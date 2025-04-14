@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Miscellaneous &mdash; RoseLisp 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Compiler" href="compiler.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoseLisp
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpreter.html">Interpreter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compiler.html">Compiler</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Miscellaneous</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#roselisp-design-goals">Roselisp design goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#differences-from-racket">Differences from Racket</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoseLisp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Miscellaneous</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/miscellaneous.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="miscellaneous">
+<h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline"></a></h1>
+<section id="roselisp-design-goals">
+<h2>Roselisp design goals<a class="headerlink" href="#roselisp-design-goals" title="Permalink to this headline"></a></h2>
+<p>Roselisp translates comments as well. Comments in the Lisp source code are not stripped away, but are translated to JavaScript comments.</p>
+<p>The goal of Roselisp is to translate Scheme programs to JavaScript programs in a natural way that preserves comments. This lets one use Scheme as a tool for writing JavaScript libraries.</p>
+<p>Roselisp translates types as well, if they are specified. Typed Racket types are translated to TypeScript types.</p>
+<p>Roselisp translates Typed Racket to TypeScript.</p>
+<p>Roselisp translates a subset of Typed Racket to TypeScript.</p>
+<p>Roselisp also supports translation of Typed Racket types to TypeScript types.</p>
+</section>
+<section id="differences-from-racket">
+<h2>Differences from Racket<a class="headerlink" href="#differences-from-racket" title="Permalink to this headline"></a></h2>
+<p>Roselisp approximates the design of Racket Scheme, and takes after it as much as possible. However, by design, Roselisp is concerned with that core of Racket Scheme which is similar to the core of other programming languages.</p>
+<p>When it is difficult to translate</p>
+<p>Roselisp straddles two worlds</p>
+<p>Another way to put it is that Roselisp places a premium on <em>translatability</em>. Roselisp concerns itself with that subset of Scheme which is easily translated to other languages.</p>
+<p>More genereally, we may say that Roselisp concerns itself with that subset of Racket Scheme that is easily translatable to other languages.</p>
+<p>Roselisp attempts to bridge the gap between Lisp and JavaScript. In practice, Roselisp translates a subset of Typed Racket to a subset of TypeScript.</p>
+<p>Roselisp is subject to the following constraints:</p>
+<ul class="simple">
+<li><p>Scheme programs should be translated to JavaScript in a natural way.</p></li>
+<li><p>S-expressions are represented as arrays in JavaScript, with JavaScript’s own <code class="docutils literal notranslate"><span class="pre">Symbol</span></code> class used to represent symbols. This makes it easy to write S-expressions in JavaScript.</p></li>
+</ul>
+<p>There are currently some differences from Racket:</p>
+<ul class="simple">
+<li><p>In addition to the function <code class="docutils literal notranslate"><span class="pre">member</span></code>, Roselisp defines a nonstandard function <code class="docutils literal notranslate"><span class="pre">member?</span></code>, which is similar to the standard function except that its return value is <code class="docutils literal notranslate"><span class="pre">#t</span></code> or <code class="docutils literal notranslate"><span class="pre">#f</span></code>. The benefit of <code class="docutils literal notranslate"><span class="pre">member?</span></code> is that it translates directory to JavaScript’s <code class="docutils literal notranslate"><span class="pre">.includes</span></code> method.</p></li>
+<li><p>Classes in Roselisp can define a constructor with <code class="docutils literal notranslate"><span class="pre">(define/public</span> <span class="pre">(constructor</span> <span class="pre">...)</span> <span class="pre">...)</span></code>. The constructor is invoked when the class is instantiated.</p></li>
+</ul>
+<p><em>Constructors.</em> Roselisp permits classes to define a constructor by defining a public member method named <code class="docutils literal notranslate"><span class="pre">constructor</span></code>, i.e., <code class="docutils literal notranslate"><span class="pre">(define/public</span> <span class="pre">(constructor</span> <span class="pre">...)</span> <span class="pre">...)</span></code>. The constructor is invoked when the class is instantiated. Objects instantiated with <code class="docutils literal notranslate"><span class="pre">make-object</span></code> or <code class="docutils literal notranslate"><span class="pre">new</span></code> pass values in the order specified by the constructor.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="compiler.html" class="btn btn-neutral float-left" title="Compiler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

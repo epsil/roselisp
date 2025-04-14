@@ -1,0 +1,83 @@
+{
+  "name": "roselisp",
+  "version": "0.0.1",
+  "description": "Lisp interpreter and transpiler in JavaScript",
+  "main": "dist/index.js",
+  "bin": {
+    "roselisp": "cli.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/epsil/roselisp.git"
+  },
+  "keywords": [
+    "lisp"
+  ],
+  "author": "Vegard Øye",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/epsil/roselisp/issues"
+  },
+  "homepage": "https://github.com/epsil/roselisp#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.62.0",
+    "0x": "^5.8.0",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^8.2.0",
+    "jsdoc": "^3.6.7",
+    "mocha": "^8.4.0",
+    "prettier": "^2.3.2",
+    "ts-mocha": "^8.0.0",
+    "typescript": "^4.4.4"
+  },
+  "scripts": {
+    "build": "npm run prettier && npm run transpile-all && npm run compile",
+    "build!": "npm run build && npm run test",
+    "build-doc": "npm run sphinx",
+    "cli": "node dist/cli.js",
+    "compile": "tsc -p tsconfig.json",
+    "doc": "npm run build-doc",
+    "fix": "npm run format",
+    "format": "npm run prettier",
+    "jsdoc": "jsdoc -c jsdoc.json -d doc index.js src/*.js test/*.js",
+    "lint": "eslint src/*.ts test/*.ts",
+    "prettier": "npm run prettier-ts && npm run prettier-json",
+    "prettier-js": "prettier --single-quote --write \"test/*.js\"",
+    "prettier-json": "prettier --single-quote --write \"*.json\"",
+    "prettier-ts": "prettier --single-quote --write \"test/ts/*.ts\"",
+    "repl": "node dist/cli.js --repl",
+    "sphinx": "cd doc; make html",
+    "start": "npm run repl",
+    "test": "npm run transpile && npm run transpile-test && npm run ts-mocha",
+    "test!": "npm run build && npm run transpile-test-all && npm run prettier && npm run ts-mocha",
+    "profiler": "npm run profiler-transpile && npm run profiler-view",
+    "profiler-transpile": "node --prof dist/cli.js -c --feval-bindings --finline-functions --language TypeScript --out-dir src/ts src/scm/*.scm",
+    "profiler-view": "node --prof-process *.log > processed.txt; less processed.txt",
+    "flamegraph": "0x dist/cli.js -c --feval-bindings --finline-functions --language TypeScript --out-dir src/ts src/scm/*.scm",
+    "transpile": "npm run transpile-src",
+    "transpile-all": "npm run transpile-src-all",
+    "transpile-src": "node dist/cli.js -c --quick --feval-bindings --finline-functions --language TypeScript --out-dir src/ts src/scm/*.scm",
+    "transpile-src-all": "node dist/cli.js -c --feval-bindings --finline-functions --language TypeScript --out-dir src/ts src/scm/*.scm",
+    "transpile-test": "node dist/cli.js -c --quick --feval-bindings --finline-functions --language TypeScript --out-dir test/ts test/scm/*.scm",
+    "transpile-test-all": "node dist/cli.js -c --feval-bindings --finline-functions --language TypeScript --out-dir test/ts test/scm/*.scm",
+    "transpile!": "npm run transpile && npm run compile",
+    "ts-mocha": "ts-mocha -p tsconfig.json test/ts/*.test.ts",
+    "tsc": "npm run compile"
+  },
+  "dependencies": {
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^20.2.1",
+    "@types/ramda": "^0.28.13",
+    "@typescript-eslint/typescript-estree": "^5.62.0",
+    "minimist": "^1.2.8",
+    "minimist-options": "^4.1.0",
+    "ramda": "^0.28.0"
+  }
+}

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interpreter &mdash; RoseLisp 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Compiler" href="compiler.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoseLisp
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Interpreter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#repl">REPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpreting-files">Interpreting files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scripts">Scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#library">Library</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environments">Environments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compiler.html">Compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous.html">Miscellaneous</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoseLisp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Interpreter</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/interpreter.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="interpreter">
+<h1>Interpreter<a class="headerlink" href="#interpreter" title="Permalink to this headline"></a></h1>
+<p>Roselisp provides an interpreter. The interpreter can be loaded as a Node library, or interacted with through Roselisp’s <a class="reference internal" href="#repl"><span class="std std-ref">REPL</span></a>.</p>
+<section id="repl">
+<span id="id1"></span><h2>REPL<a class="headerlink" href="#repl" title="Permalink to this headline"></a></h2>
+<p>Roselisp provides a simple language shell in the form of a REPL (read–eval–print loop). To interact with the REPL, invoke <code class="docutils literal notranslate"><span class="pre">roselisp</span></code> with zero arguments:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>roselisp
+</pre></div>
+</div>
+<p>This will start a shell asking the user for input:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">;;</span> <span class="n">Roselisp</span> <span class="n">version</span> <span class="mf">0.0.1</span><span class="o">.</span>
+<span class="p">;;</span> <span class="n">Type</span> <span class="p">,</span><span class="n">h</span> <span class="k">for</span> <span class="n">help</span> <span class="ow">and</span> <span class="p">,</span><span class="n">q</span> <span class="n">to</span> <span class="n">quit</span><span class="o">.</span>
+<span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>For example, to calculate 1 + 1, enter the expression <code class="docutils literal notranslate"><span class="pre">(+</span> <span class="pre">1</span> <span class="pre">1)</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="p">(</span><span class="o">+</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>
+<span class="mi">2</span>
+</pre></div>
+</div>
+<p>For help, type <code class="docutils literal notranslate"><span class="pre">,h</span></code>. To quit the REPL, type <code class="docutils literal notranslate"><span class="pre">,q</span></code>.</p>
+</section>
+<section id="interpreting-files">
+<h2>Interpreting files<a class="headerlink" href="#interpreting-files" title="Permalink to this headline"></a></h2>
+<p>Roselisp can be used to execute Scheme programs. To begin, we will make a simple <a class="reference external" href="http://en.wikipedia.org/wiki/%22Hello,_World%21%22_program">“hello, world”</a> program in the style of <a class="reference external" href="http://en.wikipedia.org/wiki/The_C_Programming_Language">Kernighan and Ritchie</a>. Create the following file named <code class="docutils literal notranslate"><span class="pre">hello.scm</span></code>:</p>
+<div class="highlight-scheme notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">display </span><span class="s">&quot;hello, world&quot;</span><span class="p">)</span>
+  <span class="mi">0</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can run this file by passing it to <code class="docutils literal notranslate"><span class="pre">roselisp</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>roselisp hello.scm
+<span class="go">hello, world</span>
+</pre></div>
+</div>
+</section>
+<section id="scripts">
+<h2>Scripts<a class="headerlink" href="#scripts" title="Permalink to this headline"></a></h2>
+<p>We can also create self-executing Roselisp scripts by adding a <a class="reference external" href="http://en.wikipedia.org/wiki/Shebang_%28Unix%29">shebang directive</a>:</p>
+<div class="highlight-scheme notranslate"><div class="highlight"><pre><span></span><span class="o">#</span><span class="nv">!/usr/bin/env</span> <span class="nv">roselisp</span>
+<span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">display </span><span class="s">&quot;hello, world&quot;</span><span class="p">)</span>
+  <span class="mi">0</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then set the file permissions to executable:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chmod +x hello.scm
+</pre></div>
+</div>
+<p>It is now possible to run <code class="docutils literal notranslate"><span class="pre">hello.scm</span></code> as a script:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./hello.scm
+<span class="go">hello, world</span>
+</pre></div>
+</div>
+</section>
+<section id="library">
+<h2>Library<a class="headerlink" href="#library" title="Permalink to this headline"></a></h2>
+<p>Roselisp can be used as a Node library, and is designed to make it easy to evaluate Lisp code in a JavaScript context. Roselisp S-expressions are made out of JavaScript arrays, with JavaScript’s <code class="docutils literal notranslate"><span class="pre">Symbol</span></code> data type being used to represent Lisp symbols. Thus, the S-expression <code class="docutils literal notranslate"><span class="pre">(+</span> <span class="pre">1</span> <span class="pre">1)</span></code> would in JavaScript be represented as:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">exp</span> <span class="o">=</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="k">for</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">),</span> <span class="mf">1</span><span class="p">,</span> <span class="mf">1</span><span class="p">];</span> <span class="c1">// (+ 1 1)</span>
+</pre></div>
+</div>
+<p>To simplify the task of creating symbols, Roselisp provides a shorthand, <code class="docutils literal notranslate"><span class="pre">s</span></code>, which is a special function that supports JavaScript’s template string syntax:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span><span class="nx">s</span><span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;roselisp&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">exp</span> <span class="o">=</span> <span class="p">[</span><span class="nx">s</span><span class="sb">`+`</span><span class="p">,</span> <span class="mf">1</span><span class="p">,</span> <span class="mf">1</span><span class="p">];</span> <span class="c1">// (+ 1 1)</span>
+</pre></div>
+</div>
+<p>Alternatively, we can write the same expression as an S-expression by using the <code class="docutils literal notranslate"><span class="pre">sexp</span></code> function:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span><span class="nx">sexp</span><span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;roselisp&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">exp</span> <span class="o">=</span> <span class="nx">sexp</span><span class="sb">`(+ 1 1)`</span><span class="p">;</span> <span class="c1">// [s`+`, 1, 1]</span>
+</pre></div>
+</div>
+<p>To evaluate this expression, pass it to Roselisp’s <code class="docutils literal notranslate"><span class="pre">interpret</span></code> function:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span><span class="nx">interpret</span><span class="p">,</span> <span class="nx">sexp</span><span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;roselisp&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">exp</span> <span class="o">=</span> <span class="nx">sexp</span><span class="sb">`(+ 1 1)`</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">interpret</span><span class="p">(</span><span class="nx">exp</span><span class="p">);</span> <span class="c1">// 2</span>
+</pre></div>
+</div>
+<p>When passed a single argument, <code class="docutils literal notranslate"><span class="pre">interpret</span></code> evaluates the given S-expression in a standard environment. It is also possible to pass a custom environment as the second argument to <code class="docutils literal notranslate"><span class="pre">interpret</span></code>.</p>
+<section id="environments">
+<h3>Environments<a class="headerlink" href="#environments" title="Permalink to this headline"></a></h3>
+<p>To create a custom Lisp environment, instantiate the <code class="docutils literal notranslate"><span class="pre">LispEnvironment</span></code> class. The <code class="docutils literal notranslate"><span class="pre">LispEnvironment</span></code> constructor is passed an array of environment bindings. For example, the following creates an environment that binds the symbols <code class="docutils literal notranslate"><span class="pre">inc</span></code> and <code class="docutils literal notranslate"><span class="pre">square</span></code> to functions that increment and square a value, respectively. The expression <code class="docutils literal notranslate"><span class="pre">(square</span> <span class="pre">(inc</span> <span class="pre">1))</span></code> is then evaluated in that environment:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span><span class="nx">interpret</span><span class="p">,</span> <span class="nx">LispEnvironment</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">sexp</span><span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;roselisp&#39;</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">inc</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mf">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">square</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">env</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">LispEnvironment</span><span class="p">([</span>
+  <span class="p">[</span><span class="nx">s</span><span class="sb">`inc`</span><span class="p">,</span> <span class="nx">inc</span><span class="p">,</span> <span class="s1">&#39;function&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="nx">s</span><span class="sb">`square`</span><span class="p">,</span> <span class="nx">square</span><span class="p">,</span> <span class="s1">&#39;function&#39;</span><span class="p">]</span>
+<span class="p">]);</span>
+
+<span class="kd">const</span> <span class="nx">exp</span> <span class="o">=</span> <span class="nx">sexp</span><span class="sb">`(square (inc 1))`</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">interpret</span><span class="p">(</span><span class="nx">exp</span><span class="p">,</span> <span class="nx">env</span><span class="p">);</span> <span class="c1">// 4</span>
+</pre></div>
+</div>
+<p>When we instantiate <code class="docutils literal notranslate"><span class="pre">LispEnvironment</span></code> with an array of bindings, each binding is an array <code class="docutils literal notranslate"><span class="pre">[sym,</span> <span class="pre">val,</span> <span class="pre">type]</span></code>, where <code class="docutils literal notranslate"><span class="pre">sym</span></code> is a symbol to bind to a value, <code class="docutils literal notranslate"><span class="pre">val</span></code> is the value to bind it to, and <code class="docutils literal notranslate"><span class="pre">type</span></code> is one of <code class="docutils literal notranslate"><span class="pre">'variable'</span></code>, <code class="docutils literal notranslate"><span class="pre">'function'</span></code>, <code class="docutils literal notranslate"><span class="pre">'macro'</span></code> or <code class="docutils literal notranslate"><span class="pre">'special'</span></code>. Here, the binding type is <code class="docutils literal notranslate"><span class="pre">'function'</span></code> since <code class="docutils literal notranslate"><span class="pre">inc</span></code> and <code class="docutils literal notranslate"><span class="pre">square</span></code> are functions.</p>
+<p>The custom environment is stacked on top of a standard Lisp environment, so it is possible to use bindings from both. For example, we can evaluate <code class="docutils literal notranslate"><span class="pre">(+</span> <span class="pre">(square</span> <span class="pre">(inc</span> <span class="pre">1))</span> <span class="pre">1)</span></code> and get <code class="docutils literal notranslate"><span class="pre">5</span></code>; here, <code class="docutils literal notranslate"><span class="pre">+</span></code> is provided by the standard environment, while <code class="docutils literal notranslate"><span class="pre">square</span></code> and <code class="docutils literal notranslate"><span class="pre">inc</span></code> are provided by the custom environment. (There is also a low-level evaluation function, <code class="docutils literal notranslate"><span class="pre">eval_</span></code>, which does not do any stacking and requires the caller to provide a complete language environment, but it is rarely what you want. When in doubt, use <code class="docutils literal notranslate"><span class="pre">interpret</span></code>, not <code class="docutils literal notranslate"><span class="pre">eval_</span></code>.)</p>
+<p>Thus far, we have interacted with Roselisp’s interpreter from JavaScript, in order to call attention to the way Lisp code is represented in JavaScript. But we could easily express the same program in Lisp:</p>
+<div class="highlight-scheme notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">require</span> <span class="p">(</span><span class="nf">only-in</span> <span class="s">&quot;roselisp&quot;</span> <span class="nv">interpret</span> <span class="nv">LispEnvironment</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">inc</span> <span class="nv">x</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">+ </span><span class="nv">x</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">square</span> <span class="nv">x</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">* </span><span class="nv">x</span> <span class="nv">x</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">define </span><span class="nv">env</span>
+  <span class="p">(</span><span class="nf">new</span> <span class="nv">LispEnvironment</span>
+       <span class="o">`</span><span class="p">((</span><span class="nf">inc</span> <span class="o">,</span><span class="nv">inc</span> <span class="s">&quot;function&quot;</span><span class="p">)</span>
+         <span class="p">(</span><span class="nf">square</span> <span class="o">,</span><span class="nv">square</span> <span class="s">&quot;function&quot;</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="k">define </span><span class="nv">exp</span>
+  <span class="o">&#39;</span><span class="p">(</span><span class="nv">square</span> <span class="p">(</span><span class="nf">inc</span> <span class="mi">1</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="k">define </span><span class="nv">val</span>
+  <span class="p">(</span><span class="nf">interpret</span> <span class="nv">exp</span> <span class="nv">env</span><span class="p">))</span> <span class="c1">; 4</span>
+</pre></div>
+</div>
+<p>In the <a class="reference internal" href="compiler.html"><span class="doc">Compiler</span></a> chapter, we will see how we can compile such Lisp code to the equivalent JavaScript code.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="compiler.html" class="btn btn-neutral float-right" title="Compiler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

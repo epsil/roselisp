@@ -1,0 +1,70 @@
+"use strict";
+// SPDX-License-Identifier: MPL-2.0
+// inline-lisp-sources: true
+/**
+ * # Exceptions
+ *
+ * Exceptions thrown during evaluation.
+ *
+ * ## Description
+ *
+ * These exceptions are thrown by the evaluator. For example, a
+ * `BreakException` is thrown while evaluating a `BreakStatement`
+ * ESTree node, which is what a `(break)` form compiles to.
+ * Similarly, `ContinueException` is thrown when evaluating
+ * `ContinueStatement` and `(continue)`.
+ *
+ * ## License
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ReturnException = exports.YieldException = exports.ContinueException = exports.BreakException = void 0;
+/**
+ * `BreakException`.
+ *
+ * Used for evaluating `BreakStatement` and `(break)`.
+ */
+class BreakException extends Error {
+    constructor() {
+        super('BreakException');
+    }
+}
+exports.BreakException = BreakException;
+/**
+ * `ContinueException`.
+ *
+ * Used for evaluating `ContinueStatement` and `(continue)`.
+ */
+class ContinueException extends Error {
+    constructor() {
+        super('ContinueException');
+    }
+}
+exports.ContinueException = ContinueException;
+/**
+ * `YieldException`.
+ *
+ * Used for evaluating `YieldExpression` and `(yield ...)`.
+ */
+class YieldException extends Error {
+    constructor(value) {
+        super('YieldException');
+        this.value = value;
+    }
+}
+exports.YieldException = YieldException;
+/**
+ * `ReturnException`.
+ *
+ * Used for evaluating `ReturnStatement` and `(return ...)`.
+ */
+class ReturnException extends Error {
+    constructor(value) {
+        super('ReturnException');
+        this.value = value;
+    }
+}
+exports.ReturnException = ReturnException;

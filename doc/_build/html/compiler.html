@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compiler &mdash; RoseLisp 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Miscellaneous" href="miscellaneous.html" />
+    <link rel="prev" title="Interpreter" href="interpreter.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> RoseLisp
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpreter.html">Interpreter</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Compiler</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#javascript">JavaScript</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typescript">TypeScript</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous.html">Miscellaneous</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RoseLisp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Compiler</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/compiler.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="compiler">
+<h1>Compiler<a class="headerlink" href="#compiler" title="Permalink to this headline"></a></h1>
+<p>Roselisp provides a compiler which can be used to compile Scheme programs to JavaScript or TypeScript. Roselisp’s compiler is a <em>source-to-source compiler</em> or <em>transcompiler</em>, what is sometimes called a <em>transpiler</em>. Whenever we speak of compilation here, we mean source-to-source compilation, also known as transcompilation or transpilation.</p>
+<section id="javascript">
+<h2>JavaScript<a class="headerlink" href="#javascript" title="Permalink to this headline"></a></h2>
+<p>We assume that we have a file named <code class="docutils literal notranslate"><span class="pre">hello.scm</span></code> that contains the same <a class="reference external" href="http://en.wikipedia.org/wiki/%22Hello,_World%21%22_program">“hello, world”</a> program we have seen before:</p>
+<div class="highlight-scheme notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">display </span><span class="s">&quot;hello, world&quot;</span><span class="p">)</span>
+  <span class="mi">0</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To compile this program to JavaScript, run <code class="docutils literal notranslate"><span class="pre">roselisp</span></code> with the <code class="docutils literal notranslate"><span class="pre">-c</span></code> option:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>roselisp -c hello.scm
+<span class="go">Compiled hello.scm to hello.js</span>
+</pre></div>
+</div>
+<p>This will create a file named <code class="docutils literal notranslate"><span class="pre">hello.js</span></code> in the same directory, which contains the following JavaScript code:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello, world&#39;</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mf">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">main</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>If we execute this file with <code class="docutils literal notranslate"><span class="pre">node</span></code>, it will print <code class="docutils literal notranslate"><span class="pre">hello,</span> <span class="pre">world</span></code> to standard output:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>node hello.js
+<span class="go">hello, world</span>
+</pre></div>
+</div>
+<p>By default, all Roselisp functions return a value, which is why we have made the <code class="docutils literal notranslate"><span class="pre">main</span></code> function return <code class="docutils literal notranslate"><span class="pre">0</span></code>. We can change this behavior by adding a type annotation. As Roselisp takes after <a class="reference external" href="http://docs.racket-lang.org/ts-guide/">Typed Racket</a>, we need to specify a return type of <code class="docutils literal notranslate"><span class="pre">Void</span></code>. Change <code class="docutils literal notranslate"><span class="pre">hello.scm</span></code> to:</p>
+<div class="highlight-scheme notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">:</span> <span class="nv">main</span> <span class="p">(</span><span class="nf">-&gt;</span> <span class="nv">Void</span><span class="p">))</span>
+<span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">display </span><span class="s">&quot;hello, world&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run <code class="docutils literal notranslate"><span class="pre">roselisp</span> <span class="pre">-c</span> <span class="pre">hello.scm</span></code> again. <code class="docutils literal notranslate"><span class="pre">hello.js</span></code> now changes to:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello, world&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">main</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Since the function’s return type has been declared as <code class="docutils literal notranslate"><span class="pre">Void</span></code>, the compiled code does not contain a <code class="docutils literal notranslate"><span class="pre">return</span></code> statement.</p>
+</section>
+<section id="typescript">
+<h2>TypeScript<a class="headerlink" href="#typescript" title="Permalink to this headline"></a></h2>
+<p>To compile a Roselisp file to TypeScript, add <code class="docutils literal notranslate"><span class="pre">--language</span> <span class="pre">typescript</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>roselisp hello.scm -c --language typescript
+</pre></div>
+</div>
+<p>This will create a file named <code class="docutils literal notranslate"><span class="pre">hello.ts</span></code> in the same directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">function</span> <span class="n">main</span><span class="p">():</span> <span class="n">void</span> <span class="p">{</span>
+  <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;hello, world&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">main</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">void</span></code> type annotation, which is TypeScript syntax. Roselisp has translated the Typed Racket type <code class="docutils literal notranslate"><span class="pre">Void</span></code> to the TypeScript type <code class="docutils literal notranslate"><span class="pre">void</span></code>.</p>
+<p>This file, <code class="docutils literal notranslate"><span class="pre">hello.ts</span></code>, can be then be compiled to JavaScript with TypeScript’s <code class="docutils literal notranslate"><span class="pre">tsc</span></code> compiler:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tsc hello.ts
+</pre></div>
+</div>
+<p>This creates a JavaScript file <code class="docutils literal notranslate"><span class="pre">hello.js</span></code>, which is produced from the TypeScript file <code class="docutils literal notranslate"><span class="pre">hello.ts</span></code>.</p>
+<p>For more on TypeScript and <code class="docutils literal notranslate"><span class="pre">tsc</span></code>, see <a class="reference external" href="http://www.typescriptlang.org/docs/handbook/intro.html"><em>The TypeScript Handbook</em></a>. For more on type annotations in Scheme, see <a class="reference external" href="http://docs.racket-lang.org/ts-guide/"><em>The Typed Racket Guide</em></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="interpreter.html" class="btn btn-neutral float-left" title="Interpreter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="miscellaneous.html" class="btn btn-neutral float-right" title="Miscellaneous" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

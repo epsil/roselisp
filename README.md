@@ -2,6 +2,8 @@
 
 Roselisp is a Scheme-like Lisp implementation that compiles to JavaScript. Roselisp is self-hosted and provides both a Lisp interpreter and a Lisp compiler, as well as a simple decompiler for translating from JavaScript to Roselisp.
 
+Roselisp is named after the [*rose tree*](https://en.wikipedia.org/wiki/Rose_tree) data structure, which plays a core part in Roselisp's design.
+
 Roselisp is free software and is licensed under the MPL license. The MPL is a library license that permits Roselisp to be linked with both free code and proprietary code.
 
 ## Usage

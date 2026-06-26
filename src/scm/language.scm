@@ -5059,7 +5059,7 @@
         (and is-method
              (> (array-list-length (second exp)) 0)
              (eq? id 'constructor)))
-      (when is-constructor
+      (when (or is-constructor is-generator)
         (set! accessibility "public"))
       (define return-type
         (if is-constructor

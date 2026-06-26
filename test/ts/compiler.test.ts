@@ -792,7 +792,7 @@ describe('compile', function (): any {
             '(module m scheme\n' +
               '  ;;; Foo class.\n' +
               '  (define-class Foo ()\n' +
-              '    ;;; bar property.\n' +
+              '    ;;; foo method.\n' +
               '    (define/public (foo)\n' +
               '      ;; this\n' +
               '      this)))'
@@ -807,7 +807,7 @@ describe('compile', function (): any {
           ' */\n' +
           'class Foo {\n' +
           '  /**\n' +
-          '   * bar property.\n' +
+          '   * foo method.\n' +
           '   */\n' +
           '  foo() {\n' +
           '    // this\n' +

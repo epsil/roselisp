@@ -625,7 +625,7 @@ class Foo {
                  "(module m scheme
   ;;; Foo class.
   (define-class Foo ()
-    ;;; bar property.
+    ;;; foo method.
     (define/public (foo)
       ;; this
       this)))")
@@ -636,7 +636,7 @@ class Foo {
  */
 class Foo {
   /**
-   * bar property.
+   * foo method.
    */
   foo() {
     // this

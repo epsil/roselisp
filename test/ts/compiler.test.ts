@@ -848,6 +848,50 @@ describe('compile', function (): any {
           '}'
       );
     });
+    it('(define Foo (class ...))', function (): any {
+      return assertEqual(
+        compile(
+          readRose(
+            '(module m scheme\n' +
+              '  ;;; Foo class.\n' +
+              '  (define Foo\n' +
+              '    (class object%\n' +
+              '      ;;; foo method.\n' +
+              '      (define/public (foo)\n' +
+              '        0)\n' +
+              '\n' +
+              '      ;;; bar generator method.\n' +
+              '      (define/generator ((get-field iterator Symbol))\n' +
+              '        (for ((x (list 1 2 3 4)))\n' +
+              '          (yield x))))))'
+          ),
+          compilationEnvironment,
+          {
+            language: 'TypeScript',
+          }
+        ),
+        '/**\n' +
+          ' * Foo class.\n' +
+          ' */\n' +
+          'class Foo {\n' +
+          '  /**\n' +
+          '   * foo method.\n' +
+          '   */\n' +
+          '  foo(): any {\n' +
+          '    return 0;\n' +
+          '  }\n' +
+          '\n' +
+          '  /**\n' +
+          '   * bar generator method.\n' +
+          '   */\n' +
+          '  *[Symbol.iterator](): any {\n' +
+          '    for (let x of [1, 2, 3, 4]) {\n' +
+          '      yield x;\n' +
+          '    }\n' +
+          '  }\n' +
+          '}'
+      );
+    });
     xit('(define (hello-world) ...)', function (): any {
       return assertEqual(
         compile(

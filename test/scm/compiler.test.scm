@@ -670,6 +670,45 @@ class Foo {
     return this;
   }
 }")))
+        (it "(define Foo (class ...))"
+            (fn ()
+              (assert-equal
+               (compile
+                (read-rose
+                 "(module m scheme
+  ;;; Foo class.
+  (define Foo
+    (class object%
+      ;;; foo method.
+      (define/public (foo)
+        0)
+
+      ;;; bar generator method.
+      (define/generator ((get-field iterator Symbol))
+        (for ((x (list 1 2 3 4)))
+          (yield x))))))")
+                compilation-environment
+                (js-obj "language" "TypeScript"))
+               "/**
+ * Foo class.
+ */
+class Foo {
+  /**
+   * foo method.
+   */
+  foo(): any {
+    return 0;
+  }
+
+  /**
+   * bar generator method.
+   */
+  *[Symbol.iterator](): any {
+    for (let x of [1, 2, 3, 4]) {
+      yield x;
+    }
+  }
+}")))
         (xit "(define (hello-world) ...)"
              (fn ()
                (assert-equal

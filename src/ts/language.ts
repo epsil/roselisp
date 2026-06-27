@@ -8900,6 +8900,7 @@ export {
   macroexpand1,
   macroexpandAll,
   macroexpandAllUntil,
+  macroexpandN,
   macroexpandUntil,
   makeLisp,
   makeModuleMap,

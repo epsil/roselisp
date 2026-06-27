@@ -8077,6 +8077,7 @@
   macroexpand-1
   macroexpand-all
   macroexpand-all-until
+  macroexpand-n
   macroexpand-until
   make-lisp
   make-module-map

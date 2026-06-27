@@ -2810,6 +2810,25 @@ return value;")))))
                 (js-obj "expressionType" "statement"
                         "language" "TypeScript"))
                "const [_, , value]: any[] = foo(bar, baz);")))))
+    (it "(define-values (x . rest) ...), TS"
+        (fn ()
+          (assert-equal
+           (compile
+            '(module m scheme
+               (define (foo)
+                 (define xs
+                   '(1 2 3 4))
+                 (define-values (x . rest)
+                   xs)
+                 (append rest '(5))))
+            compilation-environment
+            (js-obj "inlineFunctions" #f
+                    "language" "TypeScript"))
+           "function foo(): any {
+  const xs: any = [1, 2, 3, 4];
+  const [x, ...rest]: any[] = xs;
+  return [...rest, 5];
+}")))
     (describe "set!-values"
       (fn ()
         (it "(set!-values (value) (foo bar baz)), JS"
@@ -2887,7 +2906,26 @@ prop;")))))
                         compilation-environment
                         (js-obj "expressionType" "statement"
                                 "language" "TypeScript"))
-               "const {x: y, z} = obj;")))))
+               "const {x: y, z} = obj;")))
+        (it "(define-js-obj (x rest) ...), TS"
+            (fn ()
+              (assert-equal
+               (compile
+                '(module m scheme
+                   (define (foo)
+                     (define obj
+                       (js-obj))
+                     (define-js-obj (x rest)
+                       obj)
+                     (append rest '(5))))
+                compilation-environment
+                (js-obj "inlineFunctions" #f
+                        "language" "TypeScript"))
+               "function foo(): any {
+  const obj: any = {};
+  const {x, rest} = obj;
+  return [...rest, 5];
+}")))))
     (describe "set!-js-obj"
       (fn ()
         (it "(set!-js-obj (prop) obj), JS"

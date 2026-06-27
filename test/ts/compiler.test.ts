@@ -4547,6 +4547,46 @@ describe('compile', function (): any {
       );
     });
   });
+  it('(define-values (x . rest) ...), TS', function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('foo')],
+            [
+              Symbol.for('define'),
+              Symbol.for('xs'),
+              [Symbol.for('quote'), [1, 2, 3, 4]],
+            ],
+            [
+              Symbol.for('define-values'),
+              [Symbol.for('x'), Symbol.for('.'), Symbol.for('rest')],
+              Symbol.for('xs'),
+            ],
+            [
+              Symbol.for('append'),
+              Symbol.for('rest'),
+              [Symbol.for('quote'), [5]],
+            ],
+          ],
+        ],
+        compilationEnvironment,
+        {
+          inlineFunctions: false,
+          language: 'TypeScript',
+        }
+      ),
+      'function foo(): any {\n' +
+        '  const xs: any = [1, 2, 3, 4];\n' +
+        '  const [x, ...rest]: any[] = xs;\n' +
+        '  return [...rest, 5];\n' +
+        '}'
+    );
+  });
   describe('set!-values', function (): any {
     it('(set!-values (value) (foo bar baz)), JS', function (): any {
       return assertEqual(
@@ -4673,7 +4713,7 @@ describe('compile', function (): any {
         'const {x: y, z} = obj;'
       );
     });
-    return it('(define-js-obj ((x y) z) obj), TS', function (): any {
+    it('(define-js-obj ((x y) z) obj), TS', function (): any {
       return assertEqual(
         compile(
           [
@@ -4688,6 +4728,42 @@ describe('compile', function (): any {
           }
         ),
         'const {x: y, z} = obj;'
+      );
+    });
+    return it('(define-js-obj (x rest) ...), TS', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('define'),
+              [Symbol.for('foo')],
+              [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js-obj')]],
+              [
+                Symbol.for('define-js-obj'),
+                [Symbol.for('x'), Symbol.for('rest')],
+                Symbol.for('obj'),
+              ],
+              [
+                Symbol.for('append'),
+                Symbol.for('rest'),
+                [Symbol.for('quote'), [5]],
+              ],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            inlineFunctions: false,
+            language: 'TypeScript',
+          }
+        ),
+        'function foo(): any {\n' +
+          '  const obj: any = {};\n' +
+          '  const {x, rest} = obj;\n' +
+          '  return [...rest, 5];\n' +
+          '}'
       );
     });
   });

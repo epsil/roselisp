@@ -1635,12 +1635,7 @@
                 ")"
                 space)
                '())
-           (list
-            "{"
-            line
-            (indent handler-body-printed)
-            line
-            "}"))))
+           handler-body-printed)))
   (when finalizer
     (define finalizer-printed
       (print-node finalizer options))

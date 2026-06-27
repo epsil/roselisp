@@ -5265,8 +5265,9 @@
       (make-rose
        `(begin ,@(send catch-clause drop 2))))
     (define body-compiled
-      (compile-statement-or-return-statement
-       body env options))
+      (wrap-in-block-statement-smart
+       (compile-statement-or-return-statement
+        body env options)))
     (set! handler
           (new CatchClause
                param-compiled

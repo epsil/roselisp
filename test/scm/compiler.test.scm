@@ -2925,6 +2925,25 @@ prop;")))))
   const obj: any = {};
   const {x, rest} = obj;
   return [...rest, 5];
+}")))
+        (it "(define-js-obj ((rest r) x) ...), TS"
+            (fn ()
+              (assert-equal
+               (compile
+                '(module m scheme
+                   (define (foo)
+                     (define obj
+                       (js-obj))
+                     (define-js-obj ((rest r) x)
+                       obj)
+                     (list r x)))
+                compilation-environment
+                (js-obj "inlineFunctions" #f
+                        "language" "TypeScript"))
+               "function foo(): any {
+  const obj: any = {};
+  const {rest: r, x} = obj;
+  return [r, x];
 }")))))
     (describe "set!-js-obj"
       (fn ()

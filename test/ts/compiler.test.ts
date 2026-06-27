@@ -4730,7 +4730,7 @@ describe('compile', function (): any {
         'const {x: y, z} = obj;'
       );
     });
-    return it('(define-js-obj (x rest) ...), TS', function (): any {
+    it('(define-js-obj (x rest) ...), TS', function (): any {
       return assertEqual(
         compile(
           [
@@ -4763,6 +4763,38 @@ describe('compile', function (): any {
           '  const obj: any = {};\n' +
           '  const {x, rest} = obj;\n' +
           '  return [...rest, 5];\n' +
+          '}'
+      );
+    });
+    return it('(define-js-obj ((rest r) x) ...), TS', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('define'),
+              [Symbol.for('foo')],
+              [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js-obj')]],
+              [
+                Symbol.for('define-js-obj'),
+                [[Symbol.for('rest'), Symbol.for('r')], Symbol.for('x')],
+                Symbol.for('obj'),
+              ],
+              [Symbol.for('list'), Symbol.for('r'), Symbol.for('x')],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            inlineFunctions: false,
+            language: 'TypeScript',
+          }
+        ),
+        'function foo(): any {\n' +
+          '  const obj: any = {};\n' +
+          '  const {rest: r, x} = obj;\n' +
+          '  return [r, x];\n' +
           '}'
       );
     });

@@ -5187,7 +5187,8 @@ for (let i: any = _start; i < _end; i++) {
                (compile '(clj/try
                           (set! x (/ 2 1))
                           (catch MyException e
-                            (display "there was an error"))
+                            (display "there was an error")
+                            (return #f))
                           (finally
                             (display "cleanup")))
                         compilation-environment
@@ -5197,9 +5198,30 @@ for (let i: any = _start; i < _end; i++) {
 } catch (e) {
   if (e instanceof MyException) {
     console.log('there was an error');
+    return false;
   } else {
     throw e;
   }
+} finally {
+  console.log('cleanup');
+}")))
+        (it "(clj/try ... (catch ...) (finally ...))"
+            (fn ()
+              (assert-equal
+               (compile '(clj/try
+                          (set! x (/ 2 1))
+                          (catch Object e
+                            (display "there was an error")
+                            (return #f))
+                          (finally
+                            (display "cleanup")))
+                        compilation-environment
+                        (js-obj "language" "JavaScript"))
+               "try {
+  x = 2 / 1;
+} catch (e) {
+  console.log('there was an error');
+  return false;
 } finally {
   console.log('cleanup');
 }")))))

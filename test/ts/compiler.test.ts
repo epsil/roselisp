@@ -8560,7 +8560,7 @@ describe('compile', function (): any {
           '}'
       );
     });
-    return it('(clj/try ... (catch ...) (finally ...))', function (): any {
+    it('(clj/try ... (catch ...) (finally ...))', function (): any {
       return assertEqual(
         compile(
           [
@@ -8571,6 +8571,7 @@ describe('compile', function (): any {
               Symbol.for('MyException'),
               Symbol.for('e'),
               [Symbol.for('display'), 'there was an error'],
+              [Symbol.for('return'), Symbol.for('#f')],
             ],
             [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']],
           ],
@@ -8584,9 +8585,40 @@ describe('compile', function (): any {
           '} catch (e) {\n' +
           '  if (e instanceof MyException) {\n' +
           "    console.log('there was an error');\n" +
+          '    return false;\n' +
           '  } else {\n' +
           '    throw e;\n' +
           '  }\n' +
+          '} finally {\n' +
+          "  console.log('cleanup');\n" +
+          '}'
+      );
+    });
+    return it('(clj/try ... (catch ...) (finally ...))', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('clj/try'),
+            [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]],
+            [
+              Symbol.for('catch'),
+              Symbol.for('Object'),
+              Symbol.for('e'),
+              [Symbol.for('display'), 'there was an error'],
+              [Symbol.for('return'), Symbol.for('#f')],
+            ],
+            [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']],
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        'try {\n' +
+          '  x = 2 / 1;\n' +
+          '} catch (e) {\n' +
+          "  console.log('there was an error');\n" +
+          '  return false;\n' +
           '} finally {\n' +
           "  console.log('cleanup');\n" +
           '}'

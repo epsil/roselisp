@@ -2682,7 +2682,7 @@
     (return #f))
   (and (symbol? sym)
        ;; Do not inline if the symbol is listed in
-       ;; `send compilation-variables-env`.
+       ;; `compilation-variables-env`.
        (not (send compilation-variables-env has sym))
        ;; Do not inline if there is a local binding for the
        ;; value (e.g., a `let` variable).

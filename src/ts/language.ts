@@ -2937,7 +2937,7 @@ function shouldInlineP(sym: any, env: any, options: any = {}): any {
        (
         (typeof sym === 'symbol') &&
         // Do not inline if the symbol is listed in
-        // `send compilation-variables-env`.
+        // `compilation-variables-env`.
         !compilationVariablesEnv.has(sym)
        ) &&
        // Do not inline if there is a local binding for the

@@ -3193,11 +3193,6 @@
     (oget inherited-options "bindings"))
   (define make-block #t)
   (define hole-marker '_)
-  (set! bindings
-        (extend-environment
-         (new LispEnvironment)
-         bindings))
-  (oset! inherited-options "bindings" bindings)
   (define variables
     (~> node
         (send get 1)

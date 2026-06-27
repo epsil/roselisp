@@ -3424,13 +3424,13 @@
                 (cond
                  ((array? exp)
                   (new Property
-                       (compile-expression
+                       (compile-symbol
                         (send x get 0) env options)
-                       (compile-expression
+                       (compile-symbol
                         (send x get 1) env options)))
                  (else
                   (define key
-                    (compile-expression
+                    (compile-symbol
                      x env options))
                   (new Property key key))))
               (send (send node get 1) drop 0)))

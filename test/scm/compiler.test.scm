@@ -6210,7 +6210,37 @@ type NN = (a: number) => number;
 
 const f: NN = function (x: any): any {
   return x;
-};")))))))
+};")))))
+    (describe "field-bound?"
+      (fn ()
+        (it "(field-bound? baz foo), JS"
+            (fn ()
+              (assert-equal
+               (compile '(begin
+                           (define foo
+                             (js-obj))
+                           (define bar
+                             (field-bound? baz foo)))
+                        compilation-environment
+                        (js-obj "language" "JavaScript"
+                                "expressionType" "statement"))
+               "const foo = {};
+
+const bar = foo && ('baz' in foo);")))
+        (it "(field-bound? baz-baz foo), JS"
+            (fn ()
+              (assert-equal
+               (compile '(begin
+                           (define foo
+                             (js-obj))
+                           (define bar
+                             (field-bound? baz-baz foo)))
+                        compilation-environment
+                        (js-obj "language" "JavaScript"
+                                "expressionType" "statement"))
+               "const foo = {};
+
+const bar = foo && ('bazBaz' in foo);")))))))
 
 (describe "definition-to-macro"
   (fn ()

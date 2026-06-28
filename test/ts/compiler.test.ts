@@ -10111,7 +10111,7 @@ describe('compile', function (): any {
       );
     });
   });
-  return describe('define-type', function (): any {
+  describe('define-type', function (): any {
     it('(define-type NN (-> Number Number)), JS', function (): any {
       return assertEqual(
         compile(
@@ -10493,6 +10493,58 @@ describe('compile', function (): any {
           'const f: NN = function (x: any): any {\n' +
           '  return x;\n' +
           '};'
+      );
+    });
+  });
+  return describe('field-bound?', function (): any {
+    it('(field-bound? baz foo), JS', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js-obj')]],
+            [
+              Symbol.for('define'),
+              Symbol.for('bar'),
+              [
+                Symbol.for('field-bound?'),
+                Symbol.for('baz'),
+                Symbol.for('foo'),
+              ],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+            expressionType: 'statement',
+          }
+        ),
+        'const foo = {};\n' + '\n' + "const bar = foo && ('baz' in foo);"
+      );
+    });
+    return it('(field-bound? baz-baz foo), JS', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js-obj')]],
+            [
+              Symbol.for('define'),
+              Symbol.for('bar'),
+              [
+                Symbol.for('field-bound?'),
+                Symbol.for('baz-baz'),
+                Symbol.for('foo'),
+              ],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+            expressionType: 'statement',
+          }
+        ),
+        'const foo = {};\n' + '\n' + "const bar = foo && ('bazBaz' in foo);"
       );
     });
   });

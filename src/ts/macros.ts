@@ -488,23 +488,6 @@ jsForOf_.lispSource = [Symbol.for('define'), [Symbol.for('js/for-of_'), Symbol.f
 jsForOf_.lispMacro = true;
 
 /**
- * Expand a `(field-bound? ...)` expression.
- */
-function fieldBoundP_(exp: any, env: any): any {
-  const [id, obj]: any[] = exp.slice(1);
-  if (typeof obj === 'symbol') {
-    return [Symbol.for('and'), obj, [Symbol.for('js/in'), id.description as string, obj]];
-  } else {
-    const objSym: any = Symbol('obj');
-    return [Symbol.for('let'), [[objSym, obj]], [Symbol.for('and'), objSym, [Symbol.for('js/in'), id.description as string, objSym]]];
-  }
-}
-
-fieldBoundP_.lispSource = [Symbol.for('define'), [Symbol.for('field-bound?_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('id'), Symbol.for('obj')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('js/in'), [Symbol.for('unquote'), [Symbol.for('symbol->string'), Symbol.for('id')]], [Symbol.for('unquote'), Symbol.for('obj')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj-sym'), [Symbol.for('gensym'), 'obj']], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('unquote'), Symbol.for('obj')]]], [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('js/in'), [Symbol.for('unquote'), [Symbol.for('symbol->string'), Symbol.for('id')]], [Symbol.for('unquote'), Symbol.for('obj-sym')]]]]]]]];
-
-fieldBoundP_.lispMacro = true;
-
-/**
  * Expand a `(case ...)` expression.
  */
 function case_(exp: any, env: any): any {
@@ -749,7 +732,6 @@ cljTry_.lispSource = [Symbol.for('define'), [Symbol.for('clj-try_'), Symbol.for(
 cljTry_.lispMacro = true;
 
 export {
-  fieldBoundP_ as fieldBoundp_,
   begin0_,
   caseEq_,
   case_,
@@ -760,7 +742,6 @@ export {
   defmacro_,
   defun_,
   do_,
-  fieldBoundP_,
   if_,
   jsForIn_,
   jsForOf_,

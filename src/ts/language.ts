@@ -337,7 +337,6 @@ import {
   defmacro_,
   defun_,
   do_,
-  fieldBoundP_,
   if_,
   jsForIn_,
   jsForOf_,
@@ -746,7 +745,7 @@ function compile(exp: any, env: any = new LispEnvironment(), options: any = {}):
   const languageOption: any = options['language'] || defaultLanguage;
   const langEnv: any = extendsLispEnvironmentP(env) ? env : new EnvironmentStack(env, langEnvironment);
   const mappingEnv: any = compilationMap.get(languageOption) || compilationMappingEnv;
-  const compilationOptions: any = addDefaultOptions(options, true);
+  let compilationOptions: any = addDefaultOptions(options, true);
   const compiledEnv: any = new LispEnvironment();
   let bindingsEnv: any = new LispEnvironment();
   const continuationEnv: any = new EnvironmentStack(bindingsEnv, env);
@@ -755,12 +754,18 @@ function compile(exp: any, env: any = new LispEnvironment(), options: any = {}):
   compilationOptions['bindings'] = bindingsEnv;
   compilationOptions['continuationEnv'] = continuationEnv;
   compilationOptions['compiledEnv'] = compiledEnv;
-  let ast: any = (exp instanceof Module) ? compileModule(exp, langEnv, compilationOptions) : ((exp instanceof Rose) ? compileRose(exp, langEnv, compilationOptions) : compileSexp(exp, langEnv, compilationOptions));
-  ast = optimizeEstree(ast);
-  return printEstree(ast, compilationOptions);
+  compilationOptions = {
+    ...defaultCompilationOptions,
+    ...compilationOptions
+  };
+  return withCompilationOptions(compilationOptions, function (): any {
+    let ast: any = (exp instanceof Module) ? compileModule(exp, langEnv, compilationOptions) : ((exp instanceof Rose) ? compileRose(exp, langEnv, compilationOptions) : compileSexp(exp, langEnv, compilationOptions));
+    ast = optimizeEstree(ast);
+    return printEstree(ast, compilationOptions);
+  });
 }
 
-compile.lispSource = [Symbol.for('define'), [Symbol.for('compile'), Symbol.for('exp'), [Symbol.for('env'), [Symbol.for('new'), Symbol.for('LispEnvironment')]], [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('language-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'language'], Symbol.for('default-language')]], [Symbol.for('define'), Symbol.for('lang-env'), [Symbol.for('if'), [Symbol.for('extends-lisp-environment?'), Symbol.for('env')], Symbol.for('env'), [Symbol.for('new'), Symbol.for('EnvironmentStack'), Symbol.for('env'), Symbol.for('lang-environment')]]], [Symbol.for('define'), Symbol.for('mapping-env'), [Symbol.for('or'), [Symbol.for('hash-ref'), Symbol.for('compilation-map'), Symbol.for('language-option')], Symbol.for('compilation-mapping-env')]], [Symbol.for('define'), Symbol.for('compilation-options'), [Symbol.for('add-default-options'), Symbol.for('options'), Symbol.for('#t')]], [Symbol.for('define'), Symbol.for('compiled-env'), [Symbol.for('new'), Symbol.for('LispEnvironment')]], [Symbol.for('define'), Symbol.for('bindings-env'), [Symbol.for('new'), Symbol.for('LispEnvironment')]], [Symbol.for('define'), Symbol.for('continuation-env'), [Symbol.for('new'), Symbol.for('EnvironmentStack'), Symbol.for('bindings-env'), Symbol.for('env')]], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'lispEnvironment', Symbol.for('lang-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'compilationMappingEnvironment', Symbol.for('mapping-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'bindings', Symbol.for('bindings-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'continuationEnv', Symbol.for('continuation-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'compiledEnv', Symbol.for('compiled-env')], [Symbol.for('define'), Symbol.for('ast'), [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('exp'), Symbol.for('Module')], [Symbol.for('compile-module'), Symbol.for('exp'), Symbol.for('lang-env'), Symbol.for('compilation-options')]], [[Symbol.for('is-a?'), Symbol.for('exp'), Symbol.for('Rose')], [Symbol.for('compile-rose'), Symbol.for('exp'), Symbol.for('lang-env'), Symbol.for('compilation-options')]], [Symbol.for('else'), [Symbol.for('compile-sexp'), Symbol.for('exp'), Symbol.for('lang-env'), Symbol.for('compilation-options')]]]], [Symbol.for('set!'), Symbol.for('ast'), [Symbol.for('optimize-estree'), Symbol.for('ast')]], [Symbol.for('print-estree'), Symbol.for('ast'), Symbol.for('compilation-options')]];
+compile.lispSource = [Symbol.for('define'), [Symbol.for('compile'), Symbol.for('exp'), [Symbol.for('env'), [Symbol.for('new'), Symbol.for('LispEnvironment')]], [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('language-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'language'], Symbol.for('default-language')]], [Symbol.for('define'), Symbol.for('lang-env'), [Symbol.for('if'), [Symbol.for('extends-lisp-environment?'), Symbol.for('env')], Symbol.for('env'), [Symbol.for('new'), Symbol.for('EnvironmentStack'), Symbol.for('env'), Symbol.for('lang-environment')]]], [Symbol.for('define'), Symbol.for('mapping-env'), [Symbol.for('or'), [Symbol.for('hash-ref'), Symbol.for('compilation-map'), Symbol.for('language-option')], Symbol.for('compilation-mapping-env')]], [Symbol.for('define'), Symbol.for('compilation-options'), [Symbol.for('add-default-options'), Symbol.for('options'), Symbol.for('#t')]], [Symbol.for('define'), Symbol.for('compiled-env'), [Symbol.for('new'), Symbol.for('LispEnvironment')]], [Symbol.for('define'), Symbol.for('bindings-env'), [Symbol.for('new'), Symbol.for('LispEnvironment')]], [Symbol.for('define'), Symbol.for('continuation-env'), [Symbol.for('new'), Symbol.for('EnvironmentStack'), Symbol.for('bindings-env'), Symbol.for('env')]], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'lispEnvironment', Symbol.for('lang-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'compilationMappingEnvironment', Symbol.for('mapping-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'bindings', Symbol.for('bindings-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'continuationEnv', Symbol.for('continuation-env')], [Symbol.for('oset!'), Symbol.for('compilation-options'), 'compiledEnv', Symbol.for('compiled-env')], [Symbol.for('set!'), Symbol.for('compilation-options'), [Symbol.for('js-obj-append'), Symbol.for('default-compilation-options'), Symbol.for('compilation-options')]], [Symbol.for('with-compilation-options'), Symbol.for('compilation-options'), [Symbol.for('lambda'), [], [Symbol.for('define'), Symbol.for('ast'), [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('exp'), Symbol.for('Module')], [Symbol.for('compile-module'), Symbol.for('exp'), Symbol.for('lang-env'), Symbol.for('compilation-options')]], [[Symbol.for('is-a?'), Symbol.for('exp'), Symbol.for('Rose')], [Symbol.for('compile-rose'), Symbol.for('exp'), Symbol.for('lang-env'), Symbol.for('compilation-options')]], [Symbol.for('else'), [Symbol.for('compile-sexp'), Symbol.for('exp'), Symbol.for('lang-env'), Symbol.for('compilation-options')]]]], [Symbol.for('set!'), Symbol.for('ast'), [Symbol.for('optimize-estree'), Symbol.for('ast')]], [Symbol.for('print-estree'), Symbol.for('ast'), Symbol.for('compilation-options')]]]];
 
 /**
  * Compile a set of modules together.
@@ -825,7 +830,7 @@ compileModule.lispSource = [Symbol.for('define'), [Symbol.for('compile-module'),
  */
 function compileModuleExpression(node: any, env: any, options: any = {}): any {
   let module: any = moduleExpressionToModuleObject(node, env);
-  const compilationOptions: any = {
+  let compilationOptions: any = {
     ...options,
     currentModule: module
   };
@@ -871,7 +876,7 @@ function compileFilesX(files: any, options: any = {}): any {
   const outDirOption: any = options['outDir'] || '';
   const commentsOption: any = options['comments'];
   const quickOption: any = options['quick'];
-  const compilationOptions: any = {
+  let compilationOptions: any = {
     ...options,
     expressionType: 'statement',
     language: languageOption
@@ -7717,6 +7722,24 @@ function jsSwitch_(exp: any, env: any): any {
 jsSwitch_.lispSource = [Symbol.for('define'), [Symbol.for('js-switch_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('compile-sexp'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('current-compilation-options')]]];
 
 jsSwitch_.lispMacro = true;
+
+/**
+ * Expand a `(field-bound? ...)` expression.
+ */
+function fieldBoundP_(exp: any, env: any): any {
+  let [id, obj]: any[] = exp.slice(1);
+  const prop: any = makeJsIdentifierString(id.description as string, currentCompilationOptions());
+  if (typeof obj === 'symbol') {
+    return [Symbol.for('and'), obj, [Symbol.for('js/in'), prop, obj]];
+  } else {
+    const objSym: any = Symbol('obj');
+    return [Symbol.for('let'), [[objSym, obj]], [Symbol.for('and'), objSym, [Symbol.for('js/in'), prop, objSym]]];
+  }
+}
+
+fieldBoundP_.lispSource = [Symbol.for('define'), [Symbol.for('field-bound?_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('id'), Symbol.for('obj')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('make-js-identifier-string'), [Symbol.for('symbol->string'), Symbol.for('id')], [Symbol.for('current-compilation-options')]]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('js/in'), [Symbol.for('unquote'), Symbol.for('prop')], [Symbol.for('unquote'), Symbol.for('obj')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj-sym'), [Symbol.for('gensym'), 'obj']], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('unquote'), Symbol.for('obj')]]], [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('js/in'), [Symbol.for('unquote'), Symbol.for('prop')], [Symbol.for('unquote'), Symbol.for('obj-sym')]]]]]]]];
+
+fieldBoundP_.lispMacro = true;
 
 /**
  * Simple `call-with-current-continuation` implementation.

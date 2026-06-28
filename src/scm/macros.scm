@@ -319,19 +319,6 @@
   `(for ,bindings
      ,@body))
 
-;;; Expand a `(field-bound? ...)` expression.
-(defmacro field-bound?_ (id obj)
-  (cond
-   ((symbol? obj)
-    `(and ,obj
-          (js/in ,(symbol->string id) ,obj)))
-   (else
-    (define obj-sym
-      (gensym "obj"))
-    `(let ((,obj-sym ,obj))
-       (and ,obj-sym
-            (js/in ,(symbol->string id) ,obj-sym))))))
-
 ;;; Expand a `(case ...)` expression.
 (defmacro case_ (val &rest clauses)
   (define has-complex-clauses #f)
@@ -507,7 +494,6 @@
     ,@finalizer-clauses))
 
 (provide
-  (rename-out (field-bound?_ field-boundp_))
   begin0_
   case-eq_
   case_
@@ -518,7 +504,6 @@
   defmacro_
   defun_
   do_
-  field-bound?_
   if_
   js/for-in_
   js/for-of_

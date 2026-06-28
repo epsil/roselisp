@@ -312,7 +312,6 @@
                   defmacro_
                   defun_
                   do_
-                  field-bound?_
                   if_
                   js/for-in_
                   js/for-of_
@@ -839,16 +838,23 @@
   (oset! compilation-options "bindings" bindings-env)
   (oset! compilation-options "continuationEnv" continuation-env)
   (oset! compilation-options "compiledEnv" compiled-env)
-  (define ast
-    (cond
-     ((is-a? exp Module)
-      (compile-module exp lang-env compilation-options))
-     ((is-a? exp Rose)
-      (compile-rose exp lang-env compilation-options))
-     (else
-      (compile-sexp exp lang-env compilation-options))))
-  (set! ast (optimize-estree ast))
-  (print-estree ast compilation-options))
+  (set! compilation-options
+        (js-obj-append
+         default-compilation-options
+         compilation-options))
+  (with-compilation-options
+   compilation-options
+   (lambda ()
+     (define ast
+       (cond
+        ((is-a? exp Module)
+         (compile-module exp lang-env compilation-options))
+        ((is-a? exp Rose)
+         (compile-rose exp lang-env compilation-options))
+        (else
+         (compile-sexp exp lang-env compilation-options))))
+     (set! ast (optimize-estree ast))
+     (print-estree ast compilation-options))))
 
 ;;; Compile a set of modules together.
 ;;; The modules may reference one another.
@@ -6750,6 +6756,23 @@
    exp
    env
    (current-compilation-options)))
+
+;;; Expand a `(field-bound? ...)` expression.
+(defmacro field-bound?_ (id obj)
+  (define prop
+    (make-js-identifier-string
+     (symbol->string id)
+     (current-compilation-options)))
+  (cond
+   ((symbol? obj)
+    `(and ,obj
+          (js/in ,prop ,obj)))
+   (else
+    (define obj-sym
+      (gensym "obj"))
+    `(let ((,obj-sym ,obj))
+       (and ,obj-sym
+            (js/in ,prop ,obj-sym))))))
 
 ;;; Simple `call-with-current-continuation` implementation.
 ;;; Also known as `call/cc`.

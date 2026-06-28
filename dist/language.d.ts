@@ -28,7 +28,7 @@ import { quotep } from './util';
  */
 declare function compile(exp: any, env?: any, options?: any): any;
 declare namespace compile {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[] | (symbol | (symbol | (string | symbol)[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (string | symbol)[] | (symbol | (symbol | (string | symbol)[])[])[])[];
 }
 /**
  * Compile a set of modules together.

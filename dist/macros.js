@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.fieldBoundP_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defclass_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.fieldBoundp_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defclass_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
 const util_1 = require("./util");
 const [cons, take, lastCdr] = (() => {
     function cons_(x, y) {
@@ -439,23 +439,6 @@ function jsForOf_(exp, env) {
 exports.jsForOf_ = jsForOf_;
 jsForOf_.lispSource = [Symbol.for('define'), [Symbol.for('js/for-of_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('array-list-first'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('array-list-second'), Symbol.for('x')]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('left'), [Symbol.for('quote'), Symbol.for('define')]], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('array-list-second'), Symbol.for('left')]]], [Symbol.for('list'), Symbol.for('left'), Symbol.for('right')]], Symbol.for('args')]], [Symbol.for('quasiquote'), [Symbol.for('for'), [Symbol.for('unquote'), Symbol.for('bindings')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 jsForOf_.lispMacro = true;
-/**
- * Expand a `(field-bound? ...)` expression.
- */
-function fieldBoundP_(exp, env) {
-    const [id, obj] = exp.slice(1);
-    if (typeof obj === 'symbol') {
-        return [Symbol.for('and'), obj, [Symbol.for('js/in'), id.description, obj]];
-    }
-    else {
-        const objSym = Symbol('obj');
-        return [Symbol.for('let'), [[objSym, obj]], [Symbol.for('and'), objSym, [Symbol.for('js/in'), id.description, objSym]]];
-    }
-}
-exports.fieldBoundp_ = fieldBoundP_;
-exports.fieldBoundP_ = fieldBoundP_;
-fieldBoundP_.lispSource = [Symbol.for('define'), [Symbol.for('field-bound?_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('id'), Symbol.for('obj')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('js/in'), [Symbol.for('unquote'), [Symbol.for('symbol->string'), Symbol.for('id')]], [Symbol.for('unquote'), Symbol.for('obj')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj-sym'), [Symbol.for('gensym'), 'obj']], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('unquote'), Symbol.for('obj')]]], [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('js/in'), [Symbol.for('unquote'), [Symbol.for('symbol->string'), Symbol.for('id')]], [Symbol.for('unquote'), Symbol.for('obj-sym')]]]]]]]];
-fieldBoundP_.lispMacro = true;
 /**
  * Expand a `(case ...)` expression.
  */

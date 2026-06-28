@@ -186,14 +186,6 @@ declare namespace jsForOf_ {
     var lispMacro: boolean;
 }
 /**
- * Expand a `(field-bound? ...)` expression.
- */
-declare function fieldBoundP_(exp: any, env: any): any;
-declare namespace fieldBoundP_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (string | symbol)[])[])[])[])[];
-    var lispMacro: boolean;
-}
-/**
  * Expand a `(case ...)` expression.
  */
 declare function case_(exp: any, env: any): any;
@@ -245,4 +237,4 @@ declare namespace cljTry_ {
     var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var lispMacro: boolean;
 }
-export { fieldBoundP_ as fieldBoundp_, begin0_, caseEq_, case_, cljTry_, defclass_, definePrivate_, definePublic_, defmacro_, defun_, do_, fieldBoundP_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };
+export { begin0_, caseEq_, case_, cljTry_, defclass_, definePrivate_, definePublic_, defmacro_, defun_, do_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };

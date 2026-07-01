@@ -491,7 +491,7 @@
   (define value
     (get-field value node))
   (cond
-   ((eq? value js/null)
+   ((eq? value #n)
     (make-rose 'js/null))
    ((boolean? value)
     (make-rose
@@ -1317,7 +1317,7 @@
   (make-rose
    `(,define-symbol
       ,key-decompiled
-      ,@(if (eq? value js/null)
+      ,@(if (eq? value #n)
             '()
              (list value-decompiled)))))
 

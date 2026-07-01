@@ -59,7 +59,7 @@
 (define (tokenize str (options (js-obj)))
   (define comments
     (oget options "comments"))
-  (when (eq? comments undefined)
+  (when (eq? comments #u)
     (set! comments #t))
   (define pos 0)
   (define len
@@ -301,8 +301,8 @@
           (set! parent-exp (aget entry 1))
           (set! parent-exp-node (aget entry 3)))
          (else
-          (set! parent-exp undefined)
-          (set! parent-exp-node undefined)))
+          (set! parent-exp #u)
+          (set! parent-exp-node #u)))
         (when parent-exp
           (push-right! parent-exp current-exp)
           (send parent-exp-node insert current-exp-node)))
@@ -430,7 +430,7 @@
 (define (attach-comments node comments (options (js-obj)))
   (define comments-option
     (oget options "comments"))
-  (when (eq? comments-option undefined)
+  (when (eq? comments-option #u)
     (set! comments-option #t))
   (define result
     (if (is-a? node Rose)
@@ -479,7 +479,7 @@
   (define/public value)
 
   ;;; Make a token.
-  (define/public (constructor (value undefined) (tag "token"))
+  (define/public (constructor (value #u) (tag "token"))
     (send this set-value value)
     (send this set-tag tag))
 

@@ -20,7 +20,7 @@
 ;;; Convert `input` to a [regular expression][mdn:Regular Expressions] object.
 ;;;
 ;;; [mdn:Regular Expressions]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-(define (regexp_ input (flags undefined))
+(define (regexp_ input (flags #u))
   (if (string? input)
       (new RegExp input flags)
       input))
@@ -59,7 +59,7 @@
 
 (define (regexp-match?_ pattern input)
   (not (eq? (regexp-match pattern input)
-            js/null)))
+            #n)))
 
 ;;; Match `pattern` against `input` and replace with `insert`.
 ;;; `pattern` is a [regular expression][mdn:Regular Expressions]

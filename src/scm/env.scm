@@ -41,7 +41,7 @@
   ;;; which is a list of `(key value)` tuples. The
   ;;; parent environment may be specified with `parent`.
   (define/public (constructor (entries '())
-                              (parent undefined))
+                              (parent #u))
     (send this add-entries entries)
     (set-field! parent this parent))
 
@@ -143,10 +143,10 @@
     (hash-remove! (get-field table this) key)
     this)
 
-  ;;; Get the value of `key`, or `undefined`
+  ;;; Get the value of `key`, or `#u`
   ;;; if there is no binding.
   (define/public (get key
-                      (not-found undefined))
+                      (not-found #u))
     (define-values (value found)
       (send this get-tuple key))
     (if found
@@ -156,7 +156,7 @@
   ;;; Get the entry of `key`, which is a list `(key binding)`.
   ;;; If there is no binding, `not-found` is returned.
   (define/public (get-entry key
-                            (not-found undefined))
+                            (not-found #u))
     (define-values (value found)
       (send this get-tuple key))
     (if found
@@ -185,11 +185,11 @@
       (send this find-frame key))
     (if env
         (send env get-local-tuple key)
-        (values undefined #f)))
+        (values #u #f)))
 
   ;;; Get the binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get-local key (not-found undefined))
+  (define/public (get-local key (not-found #u))
     (define-values (value found)
       (send this get-local-tuple key))
     (if found
@@ -204,7 +204,7 @@
     (define value
       (if found
           (hash-ref (get-field table this) key)
-          undefined))
+          #u))
     (values value found))
 
   ;;; Get the parent environment, if any.
@@ -214,7 +214,7 @@
   ;;; Get the value of `key`, or `not-found`
   ;;; if there is no binding.
   (define/public (get-value key
-                            (not-found undefined))
+                            (not-found #u))
     ;; Alias for `.get`.
     (send this get key not-found))
 
@@ -278,16 +278,16 @@
 (define-class TypedEnvironment (Environment)
   ;;; Get the binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get key (not-found undefined))
+  (define/public (get key (not-found #u))
     (send this get-untyped-value key not-found))
 
   ;;; Get the local binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get-local key (not-found undefined))
+  (define/public (get-local key (not-found #u))
     (send this get-untyped-local-value key not-found))
 
   ;;; Get the type of `key`. If there is no binding,
-  ;;; return `"undefined"`.
+  ;;; return `"#u"`.
   (define/public (get-type key)
     (define-values (_ typ)
       (send this get-typed-value key))
@@ -298,22 +298,22 @@
   ;;; `not-found`.
   (define/public (get-typed-value key
                                   (not-found
-                                   (list undefined "undefined")))
+                                   (list #u "undefined")))
     ;; The same as `super.get`, except that
-    ;; `not-found` defaults to `(undefined "undefined")`.
+    ;; `not-found` defaults to `(#u "undefined")`.
     (send super get key not-found))
 
   (define/public (get-typed-local-value key
                                         (not-found
-                                         (list undefined "undefined")))
+                                         (list #u "undefined")))
     ;; The same as `super.get-local`, except that
-    ;; `not-found` defaults to `(undefined "undefined")`.
+    ;; `not-found` defaults to `(#u "undefined")`.
     (send super get-local key not-found))
 
   ;;; Get the untyped value of `key`. If there is no binding,
   ;;; return `not-found`.
   (define/public (get-untyped-value key
-                                    (not-found undefined))
+                                    (not-found #u))
     (define-values (value typ)
       (send this get-typed-value key))
     (if (eq? typ "undefined")
@@ -323,7 +323,7 @@
   ;;; Get the untyped local value of `key`. If there is no binding,
   ;;; return `not-found`.
   (define/public (get-untyped-local-value key
-                                          (not-found undefined))
+                                          (not-found #u))
     (define-values (value typ)
       (send this get-typed-local-value key))
     (if (eq? typ "undefined")
@@ -408,7 +408,7 @@
            (if (is-a? frame ThunkedEnvironment)
                (send frame get-unforced-local-tuple key)
                (send frame get-local-tuple key)))))
-      (values undefined #f))))
+      (values #u #f))))
 
   (define/public (get-unforced-local-tuple key)
     (send super get-local-tuple key))
@@ -543,7 +543,7 @@
       (send this find-frame key))
     (if env
         (send env get-tuple key)
-        (values undefined #f)))
+        (values #u #f)))
 
   ;;; Get the local binding for `key` as a tuple `(value found)`.
   (define/public (get-local-tuple key)
@@ -551,7 +551,7 @@
       (send this find-local-frame key))
     (if env
         (send env get-tuple key)
-        (values undefined #f)))
+        (values #u #f)))
 
   ;;; Whether the stack contains an environment that binds `key`.
   (define/public (has-local key)
@@ -647,7 +647,7 @@
           (get-field parent _)
           (send _ get-tuple current-key)))
      (else
-      (values undefined #f))))
+      (values #u #f))))
 
   (define/public (has key)
     (define-values (value found)
@@ -694,7 +694,7 @@
              ((get-field typing-f this) value))
        #t))
      (else
-      (values undefined #f))))
+      (values #u #f))))
 
   ;;; Whether `key` is bound by the dynamic environment.
   (define/public (has-local key)
@@ -711,7 +711,7 @@
 
 ;;; Pointer to the current environment.
 ;;; Used by {@link currentEnvironment}.
-(define current-environment-pointer undefined)
+(define current-environment-pointer #u)
 
 ;;; Return the current environment.
 (define (current-environment_)
@@ -737,7 +737,7 @@
 (define (with-environment env f)
   ;; TODO: It would be much faster to implement this as
   ;; a macro.
-  (define result undefined)
+  (define result #u)
   (define tmp current-environment-pointer)
   (try
     (set! current-environment-pointer env)
@@ -747,8 +747,8 @@
   result)
 
 ;;; Make an environment.
-(define (make-environment (variables undefined)
-                          (parent undefined)
+(define (make-environment (variables #u)
+                          (parent #u)
                           (is-lisp-2 #f))
   (new LispEnvironment variables parent))
 
@@ -790,7 +790,7 @@
 ;;; by modifying each frame's `parent` property to point to
 ;;; the next frame in the array.
 (define (link-environment-frames frames)
-  (define first-frame undefined)
+  (define first-frame #u)
   (for ((i (range (- (array-list-length frames) 1) -1 -1)))
     (define frame
       (aget frames i))

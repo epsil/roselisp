@@ -84,7 +84,7 @@ Type ,q to quit.")
         (help)
         (loop-f))
        (else
-        (define result undefined)
+        (define result #u)
         ;; Read (R).
         (define exp
           (read x))

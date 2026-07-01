@@ -145,7 +145,7 @@
   ;;; An initial function call may be specified
   ;;; with `f` and `args`; `args`  are here the
   ;;; arguments to the function `f`.
-  (define/public (constructor (f undefined) . args)
+  (define/public (constructor (f #u) . args)
     (when f
       (define initial-call
         (apply new TrampolineCall f args))
@@ -160,7 +160,7 @@
   (define/public (pop-call)
     (cond
      ((zero? (array-list-length (get-field calls this)))
-      undefined)
+      #u)
      (else
       (pop! (get-field calls this)))))
 
@@ -168,7 +168,7 @@
   (define/public (pop-value)
     (cond
      ((zero? (array-list-length (get-field values this)))
-      undefined)
+      #u)
      (else
       (pop! (get-field values this)))))
 
@@ -269,13 +269,13 @@
      ((= (~> (get-field call this)
              (array-list-length _))
          0)
-      undefined)
+      #u)
      (else
       (define-values (f . args)
         (get-field call this))
       (if (procedure? f)
           (apply f args)
-          undefined))))
+          #u))))
 
   ;;; Map a function over the function call
   ;;; (left-to-right).

@@ -126,7 +126,7 @@
 (define (B2 . args)
   (case (array-list-length args)
     ((0)
-     undefined)
+     #u)
     ((1)
      (first args))
     (else
@@ -394,7 +394,7 @@
 (define (Q2 . args)
   (case (array-list-length args)
     ((0)
-     undefined)
+     #u)
     ((1)
      (first args))
     (else
@@ -513,7 +513,7 @@
 (define (T2 . args)
   (case (array-list-length args)
     ((0)
-     undefined)
+     #u)
     ((1)
      (first args))
     (else

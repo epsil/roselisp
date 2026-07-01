@@ -111,7 +111,7 @@ function jsPlus_(...args: any[]): any {
   }
 }
 
-jsPlus_.lispSource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('array-length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], Symbol.for('undefined')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('array-first'), Symbol.for('args')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/+'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
+jsPlus_.lispSource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('array-length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], Symbol.for('#u')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('array-first'), Symbol.for('args')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/+'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
 
 /**
  * Whether `obj` is a JavaScript function.
@@ -151,7 +151,7 @@ function jsNullP_(obj: any): any {
   return obj === null;
 }
 
-jsNullP_.lispSource = [Symbol.for('define'), [Symbol.for('js-null?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), Symbol.for('js/null')]];
+jsNullP_.lispSource = [Symbol.for('define'), [Symbol.for('js-null?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), Symbol.for('#n')]];
 
 /**
  * Find the index of a list element matching a predicate.
@@ -215,7 +215,7 @@ function jsDelete_(x: any): any {
   return undefined;
 }
 
-jsDelete_.lispSource = [Symbol.for('define'), [Symbol.for('js-delete_'), Symbol.for('x')], Symbol.for('undefined')];
+jsDelete_.lispSource = [Symbol.for('define'), [Symbol.for('js-delete_'), Symbol.for('x')], Symbol.for('#u')];
 
 export {
   jsDelete_,

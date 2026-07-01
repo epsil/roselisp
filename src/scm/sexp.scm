@@ -63,7 +63,7 @@
 ;;;
 ;;; [js:Template literals]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
 ;;; [js:Symbol]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol
-(define (s x (y undefined))
+(define (s x (y #u))
   (string->symbol
    (if (string? x)
        x

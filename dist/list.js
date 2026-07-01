@@ -372,7 +372,7 @@ function listStar_(...args) {
 }
 exports.listStar = listStar_;
 exports.listStar_ = listStar_;
-listStar_.lispSource = [Symbol.for('define'), [Symbol.for('list-star_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 0], Symbol.for('undefined')], [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('tail-lst'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('head-lst'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('tail-lst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], [Symbol.for('unquote-splicing'), Symbol.for('tail-lst')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), Symbol.for('tail-lst')]]]]]]]];
+listStar_.lispSource = [Symbol.for('define'), [Symbol.for('list-star_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 0], Symbol.for('#u')], [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('tail-lst'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('head-lst'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('tail-lst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], [Symbol.for('unquote-splicing'), Symbol.for('tail-lst')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), Symbol.for('tail-lst')]]]]]]]];
 /**
  * Make a list of `n` elements. The function `proc` is applied
  * to the integers from `0` to `n - 1`.
@@ -1136,7 +1136,7 @@ exports.lastCons_ = lastPair_;
 exports.linkedListLastCons_ = lastPair_;
 exports.linkedListLastPair_ = lastPair_;
 exports.lastPair_ = lastPair_;
-lastPair_.lispSource = [Symbol.for('define'), [Symbol.for('last-pair_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('lst')]], Symbol.for('undefined')], [[Symbol.for('null?'), Symbol.for('lst')], Symbol.for('lst')], [[Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('undefined')], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('array-list-drop'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('lst')], 1]]]]];
+lastPair_.lispSource = [Symbol.for('define'), [Symbol.for('last-pair_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('lst')]], Symbol.for('#u')], [[Symbol.for('null?'), Symbol.for('lst')], Symbol.for('lst')], [[Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('#u')], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('array-list-drop'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('lst')], 1]]]]];
 /**
  * Return the last cdr of a list, i.e., the terminating empty list.
  */
@@ -1157,7 +1157,7 @@ function lastCdr_(lst) {
 }
 exports.linkedListLastCdr_ = lastCdr_;
 exports.lastCdr_ = lastCdr_;
-lastCdr_.lispSource = [Symbol.for('define'), [Symbol.for('last-cdr_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('lst')]], Symbol.for('undefined')], [[Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('linked-list-link?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('linked-list-tail'), Symbol.for('result')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('quote'), []]]]];
+lastCdr_.lispSource = [Symbol.for('define'), [Symbol.for('last-cdr_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('lst')]], Symbol.for('#u')], [[Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('linked-list-link?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('linked-list-tail'), Symbol.for('result')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('quote'), []]]]];
 /**
  * Set the CAR of a list.
  *
@@ -1173,7 +1173,7 @@ function setCarX_(x, y) {
 }
 exports.setCar_ = setCarX_;
 exports.setCarX_ = setCarX_;
-setCarX_.lispSource = [Symbol.for('define'), [Symbol.for('set-car!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0], [Symbol.for('aset!'), Symbol.for('x'), 0, Symbol.for('y')]], Symbol.for('undefined')];
+setCarX_.lispSource = [Symbol.for('define'), [Symbol.for('set-car!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0], [Symbol.for('aset!'), Symbol.for('x'), 0, Symbol.for('y')]], Symbol.for('#u')];
 /**
  * Set the CDR of a list.
  *
@@ -1211,7 +1211,7 @@ function setCdrX_(x, y) {
 }
 exports.setCdr_ = setCdrX_;
 exports.setCdrX_ = setCdrX_;
-setCdrX_.lispSource = [Symbol.for('define'), [Symbol.for('set-cdr!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('x')]], [[Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('aset!'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 1], Symbol.for('y')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]], [Symbol.for('else'), [Symbol.for('while'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 1], [Symbol.for('pop-right!'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('y')], [Symbol.for('for'), [[Symbol.for('z'), Symbol.for('y')]], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('z')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]]], Symbol.for('undefined')];
+setCdrX_.lispSource = [Symbol.for('define'), [Symbol.for('set-cdr!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('x')]], [[Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('aset!'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 1], Symbol.for('y')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]], [Symbol.for('else'), [Symbol.for('while'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 1], [Symbol.for('pop-right!'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('y')], [Symbol.for('for'), [[Symbol.for('z'), Symbol.for('y')]], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('z')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]]], Symbol.for('#u')];
 /**
  * Whether something is the empty list.
  *
@@ -1743,7 +1743,7 @@ function linkedListLast_(lst) {
     return result;
 }
 exports.linkedListLast_ = linkedListLast_;
-linkedListLast_.lispSource = [Symbol.for('define'), [Symbol.for('linked-list-last_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('undefined')], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]], [Symbol.for('when'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('current'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('current')], 3]]]], Symbol.for('result')];
+linkedListLast_.lispSource = [Symbol.for('define'), [Symbol.for('linked-list-last_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('#u')], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]], [Symbol.for('when'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('current'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('current')], 3]]]], Symbol.for('result')];
 /**
  * Return the `n`-th element of a linked list.
  */

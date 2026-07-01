@@ -853,7 +853,7 @@ function printLiteral(node, options = {}) {
         return value + '';
     }
 }
-printLiteral.lispSource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('#t')], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('#f')], 'false'], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('js/null')], 'null'], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('undefined')], 'undefined'], [Symbol.for('else'), [Symbol.for('string-append'), Symbol.for('value'), '']]]];
+printLiteral.lispSource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('#t')], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('#f')], 'false'], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('#n')], 'null'], [[Symbol.for('eq?'), Symbol.for('value'), Symbol.for('#u')], 'undefined'], [Symbol.for('else'), [Symbol.for('string-append'), Symbol.for('value'), '']]]];
 /**
  * Print a string `Literal` ESTree node to a `Doc` object.
  *
@@ -1329,7 +1329,7 @@ printClassDeclaration.lispSource = [Symbol.for('define'), [Symbol.for('print-cla
 function printClassExpression(node, options = {}) {
     return printClassDeclaration(new estree_1.ClassDeclaration(null, node.body, node.superClass), options);
 }
-printClassExpression.lispSource = [Symbol.for('define'), [Symbol.for('print-class-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('print-class-declaration'), [Symbol.for('new'), Symbol.for('ClassDeclaration'), Symbol.for('js/null'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')], [Symbol.for('get-field'), Symbol.for('superClass'), Symbol.for('node')]], Symbol.for('options')]];
+printClassExpression.lispSource = [Symbol.for('define'), [Symbol.for('print-class-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('print-class-declaration'), [Symbol.for('new'), Symbol.for('ClassDeclaration'), Symbol.for('#n'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')], [Symbol.for('get-field'), Symbol.for('superClass'), Symbol.for('node')]], Symbol.for('options')]];
 /**
  * Print a `ClassBody` ESTree node to a `Doc` object.
  */

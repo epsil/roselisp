@@ -867,9 +867,9 @@
     "true")
    ((eq? value #f)
     "false")
-   ((eq? value js/null)
+   ((eq? value #n)
     "null")
-   ((eq? value undefined)
+   ((eq? value #u)
     "undefined")
    (else
     (string-append value ""))))
@@ -1696,7 +1696,7 @@
 (define (print-class-expression node (options (js-obj)))
   (print-class-declaration
    (new ClassDeclaration
-        js/null
+        #n
         (get-field body node)
         (get-field superClass node))
    options))

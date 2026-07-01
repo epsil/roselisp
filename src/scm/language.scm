@@ -491,7 +491,7 @@
         options
         (js-obj-append options)))
   (for ((key (js-keys default-options)))
-    (when (eq? (oget result key) undefined)
+    (when (eq? (oget result key) #u)
       (oset! result key (oget default-options key))))
   result)
 
@@ -510,19 +510,19 @@
   (new CompilationEnvironment
        `((,(string->symbol "#f") ,(new Literal #f) "variable")
          (,(string->symbol "#t") ,(new Literal #t) "variable")
-         (,(string->symbol "#n") ,(new Literal js/null) "variable")
-         (,(string->symbol "#u") ,(new Literal undefined) "variable")
-         (,(string->symbol "js-null") ,(new Literal js/null) "variable")
-         (,(string->symbol "js-undefined") ,(new Literal undefined) "variable")
+         (,(string->symbol "#n") ,(new Literal #n) "variable")
+         (,(string->symbol "#u") ,(new Literal #u) "variable")
+         (,(string->symbol "js-null") ,(new Literal #n) "variable")
+         (,(string->symbol "js-undefined") ,(new Literal #u) "variable")
          (,(string->symbol "js/arguments") ,(new Identifier "arguments") "variable")
-         (,(string->symbol "js/null") ,(new Literal js/null) "variable")
+         (,(string->symbol "js/null") ,(new Literal #n) "variable")
          (,(string->symbol "js/require") ,(new Identifier "require") "variable")
-         (,(string->symbol "js/undefined") ,(new Literal undefined) "variable")
+         (,(string->symbol "js/undefined") ,(new Literal #u) "variable")
          (,(string->symbol "*cons-dot*") ,cons-dot-compiled_ "variable")
-         (,(string->symbol "nil") ,(new Literal js/null) "variable")
+         (,(string->symbol "nil") ,(new Literal #n) "variable")
          (,(string->symbol "null") ,(new ArrayExpression) "variable")
          (,(string->symbol "t") ,(new Literal #t) "variable")
-         (,(string->symbol "undefined") ,(new Literal undefined) "variable"))))
+         (,(string->symbol "undefined") ,(new Literal #u) "variable"))))
 
 ;;; Compiler procedures mapping environment.
 (define compilation-compiler-mapping-env
@@ -1281,11 +1281,11 @@
                      options))))
 
 ;;; Interpret a string of Lisp code.
-(define (interpret-string str (env undefined) (options (js-obj)))
+(define (interpret-string str (env #u) (options (js-obj)))
   (interpret (read-sexp str) env options))
 
 ;;; Interpret a list of files.
-(define (interpret-files files (env undefined) (options (js-obj)))
+(define (interpret-files files (env #u) (options (js-obj)))
   (map (lambda (file)
          (define str
            (~> file
@@ -1299,7 +1299,7 @@
 
 ;;; Interpret a string of Lisp code.
 ;;; Alias for `interpret-string`.
-(define (lisp str (env undefined))
+(define (lisp str (env #u))
   (interpret-string str env))
 
 ;;; Make a Lisp environment.
@@ -1314,7 +1314,7 @@
   (define eval-option
     (oget options "eval"))
   ;; TODO: Make `#f` the default.
-  (when (eq? eval-option undefined)
+  (when (eq? eval-option #u)
     (set! eval-option #t))
   (cond
    ((or (eq? env lang-environment)
@@ -1622,7 +1622,7 @@
     (cdr name-and-params))
   (define should-curry
     (or curried-option
-        (and (eq? curried-option undefined)
+        (and (eq? curried-option #u)
              (array? name))))
   (when should-curry
     (set! params (rest (flatten name-and-params)))
@@ -1688,7 +1688,7 @@
                      ((array? current-param)
                       (second current-param))
                      (else
-                      undefined)))))
+                      #u)))))
                  (else
                   y)))
               x))
@@ -1726,7 +1726,7 @@
              ((array? current-param)
               (second current-param))
              (else
-              undefined)))))
+              #u)))))
         (define param-exp
           (aget params i))
         (define param
@@ -1777,7 +1777,7 @@
   (define exp-arg 'exp)
   (define env-arg 'env)
   (define macro-args '())
-  (define rest-arg undefined)
+  (define rest-arg #u)
   (cond
    ((list? args)
     (define i 0)
@@ -2044,7 +2044,7 @@
 
 ;;; "NO-OP" operation.
 (define (nop_ exp env)
-  undefined)
+  #u)
 
 ;;; Compile a `(+ ...)` expression.
 (define (compile-add node env (options (js-obj)))
@@ -2263,7 +2263,7 @@
       (foldr reducing-f
              (if (or (eq? expression-type "statement")
                      (eq? expression-type "return"))
-                 js/null
+                 #n
                  (new Identifier "undefined"))
              cond-clauses))))))
 
@@ -2314,7 +2314,7 @@
     (define declared-type
       (send bindings get sym))
     (cond
-     ((or (eq? declared-type undefined)
+     ((or (eq? declared-type #u)
           (eq? declared-type #t)
           (eq? declared-type 'Any))
       (set! type_
@@ -2354,7 +2354,7 @@
                                    compiled-type)
                         TSVoidKeyword))
             "void"
-            undefined))
+            #u))
       (set! result
             (compile-js-function
              lambda-exp
@@ -3209,7 +3209,7 @@
     (~> node
         (send get 2)))
   (define regular-vars '())
-  (define rest-var undefined)
+  (define rest-var #u)
   (define var-decls '())
   (define declarator-id)
   (define declarator-init)
@@ -3247,7 +3247,7 @@
           (map (lambda (x)
                  (cond
                   ((eq? x hole-marker)
-                   js/null)
+                   #n)
                   (else
                    (send bindings set-local x #t "variable")
                    (new Identifier
@@ -3567,7 +3567,7 @@
 ;;; something that is not a macro call is obtained.
 (define (macroexpand-all-until exp
                                env
-                               (pred undefined)
+                               (pred #u)
                                (stack '())
                                (bindings (new LispEnvironment)))
   (define (f x stack bindings)
@@ -3764,7 +3764,7 @@
     (send node get 1))
   (define operand-compiled
     (compile-expression operand env options))
-  (define result undefined)
+  (define result #u)
   (cond
    ((and (estree-type? operand-compiled "BinaryExpression")
          (eq? (get-field operator operand-compiled) "==="))
@@ -3914,7 +3914,7 @@
           (define bindings-1
             (if bindings
                 (send bindings clone)
-                undefined))
+                #u))
           (define compiled-expression
             (compile-rose
              (make-rose exp)
@@ -3953,7 +3953,7 @@
                      (js ,js-string))))))
          ((js-obj? value)
           (define js-string
-            (send JSON stringify value js/null 2))
+            (send JSON stringify value #n 2))
           (set! internal-symbol symbol)
           (set! exp
                 `(define ,internal-symbol
@@ -4148,7 +4148,7 @@
                             (new Identifier x1)))))))
     (define result
       (new ExportNamedDeclaration
-           js/null
+           #n
            specifiers))
     (push-right! results result))
   (cond
@@ -4244,7 +4244,7 @@
     (send y-node get-value))
   (define specifiers '())
   (define seen '())
-  (define src js/null)
+  (define src #n)
   (cond
    ((tagged-list? x-exp 'only-in)
     (for ((x (send x-node drop 2)))
@@ -4656,21 +4656,21 @@
     (define start
       (if (>= (array-list-length vals-exp) 2)
           (second vals-exp)
-          undefined))
+          #u))
     (define end
       (if (>= (array-list-length vals-exp) 3)
           (third vals-exp)
-          undefined))
+          #u))
     (define step
       (if (>= 4 (array-list-length vals-exp))
           (fourth vals-exp)
-          undefined))
+          #u))
     (set! start
-          (if (eq? end undefined)
+          (if (eq? end #u)
               0
               start))
     (set! end
-          (if (eq? end undefined)
+          (if (eq? end #u)
               start
               end))
     ;; If `start`, `end` or `step` is a function call,
@@ -4803,7 +4803,7 @@
            (compile-expression
             (send node get 1)
             env options)
-           js/null)))
+           #n)))
 
 ;;; Compile a `(continue)` expression.
 (define (compile-continue node env (options (js-obj)))
@@ -4812,7 +4812,7 @@
            (compile-expression
             (send node get 1)
             env options)
-           js/null)))
+           #n)))
 
 ;;; Compile a `(js/typeof ...)` expression.
 (define (compile-js-typeof node env (options (js-obj)))
@@ -4898,7 +4898,7 @@
             (compile-expression
              (send node get 1)
              env options)
-            js/null))
+            #n))
    options))
 
 ;;; Compile a `(throw ...)` expression.
@@ -4924,7 +4924,7 @@
            (compile-expression
             (send node get 1)
             env options)
-           js/null)))
+           #n)))
 
 ;;; Compile a `(js/async ...)` expression.
 (define (compile-js-async node env (options (js-obj)))
@@ -4985,7 +4985,7 @@
   (define class-name
     (send class-name-node get-value))
   (define super-class
-    js/null)
+    #n)
   (define id
     (if (symbol? class-name)
         (new Identifier
@@ -4993,9 +4993,9 @@
               (compile-expression
                class-name-node env inherited-options)
               inherited-options))
-        js/null))
+        #n))
   (define body-node
-    (if (eq? id js/null)
+    (if (eq? id #n)
         (slice-rose node 1)
         (slice-rose node 2)))
   (define body-exp
@@ -5067,7 +5067,7 @@
       (define return-type
         (if is-constructor
             "void"
-            undefined))
+            #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -5081,7 +5081,7 @@
       (define init-compiled
         (cond
          ((not is-initialized)
-          undefined)
+          #u)
          (is-method
           (compile-js-function
            (define->lambda x (js-obj "curried"  #f))
@@ -5133,7 +5133,7 @@
   (define body
     (new ClassBody
          body-declarations))
-  (if (eq? id js/null)
+  (if (eq? id #n)
       (new ClassExpression
            body
            super-class)
@@ -5241,8 +5241,8 @@
 ;;; Compile a `(js/try ...)` expression.
 (define (compile-js-try node env (options (js-obj)))
   (define body-exps '())
-  (define catch-clause js/null)
-  (define finally-clause js/null)
+  (define catch-clause #n)
+  (define finally-clause #n)
   (for ((x (send node drop 1)))
     (cond
      ((tagged-list? x 'catch)
@@ -5257,7 +5257,7 @@
       (make-rose
        `(begin ,@body-exps))
       env options)))
-  (define handler js/null)
+  (define handler #n)
   (when catch-clause
     ;; TODO: Permit destructuring.
     (define param
@@ -5266,7 +5266,7 @@
       (send param get-value))
     (define param-compiled
       (if (eq? param-exp '_)
-          js/null
+          #n
           (compile-expression
            param env options)))
     (define body
@@ -5287,7 +5287,7 @@
           (make-rose
            `(begin ,@(send finally-clause drop 1)))
           env options))
-        js/null))
+        #n))
   (make-expression-or-statement
    (new TryStatement
         block
@@ -5652,9 +5652,9 @@
                 ((regexp-match? ,identifier-regexp ,str-sym)
                  (return (js/eval ,str-sym)))
                 (else
-                 (return undefined)))
+                 (return #u)))
                (catch Error e
-                 (return undefined))))
+                 (return #u))))
            "has"
            (js/arrow (,arg-sym)
              (try
@@ -5681,7 +5681,7 @@
   (cond
    ((not eval-option)
     (make-expression-or-statement
-     (new Literal undefined)
+     (new Literal #u)
      options))
    ((string? str-exp)
     (make-expression-or-statement
@@ -5704,7 +5704,7 @@
   (cond
    ((not eval-option)
     (make-expression-or-statement
-     (new Literal undefined)
+     (new Literal #u)
      options))
    (else
     (make-expression-or-statement
@@ -6100,8 +6100,8 @@
 
 ;;; Whether a function has Lisp source.
 (define (source? x)
-  (and (not (eq? x undefined))
-       (not (eq? (get-field lispSource x) undefined))))
+  (and (not (eq? x #u))
+       (not (eq? (get-field lispSource x) #u))))
 
 ;;; Map the function `f` over the rose tree-wrapped
 ;;; S-expression `node`. The S-expression is processed
@@ -6731,7 +6731,7 @@
                         `(block ,@consequent))
                        env options))))
               (else
-               (set! test-compiled js/null)
+               (set! test-compiled #n)
                (define consequent
                  (send x drop 1))
                (set! consequent-compiled
@@ -6783,7 +6783,7 @@
 ;;; [`call-with-current-continuation` in Racket][rkt:call-with-current-continuation].
 ;;;
 ;;; [rkt:call-with-current-continuation]: https://docs.racket-lang.org/reference/cont.html#%28def._%28%28quote._~23~25kernel%29._call-with-current-continuation%29%29
-(define (call-with-current-continuation_ proc (prompt-tag undefined))
+(define (call-with-current-continuation_ proc (prompt-tag #u))
   (define-class CallCCWrapper ()
     (define/public value)
     (define/public (constructor value)
@@ -6802,9 +6802,9 @@
 
 ;;; Traverse an ESTree tree.
 (define (traverse-estree node
-                         (enter undefined)
-                         (leave undefined)
-                         (replace undefined))
+                         (enter #u)
+                         (leave #u)
+                         (replace #u))
   (define result node)
   (define el)
   (define el1)
@@ -6893,8 +6893,8 @@
          (push! variables var-name)))))
   (traverse-estree
    program
-   undefined
-   undefined
+   #u
+   #u
    (lambda (node)
      (cond
       ((estree-type? node "VariableDeclaration")
@@ -7014,7 +7014,7 @@
       (define comments
         (send initial-node get-property "comments"))
       (define initial-node-comments '())
-      (define initial-node-comment-string undefined)
+      (define initial-node-comment-string #u)
       (define header-comments '())
       (define header-comment-strings '())
       (when comments
@@ -7034,7 +7034,7 @@
                               initial-node-comment-string)
             (push-right! header-comment-strings
                          initial-node-comment-string)
-            (set! initial-node-comment-string undefined))
+            (set! initial-node-comment-string #u))
           (when (> (length header-comment-strings) 0)
             (aset! header-comment-strings
                    (- (array-length header-comment-strings) 1)
@@ -7182,7 +7182,7 @@
              (get-field provide-expressions this)))
     this)
 
-  (define/public (make-environment (parent undefined))
+  (define/public (make-environment (parent #u))
     (define module-env
       (new LispEnvironment '() parent))
     (define imported)
@@ -7214,7 +7214,7 @@
           (set! module (send (get-field module-map this) get module-name))
           (set! env (send module get-environment)))
          (else
-          (set! env undefined)))
+          (set! env #u)))
         (for ((exp1 (drop (second exp) 2)))
           (cond
            ((array? exp1)
@@ -7253,7 +7253,7 @@
               name
               (thunk
                (lambda ()
-                 (define result undefined)
+                 (define result #u)
                  (try
                    (set! result (eval_ exp module-env))
                    (catch Error e
@@ -7345,7 +7345,7 @@
 ;;; Run `f` with `current-compilation-options-pointer` bound to `options`.
 ;;; The return value is the result of invoking `f`.
 (define (with-compilation-options options f)
-  (let ((result undefined)
+  (let ((result #u)
         (tmp current-compilation-options-pointer))
     (try
       (set! current-compilation-options-pointer options)

@@ -28,7 +28,7 @@
     (set! args
           (append (drop-right args 1)
                   (array-list-last args))))
-  (send f apply js/null args))
+  (send f apply #n args))
 
 ;;; Call `f` with `args`.
 ;;; Returns the value `f` returns.
@@ -37,7 +37,7 @@
 ;;;
 ;;; [cl:funcall]: http://clhs.lisp.se/Body/f_funcal.htm#funcall
 (define (funcall_ f . args)
-  (send/apply f call js/null args))
+  (send/apply f call #n args))
 
 ;;; Whether `obj` is a procedure (i.e., a function).
 ;;;
@@ -303,7 +303,7 @@
 ;;;
 ;;; [rkt:const]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Ffunction..rkt%29._const%29%29
 ;;; [cl:constantly]: http://clhs.lisp.se/Body/f_cons_1.htm#constantly
-(define (const_ (x undefined))
+(define (const_ (x #u))
   (lambda args
     x))
 
@@ -354,7 +354,7 @@
 
 ;;; Whether something is the value `undefined`.
 (define (undefined?_ obj)
-  (eq? obj undefined))
+  (eq? obj #u))
 
 ;;; Fold up a list left to right.
 ;;;
@@ -385,7 +385,7 @@
 ;;;
 ;;; [rkt:member]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._member%29%29
 ;;; [cl:member]: http://clhs.lisp.se/Body/f_mem_m.htm
-(define (member_ v lst (is-equal undefined))
+(define (member_ v lst (is-equal #u))
   (let ((idx (js/find-index
               (if is-equal
                   (lambda (x)
@@ -399,7 +399,7 @@
 
 ;;; Whether a list contains a value.
 ;;; Like `member`, but always returns a boolean value.
-(define (member?_ v lst (is-equal undefined))
+(define (member?_ v lst (is-equal #u))
   (memf? (if is-equal
              (lambda (x)
                (is-equal v x))
@@ -498,7 +498,7 @@
 ;;;
 ;;; [rkt:index-of]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-of%29%29
 ;;; [cl:position]: http://clhs.lisp.se/Body/f_pos_p.htm#position
-(define (index-of_ seq v (is-equal undefined))
+(define (index-of_ seq v (is-equal #u))
   (index-where seq
                (if is-equal
                    (lambda (x)
@@ -556,9 +556,9 @@
 ;;; Similar to [`range` in Racket][rkt:range].
 ;;;
 ;;; [rkt:range]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._range%29%29
-(define (range_ start (end undefined) (step undefined))
-  (let* ((start-n (if (eq? end undefined) 0 start))
-         (end-n (if (eq? end undefined) start end))
+(define (range_ start (end #u) (step #u))
+  (let* ((start-n (if (eq? end #u) 0 start))
+         (end-n (if (eq? end #u) start end))
          (step-n (or step 1))
          (result '()))
     (for ((i (range start-n end-n step-n)))
@@ -640,7 +640,7 @@
 ;;;
 ;;; [rkt:error]: https://docs.racket-lang.org/reference/exns.html#%28def._%28%28quote._~23~25kernel%29._error%29%29
 ;;; [cl:error]: http://clhs.lisp.se/Body/f_error.htm
-(define (error_ (arg undefined))
+(define (error_ (arg #u))
   (throw (new Error arg)))
 
 ;;; Get the type of a value.

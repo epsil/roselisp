@@ -53,7 +53,7 @@ plistCopy_.lispSource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbo
 
 /**
  * Return the value of a property in a property list.
- * Returns `undefined` if not found.
+ * Returns `#u` if not found.
  *
  * Similar to [`plist-get` in Emacs Lisp][el:plist-get].
  *
@@ -71,7 +71,7 @@ function plistGet_(plist: any, prop: any): any {
   return val;
 }
 
-plistGet_.lispSource = [Symbol.for('define'), [Symbol.for('plist-get_'), Symbol.for('plist'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('val'), Symbol.for('undefined')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plist')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('break')]]], Symbol.for('val')];
+plistGet_.lispSource = [Symbol.for('define'), [Symbol.for('plist-get_'), Symbol.for('plist'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('val'), Symbol.for('#u')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plist')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('break')]]], Symbol.for('val')];
 
 /**
  * Whether a property list contains a given property.
@@ -114,7 +114,7 @@ function plistSetX_(plist: any, prop: any, val: any): any {
   return undefined;
 }
 
-plistSetX_.lispSource = [Symbol.for('define'), [Symbol.for('plist-set!_'), Symbol.for('plist'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('define'), Symbol.for('found'), Symbol.for('#f')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plist')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('aset!'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1], Symbol.for('val')], [Symbol.for('set!'), Symbol.for('found'), Symbol.for('#t')], [Symbol.for('break')]], [Symbol.for('unless'), Symbol.for('found'), [Symbol.for('push-right!'), Symbol.for('plist'), Symbol.for('prop')], [Symbol.for('push-right!'), Symbol.for('plist'), Symbol.for('val')]]], Symbol.for('undefined')];
+plistSetX_.lispSource = [Symbol.for('define'), [Symbol.for('plist-set!_'), Symbol.for('plist'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('define'), Symbol.for('found'), Symbol.for('#f')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plist')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('aset!'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1], Symbol.for('val')], [Symbol.for('set!'), Symbol.for('found'), Symbol.for('#t')], [Symbol.for('break')]], [Symbol.for('unless'), Symbol.for('found'), [Symbol.for('push-right!'), Symbol.for('plist'), Symbol.for('prop')], [Symbol.for('push-right!'), Symbol.for('plist'), Symbol.for('val')]]], Symbol.for('#u')];
 
 /**
  * Set the value of a property in a property list,

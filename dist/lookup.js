@@ -36,7 +36,7 @@ new RegExp('^\\w+$');
  *
  * Returns a tuple `(value found)`, where `found` is `#t` if there is
  * a JavaScript value under that name, and `#f` otherwise. If there
- * is not, then `value` is `undefined`.
+ * is not, then `value` is `#u`.
  *
  * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
  */
@@ -61,4 +61,4 @@ function lookupJsValue(name) {
     return [value, found];
 }
 exports.lookupJsValue = lookupJsValue;
-lookupJsValue.lispSource = [Symbol.for('define'), [Symbol.for('lookup-js-value'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('if'), [Symbol.for('symbol?'), Symbol.for('name')], [Symbol.for('symbol->string'), Symbol.for('name')], Symbol.for('name')]], [Symbol.for('define'), Symbol.for('value'), Symbol.for('undefined')], [Symbol.for('define'), Symbol.for('found'), Symbol.for('#f')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('string?'), Symbol.for('str')], [Symbol.for('regexp-match'), Symbol.for('js-identifier-regexp'), Symbol.for('str')]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('js/eval'), Symbol.for('str')]], [Symbol.for('set!'), Symbol.for('found'), Symbol.for('#t')], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e')]]], [Symbol.for('values'), Symbol.for('value'), Symbol.for('found')]];
+lookupJsValue.lispSource = [Symbol.for('define'), [Symbol.for('lookup-js-value'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('if'), [Symbol.for('symbol?'), Symbol.for('name')], [Symbol.for('symbol->string'), Symbol.for('name')], Symbol.for('name')]], [Symbol.for('define'), Symbol.for('value'), Symbol.for('#u')], [Symbol.for('define'), Symbol.for('found'), Symbol.for('#f')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('string?'), Symbol.for('str')], [Symbol.for('regexp-match'), Symbol.for('js-identifier-regexp'), Symbol.for('str')]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('js/eval'), Symbol.for('str')]], [Symbol.for('set!'), Symbol.for('found'), Symbol.for('#t')], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e')]]], [Symbol.for('values'), Symbol.for('value'), Symbol.for('found')]];

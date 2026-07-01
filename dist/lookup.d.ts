@@ -24,7 +24,7 @@
  *
  * Returns a tuple `(value found)`, where `found` is `#t` if there is
  * a JavaScript value under that name, and `#f` otherwise. If there
- * is not, then `value` is `undefined`.
+ * is not, then `value` is `#u`.
  *
  * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
  */

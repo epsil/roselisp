@@ -70,7 +70,7 @@
   (let ((len (array-length args)))
     (cond
      ((zero? len)
-      undefined)
+      #u)
      (else
       (define result
         (array-first args))
@@ -97,7 +97,7 @@
 
 ;;; Whether something is JavaScript's `null`.
 (define (js-null?_ obj)
-  (eq? obj js/null))
+  (eq? obj #n))
 
 ;;; Find the index of a list element matching a predicate.
 ;;;
@@ -136,7 +136,7 @@
   ;; This function does nothing by itself, but a call to it
   ;; will be compiled to a `UnaryExpression` ESTree node
   ;; invoking `delete`.
-  undefined)
+  #u)
 
 (provide
   js-delete_

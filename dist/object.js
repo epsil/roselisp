@@ -48,7 +48,7 @@ function jsObjP_(x) {
     return (x !== null) && (typeof x === 'object');
 }
 exports.jsObjP_ = jsObjP_;
-jsObjP_.lispSource = [Symbol.for('define'), [Symbol.for('js-obj?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('js/null')]], [Symbol.for('js/object-type?'), Symbol.for('x')]]];
+jsObjP_.lispSource = [Symbol.for('define'), [Symbol.for('js-obj?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('#n')]], [Symbol.for('js/object-type?'), Symbol.for('x')]]];
 /**
  * Whether something types as a JavaScript object.
  *

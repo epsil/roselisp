@@ -33,7 +33,7 @@ declare namespace plistCopy_ {
 }
 /**
  * Return the value of a property in a property list.
- * Returns `undefined` if not found.
+ * Returns `#u` if not found.
  *
  * Similar to [`plist-get` in Emacs Lisp][el:plist-get].
  *

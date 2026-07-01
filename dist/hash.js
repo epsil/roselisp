@@ -117,7 +117,7 @@ function hashRef_(ht, key, failureResult = undefined) {
     }
 }
 exports.hashRef_ = hashRef_;
-hashRef_.lispSource = [Symbol.for('define'), [Symbol.for('hash-ref_'), Symbol.for('ht'), Symbol.for('key'), [Symbol.for('failure-result'), Symbol.for('undefined')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('failure-result'), Symbol.for('undefined')]], [Symbol.for('not'), [Symbol.for('hash-has-key?'), Symbol.for('ht'), Symbol.for('key')]]], Symbol.for('failure-result')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('get'), Symbol.for('key')]]]];
+hashRef_.lispSource = [Symbol.for('define'), [Symbol.for('hash-ref_'), Symbol.for('ht'), Symbol.for('key'), [Symbol.for('failure-result'), Symbol.for('#u')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('failure-result'), Symbol.for('#u')]], [Symbol.for('not'), [Symbol.for('hash-has-key?'), Symbol.for('ht'), Symbol.for('key')]]], Symbol.for('failure-result')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('get'), Symbol.for('key')]]]];
 /**
  * Whether a hash map has a value for a given key.
  *

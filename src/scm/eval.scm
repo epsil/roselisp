@@ -71,7 +71,7 @@
 ;;; that performs no such stacking.
 (define eval_
   (dashify
-   (lambda (exp (env undefined) (options (js-obj)))
+   (lambda (exp (env #u) (options (js-obj)))
      (define evaluator
        (or (oget options "evaluator")
            default-evaluator))
@@ -80,7 +80,7 @@
 ;;; Call an evaluator on an expression.
 (define (call-evaluator evaluator
                         exp
-                        (env undefined)
+                        (env #u)
                         (options (js-obj)))
   (cond
    ((is-a? evaluator Evaluator)
@@ -88,7 +88,7 @@
    ((procedure? evaluator)
     (evaluator exp env options))
    (else
-    undefined)))
+    #u)))
 
 ;;; Whether something is an evaluator.
 (define (evaluator? obj)
@@ -99,7 +99,7 @@
 (define-class Evaluator ()
   ;;; The simplest possible evaluator is the
   ;;; identity function.
-  (define/public (eval exp (env undefined) (options (js-obj)))
+  (define/public (eval exp (env #u) (options (js-obj)))
     exp))
 
 ;;; Lisp-1 evaluator function.
@@ -186,7 +186,7 @@
                              (eval-sexp arg env options))
                            args)))))))))
         ((not op)
-         undefined)
+         #u)
         ((procedure? op)
          ;; `(<fn> ...)` call. The first element is a
          ;; function object. If it is a fexpr call, the function
@@ -266,7 +266,7 @@
      (lambda ()
        (evaluator node env options))))
    (else
-    undefined)))
+    #u)))
 
 ;;; Evaluate an ESTree [`Program`][estree:program] node
 ;;; (i.e., a JavaScript program).
@@ -275,7 +275,7 @@
 (define (eval-estree-program node env (options (js-obj)))
   (define body
     (get-field body node))
-  (define result undefined)
+  (define result #u)
   (for ((statement body))
     (set! result
           (eval-estree statement env options)))
@@ -470,7 +470,7 @@
     (get-field declarations node))
   (for ((x declarations))
     (eval-estree x env options))
-  undefined)
+  #u)
 
 ;;; Evaluate an ESTree [`VariableDeclarator`][estree:variabledeclarator] node.
 ;;;
@@ -536,7 +536,7 @@
   (define f
     (eval-estree-function-expression node env options))
   (send env set-local name f "function")
-  undefined)
+  #u)
 
 ;;; Evaluate an ESTree [`FunctionExpression`][estree:functionexpression] node.
 ;;;
@@ -602,7 +602,7 @@
    ((eq? operator "typeof")
     (type-of (eval-estree argument env options)))
    (else
-    undefined)))
+    #u)))
 
 ;;; Evaluate an ESTree [`UpdateExpression`][estree:updateexpression] node.
 ;;;
@@ -651,7 +651,7 @@
    ((eq? operator "instanceof")
     (is-a? left-val right-val))
    (else
-    undefined)))
+    #u)))
 
 ;;; Evaluate an ESTree [`LogicalExpression`][estree:logicalexpression] node.
 ;;;
@@ -681,7 +681,7 @@
      (else
       (eval-estree right env options))))
    (else
-    undefined)))
+    #u)))
 
 ;;; Evaluate an ESTree [`IfStatement`][estree:ifstatement] node.
 ;;;
@@ -705,7 +705,7 @@
    (alternate
     (eval-estree alternate env options))
    (else
-    undefined)))
+    #u)))
 
 ;;; Evaluate an ESTree [`WhileStatement`][estree:whilestatement] node.
 ;;;
@@ -723,7 +723,7 @@
         (eval-estree body env options)
         (catch ContinueException e)))
     (catch BreakException e))
-  undefined)
+  #u)
 
 ;;; Evaluate an ESTree [`ForStatement`][estree:forstatement] node.
 ;;;
@@ -751,7 +751,7 @@
            (catch ContinueException e))
          (eval-estree update for-env options))
        (catch BreakException e))
-     undefined)))
+     #u)))
 
 ;;; Evaluate an ESTree [`ForOfStatement`][estree:forofstatement] node.
 ;;;
@@ -794,7 +794,7 @@
            (eval-estree body for-of-env options)
            (catch ContinueException e)))
        (catch BreakException e))
-     undefined)))
+     #u)))
 
 ;;; Evaluate an ESTree [`TryStatement`][estree:trystatement] node.
 ;;;
@@ -806,7 +806,7 @@
     (get-field handler node))
   (define finalizer
     (get-field finalizer node))
-  (define result undefined)
+  (define result #u)
   (try
     (set! result
           (eval-estree block env options))
@@ -848,7 +848,7 @@
   (define class-expression
     (eval-estree-class-expression node env options))
   (send env set sym class-expression)
-  undefined)
+  #u)
 
 ;;; Evaluate an ESTree [`ClassExpression`][estree:classexpression] node.
 ;;;
@@ -862,7 +862,7 @@
     (get-field body class-body))
   (define constructor-f
     (lambda (this . args)
-      (define constructor-inner-f undefined)
+      (define constructor-inner-f #u)
       (for ((x class-body-statements))
         ;; TODO: Move evaluation outside---no reason to do it each
         ;; time we are instantiating.
@@ -877,13 +877,13 @@
            (value
             (eval-estree value env options))
            (else
-            undefined)))
+            #u)))
         (oset! this key-str value-val)
         (when (eq? key-str "constructor")
           (set! constructor-inner-f value-val)))
       (when constructor-inner-f
         (send constructor-inner-f apply this args))
-      undefined))
+      #u))
   (when super-class
     (define super-class-val
       (eval-estree super-class env options))
@@ -914,7 +914,7 @@
                      (eval-estree test env options)))
         (eval-estree x env options)))
     (catch BreakException e))
-  undefined)
+  #u)
 
 ;;; Evaluate an ESTree [`SwitchCase`][estree:switchcase] node.
 ;;;
@@ -924,7 +924,7 @@
     (get-field consequent node))
   (for ((x consequent))
     (eval-estree x env options))
-  undefined)
+  #u)
 
 ;;; Evaluate an ESTree `XRawJavaScript` node.
 ;;; This is an unofficial ESTree extension.
@@ -936,13 +936,13 @@
 
 ;;; Global variable used for storing the value of `this`.
 ;;; Used for evaluating `ThisExpression`.
-(define current-this-value undefined)
+(define current-this-value #u)
 
 ;;; Temporarily set `current-this-value` to `val`,
 ;;; call `f`, and restore the original value.
 ;;; Returns the result of calling `f`.
 (define (with-this-value val f)
-  (define result undefined)
+  (define result #u)
   (define tmp current-this-value)
   (try
     (set! current-this-value val)
@@ -966,7 +966,7 @@
      (right
       (eval-estree right env options))
      (else
-      undefined)))
+      #u)))
   (cond
    ((eq? left-type "ArrayPattern")
     (define elements
@@ -1053,7 +1053,7 @@
     obj-val)
    ;; TODO: Chain expressions
    (else
-    undefined)))
+    #u)))
 
 ;;; Helper function for `eval-estree-array-expression`.
 (define (eval-estree-array-expression-helper elements env (options (js-obj)))
@@ -1080,7 +1080,7 @@
   (cond
    (arrow-setting
     (lambda args
-      (define result undefined)
+      (define result #u)
       (try
         (set! result
               (eval-estree
@@ -1105,7 +1105,7 @@
       (with-this-value
        this
        (lambda ()
-         (define result undefined)
+         (define result #u)
          (try
            (set! result
                  (eval-estree

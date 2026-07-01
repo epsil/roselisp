@@ -268,7 +268,7 @@
 (define (list-star_ . args)
   (cond
    ((= (array-list-length args) 0)
-    undefined)
+    #u)
    ((= (array-list-length args) 1)
     (first args))
    (else
@@ -609,12 +609,12 @@
 (define (last-pair_ lst)
   (cond
    ((not (array? lst))
-    undefined)
+    #u)
    ((null? lst)
     lst)
    ((linked-list-link? lst)
     (define current lst)
-    (define result undefined)
+    (define result #u)
     (while (and (linked-list-link? current)
                 (not (null? (linked-list-tail current))))
       (set! current (linked-list-tail current)))
@@ -626,7 +626,7 @@
 (define (last-cdr_ lst)
   (cond
    ((not (array? lst))
-    undefined)
+    #u)
    ((linked-list-link? lst)
     (define result lst)
     (while (linked-list-link? result)
@@ -643,7 +643,7 @@
 (define (set-car!_ x y)
   (when (> (array-length x) 0)
     (aset! x 0 y))
-  undefined)
+  #u)
 
 ;;; Set the CDR of a list.
 ;;;
@@ -670,7 +670,7 @@
      (else
       (push-right! x *cons-dot*)
       (push-right! x y)))))
-  undefined)
+  #u)
 
 ;;; Whether something is the empty list.
 ;;;
@@ -878,7 +878,7 @@
 ;;; Return the last element of a linked list.
 (define (linked-list-last_ lst)
   (define current lst)
-  (define result undefined)
+  (define result #u)
   (while (and (linked-list-link? current)
               (not (null? (linked-list-link-cdr current))))
     (set! current (linked-list-link-cdr current)))

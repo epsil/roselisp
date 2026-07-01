@@ -30,13 +30,13 @@
   `(,@plist))
 
 ;;; Return the value of a property in a property list.
-;;; Returns `undefined` if not found.
+;;; Returns `#u` if not found.
 ;;;
 ;;; Similar to [`plist-get` in Emacs Lisp][el:plist-get].
 ;;;
 ;;; [el:plist-get]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dget
 (define (plist-get_ plist prop)
-  (define val undefined)
+  (define val #u)
   (for ((i (range 0 (array-length plist) 2)))
     (when (eq? (aget plist i) prop)
       (set! val (aget plist (+ i 1)))
@@ -67,7 +67,7 @@
     (unless found
       (push-right! plist prop)
       (push-right! plist val)))
-  undefined)
+  #u)
 
 ;;; Set the value of a property in a property list,
 ;;; returning a new property list.

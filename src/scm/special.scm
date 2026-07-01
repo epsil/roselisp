@@ -173,7 +173,7 @@
 
 ;;; Evaluate a `(begin ...)` form.
 (define (begin-special_ exp env)
-  (begin-helper (rest exp) env undefined))
+  (begin-helper (rest exp) env #u))
 
 ;;; Helper function for `begin-special_`.
 (define (begin-helper expressions env val)
@@ -198,11 +198,11 @@
     (cond
      ((symbol? var-exp)
       (push-right! bindings
-                   (list var-exp undefined "variable")))
+                   (list var-exp #u "variable")))
 
      (else
       (push-right! bindings
-                   (list (first var-exp) undefined "variable"))
+                   (list (first var-exp) #u "variable"))
       (define init-exp
         `(setq ,@var-exp))
       (push-right! init-exps init-exp))))
@@ -235,7 +235,7 @@
     (define binding-exp
       (second binding))
     (define regular-bindings '())
-    (define rest-binding undefined)
+    (define rest-binding #u)
     (cond
      ((symbol? binding-vars)
       (set! rest-binding binding-vars))
@@ -270,7 +270,7 @@
   (define val
     (third exp))
   (define regular-bindings '())
-  (define rest-binding undefined)
+  (define rest-binding #u)
   (define result)
   (cond
    ((symbol? ids)
@@ -295,7 +295,7 @@
                                regular-bindings)
                               result)))
            env))
-  undefined)
+  #u)
 
 ;;; Evaluate a `(set!-values ...)` form.
 (define (set-values-special_ exp env)
@@ -304,7 +304,7 @@
   (define val
     (third exp))
   (define regular-bindings '())
-  (define rest-binding undefined)
+  (define rest-binding #u)
   (define result)
   (cond
    ((symbol? ids)
@@ -329,7 +329,7 @@
                                    regular-bindings)
                                   result)))
            env))
-  undefined)
+  #u)
 
 ;;; Evaluate a `(define ...)` form.
 (define (define-special_ exp env)
@@ -547,7 +547,7 @@
     decl1)
   (define values
     (eval_ values-expr env))
-  (define result undefined)
+  (define result #u)
   (try
     (for ((value values))
       (try
@@ -557,7 +557,7 @@
                      env))
         (catch ContinueException e)))
     (catch BreakException e
-      (set! result undefined)))
+      (set! result #u)))
   result)
 
 ;;; Evaluate a `(js/while ...)` form.
@@ -566,14 +566,14 @@
     `(truep ,(second exp)))
   (define body
     (begin-wrap (drop exp 2)))
-  (define result undefined)
+  (define result #u)
   (try
     (while (eval_ test env)
       (try
         (set! result (eval_ body env))
         (catch ContinueException e)))
     (catch BreakException e
-      (set! result undefined)))
+      (set! result #u)))
   result)
 
 ;;; Evaluate a `(js/do-while ...)` form.
@@ -690,7 +690,7 @@
    (condition
     (tcall eval-t then-expr env))
    ((= (array-list-length clauses) 0)
-    undefined)
+    #u)
    (else
     (define clause1
       (first clauses))
@@ -873,7 +873,7 @@
     (if (symbol? class-name-symbol)
         (symbol->string class-name-symbol)
         ""))
-  (define base-class undefined)
+  (define base-class #u)
   (unless (eq? class-name "")
     (set! definitions (rest definitions)))
   (define super-classes
@@ -923,7 +923,7 @@
                 arg-exp))
           (define value
             (if (>= i (array-list-length args))
-                undefined
+                #u
                 (aget args i)))
           (define var-exp
             `(,name (quote ,value)))
@@ -954,7 +954,7 @@
   (define body-clauses '())
   (define catch-clauses '())
   (define finally-clauses '())
-  (define result undefined)
+  (define result #u)
   (define body)
   (for ((x (drop exp 1)))
     (cond
@@ -987,11 +987,11 @@
 
 ;;; Evaluate a `(provide ...)` form.
 (define (provide-special_ exp env)
-  undefined)
+  #u)
 
 ;;; Evaluate a `(require ...)` form.
 (define (require-special_ exp env)
-  undefined)
+  #u)
 
 ;;; Evaluate an `(ann ...)` form.
 (define (ann-special_ exp env)
@@ -999,23 +999,23 @@
 
 ;;; Evaluate a `(colon ...)` form.
 (define (colon-special_ exp env)
-  undefined)
+  #u)
 
 ;;; Evaluate a `(define-type ...)` form.
 (define (define-type-special_ exp env)
-  undefined)
+  #u)
 
 ;;; Evaluate a `(let-js-obj ...)` form.
 (define (let-js-obj-special_ exp env)
-  undefined)
+  #u)
 
 ;;; Evaluate a `(define-js-obj ...)` form.
 (define (define-js-obj-special_ exp env)
-  undefined)
+  #u)
 
 ;;; Evaluate a `(set!-js-obj ...)` form.
 (define (set-js-obj-special_ exp env)
-  undefined)
+  #u)
 
 ;;; Evaluate a `(let-env ...)` form.
 (define (let-env-special_ exp env)

@@ -39,7 +39,7 @@
            (hash-has-key? value key))
       (set! value (hash-ref value key)))
      (else
-      (set! value undefined)
+      (set! value #u)
       (set! found #f)
       (break))))
   (values value found))
@@ -166,7 +166,7 @@
 ;;; Programs*][sicp:tagged-list-p].
 ;;;
 ;;; [sicp:tagged-list-p]: https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-26.html#%_idx_4290
-(define (tagged-list? exp tag (len undefined))
+(define (tagged-list? exp tag (len #u))
   (cond
    ((is-a? exp Rose)
     (tagged-list? (send exp get-value) tag len))
@@ -244,7 +244,7 @@
         (if (>= i (array-list-length args))
             (if (array? param)
                 (second param)
-                undefined)
+                #u)
             `(quote ,(aget args i))))
       (define binding
         `(,name ,value))
@@ -310,7 +310,7 @@
         (return (apply function-definition args))))
     (if f
         (apply f args)
-        undefined))
+        #u))
   (set-field! methods generic-function methods)
   (set-field! defmethod
               generic-function

@@ -47,7 +47,7 @@
 ;;; of a value. It is treated as falsy.
 ;;;
 ;;; [js:null]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/null
-(define js-null_ js/null)
+(define js-null_ #n)
 
 ;;; JavaScript's `undefined` value.
 ;;;
@@ -56,7 +56,7 @@
 ;;; It is treated as falsy.
 ;;;
 ;;; [js:undefined]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined
-(define undefined_ undefined)
+(define undefined_ #u)
 
 ;;; Symbol for `'`.
 (define quote-sym_

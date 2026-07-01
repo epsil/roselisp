@@ -57,7 +57,7 @@
 ;;; Similar to [`string-trim` in Racket][rkt:string-trim].
 ;;;
 ;;; [rkt:string-trim]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28lib._racket%2Fstring..rkt%29._string-trim%29%29
-(define (string-trim_ str (sep undefined) . options)
+(define (string-trim_ str (sep #u) . options)
   (cond
    (sep
     (define repeat-option
@@ -129,7 +129,7 @@
 ;;; Similar to [`substring` in Racket][rkt:substring].
 ;;;
 ;;; [rkt:substring]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._substring%29%29
-(define (substring_ str start (end undefined))
+(define (substring_ str start (end #u))
   (send str substring start end))
 
 ;;; Convert a string to a number.

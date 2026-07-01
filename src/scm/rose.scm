@@ -47,24 +47,24 @@
 ;;; Rose tree node class.
 (define-class Rose ()
   ;;; The node's value.
-  (define/public value undefined)
+  (define/public value #u)
   ;;; The node's forest.
   (define/public forest)
   ;;; The node's parent node, if any.
-  (define/public parent undefined)
+  (define/public parent #u)
   ;;; The node's properties.
   (define/public properties
     (make-hash))
 
   ;;; Create a new rose tree node with a given value (optional)
   ;;; and a given forest (optional). If not specified, the
-  ;;; value defaults to `undefined` and the forest defaults to
+  ;;; value defaults to `#u` and the forest defaults to
   ;;; an empty forest (i.e., a leaf node).
-  (define/public (constructor (value undefined) (forest undefined))
+  (define/public (constructor (value #u) (forest #u))
     (~> (or forest (new Forest))
         (send _ set-parent this)
         (set-field! forest this _))
-    (unless (eq? value undefined)
+    (unless (eq? value #u)
       (send this set-value value)))
 
   ;;; Visitor pattern.
@@ -111,7 +111,7 @@
     this)
 
   ;;; Clear the value
-  ;;; (i.e., set it to `undefined`).
+  ;;; (i.e., set it to `#u`).
   ;;;
   ;;; Alias for `remove-value`.
   (define/public (clear-value)
@@ -154,67 +154,67 @@
         (send _ drop-right-forest n)))
 
   ;;; Return the first node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (first)
     (~> (send this get-forest)
         (send _ first)))
 
   ;;; Return the second node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (second)
     (~> (send this get-forest)
         (send _ second)))
 
   ;;; Return the third node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (third)
     (~> (send this get-forest)
         (send _ third)))
 
   ;;; Return the fourth node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (fourth)
     (~> (send this get-forest)
         (send _ fourth)))
 
   ;;; Return the fifth node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (fifth)
     (~> (send this get-forest)
         (send _ fifth)))
 
   ;;; Return the sixth node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (sixth)
     (~> (send this get-forest)
         (send _ sixth)))
 
   ;;; Return the seventh node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (seventh)
     (~> (send this get-forest)
         (send _ seventh)))
 
   ;;; Return the eight node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (eight)
     (~> (send this get-forest)
         (send _ eight)))
 
   ;;; Return the ninth node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (ninth)
     (~> (send this get-forest)
         (send _ ninth)))
 
   ;;; Return the tenth node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (tenth)
     (~> (send this get-forest)
         (send _ tenth)))
 
   ;;; Return the last node in the forest,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (last)
     (~> (send this get-forest)
         (send _ last)))
@@ -261,7 +261,7 @@
   (define/public (get-forest)
     (get-field forest this))
 
-  ;;; Get the parent node, or `undefined`
+  ;;; Get the parent node, or `#u`
   ;;; if this is a root node.
   (define/public (get-parent)
     (get-field parent this))
@@ -305,9 +305,9 @@
     this)
 
   ;;; Remove the value
-  ;;; (i.e., set it to `undefined`).
+  ;;; (i.e., set it to `#u`).
   (define/public (remove-value)
-    (send this set-value undefined))
+    (send this set-value #u))
 
   ;;; Alias for `set-value`.
   ;;;
@@ -352,12 +352,12 @@
   ;;; Get the previous sibling.
   (define/public (previous-sibling)
     ;; TODO
-    undefined)
+    #u)
 
   ;;; Get the next sibling.
   (define/public (next-sibling)
     ;; TODO
-    undefined)
+    #u)
 
   ;;; Get the previous node.
   (define/public (previous-node)
@@ -375,7 +375,7 @@
   ;;; The order is significant.
   (define/public node-list '())
   ;;; The node this forest belongs to.
-  (define/public parent undefined)
+  (define/public parent #u)
 
   ;;; Create a new forest containing `nodes`.
   (define/public (constructor . nodes)
@@ -412,57 +412,57 @@
         (apply new Forest _)))
 
   ;;; Return the first node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (first)
     (send this nth 0))
 
   ;;; Return the second node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (second)
     (send this nth 1))
 
   ;;; Return the third node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (third)
     (send this nth 2))
 
   ;;; Return the fourth node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (fourth)
     (send this nth 3))
 
   ;;; Return the fifth node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (fifth)
     (send this nth 4))
 
   ;;; Return the sixth node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (sixth)
     (send this nth 5))
 
   ;;; Return the seventh node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (seventh)
     (send this nth 6))
 
   ;;; Return the eight node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (eight)
     (send this nth 7))
 
   ;;; Return the ninth node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (ninth)
     (send this nth 8))
 
   ;;; Return the tenth node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (tenth)
     (send this nth 9))
 
   ;;; Return the last node,
-  ;;; or `undefined` if there is none.
+  ;;; or `#u` if there is none.
   (define/public (last)
     (send this
           nth
@@ -603,7 +603,7 @@
 ;;;
 ;;; Converts a list or nested list of rose tree nodes
 ;;; and other values to a rose tree.
-(define (make-rose exp (node undefined))
+(define (make-rose exp (node #u))
   (define cache
     (make-rose-map node))
   (define indices
@@ -637,7 +637,7 @@
     (define el-node)
     (for ((el exp))
       (set! el-node
-            (make-rose-helper el undefined cache indices))
+            (make-rose-helper el #u cache indices))
       (unless (eq? (send el-node get-value) el)
         (set! is-modified #t))
       (push-right! lst
@@ -698,7 +698,7 @@
 ;;;
 ;;; Returns a map mapping a value to a list of rose tree nodes
 ;;; containing that value.
-(define (make-rose-map (node undefined))
+(define (make-rose-map (node #u))
   (define map
     (make-hash))
   (when node

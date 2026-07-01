@@ -89,7 +89,7 @@ declare class Environment {
      */
     deleteLocal(key: any): any;
     /**
-     * Get the value of `key`, or `undefined`
+     * Get the value of `key`, or `#u`
      * if there is no binding.
      */
     get(key: any, notFound?: any): any;
@@ -182,7 +182,7 @@ declare class TypedEnvironment extends Environment {
     getLocal(key: any, notFound?: any): any;
     /**
      * Get the type of `key`. If there is no binding,
-     * return `"undefined"`.
+     * return `"#u"`.
      */
     getType(key: any): any;
     /**

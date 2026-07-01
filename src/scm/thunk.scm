@@ -28,7 +28,7 @@
   ;;; Whether the thunk has been forced yet.
   (define forced #f)
   ;;; Cached value.
-  (define value undefined)
+  (define value #u)
 
   ;;; Create a new thunk.
   ;;; `f` should be a function of zero arguments.

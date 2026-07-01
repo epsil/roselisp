@@ -49,7 +49,7 @@
 (define-class Node ()
   (define/public type "Node")
   (define/public comments '())
-  (define/public loc js/null)
+  (define/public loc #n)
 
   (define/public (add-comment comment)
     (push-right! (get-field comments this) comment)
@@ -170,7 +170,7 @@
   (define/public type "ReturnStatement")
   (define/public argument)
 
-  (define/public (constructor (argument js/null))
+  (define/public (constructor (argument #n))
     (super)
     (set-field! argument this argument)))
 
@@ -196,7 +196,7 @@
   (define/public type "BreakStatement")
   (define/public label)
 
-  (define/public (constructor (label js/null))
+  (define/public (constructor (label #n))
     (super)
     (set-field! label this label)))
 
@@ -209,7 +209,7 @@
   (define/public type "ContinueStatement")
   (define/public label)
 
-  (define/public (constructor (label js/null))
+  (define/public (constructor (label #n))
     (super)
     (set-field! label this label)))
 
@@ -307,7 +307,7 @@
   (define/public handler)
   (define/public finalizer)
 
-  (define/public (constructor block (handler js/null) (finalizer js/null))
+  (define/public (constructor block (handler #n) (finalizer #n))
     (super)
     (set-field! block this block)
     (set-field! handler this handler)
@@ -361,7 +361,7 @@
   (define/public id)
   (define/public init)
 
-  (define/public (constructor id (init js/null))
+  (define/public (constructor id (init #n))
     (super)
     (set-field! id this id)
     (set-field! init this init)))
@@ -377,7 +377,7 @@
   (define/public body)
   (define/public superClass)
 
-  (define/public (constructor id (body (new ClassBody)) (super-class undefined))
+  (define/public (constructor id (body (new ClassBody)) (super-class #u))
     (super)
     (set-field! id this id)
     (set-field! body this body)
@@ -429,7 +429,7 @@
   (define/public local)
   (define/public imported)
 
-  (define/public (constructor local (imported undefined))
+  (define/public (constructor local (imported #u))
     (super local)
     (set-field! local this local)
     (set-field! imported this (or imported local))))
@@ -471,9 +471,9 @@
   (define/public specifiers)
   (define/public source)
 
-  (define/public (constructor (declaration js/null)
+  (define/public (constructor (declaration #n)
                               (specifiers '())
-                              (source js/null))
+                              (source #n))
     (super)
     (set-field! declaration this declaration)
     (set-field! specifiers this specifiers)
@@ -489,7 +489,7 @@
   (define/public local)
   (define/public exported)
 
-  (define/public (constructor local (exported undefined))
+  (define/public (constructor local (exported #u))
     (super local)
     (set-field! local this local)
     (set-field! exported this (or exported local))))
@@ -517,7 +517,7 @@
   (define/public body)
   (define/public superClass)
 
-  (define/public (constructor (body (new ClassBody)) (super-class undefined))
+  (define/public (constructor (body (new ClassBody)) (super-class #u))
     (super)
     (set-field! body this body)
     (set-field! superClass this super-class)))
@@ -862,7 +862,7 @@
   (define/public generator)
   (define/public returnType)
 
-  (define/public (constructor id params body (async #f) (returnType undefined) (generator #f))
+  (define/public (constructor id params body (async #f) (returnType #u) (generator #f))
     (super)
     (set-field! id this id)
     (set-field! params this params)
@@ -892,7 +892,7 @@
                               (async #f)
                               (generator #f))
     (super)
-    (set-field! id this js/null)
+    (set-field! id this #n)
     (set-field! params this params)
     (set-field! body this body)
     (set-field! async this async)
@@ -1058,7 +1058,7 @@
   (define/public argument)
   (define/public delegate)
 
-  (define/public (constructor (argument js/null) (delegate #f))
+  (define/public (constructor (argument #n) (delegate #f))
     (super)
     (set-field! argument this argument)
     (set-field! delegate this delegate)))
@@ -1072,7 +1072,7 @@
   (define/public type "AwaitExpression")
   (define/public argument)
 
-  (define/public (constructor (argument js/null))
+  (define/public (constructor (argument #n))
     (super)
     (set-field! argument this argument)))
 
@@ -1116,7 +1116,7 @@
   (define/public tail)
   (define/public value)
 
-  (define/public (constructor tail cooked (raw undefined))
+  (define/public (constructor tail cooked (raw #u))
     (super)
     (set-field! tail this tail)
     (set-field! value
@@ -1311,7 +1311,7 @@
   (define/public typeName)
   (define/public typeParameters)
 
-  (define/public (constructor typeName (typeParameters undefined))
+  (define/public (constructor typeName (typeParameters #u))
     (super)
     (set-field! typeName this typeName)
     (set-field! typeParameters this typeParameters)))

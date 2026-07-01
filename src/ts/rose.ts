@@ -74,7 +74,7 @@ class Rose {
   /**
    * Create a new rose tree node with a given value (optional)
    * and a given forest (optional). If not specified, the
-   * value defaults to `undefined` and the forest defaults to
+   * value defaults to `#u` and the forest defaults to
    * an empty forest (i.e., a leaf node).
    */
   constructor(value: any = undefined, forest: any = undefined) {
@@ -139,7 +139,7 @@ class Rose {
 
   /**
    * Clear the value
-   * (i.e., set it to `undefined`).
+   * (i.e., set it to `#u`).
    *
    * Alias for `remove-value`.
    */
@@ -198,7 +198,7 @@ class Rose {
 
   /**
    * Return the first node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   first(): any {
     return this.getForest().first();
@@ -206,7 +206,7 @@ class Rose {
 
   /**
    * Return the second node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   second(): any {
     return this.getForest().second();
@@ -214,7 +214,7 @@ class Rose {
 
   /**
    * Return the third node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   third(): any {
     return this.getForest().third();
@@ -222,7 +222,7 @@ class Rose {
 
   /**
    * Return the fourth node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   fourth(): any {
     return this.getForest().fourth();
@@ -230,7 +230,7 @@ class Rose {
 
   /**
    * Return the fifth node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   fifth(): any {
     return this.getForest().fifth();
@@ -238,7 +238,7 @@ class Rose {
 
   /**
    * Return the sixth node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   sixth(): any {
     return this.getForest().sixth();
@@ -246,7 +246,7 @@ class Rose {
 
   /**
    * Return the seventh node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   seventh(): any {
     return this.getForest().seventh();
@@ -254,7 +254,7 @@ class Rose {
 
   /**
    * Return the eight node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   eight(): any {
     return this.getForest().eight();
@@ -262,7 +262,7 @@ class Rose {
 
   /**
    * Return the ninth node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   ninth(): any {
     return this.getForest().ninth();
@@ -270,7 +270,7 @@ class Rose {
 
   /**
    * Return the tenth node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   tenth(): any {
     return this.getForest().tenth();
@@ -278,7 +278,7 @@ class Rose {
 
   /**
    * Return the last node in the forest,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   last(): any {
     return this.getForest().last();
@@ -345,7 +345,7 @@ class Rose {
   }
 
   /**
-   * Get the parent node, or `undefined`
+   * Get the parent node, or `#u`
    * if this is a root node.
    */
   getParent(): any {
@@ -407,7 +407,7 @@ class Rose {
 
   /**
    * Remove the value
-   * (i.e., set it to `undefined`).
+   * (i.e., set it to `#u`).
    */
   removeValue(): any {
     return this.setValue(undefined);
@@ -582,7 +582,7 @@ class Forest {
 
   /**
    * Return the first node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   first(): any {
     return this.nth(0);
@@ -590,7 +590,7 @@ class Forest {
 
   /**
    * Return the second node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   second(): any {
     return this.nth(1);
@@ -598,7 +598,7 @@ class Forest {
 
   /**
    * Return the third node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   third(): any {
     return this.nth(2);
@@ -606,7 +606,7 @@ class Forest {
 
   /**
    * Return the fourth node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   fourth(): any {
     return this.nth(3);
@@ -614,7 +614,7 @@ class Forest {
 
   /**
    * Return the fifth node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   fifth(): any {
     return this.nth(4);
@@ -622,7 +622,7 @@ class Forest {
 
   /**
    * Return the sixth node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   sixth(): any {
     return this.nth(5);
@@ -630,7 +630,7 @@ class Forest {
 
   /**
    * Return the seventh node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   seventh(): any {
     return this.nth(6);
@@ -638,7 +638,7 @@ class Forest {
 
   /**
    * Return the eight node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   eight(): any {
     return this.nth(7);
@@ -646,7 +646,7 @@ class Forest {
 
   /**
    * Return the ninth node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   ninth(): any {
     return this.nth(8);
@@ -654,7 +654,7 @@ class Forest {
 
   /**
    * Return the tenth node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   tenth(): any {
     return this.nth(9);
@@ -662,7 +662,7 @@ class Forest {
 
   /**
    * Return the last node,
-   * or `undefined` if there is none.
+   * or `#u` if there is none.
    */
   last(): any {
     return this.nth(this.size() - 1);

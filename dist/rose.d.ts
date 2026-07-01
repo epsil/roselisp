@@ -64,7 +64,7 @@ declare class Rose {
     /**
      * Create a new rose tree node with a given value (optional)
      * and a given forest (optional). If not specified, the
-     * value defaults to `undefined` and the forest defaults to
+     * value defaults to `#u` and the forest defaults to
      * an empty forest (i.e., a leaf node).
      */
     constructor(value?: any, forest?: any);
@@ -80,7 +80,7 @@ declare class Rose {
     clear(clearValue?: any, clearForest?: any, clearProperties?: any): any;
     /**
      * Clear the value
-     * (i.e., set it to `undefined`).
+     * (i.e., set it to `#u`).
      *
      * Alias for `remove-value`.
      */
@@ -116,57 +116,57 @@ declare class Rose {
     dropRightForest(n: any): any;
     /**
      * Return the first node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     first(): any;
     /**
      * Return the second node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     second(): any;
     /**
      * Return the third node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     third(): any;
     /**
      * Return the fourth node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     fourth(): any;
     /**
      * Return the fifth node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     fifth(): any;
     /**
      * Return the sixth node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     sixth(): any;
     /**
      * Return the seventh node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     seventh(): any;
     /**
      * Return the eight node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     eight(): any;
     /**
      * Return the ninth node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     ninth(): any;
     /**
      * Return the tenth node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     tenth(): any;
     /**
      * Return the last node in the forest,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     last(): any;
     /**
@@ -207,7 +207,7 @@ declare class Rose {
      */
     getForest(): any;
     /**
-     * Get the parent node, or `undefined`
+     * Get the parent node, or `#u`
      * if this is a root node.
      */
     getParent(): any;
@@ -242,7 +242,7 @@ declare class Rose {
     removeProperty(prop: any): any;
     /**
      * Remove the value
-     * (i.e., set it to `undefined`).
+     * (i.e., set it to `#u`).
      */
     removeValue(): any;
     /**
@@ -340,57 +340,57 @@ declare class Forest {
     dropRightForest(n: any): any;
     /**
      * Return the first node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     first(): any;
     /**
      * Return the second node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     second(): any;
     /**
      * Return the third node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     third(): any;
     /**
      * Return the fourth node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     fourth(): any;
     /**
      * Return the fifth node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     fifth(): any;
     /**
      * Return the sixth node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     sixth(): any;
     /**
      * Return the seventh node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     seventh(): any;
     /**
      * Return the eight node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     eight(): any;
     /**
      * Return the ninth node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     ninth(): any;
     /**
      * Return the tenth node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     tenth(): any;
     /**
      * Return the last node,
-     * or `undefined` if there is none.
+     * or `#u` if there is none.
      */
     last(): any;
     /**

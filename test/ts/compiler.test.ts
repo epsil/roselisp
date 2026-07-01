@@ -2384,7 +2384,7 @@ describe('compile', function (): any {
         '[[1]]'
       );
     });
-    return it("'(x y z)", function (): any {
+    it("'(x y z)", function (): any {
       return assertEqual(
         compile(
           [
@@ -2397,6 +2397,18 @@ describe('compile', function (): any {
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]"
+      );
+    });
+    return it("'(#t #f)", function (): any {
+      return assertEqual(
+        compile(
+          [Symbol.for('quote'), [Symbol.for('#t'), Symbol.for('#f')]],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        '[true, false]'
       );
     });
   });

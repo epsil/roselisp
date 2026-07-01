@@ -1734,7 +1734,14 @@ three"
                (compile '(quote (x y z))
                         compilation-environment
                         (js-obj "language" "JavaScript"))
-               "[Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]")))))
+               "[Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]")))
+        (it "'(#t #f)"
+            (fn ()
+              (assert-equal
+               (compile '(quote (#t #f))
+                        compilation-environment
+                        (js-obj "language" "JavaScript"))
+               "[true, false]")))))
     (describe "quasiquote"
       (fn ()
         (it "`x"

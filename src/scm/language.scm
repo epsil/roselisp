@@ -510,6 +510,8 @@
   (new CompilationEnvironment
        `((,(string->symbol "#f") ,(new Literal #f) "variable")
          (,(string->symbol "#t") ,(new Literal #t) "variable")
+         (,(string->symbol "#n") ,(new Literal js/null) "variable")
+         (,(string->symbol "#u") ,(new Literal undefined) "variable")
          (,(string->symbol "js-null") ,(new Literal js/null) "variable")
          (,(string->symbol "js-undefined") ,(new Literal undefined) "variable")
          (,(string->symbol "js/arguments") ,(new Identifier "arguments") "variable")
@@ -7390,6 +7392,7 @@
          ;; (__________ ,__ "variable")
          (,(string->symbol "#f") ,false_ "variable")
          (,(string->symbol "#t") ,true_ "variable")
+         (,(string->symbol "#n") ,js-null_ "variable")
          (,(string->symbol "#u") ,undefined_ "variable")
          (false ,false_ "variable")
          (,(string->symbol "nil") ,null_ "variable")

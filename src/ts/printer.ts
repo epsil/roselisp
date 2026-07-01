@@ -79,7 +79,7 @@ import {
   visit
 } from './visitor';
 
-const [stringLength, length, findf, symbolp, booleanp, stringp, procedurep, arrayp, take, lastCdr]: any[] = ((): any => {
+const [stringLength, length, findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedurep, arrayp, take, lastCdr]: any[] = ((): any => {
   function length_(lst: any): any {
     if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
       return ((): any => {
@@ -111,6 +111,12 @@ const [stringLength, length, findf, symbolp, booleanp, stringp, procedurep, arra
   }
   function booleanp_(obj: any): any {
     return typeof obj === 'boolean';
+  }
+  function undefinedp_(obj: any): any {
+    return obj === undefined;
+  }
+  function jsNullP_(obj: any): any {
+    return obj === null;
   }
   function stringp_(obj: any): any {
     return (typeof obj === 'string') || (obj instanceof String);
@@ -151,7 +157,7 @@ const [stringLength, length, findf, symbolp, booleanp, stringp, procedurep, arra
     }
     return len;
   }
-  return [length_, length_, findf_, symbolp_, booleanp_, stringp_, procedurep_, arrayp_, take_, lastCdr_];
+  return [length_, length_, findf_, symbolp_, booleanp_, undefinedp_, jsNullP_, stringp_, procedurep_, arrayp_, take_, lastCdr_];
 })();
 
 /**
@@ -561,6 +567,10 @@ function writeToDoc(obj: any, options: any = {}): any {
     } else {
       return '#f';
     }
+  }], [undefinedp, function (obj: any): any {
+    return '#u';
+  }], [jsNullP, function (obj: any): any {
+    return '#n';
   }], [stringp, function (obj: any): any {
     return ['"', join(literalline, obj.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"').split(line)), '"'];
   }], [procedurep, function (obj: any): any {
@@ -582,7 +592,7 @@ function writeToDoc(obj: any, options: any = {}): any {
   return result;
 }
 
-writeToDoc.lispSource = [Symbol.for('define'), [Symbol.for('write-to-doc'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('doc-option'), [Symbol.for('oget'), Symbol.for('options'), 'doc']], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), 'pretty']], [Symbol.for('define'), Symbol.for('quote-toplevel-option'), [Symbol.for('oget'), Symbol.for('options'), 'quoteToplevel']], [Symbol.for('define'), Symbol.for('visitor'), [Symbol.for('make-visitor'), [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), Symbol.for('rose?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('write-to-doc'), [Symbol.for('send'), Symbol.for('obj'), Symbol.for('get-value')], Symbol.for('options')]]]], [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('quote-toplevel-option'), '\'', Symbol.for('empty')], [Symbol.for('if'), [Symbol.for('cons-dot?'), Symbol.for('obj')], '.', [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]], [[Symbol.for('unquote'), Symbol.for('boolean?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('if'), Symbol.for('obj'), '#t', '#f']]]], [[Symbol.for('unquote'), Symbol.for('string?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), '"', [Symbol.for('~>'), Symbol.for('obj'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\\\', 'g'], Symbol.for('_'), '\\\\'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '"', 'g'], Symbol.for('_'), '\\"'], [Symbol.for('string-split'), Symbol.for('line')], [Symbol.for('join'), Symbol.for('literalline'), Symbol.for('_')]], '"']]]], [[Symbol.for('unquote'), Symbol.for('procedure?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#<procedure>']]], [[Symbol.for('unquote'), Symbol.for('array?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('obj')]], [Symbol.for('define'), Symbol.for('spec'), [Symbol.for('and'), Symbol.for('pretty-option'), [Symbol.for('send'), Symbol.for('pretty-print-map'), Symbol.for('get'), Symbol.for('op')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('spec')], [Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [[Symbol.for('number?'), Symbol.for('spec')], [Symbol.for('pretty-print-with-offset'), Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('pretty-print-form'), Symbol.for('obj'), Symbol.for('options')]]]], [Symbol.for('when'), Symbol.for('quote-toplevel-option'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '\'', Symbol.for('result')]]], Symbol.for('result')]]], [[Symbol.for('unquote'), [Symbol.for('const'), Symbol.for('#t')]], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('string-append'), Symbol.for('obj'), '']]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('obj')]], Symbol.for('result')];
+writeToDoc.lispSource = [Symbol.for('define'), [Symbol.for('write-to-doc'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('doc-option'), [Symbol.for('oget'), Symbol.for('options'), 'doc']], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), 'pretty']], [Symbol.for('define'), Symbol.for('quote-toplevel-option'), [Symbol.for('oget'), Symbol.for('options'), 'quoteToplevel']], [Symbol.for('define'), Symbol.for('visitor'), [Symbol.for('make-visitor'), [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), Symbol.for('rose?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('write-to-doc'), [Symbol.for('send'), Symbol.for('obj'), Symbol.for('get-value')], Symbol.for('options')]]]], [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('quote-toplevel-option'), '\'', Symbol.for('empty')], [Symbol.for('if'), [Symbol.for('cons-dot?'), Symbol.for('obj')], '.', [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]], [[Symbol.for('unquote'), Symbol.for('boolean?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('if'), Symbol.for('obj'), '#t', '#f']]]], [[Symbol.for('unquote'), Symbol.for('undefined?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#u']]], [[Symbol.for('unquote'), Symbol.for('js/null?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#n']]], [[Symbol.for('unquote'), Symbol.for('string?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), '"', [Symbol.for('~>'), Symbol.for('obj'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\\\', 'g'], Symbol.for('_'), '\\\\'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '"', 'g'], Symbol.for('_'), '\\"'], [Symbol.for('string-split'), Symbol.for('line')], [Symbol.for('join'), Symbol.for('literalline'), Symbol.for('_')]], '"']]]], [[Symbol.for('unquote'), Symbol.for('procedure?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#<procedure>']]], [[Symbol.for('unquote'), Symbol.for('array?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('obj')]], [Symbol.for('define'), Symbol.for('spec'), [Symbol.for('and'), Symbol.for('pretty-option'), [Symbol.for('send'), Symbol.for('pretty-print-map'), Symbol.for('get'), Symbol.for('op')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('spec')], [Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [[Symbol.for('number?'), Symbol.for('spec')], [Symbol.for('pretty-print-with-offset'), Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('pretty-print-form'), Symbol.for('obj'), Symbol.for('options')]]]], [Symbol.for('when'), Symbol.for('quote-toplevel-option'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '\'', Symbol.for('result')]]], Symbol.for('result')]]], [[Symbol.for('unquote'), [Symbol.for('const'), Symbol.for('#t')]], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('string-append'), Symbol.for('obj'), '']]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('obj')]], Symbol.for('result')];
 
 /**
  * Pretty-print a list expression.

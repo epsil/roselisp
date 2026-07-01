@@ -429,6 +429,14 @@
            (if obj
                "#t"
                "#f")))
+       ;; Undefined.
+       (,undefined?
+        ,(lambda (obj)
+           "#u"))
+       ;; Null.
+       (,js/null?
+        ,(lambda (obj)
+           "#n"))
        ;; String.
        (,string?
         ,(lambda (obj)

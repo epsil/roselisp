@@ -1,4 +1,3 @@
-(require chai "chai")
 (require (only-in "../../src/ts/combinators"
                   I))
 (require (only-in "../../src/ts/language"

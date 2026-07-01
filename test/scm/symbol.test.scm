@@ -1,4 +1,3 @@
-(require chai "chai")
 (require (only-in "../../src/ts/sexp"
                   s))
 (require (only-in "../../src/ts/symbol"

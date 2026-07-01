@@ -4,7 +4,6 @@
 ;;;
 ;;; ...
 
-(require chai "chai")
 (require (only-in "../../src/ts/estree"
                   ArrayExpression
                   ArrayPattern

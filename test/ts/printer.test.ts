@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import {
   ArrowFunctionExpression,
   AssignmentExpression,

@@ -2,7 +2,6 @@
 ;;;
 ;;; Tests that have not been sorted yet.
 
-(require chai "chai")
 (require (only-in "./test-util"
                   assert-equal
                   compile-repl-form

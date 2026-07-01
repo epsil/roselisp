@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import {
   case_,
   caseEq_,

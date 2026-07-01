@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { add, div, license, mul, sub } from '../../src/ts/index';
 
 import { assertEqual } from './test-util';

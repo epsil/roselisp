@@ -1,4 +1,3 @@
-(require chai "chai")
 (require (only-in "../../src/ts/equal"
                   equal?_))
 (require (only-in "./test-util"

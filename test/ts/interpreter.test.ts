@@ -2,8 +2,6 @@
  * # Interpreter tests
  */
 
-import * as chai from 'chai';
-
 import {
   __,
   LispEnvironment,

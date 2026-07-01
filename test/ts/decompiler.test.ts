@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { I } from '../../src/ts/combinators';
 
 import { decompile } from '../../src/ts/decompiler';

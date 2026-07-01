@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { I, K } from '../../src/ts/combinators';
 
 import { eof, memoize } from '../../src/ts/memo';

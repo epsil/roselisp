@@ -1,4 +1,3 @@
-(require chai "chai")
 (require (only-in "@typescript-eslint/typescript-estree"
                   parse))
 (require (only-in "../../src/ts/estree"

@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { parse } from '@typescript-eslint/typescript-estree';
 
 import { BinaryExpression } from '../../src/ts/estree';

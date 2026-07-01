@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { sexp } from '../../src/ts/language';
 
 import { Rose, Forest, wrapSexpInRose } from '../../src/ts/rose';

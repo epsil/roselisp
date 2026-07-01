@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { __, curry } from '../../src/ts/curry';
 
 import { assertEqual, assertNotEqual } from './test-util';

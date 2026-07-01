@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { cons } from '../../src/ts/cons';
 
 import { compose, gt, lt, pipe } from '../../src/ts/procedures';

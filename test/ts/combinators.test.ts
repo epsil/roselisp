@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { __, curried, variadic } from '../../src/ts/combinators';
 
 import { assertEqual } from './test-util';

@@ -1,6 +1,5 @@
 ;;; # Interpreter tests
 
-(require chai "chai")
 (require (only-in "../../src/ts/language"
                   __
                   LispEnvironment

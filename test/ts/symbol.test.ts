@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { s } from '../../src/ts/sexp';
 
 import { intern_, symbolp_, symbolToString_ } from '../../src/ts/symbol';

@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { equalp_ } from '../../src/ts/equal';
 
 import { assertEqual } from './test-util';

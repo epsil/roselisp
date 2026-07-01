@@ -1,4 +1,3 @@
-(require chai "chai")
 (require (only-in "../../src/ts/cons"
                   cons))
 (require (only-in "../../src/ts/procedures"

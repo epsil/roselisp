@@ -4,8 +4,6 @@
  * Tests that have not been sorted yet.
  */
 
-import * as chai from 'chai';
-
 import { EnvironmentStack, LispEnvironment } from '../../src/ts/env';
 
 import {

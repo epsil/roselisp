@@ -1,4 +1,3 @@
-(require chai "chai")
 (require (only-in "../../src/ts/macros"
                   case_
                   case-eq_

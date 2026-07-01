@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { tcall, trampoline } from '../../src/ts/trampoline';
 
 import { assertEqual } from './test-util';

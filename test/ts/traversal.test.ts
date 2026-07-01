@@ -1,5 +1,3 @@
-import * as chai from 'chai';
-
 import { lispEnvironment, mapRose } from '../../src/ts/language';
 
 import { assertEqual } from './test-util';

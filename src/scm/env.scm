@@ -298,14 +298,14 @@
   ;;; `not-found`.
   (define/public (get-typed-value key
                                   (not-found
-                                   (list #u "undefined")))
+                                   '(#u "undefined")))
     ;; The same as `super.get`, except that
     ;; `not-found` defaults to `(#u "undefined")`.
     (send super get key not-found))
 
   (define/public (get-typed-local-value key
                                         (not-found
-                                         (list #u "undefined")))
+                                         '(#u "undefined")))
     ;; The same as `super.get-local`, except that
     ;; `not-found` defaults to `(#u "undefined")`.
     (send super get-local key not-found))

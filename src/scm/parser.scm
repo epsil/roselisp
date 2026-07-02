@@ -337,10 +337,17 @@
               (set! parent-exp-node
                     current-exp-node))
              (else
-              (if (is-a? next SymbolToken)
-                  (set! next (string->symbol
-                              (send next get-value)))
-                  (set! next (send next get-value)))
+              (cond
+               ((is-a? next SymbolToken)
+                (define next-str
+                  (send next get-value))
+                (cond
+                 ((hash-has-key? literal-values next-str)
+                  (set! next (hash-ref literal-values next-str)))
+                 (else
+                  (set! next (string->symbol next-str)))))
+               (else
+                (set! next (send next get-value))))
               (set! current-exp-node (make-list-rose (list sym next)))
               (set! current-exp (send current-exp-node get-value))
               (set!-values (current-exp-node comments)
@@ -361,6 +368,17 @@
             (push-right! parent-exp current-exp)
             (send parent-exp-node
                   insert current-exp-node)))))
+       ;; Literal value.
+       ((hash-has-key? literal-values token-string)
+        (set! current-exp
+              (hash-ref literal-values token-string))
+        (set!-values (current-exp-node comments)
+                     (attach-comments current-exp
+                                      comments
+                                      options))
+        (when parent-exp
+          (push-right! parent-exp current-exp)
+          (send parent-exp-node insert current-exp-node)))
        ;; Other symbolic values.
        (else
         (set! current-exp
@@ -469,6 +487,15 @@
      ("`" . ,quasiquote-sym_)
      ("," . ,unquote-sym_)
      (",@" . ,unquote-splicing-sym_))))
+
+;;; Map of literal symbols.
+;;; Used by `parse-rose`.
+(define literal-values
+  (make-hash
+   `(("#f" . ,#f)
+     ("#t" . ,#t)
+     ("#n" . ,#n)
+     ("#u" . ,#u))))
 
 ;;; Token class.
 (define-class Token ()

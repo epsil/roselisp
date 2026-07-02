@@ -5484,15 +5484,15 @@
 ;;; Compiler macro for `(hash-ref ...)` expressions.
 (defmacro compile-hash-ref-macro (ht key failure-result)
   (cond
-   (failure-result
+   ((undefined? failure-result)
+    `(send ,ht get ,key))
+   (else
     (definition->macro
       '(define (hash-ref ht key failure-result)
          (if (send ht has key)
              (send ht get key)
              failure-result))
-      (list ht key failure-result)))
-   (else
-    `(send ,ht get ,key))))
+      (list ht key failure-result)))))
 
 ;;; Compiler macro for `(map ...)` expressions.
 (defmacro compile-map-macro (f x)

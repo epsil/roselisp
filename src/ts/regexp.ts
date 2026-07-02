@@ -32,7 +32,7 @@ function regexp_(input: any, flags: any = undefined): any {
   }
 }
 
-regexp_.lispSource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('input'), [Symbol.for('flags'), Symbol.for('#u')]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
+regexp_.lispSource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
 
 /**
  * Whether `obj` is a regular expression.
@@ -83,7 +83,7 @@ function regexpMatchP_(pattern: any, input: any): any {
   return input.match(pattern) !== null;
 }
 
-regexpMatchP_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')], Symbol.for('#n')]]];
+regexpMatchP_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')], null]]];
 
 /**
  * Match `pattern` against `input` and replace with `insert`.

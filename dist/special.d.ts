@@ -81,35 +81,35 @@ declare namespace moduleSpecial_ {
  */
 declare function beginSpecial_(exp: any, env: any): any;
 declare namespace beginSpecial_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | symbol[] | undefined)[])[];
 }
 /**
  * Evaluate a `(let* ...)` form.
  */
 declare function letStarSpecial_(exp: any, env: any): any;
 declare namespace letStarSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol | symbol[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol | symbol[] | undefined)[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(let-values ...)` form.
  */
 declare function letValuesSpecial_(exp: any, env: any): any;
 declare namespace letValuesSpecial_ {
-    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (symbol | (string | symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (symbol | (string | symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(define-values ...)` form.
  */
 declare function defineValuesSpecial_(exp: any, env: any): any;
 declare namespace defineValuesSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var lispSource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | undefined)[];
 }
 /**
  * Evaluate a `(set!-values ...)` form.
  */
 declare function setValuesSpecial_(exp: any, env: any): any;
 declare namespace setValuesSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var lispSource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | undefined)[];
 }
 /**
  * Evaluate a `(define ...)` form.
@@ -158,14 +158,14 @@ declare namespace defineMacroSpecial_ {
  */
 declare function forSpecial_(exp: any, env: any): any;
 declare namespace forSpecial_ {
-    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(js/while ...)` form.
  */
 declare function jsWhileSpecial_(exp: any, env: any): any;
 declare namespace jsWhileSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | undefined)[])[])[])[];
 }
 /**
  * Evaluate a `(js/do-while ...)` form.
@@ -249,21 +249,21 @@ declare namespace jsArrowSpecial_ {
  */
 declare function condSpecial_(exp: any, env: any): any;
 declare namespace condSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate an `(and ...)` form.
  */
 declare function andSpecial_(exp: any, env: any): any;
 declare namespace andSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (boolean | symbol)[])[])[])[];
 }
 /**
  * Evaluate an `(or ...)` form.
  */
 declare function orSpecial_(exp: any, env: any): any;
 declare namespace orSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(send ...)` form.
@@ -312,28 +312,28 @@ declare namespace setFieldSpecial_ {
  */
 declare function defineClassSpecial_(exp: any, env: any): any;
 declare namespace defineClassSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (string | symbol)[] | (symbol | (string | symbol)[])[])[])[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (string | symbol)[] | (symbol | (string | symbol)[])[])[])[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(try ...)` form.
  */
 declare function trySpecial_(exp: any, env: any): any;
 declare namespace trySpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][][])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][][])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(provide ...)` form.
  */
 declare function provideSpecial_(exp: any, env: any): any;
 declare namespace provideSpecial_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
  * Evaluate a `(require ...)` form.
  */
 declare function requireSpecial_(exp: any, env: any): any;
 declare namespace requireSpecial_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
  * Evaluate an `(ann ...)` form.
@@ -347,35 +347,35 @@ declare namespace annSpecial_ {
  */
 declare function colonSpecial_(exp: any, env: any): any;
 declare namespace colonSpecial_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
  * Evaluate a `(define-type ...)` form.
  */
 declare function defineTypeSpecial_(exp: any, env: any): any;
 declare namespace defineTypeSpecial_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
  * Evaluate a `(let-js-obj ...)` form.
  */
 declare function letJsObjSpecial_(exp: any, env: any): any;
 declare namespace letJsObjSpecial_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
  * Evaluate a `(define-js-obj ...)` form.
  */
 declare function defineJsObjSpecial_(exp: any, env: any): any;
 declare namespace defineJsObjSpecial_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
  * Evaluate a `(set!-js-obj ...)` form.
  */
 declare function setJsObjSpecial_(exp: any, env: any): any;
 declare namespace setJsObjSpecial_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
  * Evaluate a `(let-env ...)` form.
@@ -399,6 +399,6 @@ declare namespace macropSpecial_ {
  */
 declare function nlambdaSpecial_(exp: any, env: any): any;
 declare namespace nlambdaSpecial_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[];
 }
 export { andSpecial_, annSpecial_, asyncSpecial_, awaitSpecial_, beginSpecial_, breakSpecial_, colonSpecial_, condSpecial_, continueSpecial_, defineAsyncSpecial_, defineClassSpecial_, defineGeneratorSpecial_, defineJsObjSpecial_, defineMacroSpecial_, definePublicSpecial_, defineSpecial_, defineTypeSpecial_, defineValuesSpecial_, defmacroSpecial_, dotSpecial_, forSpecial_, fsetSpecial_, getFieldSpecial_, jsArrowSpecial_, jsDoWhileSpecial_, jsFunctionSpecial_, jsOptionalChainingSpecial_, jsWhileSpecial_, lambdaSpecial_, letEnvSpecial_, letJsObjSpecial_, letStarSpecial_, letValuesSpecial_, macropSpecial_, moduleSpecial_, nlambdaSpecial_, orSpecial_, provideSpecial_, quasiquoteSpecial_, quoteSpecial_, requireSpecial_, returnSpecial_, sendApplySpecial_, sendSpecial_, setFieldSpecial_, setJsObjSpecial_, setSpecial_, setValuesSpecial_, setqSpecial_, throwSpecial_, trySpecial_, yieldSpecial_ };

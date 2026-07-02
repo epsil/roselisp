@@ -143,7 +143,7 @@ describe('strings', function (): any {
         Symbol.for('roselisp'),
         Symbol.for('>'),
         [Symbol.for('eq?'), '	', '	'],
-        Symbol.for('#t'),
+        true,
       ]);
     });
   });
@@ -1278,7 +1278,7 @@ describe('unless', function (): any {
 describe('cond', function (): any {
   it('(cond (#f 1) (else 2))', function (): any {
     return testLisp(
-      [Symbol.for('cond'), [Symbol.for('#f'), 1], [Symbol.for('else'), 2]],
+      [Symbol.for('cond'), [false, 1], [Symbol.for('else'), 2]],
       2
     );
   });
@@ -1600,7 +1600,7 @@ describe('break', function (): any {
     return testLisp(
       [
         Symbol.for('begin'),
-        [Symbol.for('while'), Symbol.for('#t'), [Symbol.for('break')]],
+        [Symbol.for('while'), true, [Symbol.for('break')]],
         1,
       ],
       1,
@@ -2800,12 +2800,7 @@ describe('hash-ref', function (): any {
   });
   return it('(hash-ref (make-hash) "quux" #f)', function (): any {
     return testLisp(
-      [
-        Symbol.for('hash-ref'),
-        [Symbol.for('make-hash')],
-        'quux',
-        Symbol.for('#f'),
-      ],
+      [Symbol.for('hash-ref'), [Symbol.for('make-hash')], 'quux', false],
       false
     );
   });
@@ -3340,7 +3335,7 @@ describe('string functions', function (): any {
             '__foo bar  baz__',
             '_',
             Symbol.for(':repeat?'),
-            Symbol.for('#t'),
+            true,
           ],
           'foo bar  baz',
         ],
@@ -3359,7 +3354,7 @@ describe('string functions', function (): any {
             '  foo bar  baz \n' + '\n' + '	',
             ' ',
             Symbol.for(':repeat?'),
-            Symbol.for('#t'),
+            true,
           ],
           'foo bar  baz \n' + '\n' + '	',
         ],
@@ -3870,7 +3865,7 @@ describe('dotted-list?', function (): any {
           [Symbol.for('foo'), Symbol.for('.'), Symbol.for('bar')],
         ],
       ],
-      Symbol.for('#t'),
+      true,
     ]);
   });
   return it('(foo bar)', function (): any {
@@ -3881,7 +3876,7 @@ describe('dotted-list?', function (): any {
         Symbol.for('dotted-list?'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
       ],
-      Symbol.for('#f'),
+      false,
     ]);
   });
 });
@@ -4006,7 +4001,7 @@ describe('proper-list?', function (): any {
         Symbol.for('proper-list?'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
       ],
-      Symbol.for('#t'),
+      true,
     ]);
   });
   return it('(foo . bar)', function (): any {
@@ -4020,7 +4015,7 @@ describe('proper-list?', function (): any {
           [Symbol.for('foo'), Symbol.for('.'), Symbol.for('bar')],
         ],
       ],
-      Symbol.for('#f'),
+      false,
     ]);
   });
 });
@@ -4034,13 +4029,13 @@ describe('circular-list?', function (): any {
       Symbol.for('undefined'),
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
-      Symbol.for('#f'),
+      false,
       Symbol.for('>'),
       [Symbol.for('set-cdr!'), Symbol.for('foo'), Symbol.for('foo')],
       Symbol.for('undefined'),
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
-      Symbol.for('#f'),
+      false,
     ]);
   });
   it('(foo)', function (): any {
@@ -4051,7 +4046,7 @@ describe('circular-list?', function (): any {
         Symbol.for('circular-list?'),
         [Symbol.for('quote'), [Symbol.for('foo')]],
       ],
-      Symbol.for('#f'),
+      false,
     ]);
   });
   it('(foo . bar)', function (): any {
@@ -4065,7 +4060,7 @@ describe('circular-list?', function (): any {
           [Symbol.for('foo'), Symbol.for('.'), Symbol.for('bar')],
         ],
       ],
-      Symbol.for('#f'),
+      false,
     ]);
   });
   it('(foo . #0#)', function (): any {
@@ -4083,7 +4078,7 @@ describe('circular-list?', function (): any {
       Symbol.for('undefined'),
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
-      Symbol.for('#t'),
+      true,
     ]);
   });
   it('(foo . #0#), from linked list', function (): any {
@@ -4101,7 +4096,7 @@ describe('circular-list?', function (): any {
       Symbol.for('undefined'),
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
-      Symbol.for('#t'),
+      true,
     ]);
   });
   return it('(foo bar . #0#)', function (): any {
@@ -4119,7 +4114,7 @@ describe('circular-list?', function (): any {
       Symbol.for('undefined'),
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
-      Symbol.for('#t'),
+      true,
     ]);
   });
 });

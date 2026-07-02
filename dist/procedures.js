@@ -122,7 +122,7 @@ function apply_(f, ...args) {
 }
 exports.apply = apply_;
 exports.apply_ = apply_;
-apply_.lispSource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('array-list-last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), Symbol.for('#n'), Symbol.for('args')]];
+apply_.lispSource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('array-list-last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, Symbol.for('args')]];
 /**
  * Call `f` with `args`.
  * Returns the value `f` returns.
@@ -136,7 +136,7 @@ function funcall_(f, ...args) {
 }
 exports.funcall = funcall_;
 exports.funcall_ = funcall_;
-funcall_.lispSource = [Symbol.for('define'), [Symbol.for('funcall_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('f'), Symbol.for('call'), Symbol.for('#n'), Symbol.for('args')]];
+funcall_.lispSource = [Symbol.for('define'), [Symbol.for('funcall_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('f'), Symbol.for('call'), null, Symbol.for('args')]];
 /**
  * Whether `obj` is a procedure (i.e., a function).
  *
@@ -221,7 +221,7 @@ function lt_(...args) {
 }
 exports.lt = lt_;
 exports.lt_ = lt_;
-lt_.lispSource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], Symbol.for('#t')], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), Symbol.for('#f')]]], Symbol.for('#t')]]];
+lt_.lispSource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Less than or equal operator.
  *
@@ -247,7 +247,7 @@ function lte_(...args) {
 }
 exports.lte = lte_;
 exports.lte_ = lte_;
-lte_.lispSource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], Symbol.for('#t')], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), Symbol.for('#f')]]], Symbol.for('#t')]]];
+lte_.lispSource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Greater than operator.
  *
@@ -273,7 +273,7 @@ function gt_(...args) {
 }
 exports.gt = gt_;
 exports.gt_ = gt_;
-gt_.lispSource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], Symbol.for('#t')], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), Symbol.for('#f')]]], Symbol.for('#t')]]];
+gt_.lispSource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Greater than or equal operator.
  *
@@ -299,7 +299,7 @@ function gte_(...args) {
 }
 exports.gte = gte_;
 exports.gte_ = gte_;
-gte_.lispSource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], Symbol.for('#t')], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), Symbol.for('#f')]]], Symbol.for('#t')]]];
+gte_.lispSource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Modulo operation.
  *
@@ -494,7 +494,7 @@ function truep(x) {
 }
 exports.truep_ = truep;
 exports.truep = truep;
-truep.lispSource = [Symbol.for('define'), [Symbol.for('true?'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('undefined?'), Symbol.for('x')]], Symbol.for('x'), [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('x')], 0]]], [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), [Symbol.for('js-keys'), Symbol.for('x')]], 0], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('constructor'), Symbol.for('x')], Symbol.for('Object')]]], Symbol.for('#t')]];
+truep.lispSource = [Symbol.for('define'), [Symbol.for('true?'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('undefined?'), Symbol.for('x')]], Symbol.for('x'), [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('x')], 0]]], [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), [Symbol.for('js-keys'), Symbol.for('x')]], 0], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('constructor'), Symbol.for('x')], Symbol.for('Object')]]], true]];
 /**
  * Whether a value is falsy.
  */
@@ -534,7 +534,7 @@ function const_(x = undefined) {
     };
 }
 exports.const_ = const_;
-const_.lispSource = [Symbol.for('define'), [Symbol.for('const_'), [Symbol.for('x'), Symbol.for('#u')]], [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('x')]];
+const_.lispSource = [Symbol.for('define'), [Symbol.for('const_'), [Symbol.for('x'), undefined]], [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('x')]];
 /**
  * Return a tuple of multiple values.
  *
@@ -604,7 +604,7 @@ function undefinedp_(obj) {
     return obj === undefined;
 }
 exports.undefinedp_ = undefinedp_;
-undefinedp_.lispSource = [Symbol.for('define'), [Symbol.for('undefined?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), Symbol.for('#u')]];
+undefinedp_.lispSource = [Symbol.for('define'), [Symbol.for('undefined?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), undefined]];
 /**
  * Fold up a list left to right.
  *
@@ -671,7 +671,7 @@ function member_(v, lst, isEqual = undefined) {
 exports.member = member_;
 exports.memq = member_;
 exports.member_ = member_;
-member_.lispSource = [Symbol.for('define'), [Symbol.for('member_'), Symbol.for('v'), Symbol.for('lst'), [Symbol.for('is-equal'), Symbol.for('#u')]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('v'), Symbol.for('x')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('v'), Symbol.for('x')]]], Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('drop'), Symbol.for('lst'), Symbol.for('idx')], Symbol.for('#f')]]];
+member_.lispSource = [Symbol.for('define'), [Symbol.for('member_'), Symbol.for('v'), Symbol.for('lst'), [Symbol.for('is-equal'), undefined]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('v'), Symbol.for('x')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('v'), Symbol.for('x')]]], Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('drop'), Symbol.for('lst'), Symbol.for('idx')], false]]];
 /**
  * Whether a list contains a value.
  * Like `member`, but always returns a boolean value.
@@ -687,7 +687,7 @@ exports.memberP = memberp_;
 exports.memberP_ = memberp_;
 exports.memberp = memberp_;
 exports.memberp_ = memberp_;
-memberp_.lispSource = [Symbol.for('define'), [Symbol.for('member?_'), Symbol.for('v'), Symbol.for('lst'), [Symbol.for('is-equal'), Symbol.for('#u')]], [Symbol.for('memf?'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('v'), Symbol.for('x')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('v'), Symbol.for('x')]]], Symbol.for('lst')]];
+memberp_.lispSource = [Symbol.for('define'), [Symbol.for('member?_'), Symbol.for('v'), Symbol.for('lst'), [Symbol.for('is-equal'), undefined]], [Symbol.for('memf?'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('v'), Symbol.for('x')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('v'), Symbol.for('x')]]], Symbol.for('lst')]];
 /**
  * Whether a list contains a value.
  * Like `member`, but comparison is done with `eq?`.
@@ -715,7 +715,7 @@ function memq_(v, lst) {
     }
 }
 exports.memq_ = memq_;
-memq_.lispSource = [Symbol.for('define'), [Symbol.for('memq_'), Symbol.for('v'), Symbol.for('lst')], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('v'), Symbol.for('x')]], Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('drop'), Symbol.for('lst'), Symbol.for('idx')], Symbol.for('#f')]]];
+memq_.lispSource = [Symbol.for('define'), [Symbol.for('memq_'), Symbol.for('v'), Symbol.for('lst')], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('v'), Symbol.for('x')]], Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('drop'), Symbol.for('lst'), Symbol.for('idx')], false]]];
 /**
  * Whether a list contains a value,
  * using `eq?` for comparisons. Like `memq`,
@@ -755,7 +755,7 @@ function memf_(proc, lst, notFound = false) {
 }
 exports.memf = memf_;
 exports.memf_ = memf_;
-memf_.lispSource = [Symbol.for('define'), [Symbol.for('memf_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), Symbol.for('#f')]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('drop'), Symbol.for('lst'), Symbol.for('idx')], Symbol.for('not-found')]]];
+memf_.lispSource = [Symbol.for('define'), [Symbol.for('memf_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('drop'), Symbol.for('lst'), Symbol.for('idx')], Symbol.for('not-found')]]];
 /**
  * Whether a list contains a value matching a predicate.
  * Like `memf`, but always returns a boolean value.
@@ -785,7 +785,7 @@ function findf_(proc, lst, notFound = false) {
 }
 exports.findf = findf_;
 exports.findf_ = findf_;
-findf_.lispSource = [Symbol.for('define'), [Symbol.for('findf_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), Symbol.for('#f')]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('array-list-nth'), Symbol.for('idx'), Symbol.for('lst')], Symbol.for('not-found')]]];
+findf_.lispSource = [Symbol.for('define'), [Symbol.for('findf_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('array-list-nth'), Symbol.for('idx'), Symbol.for('lst')], Symbol.for('not-found')]]];
 /**
  * Find the index of a list element matching a predicate.
  *
@@ -806,7 +806,7 @@ function findfIndex_(proc, seq, notFound = false) {
 }
 exports.findfIndex = findfIndex_;
 exports.findfIndex_ = findfIndex_;
-findfIndex_.lispSource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol.for('proc'), Symbol.for('seq'), [Symbol.for('not-found'), Symbol.for('#f')]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
+findfIndex_.lispSource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol.for('proc'), Symbol.for('seq'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 /**
  * Find the index of a list element matching a predicate.
  *
@@ -826,7 +826,7 @@ function indexWhere_(seq, proc, notFound = false) {
     }
 }
 exports.indexWhere_ = indexWhere_;
-indexWhere_.lispSource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol.for('seq'), Symbol.for('proc'), [Symbol.for('not-found'), Symbol.for('#f')]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
+indexWhere_.lispSource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol.for('seq'), Symbol.for('proc'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 /**
  * Find the index of a list element.
  *
@@ -850,7 +850,7 @@ function indexOf_(seq, v, isEqual = undefined) {
     }
 }
 exports.indexOf_ = indexOf_;
-indexOf_.lispSource = [Symbol.for('define'), [Symbol.for('index-of_'), Symbol.for('seq'), Symbol.for('v'), [Symbol.for('is-equal'), Symbol.for('#u')]], [Symbol.for('index-where'), Symbol.for('seq'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('x'), Symbol.for('v')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('x'), Symbol.for('v')]]]]];
+indexOf_.lispSource = [Symbol.for('define'), [Symbol.for('index-of_'), Symbol.for('seq'), Symbol.for('v'), [Symbol.for('is-equal'), undefined]], [Symbol.for('index-where'), Symbol.for('seq'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('x'), Symbol.for('v')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('x'), Symbol.for('v')]]]]];
 /**
  * Return the intersection of multiple lists.
  *
@@ -934,7 +934,7 @@ function range_(start, end = undefined, step = undefined) {
 }
 exports.range = range_;
 exports.range_ = range_;
-range_.lispSource = [Symbol.for('define'), [Symbol.for('range_'), Symbol.for('start'), [Symbol.for('end'), Symbol.for('#u')], [Symbol.for('step'), Symbol.for('#u')]], [Symbol.for('let*'), [[Symbol.for('start-n'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('end'), Symbol.for('#u')], 0, Symbol.for('start')]], [Symbol.for('end-n'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('end'), Symbol.for('#u')], Symbol.for('start'), Symbol.for('end')]], [Symbol.for('step-n'), [Symbol.for('or'), Symbol.for('step'), 1]], [Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), Symbol.for('start-n'), Symbol.for('end-n'), Symbol.for('step-n')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('i')]], Symbol.for('result')]];
+range_.lispSource = [Symbol.for('define'), [Symbol.for('range_'), Symbol.for('start'), [Symbol.for('end'), undefined], [Symbol.for('step'), undefined]], [Symbol.for('let*'), [[Symbol.for('start-n'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('end'), undefined], 0, Symbol.for('start')]], [Symbol.for('end-n'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('end'), undefined], Symbol.for('start'), Symbol.for('end')]], [Symbol.for('step-n'), [Symbol.for('or'), Symbol.for('step'), 1]], [Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), Symbol.for('start-n'), Symbol.for('end-n'), Symbol.for('step-n')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('i')]], Symbol.for('result')]];
 /**
  * Right-to-left function composition.
  *
@@ -1039,7 +1039,7 @@ function error_(arg = undefined) {
 }
 exports.error = error_;
 exports.error_ = error_;
-error_.lispSource = [Symbol.for('define'), [Symbol.for('error_'), [Symbol.for('arg'), Symbol.for('#u')]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('Error'), Symbol.for('arg')]]];
+error_.lispSource = [Symbol.for('define'), [Symbol.for('error_'), [Symbol.for('arg'), undefined]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('Error'), Symbol.for('arg')]]];
 /**
  * Get the type of a value.
  *

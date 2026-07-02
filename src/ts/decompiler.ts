@@ -452,7 +452,7 @@ function decompileLiteral(node: any, options: any = {}): any {
   if (value === null) {
     return makeRose(Symbol.for('js/null'));
   } else if (typeof value === 'boolean') {
-    return makeRose(value ? Symbol.for('#t') : Symbol.for('#f'));
+    return makeRose(value ? true : false);
   } else if (value instanceof RegExp) {
     const pattern: any = node.regex.pattern;
     const flags: any = node.regex.flags;

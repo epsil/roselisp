@@ -83,7 +83,7 @@ declare namespace printSexp {
  */
 declare function printSexpAsExpression(exp: any, options?: any): any;
 declare namespace printSexpAsExpression {
-    var lispSource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (string | boolean | symbol)[])[])[])[];
 }
 /**
  * Print an S-expression to a string.

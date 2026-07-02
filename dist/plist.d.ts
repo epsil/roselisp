@@ -41,14 +41,14 @@ declare namespace plistCopy_ {
  */
 declare function plistGet_(plist: any, prop: any): any;
 declare namespace plistGet_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var lispSource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
 }
 /**
  * Whether a property list contains a given property.
  */
 declare function plistHasP_(plist: any, prop: any): any;
 declare namespace plistHasP_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[];
 }
 /**
  * Set the value of a property in a property list.
@@ -59,7 +59,7 @@ declare namespace plistHasP_ {
  */
 declare function plistSetX_(plist: any, prop: any, val: any): any;
 declare namespace plistSetX_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[] | (boolean | symbol)[])[])[] | undefined)[];
 }
 /**
  * Set the value of a property in a property list,

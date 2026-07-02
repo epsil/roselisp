@@ -23,7 +23,7 @@ describe('decompile', function (): any {
           language: 'JavaScript',
           sexp: true,
         }),
-        Symbol.for('#f')
+        false
       );
     });
   });
@@ -1089,12 +1089,7 @@ describe('decompile', function (): any {
           [
             Symbol.for('I'),
             [Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')],
-            [
-              Symbol.for('y'),
-              Symbol.for(':'),
-              Symbol.for('Any'),
-              Symbol.for('#t'),
-            ],
+            [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any'), true],
           ],
           Symbol.for('x'),
         ]
@@ -1164,12 +1159,7 @@ describe('decompile', function (): any {
         [
           Symbol.for('define'),
           [Symbol.for('I'), Symbol.for('x')],
-          [
-            Symbol.for('if'),
-            Symbol.for('x'),
-            Symbol.for('x'),
-            Symbol.for('#f'),
-          ],
+          [Symbol.for('if'), Symbol.for('x'), Symbol.for('x'), false],
         ]
       );
     });
@@ -1196,8 +1186,8 @@ describe('decompile', function (): any {
           [
             Symbol.for('cond'),
             [Symbol.for('x'), Symbol.for('x')],
-            [Symbol.for('#f'), Symbol.for('#f')],
-            [Symbol.for('else'), Symbol.for('#f')],
+            [false, false],
+            [Symbol.for('else'), false],
           ],
         ]
       );
@@ -1273,7 +1263,7 @@ describe('decompile', function (): any {
           language: 'JavaScript',
           sexp: true,
         }),
-        [Symbol.for('when'), Symbol.for('#t'), [Symbol.for('foo'), 'bar']]
+        [Symbol.for('when'), true, [Symbol.for('foo'), 'bar']]
       );
     });
     it("if (!foo) { bar('baz'); }", function (): any {
@@ -1300,7 +1290,7 @@ describe('decompile', function (): any {
         ),
         [
           Symbol.for('if'),
-          Symbol.for('#t'),
+          true,
           [Symbol.for('foo'), 'bar'],
           [Symbol.for('bar'), 'baz'],
         ]
@@ -1496,12 +1486,7 @@ describe('decompile', function (): any {
         [
           Symbol.for('define'),
           Symbol.for('x'),
-          [
-            Symbol.for('if'),
-            Symbol.for('#t'),
-            Symbol.for('foo'),
-            Symbol.for('bar'),
-          ],
+          [Symbol.for('if'), true, Symbol.for('foo'), Symbol.for('bar')],
         ]
       );
     });
@@ -2027,7 +2012,7 @@ describe('decompile', function (): any {
       return assertEqual(actual, [
         Symbol.for('define'),
         Symbol.for('foo'),
-        [Symbol.for('js-obj'), 'bar', Symbol.for('#t')],
+        [Symbol.for('js-obj'), 'bar', true],
       ]);
     });
     return it('{ ...{ bar: true } }', function (): any {
@@ -2038,10 +2023,7 @@ describe('decompile', function (): any {
       return assertEqual(actual, [
         Symbol.for('define'),
         Symbol.for('foo'),
-        [
-          Symbol.for('js-obj-append'),
-          [Symbol.for('js-obj'), 'bar', Symbol.for('#t')],
-        ],
+        [Symbol.for('js-obj-append'), [Symbol.for('js-obj'), 'bar', true]],
       ]);
     });
   });

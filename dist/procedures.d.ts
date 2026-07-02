@@ -26,7 +26,7 @@
  */
 declare function apply_(f: any, ...args: any[]): any;
 declare namespace apply_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
+    var lispSource: (symbol | (symbol | null)[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 /**
  * Call `f` with `args`.
@@ -38,7 +38,7 @@ declare namespace apply_ {
  */
 declare function funcall_(f: any, ...args: any[]): any;
 declare namespace funcall_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | (symbol | null)[])[];
 }
 /**
  * Whether `obj` is a procedure (i.e., a function).
@@ -97,7 +97,7 @@ declare namespace map_ {
  */
 declare function lt_(...args: any[]): any;
 declare namespace lt_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[])[];
+    var lispSource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
 }
 /**
  * Less than or equal operator.
@@ -109,7 +109,7 @@ declare namespace lt_ {
  */
 declare function lte_(...args: any[]): any;
 declare namespace lte_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[])[];
+    var lispSource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
 }
 /**
  * Greater than operator.
@@ -121,7 +121,7 @@ declare namespace lte_ {
  */
 declare function gt_(...args: any[]): any;
 declare namespace gt_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[])[];
+    var lispSource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
 }
 /**
  * Greater than or equal operator.
@@ -133,7 +133,7 @@ declare namespace gt_ {
  */
 declare function gte_(...args: any[]): any;
 declare namespace gte_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[])[];
+    var lispSource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
 }
 /**
  * Modulo operation.
@@ -181,7 +181,7 @@ declare namespace add1_ {
  */
 declare function sub_(...args: any[]): any;
 declare namespace sub_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[] | (number | symbol[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (number | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[])[])[])[];
 }
 /**
  * Return `(- x 1)`.
@@ -269,7 +269,7 @@ declare namespace evenp_ {
  */
 declare function truep(x: any): any;
 declare namespace truep {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[])[];
+    var lispSource: (symbol | (boolean | symbol | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[])[];
 }
 /**
  * Whether a value is falsy.
@@ -302,7 +302,7 @@ declare namespace identity_ {
  */
 declare function const_(x?: any): any;
 declare namespace const_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Return a tuple of multiple values.
@@ -362,7 +362,7 @@ declare namespace booleanp_ {
  */
 declare function undefinedp_(obj: any): any;
 declare namespace undefinedp_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | (symbol | undefined)[])[];
 }
 /**
  * Fold up a list left to right.
@@ -403,7 +403,7 @@ declare namespace foldr_ {
  */
 declare function member_(v: any, lst: any, isEqual?: any): any;
 declare namespace member_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][] | (boolean | symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Whether a list contains a value.
@@ -411,7 +411,7 @@ declare namespace member_ {
  */
 declare function memberp_(v: any, lst: any, isEqual?: any): any;
 declare namespace memberp_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Whether a list contains a value.
@@ -425,7 +425,7 @@ declare namespace memberp_ {
  */
 declare function memq_(v: any, lst: any): any;
 declare namespace memq_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][] | (boolean | symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Whether a list contains a value,
@@ -449,7 +449,7 @@ declare namespace memqp_ {
  */
 declare function memf_(proc: any, lst: any, notFound?: any): any;
 declare namespace memf_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
+    var lispSource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Whether a list contains a value matching a predicate.
@@ -470,7 +470,7 @@ declare namespace memfp_ {
  */
 declare function findf_(proc: any, lst: any, notFound?: any): any;
 declare namespace findf_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
+    var lispSource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -483,7 +483,7 @@ declare namespace findf_ {
  */
 declare function findfIndex_(proc: any, seq: any, notFound?: any): any;
 declare namespace findfIndex_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
+    var lispSource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -496,7 +496,7 @@ declare namespace findfIndex_ {
  */
 declare function indexWhere_(seq: any, proc: any, notFound?: any): any;
 declare namespace indexWhere_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
+    var lispSource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Find the index of a list element.
@@ -509,7 +509,7 @@ declare namespace indexWhere_ {
  */
 declare function indexOf_(seq: any, v: any, isEqual?: any): any;
 declare namespace indexOf_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Return the intersection of multiple lists.
@@ -543,7 +543,7 @@ declare namespace union_ {
  */
 declare function range_(start: any, end?: any, step?: any): any;
 declare namespace range_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | symbol[] | (symbol | symbol[])[][])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[] | (symbol | (number | symbol | (symbol | undefined)[])[])[][])[])[];
 }
 /**
  * Right-to-left function composition.
@@ -623,7 +623,7 @@ declare namespace display_ {
  */
 declare function error_(arg?: any): any;
 declare namespace error_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Get the type of a value.

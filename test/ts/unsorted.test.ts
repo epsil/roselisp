@@ -85,7 +85,7 @@ describe('Unsorted tests', function (): any {
         Symbol.for('roselisp'),
         Symbol.for('>'),
         [Symbol.for('equal?'), 1, 1],
-        Symbol.for('#t'),
+        true,
       ]);
     });
     return it("(equal? '() '())", function (): any {
@@ -97,7 +97,7 @@ describe('Unsorted tests', function (): any {
           [Symbol.for('quote'), []],
           [Symbol.for('quote'), []],
         ],
-        Symbol.for('#t'),
+        true,
       ]);
     });
   });
@@ -350,7 +350,7 @@ describe('Unsorted tests', function (): any {
         Symbol.for('roselisp'),
         Symbol.for('>'),
         [Symbol.for('cons-dot?'), Symbol.for('*cons-dot*')],
-        Symbol.for('#t'),
+        true,
       ]);
     });
   });
@@ -512,7 +512,7 @@ describe('Unsorted tests', function (): any {
               [1, Symbol.for('.'), [2, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -527,7 +527,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('cons?'), [Symbol.for('quote'), []]],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -540,7 +540,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('list?'), [Symbol.for('quote'), []]],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -555,7 +555,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('list?'), [Symbol.for('quote'), []]],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -568,7 +568,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('list?'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -584,7 +584,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('list?'),
             [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
           ],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -600,7 +600,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('list?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), []]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -619,7 +619,7 @@ describe('Unsorted tests', function (): any {
               [1, Symbol.for('.'), [2, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -634,7 +634,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('vector?'), [Symbol.for('quote'), []]],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -650,7 +650,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('vector?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -666,7 +666,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('vector?'),
             [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -682,7 +682,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('vector?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), []]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -701,7 +701,7 @@ describe('Unsorted tests', function (): any {
               [1, Symbol.for('.'), [2, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -948,7 +948,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('array-list?'), [Symbol.for('quote'), []]],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -964,7 +964,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('array-list?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -977,7 +977,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('array-list?'), [Symbol.for('quote'), [1, 2]]],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -990,7 +990,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('array-list?'), [Symbol.for('quote'), [1, 2, 3]]],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1005,7 +1005,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('linked-list?'), [Symbol.for('quote'), []]],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -1021,7 +1021,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('linked-list?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
           ],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -1037,7 +1037,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('linked-list?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), []]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1056,7 +1056,7 @@ describe('Unsorted tests', function (): any {
               [1, Symbol.for('.'), [2, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1075,7 +1075,7 @@ describe('Unsorted tests', function (): any {
               [1, 2, Symbol.for('.'), [3, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1090,7 +1090,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('linked-list-link?'), [Symbol.for('quote'), []]],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -1106,7 +1106,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('linked-list-link?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1122,7 +1122,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('linked-list-link?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), []]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1141,7 +1141,7 @@ describe('Unsorted tests', function (): any {
               [1, Symbol.for('.'), [2, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1160,7 +1160,7 @@ describe('Unsorted tests', function (): any {
               [1, 2, Symbol.for('.'), [3, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1175,7 +1175,7 @@ describe('Unsorted tests', function (): any {
           Symbol.for('roselisp'),
           Symbol.for('>'),
           [Symbol.for('dotted-list?'), [Symbol.for('quote'), []]],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -1191,7 +1191,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('dotted-list?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1207,7 +1207,7 @@ describe('Unsorted tests', function (): any {
             Symbol.for('dotted-list?'),
             [Symbol.for('quote'), [1, Symbol.for('.'), []]],
           ],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -1226,7 +1226,7 @@ describe('Unsorted tests', function (): any {
               [1, Symbol.for('.'), [2, Symbol.for('.'), []]],
             ],
           ],
-          Symbol.for('#f'),
+          false,
         ],
         {
           compile: false,
@@ -1245,7 +1245,7 @@ describe('Unsorted tests', function (): any {
               [1, Symbol.for('.'), [2, Symbol.for('.'), 3]],
             ],
           ],
-          Symbol.for('#t'),
+          true,
         ],
         {
           compile: false,
@@ -1585,7 +1585,7 @@ describe('Unsorted tests', function (): any {
           [Symbol.for('new'), Symbol.for('Map')],
           Symbol.for('Map'),
         ],
-        Symbol.for('#t'),
+        true,
       ]);
     });
   });
@@ -1599,7 +1599,7 @@ describe('Unsorted tests', function (): any {
           [Symbol.for('new'), Symbol.for('Map')],
           Symbol.for('Map'),
         ],
-        Symbol.for('#t'),
+        true,
       ]);
     });
   });

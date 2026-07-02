@@ -1324,11 +1324,7 @@ describe('compile', function (): any {
                   [
                     Symbol.for('define'),
                     Symbol.for('__'),
-                    [
-                      Symbol.for('js-obj'),
-                      '@@functional/placeholder',
-                      Symbol.for('#t'),
-                    ],
+                    [Symbol.for('js-obj'), '@@functional/placeholder', true],
                   ],
                   [
                     Symbol.for('define'),
@@ -2401,13 +2397,9 @@ describe('compile', function (): any {
     });
     return it("'(#t #f)", function (): any {
       return assertEqual(
-        compile(
-          [Symbol.for('quote'), [Symbol.for('#t'), Symbol.for('#f')]],
-          compilationEnvironment,
-          {
-            language: 'JavaScript',
-          }
-        ),
+        compile([Symbol.for('quote'), [true, false]], compilationEnvironment, {
+          language: 'JavaScript',
+        }),
         '[true, false]'
       );
     });
@@ -3411,7 +3403,7 @@ describe('compile', function (): any {
           [
             Symbol.for('define'),
             Symbol.for('_'),
-            [Symbol.for('js-obj'), 'dash', Symbol.for('#t')],
+            [Symbol.for('js-obj'), 'dash', true],
           ],
           compilationEnvironment,
           {
@@ -3427,7 +3419,7 @@ describe('compile', function (): any {
           [
             Symbol.for('define'),
             Symbol.for('__'),
-            [Symbol.for('js-obj'), 'dash', Symbol.for('#t')],
+            [Symbol.for('js-obj'), 'dash', true],
           ],
           compilationEnvironment,
           {
@@ -4077,13 +4069,8 @@ describe('compile', function (): any {
                   [
                     Symbol.for('if'),
                     Symbol.for('x'),
-                    [
-                      Symbol.for('if'),
-                      Symbol.for('y'),
-                      Symbol.for('#t'),
-                      Symbol.for('#f'),
-                    ],
-                    Symbol.for('#f'),
+                    [Symbol.for('if'), Symbol.for('y'), true, false],
+                    false,
                   ],
                 ],
               ],
@@ -4254,13 +4241,9 @@ describe('compile', function (): any {
             Symbol.for('cond'),
             [
               Symbol.for('foo'),
-              [
-                Symbol.for('let'),
-                [[Symbol.for('x'), Symbol.for('#t')]],
-                Symbol.for('x'),
-              ],
+              [Symbol.for('let'), [[Symbol.for('x'), true]], Symbol.for('x')],
             ],
-            [Symbol.for('else'), Symbol.for('#f')],
+            [Symbol.for('else'), false],
           ],
           compilationEnvironment,
           {
@@ -5704,7 +5687,7 @@ describe('compile', function (): any {
             Symbol.for('module'),
             Symbol.for('m'),
             Symbol.for('scheme'),
-            [Symbol.for('define'), Symbol.for('truish'), Symbol.for('#t')],
+            [Symbol.for('define'), Symbol.for('truish'), true],
             [
               Symbol.for('define'),
               Symbol.for('falsy'),
@@ -8613,7 +8596,7 @@ describe('compile', function (): any {
               Symbol.for('MyException'),
               Symbol.for('e'),
               [Symbol.for('display'), 'there was an error'],
-              [Symbol.for('return'), Symbol.for('#f')],
+              [Symbol.for('return'), false],
             ],
             [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']],
           ],
@@ -8647,7 +8630,7 @@ describe('compile', function (): any {
               Symbol.for('Object'),
               Symbol.for('e'),
               [Symbol.for('display'), 'there was an error'],
-              [Symbol.for('return'), Symbol.for('#f')],
+              [Symbol.for('return'), false],
             ],
             [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']],
           ],
@@ -8905,7 +8888,7 @@ describe('compile', function (): any {
               Symbol.for('x'),
             ],
             [Symbol.for('define'), Symbol.for('x'), 1],
-            [Symbol.for('define'), Symbol.for('*lisp-map*'), Symbol.for('#t')],
+            [Symbol.for('define'), Symbol.for('*lisp-map*'), true],
           ],
           compilationEnvironment,
           {
@@ -8958,7 +8941,7 @@ describe('compile', function (): any {
               [Symbol.for('only-in'), './combinators', Symbol.for('I')],
             ],
             [Symbol.for('define'), Symbol.for('x'), 1],
-            [Symbol.for('define'), Symbol.for('*lisp-map*'), Symbol.for('#t')],
+            [Symbol.for('define'), Symbol.for('*lisp-map*'), true],
           ],
           compilationEnvironment,
           {
@@ -8985,7 +8968,7 @@ describe('compile', function (): any {
               [Symbol.for('only-in'), './combinators', Symbol.for('I')],
             ],
             [Symbol.for('define'), Symbol.for('x'), 1],
-            [Symbol.for('define'), Symbol.for('*lisp-map*'), Symbol.for('#t')],
+            [Symbol.for('define'), Symbol.for('*lisp-map*'), true],
           ],
           compilationEnvironment,
           {
@@ -9734,7 +9717,7 @@ describe('compile', function (): any {
           [
             Symbol.for('begin'),
             [Symbol.for(':'), Symbol.for('x'), Symbol.for('Boolean')],
-            [Symbol.for('define'), Symbol.for('x'), Symbol.for('#t')],
+            [Symbol.for('define'), Symbol.for('x'), true],
           ],
           compilationEnvironment,
           {
@@ -9751,7 +9734,7 @@ describe('compile', function (): any {
           [
             Symbol.for('begin'),
             [Symbol.for(':'), Symbol.for('x'), Symbol.for('True')],
-            [Symbol.for('define'), Symbol.for('x'), Symbol.for('#t')],
+            [Symbol.for('define'), Symbol.for('x'), true],
           ],
           compilationEnvironment,
           {
@@ -9768,7 +9751,7 @@ describe('compile', function (): any {
           [
             Symbol.for('begin'),
             [Symbol.for(':'), Symbol.for('x'), Symbol.for('False')],
-            [Symbol.for('define'), Symbol.for('x'), Symbol.for('#f')],
+            [Symbol.for('define'), Symbol.for('x'), false],
           ],
           compilationEnvironment,
           {
@@ -10582,9 +10565,9 @@ describe('definition-to-macro', function (): any {
           [Symbol.for('logical-or'), Symbol.for('x')],
           [Symbol.for('or'), Symbol.for('x'), Symbol.for('x')],
         ],
-        [Symbol.for('#t')]
+        [true]
       ),
-      [Symbol.for('or'), Symbol.for('#t'), Symbol.for('#t')]
+      [Symbol.for('or'), true, true]
     );
   });
   it('(define (repeat x) (string-append x x)), "1"', function (): any {
@@ -11090,25 +11073,17 @@ describe('compilation options', function (): any {
 describe('assert', function (): any {
   it('(assert #t)', function (): any {
     return assertEqual(
-      compile(
-        [Symbol.for('assert'), Symbol.for('#t')],
-        compilationEnvironment,
-        {
-          language: 'JavaScript',
-        }
-      ),
+      compile([Symbol.for('assert'), true], compilationEnvironment, {
+        language: 'JavaScript',
+      }),
       'console.assert(true)'
     );
   });
   return it('(assert #t "test")', function (): any {
     return assertEqual(
-      compile(
-        [Symbol.for('assert'), Symbol.for('#t'), 'test'],
-        compilationEnvironment,
-        {
-          language: 'JavaScript',
-        }
-      ),
+      compile([Symbol.for('assert'), true, 'test'], compilationEnvironment, {
+        language: 'JavaScript',
+      }),
       "console.assert(true, 'test')"
     );
   });
@@ -11117,25 +11092,17 @@ describe('assert', function (): any {
 describe('display', function (): any {
   it('(display #t)', function (): any {
     return assertEqual(
-      compile(
-        [Symbol.for('display'), Symbol.for('#t')],
-        compilationEnvironment,
-        {
-          language: 'JavaScript',
-        }
-      ),
+      compile([Symbol.for('display'), true], compilationEnvironment, {
+        language: 'JavaScript',
+      }),
       'console.log(true)'
     );
   });
   return it('(display #t "test")', function (): any {
     return assertEqual(
-      compile(
-        [Symbol.for('display'), Symbol.for('#t'), 'test'],
-        compilationEnvironment,
-        {
-          language: 'JavaScript',
-        }
-      ),
+      compile([Symbol.for('display'), true, 'test'], compilationEnvironment, {
+        language: 'JavaScript',
+      }),
       "console.log(true, 'test')"
     );
   });

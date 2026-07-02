@@ -85,7 +85,7 @@ declare namespace jsInstanceof_ {
  */
 declare function jsPlus_(...args: any[]): any;
 declare namespace jsPlus_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[])[])[];
 }
 /**
  * Whether `obj` is a JavaScript function.
@@ -115,7 +115,7 @@ declare namespace jsFunctionTypeP_ {
  */
 declare function jsNullP_(obj: any): any;
 declare namespace jsNullP_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | (symbol | null)[])[];
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -164,6 +164,6 @@ declare namespace jsTaggedTemplate_ {
  */
 declare function jsDelete_(x: any): any;
 declare namespace jsDelete_ {
-    var lispSource: (symbol | symbol[])[];
+    var lispSource: (symbol | symbol[] | undefined)[];
 }
 export { jsDelete_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsIn_, jsInstanceof_, jsIsLooselyEqualP_, jsIsStrictlyEqualP_, jsNullP_, jsPlus_, jsSameValueZeroP_, jsSameValueP_, jsTaggedTemplate_, jsTypeof_ };

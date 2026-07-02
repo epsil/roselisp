@@ -424,7 +424,7 @@ function decompileLiteral(node, options = {}) {
         return (0, rose_1.makeRose)(Symbol.for('js/null'));
     }
     else if (typeof value === 'boolean') {
-        return (0, rose_1.makeRose)(value ? Symbol.for('#t') : Symbol.for('#f'));
+        return (0, rose_1.makeRose)(value ? true : false);
     }
     else if (value instanceof RegExp) {
         const pattern = node.regex.pattern;

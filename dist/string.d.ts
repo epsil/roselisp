@@ -71,7 +71,7 @@ declare namespace stringRef_ {
  */
 declare function stringTrim_(str: any, sep?: any, ...options: any[]): any;
 declare namespace stringTrim_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (string | symbol)[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (string | symbol)[])[])[])[])[])[])[];
 }
 /**
  * Repeat a string `n` times.
@@ -144,7 +144,7 @@ declare namespace stringDowncase_ {
  */
 declare function substring_(str: any, start: any, end?: any): any;
 declare namespace substring_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Convert a string to a number.

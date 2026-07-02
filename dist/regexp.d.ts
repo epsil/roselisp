@@ -23,7 +23,7 @@
  */
 declare function regexp_(input: any, flags?: any): any;
 declare namespace regexp_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Whether `obj` is a regular expression.
@@ -64,7 +64,7 @@ declare namespace regexpMatch_ {
 }
 declare function regexpMatchP_(pattern: any, input: any): any;
 declare namespace regexpMatchP_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | symbol[] | null)[])[])[];
 }
 /**
  * Match `pattern` against `input` and replace with `insert`.

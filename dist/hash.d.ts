@@ -72,7 +72,7 @@ declare namespace hashSet_ {
  */
 declare function hashRef_(ht: any, key: any, failureResult?: any): any;
 declare namespace hashRef_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[])[])[];
 }
 /**
  * Whether a hash map has a value for a given key.

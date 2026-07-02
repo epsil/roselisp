@@ -267,7 +267,7 @@ declare namespace listp_ {
  */
 declare function listStar_(...args: any[]): any;
 declare namespace listStar_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | ((number | symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
 }
 /**
  * Make a list of `n` elements. The function `proc` is applied
@@ -626,14 +626,14 @@ declare namespace last_ {
  */
 declare function lastPair_(lst: any): any;
 declare namespace lastPair_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[])[])[];
 }
 /**
  * Return the last cdr of a list, i.e., the terminating empty list.
  */
 declare function lastCdr_(lst: any): any;
 declare namespace lastCdr_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[])[])[];
 }
 /**
  * Set the CAR of a list.
@@ -644,7 +644,7 @@ declare namespace lastCdr_ {
  */
 declare function setCarX_(x: any, y: any): any;
 declare namespace setCarX_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
+    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[])[] | undefined)[];
 }
 /**
  * Set the CDR of a list.
@@ -655,7 +655,7 @@ declare namespace setCarX_ {
  */
 declare function setCdrX_(x: any, y: any): any;
 declare namespace setCdrX_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[][] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | symbol[] | symbol[][])[][])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[][] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | symbol[] | symbol[][])[][])[])[])[] | undefined)[];
 }
 /**
  * Whether something is the empty list.
@@ -972,7 +972,7 @@ declare namespace linkedListTenth_ {
  */
 declare function linkedListLast_(lst: any): any;
 declare namespace linkedListLast_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[];
 }
 /**
  * Return the `n`-th element of a linked list.

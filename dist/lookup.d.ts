@@ -30,6 +30,6 @@
  */
 declare function lookupJsValue(name: any): any;
 declare namespace lookupJsValue {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var lispSource: (symbol | (boolean | symbol)[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[];
 }
 export { lookupJsValue };

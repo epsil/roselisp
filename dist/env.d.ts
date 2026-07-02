@@ -424,14 +424,14 @@ declare namespace defaultEnvironment {
  */
 declare function withEnvironment(env: any, f: any): any;
 declare namespace withEnvironment {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
 }
 /**
  * Make an environment.
  */
 declare function makeEnvironment(variables?: any, parent?: any, isLisp2?: any): any;
 declare namespace makeEnvironment {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | (boolean | symbol)[] | (symbol | undefined)[])[])[];
 }
 /**
  * Extend the environment `env` with `parent` as its parent
@@ -462,7 +462,7 @@ declare namespace environmentFrames {
  */
 declare function linkEnvironmentFrames(frames: any): any;
 declare namespace linkEnvironmentFrames {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[])[];
+    var lispSource: (symbol | (symbol | undefined)[] | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[])[];
 }
 /**
  * Prefix a set of bindings.

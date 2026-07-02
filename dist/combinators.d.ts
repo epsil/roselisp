@@ -132,7 +132,7 @@ declare namespace B1 {
  */
 declare function B2(...args: any[]): any;
 declare namespace B2 {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | number[])[] | (symbol[] | number[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
 }
 /**
  * Curried **B1** combinator.
@@ -394,7 +394,7 @@ declare namespace Q1 {
  */
 declare function Q2(...args: any[]): any;
 declare namespace Q2 {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | number[])[] | (symbol[] | number[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
 }
 /**
  * Curried **Q1** combinator.
@@ -515,7 +515,7 @@ declare namespace T1 {
  */
 declare function T2(...args: any[]): any;
 declare namespace T2 {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | number[])[] | (symbol[] | number[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
 }
 /**
  * Curried **T1** combinator.

@@ -928,7 +928,7 @@ function withEnvironment(env: any, f: any): any {
   return result;
 }
 
-withEnvironment.lispSource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('env'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('#u')], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-environment-pointer')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('tmp')]]], Symbol.for('result')];
+withEnvironment.lispSource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('env'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-environment-pointer')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('tmp')]]], Symbol.for('result')];
 
 /**
  * Make an environment.
@@ -937,7 +937,7 @@ function makeEnvironment(variables: any = undefined, parent: any = undefined, is
   return new LispEnvironment(variables, parent);
 }
 
-makeEnvironment.lispSource = [Symbol.for('define'), [Symbol.for('make-environment'), [Symbol.for('variables'), Symbol.for('#u')], [Symbol.for('parent'), Symbol.for('#u')], [Symbol.for('is-lisp-2'), Symbol.for('#f')]], [Symbol.for('new'), Symbol.for('LispEnvironment'), Symbol.for('variables'), Symbol.for('parent')]];
+makeEnvironment.lispSource = [Symbol.for('define'), [Symbol.for('make-environment'), [Symbol.for('variables'), undefined], [Symbol.for('parent'), undefined], [Symbol.for('is-lisp-2'), false]], [Symbol.for('new'), Symbol.for('LispEnvironment'), Symbol.for('variables'), Symbol.for('parent')]];
 
 /**
  * Extend the environment `env` with `parent` as its parent
@@ -1002,7 +1002,7 @@ function linkEnvironmentFrames(frames: any): any {
   return firstFrame;
 }
 
-linkEnvironmentFrames.lispSource = [Symbol.for('define'), [Symbol.for('link-environment-frames'), Symbol.for('frames')], [Symbol.for('define'), Symbol.for('first-frame'), Symbol.for('#u')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('frames')], 1], -1, -1]]], [Symbol.for('define'), Symbol.for('frame'), [Symbol.for('aget'), Symbol.for('frames'), Symbol.for('i')]], [Symbol.for('set-field!'), Symbol.for('parent'), Symbol.for('frame'), Symbol.for('first-frame')], [Symbol.for('set!'), Symbol.for('first-frame'), Symbol.for('frame')]], Symbol.for('first-frame')];
+linkEnvironmentFrames.lispSource = [Symbol.for('define'), [Symbol.for('link-environment-frames'), Symbol.for('frames')], [Symbol.for('define'), Symbol.for('first-frame'), undefined], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('frames')], 1], -1, -1]]], [Symbol.for('define'), Symbol.for('frame'), [Symbol.for('aget'), Symbol.for('frames'), Symbol.for('i')]], [Symbol.for('set-field!'), Symbol.for('parent'), Symbol.for('frame'), Symbol.for('first-frame')], [Symbol.for('set!'), Symbol.for('first-frame'), Symbol.for('frame')]], Symbol.for('first-frame')];
 
 /**
  * Prefix a set of bindings.

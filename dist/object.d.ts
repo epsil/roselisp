@@ -29,7 +29,7 @@ declare namespace jsObj_ {
  */
 declare function jsObjP_(x: any): any;
 declare namespace jsObjP_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | null)[])[])[])[];
 }
 /**
  * Whether something types as a JavaScript object.

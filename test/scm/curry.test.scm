@@ -60,10 +60,10 @@
             (curry abc 1))
           (assert-equal
            (curriedABC1 1)
-           (list 1 undefined undefined))
+           (list 1 #u #u))
           (assert-equal
            (curriedABC1 1 2)
-           (list 1 2 undefined))
+           (list 1 2 #u))
           (assert-equal
            (curriedABC1 1 2 3)
            '(1 2 3))))

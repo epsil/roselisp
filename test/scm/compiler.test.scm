@@ -1051,7 +1051,7 @@ const lst = [symbolp, booleanp];")))
                      ((js/arrow ()
                         (define __
                           (js-obj "@@functional/placeholder" #t))
-                        (define (js-regexp_ input (flags undefined))
+                        (define (js-regexp_ input (flags #u))
                           (if (eq? (type-of input) "string")
                               (new RegExp input flags)
                               input))
@@ -2091,7 +2091,7 @@ three"
                 '(define (Q . args)
                    (cond
                     ((= (.-length args) 0)
-                     undefined)
+                     #u)
                     ((= (.-length args) 1)
                      (aref args 0))
                     (else
@@ -2120,7 +2120,7 @@ three"
                 '(define (T . args)
                    (cond
                     ((= (.-length args) 0)
-                     undefined)
+                     #u)
                     ((= (.-length args) 1)
                      (aref args 0))
                     (else

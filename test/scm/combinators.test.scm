@@ -94,7 +94,7 @@
         (it "B"
             (fn ()
               (assert-equal
-               (eq? (B) undefined)
+               (eq? (B) #u)
                #t)))
         (it "B 1"
             (fn ()
@@ -136,7 +136,7 @@
         (it "I"
             (fn ()
               (assert-equal
-               (eq? (I) undefined)
+               (eq? (I) #u)
                #t)))
         (it "I I"
             (fn ()
@@ -178,7 +178,7 @@
         (it "Q"
             (fn ()
               (assert-equal
-               (eq? (Q) undefined)
+               (eq? (Q) #u)
                #t)))
         (it "Q 1"
             (fn ()
@@ -220,7 +220,7 @@
         (it "T"
             (fn ()
               (assert-equal
-               (eq? (T) undefined)
+               (eq? (T) #u)
                #t)))
         (it "T 1"
             (fn ()

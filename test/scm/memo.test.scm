@@ -22,11 +22,11 @@
           (define memoized-f
             (memoize I))
           (assert-equal
-           (eq? (memoized-f) undefined)
+           (eq? (memoized-f) #u)
            #t)
           (assert-equal
            (get-field cache memoized-f)
-           (new Map `((,eof ,undefined))))))
+           (new Map `((,eof ,#u))))))
     (it "cache I(1)"
         (fn ()
           (define memoized-f

@@ -90,7 +90,7 @@
          (fn ()
            (assert-equal
             (div)
-            undefined)))
+            #u)))
     (it "(div 1)"
         (fn ()
           (assert-equal

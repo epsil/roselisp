@@ -659,7 +659,7 @@ describe('define', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('define'), Symbol.for('x'), 1],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('x'),
       1,
@@ -1162,11 +1162,7 @@ describe('lexical scope', function (): any {
     return testLisp(
       [
         Symbol.for('begin'),
-        [
-          Symbol.for('define'),
-          Symbol.for('incrementer'),
-          Symbol.for('undefined'),
-        ],
+        [Symbol.for('define'), Symbol.for('incrementer'), undefined],
         [
           Symbol.for('let'),
           [[Symbol.for('x'), 1]],
@@ -1462,8 +1458,8 @@ describe('or', function (): any {
   it('(or 1 2)', function (): any {
     return testLisp([Symbol.for('or'), 1, 2], 1);
   });
-  return it('(or undefined 2)', function (): any {
-    testLisp([Symbol.for('or'), Symbol.for('undefined'), 2], 2);
+  return it('(or #u 2)', function (): any {
+    testLisp([Symbol.for('or'), undefined, 2], 2);
     return testLisp([Symbol.for('or'), undefined, 2], 2);
   });
 });
@@ -1546,21 +1542,21 @@ describe('for', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [1, 2, 3, 4]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('define'),
         Symbol.for('len'),
         [Symbol.for('length'), Symbol.for('foo')],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('for'),
         [[Symbol.for('i'), [Symbol.for('range'), 0, Symbol.for('len')]]],
         [Symbol.for('pop-right!'), Symbol.for('foo')],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), []],
@@ -1575,7 +1571,7 @@ describe('for', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [1, 2, 3, 4]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('for'),
@@ -1587,7 +1583,7 @@ describe('for', function (): any {
         ],
         [Symbol.for('pop-right!'), Symbol.for('foo')],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), []],
@@ -2435,7 +2431,7 @@ describe('define-values', function (): any {
         [Symbol.for('x'), Symbol.for('y')],
         [Symbol.for('values'), 1, 2],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('x'),
       1,
@@ -2555,7 +2551,7 @@ describe('define-js-obj', function (): any {
         [Symbol.for('x')],
         [Symbol.for('js-obj'), 'x', 1],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('x'),
       1,
@@ -3447,15 +3443,15 @@ describe('as~>', function (): any {
 });
 
 describe('ann', function (): any {
-  it('(ann undefined Any)', function (): any {
+  it('(ann #u Any)', function (): any {
     return testLisp(
-      [Symbol.for('ann'), Symbol.for('undefined'), Symbol.for('Any')],
+      [Symbol.for('ann'), undefined, Symbol.for('Any')],
       undefined
     );
   });
-  return it('((ann undefined Any))', function (): any {
+  return it('((ann #u Any))', function (): any {
     return testLisp(
-      [[Symbol.for('ann'), Symbol.for('undefined'), Symbol.for('Any')]],
+      [[Symbol.for('ann'), undefined, Symbol.for('Any')]],
       undefined,
       {
         compile: false,
@@ -3569,14 +3565,14 @@ describe('set-car!', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('quote'), []]],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-car!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), Symbol.for('bar')],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), []],
@@ -3591,14 +3587,14 @@ describe('set-car!', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-car!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), Symbol.for('bar')],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), [Symbol.for('bar')]],
@@ -3612,14 +3608,14 @@ describe('set-cdr!', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('quote'), []]],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('bar')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), []],
@@ -3634,14 +3630,14 @@ describe('set-cdr!', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('bar')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
@@ -3656,14 +3652,14 @@ describe('set-cdr!', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('baz')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('baz')]],
@@ -3678,7 +3674,7 @@ describe('set-cdr!', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
@@ -3688,7 +3684,7 @@ describe('set-cdr!', function (): any {
           [Symbol.for('baz'), Symbol.for('.'), Symbol.for('quux')],
         ],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [
@@ -3714,14 +3710,14 @@ describe('set-cdr!', function (): any {
           [Symbol.for('foo'), Symbol.for('.'), Symbol.for('bar')],
         ],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('baz')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('baz')]],
@@ -3739,7 +3735,7 @@ describe('set-cdr!', function (): any {
           [Symbol.for('foo'), Symbol.for('.'), Symbol.for('bar')],
         ],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
@@ -3749,7 +3745,7 @@ describe('set-cdr!', function (): any {
           [Symbol.for('baz'), Symbol.for('.'), Symbol.for('quux')],
         ],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [
@@ -3772,14 +3768,14 @@ describe('set-cdr!', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), Symbol.for('bar')],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [
@@ -3805,14 +3801,14 @@ describe('set-cdr!', function (): any {
           ],
         ],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('quux')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('quux')]],
@@ -3835,14 +3831,14 @@ describe('set-cdr!', function (): any {
           ],
         ],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [
         Symbol.for('set-cdr!'),
         Symbol.for('foo'),
         [Symbol.for('quote'), Symbol.for('quux')],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       Symbol.for('foo'),
       [
@@ -4026,13 +4022,13 @@ describe('circular-list?', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('quote'), []]],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
       false,
       Symbol.for('>'),
       [Symbol.for('set-cdr!'), Symbol.for('foo'), Symbol.for('foo')],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
       false,
@@ -4072,10 +4068,10 @@ describe('circular-list?', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('set-cdr!'), Symbol.for('foo'), Symbol.for('foo')],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
       true,
@@ -4090,10 +4086,10 @@ describe('circular-list?', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('.'), []]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('set-cdr!'), Symbol.for('foo'), Symbol.for('foo')],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
       true,
@@ -4108,10 +4104,10 @@ describe('circular-list?', function (): any {
         Symbol.for('foo'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
       ],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('set-cdr!'), Symbol.for('foo'), Symbol.for('foo')],
-      Symbol.for('undefined'),
+      undefined,
       Symbol.for('>'),
       [Symbol.for('circular-list?'), Symbol.for('foo')],
       true,
@@ -4164,7 +4160,7 @@ describe('list*', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('list*')],
-      Symbol.for('undefined'),
+      undefined,
     ]);
   });
   it('(list* 1)', function (): any {
@@ -4229,18 +4225,18 @@ describe('eval', function (): any {
   // (it "1 + 1, eval true"
   //     (fn ()
   //       (assert-equal
-  //        (interpret '(+ 1 1) undefined (js-obj "eval" #t))
+  //        (interpret '(+ 1 1) #u (js-obj "eval" #t))
   //        2)))
   // (it "1 + 1, eval false"
   //     (fn ()
   //       (assert-equal
-  //        (interpret '(+ 1 1) undefined (js-obj "eval" #f))
+  //        (interpret '(+ 1 1) #u (js-obj "eval" #f))
   //        2)))
 
   // (send it only "js/eval, eval true"
   //       (fn ()
   //         (assert-equal
-  //          (interpret 'js/eval undefined (js-obj "eval" #t))
+  //          (interpret 'js/eval #u (js-obj "eval" #t))
   //          js/eval)))
   it('js/eval, eval true', function (): any {
     return assertEqual(
@@ -4253,8 +4249,8 @@ describe('eval', function (): any {
   // (send it only "js/eval, eval true"
   //       (fn ()
   //         (assert-equal
-  //          (interpret '(js/eval "1") undefined (js-obj "eval" #f))
-  //          undefined)))
+  //          (interpret '(js/eval "1") #u (js-obj "eval" #f))
+  //          #u)))
   return it('js/eval, eval false', function (): any {
     return assertEqual(
       interpret(Symbol.for('js/eval'), undefined, {

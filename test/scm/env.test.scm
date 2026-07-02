@@ -94,7 +94,7 @@
            "quux")
           (assert-equal
            (send env get-local 'foo)
-           undefined)
+           #u)
           (assert-equal
            (send env get 'foo)
            "quux")))))
@@ -196,7 +196,7 @@
            "quux")
           (assert-equal
            (send env get-local 'foo)
-           undefined)
+           #u)
           (assert-equal
            (send env get 'foo)
            "quux")))))
@@ -298,7 +298,7 @@
            "quux")
           (assert-equal
            (send env get-local 'foo)
-           undefined)
+           #u)
           (assert-equal
            (send env get 'foo)
            "quux")))))
@@ -376,7 +376,7 @@
            "bar")
           (assert-equal
            (send env1 get 'foo)
-           undefined)
+           #u)
           (assert-equal
            (send env2 get 'foo)
            "bar")))

@@ -119,8 +119,8 @@
     (it "null (JS)"
         (fn ()
           (test-lisp
-           js/null
-           js/null)))
+           #n
+           #n)))
     (it "null"
         (fn ()
           (test-lisp
@@ -143,12 +143,12 @@
         (fn ()
           (test-lisp
            (js/tag sexp "js-null")
-           js/null)))
+           #n)))
     (it "js/null"
         (fn ()
           (test-lisp
            (js/tag sexp "js/null")
-           js/null)))))
+           #n)))))
 
 (describe "undefined"
   (fn ()
@@ -371,7 +371,7 @@
         (fn ()
           (test-lisp
            'y
-           undefined
+           #u
            (js-obj "compile"
                    #f
                    "env"
@@ -569,7 +569,7 @@
           (test-repl
            '(roselisp
              > (define x 1)
-             undefined
+             #u
              > x
              1))))))
 
@@ -725,7 +725,7 @@
         (fn ()
           (test-lisp
            '(let (x))
-           undefined)))
+           #u)))
     (it "(let ((a 1)) (+ (let ((a 2)) a) a))"
         (fn ()
           (test-lisp
@@ -837,7 +837,7 @@
         (fn ()
           (test-lisp
            '(begin
-              (define incrementer undefined)
+              (define incrementer #u)
               (let ((x 1))
                 (set! incrementer
                       (lambda ()
@@ -865,7 +865,7 @@
         (fn ()
           (test-lisp
            '(begin)
-           undefined)))))
+           #u)))))
 
 (describe "begin0"
   (fn ()
@@ -927,7 +927,7 @@
           (test-lisp
            '(when (> 1 2)
               1 2)
-           undefined)))))
+           #u)))))
 
 (describe "unless"
   (fn ()
@@ -936,7 +936,7 @@
           (test-lisp
            '(unless (< 1 2)
               1 2)
-           undefined)))
+           #u)))
     (it "(unless (> 1 2) 1 2)"
         (fn ()
           (test-lisp
@@ -1085,13 +1085,13 @@
           (test-lisp
            '(or 1 2)
            1)))
-    (it "(or undefined 2)"
+    (it "(or #u 2)"
         (fn ()
           (test-lisp
-           '(or undefined 2)
+           '(or #u 2)
            2)
           (test-lisp
-           (list 'or undefined 2)
+           (list 'or #u 2)
            2)))))
 
 (describe "while"
@@ -1131,13 +1131,13 @@
            '(roselisp
              > (define foo
                  '(1 2 3 4))
-             undefined
+             #u
              > (define len
                  (length foo))
-             undefined
+             #u
              > (for ((i (range 0 len)))
                  (pop-right! foo))
-             undefined
+             #u
              > foo
              '()))))
     (it "(for ((i (range 0 (length foo)))) ...)"
@@ -1146,10 +1146,10 @@
            '(roselisp
              > (define foo
                  '(1 2 3 4))
-             undefined
+             #u
              > (for ((i (range 0 (length foo))))
                  (pop-right! foo))
-             undefined
+             #u
              > foo
              '()))))))
 
@@ -1655,7 +1655,7 @@
            '(roselisp
              > (define-values (x y)
                  (values 1 2))
-             undefined
+             #u
              > x
              1))))))
 
@@ -1714,7 +1714,7 @@
            '(roselisp
              > (define-js-obj (x)
                  (js-obj "x" 1))
-             undefined
+             #u
              > x
              1))))))
 
@@ -2419,16 +2419,16 @@
 
 (describe "ann"
   (fn ()
-    (it "(ann undefined Any)"
+    (it "(ann #u Any)"
         (fn ()
           (test-lisp
-           '(ann undefined Any)
-           undefined)))
-    (it "((ann undefined Any))"
+           '(ann #u Any)
+           #u)))
+    (it "((ann #u Any))"
         (fn ()
           (test-lisp
-           '((ann undefined Any))
-           undefined
+           '((ann #u Any))
+           #u
            (js-obj "compile" #f))))))
 
 (describe "interpret"
@@ -2528,9 +2528,9 @@
           (test-repl
            '(roselisp
              > (define foo '())
-             undefined
+             #u
              > (set-car! foo 'bar)
-             undefined
+             #u
              > foo
              '()))))
     (it "(foo) -> (bar)"
@@ -2539,9 +2539,9 @@
            '(roselisp
              > (define foo
                  '(foo))
-             undefined
+             #u
              > (set-car! foo 'bar)
-             undefined
+             #u
              > foo
              '(bar)))))))
 
@@ -2552,9 +2552,9 @@
           (test-repl
            '(roselisp
              > (define foo '())
-             undefined
+             #u
              > (set-cdr! foo '(bar))
-             undefined
+             #u
              > foo
              '()))))
     (it "(foo) -> (foo bar)"
@@ -2563,9 +2563,9 @@
            '(roselisp
              > (define foo
                  '(foo))
-             undefined
+             #u
              > (set-cdr! foo '(bar))
-             undefined
+             #u
              > foo
              '(foo bar)))))
     (it "(foo bar) -> (foo baz)"
@@ -2574,9 +2574,9 @@
            '(roselisp
              > (define foo
                  '(foo bar))
-             undefined
+             #u
              > (set-cdr! foo '(baz))
-             undefined
+             #u
              > foo
              '(foo baz)))))
     (it "(foo bar) -> (foo baz . quux)"
@@ -2585,9 +2585,9 @@
            '(roselisp
              > (define foo
                  '(foo bar))
-             undefined
+             #u
              > (set-cdr! foo '(baz . quux))
-             undefined
+             #u
              > foo
              '(foo baz . quux)))))
     (it "(foo . bar) -> (foo baz)"
@@ -2596,9 +2596,9 @@
            '(roselisp
              > (define foo
                  '(foo . bar))
-             undefined
+             #u
              > (set-cdr! foo '(baz))
-             undefined
+             #u
              > foo
              '(foo baz)))))
     (it "(foo . bar) -> (foo baz . quux)"
@@ -2607,9 +2607,9 @@
            '(roselisp
              > (define foo
                  '(foo . bar))
-             undefined
+             #u
              > (set-cdr! foo '(baz . quux))
-             undefined
+             #u
              > foo
              '(foo baz . quux)))))
     (it "(foo) -> (foo . bar)"
@@ -2618,9 +2618,9 @@
            '(roselisp
              > (define foo
                  '(foo))
-             undefined
+             #u
              > (set-cdr! foo 'bar)
-             undefined
+             #u
              > foo
              '(foo . bar)))))
     (it "(foo bar . baz) -> (foo quux)"
@@ -2629,9 +2629,9 @@
            '(roselisp
              > (define foo
                  '(foo bar . baz))
-             undefined
+             #u
              > (set-cdr! foo '(quux))
-             undefined
+             #u
              > foo
              '(foo quux)))))
     (it "(foo bar . baz) -> (foo . quux)"
@@ -2640,9 +2640,9 @@
            '(roselisp
              > (define foo
                  '(foo bar . baz))
-             undefined
+             #u
              > (set-cdr! foo 'quux)
-             undefined
+             #u
              > foo
              '(foo . quux)))))))
 
@@ -2728,11 +2728,11 @@
           (test-repl
            '(roselisp
              > (define foo '())
-             undefined
+             #u
              > (circular-list? foo)
              #f
              > (set-cdr! foo foo)
-             undefined
+             #u
              > (circular-list? foo)
              #f))))
     (it "(foo)"
@@ -2753,9 +2753,9 @@
            '(roselisp
              > (define foo
                  '(foo))
-             undefined
+             #u
              > (set-cdr! foo foo)
-             undefined
+             #u
              > (circular-list? foo)
              #t))))
     (it "(foo . #0#), from linked list"
@@ -2764,9 +2764,9 @@
            '(roselisp
              > (define foo
                  '(foo . ()))
-             undefined
+             #u
              > (set-cdr! foo foo)
-             undefined
+             #u
              > (circular-list? foo)
              #t))))
     (it "(foo bar . #0#)"
@@ -2775,9 +2775,9 @@
            '(roselisp
              > (define foo
                  '(foo bar))
-             undefined
+             #u
              > (set-cdr! foo foo)
-             undefined
+             #u
              > (circular-list? foo)
              #t))))))
 
@@ -2803,7 +2803,7 @@
           (test-repl
            '(roselisp
              > (list*)
-             undefined))))
+             #u))))
     (it "(list* 1)"
         (fn ()
           (test-repl
@@ -2852,32 +2852,32 @@
     ;; (it "1 + 1, eval true"
     ;;     (fn ()
     ;;       (assert-equal
-    ;;        (interpret '(+ 1 1) undefined (js-obj "eval" #t))
+    ;;        (interpret '(+ 1 1) #u (js-obj "eval" #t))
     ;;        2)))
     ;; (it "1 + 1, eval false"
     ;;     (fn ()
     ;;       (assert-equal
-    ;;        (interpret '(+ 1 1) undefined (js-obj "eval" #f))
+    ;;        (interpret '(+ 1 1) #u (js-obj "eval" #f))
     ;;        2)))
 
     ;; (send it only "js/eval, eval true"
     ;;       (fn ()
     ;;         (assert-equal
-    ;;          (interpret 'js/eval undefined (js-obj "eval" #t))
+    ;;          (interpret 'js/eval #u (js-obj "eval" #t))
     ;;          js/eval)))
     (it "js/eval, eval true"
         (fn ()
           (assert-equal
-           (interpret '(js/eval "1") undefined (js-obj "eval" #t))
+           (interpret '(js/eval "1") #u (js-obj "eval" #t))
            1)))
     ;; (send it only "js/eval, eval true"
     ;;       (fn ()
     ;;         (assert-equal
-    ;;          (interpret '(js/eval "1") undefined (js-obj "eval" #f))
-    ;;          undefined)))
+    ;;          (interpret '(js/eval "1") #u (js-obj "eval" #f))
+    ;;          #u)))
     (it "js/eval, eval false"
         (fn ()
           (assert-equal
-           (interpret 'js/eval undefined (js-obj "eval" #f))
-           undefined)))
+           (interpret 'js/eval #u (js-obj "eval" #f))
+           #u)))
     ))

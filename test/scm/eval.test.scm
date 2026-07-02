@@ -153,7 +153,7 @@
                (eval-estree
                 (new Identifier "foo")
                 lisp-1-environment)
-               undefined)))))
+               #u)))))
     (describe "object expressions"
       (fn ()
         (it "{}"

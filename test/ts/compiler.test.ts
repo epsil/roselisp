@@ -1331,7 +1331,7 @@ describe('compile', function (): any {
                     [
                       Symbol.for('js-regexp_'),
                       Symbol.for('input'),
-                      [Symbol.for('flags'), Symbol.for('undefined')],
+                      [Symbol.for('flags'), undefined],
                     ],
                     [
                       Symbol.for('if'),
@@ -3126,7 +3126,7 @@ describe('compile', function (): any {
                   [Symbol.for('.-length'), Symbol.for('args')],
                   0,
                 ],
-                Symbol.for('undefined'),
+                undefined,
               ],
               [
                 [
@@ -3206,7 +3206,7 @@ describe('compile', function (): any {
                   [Symbol.for('.-length'), Symbol.for('args')],
                   0,
                 ],
-                Symbol.for('undefined'),
+                undefined,
               ],
               [
                 [

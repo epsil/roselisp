@@ -36,7 +36,7 @@
            '(roselisp
              > (define (foo . args)
                  args)
-             undefined
+             #u
              > (foo)
              '()))))
     (describe "equal?"
@@ -61,7 +61,7 @@
                '(roselisp
                  > (define-js-obj (foo)
                      (js-obj "foo" "bar"))
-                 undefined
+                 #u
                  > foo
                  "bar"))))
         (it "(define-js-obj ((foo bar)) ...)"
@@ -70,7 +70,7 @@
                '(roselisp
                  > (define-js-obj ((foo bar))
                      (js-obj "foo" "bar"))
-                 undefined
+                 #u
                  > bar
                  "bar"))))))
     (describe "call/cc"
@@ -167,7 +167,7 @@
                       (lambda (future)
                         (f (lambda (arg)
                              ((future future) arg))))))
-                 undefined
+                 #u
                  > ((Y (lambda (f)
                          (lambda (x)
                            (if (zero? x)
@@ -204,10 +204,10 @@
                  > (define-class Foo ()
                      (define/public (bar)
                        "bar"))
-                 undefined
+                 #u
                  > (define foo
                      (new Foo))
-                 undefined
+                 #u
                  > (send foo bar)
                  "bar"))))))
     (describe "defclass"
@@ -219,10 +219,10 @@
                  > (defclass Foo ()
                      (define/public (bar)
                        "bar"))
-                 undefined
+                 #u
                  > (define foo
                      (new Foo))
-                 undefined
+                 #u
                  > (send foo bar)
                  "bar"))))))
     (describe "define-macro"
@@ -265,7 +265,7 @@
             (fn ()
               (define options
                 (js-obj))
-              (compile 'foo undefined options)
+              (compile 'foo #u options)
               (define compiled-env
                 (oget options "compiledEnv"))
               (assert-equal
@@ -278,7 +278,7 @@
               (define options
                 (js-obj))
               (compile 'foo
-                       undefined
+                       #u
                        options)
               (define continuation-env
                 (oget options "continuationEnv"))
@@ -290,7 +290,7 @@
               (define options
                 (js-obj))
               (compile '(define foo 1)
-                       undefined
+                       #u
                        options)
               (define continuation-env
                 (oget options "continuationEnv"))
@@ -426,7 +426,7 @@
               (test-repl
                '(roselisp
                  > (dotted-list-last '())
-                 undefined)
+                 #u)
                (js-obj "compile" #f))))
         (it "'(1 . ())"
             (fn ()

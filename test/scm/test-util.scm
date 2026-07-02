@@ -74,8 +74,8 @@
 ;;; [2]: http://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 ;;; [3]: http://www.lispworks.com/documentation/HyperSpec/Body/f_eval.htm
 ;;; [4]: https://github.com/IUCompilerCourse/Essentials-of-Compilation
-(define (test-lisp (exp undefined)
-                   (val undefined)
+(define (test-lisp (exp #u)
+                   (val #u)
                    (options (js-obj)))
   ;; FIXME: `exp` *might* be modified by side-effect. If so, the
   ;; compilation test will receive a different value. We should
@@ -99,17 +99,17 @@
   (define compilation-options
     evaluation-options)
   (set! interpret-flag
-        (if (eq? interpret-flag undefined)
+        (if (eq? interpret-flag #u)
             #t
             compile))
   (set! compile
-        (if (eq? compile undefined)
+        (if (eq? compile #u)
             #t
             compile))
   (define interpreted-value
-    undefined)
+    #u)
   (define compiled-value
-    undefined)
+    #u)
   (when verbose
     (display "expression:" (write-to-string exp)))
   (when interpret-flag
@@ -120,8 +120,8 @@
           (interpret exp interpretation-env))
     (when verbose
       (display "interpreted value:" interpreted-value))
-    (if (or (eq? interpreted-value js/null)
-            (eq? interpreted-value undefined))
+    (if (or (eq? interpreted-value #n)
+            (eq? interpreted-value #u))
         (assert-equal
          (eq? interpreted-value expected-value)
          #t)
@@ -142,8 +142,8 @@
           (js/eval compiled-js))
     (when verbose
       (display "compiled value:" compiled-value))
-    (if (or (eq? compiled-value js/null)
-            (eq? compiled-value undefined))
+    (if (or (eq? compiled-value #n)
+            (eq? compiled-value #u))
         (assert-equal
          (eq? compiled-value expected-value)
          #t)

@@ -496,8 +496,8 @@
    ((boolean? value)
     (make-rose
      (if value
-         (string->symbol "#t")
-         (string->symbol "#f"))))
+         #t
+         #f)))
    ((regexp? value)
     (define pattern
       (~> node

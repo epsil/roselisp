@@ -35,7 +35,7 @@
   ;; it causes an error to be thrown. This is more trouble than it is
   ;; worth, so only non-`null` object values are considered to be
   ;; proper objects here.
-  (and (not (eq? x #n))
+  (and (not (js/null? x))
        (js/object-type? x)))
 
 ;;; Whether something types as a JavaScript object.

@@ -88,7 +88,7 @@ function regexpMatchP_(pattern, input) {
 }
 exports.jsRegexpMatchP_ = regexpMatchP_;
 exports.regexpMatchP_ = regexpMatchP_;
-regexpMatchP_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')], null]]];
+regexpMatchP_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('js/null?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]]];
 /**
  * Match `pattern` against `input` and replace with `insert`.
  * `pattern` is a [regular expression][mdn:Regular Expressions]

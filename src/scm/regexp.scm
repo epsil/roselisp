@@ -58,8 +58,7 @@
   (send input match pattern))
 
 (define (regexp-match?_ pattern input)
-  (not (eq? (regexp-match pattern input)
-            #n)))
+  (not (js/null? (regexp-match pattern input))))
 
 ;;; Match `pattern` against `input` and replace with `insert`.
 ;;; `pattern` is a [regular expression][mdn:Regular Expressions]

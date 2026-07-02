@@ -61,7 +61,7 @@
 ;;; [rkt:hash-ref]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-ref%29%29
 (define (hash-ref_ ht key (failure-result #u))
   (cond
-   ((and (not (eq? failure-result #u))
+   ((and (not (undefined? failure-result))
          (not (hash-has-key? ht key)))
     failure-result)
    (else

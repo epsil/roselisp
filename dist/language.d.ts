@@ -113,7 +113,7 @@ declare namespace splitComments {
  */
 declare function definitionToMacro(exp: any, args: any): any;
 declare namespace definitionToMacro {
-    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | undefined)[] | symbol[][])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | undefined)[] | symbol[][])[])[])[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Create a `(lambda ...)` form for a macro function
@@ -584,7 +584,7 @@ declare namespace source {
  */
 declare function sourcep(x: any): any;
 declare namespace sourcep {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[] | undefined)[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
 /**
  * Map the function `f` over the rose tree-wrapped

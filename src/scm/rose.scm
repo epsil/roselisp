@@ -64,7 +64,7 @@
     (~> (or forest (new Forest))
         (send _ set-parent this)
         (set-field! forest this _))
-    (unless (eq? value #u)
+    (unless (undefined? value)
       (send this set-value value)))
 
   ;;; Visitor pattern.

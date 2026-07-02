@@ -853,7 +853,7 @@ function printLiteral(node, options = {}) {
         return value + '';
     }
 }
-printLiteral.lispSource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), true], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), false], 'false'], [[Symbol.for('eq?'), Symbol.for('value'), null], 'null'], [[Symbol.for('eq?'), Symbol.for('value'), undefined], 'undefined'], [Symbol.for('else'), [Symbol.for('string-append'), Symbol.for('value'), '']]]];
+printLiteral.lispSource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), true], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), false], 'false'], [[Symbol.for('js/null?'), Symbol.for('value')], 'null'], [[Symbol.for('undefined?'), Symbol.for('value')], 'undefined'], [Symbol.for('else'), [Symbol.for('string-append'), Symbol.for('value'), '']]]];
 /**
  * Print a string `Literal` ESTree node to a `Doc` object.
  *

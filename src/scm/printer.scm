@@ -867,9 +867,9 @@
     "true")
    ((eq? value #f)
     "false")
-   ((eq? value #n)
+   ((js/null? value)
     "null")
-   ((eq? value #u)
+   ((undefined? value)
     "undefined")
    (else
     (string-append value ""))))

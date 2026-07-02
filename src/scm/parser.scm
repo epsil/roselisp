@@ -59,7 +59,7 @@
 (define (tokenize str (options (js-obj)))
   (define comments
     (oget options "comments"))
-  (when (eq? comments #u)
+  (when (undefined? comments)
     (set! comments #t))
   (define pos 0)
   (define len
@@ -448,7 +448,7 @@
 (define (attach-comments node comments (options (js-obj)))
   (define comments-option
     (oget options "comments"))
-  (when (eq? comments-option #u)
+  (when (undefined? comments-option)
     (set! comments-option #t))
   (define result
     (if (is-a? node Rose)

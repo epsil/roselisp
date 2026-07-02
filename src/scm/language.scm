@@ -491,7 +491,7 @@
         options
         (js-obj-append options)))
   (for ((key (js-keys default-options)))
-    (when (eq? (oget result key) #u)
+    (when (undefined? (oget result key))
       (oset! result key (oget default-options key))))
   result)
 
@@ -1314,7 +1314,7 @@
   (define eval-option
     (oget options "eval"))
   ;; TODO: Make `#f` the default.
-  (when (eq? eval-option #u)
+  (when (undefined? eval-option)
     (set! eval-option #t))
   (cond
    ((or (eq? env lang-environment)
@@ -1622,7 +1622,7 @@
     (cdr name-and-params))
   (define should-curry
     (or curried-option
-        (and (eq? curried-option #u)
+        (and (undefined? curried-option)
              (array? name))))
   (when should-curry
     (set! params (rest (flatten name-and-params)))
@@ -4666,11 +4666,11 @@
           (fourth vals-exp)
           #u))
     (set! start
-          (if (eq? end #u)
+          (if (undefined? end)
               0
               start))
     (set! end
-          (if (eq? end #u)
+          (if (undefined? end)
               start
               end))
     ;; If `start`, `end` or `step` is a function call,
@@ -6100,8 +6100,8 @@
 
 ;;; Whether a function has Lisp source.
 (define (source? x)
-  (and (not (eq? x #u))
-       (not (eq? (get-field lispSource x) #u))))
+  (and (not (undefined? x))
+       (not (undefined? (get-field lispSource x)))))
 
 ;;; Map the function `f` over the rose tree-wrapped
 ;;; S-expression `node`. The S-expression is processed

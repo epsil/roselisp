@@ -491,7 +491,7 @@
   (define value
     (get-field value node))
   (cond
-   ((eq? value #n)
+   ((js/null? value)
     (make-rose 'js/null))
    ((boolean? value)
     (make-rose

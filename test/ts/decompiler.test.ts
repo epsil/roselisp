@@ -878,7 +878,7 @@ describe('decompile', function (): any {
           sexp: true,
         }),
         [
-          Symbol.for('define-js-obj'),
+          Symbol.for('define-fields'),
           [Symbol.for('x'), Symbol.for('y')],
           Symbol.for('obj'),
         ]
@@ -891,7 +891,7 @@ describe('decompile', function (): any {
           sexp: true,
         }),
         [
-          Symbol.for('set!-js-obj'),
+          Symbol.for('set!-fields'),
           [Symbol.for('x'), Symbol.for('y')],
           Symbol.for('obj'),
         ]
@@ -904,7 +904,7 @@ describe('decompile', function (): any {
           sexp: true,
         }),
         [
-          Symbol.for('define-js-obj'),
+          Symbol.for('define-fields'),
           [[Symbol.for('x'), Symbol.for('y')], Symbol.for('z')],
           Symbol.for('obj'),
         ]

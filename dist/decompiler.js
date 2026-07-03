@@ -276,7 +276,7 @@ function decompileAssignmentExpression(node, options = {}) {
         return (0, rose_1.makeRose)([Symbol.for('set!-values'), leftDecompiled, rightDecompiled]);
     }
     else if ((0, estree_1.estreeTypeP)(left, 'ObjectPattern')) {
-        return (0, rose_1.makeRose)([Symbol.for('set!-js-obj'), leftDecompiled, rightDecompiled]);
+        return (0, rose_1.makeRose)([Symbol.for('set!-fields'), leftDecompiled, rightDecompiled]);
     }
     else {
         return (0, rose_1.makeRose)([Symbol.for('set!'), leftDecompiled, rightDecompiled]);
@@ -401,7 +401,7 @@ function decompileVariableDeclarator(node, options = {}) {
     const id = node.id;
     const idType = (0, estree_1.estreeType)(id);
     const init = node.init;
-    const defineSym = (idType === 'ArrayPattern') ? Symbol.for('define-values') : ((idType === 'ObjectPattern') ? Symbol.for('define-js-obj') : Symbol.for('define'));
+    const defineSym = (idType === 'ArrayPattern') ? Symbol.for('define-values') : ((idType === 'ObjectPattern') ? Symbol.for('define-fields') : Symbol.for('define'));
     return (0, rose_1.makeRose)([defineSym, decompileEstree(id, options), ...(((init === undefined) || (init === null)) ? [] : [decompileEstree(init, options)])]);
 }
 /**

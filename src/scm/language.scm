@@ -544,7 +544,7 @@
          (,define-async_ ,compile-define-async "compiler")
          (,define-class_ ,compile-define-class "compiler")
          (,define-generator_ ,compile-define-generator "compiler")
-         (,define-js-obj_ ,compile-define-js-obj "compiler")
+         (,define-fields_ ,compile-define-fields "compiler")
          (,define-macro_ ,compile-define-macro "compiler")
          (,define-type_ ,compile-define-type "compiler")
          (,define-values_ ,compile-define-values "compiler")
@@ -578,7 +578,7 @@
          (,js-while_ ,compile-js-while "compiler")
          (,js_ ,compile-js "compiler")
          (,lambda_ ,compile-lambda "compiler")
-         (,let-js-obj_ ,compile-let-js-obj "compiler")
+         (,let-fields_ ,compile-let-fields "compiler")
          (,let-star_ ,compile-let "compiler")
          (,let-values_ ,compile-let-values "compiler")
          (,list_ ,compile-list "compiler")
@@ -603,7 +603,7 @@
          (,send_ ,compile-send "compiler")
          (,set!_ ,compile-set "compiler")
          (,set-field_ ,compile-set-field "compiler")
-         (,set-js-obj_ ,compile-set-js-obj "compiler")
+         (,set-fields_ ,compile-set-fields "compiler")
          (,set-values_ ,compile-set-values "compiler")
          (,string-append_ ,compile-string-append "compiler")
          (,sub_ ,compile-sub "compiler")
@@ -3319,8 +3319,8 @@
         right)
    inherited-options))
 
-;;; Compile a `(let-js-obj ...)` expression.
-(define (compile-let-js-obj node env (options (js-obj)))
+;;; Compile a `(let-fields ...)` expression.
+(define (compile-let-fields node env (options (js-obj)))
   (define inherited-options
     (js-obj-append options))
   (define expression-type
@@ -3358,7 +3358,7 @@
                           (send bindings has sym))
                  (set! make-block #t)))
              (make-rose
-              `(define-js-obj ,fields
+              `(define-fields ,fields
                  ,obj)
               x))
            let-nodes))
@@ -3380,8 +3380,8 @@
      (wrap-in-arrow-call exp)
      env options))))
 
-;;; Compile a `(define-js-obj ...)` expression.
-(define (compile-define-js-obj node env (options (js-obj)))
+;;; Compile a `(define-fields ...)` expression.
+(define (compile-define-fields node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
   (define bindings
@@ -3399,9 +3399,9 @@
           f))
     (send bindings set-local sym #t "variable"))
   (define expression-statement
-    (compile-set-js-obj
+    (compile-set-fields
      (make-rose
-      `(set!-js-obj ,fields ,obj)
+      `(set!-fields ,fields ,obj)
       node)
      env options))
   (define assignment-expression
@@ -3417,8 +3417,8 @@
              right))
        "let"))
 
-;;; Compile a `(set!-js-obj! ...)` expression.
-(define (compile-set-js-obj node env (options (js-obj)))
+;;; Compile a `(set!-fields! ...)` expression.
+(define (compile-set-fields node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
   (wrap-expression-in-statement
@@ -6670,22 +6670,22 @@
    env
    (current-compilation-options)))
 
-;;; Expand a `(let-js-obj ...)` expression.
-(defmacro let-js-obj_ (&whole exp &environment env)
+;;; Expand a `(let-fields ...)` expression.
+(defmacro let-fields_ (&whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
-;;; Expand a `(define-js-obj ...)` expression.
-(defmacro define-js-obj_ (&whole exp &environment env)
+;;; Expand a `(define-fields ...)` expression.
+(defmacro define-fields_ (&whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
-;;; Expand a `(set!-js-obj ...)` expression.
-(defmacro set-js-obj_ (&whole exp &environment env)
+;;; Expand a `(set!-fields ...)` expression.
+(defmacro set-fields_ (&whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -7831,7 +7831,8 @@
          (defclass ,defclass_ "macro")
          (define ,define_ "macro")
          (define-class ,define-class_ "macro")
-         (define-js-obj ,define-js-obj_ "macro")
+         (define-fields ,define-fields_ "macro")
+         (define-js-obj ,define-fields_ "macro")
          (define-macro ,define-macro_ "macro")
          (define-type ,define-type_ "macro")
          (define-values ,define-values_ "macro")
@@ -7866,7 +7867,8 @@
          (let* ,let-star_ "macro")
          (let*-values ,let-values_ "macro")
          (let-env ,let-env_ "macro")
-         (let-js-obj ,let-js-obj_ "macro")
+         (let-fields ,let-fields_ "macro")
+         (let-js-obj ,let-fields_ "macro")
          (let-values ,let-values_ "macro")
          (letrec ,let-star_ "macro")
          (letrec-values ,let-values_ "macro")
@@ -7885,7 +7887,8 @@
          (send/apply ,send-apply_ "macro")
          (set ,set_ "macro")
          (set! ,set!_ "macro")
-         (set!-js-obj ,set-js-obj_ "macro")
+         (set!-fields ,set-fields_ "macro")
+         (set!-js-obj ,set-fields_ "macro")
          (set!-values ,set-values_ "macro")
          (set-field! ,set-field_ "macro")
          (setq ,set!_ "macro")
@@ -7902,7 +7905,7 @@
          ;; (define/public ,define_ "macro")
          ;; (new ,rkt-new_ "macro")
          ;; (set!-field ,set-field_ "macro")
-         ;; (set-js-obj! ,set-js-obj_ "macro")
+         ;; (set-fields! ,set-fields_ "macro")
          ;; (set-values! ,set-values_ "macro")
          ;; Special forms, expressed as macros.
          )))
@@ -7995,7 +7998,8 @@
   (rename-out (define-class_ define-class))
   (rename-out (define-generator_ define-generator))
   (rename-out (define-generator_ define/generator))
-  (rename-out (define-js-obj_ define-js-obj))
+  (rename-out (define-fields_ define-fields))
+  (rename-out (define-fields_ define-js-obj))
   (rename-out (define-macro_ define-macro))
   (rename-out (define-public_ define-public))
   (rename-out (define-public_ define/public))
@@ -8014,7 +8018,8 @@
   (rename-out (lambda_ compile-function))
   (rename-out (lambda_ fn))
   (rename-out (lambda_ lambda))
-  (rename-out (let-js-obj_ let-js-obj))
+  (rename-out (let-fields_ let-fields))
+  (rename-out (let-fields_ let-js-obj))
   (rename-out (let-star_ let*))
   (rename-out (let-star_ let-star))
   (rename-out (let-star_ let_))
@@ -8044,9 +8049,10 @@
   (rename-out (set!_ setq_))
   (rename-out (set-field_ set-field!))
   (rename-out (set-field_ set-field))
-  (rename-out (set-js-obj_ set!-js-obj))
-  (rename-out (set-js-obj_ set-js-obj!))
-  (rename-out (set-js-obj_ set-js-obj))
+  (rename-out (set-fields_ set!-fields))
+  (rename-out (set-fields_ set!-js-obj))
+  (rename-out (set-fields_ set-fields!))
+  (rename-out (set-fields_ set-fields))
   (rename-out (set-values_ set!-values))
   (rename-out (set-values_ set-values))
   (rename-out (sexp read-from-string))
@@ -8071,7 +8077,7 @@
   define->define-class
   define-async_
   define-generator_
-  define-js-obj_
+  define-fields_
   define-macro->function
   define-macro->lambda-form
   define-macro_
@@ -8094,7 +8100,7 @@
   js_
   lambda_
   lang-environment
-  let-js-obj_
+  let-fields_
   let-star_
   let-values_
   let-vars-to-const-vars
@@ -8136,7 +8142,7 @@
   send_
   set!_
   set-field_
-  set-js-obj_
+  set-fields_
   set-values_
   sexp
   source

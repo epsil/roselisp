@@ -230,7 +230,7 @@
     (make-rose
      `(,(if is-spread
             'send/apply
-             'send)
+            'send)
        ,(send callee-decompiled get 2)
        ,(send callee-decompiled get 1)
        ,@args-decompiled)))
@@ -238,7 +238,7 @@
     (make-rose
      `(,@(if is-spread
              '(apply)
-              '())
+             '())
        ,callee-decompiled
        ,@args-decompiled)))))
 
@@ -281,7 +281,7 @@
      `(set!-values ,left-decompiled ,right-decompiled)))
    ((estree-type? left "ObjectPattern")
     (make-rose
-     `(set!-js-obj ,left-decompiled ,right-decompiled)))
+     `(set!-fields ,left-decompiled ,right-decompiled)))
    (else
     (make-rose
      `(set! ,left-decompiled ,right-decompiled)))))
@@ -465,7 +465,7 @@
      ((eq? id-type "ArrayPattern")
       'define-values)
      ((eq? id-type "ObjectPattern")
-      'define-js-obj)
+      'define-fields)
      (else
       'define)))
   (make-rose
@@ -474,7 +474,7 @@
       ,@(if (or (eq? init js/undefined)
                 (eq? init js/null))
             '()
-             (list (decompile-estree init options))))))
+            (list (decompile-estree init options))))))
 
 ;;; Decompile an ESTree [`Identifier`][estree:identifier] node.
 ;;;
@@ -876,7 +876,7 @@
                  ,end
                  ,@(if (= step 1)
                        '()
-                        (list step)))))
+                       (list step)))))
         ,@(send body drop 1))))
    (else
     (make-rose
@@ -1021,7 +1021,7 @@
   (make-rose
    `(,@(if is-spread
            '(apply)
-            '())
+           '())
      new
      ,(decompile-estree (get-field callee node)
                         options)
@@ -1286,7 +1286,7 @@
                  object
                  Object))
         '()
-         (list super-class-decompiled)))
+        (list super-class-decompiled)))
   (define body-decompiled '())
   (define body
     (get-field body node))
@@ -1313,13 +1313,13 @@
     (if (eq? (get-field accessibility node)
              "private")
         'define
-         'define/public))
+        'define/public))
   (make-rose
    `(,define-symbol
       ,key-decompiled
       ,@(if (eq? value #n)
             '()
-             (list value-decompiled)))))
+            (list value-decompiled)))))
 
 ;;; Decompile an ESTree [`MethodDefinition`][estree:methoddefinition] node.
 ;;;
@@ -1397,7 +1397,7 @@
   (define literal-decompiled
     (if literal
         'True
-         'False))
+        'False))
   (make-rose literal-decompiled))
 
 ;;; Decompile a TSESTree `TSArrayType` node.
@@ -1516,7 +1516,7 @@
   (define lambda-sym
     (if (eq? type_ "ArrowFunctionExpression")
         'js/arrow
-         'lambda))
+        'lambda))
   (define params
     (map (lambda (x)
            (decompile-parameter x options))

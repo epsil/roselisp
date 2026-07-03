@@ -4635,12 +4635,12 @@ describe('compile', function (): any {
       );
     });
   });
-  describe('let-js-obj', function (): any {
-    return it('(let-js-obj (((prop) obj)) prop), JS', function (): any {
+  describe('let-fields', function (): any {
+    return it('(let-fields (((prop) obj)) prop), JS', function (): any {
       return assertEqual(
         compile(
           [
-            Symbol.for('let-js-obj'),
+            Symbol.for('let-fields'),
             [[[Symbol.for('prop')], Symbol.for('obj')]],
             Symbol.for('prop'),
           ],
@@ -4654,12 +4654,12 @@ describe('compile', function (): any {
       );
     });
   });
-  describe('define-js-obj', function (): any {
-    it('(define-js-obj (prop) obj), JS', function (): any {
+  describe('define-fields', function (): any {
+    it('(define-fields (prop) obj), JS', function (): any {
       return assertEqual(
         compile(
           [
-            Symbol.for('define-js-obj'),
+            Symbol.for('define-fields'),
             [Symbol.for('prop')],
             Symbol.for('obj'),
           ],
@@ -4672,11 +4672,11 @@ describe('compile', function (): any {
         'const {prop} = obj;'
       );
     });
-    it('(define-js-obj (prop) obj), TS', function (): any {
+    it('(define-fields (prop) obj), TS', function (): any {
       return assertEqual(
         compile(
           [
-            Symbol.for('define-js-obj'),
+            Symbol.for('define-fields'),
             [Symbol.for('prop')],
             Symbol.for('obj'),
           ],
@@ -4689,11 +4689,11 @@ describe('compile', function (): any {
         'const {prop} = obj;'
       );
     });
-    it('(define-js-obj ((x y) z) obj), JS', function (): any {
+    it('(define-fields ((x y) z) obj), JS', function (): any {
       return assertEqual(
         compile(
           [
-            Symbol.for('define-js-obj'),
+            Symbol.for('define-fields'),
             [[Symbol.for('x'), Symbol.for('y')], Symbol.for('z')],
             Symbol.for('obj'),
           ],
@@ -4706,11 +4706,11 @@ describe('compile', function (): any {
         'const {x: y, z} = obj;'
       );
     });
-    it('(define-js-obj ((x y) z) obj), TS', function (): any {
+    it('(define-fields ((x y) z) obj), TS', function (): any {
       return assertEqual(
         compile(
           [
-            Symbol.for('define-js-obj'),
+            Symbol.for('define-fields'),
             [[Symbol.for('x'), Symbol.for('y')], Symbol.for('z')],
             Symbol.for('obj'),
           ],
@@ -4723,7 +4723,7 @@ describe('compile', function (): any {
         'const {x: y, z} = obj;'
       );
     });
-    it('(define-js-obj (x rest) ...), TS', function (): any {
+    it('(define-fields (x rest) ...), TS', function (): any {
       return assertEqual(
         compile(
           [
@@ -4735,7 +4735,7 @@ describe('compile', function (): any {
               [Symbol.for('foo')],
               [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js-obj')]],
               [
-                Symbol.for('define-js-obj'),
+                Symbol.for('define-fields'),
                 [Symbol.for('x'), Symbol.for('rest')],
                 Symbol.for('obj'),
               ],
@@ -4759,7 +4759,7 @@ describe('compile', function (): any {
           '}'
       );
     });
-    return it('(define-js-obj ((rest r) x) ...), TS', function (): any {
+    return it('(define-fields ((rest r) x) ...), TS', function (): any {
       return assertEqual(
         compile(
           [
@@ -4771,7 +4771,7 @@ describe('compile', function (): any {
               [Symbol.for('foo')],
               [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js-obj')]],
               [
-                Symbol.for('define-js-obj'),
+                Symbol.for('define-fields'),
                 [[Symbol.for('rest'), Symbol.for('r')], Symbol.for('x')],
                 Symbol.for('obj'),
               ],
@@ -4792,11 +4792,11 @@ describe('compile', function (): any {
       );
     });
   });
-  describe('set!-js-obj', function (): any {
-    return it('(set!-js-obj (prop) obj), JS', function (): any {
+  describe('set!-fields', function (): any {
+    return it('(set!-fields (prop) obj), JS', function (): any {
       return assertEqual(
         compile(
-          [Symbol.for('set!-js-obj'), [Symbol.for('prop')], Symbol.for('obj')],
+          [Symbol.for('set!-fields'), [Symbol.for('prop')], Symbol.for('obj')],
           compilationEnvironment,
           {
             expressionType: 'statement',

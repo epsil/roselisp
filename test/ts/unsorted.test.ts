@@ -101,13 +101,13 @@ describe('Unsorted tests', function (): any {
       ]);
     });
   });
-  describe('define-js-obj', function (): any {
-    it('(define-js-obj (foo) ...)', function (): any {
+  describe('define-fields', function (): any {
+    it('(define-fields (foo) ...)', function (): any {
       return testRepl([
         Symbol.for('roselisp'),
         Symbol.for('>'),
         [
-          Symbol.for('define-js-obj'),
+          Symbol.for('define-fields'),
           [Symbol.for('foo')],
           [Symbol.for('js-obj'), 'foo', 'bar'],
         ],
@@ -117,12 +117,12 @@ describe('Unsorted tests', function (): any {
         'bar',
       ]);
     });
-    return it('(define-js-obj ((foo bar)) ...)', function (): any {
+    return it('(define-fields ((foo bar)) ...)', function (): any {
       return testRepl([
         Symbol.for('roselisp'),
         Symbol.for('>'),
         [
-          Symbol.for('define-js-obj'),
+          Symbol.for('define-fields'),
           [[Symbol.for('foo'), Symbol.for('bar')]],
           [Symbol.for('js-obj'), 'foo', 'bar'],
         ],

@@ -2158,31 +2158,31 @@ function defineTypeSpecial_(exp: any, env: any): any {
 defineTypeSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('define-type-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 
 /**
- * Evaluate a `(let-js-obj ...)` form.
+ * Evaluate a `(let-fields ...)` form.
  */
-function letJsObjSpecial_(exp: any, env: any): any {
+function letFieldsSpecial_(exp: any, env: any): any {
   return undefined;
 }
 
-letJsObjSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('let-js-obj-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
+letFieldsSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('let-fields-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 
 /**
- * Evaluate a `(define-js-obj ...)` form.
+ * Evaluate a `(define-fields ...)` form.
  */
-function defineJsObjSpecial_(exp: any, env: any): any {
+function defineFieldsSpecial_(exp: any, env: any): any {
   return undefined;
 }
 
-defineJsObjSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('define-js-obj-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
+defineFieldsSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('define-fields-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 
 /**
- * Evaluate a `(set!-js-obj ...)` form.
+ * Evaluate a `(set!-fields ...)` form.
  */
-function setJsObjSpecial_(exp: any, env: any): any {
+function setFieldsSpecial_(exp: any, env: any): any {
   return undefined;
 }
 
-setJsObjSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('set-js-obj-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
+setFieldsSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('set-fields-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 
 /**
  * Evaluate a `(let-env ...)` form.
@@ -2234,7 +2234,7 @@ export {
   defineAsyncSpecial_,
   defineClassSpecial_,
   defineGeneratorSpecial_,
-  defineJsObjSpecial_,
+  defineFieldsSpecial_,
   defineMacroSpecial_,
   definePublicSpecial_,
   defineSpecial_,
@@ -2252,7 +2252,7 @@ export {
   jsWhileSpecial_,
   lambdaSpecial_,
   letEnvSpecial_,
-  letJsObjSpecial_,
+  letFieldsSpecial_,
   letStarSpecial_,
   letValuesSpecial_,
   macropSpecial_,
@@ -2267,7 +2267,7 @@ export {
   sendApplySpecial_,
   sendSpecial_,
   setFieldSpecial_,
-  setJsObjSpecial_,
+  setFieldsSpecial_,
   setSpecial_,
   setValuesSpecial_,
   setqSpecial_,

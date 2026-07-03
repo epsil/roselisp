@@ -38,7 +38,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.throwSpecial_ = exports.setqSpecial_ = exports.setValuesSpecial_ = exports.setSpecial_ = exports.setJsObjSpecial_ = exports.setFieldSpecial_ = exports.sendSpecial_ = exports.sendApplySpecial_ = exports.returnSpecial_ = exports.requireSpecial_ = exports.quoteSpecial_ = exports.quasiquoteSpecial_ = exports.provideSpecial_ = exports.orSpecial_ = exports.nlambdaSpecial_ = exports.moduleSpecial_ = exports.macropSpecial_ = exports.letValuesSpecial_ = exports.letStarSpecial_ = exports.letJsObjSpecial_ = exports.letEnvSpecial_ = exports.lambdaSpecial_ = exports.jsWhileSpecial_ = exports.jsOptionalChainingSpecial_ = exports.jsFunctionSpecial_ = exports.jsDoWhileSpecial_ = exports.jsArrowSpecial_ = exports.getFieldSpecial_ = exports.fsetSpecial_ = exports.forSpecial_ = exports.dotSpecial_ = exports.defmacroSpecial_ = exports.defineValuesSpecial_ = exports.defineTypeSpecial_ = exports.defineSpecial_ = exports.definePublicSpecial_ = exports.defineMacroSpecial_ = exports.defineJsObjSpecial_ = exports.defineGeneratorSpecial_ = exports.defineClassSpecial_ = exports.defineAsyncSpecial_ = exports.continueSpecial_ = exports.condSpecial_ = exports.colonSpecial_ = exports.breakSpecial_ = exports.beginSpecial_ = exports.awaitSpecial_ = exports.asyncSpecial_ = exports.annSpecial_ = exports.andSpecial_ = void 0;
+exports.throwSpecial_ = exports.setqSpecial_ = exports.setValuesSpecial_ = exports.setSpecial_ = exports.setFieldsSpecial_ = exports.setFieldSpecial_ = exports.sendSpecial_ = exports.sendApplySpecial_ = exports.returnSpecial_ = exports.requireSpecial_ = exports.quoteSpecial_ = exports.quasiquoteSpecial_ = exports.provideSpecial_ = exports.orSpecial_ = exports.nlambdaSpecial_ = exports.moduleSpecial_ = exports.macropSpecial_ = exports.letValuesSpecial_ = exports.letStarSpecial_ = exports.letFieldsSpecial_ = exports.letEnvSpecial_ = exports.lambdaSpecial_ = exports.jsWhileSpecial_ = exports.jsOptionalChainingSpecial_ = exports.jsFunctionSpecial_ = exports.jsDoWhileSpecial_ = exports.jsArrowSpecial_ = exports.getFieldSpecial_ = exports.fsetSpecial_ = exports.forSpecial_ = exports.dotSpecial_ = exports.defmacroSpecial_ = exports.defineValuesSpecial_ = exports.defineTypeSpecial_ = exports.defineSpecial_ = exports.definePublicSpecial_ = exports.defineMacroSpecial_ = exports.defineFieldsSpecial_ = exports.defineGeneratorSpecial_ = exports.defineClassSpecial_ = exports.defineAsyncSpecial_ = exports.continueSpecial_ = exports.condSpecial_ = exports.colonSpecial_ = exports.breakSpecial_ = exports.beginSpecial_ = exports.awaitSpecial_ = exports.asyncSpecial_ = exports.annSpecial_ = exports.andSpecial_ = void 0;
 exports.yieldSpecial_ = exports.trySpecial_ = void 0;
 const array_1 = require("./array");
 const env_1 = require("./env");
@@ -2165,29 +2165,29 @@ function defineTypeSpecial_(exp, env) {
 exports.defineTypeSpecial_ = defineTypeSpecial_;
 defineTypeSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('define-type-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 /**
- * Evaluate a `(let-js-obj ...)` form.
+ * Evaluate a `(let-fields ...)` form.
  */
-function letJsObjSpecial_(exp, env) {
+function letFieldsSpecial_(exp, env) {
     return undefined;
 }
-exports.letJsObjSpecial_ = letJsObjSpecial_;
-letJsObjSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('let-js-obj-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
+exports.letFieldsSpecial_ = letFieldsSpecial_;
+letFieldsSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('let-fields-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 /**
- * Evaluate a `(define-js-obj ...)` form.
+ * Evaluate a `(define-fields ...)` form.
  */
-function defineJsObjSpecial_(exp, env) {
+function defineFieldsSpecial_(exp, env) {
     return undefined;
 }
-exports.defineJsObjSpecial_ = defineJsObjSpecial_;
-defineJsObjSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('define-js-obj-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
+exports.defineFieldsSpecial_ = defineFieldsSpecial_;
+defineFieldsSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('define-fields-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 /**
- * Evaluate a `(set!-js-obj ...)` form.
+ * Evaluate a `(set!-fields ...)` form.
  */
-function setJsObjSpecial_(exp, env) {
+function setFieldsSpecial_(exp, env) {
     return undefined;
 }
-exports.setJsObjSpecial_ = setJsObjSpecial_;
-setJsObjSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('set-js-obj-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
+exports.setFieldsSpecial_ = setFieldsSpecial_;
+setFieldsSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('set-fields-special_'), Symbol.for('exp'), Symbol.for('env')], undefined];
 /**
  * Evaluate a `(let-env ...)` form.
  */

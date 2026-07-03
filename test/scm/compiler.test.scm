@@ -2866,12 +2866,12 @@ return value;")))))
                 (js-obj "expressionType" "statement"
                         "language" "JavaScript"))
                "[_, , value] = foo(bar, baz);")))))
-    (describe "let-js-obj"
+    (describe "let-fields"
       (fn ()
-        (it "(let-js-obj (((prop) obj)) prop), JS"
+        (it "(let-fields (((prop) obj)) prop), JS"
             (fn ()
               (assert-equal
-               (compile '(let-js-obj (((prop) obj))
+               (compile '(let-fields (((prop) obj))
                                      prop)
                         compilation-environment
                         (js-obj "expressionType" "statement"
@@ -2879,41 +2879,41 @@ return value;")))))
                "const {prop} = obj;
 
 prop;")))))
-    (describe "define-js-obj"
+    (describe "define-fields"
       (fn ()
-        (it "(define-js-obj (prop) obj), JS"
+        (it "(define-fields (prop) obj), JS"
             (fn ()
               (assert-equal
-               (compile '(define-js-obj (prop) obj)
+               (compile '(define-fields (prop) obj)
                         compilation-environment
                         (js-obj "expressionType" "statement"
                                 "language" "JavaScript"))
                "const {prop} = obj;")))
-        (it "(define-js-obj (prop) obj), TS"
+        (it "(define-fields (prop) obj), TS"
             (fn ()
               (assert-equal
-               (compile '(define-js-obj (prop) obj)
+               (compile '(define-fields (prop) obj)
                         compilation-environment
                         (js-obj "expressionType" "statement"
                                 "language" "TypeScript"))
                "const {prop} = obj;")))
-        (it "(define-js-obj ((x y) z) obj), JS"
+        (it "(define-fields ((x y) z) obj), JS"
             (fn ()
               (assert-equal
-               (compile '(define-js-obj ((x y) z) obj)
+               (compile '(define-fields ((x y) z) obj)
                         compilation-environment
                         (js-obj "expressionType" "statement"
                                 "language" "JavaScript"))
                "const {x: y, z} = obj;")))
-        (it "(define-js-obj ((x y) z) obj), TS"
+        (it "(define-fields ((x y) z) obj), TS"
             (fn ()
               (assert-equal
-               (compile '(define-js-obj ((x y) z) obj)
+               (compile '(define-fields ((x y) z) obj)
                         compilation-environment
                         (js-obj "expressionType" "statement"
                                 "language" "TypeScript"))
                "const {x: y, z} = obj;")))
-        (it "(define-js-obj (x rest) ...), TS"
+        (it "(define-fields (x rest) ...), TS"
             (fn ()
               (assert-equal
                (compile
@@ -2921,7 +2921,7 @@ prop;")))))
                    (define (foo)
                      (define obj
                        (js-obj))
-                     (define-js-obj (x rest)
+                     (define-fields (x rest)
                        obj)
                      (append rest '(5))))
                 compilation-environment
@@ -2932,7 +2932,7 @@ prop;")))))
   const {x, rest} = obj;
   return [...rest, 5];
 }")))
-        (it "(define-js-obj ((rest r) x) ...), TS"
+        (it "(define-fields ((rest r) x) ...), TS"
             (fn ()
               (assert-equal
                (compile
@@ -2940,7 +2940,7 @@ prop;")))))
                    (define (foo)
                      (define obj
                        (js-obj))
-                     (define-js-obj ((rest r) x)
+                     (define-fields ((rest r) x)
                        obj)
                      (list r x)))
                 compilation-environment
@@ -2951,12 +2951,12 @@ prop;")))))
   const {rest: r, x} = obj;
   return [r, x];
 }")))))
-    (describe "set!-js-obj"
+    (describe "set!-fields"
       (fn ()
-        (it "(set!-js-obj (prop) obj), JS"
+        (it "(set!-fields (prop) obj), JS"
             (fn ()
               (assert-equal
-               (compile '(set!-js-obj (prop) obj)
+               (compile '(set!-fields (prop) obj)
                         compilation-environment
                         (js-obj "expressionType" "statement"
                                 "language" "JavaScript"))

@@ -646,7 +646,7 @@ let z = 3;"
                (decompile "let {x, y} = obj;"
                           (js-obj "language" "JavaScript"
                                   "sexp" #t))
-               '(define-js-obj (x y)
+               '(define-fields (x y)
                   obj))))
         (it "({x, y} = obj);"
             (fn ()
@@ -654,14 +654,14 @@ let z = 3;"
                (decompile "({x, y} = obj);"
                           (js-obj "language" "JavaScript"
                                   "sexp" #t))
-               '(set!-js-obj (x y) obj))))
+               '(set!-fields (x y) obj))))
         (it "let {x: y, z} = obj;"
             (fn ()
               (assert-equal
                (decompile "let {x: y, z} = obj;"
                           (js-obj "language" "JavaScript"
                                   "sexp" #t))
-               '(define-js-obj ((x y) z)
+               '(define-fields ((x y) z)
                   obj))))))
     (describe "fields"
       (fn ()

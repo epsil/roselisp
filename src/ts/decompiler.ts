@@ -302,7 +302,7 @@ function decompileAssignmentExpression(node: any, options: any = {}): any {
   } else if (estreeTypeP(left, 'ArrayPattern')) {
     return makeRose([Symbol.for('set!-values'), leftDecompiled, rightDecompiled]);
   } else if (estreeTypeP(left, 'ObjectPattern')) {
-    return makeRose([Symbol.for('set!-js-obj'), leftDecompiled, rightDecompiled]);
+    return makeRose([Symbol.for('set!-fields'), leftDecompiled, rightDecompiled]);
   } else {
     return makeRose([Symbol.for('set!'), leftDecompiled, rightDecompiled]);
   }
@@ -428,7 +428,7 @@ function decompileVariableDeclarator(node: any, options: any = {}): any {
   const id: any = node.id;
   const idType: any = estreeType(id);
   const init: any = node.init;
-  const defineSym: any = (idType === 'ArrayPattern') ? Symbol.for('define-values') : ((idType === 'ObjectPattern') ? Symbol.for('define-js-obj') : Symbol.for('define'));
+  const defineSym: any = (idType === 'ArrayPattern') ? Symbol.for('define-values') : ((idType === 'ObjectPattern') ? Symbol.for('define-fields') : Symbol.for('define'));
   return makeRose([defineSym, decompileEstree(id, options), ...(((init === undefined) || (init === null)) ? [] : [decompileEstree(init, options)])]);
 }
 

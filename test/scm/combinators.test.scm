@@ -7,7 +7,7 @@
 
 (describe "curried"
   (fn ()
-    (define-js-obj (C Y)
+    (define-fields (C Y)
       curried)
     (describe "C"
       (fn ()
@@ -50,7 +50,7 @@
 
 (describe "variadic"
   (fn ()
-    (define-js-obj (A B I Q T)
+    (define-fields (A B I Q T)
       variadic)
     (describe "A"
       (fn ()

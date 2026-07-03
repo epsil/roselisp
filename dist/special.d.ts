@@ -357,24 +357,24 @@ declare namespace defineTypeSpecial_ {
     var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
- * Evaluate a `(let-js-obj ...)` form.
+ * Evaluate a `(let-fields ...)` form.
  */
-declare function letJsObjSpecial_(exp: any, env: any): any;
-declare namespace letJsObjSpecial_ {
+declare function letFieldsSpecial_(exp: any, env: any): any;
+declare namespace letFieldsSpecial_ {
     var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
- * Evaluate a `(define-js-obj ...)` form.
+ * Evaluate a `(define-fields ...)` form.
  */
-declare function defineJsObjSpecial_(exp: any, env: any): any;
-declare namespace defineJsObjSpecial_ {
+declare function defineFieldsSpecial_(exp: any, env: any): any;
+declare namespace defineFieldsSpecial_ {
     var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
- * Evaluate a `(set!-js-obj ...)` form.
+ * Evaluate a `(set!-fields ...)` form.
  */
-declare function setJsObjSpecial_(exp: any, env: any): any;
-declare namespace setJsObjSpecial_ {
+declare function setFieldsSpecial_(exp: any, env: any): any;
+declare namespace setFieldsSpecial_ {
     var lispSource: (symbol | symbol[] | undefined)[];
 }
 /**
@@ -401,4 +401,4 @@ declare function nlambdaSpecial_(exp: any, env: any): any;
 declare namespace nlambdaSpecial_ {
     var lispSource: (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[];
 }
-export { andSpecial_, annSpecial_, asyncSpecial_, awaitSpecial_, beginSpecial_, breakSpecial_, colonSpecial_, condSpecial_, continueSpecial_, defineAsyncSpecial_, defineClassSpecial_, defineGeneratorSpecial_, defineJsObjSpecial_, defineMacroSpecial_, definePublicSpecial_, defineSpecial_, defineTypeSpecial_, defineValuesSpecial_, defmacroSpecial_, dotSpecial_, forSpecial_, fsetSpecial_, getFieldSpecial_, jsArrowSpecial_, jsDoWhileSpecial_, jsFunctionSpecial_, jsOptionalChainingSpecial_, jsWhileSpecial_, lambdaSpecial_, letEnvSpecial_, letJsObjSpecial_, letStarSpecial_, letValuesSpecial_, macropSpecial_, moduleSpecial_, nlambdaSpecial_, orSpecial_, provideSpecial_, quasiquoteSpecial_, quoteSpecial_, requireSpecial_, returnSpecial_, sendApplySpecial_, sendSpecial_, setFieldSpecial_, setJsObjSpecial_, setSpecial_, setValuesSpecial_, setqSpecial_, throwSpecial_, trySpecial_, yieldSpecial_ };
+export { andSpecial_, annSpecial_, asyncSpecial_, awaitSpecial_, beginSpecial_, breakSpecial_, colonSpecial_, condSpecial_, continueSpecial_, defineAsyncSpecial_, defineClassSpecial_, defineGeneratorSpecial_, defineFieldsSpecial_, defineMacroSpecial_, definePublicSpecial_, defineSpecial_, defineTypeSpecial_, defineValuesSpecial_, defmacroSpecial_, dotSpecial_, forSpecial_, fsetSpecial_, getFieldSpecial_, jsArrowSpecial_, jsDoWhileSpecial_, jsFunctionSpecial_, jsOptionalChainingSpecial_, jsWhileSpecial_, lambdaSpecial_, letEnvSpecial_, letFieldsSpecial_, letStarSpecial_, letValuesSpecial_, macropSpecial_, moduleSpecial_, nlambdaSpecial_, orSpecial_, provideSpecial_, quasiquoteSpecial_, quoteSpecial_, requireSpecial_, returnSpecial_, sendApplySpecial_, sendSpecial_, setFieldSpecial_, setFieldsSpecial_, setSpecial_, setValuesSpecial_, setqSpecial_, throwSpecial_, trySpecial_, yieldSpecial_ };

@@ -1706,25 +1706,25 @@
               (list x y))
            '(1 2))))))
 
-(describe "define-js-obj"
+(describe "define-fields"
   (fn ()
-    (it "> (define-js-obj (x) (js-obj \"x\" 1))"
+    (it "> (define-fields (x) (js-obj \"x\" 1))"
         (fn ()
           (test-repl
            '(roselisp
-             > (define-js-obj (x)
+             > (define-fields (x)
                  (js-obj "x" 1))
              #u
              > x
              1))))))
 
-(describe "set!-js-obj"
+(describe "set!-fields"
   (fn ()
-    (it "> (set!-js-obj (x) (js-obj \"x\" 1))"
+    (it "> (set!-fields (x) (js-obj \"x\" 1))"
         (fn ()
           (test-repl
            '(roselisp
-             > (set!-js-obj (x) (js-obj "x" 1))
+             > (set!-fields (x) (js-obj "x" 1))
              (js-obj "x" 1)
              > x
              1)

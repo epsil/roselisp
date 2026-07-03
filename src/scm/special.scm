@@ -1005,16 +1005,16 @@
 (define (define-type-special_ exp env)
   #u)
 
-;;; Evaluate a `(let-js-obj ...)` form.
-(define (let-js-obj-special_ exp env)
+;;; Evaluate a `(let-fields ...)` form.
+(define (let-fields-special_ exp env)
   #u)
 
-;;; Evaluate a `(define-js-obj ...)` form.
-(define (define-js-obj-special_ exp env)
+;;; Evaluate a `(define-fields ...)` form.
+(define (define-fields-special_ exp env)
   #u)
 
-;;; Evaluate a `(set!-js-obj ...)` form.
-(define (set-js-obj-special_ exp env)
+;;; Evaluate a `(set!-fields ...)` form.
+(define (set-fields-special_ exp env)
   #u)
 
 ;;; Evaluate a `(let-env ...)` form.
@@ -1057,7 +1057,7 @@
   define-async-special_
   define-class-special_
   define-generator-special_
-  define-js-obj-special_
+  define-fields-special_
   define-macro-special_
   define-public-special_
   define-special_
@@ -1075,7 +1075,7 @@
   js-while-special_
   lambda-special_
   let-env-special_
-  let-js-obj-special_
+  let-fields-special_
   let-star-special_
   let-values-special_
   macrop-special_
@@ -1090,7 +1090,7 @@
   send-apply-special_
   send-special_
   set-field-special_
-  set-js-obj-special_
+  set-fields-special_
   set-special_
   set-values-special_
   setq-special_

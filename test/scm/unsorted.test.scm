@@ -53,22 +53,22 @@
                '(roselisp
                  > (equal? '() '())
                  #t))))))
-    (describe "define-js-obj"
+    (describe "define-fields"
       (fn ()
-        (it "(define-js-obj (foo) ...)"
+        (it "(define-fields (foo) ...)"
             (fn ()
               (test-repl
                '(roselisp
-                 > (define-js-obj (foo)
+                 > (define-fields (foo)
                      (js-obj "foo" "bar"))
                  #u
                  > foo
                  "bar"))))
-        (it "(define-js-obj ((foo bar)) ...)"
+        (it "(define-fields ((foo bar)) ...)"
             (fn ()
               (test-repl
                '(roselisp
-                 > (define-js-obj ((foo bar))
+                 > (define-fields ((foo bar))
                      (js-obj "foo" "bar"))
                  #u
                  > bar

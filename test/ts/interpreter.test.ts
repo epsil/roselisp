@@ -2541,13 +2541,13 @@ describe('set!-values', function (): any {
   });
 });
 
-describe('define-js-obj', function (): any {
-  return it('> (define-js-obj (x) (js-obj "x" 1))', function (): any {
+describe('define-fields', function (): any {
+  return it('> (define-fields (x) (js-obj "x" 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
-        Symbol.for('define-js-obj'),
+        Symbol.for('define-fields'),
         [Symbol.for('x')],
         [Symbol.for('js-obj'), 'x', 1],
       ],
@@ -2559,14 +2559,14 @@ describe('define-js-obj', function (): any {
   });
 });
 
-describe('set!-js-obj', function (): any {
-  return it('> (set!-js-obj (x) (js-obj "x" 1))', function (): any {
+describe('set!-fields', function (): any {
+  return it('> (set!-fields (x) (js-obj "x" 1))', function (): any {
     return testRepl(
       [
         Symbol.for('roselisp'),
         Symbol.for('>'),
         [
-          Symbol.for('set!-js-obj'),
+          Symbol.for('set!-fields'),
           [Symbol.for('x')],
           [Symbol.for('js-obj'), 'x', 1],
         ],

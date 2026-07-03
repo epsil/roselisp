@@ -80,7 +80,7 @@
   ;; FIXME: `exp` *might* be modified by side-effect. If so, the
   ;; compilation test will receive a different value. We should
   ;; clone the value to avoid this.
-  (define-js-obj (compile
+  (define-fields (compile
                   env
                   (interpret interpret-flag)
                   (interpretValue interpret-value-option)
@@ -156,7 +156,7 @@
 
 ;;; Test a REPL form.
 (define (test-repl exp (options (js-obj)))
-  (define-js-obj (env)
+  (define-fields (env)
     options)
   (set! env (or env (new LispEnvironment)))
   (case (get-repl-form-type exp)
@@ -179,7 +179,7 @@
 
 ;;; Test a Roselisp REPL form.
 (define (test-roselisp-repl exp (options (js-obj)))
-  (define-js-obj ((compile compile-option)
+  (define-fields ((compile compile-option)
                   (verbose verbose-option)
                   env)
     (js-obj-append

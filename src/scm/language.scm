@@ -940,22 +940,26 @@
     (compile-statement
      (begin-wrap-rose
       (get-field header-nodes module))
-     module-environment module-options))
+     module-environment
+     module-options))
   (define require-statements
     (compile-statement
      (begin-wrap-rose
       (get-field require-nodes module))
-     module-environment module-options))
+     module-environment
+     module-options))
   (define main-statements
     (compile-statement
      (begin-wrap-rose
       (get-field main-nodes module))
-     module-environment module-options))
+     module-environment
+     module-options))
   (define provide-statements
     (compile-statement
      (begin-wrap-rose
       (get-field provide-nodes module))
-     module-environment module-options))
+     module-environment
+     module-options))
   (define global-environment
     (build-global-environment
      (oget module-options "referencedSymbols")
@@ -6969,6 +6973,8 @@
 
   (define/public parent-environment)
 
+  (define/public interpretation-environment)
+
   (define/public module-map)
 
   (define/public symbol-map (make-hash))
@@ -6988,7 +6994,9 @@
      ((get-field environment this)
       (get-field environment this))
      (else
-      (send this make-environment (get-field parent-environment this)))))
+      (send this
+            make-environment
+            (get-field parent-environment this)))))
 
   (define/public (get-module-map)
     (get-field module-map this))
@@ -7185,6 +7193,10 @@
   (define/public (make-environment (parent #u))
     (define module-env
       (new LispEnvironment '() parent))
+    (define module-interpretation-env
+      (new EnvironmentStack
+           module-env
+           js-environment))
     (define imported)
     (define local)
     (define module)
@@ -7192,6 +7204,9 @@
     (define module-name)
     (set-field! parent-environment this parent)
     (set-field! environment this module-env)
+    (set-field! interpretation-environment
+                this
+                module-interpretation-env)
     ;; Iterate over `require-nodes`, importing definitions
     ;; from other modules.
     (for ((node (get-field require-nodes this)))
@@ -7255,7 +7270,8 @@
                (lambda ()
                  (define result #u)
                  (try
-                   (set! result (eval_ exp module-env))
+                   (set! result
+                         (eval_ exp module-interpretation-env))
                    (catch Error e
                      ;; Do nothing
                      ))

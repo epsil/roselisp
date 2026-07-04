@@ -7987,6 +7987,8 @@ class Module {
 
   parentEnvironment: any;
 
+  interpretationEnvironment: any;
+
   moduleMap: any;
 
   symbolMap: any = new Map();
@@ -8337,6 +8339,7 @@ class Module {
 
   makeEnvironment(parent: any = undefined): any {
     const moduleEnv: any = new LispEnvironment([], parent);
+    const moduleInterpretationEnv: any = new EnvironmentStack(moduleEnv, jsEnvironment);
     let imported: any;
     let local: any;
     let module: any;
@@ -8344,6 +8347,7 @@ class Module {
     let moduleName: any;
     this.parentEnvironment = parent;
     this.environment = moduleEnv;
+    this.interpretationEnvironment = moduleInterpretationEnv;
     // Iterate over `require-nodes`, importing definitions
     // from other modules.
     for (let node of this.requireNodes) {
@@ -8507,7 +8511,7 @@ class Module {
         moduleEnv.setLocal(name, thunk(function (): any {
           let result: any = undefined;
           try {
-            result = eval_(exp, moduleEnv);
+            result = eval_(exp, moduleInterpretationEnv);
           } catch (e) {
             if (e instanceof Error) {
             } else {

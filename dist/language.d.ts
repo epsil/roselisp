@@ -755,6 +755,7 @@ declare class Module {
     seenModules: any;
     environment: any;
     parentEnvironment: any;
+    interpretationEnvironment: any;
     moduleMap: any;
     symbolMap: any;
     constructor(nodes?: any, parent?: any, name?: any);

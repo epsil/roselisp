@@ -142,6 +142,27 @@ foo.lispMacro = true;
 function bar(x) {
   return x;
 }")))
+        (it "(module ... (defmacro foo (x) `(begin ,x)) ...)"
+            (fn ()
+              (assert-equal
+               (compile
+                '(module m scheme
+                   (defmacro foo (x)
+                     `(begin ,x))
+                   (define (bar x)
+                     (foo x)))
+                compilation-environment
+                (js-obj "language" "JavaScript"))
+               "function foo(exp, env) {
+  const [x] = exp.slice(1);
+  return [Symbol.for('begin'), x];
+}
+
+foo.lispMacro = true;
+
+function bar(x) {
+  return x;
+}")))
         (it "(module ... (defmacro foo (x . args) ...) ...)"
             (fn ()
               (assert-equal

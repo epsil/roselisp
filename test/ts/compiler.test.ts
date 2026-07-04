@@ -230,6 +230,45 @@ describe('compile', function (): any {
           '}'
       );
     });
+    it('(module ... (defmacro foo (x) `(begin ,x)) ...)', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('defmacro'),
+              Symbol.for('foo'),
+              [Symbol.for('x')],
+              [
+                Symbol.for('quasiquote'),
+                [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
+              ],
+            ],
+            [
+              Symbol.for('define'),
+              [Symbol.for('bar'), Symbol.for('x')],
+              [Symbol.for('foo'), Symbol.for('x')],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        'function foo(exp, env) {\n' +
+          '  const [x] = exp.slice(1);\n' +
+          "  return [Symbol.for('begin'), x];\n" +
+          '}\n' +
+          '\n' +
+          'foo.lispMacro = true;\n' +
+          '\n' +
+          'function bar(x) {\n' +
+          '  return x;\n' +
+          '}'
+      );
+    });
     it('(module ... (defmacro foo (x . args) ...) ...)', function (): any {
       return assertEqual(
         compile(

@@ -926,6 +926,12 @@
     (eval-estree x env options))
   #u)
 
+;;; Evaluate a TSESTree `TSAsExpression` node.
+(define (eval-estree-ts-as-expression node env (options (js-obj)))
+  (define expression
+    (get-field expression node))
+  (eval-estree expression env options))
+
 ;;; Evaluate an ESTree `XRawJavaScript` node.
 ;;; This is an unofficial ESTree extension.
 (define (eval-estree-x-raw-javascript node env (options (js-obj)))
@@ -1157,8 +1163,9 @@
      ("RestElement" . ,eval-estree-rest-element)
      ("ReturnStatement" . ,eval-estree-return-statement)
      ("SequenceExpression" . ,eval-estree-sequence-expression)
-     ("SwitchStatement" . ,eval-estree-switch-statement)
      ("SwitchCase" . ,eval-estree-switch-case)
+     ("SwitchStatement" . ,eval-estree-switch-statement)
+     ("TSAsExpression" . ,eval-estree-ts-as-expression)
      ("ThisExpression" . ,eval-estree-this-expression)
      ("ThrowStatement" . ,eval-estree-throw-statement)
      ("TryStatement" . ,eval-estree-try-statement)
@@ -1167,8 +1174,8 @@
      ("VariableDeclaration" . ,eval-estree-variable-declaration)
      ("VariableDeclarator" . ,eval-estree-variable-declarator)
      ("WhileStatement" . ,eval-estree-while-statement)
-     ("YieldExpression" . ,eval-estree-yield-expression)
-     ("XRawJavaScript" . ,eval-estree-x-raw-javascript))))
+     ("XRawJavaScript" . ,eval-estree-x-raw-javascript)
+     ("YieldExpression" . ,eval-estree-yield-expression))))
 
 (provide
   (rename-out (eval_ seval))

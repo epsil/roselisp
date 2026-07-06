@@ -100,6 +100,129 @@ describe('compile-modules', function (): any {
         ]
       );
     });
+    it('import macro from a module defined later', function (): any {
+      return assertEqual(
+        compileModules(
+          [
+            [
+              Symbol.for('module'),
+              Symbol.for('a'),
+              Symbol.for('scheme'),
+              [
+                Symbol.for('require'),
+                [Symbol.for('only-in'), './b', Symbol.for('bar')],
+              ],
+              [
+                Symbol.for('define'),
+                [Symbol.for('foo'), Symbol.for('x')],
+                [Symbol.for('bar'), Symbol.for('x')],
+              ],
+            ],
+            [
+              Symbol.for('module'),
+              Symbol.for('b'),
+              Symbol.for('scheme'),
+              [
+                Symbol.for('defmacro'),
+                Symbol.for('bar'),
+                [Symbol.for('x')],
+                Symbol.for('x'),
+              ],
+              [Symbol.for('provide'), Symbol.for('bar')],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        [
+          'import {\n' +
+            '  bar\n' +
+            "} from './b';\n" +
+            '\n' +
+            'function foo(x) {\n' +
+            '  return x;\n' +
+            '}',
+          'function bar(exp, env) {\n' +
+            '  const [x] = exp.slice(1);\n' +
+            '  return x;\n' +
+            '}\n' +
+            '\n' +
+            'bar.lispMacro = true;\n' +
+            '\n' +
+            'export {\n' +
+            '  bar\n' +
+            '};',
+        ]
+      );
+    });
+    it('import function for use in a macro', function (): any {
+      return assertEqual(
+        compileModules(
+          [
+            [
+              Symbol.for('module'),
+              Symbol.for('a'),
+              Symbol.for('scheme'),
+              [
+                Symbol.for('require'),
+                [Symbol.for('only-in'), './b', Symbol.for('baz')],
+              ],
+              [
+                Symbol.for('defmacro'),
+                Symbol.for('bar'),
+                [Symbol.for('x')],
+                [Symbol.for('baz'), Symbol.for('x')],
+              ],
+              [
+                Symbol.for('define'),
+                [Symbol.for('foo'), Symbol.for('x')],
+                [Symbol.for('bar'), Symbol.for('x')],
+              ],
+            ],
+            [
+              Symbol.for('module'),
+              Symbol.for('b'),
+              Symbol.for('scheme'),
+              [
+                Symbol.for('define'),
+                [Symbol.for('baz'), Symbol.for('x')],
+                Symbol.for('x'),
+              ],
+              [Symbol.for('provide'), Symbol.for('baz')],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        [
+          'import {\n' +
+            '  baz\n' +
+            "} from './b';\n" +
+            '\n' +
+            'function bar(exp, env) {\n' +
+            '  const [x] = exp.slice(1);\n' +
+            '  return baz(x);\n' +
+            '}\n' +
+            '\n' +
+            'bar.lispMacro = true;\n' +
+            '\n' +
+            'function foo(x) {\n' +
+            '  return x;\n' +
+            '}',
+          'function baz(x) {\n' +
+            '  return x;\n' +
+            '}\n' +
+            '\n' +
+            'export {\n' +
+            '  baz\n' +
+            '};',
+        ]
+      );
+    });
     return it('import renamed macro from another module', function (): any {
       return assertEqual(
         compileModules(

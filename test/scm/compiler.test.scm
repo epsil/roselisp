@@ -60,13 +60,90 @@ foo.lispMacro = true;
 
 export {
   foo
-};" "import {
+};"
+                "import {
   foo
 } from './a';
 
 function bar(x) {
   return x;
 }"))))
+        (it "import macro from a module defined later"
+            (fn ()
+              (assert-equal
+               (compile-modules
+                (list
+                 '(module a scheme
+                    (require (only-in "./b"
+                                      bar))
+                    (define (foo x)
+                      (bar x)))
+                 '(module b scheme
+                    (defmacro bar (x)
+                      x)
+                    (provide bar)))
+                compilation-environment
+                (js-obj "language" "JavaScript"))
+               (list
+                "import {
+  bar
+} from './b';
+
+function foo(x) {
+  return x;
+}"
+
+                "function bar(exp, env) {
+  const [x] = exp.slice(1);
+  return x;
+}
+
+bar.lispMacro = true;
+
+export {
+  bar
+};"))))
+        (it "import function for use in a macro"
+            (fn ()
+              (assert-equal
+               (compile-modules
+                (list
+                 '(module a scheme
+                    (require (only-in "./b"
+                                      baz))
+                    (defmacro bar (x)
+                      (baz x))
+                    (define (foo x)
+                      (bar x)))
+                 '(module b scheme
+                    (define (baz x)
+                      x)
+                    (provide baz)))
+                compilation-environment
+                (js-obj "language" "JavaScript"))
+               (list
+                "import {
+  baz
+} from './b';
+
+function bar(exp, env) {
+  const [x] = exp.slice(1);
+  return baz(x);
+}
+
+bar.lispMacro = true;
+
+function foo(x) {
+  return x;
+}"
+
+                "function baz(x) {
+  return x;
+}
+
+export {
+  baz
+};"))))
         (it "import renamed macro from another module"
             (fn ()
               (assert-equal

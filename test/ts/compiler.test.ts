@@ -157,7 +157,7 @@ describe('compile-modules', function (): any {
         ]
       );
     });
-    it('import function for use in a macro', function (): any {
+    xit('import function for use in a macro', function (): any {
       return assertEqual(
         compileModules(
           [

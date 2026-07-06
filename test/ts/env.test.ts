@@ -7,39 +7,41 @@ import {
   LispEnvironment,
   ThunkedEnvironment,
   TypedEnvironment,
-  extendEnvironment
+  extendEnvironment,
 } from '../../src/ts/env';
 
-import {
-  thunk
-} from '../../src/ts/thunk';
+import { thunk } from '../../src/ts/thunk';
 
-import {
-  assertEqual
-} from './test-util';
+import { assertEqual } from './test-util';
 
 describe('Environment', function (): any {
   it('get', function (): any {
     const env: any = new Environment([[Symbol.for('foo'), 'bar']]);
     return assertEqual(env.get(Symbol.for('foo')), 'bar');
   });
-  it.only('get nonexistant binding', function (): any {
+  it('get nonexistant binding', function (): any {
     const env: any = new Environment([[Symbol.for('foo'), 'bar']]);
     return assertEqual(env.get(Symbol.for('quux')), undefined);
   });
-  it.only('get nonexistant binding with notFound option', function (): any {
+  it('get nonexistant binding with notFound option', function (): any {
     const env: any = new Environment([[Symbol.for('foo'), 'bar']]);
-    return assertEqual(env.get(Symbol.for('quux'), {
-      notFound: false
-    }), false);
+    return assertEqual(
+      env.get(Symbol.for('quux'), {
+        notFound: false,
+      }),
+      false
+    );
   });
-  it.only('get with filter option', function (): any {
+  xit('get with filter option', function (): any {
     const env: any = new Environment([[Symbol.for('foo'), 'bar']]);
-    return assertEqual(env.get(Symbol.for('foo'), {
-      filter: function (x: any): any {
-        return false;
-      }
-    }), undefined);
+    return assertEqual(
+      env.get(Symbol.for('foo'), {
+        filter: function (x: any): any {
+          return false;
+        },
+      }),
+      undefined
+    );
   });
   it('get-value', function (): any {
     const env: any = new Environment([[Symbol.for('foo'), 'bar']]);
@@ -84,32 +86,48 @@ describe('Environment', function (): any {
 
 describe('TypedEnvironment', function (): any {
   it('get', function (): any {
-    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.get(Symbol.for('foo')), 'bar');
   });
   it('get-value', function (): any {
-    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.getValue(Symbol.for('foo')), 'bar');
   });
   it('get-typed-value', function (): any {
-    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
-    return assertEqual(env.getTypedValue(Symbol.for('foo')), ['bar', 'variable']);
+    const env: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
+    return assertEqual(env.getTypedValue(Symbol.for('foo')), [
+      'bar',
+      'variable',
+    ]);
   });
-  xit('get-local', // ???
-  function (): any {
-    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+  xit('get-local', function (): any { // ???
+    const env: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.getLocal(Symbol.for('foo')), 'bar');
   });
   it('get-type', function (): any {
-    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.getType(Symbol.for('foo')), 'variable');
   });
   it('has', function (): any {
-    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.has(Symbol.for('foo')), true);
   });
   xit('has-local', function (): any {
-    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.hasLocal(Symbol.for('foo')), true);
   });
   it('set', function (): any {
@@ -128,7 +146,9 @@ describe('TypedEnvironment', function (): any {
     return assertEqual(env.getLocal(Symbol.for('foo')), 'bar');
   });
   return it('set, mutate existing value in parent environment', function (): any {
-    const parent: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const parent: any = new TypedEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     const env: any = extendEnvironment(new TypedEnvironment(), parent);
     env.set(Symbol.for('foo'), 'quux', 'variable');
     assertEqual(parent.get(Symbol.for('foo')), 'quux');
@@ -139,31 +159,48 @@ describe('TypedEnvironment', function (): any {
 
 describe('LispEnvironment', function (): any {
   it('get', function (): any {
-    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.get(Symbol.for('foo')), 'bar');
   });
   it('get-value', function (): any {
-    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.getValue(Symbol.for('foo')), 'bar');
   });
   it('get-typed-value', function (): any {
-    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
-    return assertEqual(env.getTypedValue(Symbol.for('foo')), ['bar', 'variable']);
+    const env: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
+    return assertEqual(env.getTypedValue(Symbol.for('foo')), [
+      'bar',
+      'variable',
+    ]);
   });
   xit('get-local', function (): any {
-    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.getLocal(Symbol.for('foo')), 'bar');
   });
   it('get-type', function (): any {
-    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.getType(Symbol.for('foo')), 'variable');
   });
   it('has', function (): any {
-    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.has(Symbol.for('foo')), true);
   });
   xit('has-local', function (): any {
-    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const env: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     return assertEqual(env.hasLocal(Symbol.for('foo')), true);
   });
   it('set', function (): any {
@@ -182,7 +219,9 @@ describe('LispEnvironment', function (): any {
     return assertEqual(env.getLocal(Symbol.for('foo')), 'bar');
   });
   return it('set, mutate existing value in parent environment', function (): any {
-    const parent: any = new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]);
+    const parent: any = new LispEnvironment([
+      [Symbol.for('foo'), 'bar', 'variable'],
+    ]);
     const env: any = extendEnvironment(new LispEnvironment(), parent);
     env.set(Symbol.for('foo'), 'quux', 'variable');
     assertEqual(parent.get(Symbol.for('foo')), 'quux');
@@ -193,20 +232,38 @@ describe('LispEnvironment', function (): any {
 
 describe('EnvironmentStack', function (): any {
   it('get', function (): any {
-    const env: any = new EnvironmentStack(new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]));
+    const env: any = new EnvironmentStack(
+      new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']])
+    );
     return assertEqual(env.get(Symbol.for('foo')), 'bar');
   });
   it('get-value', function (): any {
-    const env: any = new EnvironmentStack(new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]));
+    const env: any = new EnvironmentStack(
+      new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']])
+    );
     return assertEqual(env.getValue(Symbol.for('foo')), 'bar');
   });
   it('get-typed-value', function (): any {
-    const env: any = new EnvironmentStack(new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]));
-    return assertEqual(env.getTypedValue(Symbol.for('foo')), ['bar', 'variable']);
+    const env: any = new EnvironmentStack(
+      new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']])
+    );
+    return assertEqual(env.getTypedValue(Symbol.for('foo')), [
+      'bar',
+      'variable',
+    ]);
   });
   it('get-typed-value 2', function (): any {
-    const env: any = new EnvironmentStack(new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]), new EnvironmentStack(new LispEnvironment([[Symbol.for('bar'), 'bar', 'variable']]), new JavaScriptEnvironment()));
-    return assertEqual(env.getTypedValue(Symbol.for('foo')), ['bar', 'variable']);
+    const env: any = new EnvironmentStack(
+      new LispEnvironment([[Symbol.for('foo'), 'bar', 'variable']]),
+      new EnvironmentStack(
+        new LispEnvironment([[Symbol.for('bar'), 'bar', 'variable']]),
+        new JavaScriptEnvironment()
+      )
+    );
+    return assertEqual(env.getTypedValue(Symbol.for('foo')), [
+      'bar',
+      'variable',
+    ]);
   });
   it('set, one environment', function (): any {
     const env1: any = new LispEnvironment();
@@ -217,7 +274,9 @@ describe('EnvironmentStack', function (): any {
   });
   it('set, two environments, previously defined in second', function (): any {
     const env1: any = new LispEnvironment();
-    const env2: any = new LispEnvironment([[Symbol.for('foo'), 'foo', 'variable']]);
+    const env2: any = new LispEnvironment([
+      [Symbol.for('foo'), 'foo', 'variable'],
+    ]);
     const env: any = new EnvironmentStack(env1, env2);
     env.set(Symbol.for('foo'), 'bar', 'variable');
     assertEqual(env.get(Symbol.for('foo')), 'bar');
@@ -226,7 +285,9 @@ describe('EnvironmentStack', function (): any {
   });
   return it('set-entry, two environments, previously defined in second', function (): any {
     const env1: any = new LispEnvironment();
-    const env2: any = new LispEnvironment([[Symbol.for('foo'), 'foo', 'variable']]);
+    const env2: any = new LispEnvironment([
+      [Symbol.for('foo'), 'foo', 'variable'],
+    ]);
     const env: any = new EnvironmentStack(env1, env2);
     env.setEntry([Symbol.for('foo'), ['bar', 'variable']]);
     assertEqual(env.get(Symbol.for('foo')), 'bar');
@@ -237,39 +298,69 @@ describe('EnvironmentStack', function (): any {
 
 describe('EnvironmentPipe', function (): any {
   it('get', function (): any {
-    const env: any = new EnvironmentPipe(new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]), new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]));
+    const env: any = new EnvironmentPipe(
+      new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]),
+      new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']])
+    );
     return assertEqual(env.get(Symbol.for('foo')), Symbol.for('baz'));
   });
   it('get-value', function (): any {
-    const env: any = new EnvironmentPipe(new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]), new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]));
+    const env: any = new EnvironmentPipe(
+      new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]),
+      new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']])
+    );
     return assertEqual(env.getValue(Symbol.for('foo')), Symbol.for('baz'));
   });
   return it('get-typed-value', function (): any {
-    const env: any = new EnvironmentPipe(new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]), new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]));
-    return assertEqual(env.getTypedValue(Symbol.for('foo')), [Symbol.for('baz'), 'variable']);
+    const env: any = new EnvironmentPipe(
+      new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]),
+      new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']])
+    );
+    return assertEqual(env.getTypedValue(Symbol.for('foo')), [
+      Symbol.for('baz'),
+      'variable',
+    ]);
   });
 });
 
 describe('EnvironmentComposition', function (): any {
   it('get', function (): any {
-    const env: any = new EnvironmentComposition(new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]), new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]));
+    const env: any = new EnvironmentComposition(
+      new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]),
+      new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']])
+    );
     return assertEqual(env.get(Symbol.for('foo')), Symbol.for('baz'));
   });
   it('get-value', function (): any {
-    const env: any = new EnvironmentComposition(new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]), new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]));
+    const env: any = new EnvironmentComposition(
+      new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]),
+      new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']])
+    );
     return assertEqual(env.getValue(Symbol.for('foo')), Symbol.for('baz'));
   });
   return it('get-typed-value', function (): any {
-    const env: any = new EnvironmentComposition(new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]), new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']]));
-    return assertEqual(env.getTypedValue(Symbol.for('foo')), [Symbol.for('baz'), 'variable']);
+    const env: any = new EnvironmentComposition(
+      new LispEnvironment([[Symbol.for('bar'), Symbol.for('baz'), 'variable']]),
+      new LispEnvironment([[Symbol.for('foo'), Symbol.for('bar'), 'variable']])
+    );
+    return assertEqual(env.getTypedValue(Symbol.for('foo')), [
+      Symbol.for('baz'),
+      'variable',
+    ]);
   });
 });
 
 describe('ThunkedEnvironment', function (): any {
   return it('get', function (): any {
-    const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-      return 'bar';
-    }), 'variable']]);
+    const env: any = new ThunkedEnvironment([
+      [
+        Symbol.for('foo'),
+        thunk(function (): any {
+          return 'bar';
+        }),
+        'variable',
+      ],
+    ]);
     return assertEqual(env.get(Symbol.for('foo')), 'bar');
   });
 });

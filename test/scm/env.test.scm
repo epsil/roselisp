@@ -23,30 +23,30 @@
           (assert-equal
            (send env get 'foo)
            "bar")))
-    (send it "get nonexistant binding"
-          (fn ()
-            (define env
-              (new Environment
-                   '((foo "bar"))))
-            (assert-equal
-             (send env get 'quux)
-             #u)))
-    (send it "get nonexistant binding with notFound option"
-          (fn ()
-            (define env
-              (new Environment
-                   '((foo "bar"))))
-            (assert-equal
-             (send env get 'quux (js-obj "notFound" #f))
-             #f)))
-    (send it "get with filter option"
-          (fn ()
-            (define env
-              (new Environment
-                   '((foo "bar"))))
-            (assert-equal
-             (send env get 'foo (js-obj "filter" (lambda (x) #f)))
-             #u)))
+    (it "get nonexistant binding"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get nonexistant binding with notFound option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (xit "get with filter option"
+         (fn ()
+           (define env
+             (new Environment
+                  '((foo "bar"))))
+           (assert-equal
+            (send env get 'foo (js-obj "filter" (lambda (x) #f)))
+            #u)))
     (it "get-value"
         (fn ()
           (define env

@@ -77,7 +77,6 @@ declare class Environment {
     entries(): any;
     /**
      * Find an environment frame binding `key`.
-     * Returns `not-found` if not found.
      */
     findFrame(key: any, options?: any): any;
     /**
@@ -92,12 +91,11 @@ declare class Environment {
      * Get the value of `key`, or `#u`
      * if there is no binding.
      */
-    get(key: any, notFound?: any): any;
+    get(key: any, options?: any): any;
     /**
      * Get the entry of `key`, which is a list `(key binding)`.
-     * If there is no binding, `not-found` is returned.
      */
-    getEntry(key: any, notFound?: any): any;
+    getEntry(key: any, options?: any): any;
     /**
      * Get the environment frames of an environment.
      *
@@ -114,7 +112,7 @@ declare class Environment {
      * Get the binding defined by the current environment frame,
      * if any.
      */
-    getLocal(key: any, notFound?: any): any;
+    getLocal(key: any, options?: any): any;
     /**
      * Get the binding defined by the current environment frame,
      * if any, as a tuple `(binding found)`.
@@ -125,10 +123,9 @@ declare class Environment {
      */
     getParent(): any;
     /**
-     * Get the value of `key`, or `not-found`
-     * if there is no binding.
+     * Get the value of `key`.
      */
-    getValue(key: any, notFound?: any): any;
+    getValue(key: any, options?: any): any;
     /**
      * Whether `key` is bound in the environment,
      * or in a parent environment.
@@ -174,12 +171,12 @@ declare class TypedEnvironment extends Environment {
      * Get the binding defined by the current environment frame,
      * if any.
      */
-    get(key: any, notFound?: any): any;
+    get(key: any, options?: any): any;
     /**
      * Get the local binding defined by the current environment frame,
      * if any.
      */
-    getLocal(key: any, notFound?: any): any;
+    getLocal(key: any, options?: any): any;
     /**
      * Get the type of `key`. If there is no binding,
      * return `"#u"`.
@@ -187,21 +184,18 @@ declare class TypedEnvironment extends Environment {
     getType(key: any): any;
     /**
      * Get the typed value of `key`, which is a tuple
-     * `(value type)`. If there is no binding, return
-     * `not-found`.
+     * `(value type)`.
      */
-    getTypedValue(key: any, notFound?: any): any;
-    getTypedLocalValue(key: any, notFound?: any): any;
+    getTypedValue(key: any, options?: any): any;
+    getTypedLocalValue(key: any, options?: any): any;
     /**
-     * Get the untyped value of `key`. If there is no binding,
-     * return `not-found`.
+     * Get the untyped value of `key`.
      */
-    getUntypedValue(key: any, notFound?: any): any;
+    getUntypedValue(key: any, options?: any): any;
     /**
-     * Get the untyped local value of `key`. If there is no binding,
-     * return `not-found`.
+     * Get the untyped local value of `key`.
      */
-    getUntypedLocalValue(key: any, notFound?: any): any;
+    getUntypedLocalValue(key: any, options?: any): any;
     /**
      * Set `key` to `value` with type `type` in the environment.
      */
@@ -282,12 +276,10 @@ declare class EnvironmentStack extends TypedEnvironment {
     clone(): any;
     /**
      * Find an environment frame binding `key`.
-     * Returns `not-found` if not found.
      */
     findFrame(key: any, options?: any): any;
     /**
      * Find a local environment frame binding `key`.
-     * Returns `not-found` if not found.
      */
     findLocalFrame(key: any, options?: any): any;
     /**

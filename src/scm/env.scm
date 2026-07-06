@@ -113,7 +113,6 @@
     (hash-entries (get-field table this)))
 
   ;;; Find an environment frame binding `key`.
-  ;;; Returns `not-found` if not found.
   (define/public (find-frame key (options (js-obj)))
     (define not-found
       (oget options "notFound"))
@@ -146,7 +145,9 @@
   ;;; Get the value of `key`, or `#u`
   ;;; if there is no binding.
   (define/public (get key
-                      (not-found #u))
+                      (options (js-obj)))
+    (define not-found
+      (oget options "notFound"))
     (define-values (value found)
       (send this get-tuple key))
     (if found
@@ -154,9 +155,10 @@
         not-found))
 
   ;;; Get the entry of `key`, which is a list `(key binding)`.
-  ;;; If there is no binding, `not-found` is returned.
   (define/public (get-entry key
-                            (not-found #u))
+                            (options (js-obj)))
+    (define not-found
+      (oget options "notFound"))
     (define-values (value found)
       (send this get-tuple key))
     (if found
@@ -189,7 +191,9 @@
 
   ;;; Get the binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get-local key (not-found #u))
+  (define/public (get-local key (options (js-obj)))
+    (define not-found
+      (oget options "notFound"))
     (define-values (value found)
       (send this get-local-tuple key))
     (if found
@@ -211,12 +215,11 @@
   (define/public (get-parent)
     (get-field parent this))
 
-  ;;; Get the value of `key`, or `not-found`
-  ;;; if there is no binding.
+  ;;; Get the value of `key`.
   (define/public (get-value key
-                            (not-found #u))
+                            (options (js-obj)))
     ;; Alias for `.get`.
-    (send this get key not-found))
+    (send this get key options))
 
   ;;; Whether `key` is bound in the environment,
   ;;; or in a parent environment.
@@ -278,13 +281,13 @@
 (define-class TypedEnvironment (Environment)
   ;;; Get the binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get key (not-found #u))
-    (send this get-untyped-value key not-found))
+  (define/public (get key (options (js-obj)))
+    (send this get-untyped-value key options))
 
   ;;; Get the local binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get-local key (not-found #u))
-    (send this get-untyped-local-value key not-found))
+  (define/public (get-local key (options (js-obj)))
+    (send this get-untyped-local-value key options))
 
   ;;; Get the type of `key`. If there is no binding,
   ;;; return `"#u"`.
@@ -294,36 +297,41 @@
     typ)
 
   ;;; Get the typed value of `key`, which is a tuple
-  ;;; `(value type)`. If there is no binding, return
-  ;;; `not-found`.
+  ;;; `(value type)`.
   (define/public (get-typed-value key
-                                  (not-found
-                                   '(#u "undefined")))
+                                  (options
+                                   (js-obj
+                                    "notFound"
+                                    '(#u "undefined"))))
     ;; The same as `super.get`, except that
-    ;; `not-found` defaults to `(#u "undefined")`.
-    (send super get key not-found))
+    ;; `notFound` defaults to `(#u "undefined")`.
+    (send super get key options))
 
   (define/public (get-typed-local-value key
-                                        (not-found
-                                         '(#u "undefined")))
+                                        (options
+                                         (js-obj
+                                          "notFound"
+                                          '(#u "undefined"))))
     ;; The same as `super.get-local`, except that
     ;; `not-found` defaults to `(#u "undefined")`.
-    (send super get-local key not-found))
+    (send super get-local key options))
 
-  ;;; Get the untyped value of `key`. If there is no binding,
-  ;;; return `not-found`.
+  ;;; Get the untyped value of `key`.
   (define/public (get-untyped-value key
-                                    (not-found #u))
+                                    (options (js-obj)))
+    (define not-found
+      (oget options "notFound"))
     (define-values (value typ)
       (send this get-typed-value key))
     (if (eq? typ "undefined")
         not-found
         value))
 
-  ;;; Get the untyped local value of `key`. If there is no binding,
-  ;;; return `not-found`.
+  ;;; Get the untyped local value of `key`.
   (define/public (get-untyped-local-value key
-                                          (not-found #u))
+                                          (options (js-obj)))
+    (define not-found
+      (oget options "notFound"))
     (define-values (value typ)
       (send this get-typed-local-value key))
     (if (eq? typ "undefined")
@@ -465,7 +473,6 @@
     env)
 
   ;;; Find an environment frame binding `key`.
-  ;;; Returns `not-found` if not found.
   (define/public (find-frame key (options (js-obj)))
     (define not-found
       (oget options "notFound"))
@@ -492,7 +499,6 @@
         not-found))
 
   ;;; Find a local environment frame binding `key`.
-  ;;; Returns `not-found` if not found.
   (define/public (find-local-frame key (options (js-obj)))
     (define not-found
       (oget options "notFound"))

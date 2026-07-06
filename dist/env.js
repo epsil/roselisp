@@ -111,7 +111,6 @@ class Environment {
     }
     /**
      * Find an environment frame binding `key`.
-     * Returns `not-found` if not found.
      */
     findFrame(key, options = {}) {
         const notFound = options['notFound'];
@@ -148,7 +147,8 @@ class Environment {
      * Get the value of `key`, or `#u`
      * if there is no binding.
      */
-    get(key, notFound = undefined) {
+    get(key, options = {}) {
+        const notFound = options['notFound'];
         let [value, found] = this.getTuple(key);
         if (found) {
             return value;
@@ -159,9 +159,9 @@ class Environment {
     }
     /**
      * Get the entry of `key`, which is a list `(key binding)`.
-     * If there is no binding, `not-found` is returned.
      */
-    getEntry(key, notFound = undefined) {
+    getEntry(key, options = {}) {
+        const notFound = options['notFound'];
         let [value, found] = this.getTuple(key);
         if (found) {
             return [key, value];
@@ -208,7 +208,8 @@ class Environment {
      * Get the binding defined by the current environment frame,
      * if any.
      */
-    getLocal(key, notFound = undefined) {
+    getLocal(key, options = {}) {
+        const notFound = options['notFound'];
         let [value, found] = this.getLocalTuple(key);
         if (found) {
             return value;
@@ -233,12 +234,11 @@ class Environment {
         return this.parent;
     }
     /**
-     * Get the value of `key`, or `not-found`
-     * if there is no binding.
+     * Get the value of `key`.
      */
-    getValue(key, notFound = undefined) {
+    getValue(key, options = {}) {
         // Alias for `.get`.
-        return this.get(key, notFound);
+        return this.get(key, options);
     }
     /**
      * Whether `key` is bound in the environment,
@@ -316,15 +316,15 @@ class TypedEnvironment extends Environment {
      * Get the binding defined by the current environment frame,
      * if any.
      */
-    get(key, notFound = undefined) {
-        return this.getUntypedValue(key, notFound);
+    get(key, options = {}) {
+        return this.getUntypedValue(key, options);
     }
     /**
      * Get the local binding defined by the current environment frame,
      * if any.
      */
-    getLocal(key, notFound = undefined) {
-        return this.getUntypedLocalValue(key, notFound);
+    getLocal(key, options = {}) {
+        return this.getUntypedLocalValue(key, options);
     }
     /**
      * Get the type of `key`. If there is no binding,
@@ -336,24 +336,27 @@ class TypedEnvironment extends Environment {
     }
     /**
      * Get the typed value of `key`, which is a tuple
-     * `(value type)`. If there is no binding, return
-     * `not-found`.
+     * `(value type)`.
      */
-    getTypedValue(key, notFound = [undefined, 'undefined']) {
+    getTypedValue(key, options = {
+        notFound: [undefined, 'undefined']
+    }) {
         // The same as `super.get`, except that
-        // `not-found` defaults to `(#u "undefined")`.
-        return super.get(key, notFound);
+        // `notFound` defaults to `(#u "undefined")`.
+        return super.get(key, options);
     }
-    getTypedLocalValue(key, notFound = [undefined, 'undefined']) {
+    getTypedLocalValue(key, options = {
+        notFound: [undefined, 'undefined']
+    }) {
         // The same as `super.get-local`, except that
         // `not-found` defaults to `(#u "undefined")`.
-        return super.getLocal(key, notFound);
+        return super.getLocal(key, options);
     }
     /**
-     * Get the untyped value of `key`. If there is no binding,
-     * return `not-found`.
+     * Get the untyped value of `key`.
      */
-    getUntypedValue(key, notFound = undefined) {
+    getUntypedValue(key, options = {}) {
+        const notFound = options['notFound'];
         const [value, typ] = this.getTypedValue(key);
         if (typ === 'undefined') {
             return notFound;
@@ -363,10 +366,10 @@ class TypedEnvironment extends Environment {
         }
     }
     /**
-     * Get the untyped local value of `key`. If there is no binding,
-     * return `not-found`.
+     * Get the untyped local value of `key`.
      */
-    getUntypedLocalValue(key, notFound = undefined) {
+    getUntypedLocalValue(key, options = {}) {
+        const notFound = options['notFound'];
         const [value, typ] = this.getTypedLocalValue(key);
         if (typ === 'undefined') {
             return notFound;
@@ -534,7 +537,6 @@ class EnvironmentStack extends TypedEnvironment {
     }
     /**
      * Find an environment frame binding `key`.
-     * Returns `not-found` if not found.
      */
     findFrame(key, options = {}) {
         const notFound = options['notFound'];
@@ -555,7 +557,6 @@ class EnvironmentStack extends TypedEnvironment {
     }
     /**
      * Find a local environment frame binding `key`.
-     * Returns `not-found` if not found.
      */
     findLocalFrame(key, options = {}) {
         const notFound = options['notFound'];

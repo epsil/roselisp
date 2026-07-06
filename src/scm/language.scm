@@ -921,7 +921,8 @@
   (define expressions
     (send module get-expressions))
   (define bindings
-    (or (oget options "bindings")
+    (or (send module get-bindings)
+        (oget options "bindings")
         (new LispEnvironment)))
   (define module-environment
     (send module get-environment))
@@ -1121,7 +1122,10 @@
        ((and (symbol? op)
              (send bindings has op)
              (not (eq? (send bindings get-type op)
-                       "macro")))
+                       "macro"))
+             ;; (not (macro-function?
+             ;;       (send env get op)))
+             )
         (set! result
               (compile-function-call
                node1 env inherited-options)))
@@ -2653,7 +2657,6 @@
          ;; Set the `shouldInline` option to `#f`
          ;; if `op` is a symbol and there is a
          ;; compilation macro defined for it.
-         ;; options
          (js-obj-append
           options
           (js-obj "shouldInline" #f))
@@ -4258,10 +4261,12 @@
        ((array? exp)
         (define x1
           (first exp))
+        (define x1-str x1)
         (define x2
           (second exp))
+        (define x2-str x2)
         (when (symbol? x1)
-          (set! x1
+          (set! x1-str
                 (print-estree
                  (compile-symbol
                   (make-rose x1)
@@ -4270,7 +4275,7 @@
                   (js-obj "literalSymbol" #t))
                  options)))
         (when (symbol? x2)
-          (set! x2
+          (set! x2-str
                 (print-estree
                  (compile-symbol
                   (make-rose x2)
@@ -4278,18 +4283,20 @@
                   options
                   (js-obj "literalSymbol" #t))
                  options)))
-        (unless (memq? x2 seen)
+        (unless (memq? x2-str seen)
           (when bindings
-            (send bindings set-local x2 #t "variable"))
+            ;; (send bindings set-local x2 #t "variable")
+            )
           (push-right! seen x2)
           (push-right! specifiers
                        (new ImportSpecifier
-                            (new Identifier x1)
-                            (new Identifier x2)))))
+                            (new Identifier x1-str)
+                            (new Identifier x2-str)))))
        (else
         (define x1 exp)
+        (define x1-str x1)
         (when (symbol? x1)
-          (set! x1
+          (set! x1-str
                 (print-estree
                  (compile-symbol
                   (make-rose x1)
@@ -4297,13 +4304,14 @@
                   options
                   (js-obj "literalSymbol" #t))
                  options)))
-        (unless (memq? x1 seen)
+        (unless (memq? x1-str seen)
           (when bindings
-            (send bindings set-local x1 #t "variable"))
-          (push-right! seen x1)
+            ;; (send bindings set-local x1 #t "variable")
+            )
+          (push-right! seen x1-str)
           (push-right! specifiers
                        (new ImportSpecifier
-                            (new Identifier x1)))))))
+                            (new Identifier x1-str)))))))
     (set! y-exp (second x-exp)))
    (else
     (when (symbol? x-exp)
@@ -4334,7 +4342,8 @@
   (set! src (new Literal y-exp))
   (when (and bindings
              (symbol? x-exp))
-    (send bindings set-local x-exp #t "variable"))
+    ;; (send bindings set-local x-exp #t "variable")
+    )
   (cond
    ((null? specifiers)
     (empty-program))
@@ -5414,6 +5423,11 @@
   (when bindings
     (send bindings set-local name #t "macro"))
   result)
+
+;;; Whether `f` is a macro function.
+(define (macro-function? f)
+  (and (function? f)
+       (get-field lispMacro f)))
 
 ;;; Compiler macro for `(make-hash ...)` expressions.
 (defmacro compile-make-hash-macro (assocs)
@@ -6975,6 +6989,8 @@
 
   (define/public interpretation-environment)
 
+  (define/public bindings)
+
   (define/public module-map)
 
   (define/public symbol-map (make-hash))
@@ -6985,6 +7001,27 @@
     (set-field! parent-environment this parent)
     (set-field! name this name)
     (send this initialize-nodes nodes))
+
+  (define/public (get-bindings)
+    (define bindings
+      (get-field bindings this))
+    (unless bindings
+      (set! bindings (new LispEnvironment))
+      ;; (for ((node (get-field require-nodes this)))
+      ;;   (define exp
+      ;;     (send node get-value))
+      ;;   (when (tagged-list? exp 'require)
+      ;;     (when (tagged-list? (array-list-second exp) 'only-in)
+      ;;       (define entries
+      ;;         (drop (array-list-second exp) 2))
+      ;;       (for ((entry entries))
+      ;;         (define sym
+      ;;           (if (array-list? entry)
+      ;;               (array-list-second entry)
+      ;;               entry))
+      ;;         (send bindings set-local sym #t "variable")))))
+      (set-field! bindings this bindings))
+    bindings)
 
   (define/public (get-expressions)
     (get-field expressions this))
@@ -7247,8 +7284,11 @@
     ;; Iterate over `main-nodes`, evaluating definition forms
     ;; in the module environment.
     (for ((node (get-field main-nodes this)))
+      ;; TODO: Need to initialize bindings as well.
       (define exp
         (send node get-value))
+      ;; (define bindings
+      ;;   (send this get-bindings))
       (cond
        ((or (definition? exp)
             (macro-definition? exp))
@@ -7263,6 +7303,7 @@
           (if (macro-definition? exp)
               "macro"
               "procedure"))
+        ;; (send bindings set-local name #t typ)
         (send module-env
               set-local
               name

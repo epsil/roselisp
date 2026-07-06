@@ -756,9 +756,11 @@ declare class Module {
     environment: any;
     parentEnvironment: any;
     interpretationEnvironment: any;
+    bindings: any;
     moduleMap: any;
     symbolMap: any;
     constructor(nodes?: any, parent?: any, name?: any);
+    getBindings(): any;
     getExpressions(): any;
     getEnvironment(): any;
     getModuleMap(): any;

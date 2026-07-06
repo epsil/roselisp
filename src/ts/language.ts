@@ -844,7 +844,7 @@ compileModuleExpression.lispSource = [Symbol.for('define'), [Symbol.for('compile
  */
 function compileModuleObject(module: any, env: any, options: any = {}): any {
   const expressions: any = module.getExpressions();
-  let bindings: any = options['bindings'] || new LispEnvironment();
+  let bindings: any = module.getBindings() || options['bindings'] || new LispEnvironment();
   const moduleEnvironment: any = module.getEnvironment();
   const moduleOptions: any = {
     bindings: bindings,
@@ -862,7 +862,7 @@ function compileModuleObject(module: any, env: any, options: any = {}): any {
   return program;
 }
 
-compileModuleObject.lispSource = [Symbol.for('define'), [Symbol.for('compile-module-object'), Symbol.for('module'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expressions'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get-expressions')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'bindings'], [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('define'), Symbol.for('module-environment'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get-environment')]], [Symbol.for('define'), Symbol.for('module-options'), [Symbol.for('js-obj-append'), [Symbol.for('js-obj'), 'bindings', Symbol.for('bindings'), 'currentModule', Symbol.for('module'), 'referencedSymbols', [Symbol.for('quote'), []], 'inlineLispSources', [Symbol.for('send'), Symbol.for('module'), Symbol.for('get-inline-lisp-sources-flag')]], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('header-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('header-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('require-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('require-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('main-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('main-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('provide-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('provide-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('global-environment'), [Symbol.for('build-global-environment'), [Symbol.for('oget'), Symbol.for('module-options'), 'referencedSymbols'], Symbol.for('module-environment'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('program'), [Symbol.for('make-program'), [Symbol.for('append'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('header-statements')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('require-statements')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('global-environment')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('main-statements')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('provide-statements')]]]], Symbol.for('program')];
+compileModuleObject.lispSource = [Symbol.for('define'), [Symbol.for('compile-module-object'), Symbol.for('module'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expressions'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get-expressions')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('or'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get-bindings')], [Symbol.for('oget'), Symbol.for('options'), 'bindings'], [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('define'), Symbol.for('module-environment'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get-environment')]], [Symbol.for('define'), Symbol.for('module-options'), [Symbol.for('js-obj-append'), [Symbol.for('js-obj'), 'bindings', Symbol.for('bindings'), 'currentModule', Symbol.for('module'), 'referencedSymbols', [Symbol.for('quote'), []], 'inlineLispSources', [Symbol.for('send'), Symbol.for('module'), Symbol.for('get-inline-lisp-sources-flag')]], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('header-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('header-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('require-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('require-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('main-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('main-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('provide-statements'), [Symbol.for('compile-statement'), [Symbol.for('begin-wrap-rose'), [Symbol.for('get-field'), Symbol.for('provide-nodes'), Symbol.for('module')]], Symbol.for('module-environment'), Symbol.for('module-options')]], [Symbol.for('define'), Symbol.for('global-environment'), [Symbol.for('build-global-environment'), [Symbol.for('oget'), Symbol.for('module-options'), 'referencedSymbols'], Symbol.for('module-environment'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('program'), [Symbol.for('make-program'), [Symbol.for('append'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('header-statements')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('require-statements')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('global-environment')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('main-statements')], [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('provide-statements')]]]], Symbol.for('program')];
 
 /**
  * Compile a set of files.
@@ -978,6 +978,8 @@ function compileRose(node: any, env: any, options: any = {}): any {
     } else {
       const op: any = exp[0];
       if ((typeof op === 'symbol') && bindings.has(op) && (bindings.getType(op) !== 'macro')) {
+        // (not (macro-function?
+        //       (send env get op)))
         result = compileFunctionCall(node1, env, inheritedOptions);
       } else if ((typeof op === 'symbol') && (op.description as string).match(new RegExp('^\\.'))) {
         result = compileDot(node1, env, inheritedOptions);
@@ -2888,7 +2890,6 @@ function compileFunctionCall(node: any, env: any, options: any = {}): any {
   const calleeExp: any = compileExpression(callee, env, (symbolicOp && !shouldInlineOp) ? // Set the `shouldInline` option to `#f`
   // if `op` is a symbol and there is a
   // compilation macro defined for it.
-  // options
   {
     ...options,
     shouldInline: false
@@ -4781,6 +4782,7 @@ function compileRequire(node: any, env: any, options: any = {}): any {
       let exp: any = x.getValue();
       if (Array.isArray(exp)) {
         let x1: any = exp[0];
+        let x1Str: any = x1;
         let x2: any = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && ((): any => {
           const x3: any = lastCdr(exp);
           return Array.isArray(x3) && (x3.length === 0);
@@ -4800,36 +4802,38 @@ function compileRequire(node: any, env: any, options: any = {}): any {
           }
           return result;
         })() : exp[1];
+        let x2Str: any = x2;
         if (typeof x1 === 'symbol') {
-          x1 = printEstree(compileSymbol(makeRose(x1), env, options, {
+          x1Str = printEstree(compileSymbol(makeRose(x1), env, options, {
             literalSymbol: true
           }), options);
         }
         if (typeof x2 === 'symbol') {
-          x2 = printEstree(compileSymbol(makeRose(x2), env, options, {
+          x2Str = printEstree(compileSymbol(makeRose(x2), env, options, {
             literalSymbol: true
           }), options);
         }
-        if (!seen.includes(x2)) {
+        if (!seen.includes(x2Str)) {
           if (bindings) {
-            bindings.setLocal(x2, true, 'variable');
           }
+          // (send bindings set-local x2 #t "variable")
           seen.push(x2);
-          specifiers.push(new ImportSpecifier(new Identifier(x1), new Identifier(x2)));
+          specifiers.push(new ImportSpecifier(new Identifier(x1Str), new Identifier(x2Str)));
         }
       } else {
         let x1: any = exp;
+        let x1Str: any = x1;
         if (typeof x1 === 'symbol') {
-          x1 = printEstree(compileSymbol(makeRose(x1), env, options, {
+          x1Str = printEstree(compileSymbol(makeRose(x1), env, options, {
             literalSymbol: true
           }), options);
         }
-        if (!seen.includes(x1)) {
+        if (!seen.includes(x1Str)) {
           if (bindings) {
-            bindings.setLocal(x1, true, 'variable');
           }
-          seen.push(x1);
-          specifiers.push(new ImportSpecifier(new Identifier(x1)));
+          // (send bindings set-local x1 #t "variable")
+          seen.push(x1Str);
+          specifiers.push(new ImportSpecifier(new Identifier(x1Str)));
         }
       }
     }
@@ -4867,8 +4871,8 @@ function compileRequire(node: any, env: any, options: any = {}): any {
   }
   src = new Literal(yExp);
   if (bindings && (typeof xExp === 'symbol')) {
-    bindings.setLocal(xExp, true, 'variable');
   }
+  // (send bindings set-local x-exp #t "variable")
   if (Array.isArray(specifiers) && (specifiers.length === 0)) {
     return emptyProgram();
   } else {
@@ -4876,7 +4880,7 @@ function compileRequire(node: any, env: any, options: any = {}): any {
   }
 }
 
-compileRequire.lispSource = [Symbol.for('define'), [Symbol.for('compile-require'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('es-module-interop'), [Symbol.for('oget'), Symbol.for('options'), 'esModuleInterop']], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('oget'), Symbol.for('options'), 'bindings']], [Symbol.for('define'), Symbol.for('x-node'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('x-exp'), [Symbol.for('send'), Symbol.for('x-node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('y-node'), [Symbol.for('or'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('x-node')]], [Symbol.for('define'), Symbol.for('y-exp'), [Symbol.for('send'), Symbol.for('y-node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('seen'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('src'), null], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x-exp'), [Symbol.for('quote'), Symbol.for('only-in')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('send'), Symbol.for('x-node'), Symbol.for('drop'), 2]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('x1'), [Symbol.for('first'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('x2'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x1')], [Symbol.for('set!'), Symbol.for('x1'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x1')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x2')], [Symbol.for('set!'), Symbol.for('x2'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x2')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('x2'), Symbol.for('seen')], [Symbol.for('when'), Symbol.for('bindings'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('set-local'), Symbol.for('x2'), true, 'variable']], [Symbol.for('push-right!'), Symbol.for('seen'), Symbol.for('x2')], [Symbol.for('push-right!'), Symbol.for('specifiers'), [Symbol.for('new'), Symbol.for('ImportSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x1')], [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x2')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('x1'), Symbol.for('exp')], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x1')], [Symbol.for('set!'), Symbol.for('x1'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x1')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('x1'), Symbol.for('seen')], [Symbol.for('when'), Symbol.for('bindings'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('set-local'), Symbol.for('x1'), true, 'variable']], [Symbol.for('push-right!'), Symbol.for('seen'), Symbol.for('x1')], [Symbol.for('push-right!'), Symbol.for('specifiers'), [Symbol.for('new'), Symbol.for('ImportSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x1')]]]]]]], [Symbol.for('set!'), Symbol.for('y-exp'), [Symbol.for('second'), Symbol.for('x-exp')]]], [Symbol.for('else'), [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x-exp')], [Symbol.for('set!'), Symbol.for('x-exp'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x-exp')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('set!'), Symbol.for('specifiers'), [Symbol.for('list'), [Symbol.for('if'), Symbol.for('es-module-interop'), [Symbol.for('new'), Symbol.for('ImportDefaultSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x-exp')]], [Symbol.for('new'), Symbol.for('ImportNamespaceSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x-exp')]]]]]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('y-exp')], [Symbol.for('set!'), Symbol.for('y-exp'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('y-exp')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('set!'), Symbol.for('src'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('y-exp')]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('bindings'), [Symbol.for('symbol?'), Symbol.for('x-exp')]], [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('set-local'), Symbol.for('x-exp'), true, 'variable']], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('specifiers')], [Symbol.for('empty-program')]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('ImportDeclaration'), Symbol.for('specifiers'), Symbol.for('src')]]]];
+compileRequire.lispSource = [Symbol.for('define'), [Symbol.for('compile-require'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('es-module-interop'), [Symbol.for('oget'), Symbol.for('options'), 'esModuleInterop']], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('oget'), Symbol.for('options'), 'bindings']], [Symbol.for('define'), Symbol.for('x-node'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('x-exp'), [Symbol.for('send'), Symbol.for('x-node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('y-node'), [Symbol.for('or'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('x-node')]], [Symbol.for('define'), Symbol.for('y-exp'), [Symbol.for('send'), Symbol.for('y-node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('seen'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('src'), null], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x-exp'), [Symbol.for('quote'), Symbol.for('only-in')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('send'), Symbol.for('x-node'), Symbol.for('drop'), 2]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('x1'), [Symbol.for('first'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('x1-str'), Symbol.for('x1')], [Symbol.for('define'), Symbol.for('x2'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('x2-str'), Symbol.for('x2')], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x1')], [Symbol.for('set!'), Symbol.for('x1-str'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x1')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x2')], [Symbol.for('set!'), Symbol.for('x2-str'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x2')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('x2-str'), Symbol.for('seen')], [Symbol.for('when'), Symbol.for('bindings')], [Symbol.for('push-right!'), Symbol.for('seen'), Symbol.for('x2')], [Symbol.for('push-right!'), Symbol.for('specifiers'), [Symbol.for('new'), Symbol.for('ImportSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x1-str')], [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x2-str')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('x1'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('x1-str'), Symbol.for('x1')], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x1')], [Symbol.for('set!'), Symbol.for('x1-str'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x1')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('x1-str'), Symbol.for('seen')], [Symbol.for('when'), Symbol.for('bindings')], [Symbol.for('push-right!'), Symbol.for('seen'), Symbol.for('x1-str')], [Symbol.for('push-right!'), Symbol.for('specifiers'), [Symbol.for('new'), Symbol.for('ImportSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x1-str')]]]]]]], [Symbol.for('set!'), Symbol.for('y-exp'), [Symbol.for('second'), Symbol.for('x-exp')]]], [Symbol.for('else'), [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('x-exp')], [Symbol.for('set!'), Symbol.for('x-exp'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('x-exp')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('set!'), Symbol.for('specifiers'), [Symbol.for('list'), [Symbol.for('if'), Symbol.for('es-module-interop'), [Symbol.for('new'), Symbol.for('ImportDefaultSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x-exp')]], [Symbol.for('new'), Symbol.for('ImportNamespaceSpecifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('x-exp')]]]]]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('y-exp')], [Symbol.for('set!'), Symbol.for('y-exp'), [Symbol.for('print-estree'), [Symbol.for('compile-symbol'), [Symbol.for('make-rose'), Symbol.for('y-exp')], Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'literalSymbol', true]], Symbol.for('options')]]], [Symbol.for('set!'), Symbol.for('src'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('y-exp')]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('bindings'), [Symbol.for('symbol?'), Symbol.for('x-exp')]]], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('specifiers')], [Symbol.for('empty-program')]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('ImportDeclaration'), Symbol.for('specifiers'), Symbol.for('src')]]]];
 
 /**
  * Compile a `(set! ...)` expression.
@@ -5937,6 +5941,15 @@ function compileDefineMacro(node: any, env: any, options: any = {}): any {
 }
 
 compileDefineMacro.lispSource = [Symbol.for('define'), [Symbol.for('compile-define-macro'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('name-and-args'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('macro-fn-form'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('second'), Symbol.for('macro-fn-form')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('macro-fn-form'), 2]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('oget'), Symbol.for('options'), 'bindings']], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('compile-rose'), [Symbol.for('transfer-comments'), Symbol.for('node'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote-splicing'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('set-field!'), Symbol.for('lispMacro'), [Symbol.for('unquote'), Symbol.for('name')], true]]], Symbol.for('node')]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('bindings'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('set-local'), Symbol.for('name'), true, 'macro']], Symbol.for('result')];
+
+/**
+ * Whether `f` is a macro function.
+ */
+function macroFunctionP(f: any): any {
+  return (f instanceof Function) && f.lispMacro;
+}
+
+macroFunctionP.lispSource = [Symbol.for('define'), [Symbol.for('macro-function?'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('get-field'), Symbol.for('lispMacro'), Symbol.for('f')]]];
 
 /**
  * Compiler macro for `(make-hash ...)` expressions.
@@ -7989,6 +8002,8 @@ class Module {
 
   interpretationEnvironment: any;
 
+  bindings: any;
+
   moduleMap: any;
 
   symbolMap: any = new Map();
@@ -7997,6 +8012,28 @@ class Module {
     this.parentEnvironment = parent;
     this.name = name;
     this.initializeNodes(nodes);
+  }
+
+  getBindings(): any {
+    let bindings: any = this.bindings;
+    if (!bindings) {
+      bindings = new LispEnvironment();
+      // (for ((node (get-field require-nodes this)))
+      //   (define exp
+      //     (send node get-value))
+      //   (when (tagged-list? exp 'require)
+      //     (when (tagged-list? (array-list-second exp) 'only-in)
+      //       (define entries
+      //         (drop (array-list-second exp) 2))
+      //       (for ((entry entries))
+      //         (define sym
+      //           (if (array-list? entry)
+      //               (array-list-second entry)
+      //               entry))
+      //         (send bindings set-local sym #t "variable")))))
+      this.bindings = bindings;
+    }
+    return bindings;
   }
 
   getExpressions(): any {
@@ -8480,7 +8517,10 @@ class Module {
     // Iterate over `main-nodes`, evaluating definition forms
     // in the module environment.
     for (let node of this.mainNodes) {
+      // TODO: Need to initialize bindings as well.
       let exp: any = node.getValue();
+      // (define bindings
+      //   (send this get-bindings))
       if (definitionp(exp) || macroDefinitionP(exp)) {
         // Evaluate `define` and `defmacro` forms in the module
         // environment. Be error-tolerant since the module
@@ -8508,6 +8548,7 @@ class Module {
           name = name[0];
         }
         const typ: any = macroDefinitionP(exp) ? 'macro' : 'procedure';
+        // (send bindings set-local name #t typ)
         moduleEnv.setLocal(name, thunk(function (): any {
           let result: any = undefined;
           try {

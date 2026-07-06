@@ -149,7 +149,7 @@
     (define not-found
       (oget options "notFound"))
     (define-values (value found)
-      (send this get-tuple key))
+      (send this get-tuple key options))
     (if found
         value
         not-found))
@@ -182,9 +182,9 @@
     (drop frames offset))
 
   ;;; Get the binding for `key` as a tuple `(value found)`.
-  (define/public (get-tuple key)
+  (define/public (get-tuple key (options (js-obj)))
     (define env
-      (send this find-frame key))
+      (send this find-frame key options))
     (if env
         (send env get-local-tuple key)
         (values #u #f)))

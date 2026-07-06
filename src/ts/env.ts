@@ -217,7 +217,7 @@ class Environment {
    * Get the binding for `key` as a tuple `(value found)`.
    */
   getTuple(key: any, options: any = {}): any {
-    let env: any = this.findFrame(key, options);
+    let env: any = this.findFrame(key);
     if (env) {
       return env.getLocalTuple(key);
     } else {

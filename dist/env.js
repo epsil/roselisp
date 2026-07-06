@@ -149,7 +149,7 @@ class Environment {
      */
     get(key, options = {}) {
         const notFound = options['notFound'];
-        let [value, found] = this.getTuple(key);
+        let [value, found] = this.getTuple(key, options);
         if (found) {
             return value;
         }
@@ -195,7 +195,7 @@ class Environment {
     /**
      * Get the binding for `key` as a tuple `(value found)`.
      */
-    getTuple(key) {
+    getTuple(key, options = {}) {
         let env = this.findFrame(key);
         if (env) {
             return env.getLocalTuple(key);

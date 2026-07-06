@@ -184,7 +184,7 @@
   ;;; Get the binding for `key` as a tuple `(value found)`.
   (define/public (get-tuple key (options (js-obj)))
     (define env
-      (send this find-frame key options))
+      (send this find-frame key))
     (if env
         (send env get-local-tuple key)
         (values #u #f)))

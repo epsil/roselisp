@@ -107,7 +107,7 @@ declare class Environment {
     /**
      * Get the binding for `key` as a tuple `(value found)`.
      */
-    getTuple(key: any): any;
+    getTuple(key: any, options?: any): any;
     /**
      * Get the binding defined by the current environment frame,
      * if any.

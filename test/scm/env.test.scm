@@ -15,6 +15,38 @@
 
 (describe "Environment"
   (fn ()
+    (it "find-frame"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env find-frame 'foo)
+           env)))
+    (it "find-frame, nonexistant binding"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env find-frame 'quux)
+           #u)))
+    (it "find-frame, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env find-frame 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "find-frame, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env find-frame 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get"
         (fn ()
           (define env
@@ -23,7 +55,7 @@
           (assert-equal
            (send env get 'foo)
            "bar")))
-    (it "get nonexistant binding"
+    (it "get, nonexistant binding"
         (fn ()
           (define env
             (new Environment
@@ -31,7 +63,7 @@
           (assert-equal
            (send env get 'quux)
            #u)))
-    (it "get nonexistant binding with notFound option"
+    (it "get, nonexistant binding, notFound option"
         (fn ()
           (define env
             (new Environment
@@ -39,14 +71,14 @@
           (assert-equal
            (send env get 'quux (js-obj "notFound" #f))
            #f)))
-    (xit "get with filter option"
-         (fn ()
-           (define env
-             (new Environment
-                  '((foo "bar"))))
-           (assert-equal
-            (send env get 'foo (js-obj "filter" (lambda (x) #f)))
-            #u)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-value"
         (fn ()
           (define env
@@ -63,6 +95,94 @@
           (assert-equal
            (send env get-local 'foo)
            "bar")))
+    (it "get-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-local 'quux)
+           #u)))
+    (it "get-local, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-local 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-local, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-local 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
+    (it "get-tuple"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-tuple 'foo)
+           (values "bar" #t))))
+    (it "get-tuple, nonexistant binding"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-tuple 'quux)
+           (values #u #f))))
+    (it "get-tuple, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-tuple 'quux (js-obj "notFound" #f))
+           (values #f #f))))
+    (it "get-tuple, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-tuple 'quux (js-obj "filter" (fn (x) #f)))
+           (values #u #f))))
+    (it "get-local-tuple"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-local-tuple 'foo)
+           (values "bar" #t))))
+    (it "get-local-tuple, nonexistant binding"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-local-tuple 'quux)
+           (values #u #f))))
+    (it "get-local-tuple, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-local-tuple 'quux (js-obj "notFound" #f))
+           (values #f #f))))
+    (it "get-local-tuple, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env get-local-tuple 'quux (js-obj "filter" (fn (x) #f)))
+           (values #u #f))))
     (it "has"
         (fn ()
           (define env
@@ -71,6 +191,22 @@
           (assert-equal
            (send env has 'foo)
            #t)))
+    (it "has, nonexistant binding"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env has 'quux)
+           #f)))
+    (it "has, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env has 'foo (js-obj "filter" (fn (x) #f)))
+           #f)))
     (it "has-local"
         (fn ()
           (define env
@@ -79,6 +215,22 @@
           (assert-equal
            (send env has-local 'foo)
            #t)))
+    (it "has-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env has-local 'quux)
+           #f)))
+    (it "has-local, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))))
+          (assert-equal
+           (send env has-local 'foo (js-obj "filter" (fn (x) #f)))
+           #f)))
     (it "set"
         (fn ()
           (define env
@@ -133,6 +285,30 @@
           (assert-equal
            (send env get 'foo)
            "bar")))
+    (it "get, nonexistant binding"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-value"
         (fn ()
           (define env
@@ -141,6 +317,30 @@
           (assert-equal
            (send env get-value 'foo)
            "bar")))
+    (it "get-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-value 'quux)
+           #u)))
+    (it "get-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-value 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-value, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-typed-value"
         (fn ()
           (define env
@@ -149,14 +349,62 @@
           (assert-equal
            (send env get-typed-value 'foo)
            '("bar" "variable"))))
-    (xit "get-local" ; ???
-         (fn ()
-           (define env
-             (new TypedEnvironment
-                  '((foo "bar" "variable"))))
-           (assert-equal
-            (send env get-local 'foo)
-            "bar")))
+    (it "get-typed-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-typed-value 'quux)
+           '(#u "undefined"))))
+    (it "get-typed-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-typed-value 'quux (js-obj "notFound" '(#f "undefined")))
+           '(#f "undefined"))))
+    (it "get-typed-value, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           '(#u "undefined"))))
+    (it "get-local"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'foo)
+           "bar")))
+    (it "get-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'quux)
+           #u)))
+    (it "get-local, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-local, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-type"
         (fn ()
           (define env
@@ -165,6 +413,22 @@
           (assert-equal
            (send env get-type 'foo)
            "variable")))
+    (it "get-type, nonexistant binding"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-type 'quux)
+           "undefined")))
+    (it "get-type, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-type 'foo (js-obj "filter" (fn (x) #f)))
+           "undefined")))
     (it "has"
         (fn ()
           (define env
@@ -173,14 +437,46 @@
           (assert-equal
            (send env has 'foo)
            #t)))
-    (xit "has-local"
-         (fn ()
-           (define env
-             (new TypedEnvironment
-                  '((foo "bar" "variable"))))
-           (assert-equal
-            (send env has-local 'foo)
-            #t)))
+    (it "has, nonexistant binding"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has 'quux)
+           #f)))
+    (it "has, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has 'foo (js-obj "filter" (fn (x) #f)))
+           #f)))
+    (it "has-local"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has-local 'foo)
+           #t)))
+    (it "has-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has-local 'quux)
+           #f)))
+    (it "has-local, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has-local 'foo (js-obj "filter" (fn (x) #f)))
+           #f)))
     (it "set"
         (fn ()
           (define env
@@ -235,6 +531,30 @@
           (assert-equal
            (send env get 'foo)
            "bar")))
+    (it "get, nonexistant binding"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-value"
         (fn ()
           (define env
@@ -243,6 +563,30 @@
           (assert-equal
            (send env get-value 'foo)
            "bar")))
+    (it "get-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-value 'quux)
+           #u)))
+    (it "get-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-value 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-value, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-typed-value"
         (fn ()
           (define env
@@ -251,14 +595,62 @@
           (assert-equal
            (send env get-typed-value 'foo)
            '("bar" "variable"))))
-    (xit "get-local"
-         (fn ()
-           (define env
-             (new LispEnvironment
-                  '((foo "bar" "variable"))))
-           (assert-equal
-            (send env get-local 'foo)
-            "bar")))
+    (it "get-typed-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-typed-value 'quux)
+           '(#u "undefined"))))
+    (it "get-typed-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-typed-value 'quux (js-obj "notFound" '(#f "undefined")))
+           '(#f "undefined"))))
+    (it "get-typed-value, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           '(#u "undefined"))))
+    (it "get-local"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'foo)
+           "bar")))
+    (it "get-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'quux)
+           #u)))
+    (it "get-local, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-local, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-local 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-type"
         (fn ()
           (define env
@@ -267,6 +659,22 @@
           (assert-equal
            (send env get-type 'foo)
            "variable")))
+    (it "get-type, nonexistant binding"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-type 'quux)
+           "undefined")))
+    (it "get-type, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env get-type 'foo (js-obj "filter" (fn (x) #f)))
+           "undefined")))
     (it "has"
         (fn ()
           (define env
@@ -275,14 +683,46 @@
           (assert-equal
            (send env has 'foo)
            #t)))
-    (xit "has-local"
-         (fn ()
-           (define env
-             (new LispEnvironment
-                  '((foo "bar" "variable"))))
-           (assert-equal
-            (send env has-local 'foo)
-            #t)))
+    (it "has, nonexistant binding"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has 'quux)
+           #f)))
+    (it "has, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has 'foo (js-obj "filter" (fn (x) #f)))
+           #f)))
+    (it "has-local"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has-local 'foo)
+           #t)))
+    (it "has-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has-local 'quux)
+           #f)))
+    (it "has-local, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (assert-equal
+           (send env has-local 'foo (js-obj "filter" (fn (x) #f)))
+           #f)))
     (it "set"
         (fn ()
           (define env
@@ -338,6 +778,33 @@
           (assert-equal
            (send env get 'foo)
            "bar")))
+    (it "get, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-value"
         (fn ()
           (define env
@@ -347,6 +814,33 @@
           (assert-equal
            (send env get-value 'foo)
            "bar")))
+    (it "get-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get-value 'quux)
+           #u)))
+    (it "get-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get-value 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-value, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-typed-value"
         (fn ()
           (define env
@@ -369,6 +863,33 @@
           (assert-equal
            (send env get-typed-value 'foo)
            '("bar" "variable"))))
+    (it "get-typed-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get-typed-value 'quux)
+           '(#u "undefined"))))
+    (it "get-typed-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get-typed-value 'quux (js-obj "notFound" '(#f "undefined")))
+           '(#f "undefined"))))
+    (it "get-typed-value, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentStack
+                 (new LispEnvironment
+                      '((foo "bar" "variable")))))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           '(#u "undefined"))))
     (it "set, one environment"
         (fn ()
           (define env1
@@ -439,6 +960,39 @@
           (assert-equal
            (send env get 'foo)
            'baz)))
+    (it "get, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-value"
         (fn ()
           (define env
@@ -450,6 +1004,39 @@
           (assert-equal
            (send env get-value 'foo)
            'baz)))
+    (it "get-value, notexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get-value 'quux)
+           #u)))
+    (it "get-value, notexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get-value 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-value, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-typed-value"
         (fn ()
           (define env
@@ -460,7 +1047,40 @@
                       '((bar baz "variable")))))
           (assert-equal
            (send env get-typed-value 'foo)
-           '(baz "variable"))))))
+           '(baz "variable"))))
+    (it "get-typed-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get-typed-value 'quux)
+           '(#u "undefined"))))
+    (it "get-typed-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get-typed-value 'quux (js-obj "notFound" '(#f "undefined")))
+           '(#f "undefined"))))
+    (it "get-typed-value, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentPipe
+                 (new LispEnvironment
+                      '((foo bar "variable")))
+                 (new LispEnvironment
+                      '((bar baz "variable")))))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           '(#u "undefined"))))))
 
 (describe "EnvironmentComposition"
   (fn ()
@@ -475,6 +1095,39 @@
           (assert-equal
            (send env get 'foo)
            'baz)))
+    (it "get, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-value"
         (fn ()
           (define env
@@ -486,6 +1139,39 @@
           (assert-equal
            (send env get-value 'foo)
            'baz)))
+    (it "get-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get-value 'quux)
+           #u)))
+    (it "get-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get-value 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-value, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "get-typed-value"
         (fn ()
           (define env
@@ -496,7 +1182,40 @@
                       '((foo bar "variable")))))
           (assert-equal
            (send env get-typed-value 'foo)
-           '(baz "variable"))))))
+           '(baz "variable"))))
+    (it "get-typed-value, nonexistant binding"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get-typed-value 'quux)
+           '(#u "undefined"))))
+    (it "get-typed-value, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get-typed-value 'quux (js-obj "notFound" '(#f "undefined")))
+           '(#f "undefined"))))
+    (it "get-typed-value, filter option"
+        (fn ()
+          (define env
+            (new EnvironmentComposition
+                 (new LispEnvironment
+                      '((bar baz "variable")))
+                 (new LispEnvironment
+                      '((foo bar "variable")))))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           '(#u "undefined"))))))
 
 (describe "ThunkedEnvironment"
   (fn ()
@@ -509,7 +1228,37 @@
                     "variable"))))
           (assert-equal
            (send env get 'foo)
-           "bar")))))
+           "bar")))
+    (it "get, nonexistant binding"
+        (fn ()
+          (define env
+            (new ThunkedEnvironment
+                 `((foo
+                    ,(thunk (lambda () "bar"))
+                    "variable"))))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new ThunkedEnvironment
+                 `((foo
+                    ,(thunk (lambda () "bar"))
+                    "variable"))))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new ThunkedEnvironment
+                 `((foo
+                    ,(thunk (lambda () "bar"))
+                    "variable"))))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))))
 
 (describe "JavaScriptEnvironment"
   (fn ()
@@ -520,13 +1269,55 @@
           (assert-equal
            (send env get 'Map)
            Map)))
-    (xit "get-local"
-         (fn ()
-           (define env
-             (new JavaScriptEnvironment))
-           (assert-equal
-            (send env get-local 'Map)
-            Map)))
+    (it "get, nonexistant binding"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env get 'quux)
+           #u)))
+    (it "get, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env get 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get, filter option"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           #u)))
+    (it "get-local"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env get-local 'Map)
+           Map)))
+    (it "get-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env get-local 'quux)
+           #u)))
+    (it "get-local, nonexistant binding, notFound option"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env get-local 'quux (js-obj "notFound" #f))
+           #f)))
+    (it "get-local, filter option"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env get-local 'Map (js-obj "filter" (fn (x) #f)))
+           #u)))
     (it "has"
         (fn ()
           (define env
@@ -534,10 +1325,38 @@
           (assert-equal
            (send env has 'Map)
            #t)))
-    (xit "has-local"
-         (fn ()
-           (define env
-             (new JavaScriptEnvironment))
-           (assert-equal
-            (send env has-local 'Map)
-            #t)))))
+    (it "has, nonexistant binding"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env has 'quux)
+           #f)))
+    (it "has, filter option"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env has 'Map (js-obj "filter" (fn (x) #f)))
+           #f)))
+    (it "has-local"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env has-local 'Map)
+           #t)))
+    (it "has-local, nonexistant binding"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env has-local 'quux)
+           #f)))
+    (it "has-local, filter option"
+        (fn ()
+          (define env
+            (new JavaScriptEnvironment))
+          (assert-equal
+           (send env has-local 'Map (js-obj "filter" (fn (x) #f)))
+           #f)))))

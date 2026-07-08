@@ -7247,6 +7247,8 @@
       (new EnvironmentStack
            module-env
            js-environment))
+    (define continuation-env
+      (send this get-continuation-env))
     (define imported)
     (define local)
     (define module)
@@ -7270,9 +7272,10 @@
         (when (symbol? module-name)
           (set! module-name
                 (symbol->string module-name)))
-        (set! module-name (send module-name
-                                replace
-                                (regexp "^\\./") ""))
+        (set! module-name
+              (regexp-replace (regexp "^\\./")
+                              module-name
+                              ""))
         (cond
          ((and (get-field module-map this)
                (send (get-field module-map this) has module-name))
@@ -7300,8 +7303,6 @@
       ;; TODO: Need to initialize continuation-env as well.
       (define exp
         (send node get-value))
-      ;; (define continuation-env
-      ;;   (send this get-continuation-env))
       (cond
        ((or (definition? exp)
             (macro-definition? exp))
@@ -7316,7 +7317,7 @@
           (if (macro-definition? exp)
               "macro"
               "procedure"))
-        ;; (send continuation-env set-local name #t typ)
+        (send continuation-env set-local name #t typ)
         (send module-env
               set-local
               name
@@ -7325,7 +7326,8 @@
                  (define result #u)
                  (try
                    (set! result
-                         (eval_ exp module-interpretation-env))
+                         (eval_ `(begin ,exp ,name)
+                                module-interpretation-env))
                    (catch Error e
                      ;; Do nothing
                      ))

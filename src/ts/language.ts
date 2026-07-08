@@ -8398,6 +8398,7 @@ class Module {
   makeEnvironment(parent: any = undefined): any {
     const moduleEnv: any = new LispEnvironment([], parent);
     const moduleInterpretationEnv: any = new EnvironmentStack(moduleEnv, jsEnvironment);
+    let continuationEnv: any = this.getContinuationEnv();
     let imported: any;
     let local: any;
     let module: any;
@@ -8540,8 +8541,6 @@ class Module {
     for (let node of this.mainNodes) {
       // TODO: Need to initialize continuation-env as well.
       let exp: any = node.getValue();
-      // (define continuation-env
-      //   (send this get-continuation-env))
       if (definitionp(exp) || macroDefinitionP(exp)) {
         // Evaluate `define` and `defmacro` forms in the module
         // environment. Be error-tolerant since the module
@@ -8569,11 +8568,11 @@ class Module {
           name = name[0];
         }
         const typ: any = macroDefinitionP(exp) ? 'macro' : 'procedure';
-        // (send continuation-env set-local name #t typ)
+        continuationEnv.setLocal(name, true, typ);
         moduleEnv.setLocal(name, thunk(function (): any {
           let result: any = undefined;
           try {
-            result = eval_(exp, moduleInterpretationEnv);
+            result = eval_([Symbol.for('begin'), exp, name], moduleInterpretationEnv);
           } catch (e) {
             if (e instanceof Error) {
             } else {

@@ -105,26 +105,26 @@ bar.lispMacro = true;
 export {
   bar
 };"))))
-        (xit "import function for use in a macro"
-             (fn ()
-               (assert-equal
-                (compile-modules
-                 (list
-                  '(module a scheme
-                     (require (only-in "./b"
-                                       baz))
-                     (defmacro bar (x)
-                       (baz x))
-                     (define (foo x)
-                       (bar x)))
-                  '(module b scheme
-                     (define (baz x)
-                       x)
-                     (provide baz)))
-                 compilation-environment
-                 (js-obj "language" "JavaScript"))
+        (it "import function for use in a macro"
+            (fn ()
+              (assert-equal
+               (compile-modules
                 (list
-                 "import {
+                 '(module a scheme
+                    (require (only-in "./b"
+                                      baz))
+                    (defmacro bar (x)
+                      (baz x))
+                    (define (foo x)
+                      (bar x)))
+                 '(module b scheme
+                    (define (baz x)
+                      x)
+                    (provide baz)))
+                compilation-environment
+                (js-obj "language" "JavaScript"))
+               (list
+                "import {
   baz
 } from './b';
 
@@ -139,7 +139,7 @@ function foo(x) {
   return x;
 }"
 
-                 "function baz(x) {
+                "function baz(x) {
   return x;
 }
 

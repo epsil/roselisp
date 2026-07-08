@@ -151,6 +151,14 @@ describe('*', function (): any {
 });
 
 describe('/', function (): any {
+  it('(/)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('/')],
+      undefined,
+    ]);
+  });
   it('(/ 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),

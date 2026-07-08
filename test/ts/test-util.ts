@@ -866,6 +866,7 @@ function testMacro(exp: any, env: any): any {
   const body: any = exp.slice(1);
   let group: any = [];
   const groups: any = [];
+  let only: any = false;
   const _end: any = body.length;
   for (let i: any = 0; i < _end; i = i + 3) {
     const prompt: any = (body as any)[i];
@@ -873,7 +874,7 @@ function testMacro(exp: any, env: any): any {
     const value: any = body[i + 2];
     if (
       Array.isArray(expression) &&
-      expression.length === 2 &&
+      expression.length >= 2 &&
       expression[0] === Symbol.for('describe')
     ) {
       if (group.length > 0) {
@@ -882,10 +883,18 @@ function testMacro(exp: any, env: any): any {
       }
       const description: any = expression[1];
       group.push(description);
+    } else if (
+      Array.isArray(expression) &&
+      expression.length >= 1 &&
+      expression[0] === Symbol.for('only')
+    ) {
+      only = true;
     } else {
       const itDescription: any = printSexp(expression);
       const itExpression: any = [
-        Symbol.for('it'),
+        ...(only
+          ? [Symbol.for('send'), Symbol.for('it'), Symbol.for('only')]
+          : [Symbol.for('it')]),
         itDescription,
         [
           Symbol.for('fn'),
@@ -900,6 +909,7 @@ function testMacro(exp: any, env: any): any {
         ],
       ];
       group.push(itExpression);
+      only = false;
     }
   }
   if (group.length > 0) {

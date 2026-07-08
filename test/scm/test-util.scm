@@ -321,6 +321,7 @@
 (defmacro test-macro (&rest body)
   (define group '())
   (define groups '())
+  (define only #f)
   (for ((i (range 0 (array-list-length body) 3)))
     (define prompt
       (aget body i))
@@ -330,8 +331,8 @@
       (aget body (+ i 2)))
     (cond
      ((and (array-list? expression)
-           (= (array-list-length expression)
-              2)
+           (>= (array-list-length expression)
+               2)
            (eq? (array-list-first expression)
                 'describe))
       (when (> (array-list-length group) 0)
@@ -340,18 +341,28 @@
       (define description
         (array-list-second expression))
       (push-right! group description))
+     ((and (array-list? expression)
+           (>= (array-list-length expression)
+               1)
+           (eq? (array-list-first expression)
+                'only))
+      (set! only #t))
      (else
       (define it-description
         (print-sexp expression))
       (define it-expression
-        `(it ,it-description
-             (fn ()
-               (test-repl
-                '(roselisp
-                  ,prompt
-                  ,expression
-                  ,value)))))
-      (push-right! group it-expression))))
+        `(,@(if only
+                '(send it only)
+                '(it))
+          ,it-description
+          (fn ()
+            (test-repl
+             '(roselisp
+               ,prompt
+               ,expression
+               ,value)))))
+      (push-right! group it-expression)
+      (set! only #f))))
   (when (> (array-list-length group) 0)
     (push-right groups group))
   (define tests

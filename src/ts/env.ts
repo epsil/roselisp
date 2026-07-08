@@ -170,7 +170,11 @@ class Environment {
    */
   get(key: any, options: any = {}): any {
     const notFound: any = options['notFound'];
-    let [value, found]: any[] = this.getTuple(key, options);
+    const inheritedOptions: any = {
+      ...options,
+      notFound: false
+    };
+    let [value, found]: any[] = this.getTuple(key, inheritedOptions);
     if (found) {
       return value;
     } else {
@@ -183,7 +187,11 @@ class Environment {
    */
   getEntry(key: any, options: any = {}): any {
     const notFound: any = options['notFound'];
-    let [value, found]: any[] = this.getTuple(key);
+    const inheritedOptions: any = {
+      ...options,
+      notFound: false
+    };
+    let [value, found]: any[] = this.getTuple(key, options);
     if (found) {
       return [key, value];
     } else {
@@ -199,10 +207,11 @@ class Environment {
    * current environment, which is the first element in the list.
    */
   getFrames(options: any = {}): any {
+    const filter: any = options['filter'];
     const offset: any = options['offset'] || 0;
     let frames: any = [];
     let env: any = this;
-    while (env && !frames.includes(env)) {
+    while (env && !frames.includes(env) && !(filter && !filter(env))) {
       frames.push(env);
       env = env.parent;
     }
@@ -217,11 +226,16 @@ class Environment {
    * Get the binding for `key` as a tuple `(value found)`.
    */
   getTuple(key: any, options: any = {}): any {
-    let env: any = this.findFrame(key);
+    const notFound: any = options['notFound'];
+    const inheritedOptions: any = {
+      ...options,
+      notFound: false
+    };
+    let env: any = this.findFrame(key, inheritedOptions);
     if (env) {
-      return env.getLocalTuple(key);
+      return env.getLocalTuple(key, options);
     } else {
-      return [undefined, false];
+      return [notFound, false];
     }
   }
 
@@ -231,7 +245,11 @@ class Environment {
    */
   getLocal(key: any, options: any = {}): any {
     const notFound: any = options['notFound'];
-    let [value, found]: any[] = this.getLocalTuple(key);
+    const inheritedOptions: any = {
+      ...options,
+      notFound: false
+    };
+    let [value, found]: any[] = this.getLocalTuple(key, inheritedOptions);
     if (found) {
       return value;
     } else {
@@ -243,9 +261,14 @@ class Environment {
    * Get the binding defined by the current environment frame,
    * if any, as a tuple `(binding found)`.
    */
-  getLocalTuple(key: any): any {
+  getLocalTuple(key: any, options: any = {}): any {
+    const notFound: any = options['notFound'];
+    const filter: any = options['filter'];
+    if (filter && !filter(this)) {
+      return [notFound, false];
+    }
     let found: any = this.hasLocal(key);
-    const value: any = found ? this.table.get(key) : undefined;
+    const value: any = found ? this.table.get(key) : notFound;
     return [value, found];
   }
 
@@ -268,8 +291,8 @@ class Environment {
    * Whether `key` is bound in the environment,
    * or in a parent environment.
    */
-  has(key: any): any {
-    let env: any = this.findFrame(key);
+  has(key: any, options: any = {}): any {
+    let env: any = this.findFrame(key, options);
     if (env) {
       return true;
     } else {
@@ -280,8 +303,13 @@ class Environment {
   /**
    * Whether `key` is bound in the current environment frame.
    */
-  hasLocal(key: any): any {
-    return this.table.has(key);
+  hasLocal(key: any, options: any = {}): any {
+    const filter: any = options['filter'];
+    if (filter && !filter(this)) {
+      return false;
+    } else {
+      return this.table.has(key);
+    }
   }
 
   /**
@@ -362,8 +390,12 @@ class TypedEnvironment extends Environment {
    * Get the type of `key`. If there is no binding,
    * return `"#u"`.
    */
-  getType(key: any): any {
-    const [, typ]: any[] = this.getTypedValue(key);
+  getType(key: any, options: any = {}): any {
+    const inheritedOptions: any = {
+      ...options,
+      notFound: [undefined, 'undefined']
+    };
+    const [, typ]: any[] = this.getTypedValue(key, inheritedOptions);
     return typ;
   }
 
@@ -376,7 +408,10 @@ class TypedEnvironment extends Environment {
   }): any {
     // The same as `super.get`, except that
     // `notFound` defaults to `(#u "undefined")`.
-    return super.get(key, options);
+    return super.get(key, {
+      ...options,
+      notFound: options['notFound'] || [undefined, 'undefined']
+    });
   }
 
   getTypedLocalValue(key: any, options: any = {
@@ -384,7 +419,10 @@ class TypedEnvironment extends Environment {
   }): any {
     // The same as `super.get-local`, except that
     // `not-found` defaults to `(#u "undefined")`.
-    return super.getLocal(key, options);
+    return super.getLocal(key, {
+      ...options,
+      notFound: options['notFound'] || [undefined, 'undefined']
+    });
   }
 
   /**
@@ -392,7 +430,11 @@ class TypedEnvironment extends Environment {
    */
   getUntypedValue(key: any, options: any = {}): any {
     const notFound: any = options['notFound'];
-    const [value, typ]: any[] = this.getTypedValue(key);
+    const inheritedOptions: any = {
+      ...options,
+      notFound: [undefined, 'undefined']
+    };
+    const [value, typ]: any[] = this.getTypedValue(key, inheritedOptions);
     if (typ === 'undefined') {
       return notFound;
     } else {
@@ -405,7 +447,11 @@ class TypedEnvironment extends Environment {
    */
   getUntypedLocalValue(key: any, options: any = {}): any {
     const notFound: any = options['notFound'];
-    const [value, typ]: any[] = this.getTypedLocalValue(key);
+    const inheritedOptions: any = {
+      ...options,
+      notFound: [undefined, 'undefined']
+    };
+    const [value, typ]: any[] = this.getTypedLocalValue(key, inheritedOptions);
     if (typ === 'undefined') {
       return notFound;
     } else {
@@ -480,8 +526,8 @@ class ThunkedEnvironment extends TypedEnvironment {
    * Get the binding defined by the current environment frame,
    * if any, as a tuple `(binding found)`.
    */
-  getLocalTuple(key: any): any {
-    let tuple: any = this.getUnforcedLocalTuple(key);
+  getLocalTuple(key: any, options: any = {}): any {
+    let tuple: any = this.getUnforcedLocalTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
       let [val, typ]: any[] = binding;
@@ -495,32 +541,38 @@ class ThunkedEnvironment extends TypedEnvironment {
     return tuple;
   }
 
-  getUnforcedTuple(key: any): any {
-    if (this.hasLocal(key)) {
-      return this.getUnforcedLocalTuple(key);
+  getUnforcedTuple(key: any, options: any = {}): any {
+    const notFound: any = options['notFound'];
+    const filter: any = options['filter'];
+    if (filter && !filter(this)) {
+      return [notFound, false];
+    } else if (this.hasLocal(key, options)) {
+      return this.getUnforcedLocalTuple(key, options);
     } else {
-      for (let frame of this.getFrames({
+      const inheritedOptions: any = {
+        ...options,
         offset: 1
-      })) {
-        if (frame.hasLocal(key)) {
-          return (frame instanceof ThunkedEnvironment) ? frame.getUnforcedLocalTuple(key) : frame.getLocalTuple(key);
+      };
+      for (let frame of this.getFrames(inheritedOptions)) {
+        if (frame.hasLocal(key, options)) {
+          return (frame instanceof ThunkedEnvironment) ? frame.getUnforcedLocalTuple(key, options) : frame.getLocalTuple(key, options);
         }
       }
-      return [undefined, false];
+      return [notFound, false];
     }
   }
 
-  getUnforcedLocalTuple(key: any): any {
-    return super.getLocalTuple(key);
+  getUnforcedLocalTuple(key: any, options: any = {}): any {
+    return super.getLocalTuple(key, options);
   }
 
   /**
    * Get the type of `key`. If there is no binding,
    * return `"undefined"`.
    */
-  getType(key: any): any {
+  getType(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
-    let tuple: any = this.getUnforcedTuple(key);
+    let tuple: any = this.getUnforcedTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
       const [, typ]: any[] = binding;
@@ -605,6 +657,9 @@ class EnvironmentStack extends TypedEnvironment {
   findLocalFrame(key: any, options: any = {}): any {
     const notFound: any = options['notFound'];
     const filter: any = options['filter'];
+    if (filter && !filter(this)) {
+      return notFound;
+    }
     const inheritedOptions: any = {
       ...options,
       notFound: false
@@ -612,10 +667,12 @@ class EnvironmentStack extends TypedEnvironment {
     let result: any = notFound;
     const environments: any = this.stack;
     for (let env of environments) {
-      const frame: any = env.findFrame(key, inheritedOptions);
-      if (frame) {
-        result = frame;
-        break;
+      if (!(filter && !filter(env))) {
+        const frame: any = env.findFrame(key, inheritedOptions);
+        if (frame) {
+          result = frame;
+          break;
+        }
       }
     }
     return result;
@@ -626,18 +683,23 @@ class EnvironmentStack extends TypedEnvironment {
    * on the stack.
    */
   getFrames(options: any = {}): any {
+    const filter: any = options['filter'];
     let frames: any = [];
     const offset: any = options['offset'] || 0;
     const environments: any = this.stack;
     const parent: any = this.parent;
+    const inheritedOptions: any = {
+      ...options,
+      offset: 0
+    };
     if (parent) {
       environments.push(parent);
     }
     for (let env of environments) {
-      for (let f of env.getFrames()) {
+      for (let f of env.getFrames(inheritedOptions)) {
         if (!frames.includes(f)) {
           if (f instanceof EnvironmentStack) {
-            frames = [...frames, ...f.getFrames()];
+            frames = [...frames, ...f.getFrames(inheritedOptions)];
           } else {
             frames.push(f);
           }
@@ -654,24 +716,26 @@ class EnvironmentStack extends TypedEnvironment {
   /**
    * Get the binding for `key` as a tuple `(value found)`.
    */
-  getTuple(key: any): any {
-    let env: any = this.findFrame(key);
+  getTuple(key: any, options: any = {}): any {
+    const notFound: any = options['notFound'];
+    let env: any = this.findFrame(key, options);
     if (env) {
-      return env.getTuple(key);
+      return env.getTuple(key, options);
     } else {
-      return [undefined, false];
+      return [notFound, false];
     }
   }
 
   /**
    * Get the local binding for `key` as a tuple `(value found)`.
    */
-  getLocalTuple(key: any): any {
-    let env: any = this.findLocalFrame(key);
+  getLocalTuple(key: any, options: any = {}): any {
+    const notFound: any = options['notFound'];
+    let env: any = this.findLocalFrame(key, options);
     if (env) {
-      return env.getTuple(key);
+      return env.getTuple(key, options);
     } else {
-      return [undefined, false];
+      return [notFound, false];
     }
   }
 
@@ -759,14 +823,19 @@ class EnvironmentPipe extends TypedEnvironment {
   /**
    * Get the binding for `key` as a tuple `(value found)`.
    */
-  getTuple(key: any): any {
-    return this.getLocalTuple(key);
+  getTuple(key: any, options: any = {}): any {
+    return this.getLocalTuple(key, options);
   }
 
   /**
    * Get the local binding for `key` as a tuple `(value found)`.
    */
-  getLocalTuple(key: any): any {
+  getLocalTuple(key: any, options: any = {}): any {
+    const notFound: any = options['filter'];
+    const filter: any = options['filter'];
+    if (filter && !filter(this)) {
+      return [notFound, false];
+    }
     let currentKey: any = key;
     let lastKey: any = key;
     let lastEnv: any;
@@ -786,17 +855,17 @@ class EnvironmentPipe extends TypedEnvironment {
     } else if (this.parent) {
       return this.parent.getTuple(currentKey);
     } else {
-      return [undefined, false];
+      return [notFound, false];
     }
   }
 
-  has(key: any): any {
-    let [value, found]: any[] = this.getTuple(key);
+  has(key: any, options: any = {}): any {
+    let [value, found]: any[] = this.getTuple(key, options);
     return found;
   }
 
-  hasLocal(key: any): any {
-    let [value, found]: any[] = this.getLocalTuple(key);
+  hasLocal(key: any, options: any = {}): any {
+    let [value, found]: any[] = this.getLocalTuple(key, options);
     return found;
   }
 }
@@ -843,20 +912,26 @@ class DynamicEnvironment extends TypedEnvironment {
    * Get the binding defined by the dynamic environment,
    * if any, as a tuple `(binding found)`.
    */
-  getLocalTuple(key: any): any {
-    let [value, found]: any[] = this.lookupF(key);
-    if (found) {
-      return [[value, this.typingF(value)], true];
+  getLocalTuple(key: any, options: any = {}): any {
+    const notFound: any = options['notFound'];
+    const filter: any = options['filter'];
+    if (filter && !filter(this)) {
+      return [notFound, false];
     } else {
-      return [undefined, false];
+      let [value, found]: any[] = this.lookupF(key);
+      if (found) {
+        return [[value, this.typingF(value)], true];
+      } else {
+        return [notFound, false];
+      }
     }
   }
 
   /**
    * Whether `key` is bound by the dynamic environment.
    */
-  hasLocal(key: any): any {
-    let [, found]: any[] = this.getLocalTuple(key);
+  hasLocal(key: any, options: any = {}): any {
+    let [, found]: any[] = this.getLocalTuple(key, options);
     return found;
   }
 }

@@ -117,7 +117,7 @@ declare class Environment {
      * Get the binding defined by the current environment frame,
      * if any, as a tuple `(binding found)`.
      */
-    getLocalTuple(key: any): any;
+    getLocalTuple(key: any, options?: any): any;
     /**
      * Get the parent environment, if any.
      */
@@ -130,11 +130,11 @@ declare class Environment {
      * Whether `key` is bound in the environment,
      * or in a parent environment.
      */
-    has(key: any): any;
+    has(key: any, options?: any): any;
     /**
      * Whether `key` is bound in the current environment frame.
      */
-    hasLocal(key: any): any;
+    hasLocal(key: any, options?: any): any;
     /**
      * Map a function over the environment.
      */
@@ -181,7 +181,7 @@ declare class TypedEnvironment extends Environment {
      * Get the type of `key`. If there is no binding,
      * return `"#u"`.
      */
-    getType(key: any): any;
+    getType(key: any, options?: any): any;
     /**
      * Get the typed value of `key`, which is a tuple
      * `(value type)`.
@@ -231,14 +231,14 @@ declare class ThunkedEnvironment extends TypedEnvironment {
      * Get the binding defined by the current environment frame,
      * if any, as a tuple `(binding found)`.
      */
-    getLocalTuple(key: any): any;
-    getUnforcedTuple(key: any): any;
-    getUnforcedLocalTuple(key: any): any;
+    getLocalTuple(key: any, options?: any): any;
+    getUnforcedTuple(key: any, options?: any): any;
+    getUnforcedLocalTuple(key: any, options?: any): any;
     /**
      * Get the type of `key`. If there is no binding,
      * return `"undefined"`.
      */
-    getType(key: any): any;
+    getType(key: any, options?: any): any;
 }
 /**
  * Lisp environment.
@@ -290,11 +290,11 @@ declare class EnvironmentStack extends TypedEnvironment {
     /**
      * Get the binding for `key` as a tuple `(value found)`.
      */
-    getTuple(key: any): any;
+    getTuple(key: any, options?: any): any;
     /**
      * Get the local binding for `key` as a tuple `(value found)`.
      */
-    getLocalTuple(key: any): any;
+    getLocalTuple(key: any, options?: any): any;
     /**
      * Whether the stack contains an environment that binds `key`.
      */
@@ -326,13 +326,13 @@ declare class EnvironmentPipe extends TypedEnvironment {
     /**
      * Get the binding for `key` as a tuple `(value found)`.
      */
-    getTuple(key: any): any;
+    getTuple(key: any, options?: any): any;
     /**
      * Get the local binding for `key` as a tuple `(value found)`.
      */
-    getLocalTuple(key: any): any;
-    has(key: any): any;
-    hasLocal(key: any): any;
+    getLocalTuple(key: any, options?: any): any;
+    has(key: any, options?: any): any;
+    hasLocal(key: any, options?: any): any;
 }
 /**
  * Compose environments right-to-left.
@@ -364,11 +364,11 @@ declare class DynamicEnvironment extends TypedEnvironment {
      * Get the binding defined by the dynamic environment,
      * if any, as a tuple `(binding found)`.
      */
-    getLocalTuple(key: any): any;
+    getLocalTuple(key: any, options?: any): any;
     /**
      * Whether `key` is bound by the dynamic environment.
      */
-    hasLocal(key: any): any;
+    hasLocal(key: any, options?: any): any;
 }
 /**
  * JavaScript environment.

@@ -541,10 +541,11 @@
          (,colon_ ,compile-colon "compiler")
          (,cond_ ,compile-cond "compiler")
          (,continue_ ,compile-continue "compiler")
+         (,declare-macro_ ,compile-declare-macro "compiler")
          (,define-async_ ,compile-define-async "compiler")
          (,define-class_ ,compile-define-class "compiler")
-         (,define-generator_ ,compile-define-generator "compiler")
          (,define-fields_ ,compile-define-fields "compiler")
+         (,define-generator_ ,compile-define-generator "compiler")
          (,define-macro_ ,compile-define-macro "compiler")
          (,define-type_ ,compile-define-type "compiler")
          (,define-values_ ,compile-define-values "compiler")
@@ -4282,8 +4283,7 @@
                  options)))
         (unless (memq? x2-str seen)
           (when continuation-env
-            ;; (send continuation-env set-local x2 #t "variable")
-            )
+            (send continuation-env set-local x2 #t "variable"))
           (push-right! seen x2)
           (push-right! specifiers
                        (new ImportSpecifier
@@ -4303,8 +4303,7 @@
                  options)))
         (unless (memq? x1-str seen)
           (when continuation-env
-            ;; (send continuation-env set-local x1 #t "variable")
-            )
+            (send continuation-env set-local x1 #t "variable"))
           (push-right! seen x1-str)
           (push-right! specifiers
                        (new ImportSpecifier
@@ -4339,8 +4338,7 @@
   (set! src (new Literal y-exp))
   (when (and continuation-env
              (symbol? x-exp))
-    ;; (send continuation-env set-local x-exp #t "variable")
-    )
+    (send continuation-env set-local x-exp #t "variable"))
   (cond
    ((null? specifiers)
     (empty-program))
@@ -5421,6 +5419,17 @@
     (send continuation-env set-local name #t "macro"))
   result)
 
+;;; Compile a `(declare-macro ...)` expression.
+(define (compile-declare-macro node env (options (js-obj)))
+  (define name
+    (~> node
+        (send _ get 1)
+        (send _ get-value)))
+  (define continuation-env
+    (oget options "continuationEnv"))
+  (send continuation-env set-local name #t "macro")
+  (empty-program))
+
 ;;; Whether `f` is a macro function.
 (define (macro-function? f)
   (and (function? f)
@@ -5859,6 +5868,13 @@
     (eval_ f-exp env))
   (send env set name f "macro")
   f-exp)
+
+;;; Expand a `(declare-macro ...)` expression.
+(defmacro declare-macro_ (x)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
 
 ;;; Expand a `(for ...)` expression.
 (defmacro for_ (&whole exp &environment env)
@@ -7004,19 +7020,19 @@
       (get-field continuation-env this))
     (unless continuation-env
       (set! continuation-env (new LispEnvironment))
-      ;; (for ((node (get-field require-nodes this)))
-      ;;   (define exp
-      ;;     (send node get-value))
-      ;;   (when (tagged-list? exp 'require)
-      ;;     (when (tagged-list? (array-list-second exp) 'only-in)
-      ;;       (define entries
-      ;;         (drop (array-list-second exp) 2))
-      ;;       (for ((entry entries))
-      ;;         (define sym
-      ;;           (if (array-list? entry)
-      ;;               (array-list-second entry)
-      ;;               entry))
-      ;;         (send continuation-env set-local sym #t "variable")))))
+      (for ((node (get-field require-nodes this)))
+        (define exp
+          (send node get-value))
+        (when (tagged-list? exp 'require)
+          (when (tagged-list? (array-list-second exp) 'only-in)
+            (define entries
+              (drop (array-list-second exp) 2))
+            (for ((entry entries))
+              (define sym
+                (if (array-list? entry)
+                    (array-list-second entry)
+                    entry))
+              (send continuation-env set-local sym #t "variable")))))
       (set-field! continuation-env this continuation-env))
     continuation-env)
 
@@ -7882,6 +7898,7 @@
          (clj/try ,clj-try_ "macro")
          (cond ,cond_ "macro")
          (continue ,continue_ "macro")
+         (declare-macro ,declare-macro_ "macro")
          (defclass ,defclass_ "macro")
          (define ,define_ "macro")
          (define-class ,define-class_ "macro")

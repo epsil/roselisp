@@ -67,6 +67,7 @@ describe('compile-modules', function (): any {
                 Symbol.for('require'),
                 [Symbol.for('only-in'), './a', Symbol.for('foo')],
               ],
+              [Symbol.for('declare-macro'), Symbol.for('foo')],
               [
                 Symbol.for('define'),
                 [Symbol.for('bar'), Symbol.for('x')],
@@ -112,6 +113,7 @@ describe('compile-modules', function (): any {
                 Symbol.for('require'),
                 [Symbol.for('only-in'), './b', Symbol.for('bar')],
               ],
+              [Symbol.for('declare-macro'), Symbol.for('bar')],
               [
                 Symbol.for('define'),
                 [Symbol.for('foo'), Symbol.for('x')],
@@ -251,6 +253,7 @@ describe('compile-modules', function (): any {
                   [Symbol.for('foo'), Symbol.for('foo1')],
                 ],
               ],
+              [Symbol.for('declare-macro'), Symbol.for('foo1')],
               [
                 Symbol.for('define'),
                 [Symbol.for('bar'), Symbol.for('x')],

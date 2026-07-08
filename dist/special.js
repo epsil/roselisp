@@ -44,6 +44,7 @@ const array_1 = require("./array");
 const env_1 = require("./env");
 const eval_1 = require("./eval");
 const exception_1 = require("./exception");
+const procedures_1 = require("./procedures");
 const rose_1 = require("./rose");
 // (require (only-in "./trampoline"
 //                   tcall))
@@ -387,7 +388,7 @@ fsetSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('fset-special_'), S
  * Evaluate a `(module ...)` form.
  */
 function moduleSpecial_(exp, env) {
-    return (0, eval_1.eval_)([Symbol.for('begin'), ...exp.slice(3)], env);
+    return (0, procedures_1.funcall)(eval_1.eval_, [Symbol.for('begin'), ...exp.slice(3)], env);
 }
 exports.moduleSpecial_ = moduleSpecial_;
 moduleSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('module-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('exp'), 3]]]], Symbol.for('env')]];
@@ -407,7 +408,7 @@ function beginHelper(expressions, env, val) {
         return val;
     }
     else {
-        return beginHelper(expressions.slice(1), env, (0, eval_1.eval_)(expressions[0], env));
+        return (0, procedures_1.funcall)(beginHelper, expressions.slice(1), env, (0, procedures_1.funcall)(eval_1.eval_, expressions[0], env));
     }
 }
 beginHelper.lispSource = [Symbol.for('define'), [Symbol.for('begin-helper'), Symbol.for('expressions'), Symbol.for('env'), Symbol.for('val')], [Symbol.for('if'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('expressions')], 0], Symbol.for('val'), [Symbol.for('tcall'), Symbol.for('begin-helper'), [Symbol.for('rest'), Symbol.for('expressions')], Symbol.for('env'), [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('first'), Symbol.for('expressions')], Symbol.for('env')]]]];
@@ -433,7 +434,7 @@ function letStarSpecial_(exp, env) {
     const letEnv = new env_1.LispEnvironment(bindings);
     const combinedEnv = new env_1.EnvironmentStack(letEnv, env);
     const beginExp = [Symbol.for('begin'), ...initExps, ...body];
-    return (0, eval_1.eval_)(beginExp, combinedEnv);
+    return (0, procedures_1.funcall)(eval_1.eval_, beginExp, combinedEnv);
 }
 exports.letStarSpecial_ = letStarSpecial_;
 letStarSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('let-star-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('var-exps'), [Symbol.for('first'), Symbol.for('params')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('params')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('init-exps'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('var-exp'), Symbol.for('var-exps')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('var-exp')], [Symbol.for('push-right!'), Symbol.for('bindings'), [Symbol.for('list'), Symbol.for('var-exp'), undefined, 'variable']]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('bindings'), [Symbol.for('list'), [Symbol.for('first'), Symbol.for('var-exp')], undefined, 'variable']], [Symbol.for('define'), Symbol.for('init-exp'), [Symbol.for('quasiquote'), [Symbol.for('setq'), [Symbol.for('unquote-splicing'), Symbol.for('var-exp')]]]], [Symbol.for('push-right!'), Symbol.for('init-exps'), Symbol.for('init-exp')]]]], [Symbol.for('define'), Symbol.for('let-env'), [Symbol.for('new'), Symbol.for('LispEnvironment'), Symbol.for('bindings')]], [Symbol.for('define'), Symbol.for('combined-env'), [Symbol.for('new'), Symbol.for('EnvironmentStack'), Symbol.for('let-env'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('begin-exp'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('init-exps')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('tcall'), Symbol.for('eval-t'), Symbol.for('begin-exp'), Symbol.for('combined-env')]];
@@ -1435,7 +1436,7 @@ function condSpecial_(exp, env) {
         const clauses = exp.slice(2);
         const condition = clause[0];
         const thenExpr = (0, util_1.beginWrap)(clause.slice(1));
-        return condHelper((condition === Symbol.for('else')) || (0, eval_1.eval_)([Symbol.for('truep'), condition], env), thenExpr, clauses, env);
+        return (0, procedures_1.funcall)(condHelper, (condition === Symbol.for('else')) || (0, procedures_1.funcall)(eval_1.eval_, [Symbol.for('truep'), condition], env), thenExpr, clauses, env);
     }
 }
 exports.condSpecial_ = condSpecial_;
@@ -1445,7 +1446,7 @@ condSpecial_.lispSource = [Symbol.for('define'), [Symbol.for('cond-special_'), S
  */
 function condHelper(condition, thenExpr, clauses, env) {
     if (condition) {
-        return (0, eval_1.eval_)(thenExpr, env);
+        return (0, procedures_1.funcall)(eval_1.eval_, thenExpr, env);
     }
     else if (clauses.length === 0) {
         return undefined;
@@ -1455,7 +1456,7 @@ function condHelper(condition, thenExpr, clauses, env) {
         const clauses1 = clauses.slice(1);
         const condition1 = clause1[0];
         const thenExpr1 = (0, util_1.beginWrap)(clause1.slice(1));
-        return condHelper((condition1 === Symbol.for('else')) || (0, eval_1.eval_)([Symbol.for('truep'), condition1], env), thenExpr1, clauses1, env);
+        return (0, procedures_1.funcall)(condHelper, (condition1 === Symbol.for('else')) || (0, procedures_1.funcall)(eval_1.eval_, [Symbol.for('truep'), condition1], env), thenExpr1, clauses1, env);
     }
 }
 condHelper.lispSource = [Symbol.for('define'), [Symbol.for('cond-helper'), Symbol.for('condition'), Symbol.for('then-expr'), Symbol.for('clauses'), Symbol.for('env')], [Symbol.for('cond'), [Symbol.for('condition'), [Symbol.for('tcall'), Symbol.for('eval-t'), Symbol.for('then-expr'), Symbol.for('env')]], [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('clauses')], 0], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('clause1'), [Symbol.for('first'), Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('clauses1'), [Symbol.for('rest'), Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('condition1'), [Symbol.for('first'), Symbol.for('clause1')]], [Symbol.for('define'), Symbol.for('then-expr-1'), [Symbol.for('begin-wrap'), [Symbol.for('rest'), Symbol.for('clause1')]]], [Symbol.for('tcall'), Symbol.for('cond-helper'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('condition1'), [Symbol.for('quote'), Symbol.for('else')]], [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('quasiquote'), [Symbol.for('truep'), [Symbol.for('unquote'), Symbol.for('condition1')]]], Symbol.for('env')]], Symbol.for('then-expr-1'), Symbol.for('clauses1'), Symbol.for('env')]]]];

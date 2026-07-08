@@ -46,6 +46,7 @@
                  '(module b scheme
                     (require (only-in "./a"
                                       foo))
+                    (declare-macro foo)
                     (define (bar x)
                       (foo x))))
                 compilation-environment
@@ -76,6 +77,7 @@ function bar(x) {
                  '(module a scheme
                     (require (only-in "./b"
                                       bar))
+                    (declare-macro bar)
                     (define (foo x)
                       (bar x)))
                  '(module b scheme
@@ -156,6 +158,7 @@ export {
                  '(module b scheme
                     (require (only-in "./a"
                                       (foo foo1)))
+                    (declare-macro foo1)
                     (define (bar x)
                       (foo1 x))))
                 compilation-environment

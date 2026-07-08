@@ -2055,8 +2055,7 @@
 ;;; Compile a `(+ ...)` expression.
 (define (compile-add node env (options (js-obj)))
   (compile-binary-expression
-   node env
-   options
+   node env options
    (js-obj "identity" 0
            "operator" "+")))
 
@@ -2492,6 +2491,10 @@
   (define exp
     (send node get-value))
   (cond
+   ((= (array-list-length exp) 1)
+    (compile-expression
+     (make-rose #u node)
+     env options))
    ((= (array-list-length exp) 2)
     (compile-div
      (make-rose
@@ -2552,18 +2555,14 @@
 ;;; Compile a `(js/=== ...)` expression.
 (define (compile-js-is-strictly-equal node env (options (js-obj)))
   (compile-binary-expression
-   node
-   env
-   options
+   node env options
    (js-obj "identity" #t
            "operator" "===")))
 
 ;;; Compile a `(js/== ...)` expression.
 (define (compile-js-is-loosely-equal node env (options (js-obj)))
   (compile-binary-expression
-   node
-   env
-   options
+   node env options
    (js-obj "identity" #t
            "operator" "==")))
 
@@ -2726,8 +2725,7 @@
      env options))
    ((= (array-list-length exp) 3)
     (compile-binary-expression
-     node env
-     options
+     node env options
      (js-obj "identity" #t
              "operator" ">")))
    (else
@@ -2753,8 +2751,7 @@
      env options))
    ((= (array-list-length exp) 3)
     (compile-binary-expression
-     node env
-     options
+     node env options
      (js-obj "identity" #t
              "operator" ">=")))
    (else
@@ -2829,9 +2826,7 @@
          (options (js-obj))
          (settings (js-obj)))
   (compile-binary-expression
-   node
-   env
-   options
+   node env options
    (js-obj-append
     settings
     (js-obj "logical" #t))))
@@ -3000,8 +2995,7 @@
      env options))
    ((= (array-list-length exp) 3)
     (compile-binary-expression
-     node env
-     options
+     node env options
      (js-obj "identity" #t
              "operator" "<")))
    (else
@@ -3027,8 +3021,7 @@
      env options))
    ((= (array-list-length exp) 3)
     (compile-binary-expression
-     node env
-     options
+     node env options
      (js-obj "identity" #t
              "operator" "<=")))
    (else
@@ -3742,16 +3735,14 @@
 ;;; Compile a `(modulo ...)` expression.
 (define (compile-modulo node env (options (js-obj)))
   (compile-binary-expression
-   node env
-   options
+   node env options
    (js-obj "identity" 1
            "operator" "%")))
 
 ;;; Compile a `(* ...)` expression.
 (define (compile-mul node env (options (js-obj)))
   (compile-binary-expression
-   node env
-   options
+   node env options
    (js-obj "identity" 1
            "operator" "*")))
 
@@ -4451,8 +4442,7 @@
      options))
    (else
     (compile-binary-expression
-     node env
-     options
+     node env options
      (js-obj "identity" 0
              "operator" "-")))))
 
@@ -4975,8 +4965,7 @@
      (send node get 1) env options))
    (else
     (compile-binary-expression
-     node env
-     options
+     node env options
      (js-obj "identity" ""
              "operator" "+")))))
 

@@ -2159,7 +2159,10 @@ compileDefineGenerator.lispSource = [Symbol.for('define'), [Symbol.for('compile-
  */
 function compileDiv(node, env, options = {}) {
     let exp = node.getValue();
-    if (exp.length === 2) {
+    if (exp.length === 1) {
+        return compileExpression((0, rose_1.makeRose)(undefined, node), env, options);
+    }
+    else if (exp.length === 2) {
         return compileDiv((0, rose_1.makeRose)([Symbol.for('/'), 1, node.get(1)], node), env, options);
     }
     else {
@@ -2169,7 +2172,7 @@ function compileDiv(node, env, options = {}) {
         });
     }
 }
-compileDiv.lispSource = [Symbol.for('define'), [Symbol.for('compile-div'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('exp')], 2], [Symbol.for('compile-div'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('/'), 1, [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]]]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('compile-binary-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'identity', 1, 'operator', '/']]]]];
+compileDiv.lispSource = [Symbol.for('define'), [Symbol.for('compile-div'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('exp')], 1], [Symbol.for('compile-expression'), [Symbol.for('make-rose'), undefined, Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('exp')], 2], [Symbol.for('compile-div'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('/'), 1, [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]]]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('compile-binary-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options'), [Symbol.for('js-obj'), 'identity', 1, 'operator', '/']]]]];
 /**
  * Compile a `(send ...)` expression.
  */

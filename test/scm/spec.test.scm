@@ -11,13 +11,13 @@
 (test-macro
  ;; ;; license
  ;; > (describe "license")
- ;; #u
+ ;; _
  ;; > license
  ;; 'MPL-2.0
 
  ;; `eq?`
  > (describe "eq?")
- #u
+ _
  > (eq? #t #t)
  #t
  > (eq? #f #f)
@@ -27,7 +27,7 @@
 
  ;; `equal?`
  > (describe "equal?")
- #u
+ _
  > (equal? #t #t)
  #t
  > (equal? #f #f)
@@ -37,7 +37,7 @@
 
  ;; `+`
  > (describe "+")
- #u
+ _
  > (+)
  0
  > (+ 1)
@@ -49,7 +49,7 @@
 
  ;; `-`
  > (describe "-")
- #u
+ _
  > (-)
  0
  > (- 1)
@@ -61,7 +61,7 @@
 
  ;; `*`
  > (describe "*")
- #u
+ _
  > (*)
  1
  > (* 1)
@@ -73,7 +73,7 @@
 
  ;; `/`
  > (describe "/")
- #u
+ _
  ;; > (/)
  ;; #u
  > (/ 1)

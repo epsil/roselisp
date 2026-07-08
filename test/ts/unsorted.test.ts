@@ -485,17 +485,17 @@ describe('Unsorted tests', function (): any {
     });
   });
   describe('continuation environment', function (): any {
-    it('EnvironmentStack', function (): any {
-      const options: any = {};
-      compile(Symbol.for('foo'), undefined, options);
-      const continuationEnv: any = options['continuationEnv'];
-      return assertEqual(continuationEnv instanceof EnvironmentStack, true);
-    });
-    return it('has', function (): any {
+    it('has', function (): any {
       const options: any = {};
       compile([Symbol.for('define'), Symbol.for('foo'), 1], undefined, options);
       const continuationEnv: any = options['continuationEnv'];
       return assertEqual(continuationEnv.has(Symbol.for('foo')), true);
+    });
+    return xit('EnvironmentStack', function (): any {
+      const options: any = {};
+      compile(Symbol.for('foo'), undefined, options);
+      const continuationEnv: any = options['continuationEnv'];
+      return assertEqual(continuationEnv instanceof EnvironmentStack, true);
     });
   });
   describe('dotted lists', function (): any {

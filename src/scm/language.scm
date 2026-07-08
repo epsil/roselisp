@@ -829,15 +829,12 @@
     (add-default-options options #t))
   (define compiled-env
     (new LispEnvironment))
-  (define bindings-env
-    (new LispEnvironment))
   (define continuation-env
-    (new EnvironmentStack bindings-env env))
+    (new LispEnvironment))
   (oset! compilation-options "lispEnvironment" lang-env)
   (oset! compilation-options
          "compilationMappingEnvironment"
          mapping-env)
-  (oset! compilation-options "bindings" bindings-env)
   (oset! compilation-options "continuationEnv" continuation-env)
   (oset! compilation-options "compiledEnv" compiled-env)
   (set! compilation-options
@@ -920,16 +917,16 @@
 (define (compile-module-object module env (options (js-obj)))
   (define expressions
     (send module get-expressions))
-  (define bindings
-    (or (send module get-bindings)
-        (oget options "bindings")
+  (define continuation-env
+    (or (send module get-continuation-env)
+        (oget options "continuationEnv")
         (new LispEnvironment)))
   (define module-environment
     (send module get-environment))
   (define module-options
     (js-obj-append
-     (js-obj "bindings"
-             bindings
+     (js-obj "continuationEnv"
+             continuation-env
              "currentModule"
              module
              "referencedSymbols"
@@ -1093,14 +1090,14 @@
 ;;; Compile a S-expression wrapped in a rose tree.
 (define (compile-rose node env (options (js-obj)))
   (define inherited-options
-    (if (oget options "bindings")
+    (if (oget options "continuationEnv")
         options
         (js-obj-append
          options
-         (js-obj "bindings"
+         (js-obj "continuationEnv"
                  (new LispEnvironment)))))
-  (define bindings
-    (oget inherited-options "bindings"))
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
   (define comments-option
     (oget options "comments"))
   (define node1
@@ -1120,8 +1117,8 @@
         (first exp))
       (cond
        ((and (symbol? op)
-             (send bindings has op)
-             (not (eq? (send bindings get-type op)
+             (send continuation-env has op)
+             (not (eq? (send continuation-env get-type op)
                        "macro"))
              ;; (not (macro-function?
              ;;       (send env get op)))
@@ -1719,7 +1716,7 @@
         (break)))
     (cond
      (should-make-let
-      (define let-bindings '())
+      (define let-continuation-env '())
       (define gensym-map
         (make-hash))
       (for ((i (range 0 (array-list-length params))))
@@ -1748,7 +1745,7 @@
           (define param-gensym
             (gensym (symbol->string param)))
           (hash-set! gensym-map param param-gensym)
-          (push-right! let-bindings
+          (push-right! let-continuation-env
                        (list param-gensym arg-exp)))))
       (define let-body
         (map-tree (lambda (x)
@@ -1758,7 +1755,7 @@
                      (else
                       x)))
                   body))
-      `(let* ,let-bindings
+      `(let* ,let-continuation-env
          ,@let-body))
      (should-make-lambda
       `((lambda ,params
@@ -2163,8 +2160,8 @@
 
 ;;; Compile a `(: ...)` expression.
 (define (compile-colon node env (options (js-obj)))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define sym
     (send node get 1))
   (define sym-exp
@@ -2174,14 +2171,14 @@
   (define type-exp
     (send type_ get-value))
   (define binding-type "variable")
-  (when bindings
-    (when (send bindings has sym-exp)
+  (when continuation-env
+    (when (send continuation-env has sym-exp)
       (set! binding-type
-            (send bindings get-type sym-exp)))
+            (send continuation-env get-type sym-exp)))
     ;; FIXME: This is a kludge. We need a better way
     ;; of storing types---either a separate environment,
     ;; or a typed environment, perhaps.
-    (send bindings set-local sym-exp type-exp binding-type))
+    (send continuation-env set-local sym-exp type-exp binding-type))
   (compile-nop node env options))
 
 ;;; Compile a `(cond ...)` expression.
@@ -2277,8 +2274,8 @@
 
 ;;; Compile a `(define ...)` expression.
 (define (compile-define node env (options (js-obj)))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define language
     (oget options "language"))
   (define inline-lisp-source-option
@@ -2320,7 +2317,7 @@
       (~> (send lambda-exp get 1)
           (send get-value)))
     (define declared-type
-      (send bindings get sym))
+      (send continuation-env get sym))
     (cond
      ((or (eq? declared-type #u)
           (eq? declared-type #t)
@@ -2337,7 +2334,7 @@
                  (else
                   (make-list (array-list-length params) 'Any)))
               ,return-type))
-      (send bindings set-local (second exp) type_ "procedure"))
+      (send continuation-env set-local (second exp) type_ "procedure"))
      (else
       (set! type_ declared-type)))
     (define compiled-type
@@ -2400,7 +2397,7 @@
       result)))
    ;; Uninitialized variable.
    ((= (array-list-length exp) 2)
-    (send bindings set-local (second exp) #t "variable")
+    (send continuation-env set-local (second exp) #t "variable")
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (compile-expression
@@ -2442,11 +2439,11 @@
        env
        options))
     (cond
-     ((send bindings has sym)
+     ((send continuation-env has sym)
       (set! type_
-            (send bindings get sym)))
+            (send continuation-env get sym)))
      (else
-      (send bindings set-local (second exp) type_ "variable")))
+      (send continuation-env set-local (second exp) type_ "variable")))
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (~> sym-compiled
@@ -2625,8 +2622,8 @@
 
 ;;; Compile a function call.
 (define (compile-function-call node env (options (js-obj)))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define referenced-symbols
     (oget options "referencedSymbols"))
   (define current-module
@@ -2686,8 +2683,8 @@
 (define (should-inline? sym env (options (js-obj)))
   (define should-inline-option
     (oget options "shouldInline"))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define compilation-mapping-environment
     (oget options "compilationMappingEnvironment"))
   (define current-module
@@ -2701,8 +2698,8 @@
        (not (send compilation-variables-env has sym))
        ;; Do not inline if there is a local binding for the
        ;; value (e.g., a `let` variable).
-       (not (and bindings
-                 (send bindings has sym)))
+       (not (and continuation-env
+                 (send continuation-env has sym)))
        ;; Do not inline if the current module defines the
        ;; value.
        (not (and current-module
@@ -2858,15 +2855,15 @@
   (define language
     (oget inherited-options "language"))
   (define params '())
-  (define bindings
-    (oget inherited-options "bindings"))
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
   (define args-list)
   (define regular-args)
   (define rest-arg)
-  (set! bindings
+  (set! continuation-env
         (extend-environment (new LispEnvironment)
-                            bindings))
-  (oset! inherited-options "bindings" bindings)
+                            continuation-env))
+  (oset! inherited-options "continuationEnv" continuation-env)
   ;; Parse the parameter list: sort the regular parameters
   ;; from the rest parameter, if any.
   (cond
@@ -2888,7 +2885,7 @@
           (first arg))
         (define typ
           (third arg))
-        (send bindings set-local sym #t "variable")
+        (send continuation-env set-local sym #t "variable")
         (define result
           (~> (if (= (array-list-length arg) 4)
                   (new AssignmentPattern
@@ -2911,7 +2908,7 @@
                     (compile-type typ env options))))
         (push-right! params result))
        ((array? arg)
-        (send bindings set-local (first arg) #t "variable")
+        (send continuation-env set-local (first arg) #t "variable")
         (push-right! params
                      (new AssignmentPattern
                           (new Identifier
@@ -2926,7 +2923,7 @@
                             (second arg))
                            env inherited-options))))
        (else
-        (send bindings set-local arg #t "variable")
+        (send continuation-env set-local arg #t "variable")
         (push-right! params
                      (new Identifier
                           (print-estree
@@ -2935,7 +2932,7 @@
                             env inherited-options)
                            inherited-options)))))))
   (when rest-arg
-    (send bindings set-local rest-arg #t "variable")
+    (send continuation-env set-local rest-arg #t "variable")
     (push-right! params
                  (new RestElement
                       (compile-expression
@@ -3060,13 +3057,13 @@
   (define expression-type
     (oget inherited-options
           "expressionType"))
-  (define bindings
-    (oget inherited-options "bindings"))
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
   (define make-block #f)
-  (set! bindings
+  (set! continuation-env
         (extend-environment (new LispEnvironment)
-                            bindings))
-  (oset! inherited-options "bindings" bindings)
+                            continuation-env))
+  (oset! inherited-options "continuationEnv" continuation-env)
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
@@ -3085,7 +3082,7 @@
                (define sym
                  (first exp))
                (when (and (not make-block)
-                          (send bindings has sym))
+                          (send continuation-env has sym))
                  (set! make-block #t))
                (make-rose
                 `(define ,(send x get 0)
@@ -3094,7 +3091,7 @@
               (else
                (define sym exp)
                (when (and (not make-block)
-                          (send bindings has sym))
+                          (send continuation-env has sym))
                  (set! make-block #t))
                (make-rose
                 `(define ,x)
@@ -3125,13 +3122,13 @@
   (define expression-type
     (oget inherited-options
           "expressionType"))
-  (define bindings
-    (oget inherited-options "bindings"))
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
   (define make-block #f)
-  (set! bindings
+  (set! continuation-env
         (extend-environment (new LispEnvironment)
-                            bindings))
-  (oset! inherited-options "bindings" bindings)
+                            continuation-env))
+  (oset! inherited-options "continuationEnv" continuation-env)
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
@@ -3149,7 +3146,7 @@
               ((symbol? exp)
                (define sym exp)
                (when (and (not make-block)
-                          (send bindings has sym))
+                          (send continuation-env has sym))
                  (set! make-block #t))
                (make-rose
                 `(define ,x)))
@@ -3162,14 +3159,14 @@
                 ((symbol? variables)
                  (define sym variables)
                  (when (and (not make-block)
-                            (send bindings has sym))
+                            (send continuation-env has sym))
                    (set! make-block #t)))
                 (else
                  (define syms
                    (flatten variables))
                  (unless make-block
                    (for ((sym (flatten variables)))
-                     (when (send bindings has sym)
+                     (when (send continuation-env has sym)
                        (set! make-block #t)
                        (break))))))
                (define expression
@@ -3204,8 +3201,8 @@
   (define expression-type
     (oget inherited-options
           "expressionType"))
-  (define bindings
-    (oget inherited-options "bindings"))
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
   (define make-block #t)
   (define hole-marker '_)
   (define variables
@@ -3238,7 +3235,7 @@
                  (make-rose variables)
                  env inherited-options)
                 inherited-options)))
-    (send bindings set-local variables #t "variable"))
+    (send continuation-env set-local variables #t "variable"))
    (else
     (cond
      ((dotted-list? variables)
@@ -3256,7 +3253,7 @@
                   ((eq? x hole-marker)
                    #n)
                   (else
-                   (send bindings set-local x #t "variable")
+                   (send continuation-env set-local x #t "variable")
                    (new Identifier
                         (print-estree
                          (compile-symbol
@@ -3265,7 +3262,7 @@
                          inherited-options)))))
                regular-vars))
     (when rest-var
-      (send bindings set-local rest-var #t "variable")
+      (send continuation-env set-local rest-var #t "variable")
       (push-right! var-decls
                    (new RestElement
                         (new Identifier
@@ -3298,16 +3295,16 @@
     (oget inherited-options
           "expressionType"))
   (define make-block #t)
-  (define bindings
-    (oget inherited-options "bindings"))
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
   (define declaration)
   (define declarator)
   (define left)
   (define right)
-  (set! bindings (extend-environment
-                  (new LispEnvironment)
-                  bindings))
-  (oset! inherited-options "bindings" bindings)
+  (set! continuation-env (extend-environment
+                          (new LispEnvironment)
+                          continuation-env))
+  (oset! inherited-options "continuationEnv" continuation-env)
   (set! declaration
         (compile-define-values
          (make-rose
@@ -3332,13 +3329,13 @@
     (js-obj-append options))
   (define expression-type
     (oget options "expressionType"))
-  (define bindings
-    (oget inherited-options "bindings"))
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
   (define make-block #f)
-  (set! bindings
+  (set! continuation-env
         (extend-environment (new LispEnvironment)
-                            bindings))
-  (oset! inherited-options "bindings" bindings)
+                            continuation-env))
+  (oset! inherited-options "continuationEnv" continuation-env)
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
@@ -3362,7 +3359,7 @@
                      (second f)
                      f))
                (when (and (not make-block)
-                          (send bindings has sym))
+                          (send continuation-env has sym))
                  (set! make-block #t)))
              (make-rose
               `(define-fields ,fields
@@ -3391,8 +3388,8 @@
 (define (compile-define-fields node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define fields
     (send node get 1))
   (define fields-exp
@@ -3404,7 +3401,7 @@
       (if (array? f)
           (second f)
           f))
-    (send bindings set-local sym #t "variable"))
+    (send continuation-env set-local sym #t "variable"))
   (define expression-statement
     (compile-set-fields
      (make-rose
@@ -3576,8 +3573,8 @@
                                env
                                (pred #u)
                                (stack '())
-                               (bindings (new LispEnvironment)))
-  (define (f x stack bindings)
+                               (continuation-env (new LispEnvironment)))
+  (define (f x stack continuation-env)
     ;; Wrap `pred` in a function that checks
     ;; whether the operator symbol is locally
     ;; bound to something else than a macro.
@@ -3588,7 +3585,7 @@
       (define op
         (first x))
       (define-values b-type
-        (send bindings get-type op))
+        (send continuation-env get-type op))
       (and (or (eq? b-type "macro")
                (eq? b-type "undefined"))
            (pred-f x)))
@@ -3598,11 +3595,11 @@
         (macroexpand-until x env pred-f-1))
       (unless (macro-call? result env)
         (set! result
-              (map-sexp f result env stack bindings)))
+              (map-sexp f result env stack continuation-env)))
       result)
      (else
       x)))
-  (map-sexp f exp env stack bindings))
+  (map-sexp f exp env stack continuation-env))
 
 ;;; Macroexpand all compiler macros.
 ;;; This expands regular macros as well.
@@ -3799,8 +3796,8 @@
 
 ;;; Compile a `(begin ...)` expression.
 (define (compile-begin node env (options (js-obj)))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define expression-type
     (oget options "expressionType"))
   (define exp
@@ -3808,7 +3805,7 @@
   (define body
     (send node drop 1))
   (define compiled-body '())
-  ;; Add defined variables to `bindings` environment.
+  ;; Add defined variables to `continuation-env` environment.
   ;; We have to handle them here since they may refer
   ;; to each other.
   (for ((i (range 0 (array-list-length body))))
@@ -3820,15 +3817,15 @@
         (if (array? (second exp))
             (first (second exp))
             (second exp)))
-      (send bindings set-local sym #t "variable"))
+      (send continuation-env set-local sym #t "variable"))
      ((form? exp define-macro_ env)
       (define sym
         (first (second exp)))
-      (send bindings set-local sym #t "macro"))
+      (send continuation-env set-local sym #t "macro"))
      ((form? exp defmacro_ env)
       (define sym
         (second exp))
-      (send bindings set-local sym #t "macro"))))
+      (send continuation-env set-local sym #t "macro"))))
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
@@ -3896,8 +3893,8 @@
     `(,@symbols))
   (define current-module
     (new Module))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define seen '())
   (define exp)
   (define internal-symbol)
@@ -3918,9 +3915,9 @@
                     (array-first (array-second exp))
                     (array-second exp)))
           (define referenced-symbols-1 '())
-          (define bindings-1
-            (if bindings
-                (send bindings clone)
+          (define continuation-env-1
+            (if continuation-env
+                (send continuation-env clone)
                 #u))
           (define compiled-expression
             (compile-rose
@@ -3928,8 +3925,8 @@
              env
              (js-obj-append
               options
-              (js-obj "bindings"
-                      bindings-1
+              (js-obj "continuationEnv"
+                      continuation-env-1
                       "currentModule"
                       current-module
                       "referencedSymbols"
@@ -4010,7 +4007,7 @@
        env
        (js-obj-append
         options
-        (js-obj "bindings" (new LispEnvironment)
+        (js-obj "continuationEnv" (new LispEnvironment)
                 "expressionType" "expression"))))
     (define var-decl
       (compile-sexp define-values-form env options))
@@ -4239,8 +4236,8 @@
 (define (compile-require node env (options (js-obj)))
   (define es-module-interop
     (oget options "esModuleInterop"))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define x-node
     (send node get 1))
   (define x-exp
@@ -4284,8 +4281,8 @@
                   (js-obj "literalSymbol" #t))
                  options)))
         (unless (memq? x2-str seen)
-          (when bindings
-            ;; (send bindings set-local x2 #t "variable")
+          (when continuation-env
+            ;; (send continuation-env set-local x2 #t "variable")
             )
           (push-right! seen x2)
           (push-right! specifiers
@@ -4305,8 +4302,8 @@
                   (js-obj "literalSymbol" #t))
                  options)))
         (unless (memq? x1-str seen)
-          (when bindings
-            ;; (send bindings set-local x1 #t "variable")
+          (when continuation-env
+            ;; (send continuation-env set-local x1 #t "variable")
             )
           (push-right! seen x1-str)
           (push-right! specifiers
@@ -4340,9 +4337,9 @@
             (js-obj "literalSymbol" #t))
            options)))
   (set! src (new Literal y-exp))
-  (when (and bindings
+  (when (and continuation-env
              (symbol? x-exp))
-    ;; (send bindings set-local x-exp #t "variable")
+    ;; (send continuation-env set-local x-exp #t "variable")
     )
   (cond
    ((null? specifiers)
@@ -4511,8 +4508,8 @@
     (oget options "compileEnvironment"))
   (define camel-case-option
     (oget options "camelCase"))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define exp
     (send node get-value))
   (define gensymed-symbol
@@ -4557,7 +4554,7 @@
       (define i 1)
       (define regular-sym
         (string->symbol gensym-name))
-      (while (send bindings has regular-sym)
+      (while (send continuation-env has regular-sym)
         (set! gensym-name
               (string-append name (number->string i)))
         (set! regular-sym
@@ -4568,7 +4565,7 @@
       (define entry
         (list gensym-name name i))
       (hash-set! gensym-map exp entry)
-      (send bindings set-local regular-sym #t)
+      (send continuation-env set-local regular-sym #t)
       identifier)))
    (else
     (define name
@@ -4636,12 +4633,12 @@
   ;; in terms of that?
   (define inherited-options
     (js-obj-append options))
-  (define bindings
-    (oget inherited-options "bindings"))
-  (set! bindings
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
+  (set! continuation-env
         (extend-environment (new LispEnvironment)
-                            bindings))
-  (oset! inherited-options "bindings" bindings)
+                            continuation-env))
+  (oset! inherited-options "continuationEnv" continuation-env)
   (define language
     (oget options "language"))
   (define decls-node
@@ -5013,13 +5010,13 @@
         (slice-rose node 2)))
   (define body-exp
     (send body-node get-value))
-  (define bindings
-    (oget inherited-options "bindings"))
-  (set! bindings
+  (define continuation-env
+    (oget inherited-options "continuationEnv"))
+  (set! continuation-env
         (extend-environment (new LispEnvironment)
-                            bindings))
-  (oset! inherited-options "bindings" bindings)
-  (send bindings set-local 'super #t "variable")
+                            continuation-env))
+  (oset! inherited-options "continuationEnv" continuation-env)
+  (send continuation-env set-local 'super #t "variable")
   (when (and (array? (first body-exp))
              (not (form? (first body-exp) define_ env)))
     (define super-classes-node
@@ -5407,8 +5404,8 @@
     (second macro-fn-form))
   (define body
     (drop macro-fn-form 2))
-  (define bindings
-    (oget options "bindings"))
+  (define continuation-env
+    (oget options "continuationEnv"))
   (define result
     (compile-rose
      (transfer-comments
@@ -5420,8 +5417,8 @@
           (set-field! lispMacro ,name #t))
        node))
      env options))
-  (when bindings
-    (send bindings set-local name #t "macro"))
+  (when continuation-env
+    (send continuation-env set-local name #t "macro"))
   result)
 
 ;;; Whether `f` is a macro function.
@@ -6128,28 +6125,28 @@
                   node
                   (env (new LispEnvironment))
                   (stack '())
-                  (bindings (new LispEnvironment)))
+                  (continuation-env (new LispEnvironment)))
   (cond
    ((not (is-a? node Rose))
-    (map-sexp f node env stack bindings))
+    (map-sexp f node env stack continuation-env))
    (else
-    (map-visit-rose f node env stack bindings))))
+    (map-visit-rose f node env stack continuation-env))))
 
 ;;; Map a function `f` over a rose tree using the Visitor pattern.
 (define (map-visit-rose f
                         node
                         (env (new LispEnvironment))
                         (stack '())
-                        (bindings (new LispEnvironment)))
-  (define (skip-node node stack bindings)
+                        (continuation-env (new LispEnvironment)))
+  (define (skip-node node stack continuation-env)
     node)
-  (define (visit-node node stack bindings)
-    (f node stack bindings))
+  (define (visit-node node stack continuation-env)
+    (f node stack continuation-env))
   ;; Nonatomic value (i.e., a list form some sort).
-  (define (visit-nonatomic node stack bindings (skip 0))
+  (define (visit-nonatomic node stack continuation-env (skip 0))
     (define result
-      (visit-forms-node node `(,@stack ,node) bindings skip))
-    (f result stack bindings))
+      (visit-forms-node node `(,@stack ,node) continuation-env skip))
+    (f result stack continuation-env))
   ;; Macro call.
   (define (visit-macro-call-p node)
     (let ((exp (send node get-value)))
@@ -6167,14 +6164,14 @@
   (define visit-function-call visit-nonatomic)
   (define (visit-else-p node)
     #t)
-  (define (visit-forms-node-with visitor node stack bindings (skip 0))
+  (define (visit-forms-node-with visitor node stack continuation-env (skip 0))
     (define exp (send node get-value))
     (unless (array? exp)
       ;; `node` is not a list expression; early return.
-      (return (visit visitor node stack bindings)))
+      (return (visit visitor node stack continuation-env)))
     (define nodes (send node get-nodes))
     (define result-nodes
-      (visit-forms-list-with visitor nodes stack bindings skip))
+      (visit-forms-list-with visitor nodes stack continuation-env skip))
     (cond
      ((eq? result-nodes nodes)
       node)
@@ -6186,10 +6183,10 @@
         (push-right! exp (send node get-value))
         (send result insert node))
       result)))
-  (define (visit-forms-list-with visitor nodes stack bindings (skip 0))
+  (define (visit-forms-list-with visitor nodes stack continuation-env (skip 0))
     (unless (array? nodes)
       ;; `nodes` is not a list; early return.
-      (return (visit visitor nodes stack bindings)))
+      (return (visit visitor nodes stack continuation-env)))
     ;; Keep track of whether any of the expressions are modified
     ;; by visitation. If none of them are, return the original list.
     (define is-modified #f)
@@ -6201,7 +6198,7 @@
                (set! i (+ i 1))
                x)
               (else
-               (define x1 (visit visitor x stack bindings))
+               (define x1 (visit visitor x stack continuation-env))
                (unless (eq? x x1)
                  (set! is-modified #t))
                (set! i (+ i 1))
@@ -6212,24 +6209,24 @@
     (unless is-modified
       (set! result nodes))
     result)
-  (define (visit-forms-node node stack bindings (skip 0))
-    (visit-forms-node-with visitor node stack bindings skip))
-  (define (visit-forms-list nodes stack bindings (skip 0))
-    (visit-forms-list-with visitor nodes stack bindings skip))
-  (define (visit-clauses-node node stack bindings (skip 0))
-    (visit-forms-node-with visit-forms-node node stack bindings skip))
-  (define (visit-clauses-list nodes stack bindings (skip 0))
-    (visit-forms-list-with visit-forms-node nodes stack bindings skip))
+  (define (visit-forms-node node stack continuation-env (skip 0))
+    (visit-forms-node-with visitor node stack continuation-env skip))
+  (define (visit-forms-list nodes stack continuation-env (skip 0))
+    (visit-forms-list-with visitor nodes stack continuation-env skip))
+  (define (visit-clauses-node node stack continuation-env (skip 0))
+    (visit-forms-node-with visit-forms-node node stack continuation-env skip))
+  (define (visit-clauses-list nodes stack continuation-env (skip 0))
+    (visit-forms-list-with visit-forms-node nodes stack continuation-env skip))
   ;; `(module ...)` form.
   (define (visit-module-p node)
     (form? node module_ env))
-  (define (visit-module node stack bindings)
-    (visit-nonatomic node stack bindings 3))
+  (define (visit-module node stack continuation-env)
+    (visit-nonatomic node stack continuation-env 3))
   ;; `(begin ...)` form.
   (define (visit-begin-p node)
     (form? node begin_ env))
-  (define (visit-begin node stack bindings)
-    (visit-nonatomic node stack bindings 1))
+  (define (visit-begin node stack continuation-env)
+    (visit-nonatomic node stack continuation-env 1))
   ;; `(begin0 ...)` form.
   (define (visit-begin0-p node)
     (form? node begin0_ env))
@@ -6237,42 +6234,42 @@
   ;; `(let ...)` form.
   (define (visit-let-p node)
     (form? node let-star_ env))
-  (define (visit-let node stack bindings)
+  (define (visit-let node stack continuation-env)
     (define result node)
-    (define bindings-env
+    (define continuation-env-2
       (extend-environment (new LispEnvironment)
-                          bindings))
+                          continuation-env))
     (define sym (~> node (send get 0) (send get-value)))
-    (define let-bindings (send node get 1))
+    (define let-continuation-env (send node get 1))
     (define body (send node drop 2))
-    (for ((let-binding (send let-bindings get-value)))
+    (for ((let-binding (send let-continuation-env get-value)))
       (define binding-sym
         (if (array? let-binding)
             (first let-binding)
             let-binding))
-      (send bindings-env set-local binding-sym #t "variable"))
-    (define visited-let-bindings
-      (visit-clauses-node let-bindings `(,@stack ,node) bindings-env))
+      (send continuation-env-2 set-local binding-sym #t "variable"))
+    (define visited-let-continuation-env
+      (visit-clauses-node let-continuation-env `(,@stack ,node) continuation-env-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-env))
-    (unless (and (eq? let-bindings visited-let-bindings)
+      (visit-forms-list body `(,@stack ,node) continuation-env-2))
+    (unless (and (eq? let-continuation-env visited-let-continuation-env)
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
                     (make-rose
-                     `(,sym ,visited-let-bindings
+                     `(,sym ,visited-let-continuation-env
                             ,@visited-body)))))
-    (f result stack bindings))
+    (f result stack continuation-env))
   (define (visit-let-values-p node)
     (form? node let-values_ env))
-  (define (visit-let-values node stack bindings)
+  (define (visit-let-values node stack continuation-env)
     (define result node)
-    (define bindings-env
-      (extend-environment (new LispEnvironment) bindings))
+    (define continuation-env-2
+      (extend-environment (new LispEnvironment) continuation-env))
     (define sym (~> node (send get 0) (send get-value)))
-    (define let-bindings (send node get 1))
+    (define let-continuation-env (send node get 1))
     (define body (send node drop 2))
-    (define visited-let-bindings
+    (define visited-let-continuation-env
       (visit-forms-node-with
        (lambda (x)
          (define x-result x)
@@ -6281,15 +6278,15 @@
          (define ids-exp (send ids get-value))
          (cond
           ((symbol? ids-exp)
-           (send bindings-env set-local ids-exp #t "variable"))
+           (send continuation-env-2 set-local ids-exp #t "variable"))
           (else
            (for ((let-binding ids-exp))
              (when (symbol? let-binding)
-               (send bindings-env set let-binding #t "variable")))))
+               (send continuation-env-2 set let-binding #t "variable")))))
          (define visited-ids
-           (visit-forms-node ids `(,@stack ,node) bindings-env))
+           (visit-forms-node ids `(,@stack ,node) continuation-env-2))
          (define visited-val
-           (visit visitor val `(,@stack ,node) bindings-env))
+           (visit visitor val `(,@stack ,node) continuation-env-2))
          (unless (and (eq? visited-ids ids)
                       (eq? visited-val val))
            (set! x-result (transfer-comments
@@ -6298,19 +6295,19 @@
                             `(,visited-ids
                               ,visited-val)))))
          x-result)
-       let-bindings
+       let-continuation-env
        `(,@stack ,node)
-       bindings-env))
+       continuation-env-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-env))
-    (unless (and (eq? let-bindings visited-let-bindings)
+      (visit-forms-list body `(,@stack ,node) continuation-env-2))
+    (unless (and (eq? let-continuation-env visited-let-continuation-env)
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
                     (make-rose
-                     `(,sym ,visited-let-bindings
+                     `(,sym ,visited-let-continuation-env
                             ,@visited-body)))))
-    (f result stack bindings))
+    (f result stack continuation-env))
   ;; `(for ...)` form.
   (define (visit-for-p node)
     (form? node for_ env))
@@ -6322,44 +6319,44 @@
   ;; `(cond ...)` form.
   (define (visit-cond-p node)
     (form? node cond_ env))
-  (define (visit-cond node stack bindings)
+  (define (visit-cond node stack continuation-env)
     (define result node)
     (define sym (~> node (send get 0) (send get-value)))
     (define clauses (send node drop 1))
     (define visited-clauses
-      (visit-clauses-list clauses `(,@stack ,node) bindings))
+      (visit-clauses-list clauses `(,@stack ,node) continuation-env))
     (unless (eq? visited-clauses clauses)
       (set! result (transfer-comments
                     node
                     (make-rose
                      `(,sym ,@visited-clauses)))))
-    (f result stack bindings))
+    (f result stack continuation-env))
   ;; `(lambda ...)` form.
   (define (visit-lambda-p node)
     (or (form? node lambda_ env)
         (form? node js-function_ env)
         (form? node js-arrow_ env)))
-  (define (visit-lambda node stack bindings)
+  (define (visit-lambda node stack continuation-env)
     (define result node)
-    (define bindings-env
+    (define continuation-env-2
       (extend-environment (new LispEnvironment)
-                          bindings))
+                          continuation-env))
     (define sym (~> node (send get 0) (send get-value)))
     (define params (send node get 1))
     (define params-exp (send params get-value))
     (define body (send node drop 2))
     (cond
      ((symbol? params-exp)
-      (send bindings-env set-local params-exp #t "variable"))
+      (send continuation-env-2 set-local params-exp #t "variable"))
      (else
       (for ((param params-exp))
         (when (array? param)
           (set! param (first param)))
-        (send bindings-env set-local param #t "variable"))))
+        (send continuation-env-2 set-local param #t "variable"))))
     (define visited-params
-      (visit-clauses-node params `(,@stack ,node) bindings-env))
+      (visit-clauses-node params `(,@stack ,node) continuation-env-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-env))
+      (visit-forms-list body `(,@stack ,node) continuation-env-2))
     (unless (and (eq? params visited-params)
                  (eq? body visited-body))
       (set! result (transfer-comments
@@ -6367,11 +6364,11 @@
                     (make-rose
                      `(,sym ,visited-params
                             ,@visited-body)))))
-    (f result stack bindings))
+    (f result stack continuation-env))
   ;; `(define ...)` form.
   (define (visit-define-p node)
     (form? node define_ env))
-  (define (visit-define node stack bindings)
+  (define (visit-define node stack continuation-env)
     (define result node)
     (define define-sym (~> node (send get 0) (send get-value)))
     (define id (send node get 1))
@@ -6380,26 +6377,26 @@
       (if (array? id-exp)
           (first id-exp)
           id-exp))
-    (define bindings-env bindings)
+    (define continuation-env-2 continuation-env)
     (cond
      ((array? id-exp)
-      (send bindings set-local id-sym #t "procedure")
+      (send continuation-env set-local id-sym #t "procedure")
       (for ((param (rest id-exp)))
         (when (array? param)
           (set! param (first param)))
-        (send bindings set-local param #t "variable"))
-      (set! bindings-env
+        (send continuation-env set-local param #t "variable"))
+      (set! continuation-env-2
             (extend-environment (new LispEnvironment)
-                                bindings)))
+                                continuation-env)))
      (else
-      (send bindings set-local id-sym #t "variable")))
+      (send continuation-env set-local id-sym #t "variable")))
     (define body (send node drop 2))
     (define visited-id
       (if (array? id-exp)
-          (visit-clauses-node id `(,@stack ,node) bindings-env)
-          (visit-node id `(,@stack ,node) bindings-env)))
+          (visit-clauses-node id `(,@stack ,node) continuation-env-2)
+          (visit-node id `(,@stack ,node) continuation-env-2)))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-env))
+      (visit-forms-list body `(,@stack ,node) continuation-env-2))
     (unless (and (eq? id visited-id)
                  (eq? body visited-body))
       (set! result (transfer-comments
@@ -6408,16 +6405,16 @@
                      `(,define-sym
                         ,visited-id
                         ,@visited-body)))))
-    (f result stack bindings))
+    (f result stack continuation-env))
   ;; `(define-values ...)` form.
   (define (visit-define-values-p node)
     (form? node define-values_ env))
-  (define (visit-define-values node stack bindings)
-    (visit-forms-node node stack bindings 2))
+  (define (visit-define-values node stack continuation-env)
+    (visit-forms-node node stack continuation-env 2))
   ;; `(defmacro ...)` form.
   (define (visit-defmacro-p node)
     (form? node defmacro_ env))
-  (define (visit-defmacro node stack bindings)
+  (define (visit-defmacro node stack continuation-env)
     (define result node)
     (define defmacro-sym (~> node (send get 0) (send get-value)))
     (define id (send node get 1))
@@ -6425,21 +6422,21 @@
     (define params (send node get 2))
     (define params-exp (send params get-value))
     (define body (send node drop 3))
-    (send bindings set-local id-sym #t "macro")
-    (define bindings-env
-      (extend-environment (new LispEnvironment) bindings))
+    (send continuation-env set-local id-sym #t "macro")
+    (define continuation-env-2
+      (extend-environment (new LispEnvironment) continuation-env))
     (cond
      ((symbol? params-exp)
-      (send bindings-env set-local params-exp #t "variable"))
+      (send continuation-env-2 set-local params-exp #t "variable"))
      (else
       (for ((param (flatten_ params-exp)))
-        (send bindings-env set-local params #t "variable"))))
+        (send continuation-env-2 set-local params #t "variable"))))
     (define visited-id
-      (visit-node id `(,@stack ,node) bindings-env))
+      (visit-node id `(,@stack ,node) continuation-env-2))
     (define visited-params
-      (visit-forms-node params `(,@stack ,node) bindings-env))
+      (visit-forms-node params `(,@stack ,node) continuation-env-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-env))
+      (visit-forms-list body `(,@stack ,node) continuation-env-2))
     (unless (and (eq? id visited-id)
                  (eq? params visited-params)
                  (eq? body visited-body))
@@ -6450,13 +6447,13 @@
                         ,visited-id
                         ,visited-params
                         ,@visited-body)))))
-    (set! result (f result stack bindings))
-    (send bindings set-local id-sym #t "macro")
+    (set! result (f result stack continuation-env))
+    (send continuation-env set-local id-sym #t "macro")
     result)
   ;; `(define-macro ...)` form.
   (define (visit-define-macro-p node)
     (form? node define-macro_ env))
-  (define (visit-define-macro node stack bindings)
+  (define (visit-define-macro node stack continuation-env)
     (define result node)
     (define define-macro-sym (~> node (send get 0) (send get-value)))
     (define name-and-args (send node get 1))
@@ -6466,21 +6463,21 @@
     (define params-exp (cdr name-and-args-exp))
     (define params (make-rose params-exp name-and-args))
     (define body (send node drop 2))
-    (send bindings set-local id-sym #t "macro")
-    (define bindings-env
-      (extend-environment (new LispEnvironment) bindings))
+    (send continuation-env set-local id-sym #t "macro")
+    (define continuation-env-2
+      (extend-environment (new LispEnvironment) continuation-env))
     (cond
      ((symbol? params-exp)
-      (send bindings-env set-local params-exp #t "variable"))
+      (send continuation-env-2 set-local params-exp #t "variable"))
      (else
       (for ((param (flatten_ params-exp)))
-        (send bindings-env set-local params #t "variable"))))
+        (send continuation-env-2 set-local params #t "variable"))))
     (define visited-id
-      (visit-node id `(,@stack ,node) bindings-env))
+      (visit-node id `(,@stack ,node) continuation-env-2))
     (define visited-params
-      (visit-forms-node params `(,@stack ,node) bindings-env))
+      (visit-forms-node params `(,@stack ,node) continuation-env-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-env))
+      (visit-forms-list body `(,@stack ,node) continuation-env-2))
     (unless (and (eq? id visited-id)
                  (eq? params visited-params)
                  (eq? body visited-body))
@@ -6490,8 +6487,8 @@
                      `(,define-macro-sym
                         ,(cons visited-id visited-params)
                         ,@visited-body)))))
-    (set! result (f result stack bindings))
-    (send bindings set-local id-sym #t "macro")
+    (set! result (f result stack continuation-env))
+    (send continuation-env set-local id-sym #t "macro")
     result)
   ;; `(define-class ...)` form.
   (define (visit-define-class-p node)
@@ -6500,8 +6497,8 @@
   ;; `(ann ...)` form.
   (define (visit-ann-p node)
     (form? node ann_ env))
-  (define (visit-ann node stack bindings)
-    (visit-node node stack bindings))
+  (define (visit-ann node stack continuation-env)
+    (visit-node node stack continuation-env))
   ;; `(and ...)` form.
   (define (visit-and-p node)
     (form? node and_ env))
@@ -6513,13 +6510,13 @@
   ;; `(when ...)` form.
   (define (visit-when-p node)
     (form? node when_ env))
-  (define (visit-when node stack bindings)
-    (visit-nonatomic node stack bindings 1))
+  (define (visit-when node stack continuation-env)
+    (visit-nonatomic node stack continuation-env 1))
   ;; `(unless ...)` form.
   (define (visit-unless-p node)
     (form? node unless_ env))
-  (define (visit-unless node stack bindings)
-    (visit-nonatomic node stack bindings 1))
+  (define (visit-unless node stack continuation-env)
+    (visit-nonatomic node stack continuation-env 1))
   ;; `(make-object ...)` form.
   (define (visit-make-object-p node)
     (form? node new_ env))
@@ -6551,39 +6548,39 @@
   ;; Quasiquoted value.
   (define (visit-quasiquote-p node)
     (form? node quasiquote_ env))
-  (define (visit-quasiquote node stack bindings)
-    (define (visit-quasiquote-form node stack bindings)
+  (define (visit-quasiquote node stack continuation-env)
+    (define (visit-quasiquote-form node stack continuation-env)
       (define result node)
       (define sym (send node get 0))
       (define val (send node get 1))
       ;; Visit `unquote` and `unquote-splicing` expressions, if any.
       (define visited-val
-        (visit quasiquote-visitor val stack bindings))
+        (visit quasiquote-visitor val stack continuation-env))
       (unless (eq? val visited-val)
         (set! result (transfer-comments
                       node
                       (make-rose
                        `(,sym ,visited-val)))))
       ;; Visit the `unquote` expression.
-      (f result stack bindings))
+      (f result stack continuation-env))
     (define (visit-unquote-p node)
       (tagged-list? node 'unquote))
     (define (visit-unquote node stack)
       ;; When visiting unquoted expressions,
       ;; use the regular visitor.
-      (visit-forms-node-with visitor node stack bindings 1))
+      (visit-forms-node-with visitor node stack continuation-env 1))
     (define (visit-unquote-splicing-p node)
       (tagged-list? node 'unquote-splicing))
     (define visit-unquote-splicing visit-unquote)
-    (define (visit-quoted-list node stack bindings)
-      (visit-forms-node-with quasiquote-visitor node stack bindings))
+    (define (visit-quoted-list node stack continuation-env)
+      (visit-forms-node-with quasiquote-visitor node stack continuation-env))
     (define quasiquote-visitor
       (make-visitor
        `((,visit-unquote-p ,visit-unquote)
          (,visit-unquote-splicing-p ,visit-unquote-splicing)
          (,visit-nonatomic-p ,visit-quoted-list)
          (,visit-else-p ,skip-node))))
-    (visit-quasiquote-form node `(,@stack ,node) bindings))
+    (visit-quasiquote-form node `(,@stack ,node) continuation-env))
   ;; List.
   (define (visit-nonatomic-p node)
     (let ((exp (send node get-value)))
@@ -6627,7 +6624,7 @@
        (,visit-function-call-p ,visit-function-call)
        (,visit-nonatomic-p ,visit-nonatomic)
        (,visit-else-p ,visit-atom))))
-  (visit visitor node stack bindings))
+  (visit visitor node stack continuation-env))
 
 ;;; Map the function `f` over the S-expression `exp`.
 ;;; The S-expression is processed in bottom-up order.
@@ -6635,15 +6632,15 @@
                   exp
                   (env (new LispEnvironment))
                   (stack '())
-                  (bindings (new LispEnvironment)))
-  (let* ((f1 (lambda (x stack bindings)
+                  (continuation-env (new LispEnvironment)))
+  (let* ((f1 (lambda (x stack continuation-env)
                (let* ((exp (send x get-value))
                       (stack1 (map (lambda (x)
                                      (if (is-a? x Rose)
                                          (send x get-value)
                                          x))
                                    stack))
-                      (result (f exp stack1 bindings)))
+                      (result (f exp stack1 continuation-env)))
                  (if (eq? result exp)
                      x
                      (make-rose result x)))))
@@ -6651,7 +6648,7 @@
          (node (if is-rose
                    exp
                    (make-rose exp)))
-         (result (map-rose f1 node env stack bindings)))
+         (result (map-rose f1 node env stack continuation-env)))
     ;; If the input is a rose tree node,
     ;; return a rose tree node as output too.
     (if is-rose
@@ -6989,7 +6986,7 @@
 
   (define/public interpretation-environment)
 
-  (define/public bindings)
+  (define/public continuation-env)
 
   (define/public module-map)
 
@@ -7002,11 +6999,11 @@
     (set-field! name this name)
     (send this initialize-nodes nodes))
 
-  (define/public (get-bindings)
-    (define bindings
-      (get-field bindings this))
-    (unless bindings
-      (set! bindings (new LispEnvironment))
+  (define/public (get-continuation-env)
+    (define continuation-env
+      (get-field continuation-env this))
+    (unless continuation-env
+      (set! continuation-env (new LispEnvironment))
       ;; (for ((node (get-field require-nodes this)))
       ;;   (define exp
       ;;     (send node get-value))
@@ -7019,9 +7016,9 @@
       ;;           (if (array-list? entry)
       ;;               (array-list-second entry)
       ;;               entry))
-      ;;         (send bindings set-local sym #t "variable")))))
-      (set-field! bindings this bindings))
-    bindings)
+      ;;         (send continuation-env set-local sym #t "variable")))))
+      (set-field! continuation-env this continuation-env))
+    continuation-env)
 
   (define/public (get-expressions)
     (get-field expressions this))
@@ -7284,11 +7281,11 @@
     ;; Iterate over `main-nodes`, evaluating definition forms
     ;; in the module environment.
     (for ((node (get-field main-nodes this)))
-      ;; TODO: Need to initialize bindings as well.
+      ;; TODO: Need to initialize continuation-env as well.
       (define exp
         (send node get-value))
-      ;; (define bindings
-      ;;   (send this get-bindings))
+      ;; (define continuation-env
+      ;;   (send this get-continuation-env))
       (cond
        ((or (definition? exp)
             (macro-definition? exp))
@@ -7303,7 +7300,7 @@
           (if (macro-definition? exp)
               "macro"
               "procedure"))
-        ;; (send bindings set-local name #t typ)
+        ;; (send continuation-env set-local name #t typ)
         (send module-env
               set-local
               name

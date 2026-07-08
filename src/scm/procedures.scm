@@ -272,18 +272,10 @@
 
 ;;; Whether a value is truthy.
 (define (true? x)
-  ;; TODO: Remove.
-  (and (not (undefined? x))
-       x
-       (not (and (array? x)
-                 (= (array-list-length x) 0)))
-       (not (and (= (array-list-length (js-keys x)) 0)
-                 (eq? (get-field constructor x) Object)))
-       #t))
+  (if x #t #f))
 
 ;;; Whether a value is falsy.
 (define (false? x)
-  ;; TODO: Remove.
   (not (true? x)))
 
 ;;; The identity function.

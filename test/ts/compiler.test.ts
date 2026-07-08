@@ -2284,7 +2284,11 @@ describe('compile', function (): any {
         ),
         '(() => {\n' +
           '  function truep(x) {\n' +
-          '    return (x !== undefined) && x && !(Array.isArray(x) && (x.length === 0)) && !((Object.keys(x).length === 0) && (x.constructor === Object)) && true;\n' +
+          '    if (x) {\n' +
+          '      return true;\n' +
+          '    } else {\n' +
+          '      return false;\n' +
+          '    }\n' +
           '  }\n' +
           '  return truep;\n' +
           '})()(x)'
@@ -2304,7 +2308,11 @@ describe('compile', function (): any {
           '    return !truep(x);\n' +
           '  }\n' +
           '  function truep(x) {\n' +
-          '    return (x !== undefined) && x && !(Array.isArray(x) && (x.length === 0)) && !((Object.keys(x).length === 0) && (x.constructor === Object)) && true;\n' +
+          '    if (x) {\n' +
+          '      return true;\n' +
+          '    } else {\n' +
+          '      return false;\n' +
+          '    }\n' +
           '  }\n' +
           '  return falsep;\n' +
           '})()(x)'

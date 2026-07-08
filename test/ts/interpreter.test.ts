@@ -43,10 +43,10 @@ describe('truep', function (): any {
     return testLisp([s`truep`, s`true`], true);
   });
   it('(truep (quote ()))', function (): any {
-    return testLisp([Symbol.for('truep'), [Symbol.for('quote'), []]], false);
+    return testLisp([Symbol.for('truep'), [Symbol.for('quote'), []]], true);
   });
   return it("(truep '())", function (): any {
-    return testLisp([Symbol.for('truep'), [Symbol.for('quote'), []]], false);
+    return testLisp([Symbol.for('truep'), [Symbol.for('quote'), []]], true);
   });
 });
 

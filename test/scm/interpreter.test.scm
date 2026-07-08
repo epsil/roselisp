@@ -71,12 +71,12 @@
         (fn ()
           (test-lisp
            '(truep (quote ()))
-           #f)))
+           #t)))
     (it "(truep '())"
         (fn ()
           (test-lisp
            '(truep '())
-           #f)))))
+           #t)))))
 
 (describe "falsep"
   (fn ()

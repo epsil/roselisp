@@ -489,17 +489,20 @@ evenp_.lispSource = [Symbol.for('define'), [Symbol.for('even?_'), Symbol.for('n'
  * Whether a value is truthy.
  */
 function truep(x) {
-    // TODO: Remove.
-    return (x !== undefined) && x && !(Array.isArray(x) && (x.length === 0)) && !((Object.keys(x).length === 0) && (x.constructor === Object)) && true;
+    if (x) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 exports.truep_ = truep;
 exports.truep = truep;
-truep.lispSource = [Symbol.for('define'), [Symbol.for('true?'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('undefined?'), Symbol.for('x')]], Symbol.for('x'), [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('x')], 0]]], [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), [Symbol.for('js-keys'), Symbol.for('x')]], 0], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('constructor'), Symbol.for('x')], Symbol.for('Object')]]], true]];
+truep.lispSource = [Symbol.for('define'), [Symbol.for('true?'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), true, false]];
 /**
  * Whether a value is falsy.
  */
 function falsep(x) {
-    // TODO: Remove.
     return !truep(x);
 }
 exports.falsep_ = falsep;

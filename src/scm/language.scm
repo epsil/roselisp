@@ -50,6 +50,7 @@
                   default-language
                   false_
                   js-null_
+                  license
                   null_
                   package-name
                   quasiquote-sym_
@@ -519,7 +520,8 @@
          (,(string->symbol "js/require") ,(new Identifier "require") "variable")
          (,(string->symbol "js/undefined") ,(new Literal #u) "variable")
          (,(string->symbol "*cons-dot*") ,cons-dot-compiled_ "variable")
-         (,(string->symbol "nil") ,(new Literal #n) "variable")
+         ;; (,(string->symbol "nil") ,(new Literal #n) "variable")
+         (,(string->symbol "nil") ,(new ArrayExpression) "variable")
          (,(string->symbol "null") ,(new ArrayExpression) "variable")
          (,(string->symbol "t") ,(new Literal #t) "variable")
          (,(string->symbol "undefined") ,(new Literal #u) "variable"))))
@@ -3954,6 +3956,13 @@
           (set! exp
                 `(define ,internal-symbol
                    (js ,js-string))))
+         ((symbol? value)
+          (define str
+            (symbol->string value))
+          (set! internal-symbol symbol)
+          (set! exp
+                `(define ,internal-symbol
+                   (send Symbol for ,str))))
          (else
           (define js-string
             (string-append value ""))
@@ -7466,6 +7475,7 @@
          (js/undefined ,undefined_ "variable")
          (undefined ,undefined_ "variable")
          (,(string->symbol "*cons-dot*") ,cons-dot_ "variable")
+         (license ,license "variable")
          ;; Procedures.
          ;; (eval ,interpret "procedure")
          ;; (js/eval ,js-eval_ "procedure")

@@ -269,7 +269,7 @@ declare namespace evenp_ {
  */
 declare function truep(x: any): any;
 declare namespace truep {
-    var lispSource: (symbol | (boolean | symbol | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[])[];
+    var lispSource: (symbol | (boolean | symbol)[])[];
 }
 /**
  * Whether a value is falsy.

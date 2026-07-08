@@ -1657,7 +1657,11 @@ three"
                         (js-obj "language" "JavaScript"))
                "(() => {
   function truep(x) {
-    return (x !== undefined) && x && !(Array.isArray(x) && (x.length === 0)) && !((Object.keys(x).length === 0) && (x.constructor === Object)) && true;
+    if (x) {
+      return true;
+    } else {
+      return false;
+    }
   }
   return truep;
 })()(x)")))
@@ -1672,7 +1676,11 @@ three"
     return !truep(x);
   }
   function truep(x) {
-    return (x !== undefined) && x && !(Array.isArray(x) && (x.length === 0)) && !((Object.keys(x).length === 0) && (x.constructor === Object)) && true;
+    if (x) {
+      return true;
+    } else {
+      return false;
+    }
   }
   return falsep;
 })()(x)")))))

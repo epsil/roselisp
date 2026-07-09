@@ -2336,7 +2336,7 @@
                  (else
                   (make-list (array-list-length params) 'Any)))
               ,return-type))
-      (send continuation-env set-local (second exp) type_ "procedure"))
+      (send continuation-env set-local name-sym type_ "procedure"))
      (else
       (set! type_ declared-type)))
     (define compiled-type

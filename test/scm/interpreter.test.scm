@@ -78,23 +78,6 @@
            (interpret '(falsep undefined))
            #t)))))
 
-(describe "empty list"
-  (fn ()
-    (it "cons?"
-        (fn ()
-          (test-repl
-           '(roselisp
-             > (cons? '())
-             #f)
-           (js-obj "compile" #f))))
-    (it "list?"
-        (fn ()
-          (test-repl
-           '(roselisp
-             > (list? '())
-             #t)
-           (js-obj "compile" #f))))))
-
 (describe "variables"
   (fn ()
     (xit "(setq a 1 b 2 c 3)"

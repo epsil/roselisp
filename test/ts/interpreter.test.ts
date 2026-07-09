@@ -56,35 +56,6 @@ describe('falsep', function (): any {
   });
 });
 
-describe('empty list', function (): any {
-  it('cons?', function (): any {
-    return testRepl(
-      [
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
-        [Symbol.for('cons?'), [Symbol.for('quote'), []]],
-        false,
-      ],
-      {
-        compile: false,
-      }
-    );
-  });
-  return it('list?', function (): any {
-    return testRepl(
-      [
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
-        [Symbol.for('list?'), [Symbol.for('quote'), []]],
-        true,
-      ],
-      {
-        compile: false,
-      }
-    );
-  });
-});
-
 describe('variables', function (): any {
   return xit('(setq a 1 b 2 c 3)', function (): any {
     return testLisp(

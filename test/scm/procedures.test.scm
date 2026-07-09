@@ -1,16 +1,8 @@
-(require (only-in "../../src/ts/cons"
-                  cons))
 (require (only-in "../../src/ts/procedures"
                   compose
-                  gt
-                  lt
                   pipe))
-(require (only-in "../../src/ts/list"
-                  dotted-list-p
-                  flatten))
 (require (only-in "../../src/ts/sexp"
-                  s
-                  sexp))
+                  s))
 (require (only-in "../../src/ts/string"
                   stringp))
 (require (only-in "./test-util"
@@ -18,11 +10,6 @@
 
 (describe "stringp"
   (fn ()
-    (it "'foo'"
-        (fn ()
-          (assert-equal
-           (stringp "foo")
-           #t)))
     (it "new String('foo')"
         (fn ()
           (assert-equal
@@ -32,110 +19,6 @@
         (fn ()
           (assert-equal
            (stringp (js/tag s "foo"))
-           #f)))
-    (it "1"
-        (fn ()
-          (assert-equal
-           (stringp 1)
-           #f)))
-    (it "{}"
-        (fn ()
-          (assert-equal
-           (stringp (js-obj))
-           #f)))
-    (it "['foo']"
-        (fn ()
-          (assert-equal
-           (stringp (list "foo"))
-           #f)))
-    (it "{ 'foo': '' }"
-        (fn ()
-          (assert-equal
-           (stringp (js-obj "foo" ""))
-           #f)))
-    (it "{ 'foo': []"
-        (fn ()
-          (assert-equal
-           (stringp (js-obj "foo" (quote ())))
-           #f)))
-    (it "{ 'foo': {}"
-        (fn ()
-          (assert-equal
-           (stringp (js-obj "foo" (js-obj)))
-           #f)))
-    (it "{ 'foo': 'foo' }"
-        (fn ()
-          (assert-equal
-           (stringp (js-obj "foo" "foo"))
-           #f)))
-    (it "[]"
-        (fn ()
-          (assert-equal
-           (stringp (quote ()))
-           #f)))))
-
-(describe "flatten"
-  (fn ()
-    (it "(1 2 3 4)"
-        (fn ()
-          (assert-equal
-           (flatten '(1 2 3 4))
-           '(1 2 3 4))))
-    (it "(1 . 2)"
-        (fn ()
-          (assert-equal
-           (flatten '(1 . 2))
-           '(1 2))))
-    (it "((a) b (c (d) . e) ())"
-        (fn ()
-          (assert-equal
-           (flatten '((a) b (c (d) . e) ()))
-           '(a b c d e))))))
-
-(describe "<"
-  (fn ()
-    (it "(< 1)"
-        (fn ()
-          (assert-equal
-           (lt 1)
-           #t)))
-    (it "(< 1 2)"
-        (fn ()
-          (assert-equal
-           (lt 1 2)
-           #t)))
-    (it "(< 1 2 3)"
-        (fn ()
-          (assert-equal
-           (lt 1 2 3)
-           #t)))
-    (it "(< 1 2 0)"
-        (fn ()
-          (assert-equal
-           (lt 1 2 0)
-           #f)))))
-
-(describe ">"
-  (fn ()
-    (it "(> 1)"
-        (fn ()
-          (assert-equal
-           (gt 1)
-           #t)))
-    (it "(> 2 1)"
-        (fn ()
-          (assert-equal
-           (gt 2 1)
-           #t)))
-    (it "(> 3 2 1)"
-        (fn ()
-          (assert-equal
-           (gt 3 2 1)
-           #t)))
-    (it "(> 0 2 1)"
-        (fn ()
-          (assert-equal
-           (gt 0 2 1)
            #f)))))
 
 (describe "compose"

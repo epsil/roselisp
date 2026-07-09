@@ -106,7 +106,7 @@
  2
 
  ;; Strings
- > (describe "strings")
+ > (describe "Strings")
  _
  > "foo"
  "foo"
@@ -1065,6 +1065,30 @@
  > (/ 1 2 4)
  0.125
 
+ ;; `<`
+ > (describe "<")
+ _
+ > (< 1)
+ #t
+ > (< 1 2)
+ #t
+ > (< 1 2 3)
+ #t
+ > (< 1 2 0)
+ #f
+
+ ;; `>`
+ > (describe ">")
+ _
+ > (> 1)
+ #t
+ > (> 2 1)
+ #t
+ > (> 3 2 1)
+ #t
+ > (> 0 2 1)
+ #f
+
  ;; `range`
  > (describe "range")
  _
@@ -1163,6 +1187,28 @@
  _
  > (filter string? '("foo" 1 2 3))
  '("foo")
+
+ ;; `string?`
+ > (describe "string?")
+ _
+ > (string? "foo")
+ #t
+ > (string? 1)
+ #f
+ > (string? (js-obj))
+ #f
+ > (string? (list "foo"))
+ #f
+ > (string? (js-obj "foo" ""))
+ #f
+ > (string? (js-obj "foo" (quote ())))
+ #f
+ > (string? (js-obj "foo" (js-obj)))
+ #f
+ > (string? (js-obj "foo" "foo"))
+ #f
+ > (string? (quote ()))
+ #f
 
  ;; `string-length`
  > (describe "string-length")
@@ -1385,6 +1431,16 @@
  '(1 2)
  > (list* 1 '(2 . 3))
  '(1 2 . 3)
+
+ ;; `flatten`
+ > (describe "flatten")
+ _
+ > (flatten '(1 2 3 4))
+ '(1 2 3 4)
+ > (flatten '(1 . 2))
+ '(1 2)
+ > (flatten '((a) b (c (d) . e) ()))
+ '(a b c d e)
 
  ;; `license`
  > (describe "license")

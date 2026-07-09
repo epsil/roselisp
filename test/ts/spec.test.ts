@@ -238,7 +238,7 @@ describe('Numbers', function (): any {
   });
 });
 
-describe('strings', function (): any {
+describe('Strings', function (): any {
   it('"foo"', function (): any {
     return testRepl([Symbol.for('roselisp'), undefined, 'foo', 'foo']);
   });
@@ -2991,6 +2991,76 @@ describe('/', function (): any {
   });
 });
 
+describe('<', function (): any {
+  it('(< 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('<'), 1],
+      true,
+    ]);
+  });
+  it('(< 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('<'), 1, 2],
+      true,
+    ]);
+  });
+  it('(< 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('<'), 1, 2, 3],
+      true,
+    ]);
+  });
+  return it('(< 1 2 0)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('<'), 1, 2, 0],
+      false,
+    ]);
+  });
+});
+
+describe('>', function (): any {
+  it('(> 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('>'), 1],
+      true,
+    ]);
+  });
+  it('(> 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('>'), 2, 1],
+      true,
+    ]);
+  });
+  it('(> 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('>'), 3, 2, 1],
+      true,
+    ]);
+  });
+  return it('(> 0 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('>'), 0, 2, 1],
+      false,
+    ]);
+  });
+});
+
 describe('range', function (): any {
   it('(range 1 2)', function (): any {
     return testRepl([
@@ -3269,6 +3339,87 @@ describe('filter', function (): any {
         [Symbol.for('quote'), ['foo', 1, 2, 3]],
       ],
       [Symbol.for('quote'), ['foo']],
+    ]);
+  });
+});
+
+describe('string?', function (): any {
+  it('(string? "foo")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('string?'), 'foo'],
+      true,
+    ]);
+  });
+  it('(string? 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('string?'), 1],
+      false,
+    ]);
+  });
+  it('(string? (js-obj))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('string?'), [Symbol.for('js-obj')]],
+      false,
+    ]);
+  });
+  it('(string? (list "foo"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('string?'), [Symbol.for('list'), 'foo']],
+      false,
+    ]);
+  });
+  it('(string? (js-obj "foo" ""))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('string?'), [Symbol.for('js-obj'), 'foo', '']],
+      false,
+    ]);
+  });
+  it('(string? (js-obj "foo" (quote )))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [
+        Symbol.for('string?'),
+        [Symbol.for('js-obj'), 'foo', [Symbol.for('quote'), []]],
+      ],
+      false,
+    ]);
+  });
+  it('(string? (js-obj "foo" (js-obj)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [
+        Symbol.for('string?'),
+        [Symbol.for('js-obj'), 'foo', [Symbol.for('js-obj')]],
+      ],
+      false,
+    ]);
+  });
+  it('(string? (js-obj "foo" "foo"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('string?'), [Symbol.for('js-obj'), 'foo', 'foo']],
+      false,
+    ]);
+  });
+  return it('(string? (quote ))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('string?'), [Symbol.for('quote'), []]],
+      false,
     ]);
   });
 });
@@ -4075,6 +4226,58 @@ describe('list*', function (): any {
       undefined,
       [Symbol.for('list*'), 1, [Symbol.for('quote'), [2, Symbol.for('.'), 3]]],
       [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
+    ]);
+  });
+});
+
+describe('flatten', function (): any {
+  it('(flatten (quote (1 2 3 4)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('flatten'), [Symbol.for('quote'), [1, 2, 3, 4]]],
+      [Symbol.for('quote'), [1, 2, 3, 4]],
+    ]);
+  });
+  it('(flatten (quote (1 . 2)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('flatten'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
+      [Symbol.for('quote'), [1, 2]],
+    ]);
+  });
+  return it('(flatten (quote ((a) b (c (d) . e) )))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [
+        Symbol.for('flatten'),
+        [
+          Symbol.for('quote'),
+          [
+            [Symbol.for('a')],
+            Symbol.for('b'),
+            [
+              Symbol.for('c'),
+              [Symbol.for('d')],
+              Symbol.for('.'),
+              Symbol.for('e'),
+            ],
+            [],
+          ],
+        ],
+      ],
+      [
+        Symbol.for('quote'),
+        [
+          Symbol.for('a'),
+          Symbol.for('b'),
+          Symbol.for('c'),
+          Symbol.for('d'),
+          Symbol.for('e'),
+        ],
+      ],
     ]);
   });
 });

@@ -274,6 +274,71 @@ describe('keywords', function (): any {
   });
 });
 
+describe('symbol?', function (): any {
+  it('(symbol? (quote foo))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('symbol?'), [Symbol.for('quote'), Symbol.for('foo')]],
+      true,
+    ]);
+  });
+  it('(symbol? 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('symbol?'), 1],
+      false,
+    ]);
+  });
+  it('(symbol? "foo")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('symbol?'), 'foo'],
+      false,
+    ]);
+  });
+  it('(symbol? (js-obj))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('symbol?'), [Symbol.for('js-obj')]],
+      false,
+    ]);
+  });
+  return it('(symbol? (quote ))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('symbol?'), [Symbol.for('quote'), []]],
+      false,
+    ]);
+  });
+});
+
+describe('symbol->string', function (): any {
+  return it('(symbol->string (quote foo))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('symbol->string'), [Symbol.for('quote'), Symbol.for('foo')]],
+      'foo',
+    ]);
+  });
+});
+
+describe('intern', function (): any {
+  return it('(intern "foo")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('intern'), 'foo'],
+      [Symbol.for('quote'), Symbol.for('foo')],
+    ]);
+  });
+});
+
 describe('Cons cells', function (): any {
   it('(cons 1 2)', function (): any {
     return testRepl([

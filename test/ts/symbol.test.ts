@@ -1,6 +1,6 @@
 import { s } from '../../src/ts/sexp';
 
-import { intern_, symbolp_, symbolToString_ } from '../../src/ts/symbol';
+import { symbolp_ } from '../../src/ts/symbol';
 
 import { assertEqual } from './test-util';
 
@@ -17,32 +17,8 @@ describe('s', function (): any {
   });
 });
 
-describe('intern', function (): any {
-  return it('foo', function (): any {
-    return assertEqual(intern_('foo'), s`foo`);
-  });
-});
-
 describe('symbolp', function (): any {
-  it('s`foo`', function (): any {
+  return it('s`foo`', function (): any {
     return assertEqual(symbolp_(s`foo`), true);
-  });
-  it('1', function (): any {
-    return assertEqual(symbolp_(1), false);
-  });
-  it("'foo'", function (): any {
-    return assertEqual(symbolp_('foo'), false);
-  });
-  it("'{}'", function (): any {
-    return assertEqual(symbolp_({}), false);
-  });
-  return it("'[]'", function (): any {
-    return assertEqual(symbolp_([]), false);
-  });
-});
-
-describe('symbol-to-string', function (): any {
-  return it('foo', function (): any {
-    return assertEqual(symbolToString_(s`foo`), 'foo');
   });
 });

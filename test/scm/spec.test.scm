@@ -123,6 +123,32 @@
  > ':foo
  ':foo
 
+ ;; `symbol?`
+ > (describe "symbol?")
+ _
+ > (symbol? 'foo)
+ #t
+ > (symbol? 1)
+ #f
+ > (symbol? "foo")
+ #f
+ > (symbol? (js-obj))
+ #f
+ > (symbol? '())
+ #f
+
+ ;; `symbol->string`
+ > (describe "symbol->string")
+ _
+ > (symbol->string 'foo)
+ "foo"
+
+ ;; `intern`
+ > (describe "intern")
+ _
+ > (intern "foo")
+ 'foo
+
  ;; Cons cells
  > (describe "Cons cells")
  _

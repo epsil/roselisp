@@ -9,12 +9,6 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `license`
- > (describe "license")
- _
- > license
- 'MPL-2.0
-
  ;; `#t`
  > (describe "#t")
  _
@@ -40,10 +34,6 @@
  #u
  > undefined
  #u
- ;; > (undefined 0)
- ;; #u
- ;; > ((undefined 0) 0)
- ;; #u
 
  ;; `#n`
  > (describe "#n")
@@ -105,6 +95,390 @@
  > (length null)
  0
 
+ ;; Numbers
+ > (describe "Numbers")
+ _
+ > 0
+ 0
+ > 1
+ 1
+ > 2
+ 2
+
+ ;; Strings
+ > (describe "strings")
+ _
+ > "foo"
+ "foo"
+ > "\"foo\""
+ "\"foo\""
+ > (eq? "\t" "	")
+ #t
+
+ ;; Keywords
+ > (describe "keywords")
+ _
+ > :foo
+ ':foo
+ > ':foo
+ ':foo
+
+ ;; Cons cells
+ > (describe "Cons cells")
+ _
+ > (cons 1 2)
+ '(1 . 2)
+ > (cons 1 (cons 2 3))
+ '(1 2 . 3)
+ > (cons 1 '())
+ '(1)
+ > (cons 1 '(2))
+ '(1 2)
+ > (car '(1 . 2))
+ 1
+ > (cdr '(1 . 2))
+ 2
+ > (car (cons 1 2))
+ 1
+ > (cdr (cons 1 2))
+ 2
+
+ ;; Lists
+ > (describe "Lists")
+ _
+ > (list 1 2)
+ '(1 2)
+ > (aget '(1 2) 0)
+ 1
+ > (aget '((1 2) (3 4)) 0 1)
+ 2
+ > (aref '(1 2) 0)
+ 1
+ > (aset '(1 2) 0 3)
+ 3
+ > (let ((x '(1 2)))
+     (aset x 0 3)
+     x)
+ '(3 2)
+ > (let ((x '(1 2)))
+     (set! (aref x 0) 3)
+     x)
+ '(3 2)
+
+ ;; `quote`
+ > (describe "quote")
+ _
+ > (quote foo)
+ 'foo
+ > (quote (1))
+ '(1)
+ > (quote (1 2))
+ '(1 2)
+ > (quote ((1 2) (3 4)))
+ '((1 2) (3 4))
+
+ ;; `quasiquote`
+ > (describe "quasoquote")
+ _
+ > `foo
+ 'foo
+ > (quasiquote foo)
+ 'foo
+ > (quasiquote (,1))
+ '(1)
+ > (quasiquote ((,1)))
+ '((1))
+ > (quasiquote (,@(list 1 2 3)))
+ '(1 2 3)
+
+ ;; Variables
+ > (describe "Variables")
+ _
+ > (let ((x 2))
+     x)
+ 2
+ > (let ((x 2)
+         y)
+     y)
+ #u
+ > (let (x)
+     (set! x 2)
+     x)
+ 2
+ > ((lambda ()
+      (define x 2)
+      x))
+ 2
+ > ((lambda ()
+      (define x)
+      (set! x 2)
+      x))
+ 2
+ > (let (x y)
+     (set! x 2)
+     (set! y 3)
+     (+ x y))
+ 5
+
+ ;; Function calls
+ > (describe "Function calls")
+ _
+ > (let ((identity (lambda (x) x)))
+     (identity "foo"))
+ "foo"
+ > (let ((my-add (lambda (x y) (+ x y))))
+     (my-add 1 2))
+ 3
+ > (let ((my-add (lambda (x y z) (+ x y z))))
+     (my-add 1 2 3))
+ 6
+
+ ;; `define`
+ > (describe "define")
+ _
+ > ((lambda ()
+      (define x 1)
+      1))
+ 1
+ > ((lambda ()
+      (define (my-add x y)
+        (+ x y))
+      (my-add 2 3)))
+ 5
+ > (let ((my-add (lambda (x y) (+ x y))))
+     ((lambda ()
+        (define (my-add-2 x y)
+          (my-add x y))
+        (my-add-2 2 3))))
+ 5
+ > (let ((my-add (lambda (x y z) (+ x y z))))
+     ((lambda ()
+        (define (my-add-2 x y z)
+          (my-add x y z))
+        (my-add-2 1 2 3))))
+ 6
+
+ ;; `defun`
+ > (describe "cefun")
+ _
+ > ((lambda ()
+      (defun my-add (x y)
+        (+ x y))
+      (my-add 2 3)))
+ 5
+ > (let ((my-add (lambda (x y) (+ x y))))
+     ((lambda ()
+        (defun my-add-2 (x y)
+          (my-add x y))
+        (my-add-2 2 3))))
+ 5
+ > (let ((my-add (lambda (x y z) (+ x y z))))
+     ((lambda ()
+        (defun my-add-2 (x y z)
+          (my-add x y z))
+        (my-add-2 1 2 3))))
+ 6
+
+ ;; `define-macro`
+ > (describe "define-macro")
+ _
+ ;; > ((lambda ()
+ ;;      (define-macro (my-macro x)
+ ;;        x)
+ ;;      (my-macro 1)))
+ ;; 1
+
+ ;; `defmacro`
+ > (describe "defmacro")
+ _
+ ;; > ((lambda ()
+ ;;      (defmacro my-macro (x)
+ ;;        x)
+ ;;      (my-macro 1)))
+ ;; 1
+
+ ;; `let`
+ > (describe "let")
+ _
+ > (let ((x 0))
+     x)
+ 0
+ > (let ((x 1))
+     (let ((y 2))
+       x))
+ 1
+ > (let ((x '((1 2) (3 4))))
+     x)
+ '((1 2) (3 4))
+ > (let (x)
+     (set! x 1)
+     x)
+ 1
+ > (let (x)
+     (set! x 1)
+     (set! x 2)
+     x)
+ 2
+ > (let (x))
+ #u
+ > (let ((a 1))
+     (+ (let ((a 2))
+          a)
+        a))
+ 3
+ > (let ((compose (lambda (f g)
+                    (lambda (x)
+                      (f (g x)))))
+         (square (lambda (x) (* x x)))
+         (add1 (lambda (x) (+ x 1))))
+     ((compose square add1) (add1 4)))
+ 36
+
+ ;; `let*`
+ > (describe "let*")
+ _
+ > (let* ((x 1))
+     x)
+ 1
+
+ ;; `lambda`
+ > (describe "lambda")
+ _
+ > ((lambda (x) x) 1)
+ 1
+ > ((lambda (x)
+      x)
+    "Lisp")
+ "Lisp"
+ > ((lambda x
+      x)
+    "Lisp")
+ '("Lisp")
+ > ((fn (x)
+      x)
+    1)
+ 1
+ > ((λ (x)
+      x)
+    1)
+ 1
+
+ ;; Lexical scope
+ > (describe "lexical scope")
+ _
+ > ((lambda ()
+      (define (K x)
+        (lambda () x))
+      ((K 42))))
+ 42
+ > ((lambda ()
+      (define incrementer #u)
+      (let ((x 1))
+        (set! incrementer
+              (lambda ()
+                (set! x (+ x 1))
+                x)))
+      (incrementer)))
+ 2
+ > (let ((x 100)
+         incrementer)
+     (let ((x 1))
+       (set! incrementer
+             (lambda ()
+               (set! x (+ x 1))
+               x)))
+     (incrementer)
+     x)
+ 100
+
+ ;; `begin`
+ > (describe "begin")
+ _
+ > (begin)
+ #u
+
+ ;; `begin0`
+ > (describe "begin0")
+ _
+ > (begin0 1
+     2)
+ 1
+
+ ;; `if`
+ > (describe "if")
+ _
+ > (if #t 1 2)
+ 1
+ > (if #f 1 2)
+ 2
+ > (if (< 1 2) 1 2)
+ 1
+ > (if (> 2 1) 1 2)
+ 1
+
+ ;; `when`
+ > (describe "when")
+ _
+ > (when (< 1 2)
+     1 2)
+ 2
+ > (when (> 1 2)
+     1 2)
+ #u
+
+ ;; `unless`
+ > (describe "unless")
+ _
+ > (unless (< 1 2)
+     1 2)
+ #u
+ > (unless (> 1 2)
+     1 2)
+ 2
+
+ ;; `cond`
+ > (describe "cond")
+ _
+ > (cond
+    (#f
+     1)
+    (else
+     2))
+ 2
+ > (cond
+    (#t
+     1)
+    (#f
+     2))
+ 1
+ > (cond
+    (#f
+     1)
+    (#t
+     2))
+ 2
+ > (cond
+    (#f
+     1)
+    (#t
+     2))
+ 2
+
+ ;; `js/switch`
+ > (describe "js/switch")
+ _
+ > ((lambda ()
+      (define x "foo")
+      (define y "bar")
+      (js/switch x
+        (case "foo"
+          (set! y "baz")
+          (break))
+        (default
+          (set! y "quux")))
+      y))
+ "baz"
+
  ;; `eq?`
  > (describe "eq?")
  _
@@ -113,6 +487,10 @@
  > (eq? #f #f)
  #t
  > (eq? #t #f)
+ #f
+ > (eq '_ '_)
+ #t
+ > (eq _ '_)
  #f
 
  ;; `equal?`
@@ -124,6 +502,505 @@
  #t
  > (equal? #t #f)
  #f
+ > (equal? _ '_)
+ #f
+
+ ;; `and`
+ > (describe "and")
+ _
+ > (and)
+ #t
+ > (and #t)
+ #t
+ > (and #t #t)
+ #t
+ > (and #f #f)
+ #f
+ > (and #f #t)
+ #f
+ > (and #t #f)
+ #f
+
+ ;; `or`
+ > (describe "or")
+ _
+ > (or)
+ #f
+ > (or #t)
+ #t
+ > (or #t #t)
+ #t
+ > (or #f #f)
+ #f
+ > (or #f #t)
+ #t
+ > (or #t #f)
+ #t
+ > (or 1 2)
+ 1
+ > (or #u 2)
+ 2
+
+ ;; `while`
+ > (describe "while")
+ _
+ > (let ((result '()))
+     (while (< (length result) 3)
+       (set! result (cons 1 result)))
+     result)
+ '(1 1 1)
+
+ ;; `for`
+ > (describe "for")
+ _
+ > (let ((result '()))
+     (for ((x '(1 2 3)))
+       (set! result (cons x result)))
+     result)
+ '(3 2 1)
+ > ((lambda ()
+     (define foo
+       '(1 2 3 4))
+     (define len
+       (length foo))
+     (for ((i (range 0 len)))
+       (pop-right! foo))
+     foo))
+ '()
+ > ((lambda ()
+      (define foo
+        '(1 2 3 4))
+      (for ((i (range 0 (length foo))))
+        (pop-right! foo))
+      foo))
+ '()
+
+ ;; `break`
+ > (describe "break")
+ _
+ > ((lambda ()
+      (while #t
+        (break))
+      1))
+ 1
+ > (let ((result (list)))
+     (for ((i (range 0 10)))
+       (break)
+       (push-right! result i))
+     result)
+ '()
+
+ ;; `continue`
+ > (describe "continue")
+ _
+ > (let ((result (list))
+         (i 0))
+     (while (< i 10)
+       (set! i (+ i 1))
+       (when (< i 5)
+         (continue))
+       (push-right! result i))
+     result)
+ '(5 6 7 8 9 10)
+ > (let ((result (list)))
+      (for ((i (range 0 11)))
+        (when (< i 5)
+          (continue))
+        (push-right! result i))
+      result)
+ '(5 6 7 8 9 10)
+
+ ;; `return`
+ > (describe "return")
+ _
+ > ((lambda ()
+      (return 1)
+      2))
+ 1
+ > ((js/function ()
+      (return 1)
+      2))
+ 1
+ > ((js/arrow ()
+      (return 1)
+      2))
+ 1
+
+ ;; `get-field`
+ > (describe "get-field")
+ _
+ > (let ((obj (js-obj "foo" "bar")))
+     (get-field foo obj))
+ "bar"
+
+ ;; `set-field!`
+ > (describe "set-field!")
+ _
+ > (let ((obj (js-obj)))
+     (set-field! foo obj "bar")
+     (get-field foo obj))
+ "bar"
+
+ ;; `field-bound?`
+ > (describe "field-bound?")
+ _
+ > (let ((obj (js-obj "foo" "bar")))
+     (field-bound? foo obj))
+ #t
+
+ ;; `oget`
+ > (describe "oget")
+ _
+ > (let ((obj (js-obj "prop" "foo")))
+     (oget obj "prop"))
+ "foo"
+ > (oget _ "@@functional/placeholder")
+ #t
+
+ ;; `send`
+ > (describe "send")
+ _
+ > (let ((obj (js-obj "add" (lambda (x y) (+ x y)))))
+     (send obj add 1 1))
+ 2
+ > (let ((obj (make-hash '(("foo" . "foo")))))
+     (send obj has "foo"))
+ #t
+ > (let ((obj (make-hash '(("foo" . "foo")))))
+     (send obj has "bar"))
+ #f
+
+ ;; `send/apply`
+ > (describe "send/apply")
+ _
+ > (let ((obj (make-hash '(("foo" . "foo")))))
+     (send/apply obj has '("foo")))
+ #t
+
+ ;; `new`
+ > (describe "new")
+ _
+ > (let (quux)
+     (set! quux
+           (new (class ()
+                  (define/public (bar)
+                    "baz"))))
+     (send quux bar))
+ "baz"
+ > (let (quux)
+     (set! quux
+           (new (class ()
+                  (define/public val 1)
+                  (define (constructor x)
+                    (set-field! val this x))
+                  (define/public (bar)
+                    (get-field val this)))
+                2))
+     (send quux bar))
+ 2
+
+ ;; `class`
+ > (describe "class")
+ _
+ > ((lambda ()
+      (define Foo
+        (class object%
+          (define/public (bar)
+            "baz")))
+      (define quux
+        (new Foo))
+      (send quux bar)))
+ "baz"
+ > ((lambda ()
+      (defclass Foo ()
+        (define/public (bar)
+          "baz"))
+      (define quux
+        (new Foo))
+      (send quux bar)))
+ "baz"
+ > ((lambda ()
+      (defclass Foo ()
+        (define bar "baz"))
+      (define quux
+        (new Foo))
+      (get-field bar quux)))
+ "baz"
+ > ((lambda ()
+      (defclass Foo ()
+        (define x)
+        (define (constructor x)
+          (set-field! x this x))
+        (define (bar)
+          (get-field x this)))
+      (define quux
+        (new Foo "xyzzy"))
+      (send quux bar)))
+ "xyzzy"
+ > ((lambda ()
+      (defclass Foo (Object)
+        (define (bar)
+          "baz"))
+      (define quux
+        (new Foo))
+      (send quux bar)))
+ "baz"
+
+ ;; `js-obj`
+ > (describe "js-obj")
+ _
+ > (js-obj)
+ (js-obj)
+ > (js-obj "foo" "bar")
+ (js-obj "foo" "bar")
+
+ ;; `js/in`
+ > (describe "js/in")
+ _
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/in "foo" obj))
+ #t
+
+ ;; `module`
+ > (describe "module")
+ _
+ > (module foo bar
+     (+ 1 1))
+ 2
+
+ ;; `clj/try`
+ > (describe "clj/try")
+ _
+ > (clj/try
+    (/ 1 2)
+    (catch Exception e
+      "there was an error")
+    (finally
+      (display "finally")))
+ 0.5
+ > (clj/try
+    (/ 1 3)
+    (/ 1 2)
+    (catch Exception e
+      "there was an error")
+    (finally
+      (display "finally")))
+ 0.5
+
+ ;; `unwind-protect`
+ > (describe "unwind-protect")
+ _
+ > (unwind-protect 1 2 3)
+ 1
+
+ ;; `define-values`
+ > (describe "define-values")
+ _
+ > ((lambda ()
+      (define-values (x y)
+        (values 1 2))))
+ #u
+ > ((lambda ()
+      (define-values (x y)
+        (values 1 2))
+      (list x y)))
+ '(1 2)
+ > ((lambda ()
+      (define-values (x y)
+        (values 1 2))
+      x))
+ 1
+
+ ;; `set!-values`
+ > (describe "set!-values")
+ _
+ > (let (x y)
+     (set!-values (x y) (values 1 2))
+     x)
+ 1
+ > (let (x y)
+     (set!-values (x y) (values 1 2))
+     (list x y))
+ '(1 2)
+
+ ;; `let-values`
+ > (describe "let-values")
+ _
+ > (let-values (((x y) (values 1 2)))
+     (list x y))
+ '(1 2)
+ > (let-values (((x . y) (values 1 2)))
+     (list x y))
+ '(1 (2))
+
+ ;; `let*-values`
+ > (describe "let*-values")
+ _
+ > (let*-values (((x y) (values 1 2))
+                 ((w z) (values 3 4)))
+     (list x y w z))
+ '(1 2 3 4)
+
+ ;; `define-fields`
+ > (describe "define-fields")
+ _
+ > ((lambda ()
+      (define-fields (x)
+        (js-obj "x" 1))
+      x))
+ 1
+
+ ;; `set!-fields`
+ > (describe "set!-fields")
+ _
+ > ((lambda ()
+      (let (x)
+        (set!-fields (x) (js-obj "x" 1))
+        x)))
+ 1
+
+ ;; `destructuring-bind`
+ > (describe "destructuring-bind")
+ _
+ > (destructuring-bind (x y)
+                       '(1 2)
+                        (list x y))
+ '(1 2)
+ > (destructuring-bind (x . y)
+                       '(1 2)
+                        (list x y))
+ '(1 (2))
+
+ ;; `multiple-values-bind`
+ > (describe "multiple-values-bind")
+ _
+ > (multiple-values-bind (x y)
+                         (values 1 2)
+                         (list x y))
+ '(1 2)
+
+ ;; `hash`
+ > (describe "hash")
+ _
+ > (hash)
+ (new Map)
+ > (hash '(("foo" . "bar")))
+ (new Map '(("foo" "bar")))
+
+ ;; `make-hash`
+ > (describe "make-hash")
+ _
+ > (make-hash)
+ (new Map)
+ > (make-hash '(("foo" . "bar")))
+ (new Map '(("foo" "bar")))
+
+ ;; `hash?`
+ > (describe "hash?")
+ _
+ > (hash? (make-hash))
+ #t
+ > (hash? 0)
+ #f
+
+ ;; `hash-clear`
+ > (describe "hash-clear")
+ _
+ > (hash-clear
+    (make-hash
+     '(("foo" . "bar"))))
+ (new Map)
+
+ ;; `hash-clear!`
+ > (describe "hash-clear!")
+ _
+ > (let ((ht (make-hash '(("foo" . "bar")))))
+     (hash-clear! ht)
+     ht)
+ (new Map)
+
+ ;; `hash-copy`
+ > (describe "hash-copy")
+ _
+ > (hash-copy
+    (make-hash
+     '(("foo" . "bar"))))
+ (new Map '(("foo" "bar")))
+
+ ;; `hash-keys`
+ > (describe "hash-keys")
+ _
+ > (hash-keys
+    (make-hash
+     '(("foo" . "bar"))))
+ '("foo")
+
+ ;; `hash-values`
+  > (describe "hash-values")
+  _
+  > (hash-values
+     (make-hash
+      '(("foo" . "bar"))))
+  '("bar")
+
+ ;; `hash->list`
+ > (describe "hash->list")
+ _
+ > (hash->list
+    (make-hash
+     '(("foo" . "bar"))))
+ '(("foo" . "bar"))
+
+ ;; `hash-set`
+ > (describe "hash-set")
+ _
+ > (hash-set
+    (make-hash)
+    "foo"
+    "bar")
+ (new Map
+      '(("foo" "bar")))
+
+ ;; `hash-set!`
+ > (describe "hash-set!")
+ _
+ > (let ((ht (make-hash)))
+     (hash-set! ht "foo" "bar")
+     ht)
+ (new Map
+      '(("foo" "bar")))
+
+ ;; `hash-ref`
+ > (describe "hash-ref")
+ _
+ > (hash-ref
+    (make-hash
+     '(("foo" . "bar")))
+    "foo")
+ "bar"
+ > (hash-ref (make-hash) "quux" #f)
+ #f
+
+ ;; `hash-has-key?`
+ > (describe "hash-has-key?")
+ _
+ > (hash-has-key?
+    (make-hash
+     '(("foo" . "bar")))
+    "foo")
+ #t
+ > (hash-has-key? (make-hash) "quux")
+ #f
+
+ ;; `Map`
+ > (describe "Map")
+ _
+ > (new Map)
+ (new Map)
+ > (~> (new Map '((1 2)))
+       (send _ entries)
+       (send Array from _))
+ '((1 2))
 
  ;; `+`
  > (describe "+")
@@ -134,8 +1011,17 @@
  1
  > (+ 1 2)
  3
+ > (+ 1 2 3)
+ 6
  > (+ 1 2 4)
  7
+ > (+ (+ 1 1) (+ 1 1))
+ 4
+ > (let ((x 2))
+     (+ x x))
+ 4
+ > (apply + '(1 2))
+ 3
 
  ;; `-`
  > (describe "-")
@@ -146,6 +1032,8 @@
  -1
  > (- 1 2)
  -1
+ > (- 1 2 3)
+ -4
  > (- 1 2 4)
  -5
 
@@ -158,6 +1046,8 @@
  1
  > (* 1 2)
  2
+ > (* 1 2 3)
+ 6
  > (* 1 2 4)
  8
 
@@ -170,5 +1060,334 @@
  1
  > (/ 1 2)
  0.5
+ > (/ 1 2 3)
+ (/ 1 2 3)
  > (/ 1 2 4)
- 0.125)
+ 0.125
+
+ ;; `range`
+ > (describe "range")
+ _
+ > (range 1 2)
+ '(1)
+ > (range 10)
+ '(0 1 2 3 4 5 6 7 8 9)
+ > (range 10 20)
+ '(10 11 12 13 14 15 16 17 18 19)
+ > (range 20 40 2)
+ '(20 22 24 26 28 30 32 34 36 38)
+ > (range 20 10 -1)
+ '(20 19 18 17 16 15 14 13 12 11)
+ > (range 10 15 1.5)
+ '(10 11.5 13.0 14.5)
+
+ ;; `member`
+ > (describe "member")
+ _
+ > (member 2 (list 1 2 3 4))
+ '(2 3 4)
+ > (member 9 (list 1 2 3 4))
+ #f
+ > (member 5
+           '(3 5 1 7 2 9)
+            (lambda (x y)
+              (< x y)))
+ '(7 2 9)
+
+ ;; `member?`
+ > (describe "member?")
+ _
+ > (member? 2 (list 1 2 3 4))
+ #t
+ > (member? 9 (list 1 2 3 4))
+ #f
+
+ ;; `take`
+ > (describe "take")
+ _
+ > (take '(1 2 3 4) 0)
+ '()
+ > (take '(1 2 3 4) 1)
+ '(1)
+ > (take '(1 2 3 4) 2)
+ '(1 2)
+
+ ;; `drop`
+ > (describe "drop")
+ _
+ > (drop '(1 2 3 4) 0)
+ '(1 2 3 4)
+ > (drop '(1 2 3 4) 1)
+ '(2 3 4)
+
+ ;; `drop-right`
+ > (describe "drop-right")
+ _
+ > (drop-right '(1 2 3 4) 0)
+ '(1 2 3 4)
+ > (drop-right '(1 2 3 4) 1)
+ '(1 2 3)
+
+ ;; `map`
+ > (describe "map")
+ _
+ > (map list '(1 2))
+ '((1) (2))
+ > ((lambda ()
+      (define (fact n)
+        (if (< n 2)
+            1
+            (* n (fact (- n 1)))))
+      (map fact '(1 2 3 4 5 6))))
+ '(1 2 6 24 120 720)
+
+ ;; `foldl`
+ > (describe "foldl")
+ _
+ > (foldl cons '() '(1 2 3 4))
+ '(4 3 2 1)
+
+ ;; `foldr`
+ > (describe "foldr")
+ _
+ > (foldr cons '() '(1 2 3 4))
+ '(1 2 3 4)
+ > (foldr (lambda (v l)
+            (cons (add1 v) l))
+          '()
+           '(1 2 3 4))
+ '(2 3 4 5)
+
+ ;; `filter`
+ > (describe "filter")
+ _
+ > (filter string? '("foo" 1 2 3))
+ '("foo")
+
+ ;; `string-length`
+ > (describe "string-length")
+ _
+ > (string-length "foo")
+ 3
+
+ ;; `string-append`
+ > (describe "string-append")
+ _
+ > (string-append)
+ ""
+ > (string-append "foo")
+ "foo"
+ > (string-append "foo" "bar")
+ "foobar"
+ > (apply string-append '("foo" "bar"))
+ "foobar"
+
+ ;; `string-trim`
+ > (describe "string-trim")
+ _
+ > (string-trim "  foo bar  baz  ")
+ "foo bar  baz"
+ > (string-trim "  foo bar  baz \r\n\t")
+ "foo bar  baz"
+
+ ;; `substring`
+ > (describe "substring")
+ _
+ > (substring "Apple" 1 3)
+ "pp"
+ > (substring "Apple" 1)
+ "pple"
+
+ ;; `as~>`
+ > (describe "as~>")
+ _
+ > (as~> 0 _
+     (+ _ 1)
+     (+ _ 1))
+ 2
+
+ ;; `ann`
+ > (describe "ann")
+ _
+ > (ann #u Any)
+ #u
+ ;; > ((ann #u Any))
+ ;; #u
+
+ ;; `set-car!`
+ > (describe "set-car!")
+ _
+ > ((lambda ()
+      (define foo '())
+      (set-car! foo 'bar)
+      foo))
+ '()
+ > ((lambda ()
+      (define foo
+        '(foo))
+      (set-car! foo 'bar)
+      foo))
+ '(bar)
+
+ ;; `set-cdr!`
+ > (describe "set-cdr!")
+ _
+ > ((lambda ()
+      (define foo '())
+      (set-cdr! foo '(bar))
+      foo))
+ '()
+ > ((lambda ()
+      (define foo
+        '(foo))
+      (set-cdr! foo '(bar))
+      foo))
+ '(foo bar)
+ > ((lambda ()
+      (define foo
+        '(foo bar))
+      (set-cdr! foo '(baz))
+      foo))
+ '(foo baz)
+ > ((lambda ()
+      (define foo
+        '(foo bar))
+      (set-cdr! foo '(baz . quux))
+      foo))
+ '(foo baz . quux)
+ > ((lambda ()
+      (define foo
+        '(foo . bar))
+      (set-cdr! foo '(baz))
+      foo))
+ '(foo baz)
+ > ((lambda ()
+      (define foo
+        '(foo . bar))
+      (set-cdr! foo '(baz . quux))
+      foo))
+ '(foo baz . quux)
+ > ((lambda ()
+      (define foo
+        '(foo))
+      (set-cdr! foo 'bar)
+      foo))
+ '(foo . bar)
+ > ((lambda ()
+      (define foo
+        '(foo bar . baz))
+      (set-cdr! foo '(quux))
+      foo))
+ '(foo quux)
+ > ((lambda ()
+      (define foo
+        '(foo bar . baz))
+      (set-cdr! foo 'quux)
+      foo))
+ '(foo . quux)
+
+ ;; `dotted-list?`
+ > (describe "dotted-list?")
+ _
+ > (dotted-list? '(foo . bar))
+ #t
+ > (dotted-list? '(foo bar))
+ #f
+
+ ;; `dotted-list-head`
+ > (describe "dotted-list-head")
+ _
+ > (dotted-list-head '(foo . bar))
+ '(foo)
+ > (dotted-list-head '(foo bar . baz))
+ '(foo bar)
+
+ ;; `dotted-list-tail`
+ > (describe "dotted-list-tail")
+ _
+ > (dotted-list-tail '(foo . bar))
+ 'bar
+ > (dotted-list-tail '(foo bar . baz))
+ 'baz
+
+ ;; `dotted-list->proper-list`
+ > (describe "dotted-list->proper-list")
+ _
+ > (dotted-list->proper-list '(foo . bar))
+ '(foo bar)
+ > (dotted-list->proper-list '(foo bar . baz))
+ '(foo bar baz)
+
+ ;; `proper-list?`
+ > (describe "proper-list?")
+ _
+ > (proper-list? '(foo bar))
+ #t
+ > (proper-list? '(foo . bar))
+ #f
+
+ ;; `circular-list?`
+ > (describe "circular-list?")
+ _
+ > ((lambda ()
+      (define foo '())
+      (circular-list? foo)
+      (set-cdr! foo foo)
+      (circular-list? foo)))
+ #f
+ > (circular-list? '(foo))
+ #f
+ > (circular-list? '(foo . bar))
+ #f
+ > ((lambda ()
+      (define foo
+        '(foo))
+      (set-cdr! foo foo)
+      (circular-list? foo)))
+ #t
+ > ((lambda ()
+      (define foo
+        '(foo . ()))
+      (set-cdr! foo foo)
+      (circular-list? foo)))
+ #t
+ > ((lambda ()
+      (define foo
+        '(foo bar))
+      (set-cdr! foo foo)
+      (circular-list? foo)))
+ #t
+
+ ;; `proper-list->dotted-list`
+ > (describe "proper-list->dotted-list")
+ _
+ > (proper-list->dotted-list '(foo bar))
+ '(foo . bar)
+ > (proper-list->dotted-list '(foo bar baz))
+ '(foo bar . baz)
+
+ ;; `list*`
+ > (describe "list*")
+ _
+ > (list*)
+ #u
+ > (list* 1)
+ 1
+ > (list* 1 2)
+ '(1 . 2)
+ > (list* 1 2 3)
+ '(1 2 . 3)
+ > (list* 1 2 3 4)
+ '(1 2 3 . 4)
+ > (list* 1 '())
+ '(1)
+ > (list* 1 '(2))
+ '(1 2)
+ > (list* 1 '(2 . 3))
+ '(1 2 . 3)
+
+ ;; `license`
+ > (describe "license")
+ _
+ > license
+ 'MPL-2.0)

@@ -183,6 +183,44 @@ function bar(x) {
 
 (describe "compile"
   (fn ()
+    (describe "compiled environment"
+      (fn ()
+        (it "compiledEnv"
+            (fn ()
+              (define options
+                (js-obj))
+              (compile 'foo #u options)
+              (define compiled-env
+                (oget options "compiledEnv"))
+              (assert-equal
+               (instance-of? compiled-env LispEnvironment)
+               #t)))))
+    (describe "continuation environment"
+      (fn ()
+        (it "has"
+            (fn ()
+              (define options
+                (js-obj))
+              (compile '(define foo 1)
+                       #u
+                       options)
+              (define continuation-env
+                (oget options "continuationEnv"))
+              (assert-equal
+               (send continuation-env has 'foo)
+               #t)))
+        (xit "EnvironmentStack"
+             (fn ()
+               (define options
+                 (js-obj))
+               (compile 'foo
+                        #u
+                        options)
+               (define continuation-env
+                 (oget options "continuationEnv"))
+               (assert-equal
+                (instance-of? continuation-env EnvironmentStack)
+                #t)))))
     (describe "macros"
       (fn ()
         ;; FIXME: Failing test
@@ -5256,6 +5294,25 @@ for (let i: any = _start; i < _end; i++) {
                             (display "cleanup")))
                         compilation-environment
                         (js-obj "language" "JavaScript"))
+               "try {
+  x = 2 / 1;
+} catch (e) {
+  console.log('there was an error');
+} finally {
+  console.log('cleanup');
+}")))
+        (it "compile (js/try ... (catch ...) (finally ...))"
+            (fn ()
+              (assert-equal
+               (compile
+                '(js/try
+                  (set! x (/ 2 1))
+                  (catch e
+                      (display "there was an error"))
+                  (finally
+                    (display "cleanup")))
+                compilation-environment
+                (js-obj "language" "JavaScript"))
                "try {
   x = 2 / 1;
 } catch (e) {

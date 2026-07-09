@@ -78,6 +78,23 @@
            (interpret '(falsep undefined))
            #t)))))
 
+(describe "empty list"
+  (fn ()
+    (it "cons?"
+        (fn ()
+          (test-repl
+           '(roselisp
+             > (cons? '())
+             #f)
+           (js-obj "compile" #f))))
+    (it "list?"
+        (fn ()
+          (test-repl
+           '(roselisp
+             > (list? '())
+             #t)
+           (js-obj "compile" #f))))))
+
 (describe "variables"
   (fn ()
     (xit "(setq a 1 b 2 c 3)"
@@ -190,8 +207,50 @@
           ;;  6)
           ))))
 
+(describe "define-macro"
+  (fn ()
+    (it "(define-macro (foo x) x)"
+        (fn ()
+          (test-repl
+           '(roselisp
+             > (define-macro (foo x)
+                 x)
+             _
+             > (foo '(foo 1))
+             '(foo 1))
+           (js-obj "compile" #f))))
+    (it "(define-macro (foo x) `(+ ,x ,x))"
+        (fn ()
+          (test-repl
+           '(roselisp
+             > (define-macro (foo x)
+                 `(+ ,x ,x))
+             _
+             > (foo 1)
+             2)
+           (js-obj "compile" #f))))
+    (xit "(define-macro my-macro (x) ...)"
+         (fn ()
+           (test-lisp
+            '(begin
+               (define-macro my-macro (x)
+                 `(begin ,x))
+               (my-macro 1))
+            1
+            (js-obj "compile" #f))))))
+
 (describe "defmacro"
   (fn ()
+    (it "(defmacro foo (x) x)"
+        (fn ()
+          (test-repl
+           '(roselisp
+             > (defmacro foo (x)
+                 x)
+             _
+             > (foo '(foo 1))
+             '(foo 1))
+           (js-obj "compile" #f))))
     (xit "(defmacro my-macro (&environment env) ...)"
          (fn ()
            (test-lisp
@@ -229,18 +288,6 @@
            (test-lisp
             '(begin
                (defmacro (my-macro x)
-                 `(begin ,x))
-               (my-macro 1))
-            1
-            (js-obj "compile" #f))))))
-
-(describe "define-macro"
-  (fn ()
-    (xit "(define-macro my-macro (x) ...)"
-         (fn ()
-           (test-lisp
-            '(begin
-               (define-macro my-macro (x)
                  `(begin ,x))
                (my-macro 1))
             1
@@ -603,6 +650,14 @@
 
 (describe "string functions"
   (fn ()
+    (describe "string-split"
+      (fn ()
+        (xit "(string-split \"  foo bar  baz \\r\\n\\t\")"
+             (fn ()
+               (test-repl
+                '(roselisp
+                  > (string-split "  foo bar  baz \r\n\t")
+                  '("foo" "bar" "baz")))))))
     (describe "string-trim"
       (fn ()
         (it "> (string-trim \"_foo bar  baz_\" \"_\")"
@@ -652,6 +707,28 @@
             '(apply send (make-hash) '(has "foo"))
             #f
             (js-obj "compile" #f))))))
+
+(describe "Y combinator"
+  (fn ()
+    (it "6!"
+        (fn ()
+          (test-repl
+           '(roselisp
+             > (define (Y f)
+                 ((lambda (future)
+                    (f (lambda (arg)
+                         ((future future) arg))))
+                  (lambda (future)
+                    (f (lambda (arg)
+                         ((future future) arg))))))
+             #u
+             > ((Y (lambda (f)
+                     (lambda (x)
+                       (if (zero? x)
+                           1
+                           (* x (f (- x 1)))))))
+                6)
+             720))))))
 
 (describe "ann"
   (fn ()

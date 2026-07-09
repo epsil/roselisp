@@ -291,6 +291,28 @@ describe('compile-modules', function (): any {
 });
 
 describe('compile', function (): any {
+  describe('compiled environment', function (): any {
+    return it('compiledEnv', function (): any {
+      const options: any = {};
+      compile(Symbol.for('foo'), undefined, options);
+      const compiledEnv: any = options['compiledEnv'];
+      return assertEqual(compiledEnv instanceof LispEnvironment, true);
+    });
+  });
+  describe('continuation environment', function (): any {
+    it('has', function (): any {
+      const options: any = {};
+      compile([Symbol.for('define'), Symbol.for('foo'), 1], undefined, options);
+      const continuationEnv: any = options['continuationEnv'];
+      return assertEqual(continuationEnv.has(Symbol.for('foo')), true);
+    });
+    return xit('EnvironmentStack', function (): any {
+      const options: any = {};
+      compile(Symbol.for('foo'), undefined, options);
+      const continuationEnv: any = options['continuationEnv'];
+      return assertEqual(continuationEnv instanceof EnvironmentStack, true);
+    });
+  });
   describe('macros', function (): any {
     // FIXME: Failing test
     xit('(module ... (defmacro foo ...) ...)', function (): any {
@@ -8658,7 +8680,34 @@ describe('compile', function (): any {
           '}'
       );
     });
-    return it('(js/try ... (catch e ...) (finally ...))', function (): any {
+    it('(js/try ... (catch e ...) (finally ...))', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('js/try'),
+            [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]],
+            [
+              Symbol.for('catch'),
+              Symbol.for('e'),
+              [Symbol.for('display'), 'there was an error'],
+            ],
+            [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']],
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        'try {\n' +
+          '  x = 2 / 1;\n' +
+          '} catch (e) {\n' +
+          "  console.log('there was an error');\n" +
+          '} finally {\n' +
+          "  console.log('cleanup');\n" +
+          '}'
+      );
+    });
+    return it('compile (js/try ... (catch ...) (finally ...))', function (): any {
       return assertEqual(
         compile(
           [

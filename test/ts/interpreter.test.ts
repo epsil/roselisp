@@ -56,6 +56,35 @@ describe('falsep', function (): any {
   });
 });
 
+describe('empty list', function (): any {
+  it('cons?', function (): any {
+    return testRepl(
+      [
+        Symbol.for('roselisp'),
+        Symbol.for('>'),
+        [Symbol.for('cons?'), [Symbol.for('quote'), []]],
+        false,
+      ],
+      {
+        compile: false,
+      }
+    );
+  });
+  return it('list?', function (): any {
+    return testRepl(
+      [
+        Symbol.for('roselisp'),
+        Symbol.for('>'),
+        [Symbol.for('list?'), [Symbol.for('quote'), []]],
+        true,
+      ],
+      {
+        compile: false,
+      }
+    );
+  });
+});
+
 describe('variables', function (): any {
   return xit('(setq a 1 b 2 c 3)', function (): any {
     return testLisp(
@@ -253,7 +282,99 @@ describe('define', function (): any {
 //       (+ x y z))
 //     ((((my-add) 1) 2) 3))
 //  6)
+describe('define-macro', function (): any {
+  it('(define-macro (foo x) x)', function (): any {
+    return testRepl(
+      [
+        Symbol.for('roselisp'),
+        Symbol.for('>'),
+        [
+          Symbol.for('define-macro'),
+          [Symbol.for('foo'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        Symbol.for('_'),
+        Symbol.for('>'),
+        [Symbol.for('foo'), [Symbol.for('quote'), [Symbol.for('foo'), 1]]],
+        [Symbol.for('quote'), [Symbol.for('foo'), 1]],
+      ],
+      {
+        compile: false,
+      }
+    );
+  });
+  it('(define-macro (foo x) `(+ ,x ,x))', function (): any {
+    return testRepl(
+      [
+        Symbol.for('roselisp'),
+        Symbol.for('>'),
+        [
+          Symbol.for('define-macro'),
+          [Symbol.for('foo'), Symbol.for('x')],
+          [
+            Symbol.for('quasiquote'),
+            [
+              Symbol.for('+'),
+              [Symbol.for('unquote'), Symbol.for('x')],
+              [Symbol.for('unquote'), Symbol.for('x')],
+            ],
+          ],
+        ],
+        Symbol.for('_'),
+        Symbol.for('>'),
+        [Symbol.for('foo'), 1],
+        2,
+      ],
+      {
+        compile: false,
+      }
+    );
+  });
+  return xit('(define-macro my-macro (x) ...)', function (): any {
+    return testLisp(
+      [
+        Symbol.for('begin'),
+        [
+          Symbol.for('define-macro'),
+          Symbol.for('my-macro'),
+          [Symbol.for('x')],
+          [
+            Symbol.for('quasiquote'),
+            [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
+          ],
+        ],
+        [Symbol.for('my-macro'), 1],
+      ],
+      1,
+      {
+        compile: false,
+      }
+    );
+  });
+});
+
 describe('defmacro', function (): any {
+  it('(defmacro foo (x) x)', function (): any {
+    return testRepl(
+      [
+        Symbol.for('roselisp'),
+        Symbol.for('>'),
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('foo'),
+          [Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        Symbol.for('_'),
+        Symbol.for('>'),
+        [Symbol.for('foo'), [Symbol.for('quote'), [Symbol.for('foo'), 1]]],
+        [Symbol.for('quote'), [Symbol.for('foo'), 1]],
+      ],
+      {
+        compile: false,
+      }
+    );
+  });
   xit('(defmacro my-macro (&environment env) ...)', function (): any {
     return testLisp(
       [
@@ -325,30 +446,6 @@ describe('defmacro', function (): any {
         [
           Symbol.for('defmacro'),
           [Symbol.for('my-macro'), Symbol.for('x')],
-          [
-            Symbol.for('quasiquote'),
-            [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
-          ],
-        ],
-        [Symbol.for('my-macro'), 1],
-      ],
-      1,
-      {
-        compile: false,
-      }
-    );
-  });
-});
-
-describe('define-macro', function (): any {
-  return xit('(define-macro my-macro (x) ...)', function (): any {
-    return testLisp(
-      [
-        Symbol.for('begin'),
-        [
-          Symbol.for('define-macro'),
-          Symbol.for('my-macro'),
-          [Symbol.for('x')],
           [
             Symbol.for('quasiquote'),
             [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
@@ -932,6 +1029,16 @@ describe('+', function (): any {
 });
 
 describe('string functions', function (): any {
+  describe('string-split', function (): any {
+    return xit('(string-split "  foo bar  baz \\r\\n\\t")', function (): any {
+      return testRepl([
+        Symbol.for('roselisp'),
+        Symbol.for('>'),
+        [Symbol.for('string-split'), '  foo bar  baz \n' + '\n' + '	'],
+        [Symbol.for('quote'), ['foo', 'bar', 'baz']],
+      ]);
+    });
+  });
   return describe('string-trim', function (): any {
     it('> (string-trim "_foo bar  baz_" "_")', function (): any {
       return testRepl(
@@ -1041,6 +1148,78 @@ describe('apply', function (): any {
         compile: false,
       }
     );
+  });
+});
+
+describe('Y combinator', function (): any {
+  return it('6!', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('define'),
+        [Symbol.for('Y'), Symbol.for('f')],
+        [
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('future')],
+            [
+              Symbol.for('f'),
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('arg')],
+                [
+                  [Symbol.for('future'), Symbol.for('future')],
+                  Symbol.for('arg'),
+                ],
+              ],
+            ],
+          ],
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('future')],
+            [
+              Symbol.for('f'),
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('arg')],
+                [
+                  [Symbol.for('future'), Symbol.for('future')],
+                  Symbol.for('arg'),
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+      undefined,
+      Symbol.for('>'),
+      [
+        [
+          Symbol.for('Y'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('f')],
+            [
+              Symbol.for('lambda'),
+              [Symbol.for('x')],
+              [
+                Symbol.for('if'),
+                [Symbol.for('zero?'), Symbol.for('x')],
+                1,
+                [
+                  Symbol.for('*'),
+                  Symbol.for('x'),
+                  [Symbol.for('f'), [Symbol.for('-'), Symbol.for('x'), 1]],
+                ],
+              ],
+            ],
+          ],
+        ],
+        6,
+      ],
+      720,
+    ]);
   });
 });
 

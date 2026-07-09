@@ -267,6 +267,11 @@
       1))
  1
  > ((lambda ()
+      (define (foo . args)
+        args)
+      (foo)))
+ '()
+ > ((lambda ()
       (define (my-add x y)
         (+ x y))
       (my-add 2 3)))
@@ -530,6 +535,10 @@
  #f
  > (equal? _ '_)
  #f
+ > (equal? 1 1)
+ #t
+ > (equal? '() '())
+ #t
 
  ;; `and`
  > (describe "and")
@@ -772,6 +781,42 @@
       (send quux bar)))
  "baz"
 
+ ;; `define-class`
+ > (describe "define-class")
+ _
+ > ((lambda ()
+      (define-class Foo ()
+        (define/public (bar)
+          "bar"))
+      (define foo
+        (new Foo))
+      (send foo bar)))
+ "bar"
+
+ ;; `defclass`
+ > (describe "defclass")
+ _
+ > ((lambda ()
+      (defclass Foo ()
+        (define/public (bar)
+          "bar"))
+      (define foo
+        (new Foo))
+      (send foo bar)))
+ "bar"
+
+ ;; `instance-of?`
+ > (describe "instance-of?")
+ _
+ > (instance-of? (new Map) Map)
+ #t
+
+ ;; `is-a?`
+ > (describe "is-a?")
+ _
+ > (is-a? (new Map) Map)
+ #t
+
  ;; `js-obj`
  > (describe "js-obj")
  _
@@ -780,6 +825,17 @@
  > (js-obj "foo" "bar")
  (js-obj "foo" "bar")
 
+ ;; `js-keys`
+ > (describe "js-keys")
+ _
+ > (js-keys (js-obj))
+ '()
+ > (js-keys (js-obj "foo" "bar"))
+ '("foo")
+ > (js-keys (js-obj "foo" "bar"
+                    "baz" "quux"))
+ '("foo" "baz")
+
  ;; `js/in`
  > (describe "js/in")
  _
@@ -787,12 +843,41 @@
      (js/in "foo" obj))
  #t
 
+ ;; `plist->alist`
+ > (describe "plist->alist")
+ _
+ > (plist->alist '())
+ '()
+ > (plist->alist '(foo bar))
+ '((foo . bar))
+ > (plist->alist '(foo bar baz quux))
+ '((foo . bar) (baz . quux))
+
  ;; `module`
  > (describe "module")
  _
  > (module foo bar
      (+ 1 1))
  2
+
+ ;; `js/try`
+ > (describe "js/try")
+ _
+ > (js/try
+    (/ 1 2)
+    (catch e
+        (display "there was an error"))
+    (finally
+      (display "finally")))
+ 0.5
+ > (js/try
+    (/ 1 3)
+    (/ 1 2)
+    (catch e
+        (display "there was an error"))
+    (finally
+      (display "finally")))
+ 0.5
 
  ;; `clj/try`
  > (describe "clj/try")
@@ -818,6 +903,31 @@
  _
  > (unwind-protect 1 2 3)
  1
+
+ ;; `call/cc`
+ > (describe "call/cc")
+ _
+ > (+ 5
+      (call/cc
+       (lambda (x)
+         (* 10 3))))
+ 35
+ > (+ 5
+      (call/cc
+       (lambda (x)
+         (* 10 (x 3)))))
+ 8
+ > (+ 5 (call/cc
+         (lambda (x)
+           (x 10)
+           3)))
+ 15
+ > (+ 5
+      (call/cc
+       (lambda (x)
+         (x 10)
+         (error "error"))))
+ 15
 
  ;; `define-values`
  > (describe "define-values")
@@ -875,6 +985,16 @@
         (js-obj "x" 1))
       x))
  1
+ > ((lambda ()
+      (define-fields (foo)
+        (js-obj "foo" "bar"))
+      foo))
+ "bar"
+ > ((lambda ()
+      (define-fields ((foo bar))
+        (js-obj "foo" "bar"))
+      bar))
+ "bar"
 
  ;; `set!-fields`
  > (describe "set!-fields")
@@ -1037,6 +1157,8 @@
  1
  > (+ 1 2)
  3
+ > (+ 2 2)
+ 4
  > (+ 1 2 3)
  6
  > (+ 1 2 4)
@@ -1254,6 +1376,26 @@
  > (apply string-append '("foo" "bar"))
  "foobar"
 
+ ;; `string-join`
+ > (describe "string-join")
+ _
+ > (string-join '("foo" "bar"))
+ "foo bar"
+ > (string-join '("foo" "bar") ",")
+ "foo,bar"
+
+ ;; `string-split`
+ > (describe "string-split")
+ _
+ > (string-split "foo bar  baz")
+ '("foo" "bar" "baz")
+ > (string-split "foo,bar,baz" ",")
+ '("foo" "bar" "baz")
+ > (string-split "foo, bar, baz" ", ")
+ '("foo" "bar" "baz")
+ > (string-split "foo\nbar\nbaz" "\n")
+ '("foo" "bar" "baz")
+
  ;; `string-trim`
  > (describe "string-trim")
  _
@@ -1261,6 +1403,18 @@
  "foo bar  baz"
  > (string-trim "  foo bar  baz \r\n\t")
  "foo bar  baz"
+
+ ;; `string-upcase`
+ > (describe "string-upcase")
+ _
+ > (string-upcase "foo")
+ "FOO"
+
+ ;; `string-downcase`
+ > (describe "string-downcase")
+ _
+ > (string-downcase "FOO")
+ "foo"
 
  ;; `substring`
  > (describe "substring")
@@ -1285,6 +1439,116 @@
  #u
  ;; > ((ann #u Any))
  ;; #u
+
+ ;; `cons?`
+ > (describe "cons?")
+ _
+ > (cons? '())
+ #f
+
+ ;; `list?`
+ > (describe "list?")
+ _
+ > (list? '())
+ #t
+ > (list? '(1 . 2))
+ #f
+ > (list? '(1 2 . 3))
+ #f
+ > (list? '(1 . ()))
+ #t
+ > (list? '(1 . (2 . ())))
+ #t
+
+ ;; `vector?`
+ > (describe "vector?")
+ _
+ > (vector? '())
+ #t
+ > (vector? '(1 . 2))
+ #t
+ > (vector? '(1 2 . 3))
+ #t
+ > (vector? '(1 . ()))
+ #t
+ > (vector? '(1 . (2 . ())))
+ #t
+
+ ;; `array-list?`
+ > (describe "array-list?")
+ _
+ > (array-list? '())
+ #t
+ > (array-list? '(1 . 2))
+ #t
+ > (array-list? '(1 2))
+ #t
+ > (array-list? '(1 2 3))
+ #t
+
+ ;; `linked-list?`
+ > (describe "linked-list?")
+ _
+ > (linked-list? '())
+ #f
+ > (linked-list? '(1 . 2))
+ #f
+ > (linked-list? '(1 . ()))
+ #t
+ > (linked-list? '(1 . (2 . ())))
+ #t
+ > (linked-list? '(1 2 . (3 . ())))
+ #t
+
+ ;; `linked-list-link?`
+ > (describe "linked-list-link?")
+ _
+ > (linked-list-link? '())
+ #f
+ > (linked-list-link? '(1 . 2))
+ #t
+ > (linked-list-link? '(1 . ()))
+ #t
+ > (linked-list-link? '(1 . (2 . ())))
+ #t
+ > (linked-list-link? '(1 2 . (3 . ())))
+ #t
+
+ ;; `length`
+ > (describe "length")
+ _
+ > (length '(1 . ()))
+ 1
+ > (length '(1 . (2 . ())))
+ 2
+ > (length '(1 2 . ()))
+ 2
+
+ ;; `last`
+ > (describe "last")
+ _
+ > (last '(1 . ()))
+ 1
+ > (last '(1 . (2 . ())))
+ 2
+ > (last '(1 2 . ()))
+ 2
+
+ ;; `nth`
+ > (describe "nth")
+ _
+ > (nth 1 '(1 . (2 . ())))
+ 2
+ > (nth 1 '(1 2 . (3 . ())))
+ 2
+
+ ;; `cdr`
+ > (describe "cdr")
+ _
+ > (cdr '(1 . (2 . ())))
+ '(2 . ())
+  > (cdr '(1 2 . (3 . ())))
+  '(2 . (3 . ()))
 
  ;; `set-car!`
  > (describe "set-car!")
@@ -1358,13 +1622,39 @@
       foo))
  '(foo . quux)
 
+  ;; Dotted lists
+  > (describe "Dotted lists")
+  _
+  > (equal? '(1 2) '(1 . (2 . ())))
+  #t
+
  ;; `dotted-list?`
  > (describe "dotted-list?")
  _
+ > (dotted-list? '())
+ #f
+ > (dotted-list? '(1 . 2))
+ #t
+ > (dotted-list? '(1 . ()))
+ #f
+ > (dotted-list? '(1 . (2 . ())))
+ #f
+ > (dotted-list? '(1 . (2 . 3)))
+ #t
  > (dotted-list? '(foo . bar))
  #t
  > (dotted-list? '(foo bar))
  #f
+
+ ;; `dotted-list-length`
+ > (describe "dotted-list-length")
+ _
+ > (dotted-list-length '())
+ 0
+ > (dotted-list-length '(1 . ()))
+ 1
+ > (dotted-list-length '(1 . (2 . ())))
+ 2
 
  ;; `dotted-list-head`
  > (describe "dotted-list-head")
@@ -1381,6 +1671,26 @@
  'bar
  > (dotted-list-tail '(foo bar . baz))
  'baz
+
+ ;; `dotted-list-last`
+ > (describe "dotted-list-last")
+ _
+ > (dotted-list-last '())
+ #u
+ > (dotted-list-last '(1 . ()))
+ 1
+ > (dotted-list-last '(1 . (2 . ())))
+ 2
+
+ ;; `dotted-list-last-cdr`
+ > (describe "dotted-list-last-cdr")
+ _
+ > (dotted-list-last-cdr '())
+ '()
+ > (dotted-list-last-cdr '(1 . ()))
+ '()
+ > (dotted-list-last-cdr '(1 . (2 . ())))
+ '()
 
  ;; `dotted-list->proper-list`
  > (describe "dotted-list->proper-list")
@@ -1467,6 +1777,18 @@
  '(1 2)
  > (flatten '((a) b (c (d) . e) ()))
  '(a b c d e)
+  > (flatten '((((4)))))
+  '(4)
+
+ ;; Cons dot
+ > (describe "Cons dot")
+ _
+ > *cons-dot*
+ '.
+ > (cons-dot)
+ '.
+ > (cons-dot? *cons-dot*)
+ #t
 
  ;; `license`
  > (describe "license")

@@ -492,15 +492,6 @@
             "wobble"
             (js-obj "compile" #f))))))
 
-(describe "js-obj"
-  (fn ()
-    (it "(js-obj \"foo\" 1 \"bar\" 2)"
-        (fn ()
-          (test-lisp
-           '(js-obj "foo" 1 "bar" 2)
-           (js-obj "foo" 1 "bar" 2)
-           (js-obj "wrapParens" #t))))))
-
 (describe "error"
   (fn ()
     (it "(error)"

@@ -834,21 +834,6 @@ describe('class', function (): any {
   });
 });
 
-describe('js-obj', function (): any {
-  return it('(js-obj "foo" 1 "bar" 2)', function (): any {
-    return testLisp(
-      [Symbol.for('js-obj'), 'foo', 1, 'bar', 2],
-      {
-        foo: 1,
-        bar: 2,
-      },
-      {
-        wrapParens: true,
-      }
-    );
-  });
-});
-
 describe('error', function (): any {
   it('(error)', function (): any {
     return assertThrows(function (): any {

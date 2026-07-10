@@ -2348,12 +2348,20 @@ describe('js-obj', function (): any {
       [Symbol.for('js-obj')],
     ]);
   });
-  return it('(js-obj "foo" "bar")', function (): any {
+  it('(js-obj "foo" "bar")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       undefined,
       [Symbol.for('js-obj'), 'foo', 'bar'],
       [Symbol.for('js-obj'), 'foo', 'bar'],
+    ]);
+  });
+  return it('(js-obj "foo" 1 "bar" 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      undefined,
+      [Symbol.for('js-obj'), 'foo', 1, 'bar', 2],
+      [Symbol.for('js-obj'), 'foo', 1, 'bar', 2],
     ]);
   });
 });

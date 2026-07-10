@@ -824,6 +824,8 @@
  (js-obj)
  > (js-obj "foo" "bar")
  (js-obj "foo" "bar")
+ > (js-obj "foo" 1 "bar" 2)
+ (js-obj "foo" 1 "bar" 2)
 
  ;; `js-keys`
  > (describe "js-keys")

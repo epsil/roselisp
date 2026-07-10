@@ -950,7 +950,7 @@
      module-environment
      module-options))
   (define main-statements
-    (compile-statement
+    (compile-statement-or-return-statement
      (begin-wrap-rose
       (get-field main-nodes module))
      module-environment
@@ -5280,7 +5280,7 @@
        `(begin ,@(send catch-clause drop 2))))
     (define body-compiled
       (wrap-in-block-statement-smart
-       (compile-statement-or-return-statement
+       (compile-statement
         body env options)))
     (set! handler
           (new CatchClause
@@ -5289,7 +5289,7 @@
   (define finalizer
     (if finally-clause
         (wrap-in-block-statement-smart
-         (compile-statement-or-return-statement
+         (compile-statement
           (make-rose
            `(begin ,@(send finally-clause drop 1)))
           env options))

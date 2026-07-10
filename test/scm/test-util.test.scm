@@ -89,8 +89,12 @@
             (js-obj "from" "roselisp"
                     "to" "node"))
            '(node
-             > "1 + 1"
-             "2"))))
+             > "(function () {
+  return 1 + 1;
+})()"
+             "(function () {
+  return 2;
+})()"))))
     (it "(roselisp > (+ 1 1) _)"
         (fn ()
           (assert-equal
@@ -101,7 +105,9 @@
             (js-obj "from" "roselisp"
                     "to" "node"))
            '(node
-             > "1 + 1"
+             > "(function () {
+  return 1 + 1;
+})()"
              "_"))))
     (xit "(roselisp > (+ 1 1) 2), plist"
          (fn ()
@@ -113,8 +119,12 @@
              :from "roselisp"
              :to "node")
             '(node
-              > "1 + 1"
-              "2"))))))
+              > "(function () {
+  return 1 + 1;
+})()"
+              "(function () {
+  return 2;
+})()"))))))
 
 (describe "simplify-repl-form"
   (fn ()

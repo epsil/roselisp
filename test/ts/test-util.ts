@@ -754,7 +754,7 @@ function compileReplForm(exp: any, options: any = {}): any {
       let result: any = [Symbol.for('node')];
       for (let clause of clauses) {
         result.push(Symbol.for('>'));
-        result.push(compile(clause[0]));
+        result.push(compile([[Symbol.for('lambda'), [], clause[0]]]));
         result.push(
           (Array.isArray(clause) &&
           clause.length >= 3 &&
@@ -785,36 +785,40 @@ function compileReplForm(exp: any, options: any = {}): any {
               })()
             : clause[1]) === Symbol.for('_')
             ? '_'
-            : compile(
-                Array.isArray(clause) &&
+            : compile([
+                [
+                  Symbol.for('lambda'),
+                  [],
+                  Array.isArray(clause) &&
                   clause.length >= 3 &&
                   clause[clause.length - 2] === Symbol.for('.') &&
                   ((): any => {
                     const x: any = lastCdr(clause);
                     return Array.isArray(x) && x.length === 0;
                   })()
-                  ? ((): any => {
-                      let i: any = 1;
-                      let result: any = clause;
-                      while (i > 0) {
-                        if (
-                          Array.isArray(result) &&
-                          result.length === 3 &&
-                          result[1] === Symbol.for('.')
-                        ) {
-                          result = clause[clause.length - 1];
-                        } else {
-                          result = clause.slice(1);
+                    ? ((): any => {
+                        let i: any = 1;
+                        let result: any = clause;
+                        while (i > 0) {
+                          if (
+                            Array.isArray(result) &&
+                            result.length === 3 &&
+                            result[1] === Symbol.for('.')
+                          ) {
+                            result = clause[clause.length - 1];
+                          } else {
+                            result = clause.slice(1);
+                          }
+                          i--;
                         }
-                        i--;
-                      }
-                      if (Array.isArray(result)) {
-                        result = result[0];
-                      }
-                      return result;
-                    })()
-                  : clause[1]
-              )
+                        if (Array.isArray(result)) {
+                          result = result[0];
+                        }
+                        return result;
+                      })()
+                    : clause[1],
+                ],
+              ])
         );
       }
       return result;

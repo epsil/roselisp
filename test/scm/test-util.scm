@@ -280,11 +280,13 @@
       (for ((clause clauses))
         (push-right! result '>)
         (push-right! result
-                     (compile (first clause)))
+                     (compile `((lambda ()
+                                  ,(first clause)))))
         (push-right! result
                      (if (eq? (second clause) '_)
                          "_"
-                         (compile (second clause)))))
+                         (compile `((lambda ()
+                                      ,(second clause)))))))
       result)
      (else
       exp)))

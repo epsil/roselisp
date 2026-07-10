@@ -102,7 +102,12 @@ describe('compile-repl-form', function (): any {
           to: 'node',
         }
       ),
-      [Symbol.for('node'), Symbol.for('>'), '1 + 1', '2']
+      [
+        Symbol.for('node'),
+        Symbol.for('>'),
+        '(function () {\n' + '  return 1 + 1;\n' + '})()',
+        '(function () {\n' + '  return 2;\n' + '})()',
+      ]
     );
   });
   it('(roselisp > (+ 1 1) _)', function (): any {
@@ -119,7 +124,12 @@ describe('compile-repl-form', function (): any {
           to: 'node',
         }
       ),
-      [Symbol.for('node'), Symbol.for('>'), '1 + 1', '_']
+      [
+        Symbol.for('node'),
+        Symbol.for('>'),
+        '(function () {\n' + '  return 1 + 1;\n' + '})()',
+        '_',
+      ]
     );
   });
   return xit('(roselisp > (+ 1 1) 2), plist', function (): any {
@@ -131,7 +141,12 @@ describe('compile-repl-form', function (): any {
         Symbol.for(':to'),
         'node'
       ),
-      [Symbol.for('node'), Symbol.for('>'), '1 + 1', '2']
+      [
+        Symbol.for('node'),
+        Symbol.for('>'),
+        '(function () {\n' + '  return 1 + 1;\n' + '})()',
+        '(function () {\n' + '  return 2;\n' + '})()',
+      ]
     );
   });
 });

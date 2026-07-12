@@ -19,7 +19,7 @@
 declare function definePrivate_(exp: any, env: any): any;
 declare namespace definePrivate_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define/public ...)` expression.
@@ -27,7 +27,7 @@ declare namespace definePrivate_ {
 declare function definePublic_(exp: any, env: any): any;
 declare namespace definePublic_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(defclass ...)` expression.
@@ -35,7 +35,7 @@ declare namespace definePublic_ {
 declare function defclass_(exp: any, env: any): any;
 declare namespace defclass_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(defmacro ...)` expression.
@@ -43,7 +43,7 @@ declare namespace defclass_ {
 declare function defmacro_(exp: any, env: any): any;
 declare namespace defmacro_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(defun ...)` expression.
@@ -51,7 +51,7 @@ declare namespace defmacro_ {
 declare function defun_(exp: any, env: any): any;
 declare namespace defun_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(begin0 ...)` or `(prog1 ...)` expression.
@@ -59,7 +59,7 @@ declare namespace defun_ {
 declare function begin0_(exp: any, env: any): any;
 declare namespace begin0_ {
     var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(multiple-values-bind ...)` expression.
@@ -67,7 +67,7 @@ declare namespace begin0_ {
 declare function multipleValueBind_(exp: any, env: any): any;
 declare namespace multipleValueBind_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[] | symbol[][][])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(rkt/new ...)' expression.
@@ -75,7 +75,7 @@ declare namespace multipleValueBind_ {
 declare function rktNew_(exp: any, env: any): any;
 declare namespace rktNew_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand an `(if ...)` expression.
@@ -83,7 +83,7 @@ declare namespace rktNew_ {
 declare function if_(exp: any, env: any): any;
 declare namespace if_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[] | ((number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(when ...)` expression.
@@ -91,7 +91,7 @@ declare namespace if_ {
 declare function when_(exp: any, env: any): any;
 declare namespace when_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand an `(unless ...)` expression.
@@ -99,7 +99,7 @@ declare namespace when_ {
 declare function unless_(exp: any, env: any): any;
 declare namespace unless_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand an `(as~> ...)` expression.
@@ -111,7 +111,7 @@ declare namespace unless_ {
 declare function threadAs_(exp: any, env: any): any;
 declare namespace threadAs_ {
     var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Evaluate a `(~> ...)` expression. Based on the
@@ -123,7 +123,7 @@ declare namespace threadAs_ {
 declare function threadFirst_(exp: any, env: any): any;
 declare namespace threadFirst_ {
     var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | ((number | symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol[] | (symbol | symbol[])[][])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Evaluate a `(~>> ...)` expression. Based on the
@@ -135,7 +135,7 @@ declare namespace threadFirst_ {
 declare function threadLast_(exp: any, env: any): any;
 declare namespace threadLast_ {
     var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (number | symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand an `(unwind-protect ...)` expression.
@@ -143,7 +143,7 @@ declare namespace threadLast_ {
 declare function unwindProtect_(exp: any, env: any): any;
 declare namespace unwindProtect_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(do ...)` expression.
@@ -151,7 +151,7 @@ declare namespace unwindProtect_ {
 declare function do_(exp: any, env: any): any;
 declare namespace do_ {
     var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(while ...)` expression.
@@ -159,7 +159,7 @@ declare namespace do_ {
 declare function while_(exp: any, env: any): any;
 declare namespace while_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(js/for ...)` expression.
@@ -167,7 +167,7 @@ declare namespace while_ {
 declare function jsFor_(exp: any, env: any): any;
 declare namespace jsFor_ {
     var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | symbol[][])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(js/for-in ...)` expression.
@@ -175,7 +175,7 @@ declare namespace jsFor_ {
 declare function jsForIn_(exp: any, env: any): any;
 declare namespace jsForIn_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(js/for-of ...)` expression.
@@ -183,7 +183,7 @@ declare namespace jsForIn_ {
 declare function jsForOf_(exp: any, env: any): any;
 declare namespace jsForOf_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(case ...)` expression.
@@ -191,7 +191,7 @@ declare namespace jsForOf_ {
 declare function case_(exp: any, env: any): any;
 declare namespace case_ {
     var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(case/eq ...)` expression.
@@ -199,7 +199,7 @@ declare namespace case_ {
 declare function caseEq_(exp: any, env: any): any;
 declare namespace caseEq_ {
     var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(let-env ...)` expression.
@@ -207,7 +207,7 @@ declare namespace caseEq_ {
 declare function letEnv_(exp: any, env: any): any;
 declare namespace letEnv_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(set ...)` expression.
@@ -215,7 +215,7 @@ declare namespace letEnv_ {
 declare function set_(exp: any, env: any): any;
 declare namespace set_ {
     var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(new/apply ...)` expression.
@@ -223,7 +223,7 @@ declare namespace set_ {
 declare function newApply_(exp: any, env: any): any;
 declare namespace newApply_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(clj/try ...)` expression.
@@ -235,6 +235,14 @@ declare namespace newApply_ {
 declare function cljTry_(exp: any, env: any): any;
 declare namespace cljTry_ {
     var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
-export { begin0_, caseEq_, case_, cljTry_, defclass_, definePrivate_, definePublic_, defmacro_, defun_, do_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };
+/**
+ * Expand a `(declare ...)` expression.
+ */
+declare function declare_(exp: any, env: any): any;
+declare namespace declare_ {
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var ftype: string;
+}
+export { begin0_, caseEq_, case_, cljTry_, declare_, defclass_, definePrivate_, definePublic_, defmacro_, defun_, do_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };

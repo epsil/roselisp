@@ -165,14 +165,8 @@
                   estree?))
 (require (only-in "./eval"
                   call-evaluator
-                  compiler-type?
                   default-evaluator
-                  eval_
-                  macro-type?
-                  procedure-type?
-                  special-type?
-                  undefined-type?
-                  variable-type?))
+                  eval_))
 (require (only-in "./hash"
                   hash->list_
                   hash-clear!_
@@ -313,6 +307,7 @@
                   case-eq_
                   case_
                   clj-try_
+                  declare_
                   defclass_
                   define-private_
                   define-public_
@@ -371,6 +366,7 @@
                   apply_
                   assert_
                   boolean?_
+                  compiler-type?
                   const_
                   display_
                   div_
@@ -389,11 +385,13 @@
                   identity_
                   index-of_
                   index-where_
-                  is-a?_
                   intersection_
+                  is-a?_
                   keyword?_
                   lt_
                   lte_
+                  macro-type?
+                  macro?_
                   map_
                   member?_
                   member_
@@ -407,16 +405,20 @@
                   number?_
                   odd?_
                   one?_
+                  procedure-type?
                   procedure?_
                   range_
                   self-evaluating?_
+                  special-type?
                   sub1_
                   sub_
                   true?_
                   type-of_
+                  undefined-type?
                   undefined?_
                   union_
                   values_
+                  variable-type?
                   zero?_))
 (require (only-in "./regexp"
                   regexp-match?_
@@ -1139,7 +1141,7 @@
                          (js-obj "filter"
                                  (lambda (x)
                                    (not (eq? x env)))))))
-             ;; (not (macro-function?
+             ;; (not (macro_?
              ;;       (send env get op)))
              )
         (set! result
@@ -2413,11 +2415,11 @@
                                compiledType)))))
     (cond
      (inline-lisp-source-option
+      (define sym
+        (string->symbol function-name))
       (define lisp-code-exp
         (compile-sexp
-         `(set-field! lispSource
-                      ,(string->symbol function-name)
-                      (quote ,exp))
+         `(declare ,sym (lispSource (quote ,exp)))
          env options))
       (new Program (list result lisp-code-exp)))
      (else
@@ -5480,7 +5482,7 @@
        `(begin
           (define (,name ,@args)
             ,@body)
-          (set-field! lispMacro ,name #t))
+          (declare ,name (ftype "macro")))
        node))
      env options))
   (when continuation-env
@@ -5497,11 +5499,6 @@
     (oget options "continuationEnv"))
   (send continuation-env set-local name #t '(->macro :rest Any Any))
   (empty-program))
-
-;;; Whether `f` is a macro function.
-(define (macro-function? f)
-  (and (function? f)
-       (get-field lispMacro f)))
 
 ;;; Compiler macro for `(make-hash ...)` expressions.
 (defmacro compile-make-hash-macro (assocs)
@@ -7801,6 +7798,7 @@
          (list? ,list?_ (->* :rest Any Any))
          (listp ,list?_ (->* :rest Any Any))
          (log ,(get-field log console) (->* :rest Any Any))
+         (macro? ,macro?_ (->* :rest Any Any))
          (make ,new_ (->* :rest Any Any))
          (make-hash ,make-hash_ (->* :rest Any Any))
          (make-list ,make-list_ (->* :rest Any Any))
@@ -7957,6 +7955,7 @@
          (clj/try ,clj-try_ (->macro :rest Any Any))
          (cond ,cond_ (->macro :rest Any Any))
          (continue ,continue_ (->macro :rest Any Any))
+         (declare ,declare_ (->macro :rest Any Any))
          (declare-macro ,declare-macro_ (->macro :rest Any Any))
          (defclass ,defclass_ (->macro :rest Any Any))
          (define ,define_ (->macro :rest Any Any))

@@ -53,6 +53,15 @@
 (require (only-in "./printer"
                   print-estree
                   write-to-string))
+(require (only-in "./procedures"
+                  fexpr-type?
+                  fexpr?
+                  macro-type?
+                  macro?
+                  procedure-type?
+                  special-type?
+                  undefined-type?
+                  variable-type?))
 (require (only-in "./rose"
                   Rose))
 (require (only-in "./util"
@@ -175,7 +184,9 @@
               ((fexpr? f)
                (apply f args))
               ;; Macro function
-              ((get-field lispMacro f)
+              ((macro? f)
+               ;; (eq? (get-field ftype f)
+               ;;      "macro")
                (define expansion
                  (f exp env))
                (eval-sexp expansion env options))
@@ -1138,50 +1149,6 @@
                    (get-field value e))))
          result))))))
 
-;;; Whether `x` is the type of a variable.
-(define (variable-type? x)
-  (or (eq? x 'Any)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "variable")))
-
-;;; Whether `x` is the type of a procedure.
-(define (procedure-type? x)
-  (or (tagged-list? x '->)
-      (tagged-list? x '->*)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "function")
-      (eq? x "procedure")))
-
-;;; Whether `x` is the type of a macro.
-(define (macro-type? x)
-  (or (tagged-list? x '->macro)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "macro")))
-
-;;; Whether `x` is the type of a fexpr.
-(define (fexpr-type? x)
-  (or (tagged-list? x '->fexpr)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "fexpr")))
-
-;;; Whether `x` is the type of a compiler.
-(define (compiler-type? x)
-  (or (tagged-list? x '->compiler)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "compiler")))
-
-;;; Whether `x` is the type of a special form.
-(define (special-type? x)
-  (or (tagged-list? x '->special)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "special")))
-
-;;; Whether `x` is the type of an undefined value.
-(define (undefined-type? x)
-  (or (eq? x 'Undefined)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "undefined")))
-
 ;;; Mapping from ESTree node types to evaluator functions.
 (define eval-estree-map
   (make-hash
@@ -1231,7 +1198,6 @@
   (rename-out (eval_ seval))
   Evaluator
   call-evaluator
-  compiler-type?
   default-evaluator
   eval-estree
   eval-rose
@@ -1239,9 +1205,4 @@
   eval1
   eval_
   evaluator?
-  js-eval_
-  macro-type?
-  procedure-type?
-  special-type?
-  undefined-type?
-  variable-type?)
+  js-eval_)

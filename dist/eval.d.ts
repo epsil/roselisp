@@ -90,46 +90,4 @@ declare function evalEstree(node: any, env: any, options?: any): any;
 declare namespace evalEstree {
     var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | undefined)[])[])[];
 }
-/**
- * Whether `x` is the type of a variable.
- */
-declare function variableTypeP(x: any): any;
-declare namespace variableTypeP {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
-}
-/**
- * Whether `x` is the type of a procedure.
- */
-declare function procedureTypeP(x: any): any;
-declare namespace procedureTypeP {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
-}
-/**
- * Whether `x` is the type of a macro.
- */
-declare function macroTypeP(x: any): any;
-declare namespace macroTypeP {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
-}
-/**
- * Whether `x` is the type of a compiler.
- */
-declare function compilerTypeP(x: any): any;
-declare namespace compilerTypeP {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
-}
-/**
- * Whether `x` is the type of a special form.
- */
-declare function specialTypeP(x: any): any;
-declare namespace specialTypeP {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
-}
-/**
- * Whether `x` is the type of an undefined value.
- */
-declare function undefinedTypeP(x: any): any;
-declare namespace undefinedTypeP {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
-}
-export { eval_ as seval, Evaluator, callEvaluator, compilerTypeP, defaultEvaluator, evalEstree, evalRose, evalSexp, eval1, eval_, evaluatorp, jsEval_, macroTypeP, procedureTypeP, specialTypeP, undefinedTypeP, variableTypeP };
+export { eval_ as seval, Evaluator, callEvaluator, defaultEvaluator, evalEstree, evalRose, evalSexp, eval1, eval_, evaluatorp, jsEval_ };

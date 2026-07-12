@@ -59,7 +59,70 @@ declare namespace procedurep_ {
  */
 declare function fexprp_(obj: any): any;
 declare namespace fexprp_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+}
+/**
+ * Whether `f` is a macro function.
+ */
+declare function macrop_(f: any): any;
+declare namespace macrop_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+}
+/**
+ * Whether `x` is the type of a variable.
+ */
+declare function variableTypeP_(x: any): any;
+declare namespace variableTypeP_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+}
+/**
+ * Whether `x` is the type of a procedure.
+ */
+declare function procedureTypeP_(x: any): any;
+declare namespace procedureTypeP_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+}
+/**
+ * Whether `x` is the type of a macro.
+ */
+declare function macroTypeP_(x: any): any;
+declare namespace macroTypeP_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+}
+/**
+ * Whether `x` is the type of a fexpr.
+ */
+declare function fexprTypeP_(x: any): any;
+declare namespace fexprTypeP_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+}
+/**
+ * Whether `x` is the type of a compiler.
+ */
+declare function compilerTypeP_(x: any): any;
+declare namespace compilerTypeP_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+}
+/**
+ * Whether `x` is the type of a special form.
+ */
+declare function specialTypeP_(x: any): any;
+declare namespace specialTypeP_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+}
+/**
+ * Whether `x` is the type of an undefined value.
+ */
+declare function undefinedTypeP_(x: any): any;
+declare namespace undefinedTypeP_ {
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+}
+/**
+ * Whether `exp` is a list whose first element is `tag`.
+ */
+declare function taggedListP_(exp: any, tag: any): any;
+declare namespace taggedListP_ {
+    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
  * Logical negation.
@@ -425,7 +488,7 @@ declare namespace memberp_ {
  */
 declare function memq_(v: any, lst: any): any;
 declare namespace memq_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][] | (boolean | symbol | (number | symbol)[])[])[])[];
+    var lispSource: (symbol | (symbol | (boolean | symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[];
 }
 /**
  * Whether a list contains a value,
@@ -647,4 +710,4 @@ declare function isAP_(obj: any, cls: any): any;
 declare namespace isAP_ {
     var lispSource: (symbol | symbol[])[];
 }
-export { add1_ as add1, add_ as _add, add_ as add, add_ as plus, apply_ as apply, compose_ as compose, display_ as display, div_ as _div, div_ as div, error_ as error, falsep as falsep_, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, gt_ as gt, gte_ as gte, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordp_ as keywordp, lt_ as lt, lte_ as lte, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, memberp_, member_ as member, member_ as memq, memf_ as memf, mul_ as _mul, mul_ as mul, not_ as not, numberp_ as numberp, pipe_ as pipe, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, sub1_ as sub1, sub_ as _sub, sub_ as minus, sub_ as sub, sub_ as subtract, truep as truep_, typeOf_ as typeOf, union_ as union, values_ as values, zerop_ as zerop, add1_, add_, apply_, assert_, booleanp_, compose_, const_, display_, div_, error_, evenp_, falsep, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, funcall_, gt_, gte_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordp_, lt_, lte_, map_, member_, memfp_, memf_, memqp_, memq_, modulo_, mul_, not_, numberp_, oddp_, onep_, pipe_, procedurep_, range_, selfEvaluatingP_, sub1_, sub_, truep, typeOf_, undefinedp_, union_, values_, zerop_ };
+export { add1_ as add1, add_ as _add, add_ as add, add_ as plus, apply_ as apply, compilerTypeP_ as compilerTypeP, compose_ as compose, display_ as display, div_ as _div, div_ as div, error_ as error, falsep as falsep_, fexprTypeP_ as fexprTypeP, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, gt_ as gt, gte_ as gte, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordp_ as keywordp, lt_ as lt, lte_ as lte, macroTypeP_ as macroTypeP, macrop_ as macrop, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, memberp_, member_ as member, member_ as memq, memf_ as memf, mul_ as _mul, mul_ as mul, not_ as not, numberp_ as numberp, pipe_ as pipe, procedureTypeP_ as procedureTypeP, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, specialTypeP_ as specialTypeP, sub1_ as sub1, sub_ as _sub, sub_ as minus, sub_ as sub, sub_ as subtract, taggedListP_ as taggedListP, truep as truep_, typeOf_ as typeOf, undefinedTypeP_ as undefinedTypeP, union_ as union, values_ as values, variableTypeP_ as variableTypeP, zerop_ as zerop, add1_, add_, apply_, assert_, booleanp_, compilerTypeP_, compose_, const_, display_, div_, error_, evenp_, falsep, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, funcall_, gt_, gte_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordp_, lt_, lte_, macroTypeP_, macrop_, map_, member_, memfp_, memf_, memqp_, memq_, modulo_, mul_, not_, numberp_, oddp_, onep_, pipe_, procedureTypeP_, procedurep_, range_, selfEvaluatingP_, specialTypeP_, sub1_, sub_, taggedListP_, truep, typeOf_, undefinedTypeP_, undefinedp_, union_, values_, variableTypeP_, zerop_ };

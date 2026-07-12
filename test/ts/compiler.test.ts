@@ -86,7 +86,7 @@ describe('compile-modules', function (): any {
             '  return x;\n' +
             '}\n' +
             '\n' +
-            'foo.lispMacro = true;\n' +
+            "foo.ftype = 'macro';\n" +
             '\n' +
             'export {\n' +
             '  foo\n' +
@@ -151,7 +151,7 @@ describe('compile-modules', function (): any {
             '  return x;\n' +
             '}\n' +
             '\n' +
-            'bar.lispMacro = true;\n' +
+            "bar.ftype = 'macro';\n" +
             '\n' +
             'export {\n' +
             '  bar\n' +
@@ -210,7 +210,7 @@ describe('compile-modules', function (): any {
             '  return baz(x);\n' +
             '}\n' +
             '\n' +
-            'bar.lispMacro = true;\n' +
+            "bar.ftype = 'macro';\n" +
             '\n' +
             'function foo(x) {\n' +
             '  return x;\n' +
@@ -272,7 +272,7 @@ describe('compile-modules', function (): any {
             '  return x;\n' +
             '}\n' +
             '\n' +
-            'foo.lispMacro = true;\n' +
+            "foo.ftype = 'macro';\n" +
             '\n' +
             'export {\n' +
             '  foo\n' +
@@ -339,7 +339,7 @@ describe('compile', function (): any {
           "  return [Symbol.for('begin')];\n" +
           '}\n' +
           '\n' +
-          'foo.lispMacro = true;'
+          "foo.ftype = 'macro';"
       );
     });
     it('(module ... (defmacro foo ...) ...)', function (): any {
@@ -371,7 +371,7 @@ describe('compile', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          'foo.lispMacro = true;\n' +
+          "foo.ftype = 'macro';\n" +
           '\n' +
           'function bar(x) {\n' +
           '  return x;\n' +
@@ -410,7 +410,7 @@ describe('compile', function (): any {
           "  return [Symbol.for('begin'), x];\n" +
           '}\n' +
           '\n' +
-          'foo.lispMacro = true;\n' +
+          "foo.ftype = 'macro';\n" +
           '\n' +
           'function bar(x) {\n' +
           '  return x;\n' +
@@ -446,7 +446,7 @@ describe('compile', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          'foo.lispMacro = true;\n' +
+          "foo.ftype = 'macro';\n" +
           '\n' +
           'function bar(x) {\n' +
           '  return x;\n' +
@@ -482,7 +482,7 @@ describe('compile', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          'foo.lispMacro = true;\n' +
+          "foo.ftype = 'macro';\n" +
           '\n' +
           'const bar = 1;'
       );
@@ -515,7 +515,7 @@ describe('compile', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          'foo.lispMacro = true;\n' +
+          "foo.ftype = 'macro';\n" +
           '\n' +
           'const bar = 1;'
       );

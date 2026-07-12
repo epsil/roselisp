@@ -226,7 +226,7 @@ declare namespace macroexpandAllUntil {
 declare function quote_(exp: any, env: any): any;
 declare namespace quote_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(quasiquote ...)` form.
@@ -242,7 +242,7 @@ declare namespace quote_ {
 declare function quasiquote_(exp: any, env: any): any;
 declare namespace quasiquote_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(set! ...)` expression.
@@ -256,7 +256,7 @@ declare namespace quasiquote_ {
 declare function setX_(exp: any, env: any): any;
 declare namespace setX_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(module ...)` expression.
@@ -264,7 +264,7 @@ declare namespace setX_ {
 declare function module_(exp: any, env: any): any;
 declare namespace module_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(begin ...)` expression.
@@ -272,7 +272,7 @@ declare namespace module_ {
 declare function begin_(exp: any, env: any): any;
 declare namespace begin_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(block ...)` expression.
@@ -280,7 +280,7 @@ declare namespace begin_ {
 declare function block_(exp: any, env: any): any;
 declare namespace block_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(let* ...)` expression.
@@ -288,7 +288,7 @@ declare namespace block_ {
 declare function letStar_(exp: any, env: any): any;
 declare namespace letStar_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(let-values ...)` expression.
@@ -296,7 +296,7 @@ declare namespace letStar_ {
 declare function letValues_(exp: any, env: any): any;
 declare namespace letValues_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define-values ...)` expression.
@@ -304,7 +304,7 @@ declare namespace letValues_ {
 declare function defineValues_(exp: any, env: any): any;
 declare namespace defineValues_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(set!-values ...)` expression.
@@ -312,7 +312,7 @@ declare namespace defineValues_ {
 declare function setValues_(exp: any, env: any): any;
 declare namespace setValues_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define ...)` expression.
@@ -320,7 +320,7 @@ declare namespace setValues_ {
 declare function define_(exp: any, env: any): any;
 declare namespace define_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define/generator ...)` expression.
@@ -328,7 +328,7 @@ declare namespace define_ {
 declare function defineGenerator_(exp: any, env: any): any;
 declare namespace defineGenerator_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define/async ...)` expression.
@@ -336,7 +336,7 @@ declare namespace defineGenerator_ {
 declare function defineAsync_(exp: any, env: any): any;
 declare namespace defineAsync_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define-macro ...)` expression.
@@ -350,7 +350,7 @@ declare namespace defineAsync_ {
 declare function defineMacro_(exp: any, env: any): any;
 declare namespace defineMacro_ {
     var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(for ...)` expression.
@@ -358,7 +358,7 @@ declare namespace defineMacro_ {
 declare function for_(exp: any, env: any): any;
 declare namespace for_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(break)` expression.
@@ -366,7 +366,7 @@ declare namespace for_ {
 declare function break_(exp: any, env: any): any;
 declare namespace break_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(continue)` expression.
@@ -374,7 +374,7 @@ declare namespace break_ {
 declare function continue_(exp: any, env: any): any;
 declare namespace continue_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(yield ...)` expression.
@@ -382,7 +382,7 @@ declare namespace continue_ {
 declare function yield_(exp: any, env: any): any;
 declare namespace yield_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(return ...)` expression.
@@ -390,7 +390,7 @@ declare namespace yield_ {
 declare function return_(exp: any, env: any): any;
 declare namespace return_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(throw ...)` expression.
@@ -402,7 +402,7 @@ declare namespace return_ {
 declare function throw_(exp: any, env: any): any;
 declare namespace throw_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(js/async ...)` expression.
@@ -410,7 +410,7 @@ declare namespace throw_ {
 declare function jsAsync_(exp: any, env: any): any;
 declare namespace jsAsync_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(js/await ...)` expression.
@@ -418,7 +418,7 @@ declare namespace jsAsync_ {
 declare function jsAwait_(exp: any, env: any): any;
 declare namespace jsAwait_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(lambda ...)` expression.
@@ -431,7 +431,7 @@ declare namespace jsAwait_ {
 declare function lambda_(exp: any, env: any): any;
 declare namespace lambda_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(cond ...)` expression.
@@ -439,7 +439,7 @@ declare namespace lambda_ {
 declare function cond_(exp: any, env: any): any;
 declare namespace cond_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand an `(and ...)` expression.
@@ -447,7 +447,7 @@ declare namespace cond_ {
 declare function and_(exp: any, env: any): any;
 declare namespace and_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand an `(or ...)` expression.
@@ -455,7 +455,7 @@ declare namespace and_ {
 declare function or_(exp: any, env: any): any;
 declare namespace or_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Call a method on an object.
@@ -474,7 +474,7 @@ declare namespace sendMethod {
 declare function send_(exp: any, env: any): any;
 declare namespace send_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(send/apply ...)` expression.
@@ -482,7 +482,7 @@ declare namespace send_ {
 declare function sendApply_(exp: any, env: any): any;
 declare namespace sendApply_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(. ...)` expression.
@@ -496,7 +496,7 @@ declare namespace sendApply_ {
 declare function dot_(exp: any, env: any): any;
 declare namespace dot_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(get-field ...)` expression.
@@ -504,7 +504,7 @@ declare namespace dot_ {
 declare function getField_(exp: any, env: any): any;
 declare namespace getField_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(set-field! ...)` expression.
@@ -512,7 +512,7 @@ declare namespace getField_ {
 declare function setField_(exp: any, env: any): any;
 declare namespace setField_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Evaluate an `(make-object ...)` expression.
@@ -533,7 +533,7 @@ declare namespace new_ {
 declare function class_(exp: any, env: any): any;
 declare namespace class_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define-class ...)` expression.
@@ -547,7 +547,7 @@ declare namespace class_ {
 declare function defineClass_(exp: any, env: any): any;
 declare namespace defineClass_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(provide ...)` expression.
@@ -555,7 +555,7 @@ declare namespace defineClass_ {
 declare function provide_(exp: any, env: any): any;
 declare namespace provide_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(require ...)` expression.
@@ -563,7 +563,7 @@ declare namespace provide_ {
 declare function require_(exp: any, env: any): any;
 declare namespace require_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Evaluate a JavaScript string.
@@ -624,7 +624,7 @@ declare namespace iterateRose {
 declare function ann_(exp: any, env: any): any;
 declare namespace ann_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(: ...)` expression.
@@ -632,7 +632,7 @@ declare namespace ann_ {
 declare function colon_(exp: any, env: any): any;
 declare namespace colon_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define-type ...)` expression.
@@ -640,7 +640,7 @@ declare namespace colon_ {
 declare function defineType_(exp: any, env: any): any;
 declare namespace defineType_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(let-fields ...)` expression.
@@ -648,7 +648,7 @@ declare namespace defineType_ {
 declare function letFields_(exp: any, env: any): any;
 declare namespace letFields_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(define-fields ...)` expression.
@@ -656,7 +656,7 @@ declare namespace letFields_ {
 declare function defineFields_(exp: any, env: any): any;
 declare namespace defineFields_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Expand a `(set!-fields ...)` expression.
@@ -664,7 +664,7 @@ declare namespace defineFields_ {
 declare function setFields_(exp: any, env: any): any;
 declare namespace setFields_ {
     var lispSource: (symbol | (symbol | symbol[])[])[];
-    var lispMacro: boolean;
+    var ftype: string;
 }
 /**
  * Simple `call-with-current-continuation` implementation.

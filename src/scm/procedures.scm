@@ -53,7 +53,62 @@
 ;;; does not evaluate its arguments.
 (define (fexpr?_ obj)
   (and (procedure? obj)
-       (get-field fexpr obj)))
+       (fexpr-type?_ (get-field fexpr obj))))
+
+;;; Whether `f` is a macro function.
+(define (macro?_ f)
+  (and (function? f)
+       (macro-type?_ (get-field ftype f))))
+
+;;; Whether `x` is the type of a variable.
+(define (variable-type?_ x)
+  (or (eq? x 'Any)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "variable")))
+
+;;; Whether `x` is the type of a procedure.
+(define (procedure-type?_ x)
+  (or (tagged-list?_ x '->)
+      (tagged-list?_ x '->*)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "function")
+      (eq? x "procedure")))
+
+;;; Whether `x` is the type of a macro.
+(define (macro-type?_ x)
+  (or (tagged-list?_ x '->macro)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "macro")))
+
+;;; Whether `x` is the type of a fexpr.
+(define (fexpr-type?_ x)
+  (or (tagged-list?_ x '->fexpr)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "fexpr")))
+
+;;; Whether `x` is the type of a compiler.
+(define (compiler-type?_ x)
+  (or (tagged-list?_ x '->compiler)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "compiler")))
+
+;;; Whether `x` is the type of a special form.
+(define (special-type?_ x)
+  (or (tagged-list?_ x '->special)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "special")))
+
+;;; Whether `x` is the type of an undefined value.
+(define (undefined-type?_ x)
+  (or (eq? x 'Undefined)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "undefined")))
+
+;;; Whether `exp` is a list whose first element is `tag`.
+(define (tagged-list?_ exp tag)
+  (and (array? exp)
+       (>= (array-length exp) 1)
+       (eq? (array-first exp) tag)))
 
 ;;; Logical negation.
 ;;;
@@ -657,12 +712,15 @@
   (rename-out (add_ add))
   (rename-out (add_ plus))
   (rename-out (apply_ apply))
+  (rename-out (compiler-type?_ compiler-type?))
   (rename-out (compose_ compose))
   (rename-out (display_ display))
   (rename-out (div_ _div))
   (rename-out (div_ div))
   (rename-out (error_ error))
   (rename-out (false? false?_))
+  (rename-out (fexpr-type?_ fexpr-type?))
+  (rename-out (fexpr?_ fexpr?))
   (rename-out (fexpr?_ fexprp))
   (rename-out (findf-index_ findf-index))
   (rename-out (findf_ findf))
@@ -681,6 +739,8 @@
   (rename-out (keyword?_ keyword?))
   (rename-out (lt_ lt))
   (rename-out (lte_ lte))
+  (rename-out (macro-type?_ macro-type?))
+  (rename-out (macro?_ macro?))
   (rename-out (map_ map))
   (rename-out (map_ mapcar))
   (rename-out (member?_ member-p))
@@ -696,20 +756,25 @@
   (rename-out (not_ not))
   (rename-out (number?_ number?))
   (rename-out (pipe_ pipe))
+  (rename-out (procedure-type?_ procedure-type?))
   (rename-out (procedure?_ function?))
   (rename-out (procedure?_ functionp))
   (rename-out (procedure?_ procedure?))
   (rename-out (procedure?_ procedurep))
   (rename-out (range_ range))
+  (rename-out (special-type?_ special-type?))
   (rename-out (sub1_ sub1))
   (rename-out (sub_ _sub))
   (rename-out (sub_ minus))
   (rename-out (sub_ sub))
   (rename-out (sub_ subtract))
+  (rename-out (tagged-list?_ tagged-list?))
   (rename-out (true? true?_))
   (rename-out (type-of_ type-of))
+  (rename-out (undefined-type?_ undefined-type?))
   (rename-out (union_ union))
   (rename-out (values_ values))
+  (rename-out (variable-type?_ variable-type?))
   (rename-out (zero?_ zerop))
   ;; (rename-out (display_ print))
   ;; (rename-out (type-of_ type-of?))
@@ -718,6 +783,7 @@
   apply_
   assert_
   boolean?_
+  compiler-type?_
   compose_
   const_
   display_
@@ -725,6 +791,7 @@
   error_
   even?_
   false?
+  fexpr-type?
   fexpr?_
   filter_
   findf-index_
@@ -742,6 +809,8 @@
   keyword?_
   lt_
   lte_
+  macro-type?_
+  macro?_
   map_
   member?_
   member_
@@ -756,14 +825,19 @@
   odd?_
   one?_
   pipe_
+  procedure-type?_
   procedure?_
   range_
   self-evaluating?_
+  special-type?_
   sub1_
   sub_
+  tagged-list?_
   true?
   type-of_
+  undefined-type?_
   undefined?_
   union_
   values_
+  variable-type?_
   zero?_)

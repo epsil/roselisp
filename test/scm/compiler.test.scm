@@ -57,7 +57,7 @@
   return x;
 }
 
-foo.lispMacro = true;
+foo.ftype = 'macro';
 
 export {
   foo
@@ -100,7 +100,7 @@ function foo(x) {
   return x;
 }
 
-bar.lispMacro = true;
+bar.ftype = 'macro';
 
 export {
   bar
@@ -133,7 +133,7 @@ function bar(exp, env) {
   return baz(x);
 }
 
-bar.lispMacro = true;
+bar.ftype = 'macro';
 
 function foo(x) {
   return x;
@@ -169,7 +169,7 @@ export {
   return x;
 }
 
-foo.lispMacro = true;
+foo.ftype = 'macro';
 
 export {
   foo
@@ -238,7 +238,7 @@ function bar(x) {
   return [Symbol.for('begin')];
 }
 
-foo.lispMacro = true;")))
+foo.ftype = 'macro';")))
         (it "(module ... (defmacro foo ...) ...)"
             (fn ()
               (assert-equal
@@ -255,7 +255,7 @@ foo.lispMacro = true;")))
   return x;
 }
 
-foo.lispMacro = true;
+foo.ftype = 'macro';
 
 function bar(x) {
   return x;
@@ -276,7 +276,7 @@ function bar(x) {
   return [Symbol.for('begin'), x];
 }
 
-foo.lispMacro = true;
+foo.ftype = 'macro';
 
 function bar(x) {
   return x;
@@ -297,7 +297,7 @@ function bar(x) {
   return x;
 }
 
-foo.lispMacro = true;
+foo.ftype = 'macro';
 
 function bar(x) {
   return x;
@@ -318,7 +318,7 @@ function bar(x) {
   return x;
 }
 
-foo.lispMacro = true;
+foo.ftype = 'macro';
 
 const bar = 1;")))
         (xit "(begin (defmacro foo (x . args) ...) ...)"
@@ -338,7 +338,7 @@ const bar = 1;")))
   return x;
 }
 
-foo.lispMacro = true;
+foo.ftype = 'macro';
 
 const bar = 1;")))))
     (describe "comments"

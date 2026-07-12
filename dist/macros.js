@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defclass_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defclass_ = exports.declare_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
 const util_1 = require("./util");
 const [cons, take, lastCdr] = (() => {
     function cons_(x, y) {
@@ -63,7 +63,7 @@ function definePrivate_(exp, env) {
 }
 exports.definePrivate_ = definePrivate_;
 definePrivate_.lispSource = [Symbol.for('define'), [Symbol.for('define-private_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-definePrivate_.lispMacro = true;
+definePrivate_.ftype = 'macro';
 /**
  * Expand a `(define/public ...)` expression.
  */
@@ -73,7 +73,7 @@ function definePublic_(exp, env) {
 }
 exports.definePublic_ = definePublic_;
 definePublic_.lispSource = [Symbol.for('define'), [Symbol.for('define-public_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-definePublic_.lispMacro = true;
+definePublic_.ftype = 'macro';
 /**
  * Expand a `(defclass ...)` expression.
  */
@@ -83,7 +83,7 @@ function defclass_(exp, env) {
 }
 exports.defclass_ = defclass_;
 defclass_.lispSource = [Symbol.for('define'), [Symbol.for('defclass_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define-class'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-defclass_.lispMacro = true;
+defclass_.ftype = 'macro';
 /**
  * Expand a `(defmacro ...)` expression.
  */
@@ -93,7 +93,7 @@ function defmacro_(exp, env) {
 }
 exports.defmacro_ = defmacro_;
 defmacro_.lispSource = [Symbol.for('define'), [Symbol.for('defmacro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define-macro'), [Symbol.for('unquote'), [Symbol.for('cons'), Symbol.for('name'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-defmacro_.lispMacro = true;
+defmacro_.ftype = 'macro';
 /**
  * Expand a `(defun ...)` expression.
  */
@@ -103,7 +103,7 @@ function defun_(exp, env) {
 }
 exports.defun_ = defun_;
 defun_.lispSource = [Symbol.for('define'), [Symbol.for('defun_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote-splicing'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-defun_.lispMacro = true;
+defun_.ftype = 'macro';
 /**
  * Expand a `(begin0 ...)` or `(prog1 ...)` expression.
  */
@@ -119,7 +119,7 @@ function begin0_(exp, env) {
 }
 exports.begin0_ = begin0_;
 begin0_.lispSource = [Symbol.for('define'), [Symbol.for('begin0_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('xs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('xs')], 0], Symbol.for('x')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('gensym'), 'begin0-result']], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('result')], [Symbol.for('unquote'), Symbol.for('x')]]], [Symbol.for('unquote-splicing'), Symbol.for('xs')], [Symbol.for('unquote'), Symbol.for('result')]]]]]];
-begin0_.lispMacro = true;
+begin0_.ftype = 'macro';
 /**
  * Expand a `(multiple-values-bind ...)` expression.
  */
@@ -129,7 +129,7 @@ function multipleValueBind_(exp, env) {
 }
 exports.multipleValueBind_ = multipleValueBind_;
 multipleValueBind_.lispSource = [Symbol.for('define'), [Symbol.for('multiple-value-bind_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('bindings'), Symbol.for('expression'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('let-values'), [[[Symbol.for('unquote'), Symbol.for('bindings')], [Symbol.for('unquote'), Symbol.for('expression')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-multipleValueBind_.lispMacro = true;
+multipleValueBind_.ftype = 'macro';
 /**
  * Expand a `(rkt/new ...)' expression.
  */
@@ -146,7 +146,7 @@ function rktNew_(exp, env) {
 }
 exports.rktNew_ = rktNew_;
 rktNew_.lispSource = [Symbol.for('define'), [Symbol.for('rkt-new_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('make-object'), [Symbol.for('unquote'), Symbol.for('constructor')], [Symbol.for('unquote-splicing'), [Symbol.for('map'), Symbol.for('array-list-second'), Symbol.for('args')]]]]];
-rktNew_.lispMacro = true;
+rktNew_.ftype = 'macro';
 /**
  * Expand an `(if ...)` expression.
  */
@@ -156,7 +156,7 @@ function if_(exp, env) {
 }
 exports.if_ = if_;
 if_.lispSource = [Symbol.for('define'), [Symbol.for('if_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('condition'), Symbol.for('then-clause'), Symbol.for('.'), Symbol.for('else-clauses')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('cond'), [[Symbol.for('unquote'), Symbol.for('condition')], [Symbol.for('unquote'), Symbol.for('then-clause')]], [Symbol.for('unquote-splicing'), [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('else-clauses')], 0], [Symbol.for('quasiquote'), [[Symbol.for('else'), [Symbol.for('unquote-splicing'), Symbol.for('else-clauses')]]]]], [Symbol.for('else'), [Symbol.for('quote'), []]]]]]]];
-if_.lispMacro = true;
+if_.ftype = 'macro';
 /**
  * Expand a `(when ...)` expression.
  */
@@ -166,7 +166,7 @@ function when_(exp, env) {
 }
 exports.when_ = when_;
 when_.lispSource = [Symbol.for('define'), [Symbol.for('when_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('condition'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('if'), [Symbol.for('unquote'), Symbol.for('condition')], [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
-when_.lispMacro = true;
+when_.ftype = 'macro';
 /**
  * Expand an `(unless ...)` expression.
  */
@@ -176,7 +176,7 @@ function unless_(exp, env) {
 }
 exports.unless_ = unless_;
 unless_.lispSource = [Symbol.for('define'), [Symbol.for('unless_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('condition'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('if'), [Symbol.for('not'), [Symbol.for('unquote'), Symbol.for('condition')]], [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
-unless_.lispMacro = true;
+unless_.ftype = 'macro';
 /**
  * Expand an `(as~> ...)` expression.
  *
@@ -253,7 +253,7 @@ function threadAs_(exp, env) {
 }
 exports.threadAs_ = threadAs_;
 threadAs_.lispSource = [Symbol.for('define'), [Symbol.for('thread-as_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('val'), Symbol.for('sym'), Symbol.for('.'), Symbol.for('forms')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('is-let'), false], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('form'), Symbol.for('exp')], [Symbol.for('cond'), [Symbol.for('is-let'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('exp')], [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('form')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('n'), [Symbol.for('count-tree'), [Symbol.for('lambda'), [Symbol.for('el')], [Symbol.for('eq?'), Symbol.for('el'), Symbol.for('sym')]], Symbol.for('form')]], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('begin')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('form')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('form')]]]]]], [[Symbol.for('='), Symbol.for('n'), 1], [Symbol.for('map-tree'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('sym')], Symbol.for('exp'), Symbol.for('x')]], Symbol.for('form')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('is-let'), true], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('form')]]]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('foldl'), Symbol.for('f'), Symbol.for('val'), Symbol.for('forms')]], [Symbol.for('when'), Symbol.for('is-let'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('result')], [Symbol.for('unquote'), Symbol.for('sym')]]]]], Symbol.for('result')];
-threadAs_.lispMacro = true;
+threadAs_.ftype = 'macro';
 /**
  * Evaluate a `(~> ...)` expression. Based on the
  * [`->` macro][clj:thread-first] in Clojure (also known as
@@ -289,7 +289,7 @@ function threadFirst_(exp, env) {
 }
 exports.threadFirst_ = threadFirst_;
 threadFirst_.lispSource = [Symbol.for('define'), [Symbol.for('thread-first_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('forms')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('hole-marker'), [Symbol.for('quote'), Symbol.for('_')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('forms')], 1], [Symbol.for('eq?'), [Symbol.for('array-list-first'), Symbol.for('forms')], [Symbol.for('quote'), Symbol.for(':hole-marker')]]], [Symbol.for('set!'), Symbol.for('hole-marker'), [Symbol.for('array-list-second'), Symbol.for('forms')]], [Symbol.for('set!'), Symbol.for('forms'), [Symbol.for('drop'), Symbol.for('forms'), 2]]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('val'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('val')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote'), Symbol.for('val')], Symbol.for('_')]]]], [[Symbol.for('='), [Symbol.for('count-tree'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('hole-marker')]], Symbol.for('val')], 0], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote'), [Symbol.for('array-list-first'), Symbol.for('val')]], [Symbol.for('unquote'), Symbol.for('hole-marker')], [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('val')]]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [Symbol.for('unquote'), Symbol.for('val')]]]]]], [Symbol.for('define'), Symbol.for('as-exp'), [Symbol.for('quasiquote'), [Symbol.for('as~>'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('hole-marker')]]]], [Symbol.for('foldl'), Symbol.for('f'), Symbol.for('as-exp'), Symbol.for('forms')]];
-threadFirst_.lispMacro = true;
+threadFirst_.ftype = 'macro';
 /**
  * Evaluate a `(~>> ...)` expression. Based on the
  * [`->>` macro][clj:thread-last] in Clojure (also known as
@@ -325,7 +325,7 @@ function threadLast_(exp, env) {
 }
 exports.threadLast_ = threadLast_;
 threadLast_.lispSource = [Symbol.for('define'), [Symbol.for('thread-last_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('forms')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('hole-marker'), [Symbol.for('quote'), Symbol.for('_')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('forms')], 1], [Symbol.for('eq?'), [Symbol.for('array-list-first'), Symbol.for('forms')], [Symbol.for('quote'), Symbol.for(':hole-marker')]]], [Symbol.for('set!'), Symbol.for('hole-marker'), [Symbol.for('array-list-second'), Symbol.for('forms')]], [Symbol.for('set!'), Symbol.for('forms'), [Symbol.for('drop'), Symbol.for('forms'), 2]]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('val'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('val')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote'), Symbol.for('val')], Symbol.for('_')]]]], [[Symbol.for('='), [Symbol.for('count-tree'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('hole-marker')]], Symbol.for('val')], 0], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote-splicing'), Symbol.for('val')], [Symbol.for('unquote'), Symbol.for('hole-marker')]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [Symbol.for('unquote'), Symbol.for('val')]]]]]], [Symbol.for('define'), Symbol.for('as-exp'), [Symbol.for('quasiquote'), [Symbol.for('as~>'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('hole-marker')]]]], [Symbol.for('foldl'), Symbol.for('f'), Symbol.for('as-exp'), Symbol.for('forms')]];
-threadLast_.lispMacro = true;
+threadLast_.ftype = 'macro';
 /**
  * Expand an `(unwind-protect ...)` expression.
  */
@@ -335,7 +335,7 @@ function unwindProtect_(exp, env) {
 }
 exports.unwindProtect_ = unwindProtect_;
 unwindProtect_.lispSource = [Symbol.for('define'), [Symbol.for('unwind-protect_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('body-form'), Symbol.for('.'), Symbol.for('unwind-forms')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('try'), [Symbol.for('unquote'), Symbol.for('body-form')], [Symbol.for('finally'), [Symbol.for('unquote-splicing'), Symbol.for('unwind-forms')]]]]];
-unwindProtect_.lispMacro = true;
+unwindProtect_.ftype = 'macro';
 /**
  * Expand a `(do ...)` expression.
  */
@@ -369,7 +369,7 @@ function do_(exp, env) {
 }
 exports.do_ = do_;
 do_.lispSource = [Symbol.for('define'), [Symbol.for('do_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('bindings'), Symbol.for('tests'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('bindings')], 0], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('js/while'), [Symbol.for('not'), [Symbol.for('unquote'), [Symbol.for('array-list-first'), Symbol.for('tests')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('tests'), 1]]]]], [Symbol.for('when'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('result')], 2], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-list-second'), Symbol.for('result')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('let-bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('setters'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('binding'), Symbol.for('bindings')]], [Symbol.for('push-right!'), Symbol.for('let-bindings'), [Symbol.for('take'), Symbol.for('binding'), 2]], [Symbol.for('when'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('binding')], 3], [Symbol.for('push-right!'), Symbol.for('setters'), [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), [Symbol.for('array-list-first'), Symbol.for('binding')]], [Symbol.for('unquote'), [Symbol.for('array-list-third'), Symbol.for('binding')]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('let'), [Symbol.for('unquote'), Symbol.for('let-bindings')], [Symbol.for('js/while'), [Symbol.for('not'), [Symbol.for('unquote'), [Symbol.for('array-list-first'), Symbol.for('tests')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')], [Symbol.for('unquote-splicing'), Symbol.for('setters')]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('tests'), 1]]]]], Symbol.for('result')]]];
-do_.lispMacro = true;
+do_.ftype = 'macro';
 /**
  * Expand a `(while ...)` expression.
  */
@@ -379,7 +379,7 @@ function while_(exp, env) {
 }
 exports.while_ = while_;
 while_.lispSource = [Symbol.for('define'), [Symbol.for('while_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('test'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('do'), [], [[Symbol.for('not'), [Symbol.for('unquote'), Symbol.for('test')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-while_.lispMacro = true;
+while_.ftype = 'macro';
 /**
  * Expand a `(js/for ...)` expression.
  */
@@ -405,7 +405,7 @@ function jsFor_(exp, env) {
 }
 exports.jsFor_ = jsFor_;
 jsFor_.lispSource = [Symbol.for('define'), [Symbol.for('js/for_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('inits'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('tests'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('array-list-first'), Symbol.for('arg')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('array-list-second'), Symbol.for('arg')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('array-list-third'), Symbol.for('arg')]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('init'), [Symbol.for('quote'), Symbol.for('define')]], [Symbol.for('set!'), Symbol.for('init'), [Symbol.for('drop'), Symbol.for('init'), 1]]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('update'), [Symbol.for('quote'), Symbol.for('set!')]], [Symbol.for('set!'), Symbol.for('update'), [Symbol.for('array-list-third'), Symbol.for('init')]]], [Symbol.for('push-right!'), Symbol.for('inits'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('init')], [Symbol.for('unquote'), Symbol.for('update')]]]], [Symbol.for('push-right!'), Symbol.for('tests'), Symbol.for('test')]], [Symbol.for('define'), Symbol.for('test-exp'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('tests')], 1], [Symbol.for('array-list-first'), Symbol.for('tests')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote-splicing'), Symbol.for('tests')]]]]], [Symbol.for('quasiquote'), [Symbol.for('do'), [Symbol.for('unquote'), Symbol.for('inits')], [[Symbol.for('not'), [Symbol.for('unquote'), Symbol.for('test-exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-jsFor_.lispMacro = true;
+jsFor_.ftype = 'macro';
 /**
  * Expand a `(js/for-in ...)` expression.
  */
@@ -420,7 +420,7 @@ function jsForIn_(exp, env) {
 }
 exports.jsForIn_ = jsForIn_;
 jsForIn_.lispSource = [Symbol.for('define'), [Symbol.for('js/for-in_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('array-list-first'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('array-list-second'), Symbol.for('x')]], [Symbol.for('list'), Symbol.for('left'), [Symbol.for('quasiquote'), [Symbol.for('js-keys'), [Symbol.for('unquote'), Symbol.for('right')]]]]], Symbol.for('args')]], [Symbol.for('quasiquote'), [Symbol.for('js/for-of'), [Symbol.for('unquote'), Symbol.for('bindings')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-jsForIn_.lispMacro = true;
+jsForIn_.ftype = 'macro';
 /**
  * Expand a `(js/for-of ...)` expression.
  */
@@ -438,7 +438,7 @@ function jsForOf_(exp, env) {
 }
 exports.jsForOf_ = jsForOf_;
 jsForOf_.lispSource = [Symbol.for('define'), [Symbol.for('js/for-of_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('array-list-first'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('array-list-second'), Symbol.for('x')]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('left'), [Symbol.for('quote'), Symbol.for('define')]], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('array-list-second'), Symbol.for('left')]]], [Symbol.for('list'), Symbol.for('left'), Symbol.for('right')]], Symbol.for('args')]], [Symbol.for('quasiquote'), [Symbol.for('for'), [Symbol.for('unquote'), Symbol.for('bindings')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-jsForOf_.lispMacro = true;
+jsForOf_.ftype = 'macro';
 /**
  * Expand a `(case ...)` expression.
  */
@@ -488,7 +488,7 @@ function case_(exp, env) {
 }
 exports.case_ = case_;
 case_.lispSource = [Symbol.for('define'), [Symbol.for('case_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('val'), Symbol.for('.'), Symbol.for('clauses')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('has-complex-clauses'), false], [Symbol.for('define'), [Symbol.for('is-simple-value'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('boolean?'), Symbol.for('x')], [Symbol.for('number?'), Symbol.for('x')], [Symbol.for('symbol?'), Symbol.for('x')], [Symbol.for('string?'), Symbol.for('x')]]], [Symbol.for('define'), [Symbol.for('is-complex-value'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('is-simple-value'), Symbol.for('x')]]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('clauses')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('array-list-first'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('else')]]], [Symbol.for('memf?'), Symbol.for('is-complex-value'), [Symbol.for('array-list-first'), Symbol.for('x')]]], [Symbol.for('set!'), Symbol.for('has-complex-clauses'), true], [Symbol.for('break')]]], [Symbol.for('cond'), [Symbol.for('has-complex-clauses'), [Symbol.for('define'), Symbol.for('is-complex-val'), [Symbol.for('not'), [Symbol.for('symbol?'), Symbol.for('val')]]], [Symbol.for('define'), Symbol.for('value-var'), [Symbol.for('if'), Symbol.for('is-complex-val'), [Symbol.for('gensym'), '_value'], Symbol.for('val')]], [Symbol.for('define'), Symbol.for('cond-clauses'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('eq?'), [Symbol.for('array-list-first'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('else')]], Symbol.for('x')], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('member?'), [Symbol.for('unquote'), Symbol.for('value-var')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('array-list-first'), Symbol.for('x')]]], Symbol.for('equal?')], [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('x')]]]]]]], Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [Symbol.for('unquote-splicing'), Symbol.for('cond-clauses')]]]], [Symbol.for('when'), Symbol.for('is-complex-val'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('value-var')], [Symbol.for('unquote'), Symbol.for('val')]]], [Symbol.for('unquote'), Symbol.for('result')]]]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('case/eq'), [Symbol.for('unquote'), Symbol.for('val')], [Symbol.for('unquote-splicing'), Symbol.for('clauses')]]]]]];
-case_.lispMacro = true;
+case_.ftype = 'macro';
 /**
  * Expand a `(case/eq ...)` expression.
  */
@@ -539,7 +539,7 @@ function caseEq_(exp, env) {
 }
 exports.caseEq_ = caseEq_;
 caseEq_.lispSource = [Symbol.for('define'), [Symbol.for('case-eq_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('val'), Symbol.for('.'), Symbol.for('clauses')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('has-complex-clauses'), false], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('clauses')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('array-list-first'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('else')]]], [Symbol.for('>'), [Symbol.for('array-list-length'), [Symbol.for('array-list-first'), Symbol.for('x')]], 1]], [Symbol.for('set!'), Symbol.for('has-complex-clauses'), true], [Symbol.for('break')]]], [Symbol.for('cond'), [Symbol.for('has-complex-clauses'), [Symbol.for('define'), Symbol.for('is-complex-val'), [Symbol.for('not'), [Symbol.for('symbol?'), Symbol.for('val')]]], [Symbol.for('define'), Symbol.for('value-var'), [Symbol.for('if'), Symbol.for('is-complex-val'), [Symbol.for('gensym'), '_value'], Symbol.for('val')]], [Symbol.for('define'), Symbol.for('cond-clauses'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('eq?'), [Symbol.for('array-list-first'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('else')]], Symbol.for('x')], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('member?'), [Symbol.for('unquote'), Symbol.for('value-var')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('array-list-first'), Symbol.for('x')]]]], [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('x')]]]]]]], Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [Symbol.for('unquote-splicing'), Symbol.for('cond-clauses')]]]], [Symbol.for('when'), Symbol.for('is-complex-val'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('value-var')], [Symbol.for('unquote'), Symbol.for('val')]]], [Symbol.for('unquote'), Symbol.for('result')]]]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('switch-clauses'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('eq?'), [Symbol.for('array-list-first'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('else')]], [Symbol.for('quasiquote'), [Symbol.for('default'), [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('x')]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('case'), [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('array-list-first'), [Symbol.for('array-list-first'), Symbol.for('x')]]]], [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('x')]], [Symbol.for('break')]]]]]], Symbol.for('clauses')]], [Symbol.for('quasiquote'), [Symbol.for('js/switch'), [Symbol.for('unquote'), Symbol.for('val')], [Symbol.for('unquote-splicing'), Symbol.for('switch-clauses')]]]]]];
-caseEq_.lispMacro = true;
+caseEq_.ftype = 'macro';
 /**
  * Expand a `(let-env ...)` expression.
  */
@@ -549,7 +549,7 @@ function letEnv_(exp, env) {
 }
 exports.letEnv_ = letEnv_;
 letEnv_.lispSource = [Symbol.for('define'), [Symbol.for('let-env_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('scm/eval'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('extend-environment'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('current-environment')]]]]];
-letEnv_.lispMacro = true;
+letEnv_.ftype = 'macro';
 /**
  * Expand a `(set ...)` expression.
  */
@@ -559,7 +559,7 @@ function set_(exp, env) {
 }
 exports.set_ = set_;
 set_.lispSource = [Symbol.for('define'), [Symbol.for('set_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('sym'), Symbol.for('val')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), [Symbol.for('array-list-second'), Symbol.for('sym')]], [Symbol.for('unquote'), Symbol.for('val')]]]];
-set_.lispMacro = true;
+set_.ftype = 'macro';
 /**
  * Expand a `(new/apply ...)` expression.
  */
@@ -569,7 +569,7 @@ function newApply_(exp, env) {
 }
 exports.newApply_ = newApply_;
 newApply_.lispSource = [Symbol.for('define'), [Symbol.for('new-apply_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('apply'), Symbol.for('new'), [Symbol.for('unquote-splicing'), Symbol.for('args')]]]];
-newApply_.lispMacro = true;
+newApply_.ftype = 'macro';
 /**
  * Expand a `(clj/try ...)` expression.
  *
@@ -683,4 +683,16 @@ function cljTry_(exp, env) {
 }
 exports.cljTry_ = cljTry_;
 cljTry_.lispSource = [Symbol.for('define'), [Symbol.for('clj-try_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body-exps'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('clj-catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('finalizer-clauses'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('body')]], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('catch')]], [Symbol.for('push-right!'), Symbol.for('clj-catch-clauses'), Symbol.for('x')]], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('finally')]], [Symbol.for('push-right!'), Symbol.for('finalizer-clauses'), Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('body-exps'), Symbol.for('x')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('clj-catch-clauses')], 0], [Symbol.for('define'), Symbol.for('exception'), [Symbol.for('second'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('third'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('clj-catch-clauses')], 1], [Symbol.for('memq?'), Symbol.for('exception'), [Symbol.for('quote'), [Symbol.for('_'), Symbol.for('js/Object'), Symbol.for('Object'), Symbol.for('object%')]]]], [Symbol.for('define'), Symbol.for('clj-catch-clause'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('clj-catch-clause'), 3]]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('cond-exp'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('is-a?'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('x'), 3]]]]], Symbol.for('clj-catch-clauses')]], [Symbol.for('else'), [Symbol.for('throw'), [Symbol.for('unquote'), Symbol.for('sym')]]]]]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('cond-exp')]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]]]], [Symbol.for('quasiquote'), [Symbol.for('js/try'), [Symbol.for('unquote-splicing'), Symbol.for('body-exps')], [Symbol.for('unquote-splicing'), Symbol.for('catch-clauses')], [Symbol.for('unquote-splicing'), Symbol.for('finalizer-clauses')]]]];
-cljTry_.lispMacro = true;
+cljTry_.ftype = 'macro';
+/**
+ * Expand a `(declare ...)` expression.
+ */
+function declare_(exp, env) {
+    const [name, ...specs] = exp.slice(1);
+    return [Symbol.for('begin'), ...specs.map(function (spec) {
+            return [Symbol.for('set-field!'), spec[0], name, spec[1]];
+        })];
+}
+exports.declare_ = declare_;
+declare_.lispSource = [Symbol.for('define'), [Symbol.for('declare_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('.'), Symbol.for('specs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('spec')], [Symbol.for('quasiquote'), [Symbol.for('set-field!'), [Symbol.for('unquote'), [Symbol.for('array-list-first'), Symbol.for('spec')]], [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote'), [Symbol.for('array-list-second'), Symbol.for('spec')]]]]], Symbol.for('specs')]]]]];
+declare_.ftype = 'macro';

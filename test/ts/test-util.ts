@@ -929,7 +929,7 @@ function testMacro(exp: any, env: any): any {
   return [Symbol.for('begin'), ...tests];
 }
 
-testMacro.lispMacro = true;
+testMacro.ftype = 'macro';
 
 export {
   testRepl as testReplForm,

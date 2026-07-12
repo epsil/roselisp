@@ -18,9 +18,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sub = exports.minus = exports._sub = exports.sub1 = exports.range = exports.procedurep = exports.functionp = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp_ = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.lte = exports.lt = exports.keywordp = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.falsep_ = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.range_ = exports.procedurep_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.map_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.zerop = exports.values = exports.union = exports.typeOf = exports.truep_ = exports.subtract = void 0;
-exports.zerop_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.typeOf_ = exports.truep = exports.sub_ = exports.sub1_ = exports.selfEvaluatingP_ = void 0;
+exports.procedurep = exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp_ = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep_ = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
+exports.memfp_ = exports.member_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep_ = exports.taggedListP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep = exports.taggedListP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = void 0;
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
         if (x === y) {
@@ -158,11 +158,113 @@ procedurep_.lispSource = [Symbol.for('define'), [Symbol.for('procedure?_'), Symb
  * does not evaluate its arguments.
  */
 function fexprp_(obj) {
-    return (obj instanceof Function) && obj.fexpr;
+    return (obj instanceof Function) && fexprTypeP_(obj.fexpr);
 }
 exports.fexprp = fexprp_;
 exports.fexprp_ = fexprp_;
-fexprp_.lispSource = [Symbol.for('define'), [Symbol.for('fexpr?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('obj')], [Symbol.for('get-field'), Symbol.for('fexpr'), Symbol.for('obj')]]];
+fexprp_.lispSource = [Symbol.for('define'), [Symbol.for('fexpr?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('obj')], [Symbol.for('fexpr-type?_'), [Symbol.for('get-field'), Symbol.for('fexpr'), Symbol.for('obj')]]]];
+/**
+ * Whether `f` is a macro function.
+ */
+function macrop_(f) {
+    return (f instanceof Function) && macroTypeP_(f.ftype);
+}
+exports.macrop = macrop_;
+exports.macrop_ = macrop_;
+macrop_.lispSource = [Symbol.for('define'), [Symbol.for('macro?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('macro-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
+/**
+ * Whether `x` is the type of a variable.
+ */
+function variableTypeP_(x) {
+    return (((x === Symbol.for('Any')) ||
+        (
+        // FIXME: Legacy code, remove.
+        x === 'variable')));
+}
+exports.variableTypeP = variableTypeP_;
+exports.variableTypeP_ = variableTypeP_;
+variableTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('variable-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('Any')]], [Symbol.for('eq?'), Symbol.for('x'), 'variable']]];
+/**
+ * Whether `x` is the type of a procedure.
+ */
+function procedureTypeP_(x) {
+    return (((taggedListP_(x, Symbol.for('->')) || taggedListP_(x, Symbol.for('->*')) ||
+        (
+        // FIXME: Legacy code, remove.
+        x === 'function')) ||
+        (x === 'procedure')));
+}
+exports.procedureTypeP = procedureTypeP_;
+exports.procedureTypeP_ = procedureTypeP_;
+procedureTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('procedure-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->*')]], [Symbol.for('eq?'), Symbol.for('x'), 'function'], [Symbol.for('eq?'), Symbol.for('x'), 'procedure']]];
+/**
+ * Whether `x` is the type of a macro.
+ */
+function macroTypeP_(x) {
+    return ((taggedListP_(x, Symbol.for('->macro')) ||
+        (
+        // FIXME: Legacy code, remove.
+        x === 'macro')));
+}
+exports.macroTypeP = macroTypeP_;
+exports.macroTypeP_ = macroTypeP_;
+macroTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('macro-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->macro')]], [Symbol.for('eq?'), Symbol.for('x'), 'macro']]];
+/**
+ * Whether `x` is the type of a fexpr.
+ */
+function fexprTypeP_(x) {
+    return ((taggedListP_(x, Symbol.for('->fexpr')) ||
+        (
+        // FIXME: Legacy code, remove.
+        x === 'fexpr')));
+}
+exports.fexprTypeP = fexprTypeP_;
+fexprTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('fexpr-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->fexpr')]], [Symbol.for('eq?'), Symbol.for('x'), 'fexpr']]];
+/**
+ * Whether `x` is the type of a compiler.
+ */
+function compilerTypeP_(x) {
+    return ((taggedListP_(x, Symbol.for('->compiler')) ||
+        (
+        // FIXME: Legacy code, remove.
+        x === 'compiler')));
+}
+exports.compilerTypeP = compilerTypeP_;
+exports.compilerTypeP_ = compilerTypeP_;
+compilerTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('compiler-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->compiler')]], [Symbol.for('eq?'), Symbol.for('x'), 'compiler']]];
+/**
+ * Whether `x` is the type of a special form.
+ */
+function specialTypeP_(x) {
+    return ((taggedListP_(x, Symbol.for('->special')) ||
+        (
+        // FIXME: Legacy code, remove.
+        x === 'special')));
+}
+exports.specialTypeP = specialTypeP_;
+exports.specialTypeP_ = specialTypeP_;
+specialTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('special-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->special')]], [Symbol.for('eq?'), Symbol.for('x'), 'special']]];
+/**
+ * Whether `x` is the type of an undefined value.
+ */
+function undefinedTypeP_(x) {
+    return (((x === Symbol.for('Undefined')) ||
+        (
+        // FIXME: Legacy code, remove.
+        x === 'undefined')));
+}
+exports.undefinedTypeP = undefinedTypeP_;
+exports.undefinedTypeP_ = undefinedTypeP_;
+undefinedTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('undefined-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('Undefined')]], [Symbol.for('eq?'), Symbol.for('x'), 'undefined']]];
+/**
+ * Whether `exp` is a list whose first element is `tag`.
+ */
+function taggedListP_(exp, tag) {
+    return Array.isArray(exp) && (exp.length >= 1) && (exp[0] === tag);
+}
+exports.taggedListP = taggedListP_;
+exports.taggedListP_ = taggedListP_;
+taggedListP_.lispSource = [Symbol.for('define'), [Symbol.for('tagged-list?_'), Symbol.for('exp'), Symbol.for('tag')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('exp')], 1], [Symbol.for('eq?'), [Symbol.for('array-first'), Symbol.for('exp')], Symbol.for('tag')]]];
 /**
  * Logical negation.
  *

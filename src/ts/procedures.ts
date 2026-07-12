@@ -144,10 +144,150 @@ procedurep_.lispSource = [Symbol.for('define'), [Symbol.for('procedure?_'), Symb
  * does not evaluate its arguments.
  */
 function fexprp_(obj: any): any {
-  return (obj instanceof Function) && obj.fexpr;
+  return (obj instanceof Function) && fexprTypeP_(obj.fexpr);
 }
 
-fexprp_.lispSource = [Symbol.for('define'), [Symbol.for('fexpr?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('obj')], [Symbol.for('get-field'), Symbol.for('fexpr'), Symbol.for('obj')]]];
+fexprp_.lispSource = [Symbol.for('define'), [Symbol.for('fexpr?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('obj')], [Symbol.for('fexpr-type?_'), [Symbol.for('get-field'), Symbol.for('fexpr'), Symbol.for('obj')]]]];
+
+/**
+ * Whether `f` is a macro function.
+ */
+function macrop_(f: any): any {
+  return (f instanceof Function) && macroTypeP_(f.ftype);
+}
+
+macrop_.lispSource = [Symbol.for('define'), [Symbol.for('macro?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('macro-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
+
+/**
+ * Whether `x` is the type of a variable.
+ */
+function variableTypeP_(x: any): any {
+  return (
+    (
+     (x === Symbol.for('Any')) ||
+     (
+      // FIXME: Legacy code, remove.
+      x === 'variable'
+     )
+    )
+  );
+}
+
+variableTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('variable-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('Any')]], [Symbol.for('eq?'), Symbol.for('x'), 'variable']]];
+
+/**
+ * Whether `x` is the type of a procedure.
+ */
+function procedureTypeP_(x: any): any {
+  return (
+    (
+     (
+      taggedListP_(x, Symbol.for('->')) || taggedListP_(x, Symbol.for('->*')) ||
+      (
+       // FIXME: Legacy code, remove.
+       x === 'function'
+      )
+     ) ||
+     (x === 'procedure')
+    )
+  );
+}
+
+procedureTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('procedure-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->*')]], [Symbol.for('eq?'), Symbol.for('x'), 'function'], [Symbol.for('eq?'), Symbol.for('x'), 'procedure']]];
+
+/**
+ * Whether `x` is the type of a macro.
+ */
+function macroTypeP_(x: any): any {
+  return (
+    (
+     taggedListP_(x, Symbol.for('->macro')) ||
+     (
+      // FIXME: Legacy code, remove.
+      x === 'macro'
+     )
+    )
+  );
+}
+
+macroTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('macro-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->macro')]], [Symbol.for('eq?'), Symbol.for('x'), 'macro']]];
+
+/**
+ * Whether `x` is the type of a fexpr.
+ */
+function fexprTypeP_(x: any): any {
+  return (
+    (
+     taggedListP_(x, Symbol.for('->fexpr')) ||
+     (
+      // FIXME: Legacy code, remove.
+      x === 'fexpr'
+     )
+    )
+  );
+}
+
+fexprTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('fexpr-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->fexpr')]], [Symbol.for('eq?'), Symbol.for('x'), 'fexpr']]];
+
+/**
+ * Whether `x` is the type of a compiler.
+ */
+function compilerTypeP_(x: any): any {
+  return (
+    (
+     taggedListP_(x, Symbol.for('->compiler')) ||
+     (
+      // FIXME: Legacy code, remove.
+      x === 'compiler'
+     )
+    )
+  );
+}
+
+compilerTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('compiler-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->compiler')]], [Symbol.for('eq?'), Symbol.for('x'), 'compiler']]];
+
+/**
+ * Whether `x` is the type of a special form.
+ */
+function specialTypeP_(x: any): any {
+  return (
+    (
+     taggedListP_(x, Symbol.for('->special')) ||
+     (
+      // FIXME: Legacy code, remove.
+      x === 'special'
+     )
+    )
+  );
+}
+
+specialTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('special-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->special')]], [Symbol.for('eq?'), Symbol.for('x'), 'special']]];
+
+/**
+ * Whether `x` is the type of an undefined value.
+ */
+function undefinedTypeP_(x: any): any {
+  return (
+    (
+     (x === Symbol.for('Undefined')) ||
+     (
+      // FIXME: Legacy code, remove.
+      x === 'undefined'
+     )
+    )
+  );
+}
+
+undefinedTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('undefined-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('Undefined')]], [Symbol.for('eq?'), Symbol.for('x'), 'undefined']]];
+
+/**
+ * Whether `exp` is a list whose first element is `tag`.
+ */
+function taggedListP_(exp: any, tag: any): any {
+  return Array.isArray(exp) && (exp.length >= 1) && (exp[0] === tag);
+}
+
+taggedListP_.lispSource = [Symbol.for('define'), [Symbol.for('tagged-list?_'), Symbol.for('exp'), Symbol.for('tag')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('exp')], 1], [Symbol.for('eq?'), [Symbol.for('array-first'), Symbol.for('exp')], Symbol.for('tag')]]];
 
 /**
  * Logical negation.
@@ -1046,12 +1186,14 @@ export {
   add_ as add,
   add_ as plus,
   apply_ as apply,
+  compilerTypeP_ as compilerTypeP,
   compose_ as compose,
   display_ as display,
   div_ as _div,
   div_ as div,
   error_ as error,
   falsep as falsep_,
+  fexprTypeP_ as fexprTypeP,
   fexprp_ as fexprp,
   findfIndex_ as findfIndex,
   findf_ as findf,
@@ -1070,6 +1212,8 @@ export {
   keywordp_ as keywordp,
   lt_ as lt,
   lte_ as lte,
+  macroTypeP_ as macroTypeP,
+  macrop_ as macrop,
   map_ as map,
   map_ as mapcar,
   memberp_ as memberP,
@@ -1084,24 +1228,30 @@ export {
   not_ as not,
   numberp_ as numberp,
   pipe_ as pipe,
+  procedureTypeP_ as procedureTypeP,
   procedurep_ as functionp,
   procedurep_ as procedurep,
   range_ as range,
+  specialTypeP_ as specialTypeP,
   sub1_ as sub1,
   sub_ as _sub,
   sub_ as minus,
   sub_ as sub,
   sub_ as subtract,
+  taggedListP_ as taggedListP,
   truep as truep_,
   typeOf_ as typeOf,
+  undefinedTypeP_ as undefinedTypeP,
   union_ as union,
   values_ as values,
+  variableTypeP_ as variableTypeP,
   zerop_ as zerop,
   add1_,
   add_,
   apply_,
   assert_,
   booleanp_,
+  compilerTypeP_,
   compose_,
   const_,
   display_,
@@ -1126,6 +1276,8 @@ export {
   keywordp_,
   lt_,
   lte_,
+  macroTypeP_,
+  macrop_,
   map_,
   member_,
   memfp_,
@@ -1139,15 +1291,20 @@ export {
   oddp_,
   onep_,
   pipe_,
+  procedureTypeP_,
   procedurep_,
   range_,
   selfEvaluatingP_,
+  specialTypeP_,
   sub1_,
   sub_,
+  taggedListP_,
   truep,
   typeOf_,
+  undefinedTypeP_,
   undefinedp_,
   union_,
   values_,
+  variableTypeP_,
   zerop_
 };

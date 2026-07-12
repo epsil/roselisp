@@ -493,11 +493,21 @@
     ,@catch-clauses
     ,@finalizer-clauses))
 
+;;; Expand a `(declare ...)` expression.
+(defmacro declare_ (name &rest specs)
+  `(begin
+     ,@(map (lambda (spec)
+              `(set-field! ,(array-list-first spec)
+                           ,name
+                           ,(array-list-second spec)))
+            specs)))
+
 (provide
   begin0_
   case-eq_
   case_
   clj-try_
+  declare_
   defclass_
   define-private_
   define-public_

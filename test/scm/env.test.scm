@@ -44,8 +44,22 @@
           (define env
             (new Environment
                  '((foo "bar"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env find-frame 'foo (js-obj "filter" (fn (x) #f)))
+           (send env find-frame 'foo (js-obj "filter" filter))
+           #u)))
+    (it "find-frame, parent environment, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))
+                 (new Environment
+                      '((foo "baz")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env find-frame 'foo (js-obj "filter" filter))
            #u)))
     (it "get"
         (fn ()
@@ -76,8 +90,22 @@
           (define env
             (new Environment
                  '((foo "bar"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
+           #u)))
+    (it "get, parent environment, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))
+                 (new Environment
+                      '((foo "baz")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" filter))
            #u)))
     (it "get-value"
         (fn ()
@@ -116,8 +144,10 @@
           (define env
             (new Environment
                  '((foo "bar"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-local 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-local 'foo (js-obj "filter" filter))
            #u)))
     (it "get-tuple"
         (fn ()
@@ -148,8 +178,22 @@
           (define env
             (new Environment
                  '((foo "bar"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-tuple 'quux (js-obj "filter" (fn (x) #f)))
+           (send env get-tuple 'quux (js-obj "filter" filter))
+           (values #u #f))))
+    (it "get-tuple, parent environment, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))
+                 (new Environment
+                      '((foo "baz")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get-tuple 'quux (js-obj "filter" filter))
            (values #u #f))))
     (it "get-local-tuple"
         (fn ()
@@ -180,8 +224,10 @@
           (define env
             (new Environment
                  '((foo "bar"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-local-tuple 'quux (js-obj "filter" (fn (x) #f)))
+           (send env get-local-tuple 'quux (js-obj "filter" filter))
            (values #u #f))))
     (it "has"
         (fn ()
@@ -204,8 +250,22 @@
           (define env
             (new Environment
                  '((foo "bar"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has 'foo (js-obj "filter" (fn (x) #f)))
+           (send env has 'foo (js-obj "filter" filter))
+           #f)))
+    (it "has, parent environment, filter option"
+        (fn ()
+          (define env
+            (new Environment
+                 '((foo "bar"))
+                 (new Environment
+                      '((foo "baz")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env has 'foo (js-obj "filter" filter))
            #f)))
     (it "has-local"
         (fn ()
@@ -228,8 +288,10 @@
           (define env
             (new Environment
                  '((foo "bar"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has-local 'foo (js-obj "filter" (fn (x) #f)))
+           (send env has-local 'foo (js-obj "filter" filter))
            #f)))
     (it "set"
         (fn ()
@@ -306,8 +368,22 @@
           (define env
             (new TypedEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
+           #u)))
+    (it "get, parent environment, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))
+                 (new TypedEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" filter))
            #u)))
     (it "get-value"
         (fn ()
@@ -338,8 +414,22 @@
           (define env
             (new TypedEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-value 'foo (js-obj "filter" filter))
+           #u)))
+    (it "get-value, parent environment, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))
+                 (new TypedEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" filter))
            #u)))
     (it "get-typed-value"
         (fn ()
@@ -370,8 +460,22 @@
           (define env
             (new TypedEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-typed-value 'foo (js-obj "filter" filter))
+           '(#u "undefined"))))
+    (it "get-typed-value, parent environment, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))
+                 (new TypedEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" filter))
            '(#u "undefined"))))
     (it "get-local"
         (fn ()
@@ -402,8 +506,10 @@
           (define env
             (new TypedEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-local 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-local 'foo (js-obj "filter" filter))
            #u)))
     (it "get-type"
         (fn ()
@@ -426,8 +532,22 @@
           (define env
             (new TypedEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-type 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-type 'foo (js-obj "filter" filter))
+           "undefined")))
+    (it "get-type, parent environment, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))
+                 (new TypedEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get-type 'foo (js-obj "filter" filter))
            "undefined")))
     (it "has"
         (fn ()
@@ -450,8 +570,22 @@
           (define env
             (new TypedEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has 'foo (js-obj "filter" (fn (x) #f)))
+           (send env has 'foo (js-obj "filter" filter))
+           #f)))
+    (it "has, parent environment, filter option"
+        (fn ()
+          (define env
+            (new TypedEnvironment
+                 '((foo "bar" "variable"))
+                 (new TypedEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env has 'foo (js-obj "filter" filter))
            #f)))
     (it "has-local"
         (fn ()
@@ -474,8 +608,10 @@
           (define env
             (new TypedEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has-local 'foo (js-obj "filter" (fn (x) #f)))
+           (send env has-local 'foo (js-obj "filter" filter))
            #f)))
     (it "set"
         (fn ()
@@ -551,9 +687,13 @@
         (fn ()
           (define env
             (new LispEnvironment
-                 '((foo "bar" "variable"))))
+                 '((foo "bar" "variable"))
+                 (new LispEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
            #u)))
     (it "get-value"
         (fn ()
@@ -584,8 +724,22 @@
           (define env
             (new LispEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-value 'foo (js-obj "filter" filter))
+           #u)))
+    (it "get-value, parent environment, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))
+                 (new LispEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" filter))
            #u)))
     (it "get-typed-value"
         (fn ()
@@ -616,8 +770,22 @@
           (define env
             (new LispEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-typed-value 'foo (js-obj "filter" filter))
+           '(#u "undefined"))))
+    (it "get-typed-value, parent environment, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))
+                 (new LispEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" filter))
            '(#u "undefined"))))
     (it "get-local"
         (fn ()
@@ -648,8 +816,10 @@
           (define env
             (new LispEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-local 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-local 'foo (js-obj "filter" filter))
            #u)))
     (it "get-type"
         (fn ()
@@ -672,8 +842,22 @@
           (define env
             (new LispEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-type 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-type 'foo (js-obj "filter" filter))
+           "undefined")))
+    (it "get-type, parent environment, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))
+                 (new LispEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get-type 'foo (js-obj "filter" filter))
            "undefined")))
     (it "has"
         (fn ()
@@ -696,8 +880,22 @@
           (define env
             (new LispEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has 'foo (js-obj "filter" (fn (x) #f)))
+           (send env has 'foo (js-obj "filter" filter))
+           #f)))
+    (it "has, parent environment, filter option"
+        (fn ()
+          (define env
+            (new LispEnvironment
+                 '((foo "bar" "variable"))
+                 (new LispEnvironment
+                      '((foo "baz" "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env has 'foo (js-obj "filter" filter))
            #f)))
     (it "has-local"
         (fn ()
@@ -720,8 +918,10 @@
           (define env
             (new LispEnvironment
                  '((foo "bar" "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has-local 'foo (js-obj "filter" (fn (x) #f)))
+           (send env has-local 'foo (js-obj "filter" filter))
            #f)))
     (it "set"
         (fn ()
@@ -802,8 +1002,27 @@
             (new EnvironmentStack
                  (new LispEnvironment
                       '((foo "bar" "variable")))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
+           #u)))
+    (it "get, multiple environments, filter option"
+        (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((foo "baz" "variable"))))
+          (define env
+            (new EnvironmentStack
+                 env1
+                 env2))
+          (define (filter x)
+            (not (eq? x env1)))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" filter))
            #u)))
     (it "get-value"
         (fn ()
@@ -838,8 +1057,27 @@
             (new EnvironmentStack
                  (new LispEnvironment
                       '((foo "bar" "variable")))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-value 'foo (js-obj "filter" filter))
+           #u)))
+    (it "get-value, multiple environments, filter option"
+        (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((foo "baz" "variable"))))
+          (define env
+            (new EnvironmentStack
+                 env1
+                 env2))
+          (define (filter x)
+            (not (eq? x env1)))
+          (assert-equal
+           (send env get-value 'foo (js-obj "filter" filter))
            #u)))
     (it "get-typed-value"
         (fn ()
@@ -887,8 +1125,27 @@
             (new EnvironmentStack
                  (new LispEnvironment
                       '((foo "bar" "variable")))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-typed-value 'foo (js-obj "filter" filter))
+           '(#u "undefined"))))
+    (it "get-typed-value, multiple environments, filter option"
+        (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo "bar" "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((foo "baz" "variable"))))
+          (define env
+            (new EnvironmentStack
+                 env1
+                 env2))
+          (define (filter x)
+            (not (eq? x env1)))
+          (assert-equal
+           (send env get-typed-value 'foo (js-obj "filter" filter))
            '(#u "undefined"))))
     (it "set, one environment"
         (fn ()
@@ -984,14 +1241,20 @@
            #f)))
     (it "get, filter option"
         (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo bar "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((bar baz "variable"))))
           (define env
             (new EnvironmentPipe
-                 (new LispEnvironment
-                      '((foo bar "variable")))
-                 (new LispEnvironment
-                      '((bar baz "variable")))))
+                 env1
+                 env2))
+          (define (filter x)
+            (not (eq? x env1)))
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
            #u)))
     (it "get-value"
         (fn ()
@@ -1034,8 +1297,10 @@
                       '((foo bar "variable")))
                  (new LispEnvironment
                       '((bar baz "variable")))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-value 'foo (js-obj "filter" filter))
            #u)))
     (it "get-typed-value"
         (fn ()
@@ -1072,14 +1337,20 @@
            '(#f "undefined"))))
     (it "get-typed-value, filter option"
         (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo bar "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((bar baz "variable"))))
           (define env
             (new EnvironmentPipe
-                 (new LispEnvironment
-                      '((foo bar "variable")))
-                 (new LispEnvironment
-                      '((bar baz "variable")))))
+                 env1
+                 env2))
+          (define (filter x)
+            (not (eq? x env1)))
           (assert-equal
-           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-typed-value 'foo (js-obj "filter" filter))
            '(#u "undefined"))))))
 
 (describe "EnvironmentComposition"
@@ -1119,14 +1390,20 @@
            #f)))
     (it "get, filter option"
         (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo bar "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((bar baz "variable"))))
           (define env
             (new EnvironmentComposition
-                 (new LispEnvironment
-                      '((bar baz "variable")))
-                 (new LispEnvironment
-                      '((foo bar "variable")))))
+                 env2
+                 env1))
+          (define (filter x)
+            (not (eq? x env1)))
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
            #u)))
     (it "get-value"
         (fn ()
@@ -1163,14 +1440,20 @@
            #f)))
     (it "get-value, filter option"
         (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo bar "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((bar baz "variable"))))
           (define env
             (new EnvironmentComposition
-                 (new LispEnvironment
-                      '((bar baz "variable")))
-                 (new LispEnvironment
-                      '((foo bar "variable")))))
+                 env2
+                 env1))
+          (define (filter x)
+            (not (eq? x env1)))
           (assert-equal
-           (send env get-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-value 'foo (js-obj "filter" filter))
            #u)))
     (it "get-typed-value"
         (fn ()
@@ -1207,14 +1490,20 @@
            '(#f "undefined"))))
     (it "get-typed-value, filter option"
         (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo bar "variable"))))
+          (define env2
+            (new LispEnvironment
+                 '((bar baz "variable"))))
           (define env
             (new EnvironmentComposition
-                 (new LispEnvironment
-                      '((bar baz "variable")))
-                 (new LispEnvironment
-                      '((foo bar "variable")))))
+                 env2
+                 env1))
+          (define (filter x)
+            (not (eq? x env1)))
           (assert-equal
-           (send env get-typed-value 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get-typed-value 'foo (js-obj "filter" filter))
            '(#u "undefined"))))))
 
 (describe "ThunkedEnvironment"
@@ -1256,8 +1545,26 @@
                  `((foo
                     ,(thunk (lambda () "bar"))
                     "variable"))))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
+           #u)))
+    (it "get, parent environment, filter option"
+        (fn ()
+          (define env
+            (new ThunkedEnvironment
+                 `((foo
+                    ,(thunk (lambda () "bar"))
+                    "variable"))
+                 (new ThunkedEnvironment
+                      `((foo
+                         ,(thunk (lambda () "baz"))
+                         "variable")))))
+          (define (filter x)
+            (not (eq? x env)))
+          (assert-equal
+           (send env get 'foo (js-obj "filter" filter))
            #u)))))
 
 (describe "JavaScriptEnvironment"
@@ -1287,8 +1594,10 @@
         (fn ()
           (define env
             (new JavaScriptEnvironment))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get 'foo (js-obj "filter" (fn (x) #f)))
+           (send env get 'foo (js-obj "filter" filter))
            #u)))
     (it "get-local"
         (fn ()
@@ -1315,8 +1624,10 @@
         (fn ()
           (define env
             (new JavaScriptEnvironment))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env get-local 'Map (js-obj "filter" (fn (x) #f)))
+           (send env get-local 'Map (js-obj "filter" filter))
            #u)))
     (it "has"
         (fn ()
@@ -1336,8 +1647,10 @@
         (fn ()
           (define env
             (new JavaScriptEnvironment))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has 'Map (js-obj "filter" (fn (x) #f)))
+           (send env has 'Map (js-obj "filter" filter))
            #f)))
     (it "has-local"
         (fn ()
@@ -1357,6 +1670,8 @@
         (fn ()
           (define env
             (new JavaScriptEnvironment))
+          (define (filter x)
+            #f)
           (assert-equal
-           (send env has-local 'Map (js-obj "filter" (fn (x) #f)))
+           (send env has-local 'Map (js-obj "filter" filter))
            #f)))))

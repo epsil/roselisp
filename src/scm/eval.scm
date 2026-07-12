@@ -317,7 +317,13 @@
 (define (eval-estree-identifier node env (options (js-obj)))
   (define name
     (get-field name node))
-  (send env get (string->symbol name)))
+  (cond
+   ((eq? name "undefined")
+    #u)
+   (else
+    (define sym
+      (string->symbol name))
+    (send env get sym))))
 
 ;;; Evaluate an ESTree [`MemberExpression`][estree:memberexpression] node.
 ;;;

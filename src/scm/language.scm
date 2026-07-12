@@ -518,19 +518,19 @@
        `((,(string->symbol "#f") ,(new Literal #f) Any)
          (,(string->symbol "#t") ,(new Literal #t) Any)
          (,(string->symbol "#n") ,(new Literal #n) Any)
-         (,(string->symbol "#u") ,(new Literal #u) Any)
+         (,(string->symbol "#u") ,(new Identifier "undefined") Any)
          (,(string->symbol "js-null") ,(new Literal #n) Any)
-         (,(string->symbol "js-undefined") ,(new Literal #u) Any)
+         (,(string->symbol "js-undefined") ,(new Identifier "undefined") Any)
          (,(string->symbol "js/arguments") ,(new Identifier "arguments") Any)
          (,(string->symbol "js/null") ,(new Literal #n) Any)
          (,(string->symbol "js/require") ,(new Identifier "require") Any)
-         (,(string->symbol "js/undefined") ,(new Literal #u) Any)
+         (,(string->symbol "js/undefined") ,(new Identifier "undefined") Any)
          (,(string->symbol "*cons-dot*") ,cons-dot-compiled_ Any)
          ;; (,(string->symbol "nil") ,(new Literal #n) Any)
          (,(string->symbol "nil") ,(new ArrayExpression) Any)
          (,(string->symbol "null") ,(new ArrayExpression) Any)
          (,(string->symbol "t") ,(new Literal #t) Any)
-         (,(string->symbol "undefined") ,(new Literal #u) Any))))
+         (,(string->symbol "undefined") ,(new Identifier "undefined") Any))))
 
 ;;; Compiler procedures mapping environment.
 (define compilation-compiler-mapping-env

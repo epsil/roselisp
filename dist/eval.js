@@ -371,9 +371,15 @@ evalEstreeLiteral.lispSource = [Symbol.for('define'), [Symbol.for('eval-estree-l
  */
 function evalEstreeIdentifier(node, env, options = {}) {
     const name = node.name;
-    return env.get(Symbol.for(name));
+    if (name === 'undefined') {
+        return undefined;
+    }
+    else {
+        const sym = Symbol.for(name);
+        return env.get(sym);
+    }
 }
-evalEstreeIdentifier.lispSource = [Symbol.for('define'), [Symbol.for('eval-estree-identifier'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('node')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get'), [Symbol.for('string->symbol'), Symbol.for('name')]]];
+evalEstreeIdentifier.lispSource = [Symbol.for('define'), [Symbol.for('eval-estree-identifier'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('name'), 'undefined'], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), Symbol.for('name')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get'), Symbol.for('sym')]]]];
 /**
  * Evaluate an ESTree [`MemberExpression`][estree:memberexpression] node.
  *

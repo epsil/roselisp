@@ -333,7 +333,7 @@
     (define inherited-options
       (js-obj-append
        options
-       (js-obj "notFound" '(#u "undefined"))))
+       (js-obj "notFound" '(#u Undefined))))
     (define-values (_ typ)
       (send this get-typed-value key inherited-options))
     typ)
@@ -344,9 +344,9 @@
                                   (options
                                    (js-obj
                                     "notFound"
-                                    '(#u "undefined"))))
+                                    '(#u Undefined))))
     ;; The same as `super.get`, except that
-    ;; `notFound` defaults to `(#u "undefined")`.
+    ;; `notFound` defaults to `(#u Undefined)`.
     (send super
           get
           key
@@ -354,15 +354,15 @@
            options
            (js-obj "notFound"
                    (or (oget options "notFound")
-                       '(#u "undefined"))))))
+                       '(#u Undefined))))))
 
   (define/public (get-typed-local-value key
                                         (options
                                          (js-obj
                                           "notFound"
-                                          '(#u "undefined"))))
+                                          '(#u Undefined))))
     ;; The same as `super.get-local`, except that
-    ;; `not-found` defaults to `(#u "undefined")`.
+    ;; `not-found` defaults to `(#u Undefined)`.
     (send super
           get-local
           key
@@ -370,7 +370,7 @@
            options
            (js-obj "notFound"
                    (or (oget options "notFound")
-                       '(#u "undefined"))))))
+                       '(#u Undefined))))))
 
   ;;; Get the untyped value of `key`.
   (define/public (get-untyped-value key
@@ -380,10 +380,10 @@
     (define inherited-options
       (js-obj-append
        options
-       (js-obj "notFound" '(#u "undefined"))))
+       (js-obj "notFound" '(#u Undefined))))
     (define-values (value typ)
       (send this get-typed-value key inherited-options))
-    (if (eq? typ "undefined")
+    (if (eq? typ 'Undefined)
         not-found
         value))
 
@@ -395,15 +395,15 @@
     (define inherited-options
       (js-obj-append
        options
-       (js-obj "notFound" '(#u "undefined"))))
+       (js-obj "notFound" '(#u Undefined))))
     (define-values (value typ)
       (send this get-typed-local-value key inherited-options))
-    (if (eq? typ "undefined")
+    (if (eq? typ 'Undefined)
         not-found
         value))
 
   ;;; Set `key` to `value` with type `type` in the environment.
-  (define/public (set key value (type "variable"))
+  (define/public (set key value (type 'Any))
     ;; Alias for `.set-typed-value`.
     (send this set-typed-value key value type))
 
@@ -425,12 +425,12 @@
 
   ;;; Set `key` to `value` with type `type` in
   ;;; the current environment frame.
-  (define/public (set-local key value (type "variable"))
+  (define/public (set-local key value (type 'Any))
     (send super set-local key (list value type)))
 
   ;;; Set `key` to `value` with type `type` in
   ;;; the current environment frame.
-  (define/public (set-typed-value key value (type "variable"))
+  (define/public (set-typed-value key value (type 'Any))
     (define env
       (send this
             find-frame
@@ -444,7 +444,7 @@
 
   ;;; Set `key` to `value` with type `type` in
   ;;; the current environment frame.
-  (define/public (set-value key value (type "variable"))
+  (define/public (set-value key value (type 'Any))
     ;; Alias for `.set`.
     (send this set key value type)))
 
@@ -496,7 +496,7 @@
     (send super get-local-tuple key options))
 
   ;;; Get the type of `key`. If there is no binding,
-  ;;; return `"undefined"`.
+  ;;; return `Undefined`.
   (define/public (get-type key (options (js-obj)))
     ;; Obtain the type without forcing the thunk.
     (define tuple
@@ -509,7 +509,7 @@
         binding)
       typ)
      (else
-      "undefined"))))
+      'Undefined))))
 
 ;;; Lisp environment.
 ;;;
@@ -695,7 +695,7 @@
 
   ;;; Set `key` to `value` in the first
   ;;; environment in the stack.
-  (define/public (set-local key value (type "variable"))
+  (define/public (set-local key value (type 'Any))
     (define env
       (first (get-field stack this)))
     (when env
@@ -783,7 +783,7 @@
   ;;; Create a dynamic environment.
   (define/public (constructor lookup-f
                               (typing-f
-                               (const "variable")))
+                               (const 'Any)))
     (super)
     (set-field! lookup-f this lookup-f)
     (set-field! typing-f this typing-f))

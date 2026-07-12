@@ -172,7 +172,7 @@ declare namespace macroexpand {
  */
 declare function macroexpand1(exp: any, env: any): any;
 declare namespace macroexpand1 {
-    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[] | (boolean | symbol)[])[])[])[])[];
+    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[];
 }
 /**
  * Expand the macro call `exp` in `env`, and keep
@@ -210,9 +210,9 @@ declare namespace macroexpandAll {
  * expanding until `pred` returns `#f`, or until
  * something that is not a macro call is obtained.
  */
-declare function macroexpandAllUntil(exp: any, env: any, pred?: any, stack?: any, continuationEnv?: any): any;
+declare function macroexpandAllUntil(exp: any, env: any, pred?: any, stack?: any, bindings?: any): any;
 declare namespace macroexpandAllUntil {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[])[])[] | (symbol | (symbol | undefined)[] | (symbol | (symbol | never[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[])[])[] | (symbol | (symbol | undefined)[] | (symbol | (symbol | never[])[])[])[])[];
 }
 /**
  * Expand a `(quote ...)` expression.
@@ -349,7 +349,7 @@ declare namespace defineAsync_ {
  */
 declare function defineMacro_(exp: any, env: any): any;
 declare namespace defineMacro_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[])[];
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var lispMacro: boolean;
 }
 /**
@@ -591,22 +591,22 @@ declare namespace sourcep {
  * S-expression `node`. The S-expression is processed
  * in bottom-up order.
  */
-declare function mapRose(f: any, node: any, env?: any, stack?: any, continuationEnv?: any): any;
+declare function mapRose(f: any, node: any, env?: any, stack?: any, bindings?: any): any;
 declare namespace mapRose {
     var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[] | (symbol | (symbol | (symbol | never[])[])[])[])[];
 }
 /**
  * Map a function `f` over a rose tree using the Visitor pattern.
  */
-declare function mapVisitRose(f: any, node: any, env?: any, stack?: any, continuationEnv?: any): any;
+declare function mapVisitRose(f: any, node: any, env?: any, stack?: any, bindings?: any): any;
 declare namespace mapVisitRose {
-    var lispSource: (symbol | (boolean | symbol | symbol[])[] | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (boolean | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (string | boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | boolean | symbol)[])[])[])[] | (string | boolean | symbol)[][])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (string | boolean | symbol)[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (string | boolean | symbol)[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (symbol | (string | boolean | symbol)[])[] | ((string | boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[] | (string | boolean | symbol)[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (string | boolean | symbol)[] | (symbol | (string | boolean | symbol)[][] | (symbol | (symbol | (symbol | symbol[])[][] | (string | boolean | symbol)[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[])[])[];
+    var lispSource: (symbol | (boolean | symbol | symbol[])[] | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (boolean | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (boolean | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (boolean | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol | symbol[])[])[] | ((boolean | symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol | (symbol | symbol[])[])[] | (symbol | (boolean | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[][] | (boolean | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[])[])[];
 }
 /**
  * Map the function `f` over the S-expression `exp`.
  * The S-expression is processed in bottom-up order.
  */
-declare function mapSexp(f: any, exp: any, env?: any, stack?: any, continuationEnv?: any): any;
+declare function mapSexp(f: any, exp: any, env?: any, stack?: any, bindings?: any): any;
 declare namespace mapSexp {
     var lispSource: (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[])[][])[])[];
 }

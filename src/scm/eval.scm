@@ -55,6 +55,8 @@
                   write-to-string))
 (require (only-in "./rose"
                   Rose))
+(require (only-in "./util"
+                  tagged-list?))
 
 ;;; The default evaluator.
 (define default-evaluator eval1)
@@ -146,7 +148,7 @@
            (define-values (f binding-type)
              (send env get-typed-value op))
            (cond
-            ((eq? binding-type "macro")
+            ((macro-type? binding-type)
              ;; Macros are implemented with a macro function that
              ;; has the signature `(exp, env) => value`. The arguments
              ;; to the macro are *not* evaluated, but the macro's
@@ -156,19 +158,17 @@
              (define expansion
                (f exp env))
              (eval-sexp expansion env options))
-            ((eq? binding-type "fexpr")
+            ((fexpr-type? binding-type)
              ;; A fexpr is a function that receives its arguments
              ;; unevaluated, like a macro. However, unlike a macro,
              ;; the return value is not re-evaluated---it is simply
              ;; returned.
              (apply f args))
-            ((eq? binding-type "special")
+            ((special-type? binding-type)
              ;; Special form
              (f exp env))
-            ((or (memq? binding-type
-                        '("function"
-                          "procedure"))
-                 (and (eq? binding-type "variable")
+            ((or (procedure-type? binding-type)
+                 (and (variable-type? binding-type)
                       (procedure? f)))
              ;; Function call
              (cond
@@ -535,7 +535,7 @@
     (string->symbol (get-field name id)))
   (define f
     (eval-estree-function-expression node env options))
-  (send env set-local name f "function")
+  (send env set-local name f '(->* :rest Any Any))
   #u)
 
 ;;; Evaluate an ESTree [`FunctionExpression`][estree:functionexpression] node.
@@ -1132,6 +1132,50 @@
                    (get-field value e))))
          result))))))
 
+;;; Whether `x` is the type of a variable.
+(define (variable-type? x)
+  (or (eq? x 'Any)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "variable")))
+
+;;; Whether `x` is the type of a procedure.
+(define (procedure-type? x)
+  (or (tagged-list? x '->)
+      (tagged-list? x '->*)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "function")
+      (eq? x "procedure")))
+
+;;; Whether `x` is the type of a macro.
+(define (macro-type? x)
+  (or (tagged-list? x '->macro)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "macro")))
+
+;;; Whether `x` is the type of a fexpr.
+(define (fexpr-type? x)
+  (or (tagged-list? x '->fexpr)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "fexpr")))
+
+;;; Whether `x` is the type of a compiler.
+(define (compiler-type? x)
+  (or (tagged-list? x '->compiler)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "compiler")))
+
+;;; Whether `x` is the type of a special form.
+(define (special-type? x)
+  (or (tagged-list? x '->special)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "special")))
+
+;;; Whether `x` is the type of an undefined value.
+(define (undefined-type? x)
+  (or (eq? x 'Undefined)
+      ;; FIXME: Legacy code, remove.
+      (eq? x "undefined")))
+
 ;;; Mapping from ESTree node types to evaluator functions.
 (define eval-estree-map
   (make-hash
@@ -1181,6 +1225,7 @@
   (rename-out (eval_ seval))
   Evaluator
   call-evaluator
+  compiler-type?
   default-evaluator
   eval-estree
   eval-rose
@@ -1188,4 +1233,9 @@
   eval1
   eval_
   evaluator?
-  js-eval_)
+  js-eval_
+  macro-type?
+  procedure-type?
+  special-type?
+  undefined-type?
+  variable-type?)

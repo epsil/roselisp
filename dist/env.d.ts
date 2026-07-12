@@ -236,7 +236,7 @@ declare class ThunkedEnvironment extends TypedEnvironment {
     getUnforcedLocalTuple(key: any, options?: any): any;
     /**
      * Get the type of `key`. If there is no binding,
-     * return `"undefined"`.
+     * return `Undefined`.
      */
     getType(key: any, options?: any): any;
 }

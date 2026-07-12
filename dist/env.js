@@ -355,7 +355,7 @@ class TypedEnvironment extends Environment {
      * return `"#u"`.
      */
     getType(key, options = {}) {
-        const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, 'undefined'] });
+        const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
         const [, typ] = this.getTypedValue(key, inheritedOptions);
         return typ;
     }
@@ -364,27 +364,27 @@ class TypedEnvironment extends Environment {
      * `(value type)`.
      */
     getTypedValue(key, options = {
-        notFound: [undefined, 'undefined']
+        notFound: [undefined, Symbol.for('Undefined')]
     }) {
         // The same as `super.get`, except that
-        // `notFound` defaults to `(#u "undefined")`.
-        return super.get(key, Object.assign(Object.assign({}, options), { notFound: options['notFound'] || [undefined, 'undefined'] }));
+        // `notFound` defaults to `(#u Undefined)`.
+        return super.get(key, Object.assign(Object.assign({}, options), { notFound: options['notFound'] || [undefined, Symbol.for('Undefined')] }));
     }
     getTypedLocalValue(key, options = {
-        notFound: [undefined, 'undefined']
+        notFound: [undefined, Symbol.for('Undefined')]
     }) {
         // The same as `super.get-local`, except that
-        // `not-found` defaults to `(#u "undefined")`.
-        return super.getLocal(key, Object.assign(Object.assign({}, options), { notFound: options['notFound'] || [undefined, 'undefined'] }));
+        // `not-found` defaults to `(#u Undefined)`.
+        return super.getLocal(key, Object.assign(Object.assign({}, options), { notFound: options['notFound'] || [undefined, Symbol.for('Undefined')] }));
     }
     /**
      * Get the untyped value of `key`.
      */
     getUntypedValue(key, options = {}) {
         const notFound = options['notFound'];
-        const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, 'undefined'] });
+        const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
         const [value, typ] = this.getTypedValue(key, inheritedOptions);
-        if (typ === 'undefined') {
+        if (typ === Symbol.for('Undefined')) {
             return notFound;
         }
         else {
@@ -396,9 +396,9 @@ class TypedEnvironment extends Environment {
      */
     getUntypedLocalValue(key, options = {}) {
         const notFound = options['notFound'];
-        const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, 'undefined'] });
+        const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
         const [value, typ] = this.getTypedLocalValue(key, inheritedOptions);
-        if (typ === 'undefined') {
+        if (typ === Symbol.for('Undefined')) {
             return notFound;
         }
         else {
@@ -408,7 +408,7 @@ class TypedEnvironment extends Environment {
     /**
      * Set `key` to `value` with type `type` in the environment.
      */
-    set(key, value, type = 'variable') {
+    set(key, value, type = Symbol.for('Any')) {
         // Alias for `.set-typed-value`.
         return this.setTypedValue(key, value, type);
     }
@@ -432,14 +432,14 @@ class TypedEnvironment extends Environment {
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setLocal(key, value, type = 'variable') {
+    setLocal(key, value, type = Symbol.for('Any')) {
         return super.setLocal(key, [value, type]);
     }
     /**
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setTypedValue(key, value, type = 'variable') {
+    setTypedValue(key, value, type = Symbol.for('Any')) {
         let env = this.findFrame(key, {
             notFound: this
         });
@@ -454,7 +454,7 @@ class TypedEnvironment extends Environment {
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setValue(key, value, type = 'variable') {
+    setValue(key, value, type = Symbol.for('Any')) {
         // Alias for `.set`.
         return this.set(key, value, type);
     }
@@ -508,7 +508,7 @@ class ThunkedEnvironment extends TypedEnvironment {
     }
     /**
      * Get the type of `key`. If there is no binding,
-     * return `"undefined"`.
+     * return `Undefined`.
      */
     getType(key, options = {}) {
         // Obtain the type without forcing the thunk.
@@ -519,7 +519,7 @@ class ThunkedEnvironment extends TypedEnvironment {
             return typ;
         }
         else {
-            return 'undefined';
+            return Symbol.for('Undefined');
         }
     }
 }
@@ -722,7 +722,7 @@ class EnvironmentStack extends TypedEnvironment {
      * Set `key` to `value` in the first
      * environment in the stack.
      */
-    setLocal(key, value, type = 'variable') {
+    setLocal(key, value, type = Symbol.for('Any')) {
         let env = this.stack[0];
         if (env) {
             if (env instanceof TypedEnvironment) {
@@ -822,7 +822,7 @@ class DynamicEnvironment extends TypedEnvironment {
      * Create a dynamic environment.
      */
     constructor(lookupF, typingF = function (...args) {
-        return 'variable';
+        return Symbol.for('Any');
     }) {
         super();
         this.lookupF = lookupF;

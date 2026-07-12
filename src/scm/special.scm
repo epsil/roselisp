@@ -153,7 +153,7 @@
           (set! prop (second match))
           (set! (oget obj prop) val)))))
      (else
-      (send env set sym val "variable")))
+      (send env set sym val 'Any)))
     val)))
 
 ;;; Evaluate a `(fset ...)` form.
@@ -164,7 +164,7 @@
     (eval_ (first params) env))
   (define val
     (eval_ (second params) env))
-  (send env set sym val "function")
+  (send env set sym val '(->* :rest Any Any))
   val)
 
 ;;; Evaluate a `(module ...)` form.
@@ -198,11 +198,11 @@
     (cond
      ((symbol? var-exp)
       (push-right! bindings
-                   (list var-exp #u "variable")))
+                   (list var-exp #u 'Any)))
 
      (else
       (push-right! bindings
-                   (list (first var-exp) #u "variable"))
+                   (list (first var-exp) #u 'Any))
       (define init-exp
         `(setq ,@var-exp))
       (push-right! init-exps init-exp))))
@@ -436,7 +436,7 @@
     (set! name (first name)))
   (define macro-fn
     (defmacro->fn exp env))
-  (send env set name macro-fn "macro")
+  (send env set name macro-fn '(->macro :rest Any Any))
   ;; name
   macro-fn)
 
@@ -490,7 +490,7 @@
     (car (second exp)))
   (define macro-fn
     (define-macro->fn exp env))
-  (send env set name macro-fn "macro")
+  (send env set name macro-fn '(->macro :rest Any Any))
   name)
 
 ;;; Create a macro function on the basis of a
@@ -946,7 +946,7 @@
         (set! (oget (get-field prototype constructor) def-name)
               method-fn)))
   (unless (eq? class-name "")
-    (send env set class-name-symbol constructor "variable"))
+    (send env set class-name-symbol constructor 'Any))
   constructor)
 
 ;;; Evaluate a `(try ...)` form.

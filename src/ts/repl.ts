@@ -86,7 +86,7 @@ function repl(): void {
       return rl.close();
     }
   }
-  const env: any = makeReplEnvironment([[Symbol.for('exit'), quit, 'function'], [Symbol.for('help'), help, 'function'], [Symbol.for('quit'), quit, 'function']]);
+  const env: any = makeReplEnvironment([[Symbol.for('exit'), quit, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]], [Symbol.for('help'), help, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]], [Symbol.for('quit'), quit, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]]]);
   // Read-eval-print loop
   function loopF(...args: any[]): any {
     function callback(x: any): any {

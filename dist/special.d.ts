@@ -60,14 +60,14 @@ declare namespace setqSpecial_ {
  */
 declare function setSpecial_(exp: any, env: any): any;
 declare namespace setSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[][] | (symbol | (symbol | (symbol | (string | symbol)[])[] | ((symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[][])[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | ((symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[][])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(fset ...)` form.
  */
 declare function fsetSpecial_(exp: any, env: any): any;
 declare namespace fsetSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[])[];
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Evaluate a `(module ...)` form.
@@ -88,7 +88,7 @@ declare namespace beginSpecial_ {
  */
 declare function letStarSpecial_(exp: any, env: any): any;
 declare namespace letStarSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol | symbol[] | undefined)[])[])[])[])[])[];
+    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | symbol[] | undefined)[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(let-values ...)` form.
@@ -144,14 +144,14 @@ declare namespace defineAsyncSpecial_ {
  */
 declare function defmacroSpecial_(exp: any, env: any): any;
 declare namespace defmacroSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[])[];
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Evaluate a `(define-macro ...)` form.
  */
 declare function defineMacroSpecial_(exp: any, env: any): any;
 declare namespace defineMacroSpecial_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[])[];
+    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Evaluate a `(for ...)` form.

@@ -70,9 +70,9 @@ Type ,q to quit.")
       (send rl close)))
   (define env
     (make-repl-environment
-     `((exit ,quit "function")
-       (help ,help "function")
-       (quit ,quit "function"))))
+     `((exit ,quit '(->* :rest Any Any))
+       (help ,help '(->* :rest Any Any))
+       (quit ,quit '(->* :rest Any Any)))))
   ;; Read-eval-print loop
   (define (loop-f . args)
     (define (callback x)

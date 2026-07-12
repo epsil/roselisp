@@ -119,12 +119,14 @@
     (define filter
       (oget options "filter"))
     (define env this)
-    (while (and env
-                (or (and filter
-                         (not (filter env)))
-                    (not (send env has-local key))))
-      (set! env
-            (get-field parent env)))
+    (while env
+      (when (and filter
+                 (not (filter env)))
+        (set! env #u)
+        (break))
+      (when (send env has-local key)
+        (break))
+      (set! env (get-field parent env)))
     (if env
         env
         not-found))
@@ -587,13 +589,14 @@
     (define environments
       (get-field stack this))
     (for ((env environments))
-      (unless (and filter
-                   (not (filter env)))
-        (define frame
-          (send env find-frame key inherited-options))
-        (when frame
-          (set! result frame)
-          (break))))
+      (when (and filter
+                 (not (filter env)))
+        (break))
+      (define frame
+        (send env find-frame key inherited-options))
+      (when frame
+        (set! result frame)
+        (break)))
     result)
 
   ;;; Get all the environment frames of all the environments
@@ -730,6 +733,9 @@
     (define last-env)
     (define found #t)
     (for ((env (get-field environments this)))
+      (when (and filter
+                 (not (filter env)))
+        (break))
       (cond
        ((send env has current-key)
         (set! last-env env)
@@ -740,7 +746,7 @@
         (set! found #f)
         (break))))
     (cond
-     (found
+     ((and found last-env)
       (send last-env get-tuple last-key))
      ((get-field parent this)
       (~> this

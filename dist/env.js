@@ -116,7 +116,14 @@ class Environment {
         const notFound = options['notFound'];
         const filter = options['filter'];
         let env = this;
-        while (env && ((filter && !filter(env)) || !env.hasLocal(key))) {
+        while (env) {
+            if (filter && !filter(env)) {
+                env = undefined;
+                break;
+            }
+            if (env.hasLocal(key)) {
+                break;
+            }
             env = env.parent;
         }
         if (env) {
@@ -592,12 +599,13 @@ class EnvironmentStack extends TypedEnvironment {
         let result = notFound;
         const environments = this.stack;
         for (let env of environments) {
-            if (!(filter && !filter(env))) {
-                const frame = env.findFrame(key, inheritedOptions);
-                if (frame) {
-                    result = frame;
-                    break;
-                }
+            if (filter && !filter(env)) {
+                break;
+            }
+            const frame = env.findFrame(key, inheritedOptions);
+            if (frame) {
+                result = frame;
+                break;
             }
         }
         return result;
@@ -760,6 +768,9 @@ class EnvironmentPipe extends TypedEnvironment {
         let lastEnv;
         let found = true;
         for (let env of this.environments) {
+            if (filter && !filter(env)) {
+                break;
+            }
             if (env.has(currentKey)) {
                 lastEnv = env;
                 lastKey = currentKey;
@@ -770,7 +781,7 @@ class EnvironmentPipe extends TypedEnvironment {
                 break;
             }
         }
-        if (found) {
+        if (found && lastEnv) {
             return lastEnv.getTuple(lastKey);
         }
         else if (this.parent) {

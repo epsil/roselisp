@@ -22,14 +22,14 @@
  */
 declare function jsObj_(...args: any[]): any;
 declare namespace jsObj_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
 }
 /**
  * Whether something is a JavaScript object.
  */
 declare function jsObjP_(x: any): any;
 declare namespace jsObjP_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Whether something types as a JavaScript object.
@@ -38,7 +38,7 @@ declare namespace jsObjP_ {
  */
 declare function jsObjectTypeP_(x: any): any;
 declare namespace jsObjectTypeP_ {
-    var lispSource: (symbol | (string | symbol | symbol[])[])[];
+    var fsource: (symbol | (string | symbol | symbol[])[])[];
 }
 /**
  * Combine multiple JavaScript objects into a new JavaScript object.
@@ -47,7 +47,7 @@ declare namespace jsObjectTypeP_ {
  */
 declare function jsObjAppend_(...args: any[]): any;
 declare namespace jsObjAppend_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the keys for a JavaScript object.
@@ -57,7 +57,7 @@ declare namespace jsObjAppend_ {
  */
 declare function jsKeys_(obj: any): any;
 declare namespace jsKeys_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Look up the property `key` in `obj`.
@@ -70,7 +70,7 @@ declare namespace jsKeys_ {
  */
 declare function objectRef_(obj: any, key: any): any;
 declare namespace objectRef_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Set the property `key` in `obj` to `val`.
@@ -83,7 +83,7 @@ declare namespace objectRef_ {
  */
 declare function objectSetX_(obj: any, key: any, val: any): any;
 declare namespace objectSetX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the keys for an object.
@@ -94,6 +94,6 @@ declare namespace objectSetX_ {
  */
 declare function fieldNames_(obj: any): any;
 declare namespace fieldNames_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 export { jsObjP_, jsObjectTypeP_, objectRef_ as objectGet_, objectRef_ as oget_, objectSetX_ as objectSet_, objectSetX_ as osetX_, objectSetX_ as oset_, fieldNames_, jsKeys_, jsObjAppend_, jsObj_, objectRef_, objectSetX_ };

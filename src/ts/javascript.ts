@@ -28,7 +28,7 @@ function jsIsStrictlyEqualP_(x: any, y: any): any {
   return x === y;
 }
 
-jsIsStrictlyEqualP_.lispSource = [Symbol.for('define'), [Symbol.for('js-is-strictly-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
+jsIsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-strictly-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * JavaScript [loose equality][js:loose-equality],
@@ -41,7 +41,7 @@ function jsIsLooselyEqualP_(x: any, y: any): any {
   return x == y;
 }
 
-jsIsLooselyEqualP_.lispSource = [Symbol.for('define'), [Symbol.for('js-is-loosely-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]];
+jsIsLooselyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-loosely-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * JavaScript [sameValue][js:same-value] equality.
@@ -52,7 +52,7 @@ function jsSameValueP_(x: any, y: any): any {
   return Object.is(x, y);
 }
 
-jsSameValueP_.lispSource = [Symbol.for('define'), [Symbol.for('js-same-value?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('is'), Symbol.for('x'), Symbol.for('y')]];
+jsSameValueP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('is'), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * JavaScript [sameValueZero][js:same-value-zero] equality.
@@ -63,7 +63,7 @@ function jsSameValueZeroP_(x: any, y: any): any {
   return (x === y) || (Number.isNaN(x) && Number.isNaN(y));
 }
 
-jsSameValueZeroP_.lispSource = [Symbol.for('define'), [Symbol.for('js-same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('y')]]]];
+jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('y')]]]];
 
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
@@ -75,7 +75,7 @@ function jsTypeof_(x: any): any {
   return typeof x;
 }
 
-jsTypeof_.lispSource = [Symbol.for('define'), [Symbol.for('js-typeof_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
+jsTypeof_.fsource = [Symbol.for('define'), [Symbol.for('js-typeof_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
 
 /**
  * JavaScript's [`instanceof`][js:instanceof] operator,
@@ -87,7 +87,7 @@ function jsInstanceof_(x: any, y: any): any {
   return x instanceof y;
 }
 
-jsInstanceof_.lispSource = [Symbol.for('define'), [Symbol.for('js-instanceof_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/instanceof'), Symbol.for('x'), Symbol.for('y')]];
+jsInstanceof_.fsource = [Symbol.for('define'), [Symbol.for('js-instanceof_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/instanceof'), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * Variadic version of JavaScript's `+` operator.
@@ -111,7 +111,7 @@ function jsPlus_(...args: any[]): any {
   }
 }
 
-jsPlus_.lispSource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('array-length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('array-first'), Symbol.for('args')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/+'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
+jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('array-length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('array-first'), Symbol.for('args')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/+'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
 
 /**
  * Whether `obj` is a JavaScript function.
@@ -122,7 +122,7 @@ function jsFunctionP_(obj: any): any {
   return obj instanceof Function;
 }
 
-jsFunctionP_.lispSource = [Symbol.for('define'), [Symbol.for('js-function?_'), Symbol.for('obj')], [Symbol.for('js/function-object?'), Symbol.for('obj')]];
+jsFunctionP_.fsource = [Symbol.for('define'), [Symbol.for('js-function?_'), Symbol.for('obj')], [Symbol.for('js/function-object?'), Symbol.for('obj')]];
 
 /**
  * Whether `obj` is a [`Function`][js:Function] object.
@@ -133,7 +133,7 @@ function jsFunctionObjectP_(obj: any): any {
   return obj instanceof Function;
 }
 
-jsFunctionObjectP_.lispSource = [Symbol.for('define'), [Symbol.for('js-function-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('Function')]];
+jsFunctionObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js-function-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('Function')]];
 
 /**
  * Whether `obj` is of type `"function"`.
@@ -142,7 +142,7 @@ function jsFunctionTypeP_(obj: any): any {
   return typeof obj === 'function';
 }
 
-jsFunctionTypeP_.lispSource = [Symbol.for('define'), [Symbol.for('js-function-type?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'function']];
+jsFunctionTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js-function-type?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'function']];
 
 /**
  * Whether something is JavaScript's `null`.
@@ -151,7 +151,7 @@ function jsNullP_(obj: any): any {
   return obj === null;
 }
 
-jsNullP_.lispSource = [Symbol.for('define'), [Symbol.for('js-null?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), null]];
+jsNullP_.fsource = [Symbol.for('define'), [Symbol.for('js-null?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), null]];
 
 /**
  * Find the index of a list element matching a predicate.
@@ -165,7 +165,7 @@ function jsFindIndex_(proc: any, seq: any): any {
   return seq.findIndex(proc);
 }
 
-jsFindIndex_.lispSource = [Symbol.for('define'), [Symbol.for('js-find-index_'), Symbol.for('proc'), Symbol.for('seq')], [Symbol.for('send'), Symbol.for('seq'), Symbol.for('findIndex'), Symbol.for('proc')]];
+jsFindIndex_.fsource = [Symbol.for('define'), [Symbol.for('js-find-index_'), Symbol.for('proc'), Symbol.for('seq')], [Symbol.for('send'), Symbol.for('seq'), Symbol.for('findIndex'), Symbol.for('proc')]];
 
 /**
  * JavaScript's [`eval` function][js:eval].
@@ -176,7 +176,7 @@ function jsEval_(str: any): any {
   return eval(str);
 }
 
-jsEval_.lispSource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
+jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
 
 /**
  * JavaScript's [`in`][js:in] operator,
@@ -188,7 +188,7 @@ function jsIn_(prop: any, obj: any): any {
   return prop in obj;
 }
 
-jsIn_.lispSource = [Symbol.for('define'), [Symbol.for('js-in_'), Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/in'), Symbol.for('prop'), Symbol.for('obj')]];
+jsIn_.fsource = [Symbol.for('define'), [Symbol.for('js-in_'), Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/in'), Symbol.for('prop'), Symbol.for('obj')]];
 
 /**
  * Placeholder function for JavaScript's
@@ -200,7 +200,7 @@ function jsTaggedTemplate_(tag: any, ...args: any[]): any {
   return tag;
 }
 
-jsTaggedTemplate_.lispSource = [Symbol.for('define'), [Symbol.for('js-tagged-template_'), Symbol.for('tag'), Symbol.for('.'), Symbol.for('args')], Symbol.for('tag')];
+jsTaggedTemplate_.fsource = [Symbol.for('define'), [Symbol.for('js-tagged-template_'), Symbol.for('tag'), Symbol.for('.'), Symbol.for('args')], Symbol.for('tag')];
 
 /**
  * Placeholder function for JavaScript's
@@ -215,7 +215,7 @@ function jsDelete_(x: any): any {
   return undefined;
 }
 
-jsDelete_.lispSource = [Symbol.for('define'), [Symbol.for('js-delete_'), Symbol.for('x')], undefined];
+jsDelete_.fsource = [Symbol.for('define'), [Symbol.for('js-delete_'), Symbol.for('x')], undefined];
 
 export {
   jsDelete_,

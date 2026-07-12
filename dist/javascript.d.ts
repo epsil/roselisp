@@ -23,7 +23,7 @@
  */
 declare function jsIsStrictlyEqualP_(x: any, y: any): any;
 declare namespace jsIsStrictlyEqualP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * JavaScript [loose equality][js:loose-equality],
@@ -34,7 +34,7 @@ declare namespace jsIsStrictlyEqualP_ {
  */
 declare function jsIsLooselyEqualP_(x: any, y: any): any;
 declare namespace jsIsLooselyEqualP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * JavaScript [sameValue][js:same-value] equality.
@@ -43,7 +43,7 @@ declare namespace jsIsLooselyEqualP_ {
  */
 declare function jsSameValueP_(x: any, y: any): any;
 declare namespace jsSameValueP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * JavaScript [sameValueZero][js:same-value-zero] equality.
@@ -52,7 +52,7 @@ declare namespace jsSameValueP_ {
  */
 declare function jsSameValueZeroP_(x: any, y: any): any;
 declare namespace jsSameValueZeroP_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
@@ -62,7 +62,7 @@ declare namespace jsSameValueZeroP_ {
  */
 declare function jsTypeof_(x: any): any;
 declare namespace jsTypeof_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * JavaScript's [`instanceof`][js:instanceof] operator,
@@ -72,7 +72,7 @@ declare namespace jsTypeof_ {
  */
 declare function jsInstanceof_(x: any, y: any): any;
 declare namespace jsInstanceof_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Variadic version of JavaScript's `+` operator.
@@ -85,14 +85,14 @@ declare namespace jsInstanceof_ {
  */
 declare function jsPlus_(...args: any[]): any;
 declare namespace jsPlus_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[])[])[];
 }
 /**
  * Whether `obj` is a JavaScript function.
  */
 declare function jsFunctionP_(obj: any): any;
 declare namespace jsFunctionP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether `obj` is a [`Function`][js:Function] object.
@@ -101,21 +101,21 @@ declare namespace jsFunctionP_ {
  */
 declare function jsFunctionObjectP_(obj: any): any;
 declare namespace jsFunctionObjectP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether `obj` is of type `"function"`.
  */
 declare function jsFunctionTypeP_(obj: any): any;
 declare namespace jsFunctionTypeP_ {
-    var lispSource: (symbol | (string | symbol | symbol[])[])[];
+    var fsource: (symbol | (string | symbol | symbol[])[])[];
 }
 /**
  * Whether something is JavaScript's `null`.
  */
 declare function jsNullP_(obj: any): any;
 declare namespace jsNullP_ {
-    var lispSource: (symbol | (symbol | null)[])[];
+    var fsource: (symbol | (symbol | null)[])[];
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -125,7 +125,7 @@ declare namespace jsNullP_ {
  */
 declare function jsFindIndex_(proc: any, seq: any): any;
 declare namespace jsFindIndex_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * JavaScript's [`eval` function][js:eval].
@@ -134,7 +134,7 @@ declare namespace jsFindIndex_ {
  */
 declare function jsEval_(str: any): any;
 declare namespace jsEval_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * JavaScript's [`in`][js:in] operator,
@@ -144,7 +144,7 @@ declare namespace jsEval_ {
  */
 declare function jsIn_(prop: any, obj: any): any;
 declare namespace jsIn_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Placeholder function for JavaScript's
@@ -154,7 +154,7 @@ declare namespace jsIn_ {
  */
 declare function jsTaggedTemplate_(tag: any, ...args: any[]): any;
 declare namespace jsTaggedTemplate_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Placeholder function for JavaScript's
@@ -164,6 +164,6 @@ declare namespace jsTaggedTemplate_ {
  */
 declare function jsDelete_(x: any): any;
 declare namespace jsDelete_ {
-    var lispSource: (symbol | symbol[] | undefined)[];
+    var fsource: (symbol | symbol[] | undefined)[];
 }
 export { jsDelete_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsIn_, jsInstanceof_, jsIsLooselyEqualP_, jsIsStrictlyEqualP_, jsNullP_, jsPlus_, jsSameValueZeroP_, jsSameValueP_, jsTaggedTemplate_, jsTypeof_ };

@@ -44,7 +44,7 @@ function stringp_(obj: any): any {
   return (typeof obj === 'string') || (obj instanceof String);
 }
 
-stringp_.lispSource = [Symbol.for('define'), [Symbol.for('string?_'), Symbol.for('obj')], [Symbol.for('or'), [Symbol.for('string-primitive?'), Symbol.for('obj')], [Symbol.for('string-object?'), Symbol.for('obj')]]];
+stringp_.fsource = [Symbol.for('define'), [Symbol.for('string?_'), Symbol.for('obj')], [Symbol.for('or'), [Symbol.for('string-primitive?'), Symbol.for('obj')], [Symbol.for('string-object?'), Symbol.for('obj')]]];
 
 /**
  * Whether something is a string primitive.
@@ -53,7 +53,7 @@ function stringPrimitiveP_(obj: any): any {
   return typeof obj === 'string';
 }
 
-stringPrimitiveP_.lispSource = [Symbol.for('define'), [Symbol.for('string-primitive?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'string']];
+stringPrimitiveP_.fsource = [Symbol.for('define'), [Symbol.for('string-primitive?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'string']];
 
 /**
  * Whether something is a string object.
@@ -62,7 +62,7 @@ function stringObjectP_(obj: any): any {
   return obj instanceof String;
 }
 
-stringObjectP_.lispSource = [Symbol.for('define'), [Symbol.for('string-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('String')]];
+stringObjectP_.fsource = [Symbol.for('define'), [Symbol.for('string-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('String')]];
 
 /**
  * Concatenate one or more strings together.
@@ -77,7 +77,7 @@ function stringAppend_(...args: any[]): any {
   }, '');
 }
 
-stringAppend_.lispSource = [Symbol.for('define'), [Symbol.for('string-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('string-append'), Symbol.for('acc'), Symbol.for('x')]], '', Symbol.for('args')]];
+stringAppend_.fsource = [Symbol.for('define'), [Symbol.for('string-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('string-append'), Symbol.for('acc'), Symbol.for('x')]], '', Symbol.for('args')]];
 
 /**
  * Get the character at a particular position in a string.
@@ -90,7 +90,7 @@ function stringRef_(str: any, n: any): any {
   return str.charAt(n);
 }
 
-stringRef_.lispSource = [Symbol.for('define'), [Symbol.for('string-ref_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('charAt'), Symbol.for('n')]];
+stringRef_.fsource = [Symbol.for('define'), [Symbol.for('string-ref_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('charAt'), Symbol.for('n')]];
 
 /**
  * Trim whitespace from the beginning and end of a string.
@@ -109,7 +109,7 @@ function stringTrim_(str: any, sep: any = undefined, ...options: any[]): any {
   }
 }
 
-stringTrim_.lispSource = [Symbol.for('define'), [Symbol.for('string-trim_'), Symbol.for('str'), [Symbol.for('sep'), undefined], Symbol.for('.'), Symbol.for('options')], [Symbol.for('cond'), [Symbol.for('sep'), [Symbol.for('define'), Symbol.for('repeat-option'), [Symbol.for('plist-get'), Symbol.for('options'), [Symbol.for('quote'), Symbol.for(':repeat?')]]], [Symbol.for('define'), Symbol.for('pattern-str'), [Symbol.for('string-append'), '(', [Symbol.for('regexp-quote'), Symbol.for('sep')], ')', [Symbol.for('if'), Symbol.for('repeat-option'), '+', '']]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), [Symbol.for('string-append'), '^', Symbol.for('pattern-str')]], Symbol.for('_'), ''], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), [Symbol.for('string-append'), Symbol.for('pattern-str'), '$']], Symbol.for('_'), '']]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('str'), Symbol.for('trim')]]]];
+stringTrim_.fsource = [Symbol.for('define'), [Symbol.for('string-trim_'), Symbol.for('str'), [Symbol.for('sep'), undefined], Symbol.for('.'), Symbol.for('options')], [Symbol.for('cond'), [Symbol.for('sep'), [Symbol.for('define'), Symbol.for('repeat-option'), [Symbol.for('plist-get'), Symbol.for('options'), [Symbol.for('quote'), Symbol.for(':repeat?')]]], [Symbol.for('define'), Symbol.for('pattern-str'), [Symbol.for('string-append'), '(', [Symbol.for('regexp-quote'), Symbol.for('sep')], ')', [Symbol.for('if'), Symbol.for('repeat-option'), '+', '']]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), [Symbol.for('string-append'), '^', Symbol.for('pattern-str')]], Symbol.for('_'), ''], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), [Symbol.for('string-append'), Symbol.for('pattern-str'), '$']], Symbol.for('_'), '']]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('str'), Symbol.for('trim')]]]];
 
 /**
  * Repeat a string `n` times.
@@ -118,7 +118,7 @@ function stringRepeat_(str: any, n: any): any {
   return str.repeat(n);
 }
 
-stringRepeat_.lispSource = [Symbol.for('define'), [Symbol.for('string-repeat_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('repeat'), Symbol.for('n')]];
+stringRepeat_.fsource = [Symbol.for('define'), [Symbol.for('string-repeat_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('repeat'), Symbol.for('n')]];
 
 /**
  * Join a list of strings, using `sep` as the separator.
@@ -131,7 +131,7 @@ function stringJoin_(lst: any, sep: any = ' '): any {
   return lst.join(sep);
 }
 
-stringJoin_.lispSource = [Symbol.for('define'), [Symbol.for('string-join_'), Symbol.for('lst'), [Symbol.for('sep'), ' ']], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('join'), Symbol.for('sep')]];
+stringJoin_.fsource = [Symbol.for('define'), [Symbol.for('string-join_'), Symbol.for('lst'), [Symbol.for('sep'), ' ']], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('join'), Symbol.for('sep')]];
 
 /**
  * Split a string into a list of strings.
@@ -144,7 +144,7 @@ function stringSplit_(str: any, sep: any = new RegExp('\\s+', 'g')): any {
   return str.split(sep);
 }
 
-stringSplit_.lispSource = [Symbol.for('define'), [Symbol.for('string-split_'), Symbol.for('str'), [Symbol.for('sep'), [Symbol.for('regexp'), '\\s+', 'g']]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('split'), Symbol.for('sep')]];
+stringSplit_.fsource = [Symbol.for('define'), [Symbol.for('string-split_'), Symbol.for('str'), [Symbol.for('sep'), [Symbol.for('regexp'), '\\s+', 'g']]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('split'), Symbol.for('sep')]];
 
 /**
  * Return a copy of `str` where `from` is replaced with `to`.
@@ -157,7 +157,7 @@ function stringReplace_(str: any, from: any, to: any): any {
   return str.replace(from, to);
 }
 
-stringReplace_.lispSource = [Symbol.for('define'), [Symbol.for('string-replace_'), Symbol.for('str'), Symbol.for('from'), Symbol.for('to')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('from'), Symbol.for('to')]];
+stringReplace_.fsource = [Symbol.for('define'), [Symbol.for('string-replace_'), Symbol.for('str'), Symbol.for('from'), Symbol.for('to')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('from'), Symbol.for('to')]];
 
 /**
  * Convert string to upper case.
@@ -170,7 +170,7 @@ function stringUpcase_(str: any): any {
   return str.toUpperCase();
 }
 
-stringUpcase_.lispSource = [Symbol.for('define'), [Symbol.for('string-upcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toUpperCase')]];
+stringUpcase_.fsource = [Symbol.for('define'), [Symbol.for('string-upcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toUpperCase')]];
 
 /**
  * Convert string to lower case.
@@ -183,7 +183,7 @@ function stringDowncase_(str: any): any {
   return str.toLowerCase();
 }
 
-stringDowncase_.lispSource = [Symbol.for('define'), [Symbol.for('string-downcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toLowerCase')]];
+stringDowncase_.fsource = [Symbol.for('define'), [Symbol.for('string-downcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toLowerCase')]];
 
 /**
  * Return a substring of `str`, from `start` to `end`.
@@ -196,7 +196,7 @@ function substring_(str: any, start: any, end: any = undefined): any {
   return str.substring(start, end);
 }
 
-substring_.lispSource = [Symbol.for('define'), [Symbol.for('substring_'), Symbol.for('str'), Symbol.for('start'), [Symbol.for('end'), undefined]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('substring'), Symbol.for('start'), Symbol.for('end')]];
+substring_.fsource = [Symbol.for('define'), [Symbol.for('substring_'), Symbol.for('str'), Symbol.for('start'), [Symbol.for('end'), undefined]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('substring'), Symbol.for('start'), Symbol.for('end')]];
 
 /**
  * Convert a string to a number.
@@ -209,7 +209,7 @@ function stringToNumber_(str: any): any {
   return parseFloat(str);
 }
 
-stringToNumber_.lispSource = [Symbol.for('define'), [Symbol.for('string->number_'), Symbol.for('str')], [Symbol.for('parseFloat'), Symbol.for('str')]];
+stringToNumber_.fsource = [Symbol.for('define'), [Symbol.for('string->number_'), Symbol.for('str')], [Symbol.for('parseFloat'), Symbol.for('str')]];
 
 /**
  * Convert a number to a string.
@@ -222,7 +222,7 @@ function numberToString_(n: any): any {
   return n + '';
 }
 
-numberToString_.lispSource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('string-append'), Symbol.for('n'), '']];
+numberToString_.fsource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('string-append'), Symbol.for('n'), '']];
 
 /**
  * Indent a string by prepending each line with `n` spaces.
@@ -236,7 +236,7 @@ function indentString(str: any, n: any = 2, options: any = {}): any {
   return str.replace(pattern, indentation);
 }
 
-indentString.lispSource = [Symbol.for('define'), [Symbol.for('indent-string'), Symbol.for('str'), [Symbol.for('n'), 2], [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('whitespace-option'), [Symbol.for('oget'), Symbol.for('options'), 'whitespace']], [Symbol.for('define'), Symbol.for('whitespace'), [Symbol.for('or'), Symbol.for('whitespace-option'), ' ']], [Symbol.for('define'), Symbol.for('include-empty-lines-option'), [Symbol.for('oget'), Symbol.for('options'), 'includeEmptyLines']], [Symbol.for('define'), Symbol.for('pattern'), [Symbol.for('if'), Symbol.for('include-empty-lines-option'), [Symbol.for('regexp'), '^', 'gm'], [Symbol.for('regexp'), '^(?!s*$)', 'gm']]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), Symbol.for('whitespace'), Symbol.for('n')]], [Symbol.for('regexp-replace'), Symbol.for('pattern'), Symbol.for('str'), Symbol.for('indentation')]];
+indentString.fsource = [Symbol.for('define'), [Symbol.for('indent-string'), Symbol.for('str'), [Symbol.for('n'), 2], [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('whitespace-option'), [Symbol.for('oget'), Symbol.for('options'), 'whitespace']], [Symbol.for('define'), Symbol.for('whitespace'), [Symbol.for('or'), Symbol.for('whitespace-option'), ' ']], [Symbol.for('define'), Symbol.for('include-empty-lines-option'), [Symbol.for('oget'), Symbol.for('options'), 'includeEmptyLines']], [Symbol.for('define'), Symbol.for('pattern'), [Symbol.for('if'), Symbol.for('include-empty-lines-option'), [Symbol.for('regexp'), '^', 'gm'], [Symbol.for('regexp'), '^(?!s*$)', 'gm']]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), Symbol.for('whitespace'), Symbol.for('n')]], [Symbol.for('regexp-replace'), Symbol.for('pattern'), Symbol.for('str'), Symbol.for('indentation')]];
 
 export {
   numberToString_,

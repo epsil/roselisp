@@ -54,28 +54,28 @@
  */
 declare function print(obj: any, options?: any): any;
 declare namespace print {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Print an ESTree node.
  */
 declare function printEstree(node: any, options?: any): any;
 declare namespace printEstree {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Print a rose tree.
  */
 declare function printRose(node: any, options?: any): any;
 declare namespace printRose {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Print an S-expression.
  */
 declare function printSexp(exp: any, options?: any): any;
 declare namespace printSexp {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Print an S-expression as an expression
@@ -83,20 +83,20 @@ declare namespace printSexp {
  */
 declare function printSexpAsExpression(exp: any, options?: any): any;
 declare namespace printSexpAsExpression {
-    var lispSource: (symbol | (symbol | (symbol | (string | boolean | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (string | boolean | symbol)[])[])[])[];
 }
 /**
  * Print an S-expression to a string.
  */
 declare function writeToString(obj: any, options?: any): any;
 declare namespace writeToString {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
 }
 /**
  * Print an ESTree node to a `Doc` object.
  */
 declare function printNode(node: any, options?: any): any;
 declare namespace printNode {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 export { printNode as printEstreeNode, printSexpAsExpression as printAsExpression, print, printEstree, printNode, printRose, printSexp, printSexpAsExpression, writeToString };

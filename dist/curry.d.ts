@@ -33,7 +33,7 @@ declare const __: any;
  */
 declare function isPlaceholder(x: any, placeholder?: any): any;
 declare namespace isPlaceholder {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Creates a function that accepts arguments of `f` and either invokes `f`
@@ -48,7 +48,7 @@ declare namespace isPlaceholder {
  */
 declare function curry(f: any, arity?: any): any;
 declare namespace curry {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Make a curried function. `f` is the function to call, `arity` is
@@ -62,7 +62,7 @@ declare namespace curry {
  */
 declare function curryN(arity: any, f: any, received?: any): any;
 declare namespace curryN {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[])[])[])[])[];
 }
 /**
  * Add support for partial application with
@@ -70,6 +70,6 @@ declare namespace curryN {
  */
 declare function dashify(f: any, placeholder?: any): any;
 declare namespace dashify {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | symbol[] | (number | symbol | symbol[])[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | symbol[] | (number | symbol | symbol[])[][])[])[])[])[])[])[];
 }
 export { __, __ as _, __ as placeholder, curry, curryN, dashify, isPlaceholder };

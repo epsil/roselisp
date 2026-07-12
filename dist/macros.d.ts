@@ -18,7 +18,7 @@
  */
 declare function definePrivate_(exp: any, env: any): any;
 declare namespace definePrivate_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
 }
 /**
@@ -26,7 +26,7 @@ declare namespace definePrivate_ {
  */
 declare function definePublic_(exp: any, env: any): any;
 declare namespace definePublic_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
 }
 /**
@@ -34,7 +34,7 @@ declare namespace definePublic_ {
  */
 declare function defclass_(exp: any, env: any): any;
 declare namespace defclass_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
 }
 /**
@@ -42,7 +42,7 @@ declare namespace defclass_ {
  */
 declare function defmacro_(exp: any, env: any): any;
 declare namespace defmacro_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -50,7 +50,7 @@ declare namespace defmacro_ {
  */
 declare function defun_(exp: any, env: any): any;
 declare namespace defun_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
     var ftype: string;
 }
 /**
@@ -58,7 +58,7 @@ declare namespace defun_ {
  */
 declare function begin0_(exp: any, env: any): any;
 declare namespace begin0_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -66,7 +66,7 @@ declare namespace begin0_ {
  */
 declare function multipleValueBind_(exp: any, env: any): any;
 declare namespace multipleValueBind_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[] | symbol[][][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[] | symbol[][][])[])[])[];
     var ftype: string;
 }
 /**
@@ -74,7 +74,7 @@ declare namespace multipleValueBind_ {
  */
 declare function rktNew_(exp: any, env: any): any;
 declare namespace rktNew_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -82,7 +82,7 @@ declare namespace rktNew_ {
  */
 declare function if_(exp: any, env: any): any;
 declare namespace if_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[] | ((number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[] | ((number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -90,7 +90,7 @@ declare namespace if_ {
  */
 declare function when_(exp: any, env: any): any;
 declare namespace when_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -98,7 +98,7 @@ declare namespace when_ {
  */
 declare function unless_(exp: any, env: any): any;
 declare namespace unless_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -110,7 +110,7 @@ declare namespace unless_ {
  */
 declare function threadAs_(exp: any, env: any): any;
 declare namespace threadAs_ {
-    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -122,7 +122,7 @@ declare namespace threadAs_ {
  */
 declare function threadFirst_(exp: any, env: any): any;
 declare namespace threadFirst_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | ((number | symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol[] | (symbol | symbol[])[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | ((number | symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol[] | (symbol | symbol[])[][])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -134,7 +134,7 @@ declare namespace threadFirst_ {
  */
 declare function threadLast_(exp: any, env: any): any;
 declare namespace threadLast_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (number | symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (number | symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[];
     var ftype: string;
 }
 /**
@@ -142,7 +142,7 @@ declare namespace threadLast_ {
  */
 declare function unwindProtect_(exp: any, env: any): any;
 declare namespace unwindProtect_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -150,7 +150,7 @@ declare namespace unwindProtect_ {
  */
 declare function do_(exp: any, env: any): any;
 declare namespace do_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -158,7 +158,7 @@ declare namespace do_ {
  */
 declare function while_(exp: any, env: any): any;
 declare namespace while_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[])[];
     var ftype: string;
 }
 /**
@@ -166,7 +166,7 @@ declare namespace while_ {
  */
 declare function jsFor_(exp: any, env: any): any;
 declare namespace jsFor_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | symbol[][])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | symbol[][])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -174,7 +174,7 @@ declare namespace jsFor_ {
  */
 declare function jsForIn_(exp: any, env: any): any;
 declare namespace jsForIn_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -182,7 +182,7 @@ declare namespace jsForIn_ {
  */
 declare function jsForOf_(exp: any, env: any): any;
 declare namespace jsForOf_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -190,7 +190,7 @@ declare namespace jsForOf_ {
  */
 declare function case_(exp: any, env: any): any;
 declare namespace case_ {
-    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -198,7 +198,7 @@ declare namespace case_ {
  */
 declare function caseEq_(exp: any, env: any): any;
 declare namespace caseEq_ {
-    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -206,7 +206,7 @@ declare namespace caseEq_ {
  */
 declare function letEnv_(exp: any, env: any): any;
 declare namespace letEnv_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -214,7 +214,7 @@ declare namespace letEnv_ {
  */
 declare function set_(exp: any, env: any): any;
 declare namespace set_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -222,7 +222,7 @@ declare namespace set_ {
  */
 declare function newApply_(exp: any, env: any): any;
 declare namespace newApply_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
 }
 /**
@@ -234,7 +234,7 @@ declare namespace newApply_ {
  */
 declare function cljTry_(exp: any, env: any): any;
 declare namespace cljTry_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -242,7 +242,7 @@ declare namespace cljTry_ {
  */
 declare function declare_(exp: any, env: any): any;
 declare namespace declare_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 export { begin0_, caseEq_, case_, cljTry_, declare_, defclass_, definePrivate_, definePublic_, defmacro_, defun_, do_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };

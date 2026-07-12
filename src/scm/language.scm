@@ -2419,7 +2419,7 @@
         (string->symbol function-name))
       (define lisp-code-exp
         (compile-sexp
-         `(declare ,sym (lispSource (quote ,exp)))
+         `(declare ,sym (fsource (quote ,exp)))
          env options))
       (new Program (list result lisp-code-exp)))
      (else
@@ -6192,12 +6192,12 @@
 
 ;;; Get the Lisp source of a function.
 (define (source x)
-  (get-field lispSource x))
+  (get-field fsource x))
 
 ;;; Whether a function has Lisp source.
 (define (source? x)
   (and (not (undefined? x))
-       (not (undefined? (get-field lispSource x)))))
+       (not (undefined? (get-field fsource x)))))
 
 ;;; Map the function `f` over the rose tree-wrapped
 ;;; S-expression `node`. The S-expression is processed

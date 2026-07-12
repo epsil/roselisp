@@ -20,14 +20,14 @@
  */
 declare function read(input: any): any;
 declare namespace read {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Parse a string of Lisp code and return an S-expression.
  */
 declare function readSexp(str: any): any;
 declare namespace readSexp {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Parse a string of Lisp code and return an S-expression
@@ -35,7 +35,7 @@ declare namespace readSexp {
  */
 declare function readRose(str: any, options?: any): any;
 declare namespace readRose {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Convert a string of Lisp code to an array of tokens.
@@ -51,7 +51,7 @@ declare namespace readRose {
  */
 declare function tokenize(str: any, options?: any): any;
 declare namespace tokenize {
-    var lispSource: (symbol | (number | symbol)[] | (string | symbol)[] | (symbol | (string | symbol)[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | ((string | symbol)[] | (symbol | (string | symbol | (number | symbol)[])[])[])[] | ((string | symbol)[] | (symbol | (string | symbol)[][] | (symbol | (symbol | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (string | symbol)[])[])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((string | symbol)[] | (symbol | (string | symbol)[] | (symbol | (string | symbol)[])[])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (string | symbol)[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | ((string | symbol)[] | (symbol | (string | symbol)[])[])[])[])[])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (string | symbol)[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (number | symbol)[] | (string | symbol)[] | (symbol | (string | symbol)[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | ((string | symbol)[] | (symbol | (string | symbol | (number | symbol)[])[])[])[] | ((string | symbol)[] | (symbol | (string | symbol)[][] | (symbol | (symbol | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (string | symbol)[])[])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((string | symbol)[] | (symbol | (string | symbol)[] | (symbol | (string | symbol)[])[])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (string | symbol)[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | ((string | symbol)[] | (symbol | (string | symbol)[])[])[])[])[])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (string | symbol)[])[])[])[])[])[])[])[])[];
 }
 /**
  * Take the array of tokens produced by `tokenize` and make a
@@ -74,7 +74,7 @@ declare namespace tokenize {
  */
 declare function parseRose(tokens: any, options?: any): any;
 declare namespace parseRose {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (string | symbol)[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | ((number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | ((symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[][] | (symbol | (symbol | (string | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[][])[][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (string | symbol)[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | ((number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | ((symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[][] | (symbol | (symbol | (string | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[][])[][])[])[])[];
 }
 /**
  * Take the array of tokens produced by `tokenize` and make a
@@ -85,7 +85,7 @@ declare namespace parseRose {
  */
 declare function parseSexp(tokens: any, options?: any): any;
 declare namespace parseSexp {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Whether `comment` is a `;;`-comment (level 2),
@@ -93,7 +93,7 @@ declare namespace parseSexp {
  */
 declare function getCommentLevel(comment: any): any;
 declare namespace getCommentLevel {
-    var lispSource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
 }
 /**
  * Get the comment level, e.g., 2 for a `;;`-comment,
@@ -101,7 +101,7 @@ declare namespace getCommentLevel {
  */
 declare function isCommentLevel(comment: any, level: any): any;
 declare namespace isCommentLevel {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Token class.

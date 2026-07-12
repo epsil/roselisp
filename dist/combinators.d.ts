@@ -26,7 +26,7 @@ import { __ } from './curry';
  */
 declare function A1(f: any, x: any): any;
 declare namespace A1 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * **A2** combinator.
@@ -43,7 +43,7 @@ declare namespace A1 {
  */
 declare function A2(f: any, ...args: any[]): any;
 declare namespace A2 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Curried **A1** combinator.
@@ -100,7 +100,7 @@ declare const A: any;
  */
 declare function B1(f: any, g: any, x: any): any;
 declare namespace B1 {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * **B2** combinator.
@@ -132,7 +132,7 @@ declare namespace B1 {
  */
 declare function B2(...args: any[]): any;
 declare namespace B2 {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
 }
 /**
  * Curried **B1** combinator.
@@ -178,7 +178,7 @@ declare const B: any;
  */
 declare function C1(f: any, x: any, y: any): any;
 declare namespace C1 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * **C2** combinator.
@@ -194,7 +194,7 @@ declare namespace C1 {
  */
 declare function C2(f: any, ...args: any[]): any;
 declare namespace C2 {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[];
 }
 /**
  * **C3** combinator.
@@ -210,7 +210,7 @@ declare namespace C2 {
  */
 declare function C3(f: any, ...args: any[]): any;
 declare namespace C3 {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][])[])[])[])[])[];
 }
 /**
  * Curried **C1** combinator.
@@ -248,7 +248,7 @@ declare const C: any;
  */
 declare function I1(x: any): any;
 declare namespace I1 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Curried **I1** combinator.
@@ -277,7 +277,7 @@ declare const I: any;
  */
 declare function K1(x: any, y: any): any;
 declare namespace K1 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * **K2** combinator.
@@ -290,7 +290,7 @@ declare namespace K1 {
  */
 declare function K2(x: any, ...args: any[]): any;
 declare namespace K2 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Curried **K1** combinator.
@@ -333,7 +333,7 @@ declare const K: any;
  */
 declare function Ki1(x: any, y: any): any;
 declare namespace Ki1 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Curried **Ki** combinator.
@@ -367,7 +367,7 @@ declare const Ki: any;
  */
 declare function Q1(f: any, g: any, x: any): any;
 declare namespace Q1 {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * **Q2** combinator.
@@ -394,7 +394,7 @@ declare namespace Q1 {
  */
 declare function Q2(...args: any[]): any;
 declare namespace Q2 {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
 }
 /**
  * Curried **Q1** combinator.
@@ -445,7 +445,7 @@ declare const Q: any;
  */
 declare function S1(f: any, g: any, x: any): any;
 declare namespace S1 {
-    var lispSource: (symbol | symbol[] | symbol[][])[];
+    var fsource: (symbol | symbol[] | symbol[][])[];
 }
 /**
  * **S2** combinator.
@@ -461,7 +461,7 @@ declare namespace S1 {
  */
 declare function S2(f: any, g: any, x: any): any;
 declare namespace S2 {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Curried **S1** combinator.
@@ -498,7 +498,7 @@ declare const S: any;
  */
 declare function T1(x: any, f: any): any;
 declare namespace T1 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * **T2** combinator.
@@ -515,7 +515,7 @@ declare namespace T1 {
  */
 declare function T2(...args: any[]): any;
 declare namespace T2 {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number[] | undefined)[] | (symbol[] | number[])[])[])[];
 }
 /**
  * Curried **T1** combinator.
@@ -558,7 +558,7 @@ declare const T: any;
  */
 declare function U1(f: any): any;
 declare namespace U1 {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Curried **U1** combinator.
@@ -593,7 +593,7 @@ declare const U: any;
  */
 declare function UT1(x: any, y: any): any;
 declare namespace UT1 {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Curried **UT1** combinator.
@@ -629,7 +629,7 @@ declare const UT: any;
  */
 declare function Y1(f: any): any;
 declare namespace Y1 {
-    var lispSource: (symbol | symbol[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[];
+    var fsource: (symbol | symbol[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[];
 }
 /**
  * Curried **Y1** combinator.

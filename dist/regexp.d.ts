@@ -23,14 +23,14 @@
  */
 declare function regexp_(input: any, flags?: any): any;
 declare namespace regexp_ {
-    var lispSource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Whether `obj` is a regular expression.
  */
 declare function regexpp_(obj: any): any;
 declare namespace regexpp_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Make a regexp string suitable for matching the given string.
@@ -42,7 +42,7 @@ declare namespace regexpp_ {
  */
 declare function regexpQuote_(str: any): any;
 declare namespace regexpQuote_ {
-    var lispSource: (symbol | (string | symbol | (string | symbol)[])[])[];
+    var fsource: (symbol | (string | symbol | (string | symbol)[])[])[];
 }
 /**
  * Match `pattern` against `input`.
@@ -60,11 +60,11 @@ declare namespace regexpQuote_ {
  */
 declare function regexpMatch_(pattern: any, input: any): any;
 declare namespace regexpMatch_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 declare function regexpMatchP_(pattern: any, input: any): any;
 declare namespace regexpMatchP_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Match `pattern` against `input` and replace with `insert`.
@@ -79,6 +79,6 @@ declare namespace regexpMatchP_ {
  */
 declare function regexpReplace_(pattern: any, input: any, insert: any): any;
 declare namespace regexpReplace_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 export { regexpMatchP_ as jsRegexpMatchP_, regexpMatchP_, regexpMatch_ as jsRegexpMatch_, regexpQuote_ as jsRegexpQuote_, regexpReplace_ as jsRegexpReplace_, regexpp_ as jsRegexpP_, regexpp_ as regexpP_, regexp_ as jsRegexp_, regexpMatch_, regexpQuote_, regexpReplace_, regexpp_, regexp_ };

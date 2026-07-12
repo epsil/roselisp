@@ -23,7 +23,7 @@ function arrayp_(obj: any): any {
   return Array.isArray(obj);
 }
 
-arrayp_.lispSource = [Symbol.for('define'), [Symbol.for('array?_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('obj')]];
+arrayp_.fsource = [Symbol.for('define'), [Symbol.for('array?_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('obj')]];
 
 /**
  * Return the last element of an array.
@@ -32,7 +32,7 @@ function arrayLast_(arr: any): any {
   return arr[arr.length - 1];
 }
 
-arrayLast_.lispSource = [Symbol.for('define'), [Symbol.for('array-last_'), Symbol.for('arr')], [Symbol.for('aget'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('arr')], 1]]];
+arrayLast_.fsource = [Symbol.for('define'), [Symbol.for('array-last_'), Symbol.for('arr')], [Symbol.for('aget'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('arr')], 1]]];
 
 /**
  * Return the length of an array.
@@ -41,7 +41,7 @@ function arrayLength_(arr: any): any {
   return arr.length;
 }
 
-arrayLength_.lispSource = [Symbol.for('define'), [Symbol.for('array-length_'), Symbol.for('arr')], [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('arr')]];
+arrayLength_.fsource = [Symbol.for('define'), [Symbol.for('array-length_'), Symbol.for('arr')], [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('arr')]];
 
 /**
  * Return the first element of an array.
@@ -50,7 +50,7 @@ function arrayFirst_(lst: any): any {
   return lst[0];
 }
 
-arrayFirst_.lispSource = [Symbol.for('define'), [Symbol.for('array-first_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 0]];
+arrayFirst_.fsource = [Symbol.for('define'), [Symbol.for('array-first_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 0]];
 
 /**
  * Return the second element of an array.
@@ -59,7 +59,7 @@ function arraySecond_(lst: any): any {
   return lst[1];
 }
 
-arraySecond_.lispSource = [Symbol.for('define'), [Symbol.for('array-second_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 1]];
+arraySecond_.fsource = [Symbol.for('define'), [Symbol.for('array-second_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 1]];
 
 /**
  * Return the third element of an array.
@@ -68,7 +68,7 @@ function arrayThird_(lst: any): any {
   return lst[2];
 }
 
-arrayThird_.lispSource = [Symbol.for('define'), [Symbol.for('array-third_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 2]];
+arrayThird_.fsource = [Symbol.for('define'), [Symbol.for('array-third_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 2]];
 
 /**
  * Return the fourth element of an array.
@@ -77,7 +77,7 @@ function arrayFourth_(lst: any): any {
   return lst[3];
 }
 
-arrayFourth_.lispSource = [Symbol.for('define'), [Symbol.for('array-fourth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 3]];
+arrayFourth_.fsource = [Symbol.for('define'), [Symbol.for('array-fourth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 3]];
 
 /**
  * Return the fifth element of an array.
@@ -86,7 +86,7 @@ function arrayFifth_(lst: any): any {
   return lst[4];
 }
 
-arrayFifth_.lispSource = [Symbol.for('define'), [Symbol.for('array-fifth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 4]];
+arrayFifth_.fsource = [Symbol.for('define'), [Symbol.for('array-fifth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 4]];
 
 /**
  * Return the sixth element of an array.
@@ -95,7 +95,7 @@ function arraySixth_(lst: any): any {
   return lst[5];
 }
 
-arraySixth_.lispSource = [Symbol.for('define'), [Symbol.for('array-sixth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 5]];
+arraySixth_.fsource = [Symbol.for('define'), [Symbol.for('array-sixth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 5]];
 
 /**
  * Return the seventh element of an array.
@@ -104,7 +104,7 @@ function arraySeventh_(lst: any): any {
   return lst[6];
 }
 
-arraySeventh_.lispSource = [Symbol.for('define'), [Symbol.for('array-seventh_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 6]];
+arraySeventh_.fsource = [Symbol.for('define'), [Symbol.for('array-seventh_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 6]];
 
 /**
  * Return the eight element of an array.
@@ -113,7 +113,7 @@ function arrayEighth_(lst: any): any {
   return lst[7];
 }
 
-arrayEighth_.lispSource = [Symbol.for('define'), [Symbol.for('array-eighth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 7]];
+arrayEighth_.fsource = [Symbol.for('define'), [Symbol.for('array-eighth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 7]];
 
 /**
  * Return the ninth element of an array.
@@ -122,7 +122,7 @@ function arrayNinth_(lst: any): any {
   return lst[8];
 }
 
-arrayNinth_.lispSource = [Symbol.for('define'), [Symbol.for('array-ninth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 8]];
+arrayNinth_.fsource = [Symbol.for('define'), [Symbol.for('array-ninth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 8]];
 
 /**
  * Return the tenth element of an array.
@@ -131,7 +131,7 @@ function arrayTenth_(lst: any): any {
   return lst[9];
 }
 
-arrayTenth_.lispSource = [Symbol.for('define'), [Symbol.for('array-tenth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 9]];
+arrayTenth_.fsource = [Symbol.for('define'), [Symbol.for('array-tenth_'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), 9]];
 
 /**
  * Access the array element indicated by
@@ -155,7 +155,7 @@ function arrayRef_(arr: any, ...indices: any[]): any {
   }
 }
 
-arrayRef_.lispSource = [Symbol.for('define'), [Symbol.for('array-ref_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-length'), Symbol.for('indices')], 1], [Symbol.for('aget'), Symbol.for('arr'), [Symbol.for('first'), Symbol.for('indices')]]], [Symbol.for('else'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('i'), Symbol.for('arr')], [Symbol.for('aget'), Symbol.for('arr'), Symbol.for('i')]], Symbol.for('arr'), Symbol.for('indices')]]]];
+arrayRef_.fsource = [Symbol.for('define'), [Symbol.for('array-ref_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-length'), Symbol.for('indices')], 1], [Symbol.for('aget'), Symbol.for('arr'), [Symbol.for('first'), Symbol.for('indices')]]], [Symbol.for('else'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('i'), Symbol.for('arr')], [Symbol.for('aget'), Symbol.for('arr'), Symbol.for('i')]], Symbol.for('arr'), Symbol.for('indices')]]]];
 
 /**
  * Set the array position indiciated by one or more indices
@@ -176,7 +176,7 @@ function arraySet_(arr: any, ...indicesAndValue: any[]): any {
   return value;
 }
 
-arraySet_.lispSource = [Symbol.for('define'), [Symbol.for('array-set_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('aget'), Symbol.for('indices-and-value'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('indices-and-value')], 1]]], [Symbol.for('define'), Symbol.for('idx'), [Symbol.for('aget'), Symbol.for('indices-and-value'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('indices-and-value')], 2]]], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('drop-right'), Symbol.for('indices-and-value'), 2]], [Symbol.for('define'), Symbol.for('arr1'), [Symbol.for('apply'), Symbol.for('array-ref_'), Symbol.for('arr'), Symbol.for('indices')]], [Symbol.for('aset!'), Symbol.for('arr1'), Symbol.for('idx'), Symbol.for('value')], Symbol.for('value')];
+arraySet_.fsource = [Symbol.for('define'), [Symbol.for('array-set_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('aget'), Symbol.for('indices-and-value'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('indices-and-value')], 1]]], [Symbol.for('define'), Symbol.for('idx'), [Symbol.for('aget'), Symbol.for('indices-and-value'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('indices-and-value')], 2]]], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('drop-right'), Symbol.for('indices-and-value'), 2]], [Symbol.for('define'), Symbol.for('arr1'), [Symbol.for('apply'), Symbol.for('array-ref_'), Symbol.for('arr'), Symbol.for('indices')]], [Symbol.for('aset!'), Symbol.for('arr1'), Symbol.for('idx'), Symbol.for('value')], Symbol.for('value')];
 
 /**
  * Return the array obtained by dropping
@@ -190,7 +190,7 @@ function arrayDrop_(arr: any, n: any): any {
   }
 }
 
-arrayDrop_.lispSource = [Symbol.for('define'), [Symbol.for('array-drop_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], Symbol.for('arr')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('n')]]]];
+arrayDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-drop_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], Symbol.for('arr')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('n')]]]];
 
 /**
  * Return the array obtained by dropping
@@ -204,7 +204,7 @@ function arrayDropRight_(arr: any, n: any): any {
   }
 }
 
-arrayDropRight_.lispSource = [Symbol.for('define'), [Symbol.for('array-drop-right_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], Symbol.for('arr')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('arr'), Symbol.for('slice'), 0, [Symbol.for('-'), Symbol.for('n')]]]]];
+arrayDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-drop-right_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], Symbol.for('arr')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('arr'), Symbol.for('slice'), 0, [Symbol.for('-'), Symbol.for('n')]]]]];
 
 /**
  * Return the tail of an array.
@@ -213,7 +213,7 @@ function arrayRest_(arr: any): any {
   return arr.slice(1);
 }
 
-arrayRest_.lispSource = [Symbol.for('define'), [Symbol.for('array-rest_'), Symbol.for('arr')], [Symbol.for('array-drop'), Symbol.for('arr'), 1]];
+arrayRest_.fsource = [Symbol.for('define'), [Symbol.for('array-rest_'), Symbol.for('arr')], [Symbol.for('array-drop'), Symbol.for('arr'), 1]];
 
 /**
  * Reverse the order of an array.
@@ -223,7 +223,7 @@ function arrayReverse_(arr: any): any {
   return arr.reverse();
 }
 
-arrayReverse_.lispSource = [Symbol.for('define'), [Symbol.for('array-reverse_'), Symbol.for('arr')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('reverse')]];
+arrayReverse_.fsource = [Symbol.for('define'), [Symbol.for('array-reverse_'), Symbol.for('arr')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('reverse')]];
 
 /**
  * Take the `n` first elements from `arr`.
@@ -237,7 +237,7 @@ function arrayTake_(arr: any, n: any): any {
   }
 }
 
-arrayTake_.lispSource = [Symbol.for('define'), [Symbol.for('array-take_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('arr')], Symbol.for('n')]]];
+arrayTake_.fsource = [Symbol.for('define'), [Symbol.for('array-take_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('arr')], Symbol.for('n')]]];
 
 export {
   arrayRef_ as aget,

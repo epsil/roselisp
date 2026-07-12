@@ -25,7 +25,7 @@
  */
 declare function eqp_(x: any, y: any): any;
 declare namespace eqp_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Loose equality.
@@ -38,7 +38,7 @@ declare namespace eqp_ {
  */
 declare function eqvp_(x: any, y: any): any;
 declare namespace eqvp_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Structural equality.
@@ -51,6 +51,6 @@ declare namespace eqvp_ {
  */
 declare function equalp_(x: any, y: any): any;
 declare namespace equalp_ {
-    var lispSource: (symbol | (symbol | (boolean | symbol)[] | (symbol | (boolean | symbol)[] | (boolean | (symbol | (number | symbol | symbol[])[])[])[])[][] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[] | (boolean | (symbol | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | symbol)[] | (symbol | (boolean | symbol)[] | (boolean | (symbol | (number | symbol | symbol[])[])[])[])[][] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[] | (boolean | (symbol | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol)[])[])[])[])[];
 }
 export { eqp_ as eq, eqp_ as eqp, eqp_ as eq_, equalp_ as equalp, equalp_ as equal_, eqvp_ as eql, eqvp_ as eqlp, eqvp_ as eqlp_, eqvp_ as eql_, eqvp_ as eqv, eqvp_ as eqvp, eqvp_ as eqv_, eqp_, equalp_, eqvp_ };

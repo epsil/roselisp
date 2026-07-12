@@ -38,7 +38,7 @@ declare const eof: any;
  */
 declare function memoize(f: any, cache?: any): any;
 declare namespace memoize {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Make a [memoized][w:Memoization] version of the function `f`.
@@ -62,7 +62,7 @@ declare namespace memoize {
  */
 declare function memoize2(f: any, cache?: any): any;
 declare namespace memoize2 {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Return a [memoized][w:Memoization] version of the function `f`,
@@ -72,6 +72,6 @@ declare namespace memoize2 {
  */
 declare function memoizeWithArg(f: any, arity?: any): any;
 declare namespace memoizeWithArg {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 export { eof, memoize, memoize2, memoizeWithArg };

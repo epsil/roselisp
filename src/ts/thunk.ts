@@ -83,7 +83,7 @@ function thunk(f: any): any {
   return new Thunk(f);
 }
 
-thunk.lispSource = [Symbol.for('define'), [Symbol.for('thunk'), Symbol.for('f')], [Symbol.for('new'), Symbol.for('Thunk'), Symbol.for('f')]];
+thunk.fsource = [Symbol.for('define'), [Symbol.for('thunk'), Symbol.for('f')], [Symbol.for('new'), Symbol.for('Thunk'), Symbol.for('f')]];
 
 /**
  * Whether something is a thunk.
@@ -92,7 +92,7 @@ function thunkp(x: any): any {
   return x instanceof Thunk;
 }
 
-thunkp.lispSource = [Symbol.for('define'), [Symbol.for('thunk?'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Thunk')]];
+thunkp.fsource = [Symbol.for('define'), [Symbol.for('thunk?'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Thunk')]];
 
 /**
  * Whether something appears to be a thunk.
@@ -101,7 +101,7 @@ function thunkishp(x: any): any {
   return (x !== null) && (typeof x === 'object') && (x.force instanceof Function);
 }
 
-thunkishp.lispSource = [Symbol.for('define'), [Symbol.for('thunkish?'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('object?'), Symbol.for('x')], [Symbol.for('procedure?'), [Symbol.for('get-field'), Symbol.for('force'), Symbol.for('x')]]]];
+thunkishp.fsource = [Symbol.for('define'), [Symbol.for('thunkish?'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('object?'), Symbol.for('x')], [Symbol.for('procedure?'), [Symbol.for('get-field'), Symbol.for('force'), Symbol.for('x')]]]];
 
 /**
  * Whether something is a thunk,
@@ -111,7 +111,7 @@ function thunkablep(x: any): any {
   return thunkp(x) || thunkishp(x);
 }
 
-thunkablep.lispSource = [Symbol.for('define'), [Symbol.for('thunkable?'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('thunk?'), Symbol.for('x')], [Symbol.for('thunkish?'), Symbol.for('x')]]];
+thunkablep.fsource = [Symbol.for('define'), [Symbol.for('thunkable?'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('thunk?'), Symbol.for('x')], [Symbol.for('thunkish?'), Symbol.for('x')]]];
 
 /**
  * Force a thunk.
@@ -120,7 +120,7 @@ function force(x: any): any {
   return x.force();
 }
 
-force.lispSource = [Symbol.for('define'), [Symbol.for('force'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('x'), Symbol.for('force')]];
+force.fsource = [Symbol.for('define'), [Symbol.for('force'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('x'), Symbol.for('force')]];
 
 /**
  * Map for storing thunks in.

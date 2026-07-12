@@ -58,21 +58,21 @@ declare class Thunk {
  */
 declare function thunk(f: any): any;
 declare namespace thunk {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether something is a thunk.
  */
 declare function thunkp(x: any): any;
 declare namespace thunkp {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether something appears to be a thunk.
  */
 declare function thunkishp(x: any): any;
 declare namespace thunkishp {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Whether something is a thunk,
@@ -80,14 +80,14 @@ declare namespace thunkishp {
  */
 declare function thunkablep(x: any): any;
 declare namespace thunkablep {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Force a thunk.
  */
 declare function force(x: any): any;
 declare namespace force {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Map for storing thunks in.

@@ -5578,7 +5578,7 @@ const y = 2;")))
   return x;
 }
 
-I.lispSource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];
+I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];
 
 const x = 1;")))
         (xit "(module m lisp ... (define *lisp-map* '()))"
@@ -5599,7 +5599,7 @@ function I(x) {
   return x;
 }
 
-I.lispSource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];")))
+I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];")))
         (xit "(module m lisp (require ...) ... (define *lisp-map* '())), JS"
              (fn ()
                (assert-equal
@@ -6708,7 +6708,7 @@ const bar = foo && ('bazBaz' in foo);")))))))
   return x;
 }
 
-foo.lispSource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];")))
+foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];")))
         (xit "(define foo (lambda (foo x) x))"
              (fn ()
                (assert-equal
@@ -6724,7 +6724,7 @@ foo.lispSource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Sy
   return x;
 };
 
-foo.lispSource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];")))
+foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];")))
         (it "(define foo (lambda (foo x) x))"
             (fn ()
               (assert-equal
@@ -6741,7 +6741,7 @@ foo.lispSource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];")))
   return x;
 }
 
-foo.lispSource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];")))))))
+foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];")))))))
 
 (describe "assert"
   (fn ()

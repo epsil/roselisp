@@ -36,7 +36,7 @@ function A1(f: any, x: any): any {
   return f(x);
 }
 
-A1.lispSource = [Symbol.for('define'), [Symbol.for('A1'), Symbol.for('f'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]];
+A1.fsource = [Symbol.for('define'), [Symbol.for('A1'), Symbol.for('f'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]];
 
 /**
  * **A2** combinator.
@@ -55,7 +55,7 @@ function A2(f: any, ...args: any[]): any {
   return f(...args);
 }
 
-A2.lispSource = [Symbol.for('define'), [Symbol.for('A2'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]];
+A2.fsource = [Symbol.for('define'), [Symbol.for('A2'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]];
 
 /**
  * Curried **A1** combinator.
@@ -117,7 +117,7 @@ function B1(f: any, g: any, x: any): any {
   return f(g(x));
 }
 
-B1.lispSource = [Symbol.for('define'), [Symbol.for('B1'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [Symbol.for('f'), [Symbol.for('g'), Symbol.for('x')]]];
+B1.fsource = [Symbol.for('define'), [Symbol.for('B1'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [Symbol.for('f'), [Symbol.for('g'), Symbol.for('x')]]];
 
 /**
  * **B2** combinator.
@@ -169,7 +169,7 @@ function B2(...args: any[]): any {
   }
 }
 
-B2.lispSource = [Symbol.for('define'), [Symbol.for('B2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('array-list-length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('foldr'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
+B2.fsource = [Symbol.for('define'), [Symbol.for('B2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('array-list-length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('foldr'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
 
 /**
  * Curried **B1** combinator.
@@ -220,7 +220,7 @@ function C1(f: any, x: any, y: any): any {
   return f(y, x);
 }
 
-C1.lispSource = [Symbol.for('define'), [Symbol.for('C1'), Symbol.for('f'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('f'), Symbol.for('y'), Symbol.for('x')]];
+C1.fsource = [Symbol.for('define'), [Symbol.for('C1'), Symbol.for('f'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('f'), Symbol.for('y'), Symbol.for('x')]];
 
 /**
  * **C2** combinator.
@@ -242,7 +242,7 @@ function C2(f: any, ...args: any[]): any {
   }
 }
 
-C2.lispSource = [Symbol.for('define'), [Symbol.for('C2'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('args')]], [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('args')]]]]]]]];
+C2.fsource = [Symbol.for('define'), [Symbol.for('C2'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('args')]], [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('args')]]]]]]]];
 
 /**
  * **C3** combinator.
@@ -264,7 +264,7 @@ function C3(f: any, ...args: any[]): any {
   }
 }
 
-C3.lispSource = [Symbol.for('define'), [Symbol.for('C3'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), [Symbol.for('drop-right'), Symbol.for('args'), 1]]]]]]]];
+C3.fsource = [Symbol.for('define'), [Symbol.for('C3'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), [Symbol.for('drop-right'), Symbol.for('args'), 1]]]]]]]];
 
 /**
  * Curried **C1** combinator.
@@ -308,7 +308,7 @@ function I1(x: any): any {
   return x;
 }
 
-I1.lispSource = [Symbol.for('define'), [Symbol.for('I1'), Symbol.for('x')], Symbol.for('x')];
+I1.fsource = [Symbol.for('define'), [Symbol.for('I1'), Symbol.for('x')], Symbol.for('x')];
 
 /**
  * **I2** combinator.
@@ -323,7 +323,7 @@ function I2(x: any, ...args: any[]): any {
   return x;
 }
 
-I2.lispSource = [Symbol.for('define'), [Symbol.for('I2'), Symbol.for('x'), Symbol.for('.'), Symbol.for('args')], Symbol.for('x')];
+I2.fsource = [Symbol.for('define'), [Symbol.for('I2'), Symbol.for('x'), Symbol.for('.'), Symbol.for('args')], Symbol.for('x')];
 
 /**
  * Curried **I1** combinator.
@@ -361,7 +361,7 @@ function K1(x: any, y: any): any {
   return x;
 }
 
-K1.lispSource = [Symbol.for('define'), [Symbol.for('K1'), Symbol.for('x'), Symbol.for('y')], Symbol.for('x')];
+K1.fsource = [Symbol.for('define'), [Symbol.for('K1'), Symbol.for('x'), Symbol.for('y')], Symbol.for('x')];
 
 /**
  * **K2** combinator.
@@ -376,7 +376,7 @@ function K2(x: any, ...args: any[]): any {
   return x;
 }
 
-K2.lispSource = [Symbol.for('define'), [Symbol.for('K2'), Symbol.for('x'), Symbol.for('.'), Symbol.for('args')], Symbol.for('x')];
+K2.fsource = [Symbol.for('define'), [Symbol.for('K2'), Symbol.for('x'), Symbol.for('.'), Symbol.for('args')], Symbol.for('x')];
 
 /**
  * Curried **K1** combinator.
@@ -424,7 +424,7 @@ function Ki1(x: any, y: any): any {
   return y;
 }
 
-Ki1.lispSource = [Symbol.for('define'), [Symbol.for('Ki1'), Symbol.for('x'), Symbol.for('y')], Symbol.for('y')];
+Ki1.fsource = [Symbol.for('define'), [Symbol.for('Ki1'), Symbol.for('x'), Symbol.for('y')], Symbol.for('y')];
 
 /**
  * Curried **Ki** combinator.
@@ -462,7 +462,7 @@ function Q1(f: any, g: any, x: any): any {
   return g(f(x));
 }
 
-Q1.lispSource = [Symbol.for('define'), [Symbol.for('Q1'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [Symbol.for('g'), [Symbol.for('f'), Symbol.for('x')]]];
+Q1.fsource = [Symbol.for('define'), [Symbol.for('Q1'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [Symbol.for('g'), [Symbol.for('f'), Symbol.for('x')]]];
 
 /**
  * **Q2** combinator.
@@ -509,7 +509,7 @@ function Q2(...args: any[]): any {
   }
 }
 
-Q2.lispSource = [Symbol.for('define'), [Symbol.for('Q2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('array-list-length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
+Q2.fsource = [Symbol.for('define'), [Symbol.for('Q2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('array-list-length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
 
 /**
  * Curried **Q1** combinator.
@@ -565,7 +565,7 @@ function S1(f: any, g: any, x: any): any {
   return f(x)(g(x));
 }
 
-S1.lispSource = [Symbol.for('define'), [Symbol.for('S1'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [[Symbol.for('f'), Symbol.for('x')], [Symbol.for('g'), Symbol.for('x')]]];
+S1.fsource = [Symbol.for('define'), [Symbol.for('S1'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [[Symbol.for('f'), Symbol.for('x')], [Symbol.for('g'), Symbol.for('x')]]];
 
 /**
  * **S2** combinator.
@@ -583,7 +583,7 @@ function S2(f: any, g: any, x: any): any {
   return f(x, g(x));
 }
 
-S2.lispSource = [Symbol.for('define'), [Symbol.for('S2'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x'), [Symbol.for('g'), Symbol.for('x')]]];
+S2.fsource = [Symbol.for('define'), [Symbol.for('S2'), Symbol.for('f'), Symbol.for('g'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x'), [Symbol.for('g'), Symbol.for('x')]]];
 
 /**
  * Curried **S1** combinator.
@@ -625,7 +625,7 @@ function T1(x: any, f: any): any {
   return f(x);
 }
 
-T1.lispSource = [Symbol.for('define'), [Symbol.for('T1'), Symbol.for('x'), Symbol.for('f')], [Symbol.for('f'), Symbol.for('x')]];
+T1.fsource = [Symbol.for('define'), [Symbol.for('T1'), Symbol.for('x'), Symbol.for('f')], [Symbol.for('f'), Symbol.for('x')]];
 
 /**
  * **T2** combinator.
@@ -659,7 +659,7 @@ function T2(...args: any[]): any {
   }
 }
 
-T2.lispSource = [Symbol.for('define'), [Symbol.for('T2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('array-list-length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')], Symbol.for('args')], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
+T2.fsource = [Symbol.for('define'), [Symbol.for('T2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('array-list-length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')], Symbol.for('args')], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
 
 /**
  * Curried **T1** combinator.
@@ -707,7 +707,7 @@ function U1(f: any): any {
   return f(f);
 }
 
-U1.lispSource = [Symbol.for('define'), [Symbol.for('U1'), Symbol.for('f')], [Symbol.for('f'), Symbol.for('f')]];
+U1.fsource = [Symbol.for('define'), [Symbol.for('U1'), Symbol.for('f')], [Symbol.for('f'), Symbol.for('f')]];
 
 /**
  * Curried **U1** combinator.
@@ -746,7 +746,7 @@ function UT1(x: any, y: any): any {
   return y(x(x, y));
 }
 
-UT1.lispSource = [Symbol.for('define'), [Symbol.for('UT1'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('y'), [Symbol.for('x'), Symbol.for('x'), Symbol.for('y')]]];
+UT1.fsource = [Symbol.for('define'), [Symbol.for('UT1'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('y'), [Symbol.for('x'), Symbol.for('x'), Symbol.for('y')]]];
 
 /**
  * Curried **UT1** combinator.
@@ -797,7 +797,7 @@ function Y1(f: any): any {
   });
 }
 
-Y1.lispSource = [Symbol.for('define'), [Symbol.for('Y1'), Symbol.for('f')], [[Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]], [Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]]]];
+Y1.fsource = [Symbol.for('define'), [Symbol.for('Y1'), Symbol.for('f')], [[Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]], [Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]]]];
 
 /**
  * Curried **Y1** combinator.

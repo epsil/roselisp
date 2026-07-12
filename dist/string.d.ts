@@ -24,21 +24,21 @@
  */
 declare function stringp_(obj: any): any;
 declare namespace stringp_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Whether something is a string primitive.
  */
 declare function stringPrimitiveP_(obj: any): any;
 declare namespace stringPrimitiveP_ {
-    var lispSource: (symbol | (string | symbol | symbol[])[])[];
+    var fsource: (symbol | (string | symbol | symbol[])[])[];
 }
 /**
  * Whether something is a string object.
  */
 declare function stringObjectP_(obj: any): any;
 declare namespace stringObjectP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Concatenate one or more strings together.
@@ -49,7 +49,7 @@ declare namespace stringObjectP_ {
  */
 declare function stringAppend_(...args: any[]): any;
 declare namespace stringAppend_ {
-    var lispSource: (symbol | (string | symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (string | symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Get the character at a particular position in a string.
@@ -60,7 +60,7 @@ declare namespace stringAppend_ {
  */
 declare function stringRef_(str: any, n: any): any;
 declare namespace stringRef_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Trim whitespace from the beginning and end of a string.
@@ -71,14 +71,14 @@ declare namespace stringRef_ {
  */
 declare function stringTrim_(str: any, sep?: any, ...options: any[]): any;
 declare namespace stringTrim_ {
-    var lispSource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (string | symbol)[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (string | symbol)[])[])[])[])[])[])[];
 }
 /**
  * Repeat a string `n` times.
  */
 declare function stringRepeat_(str: any, n: any): any;
 declare namespace stringRepeat_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Join a list of strings, using `sep` as the separator.
@@ -89,7 +89,7 @@ declare namespace stringRepeat_ {
  */
 declare function stringJoin_(lst: any, sep?: any): any;
 declare namespace stringJoin_ {
-    var lispSource: (symbol | (symbol | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Split a string into a list of strings.
@@ -100,7 +100,7 @@ declare namespace stringJoin_ {
  */
 declare function stringSplit_(str: any, sep?: any): any;
 declare namespace stringSplit_ {
-    var lispSource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
 }
 /**
  * Return a copy of `str` where `from` is replaced with `to`.
@@ -111,7 +111,7 @@ declare namespace stringSplit_ {
  */
 declare function stringReplace_(str: any, from: any, to: any): any;
 declare namespace stringReplace_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Convert string to upper case.
@@ -122,7 +122,7 @@ declare namespace stringReplace_ {
  */
 declare function stringUpcase_(str: any): any;
 declare namespace stringUpcase_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Convert string to lower case.
@@ -133,7 +133,7 @@ declare namespace stringUpcase_ {
  */
 declare function stringDowncase_(str: any): any;
 declare namespace stringDowncase_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return a substring of `str`, from `start` to `end`.
@@ -144,7 +144,7 @@ declare namespace stringDowncase_ {
  */
 declare function substring_(str: any, start: any, end?: any): any;
 declare namespace substring_ {
-    var lispSource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Convert a string to a number.
@@ -155,7 +155,7 @@ declare namespace substring_ {
  */
 declare function stringToNumber_(str: any): any;
 declare namespace stringToNumber_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Convert a number to a string.
@@ -166,13 +166,13 @@ declare namespace stringToNumber_ {
  */
 declare function numberToString_(n: any): any;
 declare namespace numberToString_ {
-    var lispSource: (symbol | (string | symbol)[])[];
+    var fsource: (symbol | (string | symbol)[])[];
 }
 /**
  * Indent a string by prepending each line with `n` spaces.
  */
 declare function indentString(str: any, n?: any, options?: any): any;
 declare namespace indentString {
-    var lispSource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
 }
 export { numberToString_, stringToNumber_, stringAppend_ as stringAppend, stringObjectP_, stringPrimitiveP_, stringReplace_ as stringReplace, stringp_ as stringp, stringp_, substring_ as substring, indentString, stringAppend_, stringDowncase_, stringJoin_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringTrim_, stringUpcase_, substring_ };

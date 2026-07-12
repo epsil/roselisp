@@ -22,14 +22,14 @@
  */
 declare function plistp_(obj: any): any;
 declare namespace plistp_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Copy a property list.
  */
 declare function plistCopy_(plist: any): any;
 declare namespace plistCopy_ {
-    var lispSource: (symbol | (symbol | symbol[][])[])[];
+    var fsource: (symbol | (symbol | symbol[][])[])[];
 }
 /**
  * Return the value of a property in a property list.
@@ -41,14 +41,14 @@ declare namespace plistCopy_ {
  */
 declare function plistGet_(plist: any, prop: any): any;
 declare namespace plistGet_ {
-    var lispSource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
 }
 /**
  * Whether a property list contains a given property.
  */
 declare function plistHasP_(plist: any, prop: any): any;
 declare namespace plistHasP_ {
-    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[];
 }
 /**
  * Set the value of a property in a property list.
@@ -59,7 +59,7 @@ declare namespace plistHasP_ {
  */
 declare function plistSetX_(plist: any, prop: any, val: any): any;
 declare namespace plistSetX_ {
-    var lispSource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[] | (boolean | symbol)[])[])[] | undefined)[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[] | (boolean | symbol)[])[])[] | undefined)[];
 }
 /**
  * Set the value of a property in a property list,
@@ -67,13 +67,13 @@ declare namespace plistSetX_ {
  */
 declare function plistSet_(plist: any, prop: any, val: any): any;
 declare namespace plistSet_ {
-    var lispSource: (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Convert a plist to an association list.
  */
 declare function plistToAlist_(plst: any): any;
 declare namespace plistToAlist_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
 }
 export { plistGet_ as plistRef_, plistHasP_ as plistHas_, plistToAlist_, plistCopy_, plistGet_, plistHasP_, plistSetX_, plistSet_, plistp_ };

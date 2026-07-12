@@ -1229,21 +1229,21 @@ declare class XRawJavaScript extends TSNode {
  */
 declare function estreep(obj: any): any;
 declare namespace estreep {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Get the type of an ESTree node.
  */
 declare function estreeType(node: any): any;
 declare namespace estreeType {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether the type of the ESTree node `node` is `typ`.
  */
 declare function estreeTypeP(node: any, typ: any): any;
 declare namespace estreeTypeP {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Wrap a value in an ESTree node.
@@ -1252,6 +1252,6 @@ declare namespace estreeTypeP {
  */
 declare function wrapInEstree(x: any): any;
 declare namespace wrapInEstree {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[];
 }
 export { Expression as ESTreeExpression, Node as ESTreeNode, Statement as ESTreeStatement, TSNode as TSESTreeNode, estreeTypeP as estreeIsP, ArrayExpression, ArrayPattern, ArrowFunctionExpression, AssignmentExpression, AssignmentPattern, AwaitExpression, BinaryExpression, BlockComment, BlockStatement, BreakStatement, CallExpression, CatchClause, ChainElement, ChainExpression, ClassBody, ClassDeclaration, ClassExpression, Comment, ConditionalExpression, ContinueStatement, DoWhileStatement, ExportAllDeclaration, ExportNamedDeclaration, ExportSpecifier, Expression, ExpressionStatement, ForInStatement, ForOfStatement, ForStatement, Function, FunctionDeclaration, FunctionExpression, Identifier, IfStatement, ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, LeadingComment, Literal, LogicalExpression, MemberExpression, MethodDefinition, NewExpression, Node, ObjectExpression, ObjectPattern, Program, Property, PropertyDefinition, RegExpLiteral, RestElement, ReturnStatement, SequenceExpression, SpreadElement, Statement, SwitchCase, SwitchStatement, TSAnyKeyword, TSArrayType, TSAsExpression, TSBooleanKeyword, TSFunctionType, TSIdentifier, TSLiteralType, TSNode, TSNumberKeyword, TSStringKeyword, TSTupleType, TSTypeAliasDeclaration, TSTypeAnnotation, TSTypeParameterInstantiation, TSTypeReference, TSUndefinedKeyword, TSUnionType, TSVoidKeyword, TaggedTemplateExpression, TemplateElement, TemplateLiteral, ThisExpression, ThrowStatement, TrailingComment, TryStatement, UnaryExpression, UpdateExpression, VariableDeclaration, VariableDeclarator, WhileStatement, XRawJavaScript, YieldExpression, estreeType, estreeTypeP, estreep, wrapInEstree };

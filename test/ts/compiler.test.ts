@@ -9122,7 +9122,7 @@ describe('compile', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          "I.lispSource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];\n" +
+          "I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];\n" +
           '\n' +
           'const x = 1;'
       );
@@ -9148,7 +9148,7 @@ describe('compile', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          "I.lispSource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];"
+          "I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];"
       );
     });
     xit("(module m lisp (require ...) ... (define *lisp-map* '())), JS", function (): any {
@@ -11231,7 +11231,7 @@ describe('compilation options', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          "foo.lispSource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
+          "foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
       );
     });
     xit('(define foo (lambda (foo x) x))', function (): any {
@@ -11257,7 +11257,7 @@ describe('compilation options', function (): any {
           '  return x;\n' +
           '};\n' +
           '\n' +
-          "foo.lispSource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
+          "foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
       );
     });
     return it('(define foo (lambda (foo x) x))', function (): any {
@@ -11286,7 +11286,7 @@ describe('compilation options', function (): any {
           '  return x;\n' +
           '}\n' +
           '\n' +
-          "foo.lispSource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
+          "foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
       );
     });
   });

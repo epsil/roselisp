@@ -25,7 +25,7 @@
  */
 declare function hashp_(v: any): any;
 declare namespace hashp_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Make a hash map from a list of `(key . value)` pairs.
@@ -36,7 +36,7 @@ declare namespace hashp_ {
  */
 declare function makeHash_(assocs?: any): any;
 declare namespace makeHash_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | never[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | never[])[])[])[])[];
 }
 /**
  * Set `key` to `v` in the hash map `ht`.
@@ -47,7 +47,7 @@ declare namespace makeHash_ {
  */
 declare function hashSetX_(ht: any, key: any, v: any): any;
 declare namespace hashSetX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Set `key` to `v` in the hash map `ht`,
@@ -59,7 +59,7 @@ declare namespace hashSetX_ {
  */
 declare function hashSet_(ht: any, key: any, v: any): any;
 declare namespace hashSet_ {
-    var lispSource: (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Get the value of `key` in the hash map `ht`.
@@ -72,7 +72,7 @@ declare namespace hashSet_ {
  */
 declare function hashRef_(ht: any, key: any, failureResult?: any): any;
 declare namespace hashRef_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Whether a hash map has a value for a given key.
@@ -83,7 +83,7 @@ declare namespace hashRef_ {
  */
 declare function hashHasKeyP_(ht: any, key: any): any;
 declare namespace hashHasKeyP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Remove the value for a given key in a hash map
@@ -94,7 +94,7 @@ declare namespace hashHasKeyP_ {
  */
 declare function hashRemove_(ht: any, key: any): any;
 declare namespace hashRemove_ {
-    var lispSource: (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Remove the value for a given key in a hash map,
@@ -106,14 +106,14 @@ declare namespace hashRemove_ {
  */
 declare function hashRemoveX_(ht: any, key: any): any;
 declare namespace hashRemoveX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the number of keys in a hash table.
  */
 declare function hashSize_(ht: any): any;
 declare namespace hashSize_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Clone a hash map.
@@ -124,7 +124,7 @@ declare namespace hashSize_ {
  */
 declare function hashCopy_(ht: any): any;
 declare namespace hashCopy_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Delete all entries in a hash map,
@@ -136,7 +136,7 @@ declare namespace hashCopy_ {
  */
 declare function hashClear_(ht: any): any;
 declare namespace hashClear_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Delete all entries in a hash map.
@@ -147,7 +147,7 @@ declare namespace hashClear_ {
  */
 declare function hashClearX_(ht: any): any;
 declare namespace hashClearX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return a list of all the keys in a hash map.
@@ -158,7 +158,7 @@ declare namespace hashClearX_ {
  */
 declare function hashKeys_(ht: any): any;
 declare namespace hashKeys_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
 }
 /**
  * Return a list of all the values in a hash map.
@@ -169,14 +169,14 @@ declare namespace hashKeys_ {
  */
 declare function hashValues_(ht: any): any;
 declare namespace hashValues_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
 }
 /**
  * Convert a hash map to a list of `(key value)` tuples.
  */
 declare function hashEntries_(ht: any): any;
 declare namespace hashEntries_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
 }
 /**
  * Convert a hash map to a list of `(key . value)` pairs.
@@ -187,6 +187,6 @@ declare namespace hashEntries_ {
  */
 declare function hashToList_(ht: any): any;
 declare namespace hashToList_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
 export { hashToList_, hashClearX_, hashClear_, hashCopy_, hashEntries_, hashHasKeyP_, hashKeys_, hashRef_, hashRemoveX_, hashRemove_, hashSetX_, hashSet_, hashSize_, hashValues_, hashp_, makeHash_ };

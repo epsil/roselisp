@@ -388,14 +388,14 @@ declare let currentEnvironmentPointer: any;
  */
 declare function currentEnvironment_(): any;
 declare namespace currentEnvironment_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return an empty environment.
  */
 declare function emptyEnvironment(): any;
 declare namespace emptyEnvironment {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the default environment.
@@ -406,7 +406,7 @@ declare namespace emptyEnvironment {
  */
 declare function defaultEnvironment(): any;
 declare namespace defaultEnvironment {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Run `f` with `currentEnvironmentPointer` bound to `env`.
@@ -416,14 +416,14 @@ declare namespace defaultEnvironment {
  */
 declare function withEnvironment(env: any, f: any): any;
 declare namespace withEnvironment {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
 }
 /**
  * Make an environment.
  */
 declare function makeEnvironment(variables?: any, parent?: any, isLisp2?: any): any;
 declare namespace makeEnvironment {
-    var lispSource: (symbol | (symbol | (boolean | symbol)[] | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (boolean | symbol)[] | (symbol | undefined)[])[])[];
 }
 /**
  * Extend the environment `env` with `parent` as its parent
@@ -438,14 +438,14 @@ declare namespace makeEnvironment {
  */
 declare function extendEnvironment(env: any, parent: any): any;
 declare namespace extendEnvironment {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Return an array of the frames in an environment.
  */
 declare function environmentFrames(env: any): any;
 declare namespace environmentFrames {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
 /**
  * Convert an array of environment frames to a linked list
@@ -454,13 +454,13 @@ declare namespace environmentFrames {
  */
 declare function linkEnvironmentFrames(frames: any): any;
 declare namespace linkEnvironmentFrames {
-    var lispSource: (symbol | (symbol | undefined)[] | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[])[];
 }
 /**
  * Prefix a set of bindings.
  */
 declare function prefixBindings(prefix: any, bindings: any): any;
 declare namespace prefixBindings {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 export { currentEnvironment_ as currentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, ThunkedEnvironment, TypedEnvironment, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withEnvironment };

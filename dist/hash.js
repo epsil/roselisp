@@ -57,7 +57,7 @@ function hashp_(v) {
     return v instanceof Map;
 }
 exports.hashp_ = hashp_;
-hashp_.lispSource = [Symbol.for('define'), [Symbol.for('hash?_'), Symbol.for('v')], [Symbol.for('is-a?'), Symbol.for('v'), Symbol.for('Map')]];
+hashp_.fsource = [Symbol.for('define'), [Symbol.for('hash?_'), Symbol.for('v')], [Symbol.for('is-a?'), Symbol.for('v'), Symbol.for('Map')]];
 /**
  * Make a hash map from a list of `(key . value)` pairs.
  *
@@ -71,7 +71,7 @@ function makeHash_(assocs = []) {
     }));
 }
 exports.makeHash_ = makeHash_;
-makeHash_.lispSource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('assocs'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), Symbol.for('assocs')]]];
+makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('assocs'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), Symbol.for('assocs')]]];
 /**
  * Set `key` to `v` in the hash map `ht`.
  *
@@ -83,7 +83,7 @@ function hashSetX_(ht, key, v) {
     return ht.set(key, v);
 }
 exports.hashSetX_ = hashSetX_;
-hashSetX_.lispSource = [Symbol.for('define'), [Symbol.for('hash-set!_'), Symbol.for('ht'), Symbol.for('key'), Symbol.for('v')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('set'), Symbol.for('key'), Symbol.for('v')]];
+hashSetX_.fsource = [Symbol.for('define'), [Symbol.for('hash-set!_'), Symbol.for('ht'), Symbol.for('key'), Symbol.for('v')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('set'), Symbol.for('key'), Symbol.for('v')]];
 /**
  * Set `key` to `v` in the hash map `ht`,
  * returning a new hash map.
@@ -98,7 +98,7 @@ function hashSet_(ht, key, v) {
     return result;
 }
 exports.hashSet_ = hashSet_;
-hashSet_.lispSource = [Symbol.for('define'), [Symbol.for('hash-set_'), Symbol.for('ht'), Symbol.for('key'), Symbol.for('v')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('hash-copy'), Symbol.for('ht')]]], [Symbol.for('hash-set!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('v')], Symbol.for('result')]];
+hashSet_.fsource = [Symbol.for('define'), [Symbol.for('hash-set_'), Symbol.for('ht'), Symbol.for('key'), Symbol.for('v')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('hash-copy'), Symbol.for('ht')]]], [Symbol.for('hash-set!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('v')], Symbol.for('result')]];
 /**
  * Get the value of `key` in the hash map `ht`.
  * `failure-result`, if specified, is returned
@@ -117,7 +117,7 @@ function hashRef_(ht, key, failureResult = undefined) {
     }
 }
 exports.hashRef_ = hashRef_;
-hashRef_.lispSource = [Symbol.for('define'), [Symbol.for('hash-ref_'), Symbol.for('ht'), Symbol.for('key'), [Symbol.for('failure-result'), undefined]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('not'), [Symbol.for('undefined?'), Symbol.for('failure-result')]], [Symbol.for('not'), [Symbol.for('hash-has-key?'), Symbol.for('ht'), Symbol.for('key')]]], Symbol.for('failure-result')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('get'), Symbol.for('key')]]]];
+hashRef_.fsource = [Symbol.for('define'), [Symbol.for('hash-ref_'), Symbol.for('ht'), Symbol.for('key'), [Symbol.for('failure-result'), undefined]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('not'), [Symbol.for('undefined?'), Symbol.for('failure-result')]], [Symbol.for('not'), [Symbol.for('hash-has-key?'), Symbol.for('ht'), Symbol.for('key')]]], Symbol.for('failure-result')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('get'), Symbol.for('key')]]]];
 /**
  * Whether a hash map has a value for a given key.
  *
@@ -129,7 +129,7 @@ function hashHasKeyP_(ht, key) {
     return ht.has(key);
 }
 exports.hashHasKeyP_ = hashHasKeyP_;
-hashHasKeyP_.lispSource = [Symbol.for('define'), [Symbol.for('hash-has-key?_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('has'), Symbol.for('key')]];
+hashHasKeyP_.fsource = [Symbol.for('define'), [Symbol.for('hash-has-key?_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('has'), Symbol.for('key')]];
 /**
  * Remove the value for a given key in a hash map
  *
@@ -143,7 +143,7 @@ function hashRemove_(ht, key) {
     return result;
 }
 exports.hashRemove_ = hashRemove_;
-hashRemove_.lispSource = [Symbol.for('define'), [Symbol.for('hash-remove_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('hash-copy'), Symbol.for('ht')]]], [Symbol.for('hash-remove!'), Symbol.for('result'), Symbol.for('key')], Symbol.for('result')]];
+hashRemove_.fsource = [Symbol.for('define'), [Symbol.for('hash-remove_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('hash-copy'), Symbol.for('ht')]]], [Symbol.for('hash-remove!'), Symbol.for('result'), Symbol.for('key')], Symbol.for('result')]];
 /**
  * Remove the value for a given key in a hash map,
  * returning a new hash map.
@@ -156,7 +156,7 @@ function hashRemoveX_(ht, key) {
     return ht.delete(key);
 }
 exports.hashRemoveX_ = hashRemoveX_;
-hashRemoveX_.lispSource = [Symbol.for('define'), [Symbol.for('hash-remove!_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('delete'), Symbol.for('key')]];
+hashRemoveX_.fsource = [Symbol.for('define'), [Symbol.for('hash-remove!_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('delete'), Symbol.for('key')]];
 /**
  * Return the number of keys in a hash table.
  */
@@ -164,7 +164,7 @@ function hashSize_(ht) {
     return ht.size;
 }
 exports.hashSize_ = hashSize_;
-hashSize_.lispSource = [Symbol.for('define'), [Symbol.for('hash-size_'), Symbol.for('ht')], [Symbol.for('get-field'), Symbol.for('size'), Symbol.for('ht')]];
+hashSize_.fsource = [Symbol.for('define'), [Symbol.for('hash-size_'), Symbol.for('ht')], [Symbol.for('get-field'), Symbol.for('size'), Symbol.for('ht')]];
 /**
  * Clone a hash map.
  *
@@ -176,7 +176,7 @@ function hashCopy_(ht) {
     return new Map(ht);
 }
 exports.hashCopy_ = hashCopy_;
-hashCopy_.lispSource = [Symbol.for('define'), [Symbol.for('hash-copy_'), Symbol.for('ht')], [Symbol.for('new'), Symbol.for('Map'), Symbol.for('ht')]];
+hashCopy_.fsource = [Symbol.for('define'), [Symbol.for('hash-copy_'), Symbol.for('ht')], [Symbol.for('new'), Symbol.for('Map'), Symbol.for('ht')]];
 /**
  * Delete all entries in a hash map,
  * returning a new hash map.
@@ -189,7 +189,7 @@ function hashClear_(ht) {
     return new Map();
 }
 exports.hashClear_ = hashClear_;
-hashClear_.lispSource = [Symbol.for('define'), [Symbol.for('hash-clear_'), Symbol.for('ht')], [Symbol.for('new'), Symbol.for('Map')]];
+hashClear_.fsource = [Symbol.for('define'), [Symbol.for('hash-clear_'), Symbol.for('ht')], [Symbol.for('new'), Symbol.for('Map')]];
 /**
  * Delete all entries in a hash map.
  *
@@ -201,7 +201,7 @@ function hashClearX_(ht) {
     return ht.clear();
 }
 exports.hashClearX_ = hashClearX_;
-hashClearX_.lispSource = [Symbol.for('define'), [Symbol.for('hash-clear!_'), Symbol.for('ht')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('clear')]];
+hashClearX_.fsource = [Symbol.for('define'), [Symbol.for('hash-clear!_'), Symbol.for('ht')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('clear')]];
 /**
  * Return a list of all the keys in a hash map.
  *
@@ -213,7 +213,7 @@ function hashKeys_(ht) {
     return [...ht.keys()];
 }
 exports.hashKeys_ = hashKeys_;
-hashKeys_.lispSource = [Symbol.for('define'), [Symbol.for('hash-keys_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('keys')]]]]];
+hashKeys_.fsource = [Symbol.for('define'), [Symbol.for('hash-keys_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('keys')]]]]];
 /**
  * Return a list of all the values in a hash map.
  *
@@ -225,7 +225,7 @@ function hashValues_(ht) {
     return [...ht.values()];
 }
 exports.hashValues_ = hashValues_;
-hashValues_.lispSource = [Symbol.for('define'), [Symbol.for('hash-values_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('values')]]]]];
+hashValues_.fsource = [Symbol.for('define'), [Symbol.for('hash-values_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('values')]]]]];
 /**
  * Convert a hash map to a list of `(key value)` tuples.
  */
@@ -233,7 +233,7 @@ function hashEntries_(ht) {
     return [...ht.entries()];
 }
 exports.hashEntries_ = hashEntries_;
-hashEntries_.lispSource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('entries')]]]]];
+hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('entries')]]]]];
 /**
  * Convert a hash map to a list of `(key . value)` pairs.
  *
@@ -247,4 +247,4 @@ function hashToList_(ht) {
     });
 }
 exports.hashToList_ = hashToList_;
-hashToList_.lispSource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('array-first'), Symbol.for('x')], [Symbol.for('array-second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];
+hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('array-first'), Symbol.for('x')], [Symbol.for('array-second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];

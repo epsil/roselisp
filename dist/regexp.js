@@ -36,7 +36,7 @@ function regexp_(input, flags = undefined) {
 }
 exports.jsRegexp_ = regexp_;
 exports.regexp_ = regexp_;
-regexp_.lispSource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
+regexp_.fsource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
 /**
  * Whether `obj` is a regular expression.
  */
@@ -46,7 +46,7 @@ function regexpp_(obj) {
 exports.jsRegexpP_ = regexpp_;
 exports.regexpP_ = regexpp_;
 exports.regexpp_ = regexpp_;
-regexpp_.lispSource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
+regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
 /**
  * Make a regexp string suitable for matching the given string.
  * Pass the regexp string to `regexp` to make a regular expression.
@@ -62,7 +62,7 @@ function regexpQuote_(str) {
 }
 exports.jsRegexpQuote_ = regexpQuote_;
 exports.regexpQuote_ = regexpQuote_;
-regexpQuote_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-quote_'), Symbol.for('str')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '[.*+?^${}()|[\\]\\\\]', 'g'], Symbol.for('str'), '\\$&']];
+regexpQuote_.fsource = [Symbol.for('define'), [Symbol.for('regexp-quote_'), Symbol.for('str')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '[.*+?^${}()|[\\]\\\\]', 'g'], Symbol.for('str'), '\\$&']];
 /**
  * Match `pattern` against `input`.
  *
@@ -82,13 +82,13 @@ function regexpMatch_(pattern, input) {
 }
 exports.jsRegexpMatch_ = regexpMatch_;
 exports.regexpMatch_ = regexpMatch_;
-regexpMatch_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('match'), Symbol.for('pattern')]];
+regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('match'), Symbol.for('pattern')]];
 function regexpMatchP_(pattern, input) {
     return input.match(pattern) !== null;
 }
 exports.jsRegexpMatchP_ = regexpMatchP_;
 exports.regexpMatchP_ = regexpMatchP_;
-regexpMatchP_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('js/null?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]]];
+regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('js/null?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]]];
 /**
  * Match `pattern` against `input` and replace with `insert`.
  * `pattern` is a [regular expression][mdn:Regular Expressions]
@@ -105,4 +105,4 @@ function regexpReplace_(pattern, input, insert) {
 }
 exports.jsRegexpReplace_ = regexpReplace_;
 exports.regexpReplace_ = regexpReplace_;
-regexpReplace_.lispSource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
+regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];

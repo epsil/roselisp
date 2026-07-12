@@ -1558,7 +1558,7 @@ function estreep(obj) {
     return obj instanceof Node;
 }
 exports.estreep = estreep;
-estreep.lispSource = [Symbol.for('define'), [Symbol.for('estree?'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('Node')]];
+estreep.fsource = [Symbol.for('define'), [Symbol.for('estree?'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('Node')]];
 /**
  * Get the type of an ESTree node.
  */
@@ -1566,7 +1566,7 @@ function estreeType(node) {
     return node.type;
 }
 exports.estreeType = estreeType;
-estreeType.lispSource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]];
+estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]];
 /**
  * Whether the type of the ESTree node `node` is `typ`.
  */
@@ -1575,7 +1575,7 @@ function estreeTypeP(node, typ) {
 }
 exports.estreeIsP = estreeTypeP;
 exports.estreeTypeP = estreeTypeP;
-estreeTypeP.lispSource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]];
+estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]];
 /**
  * Wrap a value in an ESTree node.
  *
@@ -1592,4 +1592,4 @@ function wrapInEstree(x) {
     }
 }
 exports.wrapInEstree = wrapInEstree;
-wrapInEstree.lispSource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), Symbol.for('wrap-in-estree'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]]]];
+wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), Symbol.for('wrap-in-estree'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]]]];

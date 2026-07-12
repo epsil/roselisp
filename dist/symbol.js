@@ -35,7 +35,7 @@ function symbolp_(obj) {
     return typeof obj === 'symbol';
 }
 exports.symbolp_ = symbolp_;
-symbolp_.lispSource = [Symbol.for('define'), [Symbol.for('symbol?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'symbol']];
+symbolp_.fsource = [Symbol.for('define'), [Symbol.for('symbol?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'symbol']];
 /**
  * Convert a symbol to a string.
  *
@@ -49,7 +49,7 @@ function symbolToString_(sym) {
     return sym.description;
 }
 exports.symbolToString_ = symbolToString_;
-symbolToString_.lispSource = [Symbol.for('define'), [Symbol.for('symbol->string_'), Symbol.for('sym')], [Symbol.for('ann'), [Symbol.for('get-field'), Symbol.for('description'), Symbol.for('sym')], Symbol.for('String')]];
+symbolToString_.fsource = [Symbol.for('define'), [Symbol.for('symbol->string_'), Symbol.for('sym')], [Symbol.for('ann'), [Symbol.for('get-field'), Symbol.for('description'), Symbol.for('sym')], Symbol.for('String')]];
 /**
  * Convert a string to a symbol.
  *
@@ -66,7 +66,7 @@ function stringToSymbol_(str) {
 }
 exports.intern_ = stringToSymbol_;
 exports.stringToSymbol_ = stringToSymbol_;
-stringToSymbol_.lispSource = [Symbol.for('define'), [Symbol.for('string->symbol_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('Symbol'), Symbol.for('for'), Symbol.for('str')]];
+stringToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('string->symbol_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('Symbol'), Symbol.for('for'), Symbol.for('str')]];
 /**
  * Create a unique symbol.
  *
@@ -82,7 +82,7 @@ function gensym_(str) {
     return Symbol(str);
 }
 exports.gensym_ = gensym_;
-gensym_.lispSource = [Symbol.for('define'), [Symbol.for('gensym_'), Symbol.for('str')], [Symbol.for('Symbol'), Symbol.for('str')]];
+gensym_.fsource = [Symbol.for('define'), [Symbol.for('gensym_'), Symbol.for('str')], [Symbol.for('Symbol'), Symbol.for('str')]];
 /**
  * Whether something is a unique symbol.
  */
@@ -92,4 +92,4 @@ function gensymp_(obj) {
     return (typeof obj === 'symbol') && (obj !== Symbol.for(obj.description));
 }
 exports.gensymp_ = gensymp_;
-gensymp_.lispSource = [Symbol.for('define'), [Symbol.for('gensym?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('obj'), [Symbol.for('string->symbol'), [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]];
+gensymp_.fsource = [Symbol.for('define'), [Symbol.for('gensym?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('obj'), [Symbol.for('string->symbol'), [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]];

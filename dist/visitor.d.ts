@@ -22,7 +22,7 @@
  */
 declare function visit(visitor: any, node: any, ...args: any[]): any;
 declare namespace visit {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Make a visitor function from a list of visitor clauses.
@@ -33,6 +33,6 @@ declare namespace visit {
  */
 declare function makeVisitor(visitors?: any): any;
 declare namespace makeVisitor {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 export { makeVisitor, visit };

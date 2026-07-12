@@ -37,14 +37,14 @@ declare const eval_: any;
  */
 declare function callEvaluator(evaluator: any, exp: any, env?: any, options?: any): any;
 declare namespace callEvaluator {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | undefined)[])[])[];
 }
 /**
  * Whether something is an evaluator.
  */
 declare function evaluatorp(obj: any): any;
 declare namespace evaluatorp {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Evaluator class.
@@ -61,7 +61,7 @@ declare class Evaluator {
  */
 declare function eval1(exp: any, env: any, options?: any): any;
 declare namespace eval1 {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Evaluate an S-expression.
@@ -70,14 +70,14 @@ declare namespace eval1 {
  */
 declare function evalSexp(exp: any, env: any, options?: any): any;
 declare namespace evalSexp {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol[] | undefined)[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][])[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[][])[][])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol[] | undefined)[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][])[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[][])[][])[])[])[])[];
 }
 /**
  * Evaluate an S-expression wrapped in a rose tree.
  */
 declare function evalRose(node: any, env: any, options?: any): any;
 declare namespace evalRose {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Evaluate an [ESTree][github:estree] node
@@ -88,6 +88,6 @@ declare namespace evalRose {
  */
 declare function evalEstree(node: any, env: any, options?: any): any;
 declare namespace evalEstree {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | undefined)[])[])[];
 }
 export { eval_ as seval, Evaluator, callEvaluator, defaultEvaluator, evalEstree, evalRose, evalSexp, eval1, eval_, evaluatorp, jsEval_ };

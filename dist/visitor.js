@@ -34,7 +34,7 @@ function visit(visitor, node, ...args) {
     }
 }
 exports.visit = visit;
-visit.lispSource = [Symbol.for('define'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('node'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('visitor')], [Symbol.for('apply'), Symbol.for('visitor'), Symbol.for('node'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('send/apply'), Symbol.for('visitor'), Symbol.for('visit'), Symbol.for('node'), Symbol.for('args')]]]];
+visit.fsource = [Symbol.for('define'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('node'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('visitor')], [Symbol.for('apply'), Symbol.for('visitor'), Symbol.for('node'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('send/apply'), Symbol.for('visitor'), Symbol.for('visit'), Symbol.for('node'), Symbol.for('args')]]]];
 /**
  * Make a visitor function from a list of visitor clauses.
  *
@@ -56,4 +56,4 @@ function makeVisitor(visitors = []) {
     };
 }
 exports.makeVisitor = makeVisitor;
-makeVisitor.lispSource = [Symbol.for('define'), [Symbol.for('make-visitor'), [Symbol.for('visitors'), [Symbol.for('quote'), []]]], [Symbol.for('lambda'), [Symbol.for('node'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('node')], [Symbol.for('for'), [[Symbol.for('entry'), Symbol.for('visitors')]], [Symbol.for('define-values'), [Symbol.for('predicate'), Symbol.for('visitor')], Symbol.for('entry')], [Symbol.for('when'), [Symbol.for('predicate'), Symbol.for('node')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('apply'), Symbol.for('visitor'), Symbol.for('node'), Symbol.for('args')]], [Symbol.for('break')]]], Symbol.for('result')]];
+makeVisitor.fsource = [Symbol.for('define'), [Symbol.for('make-visitor'), [Symbol.for('visitors'), [Symbol.for('quote'), []]]], [Symbol.for('lambda'), [Symbol.for('node'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('node')], [Symbol.for('for'), [[Symbol.for('entry'), Symbol.for('visitors')]], [Symbol.for('define-values'), [Symbol.for('predicate'), Symbol.for('visitor')], Symbol.for('entry')], [Symbol.for('when'), [Symbol.for('predicate'), Symbol.for('node')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('apply'), Symbol.for('visitor'), Symbol.for('node'), Symbol.for('args')]], [Symbol.for('break')]]], Symbol.for('result')]];

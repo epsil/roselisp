@@ -50,7 +50,7 @@ function memoize(f: any, cache: any = new Map()): any {
   return memoizedF;
 }
 
-memoize.lispSource = [Symbol.for('define'), [Symbol.for('memoize'), Symbol.for('f'), [Symbol.for('cache'), [Symbol.for('make-hash')]]], [Symbol.for('define-values'), [Symbol.for('memoized-f')], [Symbol.for('memoize2'), Symbol.for('f'), Symbol.for('cache')]], Symbol.for('memoized-f')];
+memoize.fsource = [Symbol.for('define'), [Symbol.for('memoize'), Symbol.for('f'), [Symbol.for('cache'), [Symbol.for('make-hash')]]], [Symbol.for('define-values'), [Symbol.for('memoized-f')], [Symbol.for('memoize2'), Symbol.for('f'), Symbol.for('cache')]], Symbol.for('memoized-f')];
 
 /**
  * Make a [memoized][w:Memoization] version of the function `f`.
@@ -85,12 +85,12 @@ function memoize2(f: any, cache: any = new Map()): any {
       return value;
     }
   }
-  memoizedF.lispSource = [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('get-cache'), Symbol.for('memoized-f')]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]];
+  memoizedF.fsource = [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('get-cache'), Symbol.for('memoized-f')]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]];
   setCacheX(memoizedF, cache);
   return [memoizedF, cache];
 }
 
-memoize2.lispSource = [Symbol.for('define'), [Symbol.for('memoize2'), Symbol.for('f'), [Symbol.for('cache'), [Symbol.for('make-hash')]]], [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('get-cache'), Symbol.for('memoized-f')]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]], [Symbol.for('set-cache!'), Symbol.for('memoized-f'), Symbol.for('cache')], [Symbol.for('values'), Symbol.for('memoized-f'), Symbol.for('cache')]];
+memoize2.fsource = [Symbol.for('define'), [Symbol.for('memoize2'), Symbol.for('f'), [Symbol.for('cache'), [Symbol.for('make-hash')]]], [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('get-cache'), Symbol.for('memoized-f')]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]], [Symbol.for('set-cache!'), Symbol.for('memoized-f'), Symbol.for('cache')], [Symbol.for('values'), Symbol.for('memoized-f'), Symbol.for('cache')]];
 
 /**
  * Get the memoization cache of `f`.
@@ -99,7 +99,7 @@ function getCache(f: any): any {
   return f.cache;
 }
 
-getCache.lispSource = [Symbol.for('define'), [Symbol.for('get-cache'), Symbol.for('f')], [Symbol.for('get-field'), Symbol.for('cache'), Symbol.for('f')]];
+getCache.fsource = [Symbol.for('define'), [Symbol.for('get-cache'), Symbol.for('f')], [Symbol.for('get-field'), Symbol.for('cache'), Symbol.for('f')]];
 
 /**
  * Set the memoization cache of `f` to `cache`.
@@ -110,7 +110,7 @@ function setCacheX(f: any, cache: any): any {
   return f;
 }
 
-setCacheX.lispSource = [Symbol.for('define'), [Symbol.for('set-cache!'), Symbol.for('f'), Symbol.for('cache')], [Symbol.for('set-field!'), Symbol.for('cache'), Symbol.for('f'), Symbol.for('cache')], Symbol.for('f')];
+setCacheX.fsource = [Symbol.for('define'), [Symbol.for('set-cache!'), Symbol.for('f'), Symbol.for('cache')], [Symbol.for('set-field!'), Symbol.for('cache'), Symbol.for('f'), Symbol.for('cache')], Symbol.for('f')];
 
 /**
  * Return a [memoized][w:Memoization] version of the function `f`,
@@ -138,11 +138,11 @@ function memoizeWithArg(f: any, arity: any = f.length): any {
       return f(...args);
     }
   }
-  memoizedF.lispSource = [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], Symbol.for('arity')], [Symbol.for('hash?'), Symbol.for('map')]], [Symbol.for('define'), Symbol.for('args1'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args1')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]]]];
+  memoizedF.fsource = [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], Symbol.for('arity')], [Symbol.for('hash?'), Symbol.for('map')]], [Symbol.for('define'), Symbol.for('args1'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args1')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]]]];
   return memoizedF;
 }
 
-memoizeWithArg.lispSource = [Symbol.for('define'), [Symbol.for('memoize-with-arg'), Symbol.for('f'), [Symbol.for('arity'), [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('f')]]], [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], Symbol.for('arity')], [Symbol.for('hash?'), Symbol.for('map')]], [Symbol.for('define'), Symbol.for('args1'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args1')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]]]], Symbol.for('memoized-f')];
+memoizeWithArg.fsource = [Symbol.for('define'), [Symbol.for('memoize-with-arg'), Symbol.for('f'), [Symbol.for('arity'), [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('f')]]], [Symbol.for('define'), [Symbol.for('memoized-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('map'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], Symbol.for('arity')], [Symbol.for('hash?'), Symbol.for('map')]], [Symbol.for('define'), Symbol.for('args1'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('path'), [Symbol.for('make-path'), Symbol.for('args1')]], [Symbol.for('define-values'), [Symbol.for('value'), Symbol.for('has-value')], [Symbol.for('map-get-tuple'), Symbol.for('map'), Symbol.for('path')]], [Symbol.for('cond'), [Symbol.for('has-value'), Symbol.for('value')], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('value'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('map-set!'), Symbol.for('map'), Symbol.for('path'), Symbol.for('value')], Symbol.for('value')]]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]]]], Symbol.for('memoized-f')];
 
 /**
  * Make a cache path corresponding to the argument list `args`.
@@ -156,7 +156,7 @@ function makePath(args: any): any {
   return [...args, eof];
 }
 
-makePath.lispSource = [Symbol.for('define'), [Symbol.for('make-path'), Symbol.for('args')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('args')], [Symbol.for('unquote'), Symbol.for('eof')]]]];
+makePath.fsource = [Symbol.for('define'), [Symbol.for('make-path'), Symbol.for('args')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('args')], [Symbol.for('unquote'), Symbol.for('eof')]]]];
 
 export {
   eof,

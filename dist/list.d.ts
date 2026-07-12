@@ -186,14 +186,14 @@ declare const consDotCompiled_: any;
  */
 declare function consDotF_(): any;
 declare namespace consDotF_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether a value is the cons dot.
  */
 declare function consDotP_(obj: any): any;
 declare namespace consDotP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Create a cons cell whose CAR is `x` and CDR is `y`.
@@ -206,7 +206,7 @@ declare namespace consDotP_ {
  */
 declare function cons_(x: any, y: any): any;
 declare namespace cons_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[];
 }
 /**
  * Whether something is a cons cell.
@@ -219,7 +219,7 @@ declare namespace cons_ {
  */
 declare function consp_(obj: any): any;
 declare namespace consp_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Make a list.
@@ -232,7 +232,7 @@ declare namespace consp_ {
  */
 declare function list_(...args: any[]): any;
 declare namespace list_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether something is a list.
@@ -247,7 +247,7 @@ declare namespace list_ {
  */
 declare function listp_(x: any): any;
 declare namespace listp_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Make a dotted list. Like `list`, but the final argument
@@ -267,7 +267,7 @@ declare namespace listp_ {
  */
 declare function listStar_(...args: any[]): any;
 declare namespace listStar_ {
-    var lispSource: (symbol | (symbol | ((number | symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | ((number | symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
 }
 /**
  * Make a list of `n` elements. The function `proc` is applied
@@ -279,7 +279,7 @@ declare namespace listStar_ {
  */
 declare function buildList_(n: any, proc: any): any;
 declare namespace buildList_ {
-    var lispSource: (symbol | (symbol | (number | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[])[];
 }
 /**
  * Make a list of length `k`, where every element is the value `v`.
@@ -290,7 +290,7 @@ declare namespace buildList_ {
  */
 declare function makeList_(k: any, v: any): any;
 declare namespace makeList_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | never[])[])[][] | (symbol | symbol[] | (symbol | (number | symbol)[])[][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | never[])[])[][] | (symbol | symbol[] | (symbol | (number | symbol)[])[][])[])[])[];
 }
 /**
  * List concatenation.
@@ -303,7 +303,7 @@ declare namespace makeList_ {
  */
 declare function append_(...args: any[]): any;
 declare namespace append_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Flatten an arbitrarily nested list.
@@ -314,7 +314,7 @@ declare namespace append_ {
  */
 declare function flatten_(lst: any): any;
 declare namespace flatten_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[])[])[];
 }
 /**
  * Return the first element of a list.
@@ -325,7 +325,7 @@ declare namespace flatten_ {
  */
 declare function first_(lst: any): any;
 declare namespace first_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the second element of a list.
@@ -336,7 +336,7 @@ declare namespace first_ {
  */
 declare function second_(lst: any): any;
 declare namespace second_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the third element of a list.
@@ -347,7 +347,7 @@ declare namespace second_ {
  */
 declare function third_(lst: any): any;
 declare namespace third_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the fourth element of a list.
@@ -358,7 +358,7 @@ declare namespace third_ {
  */
 declare function fourth_(lst: any): any;
 declare namespace fourth_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the fifth element of a list.
@@ -369,7 +369,7 @@ declare namespace fourth_ {
  */
 declare function fifth_(lst: any): any;
 declare namespace fifth_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the sixth element of a list.
@@ -380,7 +380,7 @@ declare namespace fifth_ {
  */
 declare function sixth_(lst: any): any;
 declare namespace sixth_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the seventh element of a list.
@@ -391,7 +391,7 @@ declare namespace sixth_ {
  */
 declare function seventh_(lst: any): any;
 declare namespace seventh_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the eighth element of a list.
@@ -402,7 +402,7 @@ declare namespace seventh_ {
  */
 declare function eighth_(lst: any): any;
 declare namespace eighth_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the ninth element of a list.
@@ -413,7 +413,7 @@ declare namespace eighth_ {
  */
 declare function ninth_(lst: any): any;
 declare namespace ninth_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the tenth element of a list.
@@ -424,7 +424,7 @@ declare namespace ninth_ {
  */
 declare function tenth_(lst: any): any;
 declare namespace tenth_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the tail of a list.
@@ -440,7 +440,7 @@ declare namespace tenth_ {
  */
 declare function cdr_(lst: any): any;
 declare namespace cdr_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the tail of a list.
@@ -451,7 +451,7 @@ declare namespace cdr_ {
  */
 declare function rest_(lst: any): any;
 declare namespace rest_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the `n`-th element of a list.
@@ -464,7 +464,7 @@ declare namespace rest_ {
  */
 declare function nth_(n: any, lst: any): any;
 declare namespace nth_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the `n`-th CDR element of a list.
@@ -475,7 +475,7 @@ declare namespace nth_ {
  */
 declare function nthcdr_(n: any, lst: any): any;
 declare namespace nthcdr_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 /**
  * Take the `n` first elements from `lst`.
@@ -486,7 +486,7 @@ declare namespace nthcdr_ {
  */
 declare function take_(lst: any, n: any): any;
 declare namespace take_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the list obtained by dropping
@@ -498,7 +498,7 @@ declare namespace take_ {
  */
 declare function drop_(lst: any, n: any): any;
 declare namespace drop_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the list obtained by dropping
@@ -510,7 +510,7 @@ declare namespace drop_ {
  */
 declare function dropRight_(lst: any, n: any): any;
 declare namespace dropRight_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Reverse the order of a list.
@@ -522,7 +522,7 @@ declare namespace dropRight_ {
  */
 declare function reverse_(lst: any): any;
 declare namespace reverse_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return a list where the last `n` conses have been omitted.
@@ -533,7 +533,7 @@ declare namespace reverse_ {
  */
 declare function butlast_(x: any, n?: any): any;
 declare namespace butlast_ {
-    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | symbol[][])[])[][])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | symbol[][])[])[][])[])[];
 }
 /**
  * Return a list where the last `n` conses have been omitted.
@@ -545,7 +545,7 @@ declare namespace butlast_ {
  */
 declare function nbutlast_(x: any, n?: any): any;
 declare namespace nbutlast_ {
-    var lispSource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Pop an element off the beginning of a list.
@@ -556,7 +556,7 @@ declare namespace nbutlast_ {
  */
 declare function popLeftX_(lst: any): any;
 declare namespace popLeftX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Pop an element off the end of a list.
@@ -567,7 +567,7 @@ declare namespace popLeftX_ {
  */
 declare function popRightX_(lst: any): any;
 declare namespace popRightX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Push an element onto the beginning of a list.
@@ -578,7 +578,7 @@ declare namespace popRightX_ {
  */
 declare function pushLeftX_(lst: any, x: any): any;
 declare namespace pushLeftX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Push an element onto the end of a list.
@@ -589,7 +589,7 @@ declare namespace pushLeftX_ {
  */
 declare function pushRightX_(lst: any, x: any): any;
 declare namespace pushRightX_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the length of a list.
@@ -602,7 +602,7 @@ declare namespace pushRightX_ {
  */
 declare function length_(lst: any): any;
 declare namespace length_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the last element of a list.
@@ -613,7 +613,7 @@ declare namespace length_ {
  */
 declare function last_(lst: any): any;
 declare namespace last_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Return the last pair of a list.
@@ -626,14 +626,14 @@ declare namespace last_ {
  */
 declare function lastPair_(lst: any): any;
 declare namespace lastPair_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[])[])[];
 }
 /**
  * Return the last cdr of a list, i.e., the terminating empty list.
  */
 declare function lastCdr_(lst: any): any;
 declare namespace lastCdr_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[])[])[];
 }
 /**
  * Set the CAR of a list.
@@ -644,7 +644,7 @@ declare namespace lastCdr_ {
  */
 declare function setCarX_(x: any, y: any): any;
 declare namespace setCarX_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[])[] | undefined)[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[] | undefined)[];
 }
 /**
  * Set the CDR of a list.
@@ -655,7 +655,7 @@ declare namespace setCarX_ {
  */
 declare function setCdrX_(x: any, y: any): any;
 declare namespace setCdrX_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[][] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | symbol[] | symbol[][])[][])[])[])[] | undefined)[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[][] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | symbol[] | symbol[][])[][])[])[])[] | undefined)[];
 }
 /**
  * Whether something is the empty list.
@@ -666,7 +666,7 @@ declare namespace setCdrX_ {
  */
 declare function nullp_(x: any): any;
 declare namespace nullp_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
  * Whether something is an array list.
@@ -679,126 +679,126 @@ declare namespace nullp_ {
  */
 declare function arrayListP_(x: any): any;
 declare namespace arrayListP_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the length of an array list.
  */
 declare function arrayListLength_(lst: any): any;
 declare namespace arrayListLength_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the first element of an array list.
  */
 declare function arrayListFirst_(lst: any): any;
 declare namespace arrayListFirst_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the second element of an array list.
  */
 declare function arrayListSecond_(lst: any): any;
 declare namespace arrayListSecond_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the third element of an array list.
  */
 declare function arrayListThird_(lst: any): any;
 declare namespace arrayListThird_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the fourth element of an array list.
  */
 declare function arrayListFourth_(lst: any): any;
 declare namespace arrayListFourth_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the fifth element of an array list.
  */
 declare function arrayListFifth_(lst: any): any;
 declare namespace arrayListFifth_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the sixth element of an array list.
  */
 declare function arrayListSixth_(lst: any): any;
 declare namespace arrayListSixth_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the seventh element of an array list.
  */
 declare function arrayListSeventh_(lst: any): any;
 declare namespace arrayListSeventh_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the eighth element of an array list.
  */
 declare function arrayListEighth_(lst: any): any;
 declare namespace arrayListEighth_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the ninth element of an array list.
  */
 declare function arrayListNinth_(lst: any): any;
 declare namespace arrayListNinth_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the tenth element of an array list.
  */
 declare function arrayListTenth_(lst: any): any;
 declare namespace arrayListTenth_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the last element of an array list.
  */
 declare function arrayListLast_(lst: any): any;
 declare namespace arrayListLast_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the `n`-th element of an array list.
  */
 declare function arrayListNth_(n: any, lst: any): any;
 declare namespace arrayListNth_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the `n`-th CDR of an array list.
  */
 declare function arrayListNthcdr_(n: any, lst: any): any;
 declare namespace arrayListNthcdr_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the CDR of an array list.
  */
 declare function arrayListCdr_(lst: any): any;
 declare namespace arrayListCdr_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the tail of an array list.
  */
 declare function arrayListRest_(lst: any): any;
 declare namespace arrayListRest_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Take the `n` first elements from an array list.
  */
 declare function arrayListTake_(lst: any, n: any): any;
 declare namespace arrayListTake_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the list obtained by dropping
@@ -806,7 +806,7 @@ declare namespace arrayListTake_ {
  */
 declare function arrayListDrop_(lst: any, n: any): any;
 declare namespace arrayListDrop_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the list obtained by dropping
@@ -814,7 +814,7 @@ declare namespace arrayListDrop_ {
  */
 declare function arrayListDropRight_(lst: any, n: any): any;
 declare namespace arrayListDropRight_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Reverse the order of an array list.
@@ -822,7 +822,7 @@ declare namespace arrayListDropRight_ {
  */
 declare function arrayListReverse_(lst: any): any;
 declare namespace arrayListReverse_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether something is a dotted list.
@@ -833,7 +833,7 @@ declare namespace arrayListReverse_ {
  */
 declare function dottedListP_(x: any): any;
 declare namespace dottedListP_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Whether something is a linked list.
@@ -846,147 +846,147 @@ declare namespace dottedListP_ {
  */
 declare function linkedListP_(x: any): any;
 declare namespace linkedListP_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Whether something is a linked list link.
  */
 declare function linkedListLinkP_(x: any): any;
 declare namespace linkedListLinkP_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Whether something is a linked pair.
  */
 declare function linkedPairP_(x: any): any;
 declare namespace linkedPairP_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Return the CAR of a linked list link.
  */
 declare function linkedListLinkCar_(x: any): any;
 declare namespace linkedListLinkCar_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the CDR of a linked list link.
  */
 declare function linkedListLinkCdr_(x: any): any;
 declare namespace linkedListLinkCdr_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the CAR of a linked pair.
  */
 declare function linkedPairCar_(x: any): any;
 declare namespace linkedPairCar_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the CDR of a linked pair.
  */
 declare function linkedPairCdr_(x: any): any;
 declare namespace linkedPairCdr_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the length of a linked list.
  */
 declare function linkedListLength_(lst: any): any;
 declare namespace linkedListLength_ {
-    var lispSource: (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Return the first element of a linked list.
  */
 declare function linkedListFirst_(lst: any): any;
 declare namespace linkedListFirst_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the second element of a linked list.
  */
 declare function linkedListSecond_(lst: any): any;
 declare namespace linkedListSecond_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the third element of a linked list.
  */
 declare function linkedListThird_(lst: any): any;
 declare namespace linkedListThird_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the fourth element of a linked list.
  */
 declare function linkedListFourth_(lst: any): any;
 declare namespace linkedListFourth_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the fifth element of a linked list.
  */
 declare function linkedListFifth_(lst: any): any;
 declare namespace linkedListFifth_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the sixth element of a linked list.
  */
 declare function linkedListSixth_(lst: any): any;
 declare namespace linkedListSixth_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the seventh element of a linked list.
  */
 declare function linkedListSeventh_(lst: any): any;
 declare namespace linkedListSeventh_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the eighth element of a linked list.
  */
 declare function linkedListEighth_(lst: any): any;
 declare namespace linkedListEighth_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the ninth element of a linkedd list.
  */
 declare function linkedListNinth_(lst: any): any;
 declare namespace linkedListNinth_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the tenth element of a linkedd list.
  */
 declare function linkedListTenth_(lst: any): any;
 declare namespace linkedListTenth_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the last element of a linked list.
  */
 declare function linkedListLast_(lst: any): any;
 declare namespace linkedListLast_ {
-    var lispSource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[];
 }
 /**
  * Return the `n`-th element of a linked list.
  */
 declare function linkedListNth_(n: any, lst: any): any;
 declare namespace linkedListNth_ {
-    var lispSource: (symbol | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Return the `n`-th CDR of a linked list.
  */
 declare function linkedListNthcdr_(n: any, lst: any): any;
 declare namespace linkedListNthcdr_ {
-    var lispSource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
  * Return the list obtained by dropping
@@ -994,7 +994,7 @@ declare namespace linkedListNthcdr_ {
  */
 declare function linkedListDrop_(lst: any, pos: any): any;
 declare namespace linkedListDrop_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the list obtained by dropping
@@ -1002,56 +1002,56 @@ declare namespace linkedListDrop_ {
  */
 declare function linkedListDropRight_(lst: any, n: any): any;
 declare namespace linkedListDropRight_ {
-    var lispSource: (symbol | (symbol | (number | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[])[];
 }
 /**
  * Return the CAR of a linked list.
  */
 declare function linkedListCar_(lst: any): any;
 declare namespace linkedListCar_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the CDR of a linked list.
  */
 declare function linkedListCdr_(lst: any): any;
 declare namespace linkedListCdr_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Return the head of a linked list.
  */
 declare function linkedListHead_(lst: any): any;
 declare namespace linkedListHead_ {
-    var lispSource: (symbol | (number | symbol)[])[];
+    var fsource: (symbol | (number | symbol)[])[];
 }
 /**
  * Return the tail of a linked list.
  */
 declare function linkedListTail_(lst: any): any;
 declare namespace linkedListTail_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Parse a linked list.
  */
 declare function linkedListParse_(lst: any): any;
 declare namespace linkedListParse_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Make a linked list.
  */
 declare function makeDottedList_(car: any, cdr: any): any;
 declare namespace makeDottedList_ {
-    var lispSource: (symbol | symbol[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Make a linked pair.
  */
 declare function makePair_(car: any, cdr: any): any;
 declare namespace makePair_ {
-    var lispSource: (symbol | (symbol | symbol[][])[])[];
+    var fsource: (symbol | (symbol | symbol[][])[])[];
 }
 /**
  * Whether something is a proper list,
@@ -1064,7 +1064,7 @@ declare namespace makePair_ {
  */
 declare function properListP_(x: any): any;
 declare namespace properListP_ {
-    var lispSource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Whether something is an improper list,
@@ -1076,7 +1076,7 @@ declare namespace properListP_ {
  */
 declare function improperListP_(x: any): any;
 declare namespace improperListP_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Whether something is a circular list.
@@ -1087,20 +1087,20 @@ declare namespace improperListP_ {
  */
 declare function circularListP_(x: any): any;
 declare namespace circularListP_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Convert an array list to a linked list.
  */
 declare function arrayListToLinkedList_(x: any): any;
 declare namespace arrayListToLinkedList_ {
-    var lispSource: (symbol | (symbol | (symbol | (number | symbol)[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[][])[])[];
 }
 /**
  * Convert a linked list to an array list.
  */
 declare function linkedListToArrayList_(x: any): any;
 declare namespace linkedListToArrayList_ {
-    var lispSource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
 }
 export { append_ as append, arrayListToLinkedList_, arrayListToLinkedList_ as properListToDottedList_, butlast_ as butlast, cdr_ as cdr, cdr_ as tail, cdr_ as tail_, consp_ as pairp, consp_ as pairp_, dottedListP_ as dottedListP, dropRight_ as dropRight, drop_ as drop, drop_ as listTail, drop_ as listTail_, eighth_ as eighth, fifth_ as fifth, first_ as car, first_ as car_, first_ as first, first_ as head, flatten_ as flatten, fourth_ as fourth, lastCdr_ as linkedListLastCdr_, lastPair_ as lastCons_, lastPair_ as linkedListLastCons_, lastPair_ as linkedListLastPair_, last_ as last, length_ as length, linkedListToArrayList_, linkedListLast_, linkedPairP_ as dottedPairP_, listStar_ as listStar, listp_ as listp, listp_, listp_ as properListP, list_ as list, makeList_ as makeList, nbutlast_ as nbutlast, ninth_ as ninth, nth_ as nth, nthcdr_ as nthcdr, nullp_ as nullp, nullp_, popLeftX_ as popX, popLeftX_ as popX_, popLeftX_ as pop, popLeftX_ as popLeftX, popLeftX_ as popLeft, popLeftX_ as popLeft_, popLeftX_ as pop_, popRightX_ as popRightX, popRightX_ as popRight, popRightX_ as popRight_, pushLeftX_ as pushX, pushLeftX_ as pushX_, pushLeftX_ as push, pushLeftX_ as pushLeftX, pushLeftX_ as pushLeft, pushLeftX_ as pushLeft_, pushLeftX_ as push_, pushRightX_ as appendToList, pushRightX_ as pushRightX, pushRightX_ as pushRight, pushRightX_ as pushRight_, rest_ as rest, reverse_ as reverse, second_ as cadr, second_ as cadr_, second_ as second, setCarX_ as setCar_, setCdrX_ as setCdr_, seventh_ as seventh, sixth_ as sixth, tenth_ as tenth, third_ as third, append_, arrayListCdr_, arrayListDropRight_, arrayListDrop_, arrayListEighth_, arrayListFifth_, arrayListFirst_, arrayListFourth_, arrayListLast_, arrayListLength_, arrayListNinth_, arrayListNth_, arrayListNthcdr_, arrayListRest_, arrayListReverse_, arrayListSecond_, arrayListSeventh_, arrayListSixth_, arrayListTake_, arrayListTenth_, arrayListThird_, arrayListP_, buildList_, butlast_, cdr_, circularListP_, consDotCompiled_, consDotF_, consDotP_, consDot_, consp_, cons_, dottedListP_, dropRight_, drop_, eighth_, fifth_, first_, flatten_, fourth_, improperListP_, lastCdr_, lastPair_, last_, length_, linkedListCar_, linkedListCdr_, linkedListDropRight_, linkedListDrop_, linkedListEighth_, linkedListFifth_, linkedListFirst_, linkedListFourth_, linkedListHead_, linkedListLength_, linkedListLinkCar_, linkedListLinkCdr_, linkedListLinkP_, linkedListNinth_, linkedListNth_, linkedListNthcdr_, linkedListParse_, linkedListSecond_, linkedListSeventh_, linkedListSixth_, linkedListTail_, linkedListTenth_, linkedListThird_, linkedListP_, linkedPairCar_, linkedPairCdr_, linkedPairP_, listStar_, list_, makeDottedList_, makeList_, makePair_, nbutlast_, ninth_, nth_, nthcdr_, popLeftX_, popRightX_, properListP_, pushLeftX_, pushRightX_, rest_, reverse_, second_, setCarX_, setCdrX_, seventh_, sixth_, take_, tenth_, third_ };

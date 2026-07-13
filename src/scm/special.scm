@@ -116,7 +116,7 @@
     (define val
       (aget exp (+ i 1)))
     (define assignment
-      `(set (quote ,sym) ,val))
+      `(set ',sym ,val))
     (push-right! assignments assignment))
   (define set-exp '())
   (if (> (array-list-length assignments) 1)
@@ -287,13 +287,13 @@
   (set! result (eval_ val env))
   (for ((i (range 0 (array-list-length regular-bindings))))
     (eval_ `(define ,(aget regular-bindings i)
-              (quote ,(aget result i)))
+              ',(aget result i))
            env))
   (when rest-binding
     (eval_ `(define ,rest-binding
-              (quote ,(nthcdr (array-list-length
-                               regular-bindings)
-                              result)))
+              ',(nthcdr (array-list-length
+                         regular-bindings)
+                        result))
            env))
   #u)
 
@@ -321,13 +321,13 @@
   (set! result (eval_ val env))
   (for ((i (range 0 (array-list-length regular-bindings))))
     (eval_ `(set! ,(aget regular-bindings i)
-                  (quote ,(aget result i)))
+                  ',(aget result i))
            env))
   (when rest-binding
     (eval_ `(set! ,rest-binding
-                  (quote ,(nthcdr (array-list-length
-                                   regular-bindings)
-                                  result)))
+                  ',(nthcdr (array-list-length
+                             regular-bindings)
+                            result))
            env))
   #u)
 
@@ -714,7 +714,7 @@
   (define result #t)
   (for ((operand params))
     (set! result (eval_ operand env))
-    (unless (eval_ `(truep (quote ,result)) env)
+    (unless (eval_ `(truep ',result) env)
       (return #f)))
   result)
 
@@ -725,7 +725,7 @@
   (define result #f)
   (for ((operand params))
     (set! result (eval_ operand env))
-    (when (eval_ `(truep (quote ,result)) env)
+    (when (eval_ `(truep ',result) env)
       (return result)))
   result)
 
@@ -853,7 +853,7 @@
         (define exp
           (third field))
         (set! (oget this name)
-              (eval_ `(let ((this (quote ,this)))
+              (eval_ `(let ((this ',this))
                         ,exp)
                      env)))
       (define arity
@@ -926,10 +926,10 @@
                 #u
                 (aget args i)))
           (define var-exp
-            `(,name (quote ,value)))
+            `(,name ',value))
           (push-right! var-exps var-exp))
         (define this-exp
-          `(this (quote ,this)))
+          `(this ',this))
         (push-right! var-exps this-exp)
         (define let-exp
           `(let* ,var-exps
@@ -974,7 +974,7 @@
       (for ((clause catch-clauses))
         (when (is-a? err (eval_ (second clause) env))
           (set! result
-                (eval_ `(let ((,(third clause) (quote ,err)))
+                (eval_ `(let ((,(third clause) ',err))
                           ,@(drop clause 3))
                        env))
           (break))))

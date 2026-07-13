@@ -2419,7 +2419,7 @@
         (string->symbol function-name))
       (define lisp-code-exp
         (compile-sexp
-         `(declare ,sym (fsource (quote ,exp)))
+         `(declare ,sym (fsource ',exp))
          env options))
       (new Program (list result lisp-code-exp)))
      (else

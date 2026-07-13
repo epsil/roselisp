@@ -119,7 +119,8 @@
 
   ;;; Clear the forest.
   (define/public (clear-forest)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ clear))
     this)
 
@@ -132,91 +133,106 @@
   ;;; dropping the first `n` nodes from
   ;;; the forest.
   (define/public (drop n)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ drop n)))
 
   ;;; Return the forest obtained by dropping
   ;;; the first `n` nodes from the forest.
   (define/public (drop-forest n)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ drop-forest n)))
 
   ;;; Return the list of nodes obtained by dropping
   ;;; the last `n` nodes from the forest.
   (define/public (drop-right n)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ drop-right n)))
 
   ;;; Return the forest obtained by dropping
   ;;; the last `n` nodes from the forest.
   (define/public (drop-right-forest n)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ drop-right-forest n)))
 
   ;;; Return the first node in the forest,
   ;;; or `#u` if there is none.
   (define/public (first)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ first)))
 
   ;;; Return the second node in the forest,
   ;;; or `#u` if there is none.
   (define/public (second)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ second)))
 
   ;;; Return the third node in the forest,
   ;;; or `#u` if there is none.
   (define/public (third)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ third)))
 
   ;;; Return the fourth node in the forest,
   ;;; or `#u` if there is none.
   (define/public (fourth)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ fourth)))
 
   ;;; Return the fifth node in the forest,
   ;;; or `#u` if there is none.
   (define/public (fifth)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ fifth)))
 
   ;;; Return the sixth node in the forest,
   ;;; or `#u` if there is none.
   (define/public (sixth)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ sixth)))
 
   ;;; Return the seventh node in the forest,
   ;;; or `#u` if there is none.
   (define/public (seventh)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ seventh)))
 
   ;;; Return the eight node in the forest,
   ;;; or `#u` if there is none.
   (define/public (eight)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ eight)))
 
   ;;; Return the ninth node in the forest,
   ;;; or `#u` if there is none.
   (define/public (ninth)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ ninth)))
 
   ;;; Return the tenth node in the forest,
   ;;; or `#u` if there is none.
   (define/public (tenth)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ tenth)))
 
   ;;; Return the last node in the forest,
   ;;; or `#u` if there is none.
   (define/public (last)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ last)))
 
   ;;; Alias for `for-each-node`.
@@ -227,7 +243,8 @@
   ;;; each node in the forest.
   (define/public (for-each-node f (recursive #t))
     (f this)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ for-each-node f recursive))
     this)
 
@@ -241,7 +258,8 @@
   ;;; Get the numerical index of `node` in the forest.
   ;;; Returns `-1` if not found.
   (define/public (get-index node)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ get-index node)))
 
   ;;; Alias for `get-value`.
@@ -253,7 +271,8 @@
 
   ;;; Get a list of all the nodes in the forest.
   (define/public (get-nodes)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ get-nodes)))
 
   ;;; Get the forest.
@@ -268,7 +287,8 @@
 
   ;;; Get the node property `prop`.
   (define/public (get-property prop)
-    (~> (get-field properties this)
+    (~> this
+        (get-field properties _)
         (hash-ref _ prop)))
 
   ;;; Get the node value.
@@ -277,30 +297,35 @@
 
   ;;; Whether there is a node property `prop`.
   (define/public (has-property prop)
-    (~> (get-field properties this)
+    (~> this
+        (get-field properties _)
         (hash-has-key? _ prop)))
 
   ;;; Insert `node` into the forest.
   (define/public (insert node)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ insert node))
     this)
 
   ;;; Get the `n`-th node in the forest.
   ;;; Counting begins at zero.
   (define/public (nth n)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ nth n)))
 
   ;;; Remove the node whose index is `n`.
   (define/public (remove-node n)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ remove-node n))
     this)
 
   ;;; Remove the node property `prop`.
   (define/public (remove-property prop)
-    (~> (get-field properties this)
+    (~> this
+        (get-field properties _)
         (hash-remove! _ prop))
     this)
 
@@ -318,7 +343,8 @@
 
   ;;; Set the property `prop` to `value`.
   (define/public (set-property prop value)
-    (~> (get-field properties this)
+    (~> this
+        (get-field properties _)
         (hash-set! _ prop value))
     this)
 
@@ -334,7 +360,8 @@
 
   ;;; Return the number of nodes in the forest.
   (define/public (size)
-    (~> (send this get-forest)
+    (~> this
+        (send _ get-forest)
         (send _ size)))
 
   ;;; Get the parent node.
@@ -390,25 +417,29 @@
   ;;; Return the list of nodes obtained by
   ;;; dropping the first `n` nodes.
   (define/public (drop n)
-    (~> (get-field node-list this)
+    (~> this
+        (get-field node-list _)
         (drop _ n)))
 
   ;;; Return the forest obtained by dropping
   ;;; the first `n` nodes.
   (define/public (drop-forest n)
-    (~> (send this drop n)
+    (~> this
+        (send _ drop n)
         (apply new Forest _)))
 
   ;;; Return the list of nodes obtained by dropping
   ;;; the last `n` nodes.
   (define/public (drop-right n)
-    (~> (get-field node-list this)
+    (~> this
+        (get-field node-list _)
         (drop-right _ n)))
 
   ;;; Return the forest obtained by dropping
   ;;; the last `n` nodes.
   (define/public (drop-right-forest n)
-    (~> (send this drop-right n)
+    (~> this
+        (send _ drop-right n)
         (apply new Forest _)))
 
   ;;; Return the first node,
@@ -523,12 +554,14 @@
   ;;; Get the `n`-th node.
   ;;; Counting begins at zero.
   (define/public (nth n)
-    (~> (get-field node-list this)
+    (~> this
+        (get-field node-list _)
         (aget _ n)))
 
   ;;; Remove the node whose index is `n`.
   (define/public (remove-node n)
-    (~> (get-field node-list this)
+    (~> this
+        (get-field node-list _)
         (send _ splice n 1))
     this)
 
@@ -543,7 +576,8 @@
 
   ;;; Return the number of nodes in the forest.
   (define/public (size)
-    (~> (get-field node-list this)
+    (~> this
+        (get-field node-list _)
         (get-field length _))))
 
 ;;; Special rose tree value.

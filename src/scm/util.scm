@@ -230,8 +230,7 @@
   (define bindings '())
   (cond
    ((symbol? params)
-    (push-right! bindings
-                 `(,params (quote ,args))))
+    (push-right! bindings `(,params ',args)))
    (else
     (for ((i (range 0 (array-list-length params))))
       (define param

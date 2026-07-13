@@ -351,7 +351,7 @@
                x)
               (else
                `((member? ,value-var
-                          (quote ,(array-list-first x))
+                          ',(array-list-first x)
                           equal?)
                  ,@(rest x)))))
            clauses))
@@ -394,7 +394,7 @@
               ((eq? (array-list-first x) 'else)
                x)
               (else
-               `((member? ,value-var (quote ,(array-list-first x)))
+               `((member? ,value-var ',(array-list-first x))
                  ,@(rest x)))))
            clauses))
     (define result
@@ -415,7 +415,7 @@
               ((eq? (array-list-first x) 'else)
                `(default ,@(rest x)))
               (else
-               `(case (quote ,(array-list-first (array-list-first x)))
+               `(case ',(array-list-first (array-list-first x))
                   ,@(rest x)
                   (break)))))
            clauses))

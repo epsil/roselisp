@@ -264,14 +264,14 @@ bar)"
         (fn ()
           (assert-equal
            (~> (parse-rose (list (new SymbolToken "exp")))
-               (send getValue))
+               (send get-value))
            'exp)))
     (it "[s`(`, s`)`]"
         (fn ()
           (assert-equal
            (~> (parse-rose (list (new SymbolToken "(")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            '())))
     (it "[s`(`, s`(`, s`)`, s`)`]"
         (fn ()
@@ -280,7 +280,7 @@ bar)"
                                  (new SymbolToken "(")
                                  (new SymbolToken ")")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list '()))))
     (it "[s`(`, s`foo`, s`)`]"
         (fn ()
@@ -288,7 +288,7 @@ bar)"
            (~> (parse-rose (list (new SymbolToken "(")
                                  (new SymbolToken "foo")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'foo))))
     (it "[s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]"
         (fn ()
@@ -303,7 +303,7 @@ bar)"
                                  (new SymbolToken ")")
                                  (new StringToken "Lisp")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list (list 'lambda
                        (list 'x)
                        'x)
@@ -313,7 +313,7 @@ bar)"
           (assert-equal
            (~> (parse-rose (list (new SymbolToken "'")
                                  (new SymbolToken "foo")))
-               (send getValue))
+               (send get-value))
            (list 'quote 'foo))))
     (it "[s`'`, s`(`, s`foo`, s`)`]"
         (fn ()
@@ -322,7 +322,7 @@ bar)"
                                  (new SymbolToken "(")
                                  (new SymbolToken "foo")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'quote (list 'foo)))))
     (it "[s`'`, s`(`, s`(`, s`foo`, s`)`, s`)`]"
         (fn ()
@@ -333,7 +333,7 @@ bar)"
                                  (new SymbolToken "foo")
                                  (new SymbolToken ")")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'quote (list (list 'foo))))))
     (it "[s`'`, s`(`, s`(`, s`foo`, s`)`, s`(`, s`bar`, s`)`, s`)`]"
         (fn ()
@@ -347,7 +347,7 @@ bar)"
                                  (new SymbolToken "bar")
                                  (new SymbolToken ")")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'quote
                  (list (list 'foo)
                        (list 'bar))))))
@@ -365,7 +365,7 @@ bar)"
                                  (new SymbolToken ")")
                                  (new SymbolToken ")")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'quote
                  (list (list 'foo)
                        (list 'bar))))))
@@ -377,7 +377,7 @@ bar)"
                                  (new SymbolToken "'")
                                  (new SymbolToken "foo")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'truep
                  (list 'quote 'foo)))))
     (it "[s`(`, s`truep`, s`'`, s`foo`, s`)`]"
@@ -390,7 +390,7 @@ bar)"
                                  (new SymbolToken "foo")
                                  (new SymbolToken ")")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'truep
                  (list 'quote
                        (list 'foo))))))
@@ -402,7 +402,7 @@ bar)"
                                  (new SymbolToken "`")
                                  (new SymbolToken "foo")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'truep
                  (list 'quasiquote
                        'foo)))))
@@ -416,7 +416,7 @@ bar)"
                                  (new SymbolToken "foo")
                                  (new SymbolToken ")")
                                  (new SymbolToken ")")))
-               (send getValue))
+               (send get-value))
            (list 'truep
                  (list 'quasiquote
                        (list 'foo))))))
@@ -425,21 +425,21 @@ bar)"
           (assert-equal
            (~> (parse-rose (list (new SymbolToken "`")
                                  (new SymbolToken "foo")))
-               (send getValue))
+               (send get-value))
            (list 'quasiquote 'foo))))
     (it "[s`,`, s`foo`]"
         (fn ()
           (assert-equal
            (~> (parse-rose (list (new SymbolToken ",")
                                  (new SymbolToken "foo")))
-               (send getValue))
+               (send get-value))
            (list 'unquote 'foo))))
     (it "[s`,@`, s`foo`]"
         (fn ()
           (assert-equal
            (~> (parse-rose (list (new SymbolToken ",@")
                                  (new SymbolToken "foo")))
-               (send getValue))
+               (send get-value))
            (list 'unquote-splicing 'foo))))))
 
 (describe "read"
@@ -492,7 +492,47 @@ test")))
            (read "\"string
 test\"")
            "string
-test")))))
+test")))
+    (it "'()"
+        (fn ()
+          (assert-equal
+           (read "'()")
+           '(quote ()))))
+    (it "`()"
+        (fn ()
+          (assert-equal
+           (read "`()")
+           '(quasiquote ()))))
+    (it "`(,exp)"
+        (fn ()
+          (assert-equal
+           (read "`(,exp)")
+           '(quasiquote ((unquote exp))))))
+    (it "`((quote ,exp))"
+        (fn ()
+          (assert-equal
+           (read "`((quote ,exp))")
+           '(quasiquote ((quote (unquote exp)))))))
+    (it "`(',exp)"
+        (fn ()
+          (assert-equal
+           (read "`(',exp)")
+           '(quasiquote ((quote (unquote exp)))))))
+    (it "`('',exp)"
+        (fn ()
+          (assert-equal
+           (read "`('',exp)")
+           '(quasiquote ((quote (quote (unquote exp))))))))
+    (it "`(''',exp)"
+        (fn ()
+          (assert-equal
+           (read "`(''',exp)")
+           '(quasiquote ((quote (quote (quote (unquote exp)))))))))
+    (it "(define foo `(,bar))"
+        (fn ()
+          (assert-equal
+           (read "(define foo `(,bar))")
+           '(define foo (quasiquote ((unquote bar)))))))))
 
 (describe "read-rose"
   (fn ()
@@ -502,7 +542,7 @@ test")))))
           (assert-equal
            (~> (read-rose ";; comment
 (foo)")
-               (send getValue))
+               (send get-value))
            (list 'foo))))
     (it ";; comment
 (foo), comments"
@@ -512,7 +552,7 @@ test")))))
 (foo)"
                        (js-obj "comments" #t)))
           (assert-equal
-           (send actual getValue)
+           (send actual get-value)
            (list 'foo))
           (assert-equal
            (send actual getProperty "comments")
@@ -526,7 +566,7 @@ test")))))
 `(foo)"
                        (js-obj "comments" #t)))
           (assert-equal
-           (send actual getValue)
+           (send actual get-value)
            (list 'quasiquote
                  (list 'foo)))
           (assert-equal
@@ -537,7 +577,7 @@ test")))))
         (fn ()
           (assert-equal
            (~> (read-rose "(foo) ;comment")
-               (send getValue))
+               (send get-value))
            (list 'foo))))))
 
 (describe "sexp"

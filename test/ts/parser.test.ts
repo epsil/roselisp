@@ -484,8 +484,64 @@ describe('read', function (): any {
   it('"string\\\\ntest"', function (): any {
     return assertEqual(read('"string\\\\ntest"'), 'string\\ntest');
   });
-  return it('"string\\ntest"', function (): any {
+  it('"string\\ntest"', function (): any {
     return assertEqual(read('"string\n' + 'test"'), 'string\n' + 'test');
+  });
+  it("'()", function (): any {
+    return assertEqual(read("'()"), [Symbol.for('quote'), []]);
+  });
+  it('`()', function (): any {
+    return assertEqual(read('`()'), [Symbol.for('quasiquote'), []]);
+  });
+  it('`(,exp)', function (): any {
+    return assertEqual(read('`(,exp)'), [
+      Symbol.for('quasiquote'),
+      [[Symbol.for('unquote'), Symbol.for('exp')]],
+    ]);
+  });
+  it('`((quote ,exp))', function (): any {
+    return assertEqual(read('`((quote ,exp))'), [
+      Symbol.for('quasiquote'),
+      [[Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('exp')]]],
+    ]);
+  });
+  it("`(',exp)", function (): any {
+    return assertEqual(read("`(',exp)"), [
+      Symbol.for('quasiquote'),
+      [[Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('exp')]]],
+    ]);
+  });
+  it("`('',exp)", function (): any {
+    return assertEqual(read("`('',exp)"), [
+      Symbol.for('quasiquote'),
+      [
+        [
+          Symbol.for('quote'),
+          [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('exp')]],
+        ],
+      ],
+    ]);
+  });
+  it("`(''',exp)", function (): any {
+    return assertEqual(read("`(''',exp)"), [
+      Symbol.for('quasiquote'),
+      [
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('quote'),
+            [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('exp')]],
+          ],
+        ],
+      ],
+    ]);
+  });
+  return it('(define foo `(,bar))', function (): any {
+    return assertEqual(read('(define foo `(,bar))'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('bar')]]],
+    ]);
   });
 });
 

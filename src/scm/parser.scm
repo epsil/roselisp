@@ -23,7 +23,7 @@
                   unquote-splicing-sym_))
 (require (only-in "./rose"
                   Rose
-                  make-list-rose))
+                  make-rose))
 
 ;;; Parse a string of Lisp code and return an S-expression.
 (define (read input)
@@ -232,24 +232,54 @@
   ;; added to this expression, the result should be
   ;; `(quote (1 2 3))`, not `(quote (1 2) 3)`.
   (define stack '())
-  ;; Comments for the current node.
+  ;; Currently parsed expression.
+  (define exp #u)
+  ;; Rose tree node for `exp`.
+  (define node #u)
+  ;; Comments for the currently parsed expression.
   (define comments '())
-  ;; Pointer to the value on the top of the stack.
-  (define parent-exp)
-  ;; Pointer to the rose tree node for the top stack value.
-  (define parent-exp-node)
-  ;; The current expression, i.e., the expression most recently popped
-  ;; off the stack. The final value of this variable is the return
-  ;; value.
-  (define current-exp)
+  ;; The current expression. The final value
+  ;; of this variable is the return value.
+  (define current-exp #u)
   ;; Rose tree node for `current-exp`.
-  (define current-exp-node)
-  ;; The value-part of the current expression
-  ;; (i.e., the insertion point).
-  (define current-val)
+  (define current-exp-node #u)
+  ;; The insertion point of the current expression.
+  ;; For a quoted expression like `(quote ())`,
+  ;; it points to the inner `()`.
+  (define current-val #u)
   ;; Rose tree node for `current-val`.
-  (define current-val-node)
+  (define current-val-node #u)
+  ;; The parent expression.
+  (define parent-exp)
+  ;; Rose tree node for `parent-exp`.
+  (define parent-exp-node)
+  ;; Parent expression insertion point.
+  (define parent-val)
+  ;; Rose tree node for `parent-val`.
+  (define parent-val-node)
+  ;; Helper function for inserting an expression
+  ;; into another.
+  (define (insert! val exp val-node exp-node)
+    (push-right! exp val)
+    (send exp-node insert val-node))
+  ;; Helper function for updating current values.
+  (define (update! exp node)
+    (cond
+     (current-val
+      (insert! exp current-val node current-val-node)
+      (set! current-val #u)
+      (set! current-val-node #u))
+     (else
+      (set! current-exp exp)
+      (set! current-exp-node node)))
+    (when parent-exp
+      (insert! current-exp
+               parent-val
+               current-exp-node
+               parent-val-node)))
+  ;; Iterate over the list of tokens.
   (for ((i (range 0 (array-list-length tokens))))
+    ;; The current token.
     (define token
       (aget tokens i))
     (cond
@@ -262,144 +292,96 @@
       (define token-string
         (send token get-value))
       (cond
+       ;; Quoting.
+       ((hash-has-key? operator-symbols token-string)
+        (set! exp
+              (list (hash-ref operator-symbols
+                              token-string)))
+        (set!-values (node comments)
+                     (attach-comments exp comments options))
+        (cond
+         (current-val
+          (insert! exp current-val node current-val-node)
+          (set! current-val exp)
+          (set! current-val-node node))
+         (else
+          (set! current-exp exp)
+          (set! current-exp-node node)
+          (set! current-val exp)
+          (set! current-val-node node))))
        ;; Opening parenthesis.
        ((eq? token-string "(")
-        (set! current-exp '())
-        (set!-values (current-exp-node comments)
-                     (attach-comments current-exp
-                                      comments
-                                      options))
-        (push-right! stack
-                     (list current-exp
-                           current-exp
-                           current-exp-node
-                           current-exp-node))
+        (set! exp '())
+        (set!-values (node comments)
+                     (attach-comments exp comments options))
+        (cond
+         (current-val
+          (insert! exp current-val node current-val-node)
+          (set! current-val exp)
+          (set! current-val-node node))
+         (else
+          (set! current-exp exp)
+          (set! current-exp-node node)))
+        (when parent-exp
+          (insert! current-exp
+                   parent-val
+                   current-exp-node
+                   parent-val-node))
+        (set! current-val
+              (or current-val current-exp))
+        (set! current-val-node
+              (or current-val-node current-exp-node))
+        (define entry
+          (list current-exp
+                current-val
+                current-exp-node
+                current-val-node))
+        (push-right! stack entry)
         (set! parent-exp current-exp)
-        (set! parent-exp-node current-exp-node))
+        (set! parent-val current-val)
+        (set! parent-exp-node current-exp-node)
+        (set! parent-val-node current-val-node)
+        (set! current-val #u)
+        (set! current-val-node #u))
        ;; Closing parenthesis.
        ((eq? token-string ")")
+        (define entry
+          (pop-right! stack))
         (set!-values (current-exp
                       current-val
                       current-exp-node
                       current-val-node)
-                     (pop-right! stack))
-        (when (and (array? current-val)
-                   (>= (array-list-length current-val) 3)
-                   (eq? (aget current-val
-                              (- (array-list-length current-val) 2))
-                        (string->symbol ".")))
-          (aset! current-val
-                 (- (array-list-length current-val) 2)
-                 (cons-dot))
-          (~> current-val-node
-              (send get (- (array-list-length current-val) 2))
-              (send set-value (cons-dot))))
-        (cond
-         ((> (array-list-length stack) 0)
-          (define entry
-            (array-list-last stack))
-          (set! parent-exp (aget entry 1))
-          (set! parent-exp-node (aget entry 3)))
-         (else
-          (set! parent-exp #u)
-          (set! parent-exp-node #u)))
-        (when parent-exp
-          (push-right! parent-exp current-exp)
-          (send parent-exp-node insert current-exp-node)))
-       ;; Quoting.
-       ((hash-has-key? operator-symbols token-string)
-        (define sym
-          (hash-ref operator-symbols token-string))
-        (cond
-         ((< i (- (array-list-length tokens) 1))
-          (let ((next (aget tokens (+ i 1))))
-            (set! i (+ i 1))
-            (cond
-             ((and (is-a? next SymbolToken)
-                   (eq? (send next get-value) "("))
-              (set! current-exp '())
-              (set! current-exp-node (new Rose current-exp))
-              (define exp-node
-                (make-list-rose
-                 (list sym current-exp-node)))
-              (define exp
-                (send exp-node get-value))
-              (set!-values (exp-node comments)
-                           (attach-comments exp-node
-                                            comments
-                                            options))
-              (push-right! stack
-                           (list exp
-                                 current-exp
-                                 exp-node
-                                 current-exp-node))
-              (set! parent-exp current-exp)
-              (set! parent-exp-node
-                    current-exp-node))
-             (else
-              (cond
-               ((is-a? next SymbolToken)
-                (define next-str
-                  (send next get-value))
-                (cond
-                 ((hash-has-key? literal-values next-str)
-                  (set! next (hash-ref literal-values next-str)))
-                 (else
-                  (set! next (string->symbol next-str)))))
-               (else
-                (set! next (send next get-value))))
-              (set! current-exp-node (make-list-rose (list sym next)))
-              (set! current-exp (send current-exp-node get-value))
-              (set!-values (current-exp-node comments)
-                           (attach-comments current-exp-node
-                                            comments
-                                            options))
-              (when parent-exp
-                (push-right! parent-exp current-exp)
-                (send parent-exp-node
-                      insert current-exp-node))))))
-         (else
-          (set! current-exp sym)
-          (set!-values (current-exp-node comments)
-                       (attach-comments current-exp
-                                        comments
-                                        options))
-          (when parent-exp
-            (push-right! parent-exp current-exp)
-            (send parent-exp-node
-                  insert current-exp-node)))))
+                     entry)
+        (define parent-entry
+          (if (> (array-list-length stack) 0)
+              (array-list-last stack)
+              '(#u #u #u #u)))
+        (set!-values (parent-exp
+                      parent-val
+                      parent-exp-node
+                      parent-val-node)
+                     parent-entry)
+        (set! current-val #u)
+        (set! current-val-node #u))
        ;; Literal value.
        ((hash-has-key? literal-values token-string)
-        (set! current-exp
-              (hash-ref literal-values token-string))
-        (set!-values (current-exp-node comments)
-                     (attach-comments current-exp
-                                      comments
-                                      options))
-        (when parent-exp
-          (push-right! parent-exp current-exp)
-          (send parent-exp-node insert current-exp-node)))
-       ;; Other symbolic values.
+        (set! exp (hash-ref literal-values token-string))
+        (set!-values (node comments)
+                     (attach-comments exp comments options))
+        (update! exp node))
+       ;; Symbolic value.
        (else
-        (set! current-exp
-              (string->symbol (send token get-value)))
-        (set!-values (current-exp-node comments)
-                     (attach-comments current-exp
-                                      comments
-                                      options))
-        (when parent-exp
-          (push-right! parent-exp current-exp)
-          (send parent-exp-node insert current-exp-node)))))
-     ;; Non-symbolic values.
+        (set! exp (string->symbol
+                   (send token get-value)))
+        (set!-values (node comments)
+                     (attach-comments exp comments options))
+        (update! exp node))))
+     ;; Non-symbolic value.
      (else
-      (set! current-exp (send token get-value))
-      (set!-values (current-exp-node comments)
-                   (attach-comments current-exp
-                                    comments
-                                    options))
-      (when parent-exp
-        (push-right! parent-exp current-exp)
-        (send parent-exp-node insert current-exp-node)))))
+      (set! exp (send token get-value))
+      (set!-values (node comments)
+                   (attach-comments exp comments options))
+      (update! exp node))))
   current-exp-node)
 
 ;;; Take the array of tokens produced by `tokenize` and make a
@@ -453,7 +435,7 @@
   (define result
     (if (is-a? node Rose)
         node
-        (new Rose node)))
+        (make-rose node)))
   (when (and comments-option
              comments
              (> (array-list-length comments) 0))

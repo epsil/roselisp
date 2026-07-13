@@ -292,25 +292,58 @@ function parseRose(tokens, options = {}) {
     // added to this expression, the result should be
     // `(quote (1 2 3))`, not `(quote (1 2) 3)`.
     const stack = [];
-    // Comments for the current node.
+    // Currently parsed expression.
+    let exp = undefined;
+    // Rose tree node for `exp`.
+    let node = undefined;
+    // Comments for the currently parsed expression.
     let comments = [];
-    // Pointer to the value on the top of the stack.
-    let parentExp;
-    // Pointer to the rose tree node for the top stack value.
-    let parentExpNode;
-    // The current expression, i.e., the expression most recently popped
-    // off the stack. The final value of this variable is the return
-    // value.
-    let currentExp;
+    // The current expression. The final value
+    // of this variable is the return value.
+    let currentExp = undefined;
     // Rose tree node for `current-exp`.
-    let currentExpNode;
-    // The value-part of the current expression
-    // (i.e., the insertion point).
-    let currentVal;
+    let currentExpNode = undefined;
+    // The insertion point of the current expression.
+    // For a quoted expression like `(quote ())`,
+    // it points to the inner `()`.
+    let currentVal = undefined;
     // Rose tree node for `current-val`.
-    let currentValNode;
+    let currentValNode = undefined;
+    // The parent expression.
+    let parentExp;
+    // Rose tree node for `parent-exp`.
+    let parentExpNode;
+    // Parent expression insertion point.
+    let parentVal;
+    // Rose tree node for `parent-val`.
+    let parentValNode;
+    // Helper function for inserting an expression
+    // into another.
+    function insertX(val, exp, valNode, expNode) {
+        exp.push(val);
+        return expNode.insert(valNode);
+    }
+    insertX.fsource = [Symbol.for('define'), [Symbol.for('insert!'), Symbol.for('val'), Symbol.for('exp'), Symbol.for('val-node'), Symbol.for('exp-node')], [Symbol.for('push-right!'), Symbol.for('exp'), Symbol.for('val')], [Symbol.for('send'), Symbol.for('exp-node'), Symbol.for('insert'), Symbol.for('val-node')]];
+    // Helper function for updating current values.
+    function updateX(exp, node) {
+        if (currentVal) {
+            insertX(exp, currentVal, node, currentValNode);
+            currentVal = undefined;
+            currentValNode = undefined;
+        }
+        else {
+            currentExp = exp;
+            currentExpNode = node;
+        }
+        if (parentExp) {
+            return insertX(currentExp, parentVal, currentExpNode, parentValNode);
+        }
+    }
+    updateX.fsource = [Symbol.for('define'), [Symbol.for('update!'), Symbol.for('exp'), Symbol.for('node')], [Symbol.for('cond'), [Symbol.for('current-val'), [Symbol.for('insert!'), Symbol.for('exp'), Symbol.for('current-val'), Symbol.for('node'), Symbol.for('current-val-node')], [Symbol.for('set!'), Symbol.for('current-val'), undefined], [Symbol.for('set!'), Symbol.for('current-val-node'), undefined]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-exp-node'), Symbol.for('node')]]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('insert!'), Symbol.for('current-exp'), Symbol.for('parent-val'), Symbol.for('current-exp-node'), Symbol.for('parent-val-node')]]];
+    // Iterate over the list of tokens.
     const _end = tokens.length;
     for (let i = 0; i < _end; i++) {
+        // The current token.
         const token = tokens[i];
         if (token instanceof CommentToken) {
             // Comments.
@@ -321,115 +354,82 @@ function parseRose(tokens, options = {}) {
         else if (token instanceof SymbolToken) {
             // Symbolic values.
             const tokenString = token.getValue();
-            if (tokenString === '(') {
+            if (operatorSymbols.has(tokenString)) {
+                // Quoting.
+                exp = [operatorSymbols.get(tokenString)];
+                [node, comments] = attachComments(exp, comments, options);
+                if (currentVal) {
+                    insertX(exp, currentVal, node, currentValNode);
+                    currentVal = exp;
+                    currentValNode = node;
+                }
+                else {
+                    currentExp = exp;
+                    currentExpNode = node;
+                    currentVal = exp;
+                    currentValNode = node;
+                }
+            }
+            else if (tokenString === '(') {
                 // Opening parenthesis.
-                currentExp = [];
-                [currentExpNode, comments] = attachComments(currentExp, comments, options);
-                stack.push([currentExp, currentExp, currentExpNode, currentExpNode]);
+                exp = [];
+                [node, comments] = attachComments(exp, comments, options);
+                if (currentVal) {
+                    insertX(exp, currentVal, node, currentValNode);
+                    currentVal = exp;
+                    currentValNode = node;
+                }
+                else {
+                    currentExp = exp;
+                    currentExpNode = node;
+                }
+                if (parentExp) {
+                    insertX(currentExp, parentVal, currentExpNode, parentValNode);
+                }
+                currentVal = currentVal || currentExp;
+                currentValNode = currentValNode || currentExpNode;
+                const entry = [currentExp, currentVal, currentExpNode, currentValNode];
+                stack.push(entry);
                 parentExp = currentExp;
+                parentVal = currentVal;
                 parentExpNode = currentExpNode;
+                parentValNode = currentValNode;
+                currentVal = undefined;
+                currentValNode = undefined;
             }
             else if (tokenString === ')') {
                 // Closing parenthesis.
-                [currentExp, currentVal, currentExpNode, currentValNode] = stack.pop();
-                if (Array.isArray(currentVal) && (currentVal.length >= 3) && (currentVal[currentVal.length - 2] === Symbol.for('.'))) {
-                    currentVal[currentVal.length - 2] = Symbol.for('.');
-                    currentValNode.get(currentVal.length - 2).setValue(Symbol.for('.'));
-                }
-                if (stack.length > 0) {
-                    const entry = stack[stack.length - 1];
-                    parentExp = entry[1];
-                    parentExpNode = entry[3];
-                }
-                else {
-                    parentExp = undefined;
-                    parentExpNode = undefined;
-                }
-                if (parentExp) {
-                    parentExp.push(currentExp);
-                    parentExpNode.insert(currentExpNode);
-                }
-            }
-            else if (operatorSymbols.has(tokenString)) {
-                // Quoting.
-                const sym = operatorSymbols.get(tokenString);
-                if (i < (tokens.length - 1)) {
-                    let next = tokens[i + 1];
-                    i++;
-                    if ((next instanceof SymbolToken) && (next.getValue() === '(')) {
-                        currentExp = [];
-                        currentExpNode = new rose_1.Rose(currentExp);
-                        let expNode = (0, rose_1.makeListRose)([sym, currentExpNode]);
-                        const exp = expNode.getValue();
-                        [expNode, comments] = attachComments(expNode, comments, options);
-                        stack.push([exp, currentExp, expNode, currentExpNode]);
-                        parentExp = currentExp;
-                        parentExpNode = currentExpNode;
-                    }
-                    else {
-                        if (next instanceof SymbolToken) {
-                            const nextStr = next.getValue();
-                            if (literalValues.has(nextStr)) {
-                                next = literalValues.get(nextStr);
-                            }
-                            else {
-                                next = Symbol.for(nextStr);
-                            }
-                        }
-                        else {
-                            next = next.getValue();
-                        }
-                        currentExpNode = (0, rose_1.makeListRose)([sym, next]);
-                        currentExp = currentExpNode.getValue();
-                        [currentExpNode, comments] = attachComments(currentExpNode, comments, options);
-                        if (parentExp) {
-                            parentExp.push(currentExp);
-                            parentExpNode.insert(currentExpNode);
-                        }
-                    }
-                }
-                else {
-                    currentExp = sym;
-                    [currentExpNode, comments] = attachComments(currentExp, comments, options);
-                    if (parentExp) {
-                        parentExp.push(currentExp);
-                        parentExpNode.insert(currentExpNode);
-                    }
-                }
+                const entry = stack.pop();
+                [currentExp, currentVal, currentExpNode, currentValNode] = entry;
+                const parentEntry = (stack.length > 0) ? stack[stack.length - 1] : [undefined, undefined, undefined, undefined];
+                [parentExp, parentVal, parentExpNode, parentValNode] = parentEntry;
+                currentVal = undefined;
+                currentValNode = undefined;
             }
             else if (literalValues.has(tokenString)) {
                 // Literal value.
-                currentExp = literalValues.get(tokenString);
-                [currentExpNode, comments] = attachComments(currentExp, comments, options);
-                if (parentExp) {
-                    parentExp.push(currentExp);
-                    parentExpNode.insert(currentExpNode);
-                }
+                exp = literalValues.get(tokenString);
+                [node, comments] = attachComments(exp, comments, options);
+                updateX(exp, node);
             }
             else {
-                // Other symbolic values.
-                currentExp = Symbol.for(token.getValue());
-                [currentExpNode, comments] = attachComments(currentExp, comments, options);
-                if (parentExp) {
-                    parentExp.push(currentExp);
-                    parentExpNode.insert(currentExpNode);
-                }
+                // Symbolic value.
+                exp = Symbol.for(token.getValue());
+                [node, comments] = attachComments(exp, comments, options);
+                updateX(exp, node);
             }
         }
         else {
-            // Non-symbolic values.
-            currentExp = token.getValue();
-            [currentExpNode, comments] = attachComments(currentExp, comments, options);
-            if (parentExp) {
-                parentExp.push(currentExp);
-                parentExpNode.insert(currentExpNode);
-            }
+            // Non-symbolic value.
+            exp = token.getValue();
+            [node, comments] = attachComments(exp, comments, options);
+            updateX(exp, node);
         }
     }
     return currentExpNode;
 }
 exports.parseRose = parseRose;
-parseRose.fsource = [Symbol.for('define'), [Symbol.for('parse-rose'), Symbol.for('tokens'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('stack'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('parent-exp')], [Symbol.for('define'), Symbol.for('parent-exp-node')], [Symbol.for('define'), Symbol.for('current-exp')], [Symbol.for('define'), Symbol.for('current-exp-node')], [Symbol.for('define'), Symbol.for('current-val')], [Symbol.for('define'), Symbol.for('current-val-node')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-list-length'), Symbol.for('tokens')]]]], [Symbol.for('define'), Symbol.for('token'), [Symbol.for('aget'), Symbol.for('tokens'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('token'), Symbol.for('CommentToken')], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('token'), Symbol.for('LeadingCommentToken')], [Symbol.for('push-right!'), Symbol.for('comments'), Symbol.for('token')]]], [[Symbol.for('is-a?'), Symbol.for('token'), Symbol.for('SymbolToken')], [Symbol.for('define'), Symbol.for('token-string'), [Symbol.for('send'), Symbol.for('token'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('token-string'), '('], [Symbol.for('set!'), Symbol.for('current-exp'), [Symbol.for('quote'), []]], [Symbol.for('set!-values'), [Symbol.for('current-exp-node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('current-exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('push-right!'), Symbol.for('stack'), [Symbol.for('list'), Symbol.for('current-exp'), Symbol.for('current-exp'), Symbol.for('current-exp-node'), Symbol.for('current-exp-node')]], [Symbol.for('set!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('set!'), Symbol.for('parent-exp-node'), Symbol.for('current-exp-node')]], [[Symbol.for('eq?'), Symbol.for('token-string'), ')'], [Symbol.for('set!-values'), [Symbol.for('current-exp'), Symbol.for('current-val'), Symbol.for('current-exp-node'), Symbol.for('current-val-node')], [Symbol.for('pop-right!'), Symbol.for('stack')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('current-val')], [Symbol.for('>='), [Symbol.for('array-list-length'), Symbol.for('current-val')], 3], [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('current-val'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('current-val')], 2]], [Symbol.for('string->symbol'), '.']]], [Symbol.for('aset!'), Symbol.for('current-val'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('current-val')], 2], [Symbol.for('cons-dot')]], [Symbol.for('~>'), Symbol.for('current-val-node'), [Symbol.for('send'), Symbol.for('get'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('current-val')], 2]], [Symbol.for('send'), Symbol.for('set-value'), [Symbol.for('cons-dot')]]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('stack')], 0], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('array-list-last'), Symbol.for('stack')]], [Symbol.for('set!'), Symbol.for('parent-exp'), [Symbol.for('aget'), Symbol.for('entry'), 1]], [Symbol.for('set!'), Symbol.for('parent-exp-node'), [Symbol.for('aget'), Symbol.for('entry'), 3]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('parent-exp'), undefined], [Symbol.for('set!'), Symbol.for('parent-exp-node'), undefined]]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('push-right!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('send'), Symbol.for('parent-exp-node'), Symbol.for('insert'), Symbol.for('current-exp-node')]]], [[Symbol.for('hash-has-key?'), Symbol.for('operator-symbols'), Symbol.for('token-string')], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('hash-ref'), Symbol.for('operator-symbols'), Symbol.for('token-string')]], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('tokens')], 1]], [Symbol.for('let'), [[Symbol.for('next'), [Symbol.for('aget'), Symbol.for('tokens'), [Symbol.for('+'), Symbol.for('i'), 1]]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('is-a?'), Symbol.for('next'), Symbol.for('SymbolToken')], [Symbol.for('eq?'), [Symbol.for('send'), Symbol.for('next'), Symbol.for('get-value')], '(']], [Symbol.for('set!'), Symbol.for('current-exp'), [Symbol.for('quote'), []]], [Symbol.for('set!'), Symbol.for('current-exp-node'), [Symbol.for('new'), Symbol.for('Rose'), Symbol.for('current-exp')]], [Symbol.for('define'), Symbol.for('exp-node'), [Symbol.for('make-list-rose'), [Symbol.for('list'), Symbol.for('sym'), Symbol.for('current-exp-node')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('exp-node'), Symbol.for('get-value')]], [Symbol.for('set!-values'), [Symbol.for('exp-node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('exp-node'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('push-right!'), Symbol.for('stack'), [Symbol.for('list'), Symbol.for('exp'), Symbol.for('current-exp'), Symbol.for('exp-node'), Symbol.for('current-exp-node')]], [Symbol.for('set!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('set!'), Symbol.for('parent-exp-node'), Symbol.for('current-exp-node')]], [Symbol.for('else'), [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('next'), Symbol.for('SymbolToken')], [Symbol.for('define'), Symbol.for('next-str'), [Symbol.for('send'), Symbol.for('next'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('hash-has-key?'), Symbol.for('literal-values'), Symbol.for('next-str')], [Symbol.for('set!'), Symbol.for('next'), [Symbol.for('hash-ref'), Symbol.for('literal-values'), Symbol.for('next-str')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('next'), [Symbol.for('string->symbol'), Symbol.for('next-str')]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('next'), [Symbol.for('send'), Symbol.for('next'), Symbol.for('get-value')]]]], [Symbol.for('set!'), Symbol.for('current-exp-node'), [Symbol.for('make-list-rose'), [Symbol.for('list'), Symbol.for('sym'), Symbol.for('next')]]], [Symbol.for('set!'), Symbol.for('current-exp'), [Symbol.for('send'), Symbol.for('current-exp-node'), Symbol.for('get-value')]], [Symbol.for('set!-values'), [Symbol.for('current-exp-node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('current-exp-node'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('push-right!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('send'), Symbol.for('parent-exp-node'), Symbol.for('insert'), Symbol.for('current-exp-node')]]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), Symbol.for('sym')], [Symbol.for('set!-values'), [Symbol.for('current-exp-node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('current-exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('push-right!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('send'), Symbol.for('parent-exp-node'), Symbol.for('insert'), Symbol.for('current-exp-node')]]]]], [[Symbol.for('hash-has-key?'), Symbol.for('literal-values'), Symbol.for('token-string')], [Symbol.for('set!'), Symbol.for('current-exp'), [Symbol.for('hash-ref'), Symbol.for('literal-values'), Symbol.for('token-string')]], [Symbol.for('set!-values'), [Symbol.for('current-exp-node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('current-exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('push-right!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('send'), Symbol.for('parent-exp-node'), Symbol.for('insert'), Symbol.for('current-exp-node')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), [Symbol.for('string->symbol'), [Symbol.for('send'), Symbol.for('token'), Symbol.for('get-value')]]], [Symbol.for('set!-values'), [Symbol.for('current-exp-node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('current-exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('push-right!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('send'), Symbol.for('parent-exp-node'), Symbol.for('insert'), Symbol.for('current-exp-node')]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), [Symbol.for('send'), Symbol.for('token'), Symbol.for('get-value')]], [Symbol.for('set!-values'), [Symbol.for('current-exp-node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('current-exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('push-right!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('send'), Symbol.for('parent-exp-node'), Symbol.for('insert'), Symbol.for('current-exp-node')]]]]], Symbol.for('current-exp-node')];
+parseRose.fsource = [Symbol.for('define'), [Symbol.for('parse-rose'), Symbol.for('tokens'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('stack'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('exp'), undefined], [Symbol.for('define'), Symbol.for('node'), undefined], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('current-exp'), undefined], [Symbol.for('define'), Symbol.for('current-exp-node'), undefined], [Symbol.for('define'), Symbol.for('current-val'), undefined], [Symbol.for('define'), Symbol.for('current-val-node'), undefined], [Symbol.for('define'), Symbol.for('parent-exp')], [Symbol.for('define'), Symbol.for('parent-exp-node')], [Symbol.for('define'), Symbol.for('parent-val')], [Symbol.for('define'), Symbol.for('parent-val-node')], [Symbol.for('define'), [Symbol.for('insert!'), Symbol.for('val'), Symbol.for('exp'), Symbol.for('val-node'), Symbol.for('exp-node')], [Symbol.for('push-right!'), Symbol.for('exp'), Symbol.for('val')], [Symbol.for('send'), Symbol.for('exp-node'), Symbol.for('insert'), Symbol.for('val-node')]], [Symbol.for('define'), [Symbol.for('update!'), Symbol.for('exp'), Symbol.for('node')], [Symbol.for('cond'), [Symbol.for('current-val'), [Symbol.for('insert!'), Symbol.for('exp'), Symbol.for('current-val'), Symbol.for('node'), Symbol.for('current-val-node')], [Symbol.for('set!'), Symbol.for('current-val'), undefined], [Symbol.for('set!'), Symbol.for('current-val-node'), undefined]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-exp-node'), Symbol.for('node')]]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('insert!'), Symbol.for('current-exp'), Symbol.for('parent-val'), Symbol.for('current-exp-node'), Symbol.for('parent-val-node')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-list-length'), Symbol.for('tokens')]]]], [Symbol.for('define'), Symbol.for('token'), [Symbol.for('aget'), Symbol.for('tokens'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('token'), Symbol.for('CommentToken')], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('token'), Symbol.for('LeadingCommentToken')], [Symbol.for('push-right!'), Symbol.for('comments'), Symbol.for('token')]]], [[Symbol.for('is-a?'), Symbol.for('token'), Symbol.for('SymbolToken')], [Symbol.for('define'), Symbol.for('token-string'), [Symbol.for('send'), Symbol.for('token'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('hash-has-key?'), Symbol.for('operator-symbols'), Symbol.for('token-string')], [Symbol.for('set!'), Symbol.for('exp'), [Symbol.for('list'), [Symbol.for('hash-ref'), Symbol.for('operator-symbols'), Symbol.for('token-string')]]], [Symbol.for('set!-values'), [Symbol.for('node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('cond'), [Symbol.for('current-val'), [Symbol.for('insert!'), Symbol.for('exp'), Symbol.for('current-val'), Symbol.for('node'), Symbol.for('current-val-node')], [Symbol.for('set!'), Symbol.for('current-val'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-val-node'), Symbol.for('node')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-exp-node'), Symbol.for('node')], [Symbol.for('set!'), Symbol.for('current-val'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-val-node'), Symbol.for('node')]]]], [[Symbol.for('eq?'), Symbol.for('token-string'), '('], [Symbol.for('set!'), Symbol.for('exp'), [Symbol.for('quote'), []]], [Symbol.for('set!-values'), [Symbol.for('node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('cond'), [Symbol.for('current-val'), [Symbol.for('insert!'), Symbol.for('exp'), Symbol.for('current-val'), Symbol.for('node'), Symbol.for('current-val-node')], [Symbol.for('set!'), Symbol.for('current-val'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-val-node'), Symbol.for('node')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-exp-node'), Symbol.for('node')]]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('insert!'), Symbol.for('current-exp'), Symbol.for('parent-val'), Symbol.for('current-exp-node'), Symbol.for('parent-val-node')]], [Symbol.for('set!'), Symbol.for('current-val'), [Symbol.for('or'), Symbol.for('current-val'), Symbol.for('current-exp')]], [Symbol.for('set!'), Symbol.for('current-val-node'), [Symbol.for('or'), Symbol.for('current-val-node'), Symbol.for('current-exp-node')]], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('list'), Symbol.for('current-exp'), Symbol.for('current-val'), Symbol.for('current-exp-node'), Symbol.for('current-val-node')]], [Symbol.for('push-right!'), Symbol.for('stack'), Symbol.for('entry')], [Symbol.for('set!'), Symbol.for('parent-exp'), Symbol.for('current-exp')], [Symbol.for('set!'), Symbol.for('parent-val'), Symbol.for('current-val')], [Symbol.for('set!'), Symbol.for('parent-exp-node'), Symbol.for('current-exp-node')], [Symbol.for('set!'), Symbol.for('parent-val-node'), Symbol.for('current-val-node')], [Symbol.for('set!'), Symbol.for('current-val'), undefined], [Symbol.for('set!'), Symbol.for('current-val-node'), undefined]], [[Symbol.for('eq?'), Symbol.for('token-string'), ')'], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('pop-right!'), Symbol.for('stack')]], [Symbol.for('set!-values'), [Symbol.for('current-exp'), Symbol.for('current-val'), Symbol.for('current-exp-node'), Symbol.for('current-val-node')], Symbol.for('entry')], [Symbol.for('define'), Symbol.for('parent-entry'), [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('stack')], 0], [Symbol.for('array-list-last'), Symbol.for('stack')], [Symbol.for('quote'), [undefined, undefined, undefined, undefined]]]], [Symbol.for('set!-values'), [Symbol.for('parent-exp'), Symbol.for('parent-val'), Symbol.for('parent-exp-node'), Symbol.for('parent-val-node')], Symbol.for('parent-entry')], [Symbol.for('set!'), Symbol.for('current-val'), undefined], [Symbol.for('set!'), Symbol.for('current-val-node'), undefined]], [[Symbol.for('hash-has-key?'), Symbol.for('literal-values'), Symbol.for('token-string')], [Symbol.for('set!'), Symbol.for('exp'), [Symbol.for('hash-ref'), Symbol.for('literal-values'), Symbol.for('token-string')]], [Symbol.for('set!-values'), [Symbol.for('node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('update!'), Symbol.for('exp'), Symbol.for('node')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('exp'), [Symbol.for('string->symbol'), [Symbol.for('send'), Symbol.for('token'), Symbol.for('get-value')]]], [Symbol.for('set!-values'), [Symbol.for('node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('update!'), Symbol.for('exp'), Symbol.for('node')]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('token'), Symbol.for('get-value')]], [Symbol.for('set!-values'), [Symbol.for('node'), Symbol.for('comments')], [Symbol.for('attach-comments'), Symbol.for('exp'), Symbol.for('comments'), Symbol.for('options')]], [Symbol.for('update!'), Symbol.for('exp'), Symbol.for('node')]]]], Symbol.for('current-exp-node')];
 /**
  * Take the array of tokens produced by `tokenize` and make a
  * nested array that corresponds to the structure of the Lisp code.
@@ -496,13 +496,13 @@ function attachComments(node, comments, options = {}) {
     if (commentsOption === undefined) {
         commentsOption = true;
     }
-    const result = (node instanceof rose_1.Rose) ? node : new rose_1.Rose(node);
+    const result = (node instanceof rose_1.Rose) ? node : (0, rose_1.makeRose)(node);
     if (commentsOption && comments && (comments.length > 0)) {
         result.setProperty('comments', comments);
     }
     return [result, []];
 }
-attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), Symbol.for('node'), Symbol.for('comments'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('when'), [Symbol.for('undefined?'), Symbol.for('comments-option')], [Symbol.for('set!'), Symbol.for('comments-option'), true]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], Symbol.for('node'), [Symbol.for('new'), Symbol.for('Rose'), Symbol.for('node')]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('comments-option'), Symbol.for('comments'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('comments')], 0]], [Symbol.for('send'), Symbol.for('result'), Symbol.for('set-property'), 'comments', Symbol.for('comments')]], [Symbol.for('values'), Symbol.for('result'), [Symbol.for('quote'), []]]];
+attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), Symbol.for('node'), Symbol.for('comments'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('when'), [Symbol.for('undefined?'), Symbol.for('comments-option')], [Symbol.for('set!'), Symbol.for('comments-option'), true]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], Symbol.for('node'), [Symbol.for('make-rose'), Symbol.for('node')]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('comments-option'), Symbol.for('comments'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('comments')], 0]], [Symbol.for('send'), Symbol.for('result'), Symbol.for('set-property'), 'comments', Symbol.for('comments')]], [Symbol.for('values'), Symbol.for('result'), [Symbol.for('quote'), []]]];
 /**
  * Whether `comment` is a `;;`-comment (level 2),
  * a `;;;`-comment (level 3), or some other level.

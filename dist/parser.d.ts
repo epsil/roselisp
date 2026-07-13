@@ -74,7 +74,7 @@ declare namespace tokenize {
  */
 declare function parseRose(tokens: any, options?: any): any;
 declare namespace parseRose {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (string | symbol)[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | ((number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | ((symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[][] | (symbol | (symbol | (string | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[][])[][])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
 }
 /**
  * Take the array of tokens produced by `tokenize` and make a

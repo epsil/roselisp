@@ -1661,22 +1661,42 @@
 ;;; Convert a function to a macro on the basis
 ;;; of its `(define ...)` form.
 (define (definition->macro exp args)
-  ;; TODO: Rest arguments.
-  ;;
   ;; FIXME: When a complex argument is referenced inside of a `lambda`
   ;; expression, we should store the value in a local variable.
-  (define params-list
-    (rest (second exp)))
   (define params
+    (cdr (array-list-second exp)))
+  (define-values (regular-params rest-param)
+    (parse-params-list params))
+  (when rest-param
+    (set! params
+          (append regular-params
+                  (list rest-param))))
+  (define params-list
     (map (lambda (x)
            (if (array? x)
-               (first x)
+               (array-first x)
                x))
-         params-list))
+         params))
+  (define regular-args '())
+  (define rest-arg '(list))
+  (for ((i (range 0 (array-list-length args))))
+    (define arg
+      (aget args i))
+    (cond
+     ((< i (array-list-length regular-params))
+      (push-right! regular-args arg))
+     (rest-param
+      (push-right! rest-arg arg))))
+  (define args-list
+    (append regular-args
+            (if (and rest-param
+                     (> (array-list-length rest-arg 1)))
+                (list rest-arg)
+                '())))
   (define body
     (drop exp 2))
   (cond
-   ((= (array-list-length params) 0)
+   ((= (array-list-length params-list) 0)
     (cond
      ((= (array-list-length body) 1)
       (first body))
@@ -1684,7 +1704,7 @@
       `(begin ,@body))))
    (else
     (define counts
-      (build-list (array-list-length args)
+      (build-list (array-list-length args-list)
                   (const 0)))
     (define should-make-lambda #f)
     (define should-make-let #f)
@@ -1696,7 +1716,7 @@
                   (js/find-index
                    (lambda (z)
                      (eq? z y))
-                   params))
+                   params-list))
                 (cond
                  ((>= idx 0)
                   (list-set! counts
@@ -1704,11 +1724,11 @@
                              (+ (aget counts idx)
                                 1))
                   (cond
-                   ((< idx (array-list-length args))
-                    (aget args idx))
+                   ((< idx (array-list-length args-list))
+                    (aget args-list idx))
                    (else
                     (define current-param
-                      (aget params-list idx))
+                      (aget params idx))
                     (cond
                      ((array? current-param)
                       (second current-param))
@@ -1721,17 +1741,16 @@
     ;; Determine whether a complex argument is referenced
     ;; more than once. If so, we need to make a `lambda`
     ;; expression instead.
-    (for ((i (range 0 (array-list-length args))))
+    (for ((i (range 0 (array-list-length args-list))))
       (define count
         (aget counts i))
       (define arg
-        (aget args i))
+        (aget args-list i))
       (when (and (> count 1)
                  (not (or (symbol? arg)
                           (boolean? arg)
                           (string? arg)
                           (number? arg))))
-        ;; (set! should-make-lambda #t)
         (set! should-make-let #t)
         (break)))
     (cond
@@ -1739,21 +1758,21 @@
       (define let-bindings-env '())
       (define gensym-map
         (make-hash))
-      (for ((i (range 0 (array-list-length params))))
+      (for ((i (range 0 (array-list-length params-list))))
         (define arg-exp
           (cond
-           ((< i (array-list-length args))
-            (aget args i))
+           ((< i (array-list-length args-list))
+            (aget args-list i))
            (else
             (define current-param
-              (aget params-list i))
+              (aget params i))
             (cond
              ((array? current-param)
               (second current-param))
              (else
               #u)))))
         (define param-exp
-          (aget params i))
+          (aget params-list i))
         (define param
           (if (array? param-exp)
               (first param-exp)
@@ -7566,6 +7585,21 @@
 (define (macro-definition? exp)
   (or (tagged-list? exp 'define-macro)
       (tagged-list? exp 'defmacro)))
+
+;;; Parse a parameter list into regular parameters
+;;; and rest parameter, if any.
+(define (parse-params-list params)
+  (define regular-params '())
+  (define rest-param #u)
+  (cond
+   ((symbol? params)
+    (set! rest-param params))
+   ((dotted-list? params)
+    (set! regular-params (linked-list-drop-right_ params 1))
+    (set! rest-param (dotted-list-tail params)))
+   (else
+    (set! regular-params params)))
+  (values regular-params rest-param))
 
 ;;; Lisp environment.
 (define lisp-environment

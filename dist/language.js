@@ -76,7 +76,7 @@ const thunk_1 = require("./thunk");
 const util_1 = require("./util");
 Object.defineProperty(exports, "quotep", { enumerable: true, get: function () { return util_1.quotep; } });
 const visitor_1 = require("./visitor");
-const [lastCdr, cdr, flatten, buildList, listStar, makeList, cons, findf, length] = (() => {
+const [lastCdr, cdr, flatten, buildList, listStar, keywordp, makeList, cons, findf, length] = (() => {
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
             return undefined;
@@ -149,6 +149,9 @@ const [lastCdr, cdr, flatten, buildList, listStar, makeList, cons, findf, length
             }
         }
     }
+    function keywordp_(obj) {
+        return (typeof obj === 'symbol') && obj.description.match(new RegExp('^:'));
+    }
     function makeList_(k, v) {
         let result = [];
         for (let i = 0; i < k; i++) {
@@ -211,7 +214,7 @@ const [lastCdr, cdr, flatten, buildList, listStar, makeList, cons, findf, length
         }
         return len;
     }
-    return [lastCdr_, cdr_, flatten_, buildList_, listStar_, makeList_, cons_, findf_, length_];
+    return [lastCdr_, cdr_, flatten_, buildList_, listStar_, keywordp_, makeList_, cons_, findf_, length_];
 })();
 /**
  * Default options for interpretation and compilation.
@@ -1560,59 +1563,58 @@ function compileTypeExp(exp, env, options = {}) {
         }));
     }
     else if ((0, util_1.taggedListP)(exp, Symbol.for('->')) || (0, util_1.taggedListP)(exp, Symbol.for('->*'))) {
-        const mandatoryParams = (0, util_1.taggedListP)(exp, Symbol.for('->*')) ? ((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(exp);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = exp;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = exp[exp.length - 1];
-                }
-                else {
-                    result = exp.slice(1);
-                }
-                i--;
+        let params = exp.slice(1);
+        const returnValue = params[params.length - 1];
+        params = params.slice(0, -1);
+        let plist = [];
+        const _end = params.length;
+        for (let i = 0; i < _end; i++) {
+            if (keywordp(params[i])) {
+                plist = (i === 0) ? params : params.slice(i);
+                params = (() => {
+                    const n = params.length - i;
+                    if (n === 0) {
+                        return params;
+                    }
+                    else {
+                        return params.slice(0, -n);
+                    }
+                })();
+                break;
             }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : exp[1]) : exp.slice(0, -1).slice(1);
-        const optionalParams = ((0, util_1.taggedListP)(exp, Symbol.for('->*')) && (exp.length > 3)) ? ((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(exp);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 2;
-            let result = exp;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = exp[exp.length - 1];
-                }
-                else {
-                    result = exp.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : exp[2]) : [];
-        const returnValue = exp[exp.length - 1];
-        let i = 0;
-        function compileParam(param, optional) {
-            const varName = numberToLetter(i);
-            i++;
-            return new estree_1.Identifier(varName, optional).setType(compileTypeExp(param, env, options));
         }
-        compileParam.fsource = [Symbol.for('define'), [Symbol.for('compile-param'), Symbol.for('param'), Symbol.for('optional')], [Symbol.for('define'), Symbol.for('var-name'), [Symbol.for('number->letter'), Symbol.for('i')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]], [Symbol.for('~>'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('var-name'), Symbol.for('optional')], [Symbol.for('send'), Symbol.for('set-type'), [Symbol.for('compile-type-exp'), Symbol.for('param'), Symbol.for('env'), Symbol.for('options')]]]];
-        return new estree_1.TSFunctionType([...mandatoryParams.map(function (param) {
-                return compileParam(param, false);
-            }), ...optionalParams.map(function (param) {
-                return compileParam(param, true);
-            })], compileTypeExp(returnValue, env, options));
+        const mandatoryParams = ((0, util_1.taggedListP)(exp, Symbol.for('->*')) && (params.length >= 1)) ? params[0] : params;
+        const optionalParams = ((0, util_1.taggedListP)(exp, Symbol.for('->*')) && (params.length >= 2)) ? params[1] : [];
+        const restParam = (0, plist_1.plistGet_)(plist, Symbol.for(':rest'));
+        let pos = 0;
+        function compileParam(param, options = {
+            optional: false,
+            rest: false
+        }) {
+            const { optional, rest } = options;
+            const varName = numberToLetter(pos);
+            pos++;
+            let identifier = new estree_1.Identifier(varName, optional);
+            if (rest) {
+                identifier = new estree_1.RestElement(identifier);
+            }
+            let type_ = compileTypeExp(param, env, options);
+            return identifier.setType(type_);
+        }
+        compileParam.fsource = [Symbol.for('define'), [Symbol.for('compile-param'), Symbol.for('param'), [Symbol.for('options'), [Symbol.for('js-obj'), 'optional', false, 'rest', false]]], [Symbol.for('define-fields'), [Symbol.for('optional'), Symbol.for('rest')], Symbol.for('options')], [Symbol.for('define'), Symbol.for('var-name'), [Symbol.for('number->letter'), Symbol.for('pos')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('define'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('var-name'), Symbol.for('optional')]], [Symbol.for('when'), Symbol.for('rest'), [Symbol.for('set!'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('RestElement'), Symbol.for('identifier')]]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('compile-type-exp'), Symbol.for('param'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('identifier'), Symbol.for('set-type'), Symbol.for('type_')]];
+        const mandatoryParamsCompiled = mandatoryParams.map(function (param) {
+            return compileParam(param);
+        });
+        const optionalParamsCompiled = optionalParams.map(function (param) {
+            return compileParam(param, {
+                optional: true
+            });
+        });
+        const restParamsCompiled = restParam ? [compileParam(restParam, {
+                rest: true
+            })] : [];
+        const returnValueCompiled = compileTypeExp(returnValue, env, options);
+        return new estree_1.TSFunctionType([...mandatoryParamsCompiled, ...optionalParamsCompiled, ...restParamsCompiled], returnValueCompiled);
     }
     else if (Array.isArray(exp) && (exp.length > 0)) {
         let name = new estree_1.Identifier(exp[0].description);
@@ -1630,7 +1632,7 @@ function compileTypeExp(exp, env, options = {}) {
         return new estree_1.TSAnyKeyword();
     }
 }
-compileTypeExp.fsource = [Symbol.for('define'), [Symbol.for('compile-type-exp'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('exp')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Any')]], [Symbol.for('new'), Symbol.for('TSAnyKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Void')]], [Symbol.for('new'), Symbol.for('TSVoidKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Undefined')]], [Symbol.for('new'), Symbol.for('TSUndefinedKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Boolean')]], [Symbol.for('new'), Symbol.for('TSBooleanKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('True')]], [Symbol.for('new'), Symbol.for('TSLiteralType'), [Symbol.for('new'), Symbol.for('Literal'), true]]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('False')]], [Symbol.for('new'), Symbol.for('TSLiteralType'), [Symbol.for('new'), Symbol.for('Literal'), false]]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Number')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Integer')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Natural')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Real')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('String')]], [Symbol.for('new'), Symbol.for('TSStringKeyword')]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('TSTypeReference'), [Symbol.for('new'), Symbol.for('Identifier'), [Symbol.for('symbol->string'), Symbol.for('exp')]]]]]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('List')]], [Symbol.for('new'), Symbol.for('TSTupleType'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-type-exp'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('rest'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Listof')]], [Symbol.for('new'), Symbol.for('TSArrayType'), [Symbol.for('compile-type-exp'), [Symbol.for('second'), Symbol.for('exp')], Symbol.for('env'), Symbol.for('options')]]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Pairof')]], [Symbol.for('compile-type-exp'), [Symbol.for('quasiquote'), [Symbol.for('Listof'), [Symbol.for('U'), [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('exp')]], Symbol.for('Symbol')]]], Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('U')]], [Symbol.for('new'), Symbol.for('TSUnionType'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-type-exp'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('rest'), Symbol.for('exp')]]]], [[Symbol.for('or'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->')]], [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->*')]]], [Symbol.for('define'), Symbol.for('mandatory-params'), [Symbol.for('if'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->*')]], [Symbol.for('second'), Symbol.for('exp')], [Symbol.for('drop'), [Symbol.for('drop-right'), Symbol.for('exp'), 1], 1]]], [Symbol.for('define'), Symbol.for('optional-params'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->*')]], [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('exp')], 3]], [Symbol.for('third'), Symbol.for('exp')], [Symbol.for('quote'), []]]], [Symbol.for('define'), Symbol.for('return-value'), [Symbol.for('array-list-last'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('i'), 0], [Symbol.for('define'), [Symbol.for('compile-param'), Symbol.for('param'), Symbol.for('optional')], [Symbol.for('define'), Symbol.for('var-name'), [Symbol.for('number->letter'), Symbol.for('i')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]], [Symbol.for('~>'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('var-name'), Symbol.for('optional')], [Symbol.for('send'), Symbol.for('set-type'), [Symbol.for('compile-type-exp'), Symbol.for('param'), Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('new'), Symbol.for('TSFunctionType'), [Symbol.for('append'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('param')], [Symbol.for('compile-param'), Symbol.for('param'), false]], Symbol.for('mandatory-params')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('param')], [Symbol.for('compile-param'), Symbol.for('param'), true]], Symbol.for('optional-params')]], [Symbol.for('compile-type-exp'), Symbol.for('return-value'), Symbol.for('env'), Symbol.for('options')]]], [[Symbol.for('and'), [Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('exp')], 0]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('new'), Symbol.for('Identifier'), [Symbol.for('symbol->string'), [Symbol.for('first'), Symbol.for('exp')]]]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('map'), Symbol.for('symbol->string'), [Symbol.for('rest'), Symbol.for('exp')]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('params')], 0], [Symbol.for('new'), Symbol.for('TSTypeReference'), Symbol.for('name'), [Symbol.for('new'), Symbol.for('TSTypeParameterInstantiation'), Symbol.for('params')]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('TSTypeReference'), Symbol.for('name')]]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('TSAnyKeyword')]]]];
+compileTypeExp.fsource = [Symbol.for('define'), [Symbol.for('compile-type-exp'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('exp')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Any')]], [Symbol.for('new'), Symbol.for('TSAnyKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Void')]], [Symbol.for('new'), Symbol.for('TSVoidKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Undefined')]], [Symbol.for('new'), Symbol.for('TSUndefinedKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Boolean')]], [Symbol.for('new'), Symbol.for('TSBooleanKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('True')]], [Symbol.for('new'), Symbol.for('TSLiteralType'), [Symbol.for('new'), Symbol.for('Literal'), true]]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('False')]], [Symbol.for('new'), Symbol.for('TSLiteralType'), [Symbol.for('new'), Symbol.for('Literal'), false]]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Number')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Integer')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Natural')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Real')]], [Symbol.for('new'), Symbol.for('TSNumberKeyword')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('String')]], [Symbol.for('new'), Symbol.for('TSStringKeyword')]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('TSTypeReference'), [Symbol.for('new'), Symbol.for('Identifier'), [Symbol.for('symbol->string'), Symbol.for('exp')]]]]]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('List')]], [Symbol.for('new'), Symbol.for('TSTupleType'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-type-exp'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('rest'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Listof')]], [Symbol.for('new'), Symbol.for('TSArrayType'), [Symbol.for('compile-type-exp'), [Symbol.for('second'), Symbol.for('exp')], Symbol.for('env'), Symbol.for('options')]]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('Pairof')]], [Symbol.for('compile-type-exp'), [Symbol.for('quasiquote'), [Symbol.for('Listof'), [Symbol.for('U'), [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('exp')]], Symbol.for('Symbol')]]], Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('U')]], [Symbol.for('new'), Symbol.for('TSUnionType'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-type-exp'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('rest'), Symbol.for('exp')]]]], [[Symbol.for('or'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->')]], [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->*')]]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('drop'), Symbol.for('exp'), 1]], [Symbol.for('define'), Symbol.for('return-value'), [Symbol.for('array-list-last'), Symbol.for('params')]], [Symbol.for('set!'), Symbol.for('params'), [Symbol.for('drop-right'), Symbol.for('params'), 1]], [Symbol.for('define'), Symbol.for('plist'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-list-length'), Symbol.for('params')]]]], [Symbol.for('when'), [Symbol.for('keyword?'), [Symbol.for('aget'), Symbol.for('params'), Symbol.for('i')]], [Symbol.for('set!'), Symbol.for('plist'), [Symbol.for('drop'), Symbol.for('params'), Symbol.for('i')]], [Symbol.for('set!'), Symbol.for('params'), [Symbol.for('drop-right'), Symbol.for('params'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('params')], Symbol.for('i')]]], [Symbol.for('break')]]], [Symbol.for('define'), Symbol.for('mandatory-params'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->*')]], [Symbol.for('>='), [Symbol.for('array-list-length'), Symbol.for('params')], 1]], [Symbol.for('array-list-first'), Symbol.for('params')], Symbol.for('params')]], [Symbol.for('define'), Symbol.for('optional-params'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('->*')]], [Symbol.for('>='), [Symbol.for('array-list-length'), Symbol.for('params')], 2]], [Symbol.for('array-list-second'), Symbol.for('params')], [Symbol.for('quote'), []]]], [Symbol.for('define'), Symbol.for('rest-param'), [Symbol.for('plist-get_'), Symbol.for('plist'), [Symbol.for('quote'), Symbol.for(':rest')]]], [Symbol.for('define'), Symbol.for('pos'), 0], [Symbol.for('define'), [Symbol.for('compile-param'), Symbol.for('param'), [Symbol.for('options'), [Symbol.for('js-obj'), 'optional', false, 'rest', false]]], [Symbol.for('define-fields'), [Symbol.for('optional'), Symbol.for('rest')], Symbol.for('options')], [Symbol.for('define'), Symbol.for('var-name'), [Symbol.for('number->letter'), Symbol.for('pos')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('define'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('var-name'), Symbol.for('optional')]], [Symbol.for('when'), Symbol.for('rest'), [Symbol.for('set!'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('RestElement'), Symbol.for('identifier')]]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('compile-type-exp'), Symbol.for('param'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('identifier'), Symbol.for('set-type'), Symbol.for('type_')]], [Symbol.for('define'), Symbol.for('mandatory-params-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('param')], [Symbol.for('compile-param'), Symbol.for('param')]], Symbol.for('mandatory-params')]], [Symbol.for('define'), Symbol.for('optional-params-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('param')], [Symbol.for('compile-param'), Symbol.for('param'), [Symbol.for('js-obj'), 'optional', true]]], Symbol.for('optional-params')]], [Symbol.for('define'), Symbol.for('rest-params-compiled'), [Symbol.for('if'), Symbol.for('rest-param'), [Symbol.for('list'), [Symbol.for('compile-param'), Symbol.for('rest-param'), [Symbol.for('js-obj'), 'rest', true]]], [Symbol.for('quote'), []]]], [Symbol.for('define'), Symbol.for('return-value-compiled'), [Symbol.for('compile-type-exp'), Symbol.for('return-value'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('new'), Symbol.for('TSFunctionType'), [Symbol.for('append'), Symbol.for('mandatory-params-compiled'), Symbol.for('optional-params-compiled'), Symbol.for('rest-params-compiled')], Symbol.for('return-value-compiled')]], [[Symbol.for('and'), [Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('exp')], 0]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('new'), Symbol.for('Identifier'), [Symbol.for('symbol->string'), [Symbol.for('first'), Symbol.for('exp')]]]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('map'), Symbol.for('symbol->string'), [Symbol.for('rest'), Symbol.for('exp')]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('params')], 0], [Symbol.for('new'), Symbol.for('TSTypeReference'), Symbol.for('name'), [Symbol.for('new'), Symbol.for('TSTypeParameterInstantiation'), Symbol.for('params')]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('TSTypeReference'), Symbol.for('name')]]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('TSAnyKeyword')]]]];
 /**
  * Convert a number to a letter.
  * `0` corresponds to `a`, `1` to `b`, etc.
@@ -4702,7 +4704,7 @@ function compileSymbol(node, env, options = {}, settings = {}) {
         }
         if (gensymMap.has(exp)) {
             let [gensymName, name, i] = gensymMap.get(exp);
-            const identifier = new estree_1.Identifier(gensymName);
+            let identifier = new estree_1.Identifier(gensymName);
             return identifier;
         }
         else {
@@ -4719,7 +4721,7 @@ function compileSymbol(node, env, options = {}, settings = {}) {
                 regularSym = Symbol.for(gensymName);
                 i++;
             }
-            const identifier = new estree_1.Identifier(gensymName);
+            let identifier = new estree_1.Identifier(gensymName);
             const entry = [gensymName, name, i];
             gensymMap.set(exp, entry);
             continuationEnv.setLocal(regularSym, true);
@@ -5758,7 +5760,7 @@ compileArrayDropRightMacro.ftype = 'macro';
  * Compiler macro for `(drop ...)` expressions.
  */
 function compileDropMacro(exp, env) {
-    const [lst, pos] = exp.slice(1);
+    let [lst, pos] = exp.slice(1);
     if (Number.isFinite(pos)) {
         if (pos === 0) {
             return lst;

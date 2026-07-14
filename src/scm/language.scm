@@ -2014,34 +2014,71 @@
               (rest exp))))
    ((or (tagged-list? exp '->)
         (tagged-list? exp '->*))
+    (define params
+      (drop exp 1))
+    (define return-value
+      (array-list-last params))
+    (set! params (drop-right params 1))
+    (define plist '())
+    (for ((i (range 0 (array-list-length params))))
+      (when (keyword? (aget params i))
+        (set! plist (drop params i))
+        (set! params
+              (drop-right params
+                          (- (array-list-length params) i)))
+        (break)))
     (define mandatory-params
-      (if (tagged-list? exp '->*)
-          (second exp)
-          (drop (drop-right exp 1) 1)))
+      (if (and (tagged-list? exp '->*)
+               (>= (array-list-length params) 1))
+          (array-list-first params)
+          params))
     (define optional-params
       (if (and (tagged-list? exp '->*)
-               (> (array-list-length exp) 3))
-          (third exp)
+               (>= (array-list-length params) 2))
+          (array-list-second params)
           '()))
-    (define return-value
-      (array-list-last exp))
-    (define i 0)
-    (define (compile-param param optional)
+    (define rest-param
+      (plist-get_ plist ':rest))
+    (define pos 0)
+    (define (compile-param param
+                           (options
+                            (js-obj "optional" #f
+                                    "rest" #f)))
+      (define-fields (optional rest)
+        options)
       (define var-name
-        (number->letter i))
-      (set! i (+ i 1))
-      (~> (new Identifier var-name optional)
-          (send set-type
-                (compile-type-exp param env options))))
-    (new
-     TSFunctionType
-     (append (map (lambda (param)
-                    (compile-param param #f))
-                  mandatory-params)
-             (map (lambda (param)
-                    (compile-param param #t))
-                  optional-params))
-     (compile-type-exp return-value env options)))
+        (number->letter pos))
+      (set! pos (+ pos 1))
+      (define identifier
+        (new Identifier var-name optional))
+      (when rest
+        (set! identifier
+              (new RestElement identifier)))
+      (define type_
+        (compile-type-exp param env options))
+      (send identifier set-type type_))
+    (define mandatory-params-compiled
+      (map (lambda (param)
+             (compile-param param))
+           mandatory-params))
+    (define optional-params-compiled
+      (map (lambda (param)
+             (compile-param param
+                            (js-obj "optional" #t)))
+           optional-params))
+    (define rest-params-compiled
+      (if rest-param
+          (list
+           (compile-param rest-param
+                          (js-obj "rest" #t)))
+          '()))
+    (define return-value-compiled
+      (compile-type-exp return-value env options))
+    (new TSFunctionType
+         (append mandatory-params-compiled
+                 optional-params-compiled
+                 rest-params-compiled)
+         return-value-compiled))
    ((and (array? exp)
          (> (array-list-length exp) 0))
     (define name

@@ -662,6 +662,18 @@ function evalEstreeRestElement(node: any, env: any, options: any = {}): any {
 evalEstreeRestElement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-rest-element'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-field'), Symbol.for('argument'), Symbol.for('node')]], [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]];
 
 /**
+ * Evaluate an ESTree [`SpreadElement`][estree:spreadelement] node.
+ *
+ * [estree:spreadelement]: https://github.com/estree/estree/blob/master/es2015.md#expressions
+ */
+function evalEstreeSpreadElement(node: any, env: any, options: any = {}): any {
+  const argument: any = node.argument;
+  return evalEstree(argument, env, options);
+}
+
+evalEstreeSpreadElement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-spread-element'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-field'), Symbol.for('argument'), Symbol.for('node')]], [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]];
+
+/**
  * Evaluate an ESTree [`ExpressionStatement`][estree:expressionstatement] node.
  *
  * [estree:expressionstatement]: https://github.com/estree/estree/blob/master/es5.md#expressionstatement
@@ -1223,7 +1235,7 @@ evalEstreeAssignmentExpressionHelper.fsource = [Symbol.for('define'), [Symbol.fo
 function evalEstreeArrayExpressionHelper(elements: any, env: any, options: any = {}): any {
   let result: any = [];
   for (let x of elements) {
-    if (estreeTypeP(x, 'RestElement')) {
+    if (estreeTypeP(x, 'SpreadElement')) {
       result = [...result, ...evalEstree(x, env, options)];
     } else {
       result.push(evalEstree(x, env, options));
@@ -1232,7 +1244,7 @@ function evalEstreeArrayExpressionHelper(elements: any, env: any, options: any =
   return result;
 }
 
-evalEstreeArrayExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-array-expression-helper'), Symbol.for('elements'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('elements')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('x'), 'RestElement'], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('append'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]]]], Symbol.for('result')];
+evalEstreeArrayExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-array-expression-helper'), Symbol.for('elements'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('elements')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('x'), 'SpreadElement'], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('append'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]]]], Symbol.for('result')];
 
 /**
  * Helper function for `eval-estree-function-expression`.
@@ -1279,7 +1291,7 @@ evalEstreeFunctionExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for(
 /**
  * Mapping from ESTree node types to evaluator functions.
  */
-const evalEstreeMap: any = new Map([['ArrayExpression', evalEstreeArrayExpression], ['ArrayPattern', evalEstreeArrayPattern], ['ArrowFunctionExpression', evalEstreeArrowFunctionExpression], ['AssignmentExpression', evalEstreeAssignmentExpression], ['BinaryExpression', evalEstreeBinaryExpression], ['BlockStatement', evalEstreeBlockStatement], ['BreakStatement', evalEstreeBreakStatement], ['CallExpression', evalEstreeCallExpression], ['ClassDeclaration', evalEstreeClassDeclaration], ['ClassExpression', evalEstreeClassExpression], ['ConditionalExpression', evalEstreeConditionalExpression], ['ContinueStatement', evalEstreeContinueStatement], ['ExpressionStatement', evalEstreeExpressionStatement], ['ForOfStatement', evalEstreeForOfStatement], ['ForStatement', evalEstreeForStatement], ['FunctionDeclaration', evalEstreeFunctionDeclaration], ['FunctionExpression', evalEstreeFunctionExpression], ['Identifier', evalEstreeIdentifier], ['IfStatement', evalEstreeIfStatement], ['Literal', evalEstreeLiteral], ['LogicalExpression', evalEstreeLogicalExpression], ['MemberExpression', evalEstreeMemberExpression], ['NewExpression', evalEstreeNewExpression], ['ObjectExpression', evalEstreeObjectExpression], ['Program', evalEstreeProgram], ['RestElement', evalEstreeRestElement], ['ReturnStatement', evalEstreeReturnStatement], ['SequenceExpression', evalEstreeSequenceExpression], ['SwitchCase', evalEstreeSwitchCase], ['SwitchStatement', evalEstreeSwitchStatement], ['TSAsExpression', evalEstreeTsAsExpression], ['ThisExpression', evalEstreeThisExpression], ['ThrowStatement', evalEstreeThrowStatement], ['TryStatement', evalEstreeTryStatement], ['UnaryExpression', evalEstreeUnaryExpression], ['UpdateExpression', evalEstreeUpdateExpression], ['VariableDeclaration', evalEstreeVariableDeclaration], ['VariableDeclarator', evalEstreeVariableDeclarator], ['WhileStatement', evalEstreeWhileStatement], ['XRawJavaScript', evalEstreeXRawJavascript], ['YieldExpression', evalEstreeYieldExpression]] as any);
+const evalEstreeMap: any = new Map([['ArrayExpression', evalEstreeArrayExpression], ['ArrayPattern', evalEstreeArrayPattern], ['ArrowFunctionExpression', evalEstreeArrowFunctionExpression], ['AssignmentExpression', evalEstreeAssignmentExpression], ['BinaryExpression', evalEstreeBinaryExpression], ['BlockStatement', evalEstreeBlockStatement], ['BreakStatement', evalEstreeBreakStatement], ['CallExpression', evalEstreeCallExpression], ['ClassDeclaration', evalEstreeClassDeclaration], ['ClassExpression', evalEstreeClassExpression], ['ConditionalExpression', evalEstreeConditionalExpression], ['ContinueStatement', evalEstreeContinueStatement], ['ExpressionStatement', evalEstreeExpressionStatement], ['ForOfStatement', evalEstreeForOfStatement], ['ForStatement', evalEstreeForStatement], ['FunctionDeclaration', evalEstreeFunctionDeclaration], ['FunctionExpression', evalEstreeFunctionExpression], ['Identifier', evalEstreeIdentifier], ['IfStatement', evalEstreeIfStatement], ['Literal', evalEstreeLiteral], ['LogicalExpression', evalEstreeLogicalExpression], ['MemberExpression', evalEstreeMemberExpression], ['NewExpression', evalEstreeNewExpression], ['ObjectExpression', evalEstreeObjectExpression], ['Program', evalEstreeProgram], ['RestElement', evalEstreeRestElement], ['ReturnStatement', evalEstreeReturnStatement], ['SequenceExpression', evalEstreeSequenceExpression], ['SpreadElement', evalEstreeSpreadElement], ['SwitchCase', evalEstreeSwitchCase], ['SwitchStatement', evalEstreeSwitchStatement], ['TSAsExpression', evalEstreeTsAsExpression], ['ThisExpression', evalEstreeThisExpression], ['ThrowStatement', evalEstreeThrowStatement], ['TryStatement', evalEstreeTryStatement], ['UnaryExpression', evalEstreeUnaryExpression], ['UpdateExpression', evalEstreeUpdateExpression], ['VariableDeclaration', evalEstreeVariableDeclaration], ['VariableDeclarator', evalEstreeVariableDeclarator], ['WhileStatement', evalEstreeWhileStatement], ['XRawJavaScript', evalEstreeXRawJavascript], ['YieldExpression', evalEstreeYieldExpression]] as any);
 
 export {
   eval_ as seval,

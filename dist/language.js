@@ -1711,11 +1711,35 @@ function compileApply(node, env, options = {}) {
     const argsCompiled = [];
     if (args.length > 0) {
         let regularArgs = args.slice(0, -1);
-        let restArg = args[args.length - 1];
         for (let arg of regularArgs) {
             argsCompiled.push(compileExpression((0, rose_1.makeRose)(arg), env, options));
         }
-        argsCompiled.push(new estree_1.RestElement(compileExpression((0, rose_1.makeRose)(restArg), env, options)));
+        let restArg = args[args.length - 1];
+        const restArgCompiled = compileExpression((0, rose_1.makeRose)(restArg), env, options);
+        const spreadElement = new estree_1.SpreadElement(restArgCompiled);
+        // Simplify the expression if the rest argument
+        // is nothing more than a simple list.
+        if ((0, estree_1.estreeTypeP)(restArgCompiled, 'ArrayExpression')) {
+            const elements = restArgCompiled.elements;
+            let isSimpleList = true;
+            for (let x of elements) {
+                if ((0, estree_1.estreeTypeP)(x, 'SpreadElement')) {
+                    isSimpleList = false;
+                    break;
+                }
+            }
+            if (isSimpleList) {
+                for (let x of elements) {
+                    argsCompiled.push(x);
+                }
+            }
+            else {
+                argsCompiled.push(spreadElement);
+            }
+        }
+        else {
+            argsCompiled.push(spreadElement);
+        }
     }
     if (isMakeObject) {
         return makeExpressionOrStatement(new estree_1.NewExpression(calleeCompiled, argsCompiled), options);
@@ -1724,7 +1748,7 @@ function compileApply(node, env, options = {}) {
         return makeExpressionOrStatement(new estree_1.CallExpression(calleeCompiled, argsCompiled), options);
     }
 }
-compileApply.fsource = [Symbol.for('define'), [Symbol.for('compile-apply'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('is-make-object'), [Symbol.for('eq?'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('get'), Symbol.for('f')], Symbol.for('new_')]], [Symbol.for('define'), Symbol.for('callee'), [Symbol.for('if'), Symbol.for('is-make-object'), [Symbol.for('third'), Symbol.for('exp')], Symbol.for('f')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('if'), Symbol.for('is-make-object'), [Symbol.for('drop'), Symbol.for('exp'), 3], [Symbol.for('drop'), Symbol.for('exp'), 2]]], [Symbol.for('define'), Symbol.for('callee-compiled'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), Symbol.for('callee')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('args-compiled'), [Symbol.for('quote'), []]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('args')], 0], [Symbol.for('define'), Symbol.for('regular-args'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('rest-arg'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('regular-args')]], [Symbol.for('push-right!'), Symbol.for('args-compiled'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), Symbol.for('arg')], Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('push-right!'), Symbol.for('args-compiled'), [Symbol.for('new'), Symbol.for('RestElement'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), Symbol.for('rest-arg')], Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('cond'), [Symbol.for('is-make-object'), [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('NewExpression'), Symbol.for('callee-compiled'), Symbol.for('args-compiled')], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('CallExpression'), Symbol.for('callee-compiled'), Symbol.for('args-compiled')], Symbol.for('options')]]]];
+compileApply.fsource = [Symbol.for('define'), [Symbol.for('compile-apply'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('is-make-object'), [Symbol.for('eq?'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('get'), Symbol.for('f')], Symbol.for('new_')]], [Symbol.for('define'), Symbol.for('callee'), [Symbol.for('if'), Symbol.for('is-make-object'), [Symbol.for('third'), Symbol.for('exp')], Symbol.for('f')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('if'), Symbol.for('is-make-object'), [Symbol.for('drop'), Symbol.for('exp'), 3], [Symbol.for('drop'), Symbol.for('exp'), 2]]], [Symbol.for('define'), Symbol.for('callee-compiled'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), Symbol.for('callee')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('args-compiled'), [Symbol.for('quote'), []]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('args')], 0], [Symbol.for('define'), Symbol.for('regular-args'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('regular-args')]], [Symbol.for('push-right!'), Symbol.for('args-compiled'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), Symbol.for('arg')], Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('rest-arg'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('rest-arg-compiled'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), Symbol.for('rest-arg')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('spread-element'), [Symbol.for('new'), Symbol.for('SpreadElement'), Symbol.for('rest-arg-compiled')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('rest-arg-compiled'), 'ArrayExpression'], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('get-field'), Symbol.for('elements'), Symbol.for('rest-arg-compiled')]], [Symbol.for('define'), Symbol.for('is-simple-list'), true], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('elements')]], [Symbol.for('when'), [Symbol.for('estree-type?'), Symbol.for('x'), 'SpreadElement'], [Symbol.for('set!'), Symbol.for('is-simple-list'), false], [Symbol.for('break')]]], [Symbol.for('cond'), [Symbol.for('is-simple-list'), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('elements')]], [Symbol.for('push-right!'), Symbol.for('args-compiled'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('args-compiled'), Symbol.for('spread-element')]]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('args-compiled'), Symbol.for('spread-element')]]]], [Symbol.for('cond'), [Symbol.for('is-make-object'), [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('NewExpression'), Symbol.for('callee-compiled'), Symbol.for('args-compiled')], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('CallExpression'), Symbol.for('callee-compiled'), Symbol.for('args-compiled')], Symbol.for('options')]]]];
 /**
  * Compile an `(array-ref ...)` expression.
  */
@@ -4250,7 +4274,7 @@ function compileQuasiquoteHelper(node, env, options = {}) {
                 return compileExpression(x.get(1), env, options);
             }
             else if ((0, util_1.taggedListP)(exp, Symbol.for('unquote-splicing'))) {
-                return new estree_1.RestElement(compileExpression(x.get(1), env, options));
+                return new estree_1.SpreadElement(compileExpression(x.get(1), env, options));
             }
             else {
                 return compileQuasiquoteHelper(x, env, options);

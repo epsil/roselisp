@@ -534,6 +534,14 @@
     (get-field argument node))
   (eval-estree argument env options))
 
+;;; Evaluate an ESTree [`SpreadElement`][estree:spreadelement] node.
+;;;
+;;; [estree:spreadelement]: https://github.com/estree/estree/blob/master/es2015.md#expressions
+(define (eval-estree-spread-element node env (options (js-obj)))
+  (define argument
+    (get-field argument node))
+  (eval-estree argument env options))
+
 ;;; Evaluate an ESTree [`ExpressionStatement`][estree:expressionstatement] node.
 ;;;
 ;;; [estree:expressionstatement]: https://github.com/estree/estree/blob/master/es5.md#expressionstatement
@@ -1083,7 +1091,7 @@
   (define result '())
   (for ((x elements))
     (cond
-     ((estree-type? x "RestElement")
+     ((estree-type? x "SpreadElement")
       (set! result
             (append result
                     (eval-estree x env options))))
@@ -1180,6 +1188,7 @@
      ("RestElement" . ,eval-estree-rest-element)
      ("ReturnStatement" . ,eval-estree-return-statement)
      ("SequenceExpression" . ,eval-estree-sequence-expression)
+     ("SpreadElement" . ,eval-estree-spread-element)
      ("SwitchCase" . ,eval-estree-switch-case)
      ("SwitchStatement" . ,eval-estree-switch-statement)
      ("TSAsExpression" . ,eval-estree-ts-as-expression)

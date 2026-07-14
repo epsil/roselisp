@@ -2139,18 +2139,36 @@
   (when (> (array-list-length args) 0)
     (define regular-args
       (drop-right args 1))
-    (define rest-arg
-      (array-list-last args))
     (for ((arg regular-args))
       (push-right! args-compiled
                    (compile-expression
                     (make-rose arg)
                     env options)))
-    (push-right! args-compiled
-                 (new RestElement
-                      (compile-expression
-                       (make-rose rest-arg)
-                       env options))))
+    (define rest-arg
+      (array-list-last args))
+    (define rest-arg-compiled
+      (compile-expression (make-rose rest-arg) env options))
+    (define spread-element
+      (new SpreadElement rest-arg-compiled))
+    ;; Simplify the expression if the rest argument
+    ;; is nothing more than a simple list.
+    (cond
+     ((estree-type? rest-arg-compiled "ArrayExpression")
+      (define elements
+        (get-field elements rest-arg-compiled))
+      (define is-simple-list #t)
+      (for ((x elements))
+        (when (estree-type? x "SpreadElement")
+          (set! is-simple-list #f)
+          (break)))
+      (cond
+       (is-simple-list
+        (for ((x elements))
+          (push-right! args-compiled x)))
+       (else
+        (push-right! args-compiled spread-element))))
+     (else
+      (push-right! args-compiled spread-element))))
   (cond
    (is-make-object
     (make-expression-or-statement
@@ -4329,7 +4347,7 @@
                   (compile-expression
                    (send x get 1) env options))
                  ((tagged-list? exp 'unquote-splicing)
-                  (new RestElement
+                  (new SpreadElement
                        (compile-expression
                         (send x get 1) env options)))
                  (else

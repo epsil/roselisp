@@ -217,7 +217,7 @@ arrayRest_.fsource = [Symbol.for('define'), [Symbol.for('array-rest_'), Symbol.f
 
 /**
  * Reverse the order of an array.
- * Returns a new array list.
+ * Returns a new array.
  */
 function arrayReverse_(arr: any): any {
   return arr.reverse();

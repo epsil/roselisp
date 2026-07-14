@@ -73,14 +73,14 @@
   (send input replace pattern insert))
 
 (provide
-  (rename-out (regexp-match?_ js-regexp-match-p_))
+  ;; (rename-out (regexp-match?_ js-regexp-match-p_))
+  ;; (rename-out (regexp-match_ js-regexp-match_))
+  ;; (rename-out (regexp-quote_ js-regexp-quote_))
+  ;; (rename-out (regexp-replace_ js-regexp-replace_))
+  ;; (rename-out (regexp?_ js-regexp-p_))
+  ;; (rename-out (regexp_ js-regexp_))
   (rename-out (regexp-match?_ regexp-match-p_))
-  (rename-out (regexp-match_ js-regexp-match_))
-  (rename-out (regexp-quote_ js-regexp-quote_))
-  (rename-out (regexp-replace_ js-regexp-replace_))
-  (rename-out (regexp?_ js-regexp-p_))
   (rename-out (regexp?_ regexp-p_))
-  (rename-out (regexp_ js-regexp_))
   regexp-match?_
   regexp-match_
   regexp-quote_

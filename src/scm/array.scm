@@ -131,7 +131,7 @@
   (array-drop arr 1))
 
 ;;; Reverse the order of an array.
-;;; Returns a new array list.
+;;; Returns a new array.
 (define (array-reverse_ arr)
   (send arr reverse))
 

@@ -61,23 +61,17 @@
 
 ;;; Variadic version of JavaScript's `+` operator.
 ;;;
-;;; Performs [addition][js:add] or [string concatenation][js:concat]
+;;; Performs [addition][js:add] or [string concatenation][js:concat],
 ;;; depending on the types.
 ;;;
 ;;; [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
 ;;; [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
 (define (js-plus_ . args)
-  (let ((len (array-length args)))
-    (cond
-     ((zero? len)
-      #u)
-     (else
-      (define result
-        (array-first args))
-      (for ((i (range 1 len)))
-        (set! result
-              (js/+ result (aget args i))))
-      result))))
+  (if (zero? (array-length args))
+      #u
+      (js/reduce args
+                 (lambda (acc x)
+                   (js/+ acc x)))))
 
 ;;; Whether `obj` is a JavaScript function.
 (define (js-function?_ obj)
@@ -138,20 +132,143 @@
   ;; invoking `delete`.
   #u)
 
+;;; Return the last element of a JavaScript array.
+(define (js-last_ arr)
+  (js/get arr (- (js/length arr) 1)))
+
+;;; Return the length of a JavaScript string or array.
+(define (js-length_ arr)
+  (get-field length arr))
+
+;;; Return the first element of a JavaScript array.
+(define (js-first_ lst)
+  (js/get lst 0))
+
+;;; Return the second element of a JavaScript array.
+(define (js-second_ lst)
+  (js/get lst 1))
+
+;;; Return the third element of a JavaScript array.
+(define (js-third_ lst)
+  (js/get lst 2))
+
+;;; Return the fourth element of a JavaScript array.
+(define (js-fourth_ lst)
+  (js/get lst 3))
+
+;;; Return the fifth element of a JavaScript array.
+(define (js-fifth_ lst)
+  (js/get lst 4))
+
+;;; Return the sixth element of a JavaScript array.
+(define (js-sixth_ lst)
+  (js/get lst 5))
+
+;;; Return the seventh element of a JavaScript array.
+(define (js-seventh_ lst)
+  (js/get lst 6))
+
+;;; Return the eight element of a JavaScript array.
+(define (js-eighth_ lst)
+  (js/get lst 7))
+
+;;; Return the ninth element of a JavaScript array.
+(define (js-ninth_ lst)
+  (js/get lst 8))
+
+;;; Return the tenth element of a JavaScript array.
+(define (js-tenth_ lst)
+  (js/get lst 9))
+
+;;; Look up the property `key` in the JavaScript object `obj`.
+;;;
+(define (js-get_ obj key)
+  (js/get obj key))
+
+;;; Slice a JavaScript array.
+(define (js-slice_ arr . args)
+  (send/apply arr slice args))
+
+;;; Return the tail of a JavaScript array.
+(define (js-rest_ arr)
+  (js/slice arr 1))
+
+;;; Reverse the order of a JavaScript array.
+;;; Returns a new array.
+(define (js-reverse_ arr)
+  (send arr reverse))
+
+;;; Take the `n` first elements from
+;;; the JavaScript array `arr`.
+(define (js-take_ arr n)
+  (js/slice arr 0 (- (js/length arr) n)))
+
+;;; Fold up a JavaScript array left to right.
+(define (js-reduce_ arr . args)
+  (send/apply arr reduce args))
+
+;;; Fold up a JavaScript array right to left.
+(define (js-reduce-right_ arr . args)
+  (send/apply arr reduceRight args))
+
+;;; Create a JavaScript regular expression.
+(define (js-regexp_ input (flags #u))
+  (if (string? input)
+      (new RegExp input flags)
+      input))
+
+;;; Whether `obj` is a JavaScript regular expression.
+(define (js-regexp?_ obj)
+  (is-a? obj RegExp))
+
+;;; Match a string or regular expression against
+;;; a JavaScript string.
+(define (js-regexp-match_ str pattern)
+  (send str match pattern))
+
+;;; Match a string or regular expression against
+;;; a JavaScript string and replace the matches
+;;; with a given string or replacement pattern.
+(define (js-regexp-replace_ str pattern insert)
+  (send str replace pattern insert))
+
 (provide
   js-delete_
+  js-eighth_
   js-eval_
+  js-fifth_
   js-find-index_
+  js-first_
+  js-fourth_
   js-function-object?_
   js-function-type?_
   js-function?_
+  js-get_
   js-in_
   js-instanceof_
   js-is-loosely-equal?_
   js-is-strictly-equal?_
+  js-last_
+  js-length_
+  js-ninth_
   js-null?_
   js-plus_
+  js-reduce-right_
+  js-reduce_
+  js-regexp-match_
+  js-regexp-replace_
+  js-regexp?_
+  js-regexp_
+  js-rest_
+  js-reverse_
   js-same-value-zero?_
   js-same-value?_
+  js-second_
+  js-seventh_
+  js-sixth_
+  js-slice_
   js-tagged-template_
+  js-take_
+  js-tenth_
+  js-third_
   js-typeof_)

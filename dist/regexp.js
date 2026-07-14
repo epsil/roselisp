@@ -20,7 +20,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.regexp_ = exports.regexpp_ = exports.regexpReplace_ = exports.regexpQuote_ = exports.regexpMatch_ = exports.jsRegexp_ = exports.regexpP_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpQuote_ = exports.jsRegexpMatch_ = exports.regexpMatchP_ = exports.jsRegexpMatchP_ = void 0;
+exports.regexp_ = exports.regexpp_ = exports.regexpReplace_ = exports.regexpQuote_ = exports.regexpMatch_ = exports.regexpP_ = exports.regexpMatchP_ = void 0;
 /**
  * Convert `input` to a [regular expression][mdn:Regular Expressions] object.
  *
@@ -34,7 +34,6 @@ function regexp_(input, flags = undefined) {
         return input;
     }
 }
-exports.jsRegexp_ = regexp_;
 exports.regexp_ = regexp_;
 regexp_.fsource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
 /**
@@ -43,7 +42,6 @@ regexp_.fsource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('inp
 function regexpp_(obj) {
     return obj instanceof RegExp;
 }
-exports.jsRegexpP_ = regexpp_;
 exports.regexpP_ = regexpp_;
 exports.regexpp_ = regexpp_;
 regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
@@ -60,7 +58,6 @@ function regexpQuote_(str) {
     // <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping>.
     return str.replace(new RegExp('[.*+?^${}()|[\\]\\\\]', 'g'), '\\$&');
 }
-exports.jsRegexpQuote_ = regexpQuote_;
 exports.regexpQuote_ = regexpQuote_;
 regexpQuote_.fsource = [Symbol.for('define'), [Symbol.for('regexp-quote_'), Symbol.for('str')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '[.*+?^${}()|[\\]\\\\]', 'g'], Symbol.for('str'), '\\$&']];
 /**
@@ -80,13 +77,11 @@ regexpQuote_.fsource = [Symbol.for('define'), [Symbol.for('regexp-quote_'), Symb
 function regexpMatch_(pattern, input) {
     return input.match(pattern);
 }
-exports.jsRegexpMatch_ = regexpMatch_;
 exports.regexpMatch_ = regexpMatch_;
 regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('match'), Symbol.for('pattern')]];
 function regexpMatchP_(pattern, input) {
     return input.match(pattern) !== null;
 }
-exports.jsRegexpMatchP_ = regexpMatchP_;
 exports.regexpMatchP_ = regexpMatchP_;
 regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('js/null?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]]];
 /**
@@ -103,6 +98,5 @@ regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Sy
 function regexpReplace_(pattern, input, insert) {
     return input.replace(pattern, insert);
 }
-exports.jsRegexpReplace_ = regexpReplace_;
 exports.regexpReplace_ = regexpReplace_;
 regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];

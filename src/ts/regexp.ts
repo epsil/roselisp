@@ -103,14 +103,8 @@ function regexpReplace_(pattern: any, input: any, insert: any): any {
 regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
 
 export {
-  regexpMatchP_ as jsRegexpMatchP_,
   regexpMatchP_,
-  regexpMatch_ as jsRegexpMatch_,
-  regexpQuote_ as jsRegexpQuote_,
-  regexpReplace_ as jsRegexpReplace_,
-  regexpp_ as jsRegexpP_,
   regexpp_ as regexpP_,
-  regexp_ as jsRegexp_,
   regexpMatch_,
   regexpQuote_,
   regexpReplace_,

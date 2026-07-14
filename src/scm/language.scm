@@ -185,20 +185,43 @@
                   make-hash_))
 (require (only-in "./javascript"
                   js-delete_
+                  js-eighth_
                   js-eval_
+                  js-fifth_
                   js-find-index_
+                  js-first_
+                  js-fourth_
                   js-function-object?_
                   js-function-type?_
                   js-function?_
+                  js-get_
                   js-in_
                   js-instanceof_
                   js-is-loosely-equal?_
                   js-is-strictly-equal?_
+                  js-last_
+                  js-length_
+                  js-ninth_
                   js-null?_
                   js-plus_
+                  js-reduce-right_
+                  js-reduce_
+                  js-regexp-match_
+                  js-regexp-replace_
+                  js-regexp?_
+                  js-regexp_
+                  js-rest_
+                  js-reverse_
                   js-same-value-zero?_
                   js-same-value?_
+                  js-second_
+                  js-seventh_
+                  js-sixth_
+                  js-slice_
                   js-tagged-template_
+                  js-take_
+                  js-tenth_
+                  js-third_
                   js-typeof_))
 (require (only-in "./list"
                   append_
@@ -574,6 +597,7 @@
          (,js-do-while_ ,compile-js-do-while (->compiler :rest Any Any))
          (,js-eval_ ,compile-js-eval (->compiler :rest Any Any))
          (,js-function_ ,compile-js-function (->compiler :rest Any Any))
+         (,js-get_ ,compile-js-get (->compiler :rest Any Any))
          (,js-in_ ,compile-js-in (->compiler :rest Any Any))
          (,js-instanceof_ ,compile-js-instanceof (->compiler :rest Any Any))
          (,js-is-loosely-equal?_ ,compile-js-is-loosely-equal (->compiler :rest Any Any))
@@ -732,15 +756,37 @@
    hash?_
    index-where_
    is-a?_
+   js-eighth_
+   js-fifth_
    js-find-index_
+   js-first_
+   js-fourth_
    js-function-object?_
    js-function-type?_
    js-function?_
    js-keys_
+   js-last_
+   js-length_
+   js-ninth_
    js-null?_
    js-obj-p_
    js-object-type?_
+   js-reduce-right_
+   js-reduce_
+   js-regexp-match_
+   js-regexp-replace_
+   js-regexp?_
+   js-regexp_
+   js-rest_
+   js-reverse_
    js-same-value?_
+   js-second_
+   js-seventh_
+   js-sixth_
+   js-slice_
+   js-take_
+   js-tenth_
+   js-third_
    linked-list-car_
    linked-list-cdr_
    linked-list-eighth_
@@ -2237,6 +2283,10 @@
     node)
    env options))
 
+;;; Compile a `(js/get ...)` expression.
+(define (compile-js-get node env (options (js-obj)))
+  (compile-array-ref node env options))
+
 ;;; Compile an `(object-ref ...)` expression.
 (define (compile-object-ref node env (options (js-obj)))
   (compile-array-ref node env options))
@@ -2681,12 +2731,12 @@
   ;; arguments to it. We therefore wrap it in a binary function
   ;; wrapper that reverses the order of the two first arguments
   ;; and disregards the other arguments.
-  `(send ,lst reduce ,(flip-function-expression f env) ,v))
+  `(js/reduce ,lst ,(flip-function-expression f env) ,v))
 
 ;;; Compiler macro for `(foldr ...)` expressions.
 (defmacro compile-foldr-macro (f v lst &environment env)
   ;; Like `foldl`, but invokes the `reduceRight` method instead.
-  `(send ,lst reduceRight ,(flip-function-expression f env) ,v))
+  `(js/reduce-right ,lst ,(flip-function-expression f env) ,v))
 
 ;;; Given an expression that designates a binary function,
 ;;; produce a new expression that flips the argument order.
@@ -7811,14 +7861,23 @@
          (js/=== ,js-is-strictly-equal?_ (->* :rest Any Any))
          (js/===? ,js-is-strictly-equal?_ (->* :rest Any Any))
          (js/==? ,js-is-loosely-equal?_ (->* :rest Any Any))
+         (js/append ,js-plus_ (->* :rest Any Any))
          (js/console.log ,(get-field log console) (->* :rest Any Any))
          (js/delete ,js-delete_ (->* :rest Any Any))
+         (js/eighth ,js-eighth_ (->* :rest Any Any))
+         (js/field ,array-ref_ (->* :rest Any Any))
+         (js/fifth ,js-fifth_ (->* :rest Any Any))
          (js/find-index ,js-find-index_ (->* :rest Any Any))
          (js/findf-index ,js-find-index_ (->* :rest Any Any))
+         (js/first ,js-first_ (->* :rest Any Any))
+         (js/fourth ,js-fourth_ (->* :rest Any Any))
          (js/function-object? ,js-function-object?_ (->* :rest Any Any))
          (js/function-type? ,js-function-type?_ (->* :rest Any Any))
          (js/function? ,js-function?_ (->* :rest Any Any))
+         (js/get ,js-get_ (->* :rest Any Any))
          (js/in ,js-in_ (->* :rest Any Any))
+         (js/instance-of ,js-instanceof_ (->* :rest Any Any))
+         (js/instance-of? ,js-instanceof_ (->* :rest Any Any))
          (js/instanceof ,js-instanceof_ (->* :rest Any Any))
          (js/instanceof? ,js-instanceof_ (->* :rest Any Any))
          (js/is-loosely-equal? ,js-is-loosely-equal?_ (->* :rest Any Any))
@@ -7826,20 +7885,41 @@
          (js/js-obj ,js-obj_ (->* :rest Any Any))
          (js/js-obj-append ,js-obj-append_ (->* :rest Any Any))
          (js/js-obj? ,js-obj-p_ (->* :rest Any Any))
+         (js/keys ,js-keys_ (->* :rest Any Any))
+         (js/last ,js-last_ (->* :rest Any Any))
+         (js/length ,js-length_ (->* :rest Any Any))
          (js/new ,new_ (->* :rest Any Any))
+         (js/ninth ,js-ninth_ (->* :rest Any Any))
          (js/null? ,js-null?_ (->* :rest Any Any))
          (js/obj ,js-obj_ (->* :rest Any Any))
          (js/obj-append ,js-obj-append_ (->* :rest Any Any))
+         (js/obj-keys ,js-keys_ (->* :rest Any Any))
          (js/obj? ,js-obj-p_ (->* :rest Any Any))
          (js/object-type? ,js-object-type?_ (->* :rest Any Any))
          (js/object? ,js-object-type?_ (->* :rest Any Any))
+         (js/reduce ,js-reduce_ (->* :rest Any Any))
+         (js/reduce-right ,js-reduce-right_ (->* :rest Any Any))
+         ;; (js/regexp ,js-regexp_ (->* :rest Any Any))
          (js/regexp ,regexp_ (->* :rest Any Any))
+         (js/regexp-match ,js-regexp-match_ (->* :rest Any Any))
          (js/regexp-quote ,regexp-quote_ (->* :rest Any Any))
+         (js/regexp-replace ,js-regexp-replace_ (->* :rest Any Any))
+         (js/regexp? ,js-regexp?_ (->* :rest Any Any))
          (js/regexp? ,regexp?_ (->* :rest Any Any))
+         (js/rest ,js-rest_ (->* :rest Any Any))
+         (js/reverse ,js-reverse_ (->* :rest Any Any))
          (js/same-value-zero? ,js-same-value-zero?_ (->* :rest Any Any))
          (js/same-value? ,js-same-value?_ (->* :rest Any Any))
+         (js/second ,js-second_ (->* :rest Any Any))
+         (js/seventh ,js-seventh_ (->* :rest Any Any))
+         (js/sixth ,js-sixth_ (->* :rest Any Any))
+         (js/slice ,js-slice_ (->* :rest Any Any))
          (js/tag ,js-tagged-template_ (->* :rest Any Any))
          (js/tagged-template ,js-tagged-template_ (->* :rest Any Any))
+         (js/take ,js-take_ (->* :rest Any Any))
+         (js/tenth ,js-tenth_ (->* :rest Any Any))
+         (js/third ,js-third_ (->* :rest Any Any))
+         (js/type-of ,js-typeof_ (->* :rest Any Any))
          (js/typeof ,js-typeof_ (->* :rest Any Any))
          (keyword? ,keyword?_ (->* :rest Any Any))
          (keywordp ,keyword?_ (->* :rest Any Any))

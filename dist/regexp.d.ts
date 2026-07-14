@@ -81,4 +81,4 @@ declare function regexpReplace_(pattern: any, input: any, insert: any): any;
 declare namespace regexpReplace_ {
     var fsource: (symbol | symbol[])[];
 }
-export { regexpMatchP_ as jsRegexpMatchP_, regexpMatchP_, regexpMatch_ as jsRegexpMatch_, regexpQuote_ as jsRegexpQuote_, regexpReplace_ as jsRegexpReplace_, regexpp_ as jsRegexpP_, regexpp_ as regexpP_, regexp_ as jsRegexp_, regexpMatch_, regexpQuote_, regexpReplace_, regexpp_, regexp_ };
+export { regexpMatchP_, regexpp_ as regexpP_, regexpMatch_, regexpQuote_, regexpReplace_, regexpp_, regexp_ };

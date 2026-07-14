@@ -77,7 +77,7 @@ declare namespace jsInstanceof_ {
 /**
  * Variadic version of JavaScript's `+` operator.
  *
- * Performs [addition][js:add] or [string concatenation][js:concat]
+ * Performs [addition][js:add] or [string concatenation][js:concat],
  * depending on the types.
  *
  * [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
@@ -85,7 +85,7 @@ declare namespace jsInstanceof_ {
  */
 declare function jsPlus_(...args: any[]): any;
 declare namespace jsPlus_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | undefined)[])[];
 }
 /**
  * Whether `obj` is a JavaScript function.
@@ -166,4 +166,170 @@ declare function jsDelete_(x: any): any;
 declare namespace jsDelete_ {
     var fsource: (symbol | symbol[] | undefined)[];
 }
-export { jsDelete_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsIn_, jsInstanceof_, jsIsLooselyEqualP_, jsIsStrictlyEqualP_, jsNullP_, jsPlus_, jsSameValueZeroP_, jsSameValueP_, jsTaggedTemplate_, jsTypeof_ };
+/**
+ * Return the last element of a JavaScript array.
+ */
+declare function jsLast_(arr: any): any;
+declare namespace jsLast_ {
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
+}
+/**
+ * Return the length of a JavaScript string or array.
+ */
+declare function jsLength_(arr: any): any;
+declare namespace jsLength_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Return the first element of a JavaScript array.
+ */
+declare function jsFirst_(lst: any): any;
+declare namespace jsFirst_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the second element of a JavaScript array.
+ */
+declare function jsSecond_(lst: any): any;
+declare namespace jsSecond_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the third element of a JavaScript array.
+ */
+declare function jsThird_(lst: any): any;
+declare namespace jsThird_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the fourth element of a JavaScript array.
+ */
+declare function jsFourth_(lst: any): any;
+declare namespace jsFourth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the fifth element of a JavaScript array.
+ */
+declare function jsFifth_(lst: any): any;
+declare namespace jsFifth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the sixth element of a JavaScript array.
+ */
+declare function jsSixth_(lst: any): any;
+declare namespace jsSixth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the seventh element of a JavaScript array.
+ */
+declare function jsSeventh_(lst: any): any;
+declare namespace jsSeventh_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the eight element of a JavaScript array.
+ */
+declare function jsEighth_(lst: any): any;
+declare namespace jsEighth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the ninth element of a JavaScript array.
+ */
+declare function jsNinth_(lst: any): any;
+declare namespace jsNinth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the tenth element of a JavaScript array.
+ */
+declare function jsTenth_(lst: any): any;
+declare namespace jsTenth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Look up the property `key` in the JavaScript object `obj`.
+ */
+declare function jsGet_(obj: any, key: any): any;
+declare namespace jsGet_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Slice a JavaScript array.
+ */
+declare function jsSlice_(arr: any, ...args: any[]): any;
+declare namespace jsSlice_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Return the tail of a JavaScript array.
+ */
+declare function jsRest_(arr: any): any;
+declare namespace jsRest_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Reverse the order of a JavaScript array.
+ * Returns a new array.
+ */
+declare function jsReverse_(arr: any): any;
+declare namespace jsReverse_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Take the `n` first elements from
+ * the JavaScript array `arr`.
+ */
+declare function jsTake_(arr: any, n: any): any;
+declare namespace jsTake_ {
+    var fsource: (symbol | (number | symbol | (symbol | symbol[])[])[])[];
+}
+/**
+ * Fold up a JavaScript array left to right.
+ */
+declare function jsReduce_(arr: any, ...args: any[]): any;
+declare namespace jsReduce_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Fold up a JavaScript array right to left.
+ */
+declare function jsReduceRight_(arr: any, ...args: any[]): any;
+declare namespace jsReduceRight_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Create a JavaScript regular expression.
+ */
+declare function jsRegexp_(input: any, flags?: any): any;
+declare namespace jsRegexp_ {
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
+}
+/**
+ * Whether `obj` is a JavaScript regular expression.
+ */
+declare function jsRegexpP_(obj: any): any;
+declare namespace jsRegexpP_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Match a string or regular expression against
+ * a JavaScript string.
+ */
+declare function jsRegexpMatch_(str: any, pattern: any): any;
+declare namespace jsRegexpMatch_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Match a string or regular expression against
+ * a JavaScript string and replace the matches
+ * with a given string or replacement pattern.
+ */
+declare function jsRegexpReplace_(str: any, pattern: any, insert: any): any;
+declare namespace jsRegexpReplace_ {
+    var fsource: (symbol | symbol[])[];
+}
+export { jsDelete_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceof_, jsIsLooselyEqualP_, jsIsStrictlyEqualP_, jsLast_, jsLength_, jsNinth_, jsNullP_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeof_ };

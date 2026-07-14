@@ -92,26 +92,23 @@ jsInstanceof_.fsource = [Symbol.for('define'), [Symbol.for('js-instanceof_'), Sy
 /**
  * Variadic version of JavaScript's `+` operator.
  *
- * Performs [addition][js:add] or [string concatenation][js:concat]
+ * Performs [addition][js:add] or [string concatenation][js:concat],
  * depending on the types.
  *
  * [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
  * [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
  */
 function jsPlus_(...args: any[]): any {
-  const len: any = args.length;
-  if (len === 0) {
+  if (args.length === 0) {
     return undefined;
   } else {
-    let result: any = args[0];
-    for (let i: any = 1; i < len; i++) {
-      result = result + (args as any)[i];
-    }
-    return result;
+    return args.reduce(function (acc: any, x: any): any {
+      return acc + x;
+    });
   }
 }
 
-jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('array-length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('array-first'), Symbol.for('args')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/+'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
+jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('array-length'), Symbol.for('args')]], undefined, [Symbol.for('js/reduce'), Symbol.for('args'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('acc'), Symbol.for('x')]]]]];
 
 /**
  * Whether `obj` is a JavaScript function.
@@ -217,21 +214,261 @@ function jsDelete_(x: any): any {
 
 jsDelete_.fsource = [Symbol.for('define'), [Symbol.for('js-delete_'), Symbol.for('x')], undefined];
 
+/**
+ * Return the last element of a JavaScript array.
+ */
+function jsLast_(arr: any): any {
+  return arr[arr.length - 1];
+}
+
+jsLast_.fsource = [Symbol.for('define'), [Symbol.for('js-last_'), Symbol.for('arr')], [Symbol.for('js/get'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('arr')], 1]]];
+
+/**
+ * Return the length of a JavaScript string or array.
+ */
+function jsLength_(arr: any): any {
+  return arr.length;
+}
+
+jsLength_.fsource = [Symbol.for('define'), [Symbol.for('js-length_'), Symbol.for('arr')], [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('arr')]];
+
+/**
+ * Return the first element of a JavaScript array.
+ */
+function jsFirst_(lst: any): any {
+  return lst[0];
+}
+
+jsFirst_.fsource = [Symbol.for('define'), [Symbol.for('js-first_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 0]];
+
+/**
+ * Return the second element of a JavaScript array.
+ */
+function jsSecond_(lst: any): any {
+  return lst[1];
+}
+
+jsSecond_.fsource = [Symbol.for('define'), [Symbol.for('js-second_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 1]];
+
+/**
+ * Return the third element of a JavaScript array.
+ */
+function jsThird_(lst: any): any {
+  return lst[2];
+}
+
+jsThird_.fsource = [Symbol.for('define'), [Symbol.for('js-third_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 2]];
+
+/**
+ * Return the fourth element of a JavaScript array.
+ */
+function jsFourth_(lst: any): any {
+  return lst[3];
+}
+
+jsFourth_.fsource = [Symbol.for('define'), [Symbol.for('js-fourth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 3]];
+
+/**
+ * Return the fifth element of a JavaScript array.
+ */
+function jsFifth_(lst: any): any {
+  return lst[4];
+}
+
+jsFifth_.fsource = [Symbol.for('define'), [Symbol.for('js-fifth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 4]];
+
+/**
+ * Return the sixth element of a JavaScript array.
+ */
+function jsSixth_(lst: any): any {
+  return lst[5];
+}
+
+jsSixth_.fsource = [Symbol.for('define'), [Symbol.for('js-sixth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 5]];
+
+/**
+ * Return the seventh element of a JavaScript array.
+ */
+function jsSeventh_(lst: any): any {
+  return lst[6];
+}
+
+jsSeventh_.fsource = [Symbol.for('define'), [Symbol.for('js-seventh_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 6]];
+
+/**
+ * Return the eight element of a JavaScript array.
+ */
+function jsEighth_(lst: any): any {
+  return lst[7];
+}
+
+jsEighth_.fsource = [Symbol.for('define'), [Symbol.for('js-eighth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 7]];
+
+/**
+ * Return the ninth element of a JavaScript array.
+ */
+function jsNinth_(lst: any): any {
+  return lst[8];
+}
+
+jsNinth_.fsource = [Symbol.for('define'), [Symbol.for('js-ninth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 8]];
+
+/**
+ * Return the tenth element of a JavaScript array.
+ */
+function jsTenth_(lst: any): any {
+  return lst[9];
+}
+
+jsTenth_.fsource = [Symbol.for('define'), [Symbol.for('js-tenth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 9]];
+
+/**
+ * Look up the property `key` in the JavaScript object `obj`.
+ */
+
+function jsGet_(obj: any, key: any): any {
+  return (obj as any)[key];
+}
+
+jsGet_.fsource = [Symbol.for('define'), [Symbol.for('js-get_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
+
+/**
+ * Slice a JavaScript array.
+ */
+function jsSlice_(arr: any, ...args: any[]): any {
+  return arr.slice(...args);
+}
+
+jsSlice_.fsource = [Symbol.for('define'), [Symbol.for('js-slice_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('args')]];
+
+/**
+ * Return the tail of a JavaScript array.
+ */
+function jsRest_(arr: any): any {
+  return arr.slice(1);
+}
+
+jsRest_.fsource = [Symbol.for('define'), [Symbol.for('js-rest_'), Symbol.for('arr')], [Symbol.for('js/slice'), Symbol.for('arr'), 1]];
+
+/**
+ * Reverse the order of a JavaScript array.
+ * Returns a new array.
+ */
+function jsReverse_(arr: any): any {
+  return arr.reverse();
+}
+
+jsReverse_.fsource = [Symbol.for('define'), [Symbol.for('js-reverse_'), Symbol.for('arr')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('reverse')]];
+
+/**
+ * Take the `n` first elements from
+ * the JavaScript array `arr`.
+ */
+function jsTake_(arr: any, n: any): any {
+  return arr.slice(0, arr.length - n);
+}
+
+jsTake_.fsource = [Symbol.for('define'), [Symbol.for('js-take_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('js/slice'), Symbol.for('arr'), 0, [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('arr')], Symbol.for('n')]]];
+
+/**
+ * Fold up a JavaScript array left to right.
+ */
+function jsReduce_(arr: any, ...args: any[]): any {
+  return arr.reduce(...args);
+}
+
+jsReduce_.fsource = [Symbol.for('define'), [Symbol.for('js-reduce_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('reduce'), Symbol.for('args')]];
+
+/**
+ * Fold up a JavaScript array right to left.
+ */
+function jsReduceRight_(arr: any, ...args: any[]): any {
+  return arr.reduceRight(...args);
+}
+
+jsReduceRight_.fsource = [Symbol.for('define'), [Symbol.for('js-reduce-right_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('reduceRight'), Symbol.for('args')]];
+
+/**
+ * Create a JavaScript regular expression.
+ */
+function jsRegexp_(input: any, flags: any = undefined): any {
+  if (typeof input === 'string') {
+    return new RegExp(input, flags);
+  } else {
+    return input;
+  }
+}
+
+jsRegexp_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
+
+/**
+ * Whether `obj` is a JavaScript regular expression.
+ */
+function jsRegexpP_(obj: any): any {
+  return obj instanceof RegExp;
+}
+
+jsRegexpP_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
+
+/**
+ * Match a string or regular expression against
+ * a JavaScript string.
+ */
+function jsRegexpMatch_(str: any, pattern: any): any {
+  return str.match(pattern);
+}
+
+jsRegexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp-match_'), Symbol.for('str'), Symbol.for('pattern')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('match'), Symbol.for('pattern')]];
+
+/**
+ * Match a string or regular expression against
+ * a JavaScript string and replace the matches
+ * with a given string or replacement pattern.
+ */
+function jsRegexpReplace_(str: any, pattern: any, insert: any): any {
+  return str.replace(pattern, insert);
+}
+
+jsRegexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp-replace_'), Symbol.for('str'), Symbol.for('pattern'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
+
 export {
   jsDelete_,
+  jsEighth_,
   jsEval_,
+  jsFifth_,
   jsFindIndex_,
+  jsFirst_,
+  jsFourth_,
   jsFunctionObjectP_,
   jsFunctionTypeP_,
   jsFunctionP_,
+  jsGet_,
   jsIn_,
   jsInstanceof_,
   jsIsLooselyEqualP_,
   jsIsStrictlyEqualP_,
+  jsLast_,
+  jsLength_,
+  jsNinth_,
   jsNullP_,
   jsPlus_,
+  jsReduceRight_,
+  jsReduce_,
+  jsRegexpMatch_,
+  jsRegexpReplace_,
+  jsRegexpP_,
+  jsRegexp_,
+  jsRest_,
+  jsReverse_,
   jsSameValueZeroP_,
   jsSameValueP_,
+  jsSecond_,
+  jsSeventh_,
+  jsSixth_,
+  jsSlice_,
   jsTaggedTemplate_,
+  jsTake_,
+  jsTenth_,
+  jsThird_,
   jsTypeof_
 };

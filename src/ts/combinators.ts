@@ -162,9 +162,13 @@ function B2(...args: any[]): any {
       const x: any = args[args.length - 1];
       // Right-to-left function composition
       // corresponds to a right fold.
-      return fs.reduceRight(function (acc: any, x: any): any {
-        return A(x, acc);
-      }, x);
+      return (
+        // Right-to-left function composition
+        // corresponds to a right fold.
+        fs.reduceRight(function (acc: any, x: any): any {
+          return A(x, acc);
+        }, x)
+      );
     }
   }
 }
@@ -502,9 +506,13 @@ function Q2(...args: any[]): any {
       const x: any = args[args.length - 1];
       // Left-to-right function composition
       // corresponds to a left fold.
-      return fs.reduce(function (acc: any, x: any): any {
-        return A(x, acc);
-      }, x);
+      return (
+        // Left-to-right function composition
+        // corresponds to a left fold.
+        fs.reduce(function (acc: any, x: any): any {
+          return A(x, acc);
+        }, x)
+      );
     }
   }
 }

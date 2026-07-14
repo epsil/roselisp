@@ -159,7 +159,7 @@ declare namespace arrayRest_ {
 }
 /**
  * Reverse the order of an array.
- * Returns a new array list.
+ * Returns a new array.
  */
 declare function arrayReverse_(arr: any): any;
 declare namespace arrayReverse_ {

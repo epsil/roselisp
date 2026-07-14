@@ -159,9 +159,12 @@ function B2(...args) {
             const x = args[args.length - 1];
             // Right-to-left function composition
             // corresponds to a right fold.
-            return fs.reduceRight(function (acc, x) {
+            return (
+            // Right-to-left function composition
+            // corresponds to a right fold.
+            fs.reduceRight(function (acc, x) {
                 return A(x, acc);
-            }, x);
+            }, x));
         }
     }
 }
@@ -489,9 +492,12 @@ function Q2(...args) {
             const x = args[args.length - 1];
             // Left-to-right function composition
             // corresponds to a left fold.
-            return fs.reduce(function (acc, x) {
+            return (
+            // Left-to-right function composition
+            // corresponds to a left fold.
+            fs.reduce(function (acc, x) {
                 return A(x, acc);
-            }, x);
+            }, x));
         }
     }
 }

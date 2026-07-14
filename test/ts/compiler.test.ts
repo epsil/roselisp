@@ -1601,7 +1601,7 @@ describe('compile', function (): any {
           '  return [add_];\n' +
           '})();\n' +
           '\n' +
-          'const onePlusOne = _add(...[1, 1]);'
+          'const onePlusOne = _add(1, 1);'
       );
     });
     it("(module m scheme ... (apply - '(1 1)) ...)", function (): any {
@@ -1645,7 +1645,7 @@ describe('compile', function (): any {
           '  return [sub_];\n' +
           '})();\n' +
           '\n' +
-          'const oneMinusOne = _sub(...[1, 1]);'
+          'const oneMinusOne = _sub(1, 1);'
       );
     });
     it("(module m scheme ... (apply - '(1 1)) ...), inlineFunctions false", function (): any {
@@ -1675,7 +1675,7 @@ describe('compile', function (): any {
           '  _sub\n' +
           "} from 'roselisp';\n" +
           '\n' +
-          'const oneMinusOne = _sub(...[1, 1]);'
+          'const oneMinusOne = _sub(1, 1);'
       );
     });
     it("(module m scheme ... (apply * '(1 1)) ...)", function (): any {
@@ -1712,7 +1712,7 @@ describe('compile', function (): any {
           '  return [mul_];\n' +
           '})();\n' +
           '\n' +
-          'const oneTimesOne = _mul(...[1, 1]);'
+          'const oneTimesOne = _mul(1, 1);'
       );
     });
     it("(module m scheme ... (apply / '(1 1)) ...)", function (): any {
@@ -1754,7 +1754,7 @@ describe('compile', function (): any {
           '  return [div_];\n' +
           '})();\n' +
           '\n' +
-          'const oneDividedByOne = _div(...[1, 1]);'
+          'const oneDividedByOne = _div(1, 1);'
       );
     });
     it('(module m scheme ... (apply string-append \'("foo" "bar")) ...)', function (): any {
@@ -1789,7 +1789,7 @@ describe('compile', function (): any {
           '  return [stringAppend_];\n' +
           '})();\n' +
           '\n' +
-          "const fooBar = stringAppend(...['foo', 'bar']);"
+          "const fooBar = stringAppend('foo', 'bar');"
       );
     });
     xit("(module m lisp ... (my-foldl + 0 '(1 2 3 4)) ...)", function (): any {
@@ -2153,7 +2153,7 @@ describe('compile', function (): any {
           '  return [add_];\n' +
           '})();\n' +
           '\n' +
-          'const onePlusOne = _add(...[1, 1]);'
+          'const onePlusOne = _add(1, 1);'
       );
     });
     return it("(module m scheme ... (apply + '(1 1)) ...), comments", function (): any {
@@ -2191,7 +2191,7 @@ describe('compile', function (): any {
           '/**\n' +
           ' * Custom addition function.\n' +
           ' */\n' +
-          'const onePlusOne = _add(...[1, 1]);'
+          'const onePlusOne = _add(1, 1);'
       );
     });
   });
@@ -6644,6 +6644,42 @@ describe('compile', function (): any {
       return assertEqual(
         compile(
           [Symbol.for('send'), Symbol.for('map'), Symbol.for('get'), 'foo'],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        "map.get('foo')"
+      );
+    });
+  });
+  describe('send/apply', function (): any {
+    it('(send/apply map get foo)', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('send/apply'),
+            Symbol.for('map'),
+            Symbol.for('get'),
+            Symbol.for('foo'),
+          ],
+          compilationEnvironment,
+          {
+            language: 'JavaScript',
+          }
+        ),
+        'map.get(...foo)'
+      );
+    });
+    return it('(send/apply map get \'("foo"))', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('send/apply'),
+            Symbol.for('map'),
+            Symbol.for('get'),
+            [Symbol.for('quote'), ['foo']],
+          ],
           compilationEnvironment,
           {
             language: 'JavaScript',

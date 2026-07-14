@@ -1232,7 +1232,7 @@ const lst = [symbolp, booleanp];")))
   return [add_];
 })();
 
-const onePlusOne = _add(...[1, 1]);")))
+const onePlusOne = _add(1, 1);")))
         (it "(module m scheme ... (apply - '(1 1)) ...)"
             (fn ()
               (assert-equal
@@ -1260,7 +1260,7 @@ const onePlusOne = _add(...[1, 1]);")))
   return [sub_];
 })();
 
-const oneMinusOne = _sub(...[1, 1]);")))
+const oneMinusOne = _sub(1, 1);")))
         (it "(module m scheme ... (apply - '(1 1)) ...), inlineFunctions false"
             (fn ()
               (assert-equal
@@ -1274,7 +1274,7 @@ const oneMinusOne = _sub(...[1, 1]);")))
   _sub
 } from 'roselisp';
 
-const oneMinusOne = _sub(...[1, 1]);")))
+const oneMinusOne = _sub(1, 1);")))
         (it "(module m scheme ... (apply * '(1 1)) ...)"
             (fn ()
               (assert-equal
@@ -1295,7 +1295,7 @@ const oneMinusOne = _sub(...[1, 1]);")))
   return [mul_];
 })();
 
-const oneTimesOne = _mul(...[1, 1]);")))
+const oneTimesOne = _mul(1, 1);")))
         (it "(module m scheme ... (apply / '(1 1)) ...)"
             (fn ()
               (assert-equal
@@ -1321,7 +1321,7 @@ const oneTimesOne = _mul(...[1, 1]);")))
   return [div_];
 })();
 
-const oneDividedByOne = _div(...[1, 1]);")))
+const oneDividedByOne = _div(1, 1);")))
         (it "(module m scheme ... (apply string-append '(\"foo\" \"bar\")) ...)"
             (fn ()
               (assert-equal
@@ -1341,7 +1341,7 @@ const oneDividedByOne = _div(...[1, 1]);")))
   return [stringAppend_];
 })();
 
-const fooBar = stringAppend(...['foo', 'bar']);")))
+const fooBar = stringAppend('foo', 'bar');")))
         (xit "(module m lisp ... (my-foldl + 0 '(1 2 3 4)) ...)"
              (fn ()
                (assert-equal
@@ -1561,7 +1561,7 @@ const [_add] = (() => {
   return [add_];
 })();
 
-const onePlusOne = _add(...[1, 1]);")))
+const onePlusOne = _add(1, 1);")))
         (it "(module m scheme ... (apply + '(1 1)) ...), comments"
             (fn ()
               (assert-equal
@@ -1594,7 +1594,7 @@ const [_add] = (() => {
 /**
  * Custom addition function.
  */
-const onePlusOne = _add(...[1, 1]);")))))
+const onePlusOne = _add(1, 1);")))))
     (describe "strings"
       (fn ()
         (it "\"\""
@@ -4147,6 +4147,22 @@ const quux = [['foo', Symbol.for('.'), foo], ['bar', Symbol.for('.'), bar]];")))
             (fn ()
               (assert-equal
                (compile '(send map get "foo")
+                        compilation-environment
+                        (js-obj "language" "JavaScript"))
+               "map.get('foo')")))))
+    (describe "send/apply"
+      (fn ()
+        (it "(send/apply map get foo)"
+            (fn ()
+              (assert-equal
+               (compile '(send/apply map get foo)
+                        compilation-environment
+                        (js-obj "language" "JavaScript"))
+               "map.get(...foo)")))
+        (it "(send/apply map get '(\"foo\"))"
+            (fn ()
+              (assert-equal
+               (compile '(send/apply map get '("foo"))
                         compilation-environment
                         (js-obj "language" "JavaScript"))
                "map.get('foo')")))))

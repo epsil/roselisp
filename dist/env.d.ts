@@ -211,6 +211,18 @@ declare class TypedEnvironment extends Environment {
      */
     setLocal(key: any, value: any, type?: any): any;
     /**
+     * Set the type of `key` to `typ`.
+     * If there is no existing binding,
+     * creates a new binding where the value is `#u`.
+     */
+    setType(key: any, typ: any, options?: any): any;
+    /**
+     * Set the local type of `key` to `typ`.
+     * If there is no existing local binding,
+     * creates a new binding where the value is `#u`.
+     */
+    setLocalType(key: any, typ: any, options?: any): any;
+    /**
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
@@ -239,6 +251,8 @@ declare class ThunkedEnvironment extends TypedEnvironment {
      * return `Undefined`.
      */
     getType(key: any, options?: any): any;
+    setType(key: any, typ: any, options?: any): any;
+    setLocalType(key: any, typ: any, options?: any): any;
 }
 /**
  * Lisp environment.

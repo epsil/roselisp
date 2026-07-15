@@ -428,6 +428,22 @@
   (define/public (set-local key value (type 'Any))
     (send super set-local key (list value type)))
 
+  ;;; Set the type of `key` to `typ`.
+  ;;; If there is no existing binding,
+  ;;; creates a new binding where the value is `#u`.
+  (define/public (set-type key typ (options (js-obj)))
+    (define val
+      (send this get key options))
+    (send this set key val typ))
+
+  ;;; Set the local type of `key` to `typ`.
+  ;;; If there is no existing local binding,
+  ;;; creates a new binding where the value is `#u`.
+  (define/public (set-local-type key typ (options (js-obj)))
+    (define val
+      (send this get-local key options))
+    (send this set-local key val typ))
+
   ;;; Set `key` to `value` with type `type` in
   ;;; the current environment frame.
   (define/public (set-typed-value key value (type 'Any))
@@ -509,7 +525,35 @@
         binding)
       typ)
      (else
-      'Undefined))))
+      'Undefined)))
+
+  (define/public (set-type key typ (options (js-obj)))
+    (define inherited-options
+      (js-obj-append
+       options
+       (js-obj "notFound" '(#u Undefined))))
+    ;; Obtain the type without forcing the thunk.
+    (define tuple
+      (send this get-unforced-tuple key inherited-options))
+    (define-values (binding)
+      tuple)
+    (define-values (val)
+      binding)
+    (send this set key val typ))
+
+  (define/public (set-local-type key typ (options (js-obj)))
+    (define inherited-options
+      (js-obj-append
+       options
+       (js-obj "notFound" '(#u Undefined))))
+    ;; Obtain the type without forcing the thunk.
+    (define tuple
+      (send this get-unforced-local-tuple key inherited-options))
+    (define-values (binding)
+      tuple)
+    (define-values (val)
+      binding)
+    (send this set-local key val typ)))
 
 ;;; Lisp environment.
 ;;;

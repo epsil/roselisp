@@ -2319,25 +2319,8 @@
     (send node get 2))
   (define type-exp
     (send type_ get-value))
-  (define binding-type 'Any)
   (when continuation-env
-    (when (send continuation-env
-                has
-                sym-exp
-                (js-obj "filter"
-                        (lambda (x)
-                          (not (eq? x env)))))
-      (set! binding-type
-            (send continuation-env
-                  get-type
-                  sym-exp
-                  (js-obj "filter"
-                          (lambda (x)
-                            (not (eq? x env)))))))
-    ;; FIXME: This is a kludge. We need a better way
-    ;; of storing types---either a separate environment,
-    ;; or a typed environment, perhaps.
-    (send continuation-env set-local sym-exp type-exp binding-type))
+    (send continuation-env set-local-type sym-exp type-exp))
   (compile-nop node env options))
 
 ;;; Compile a `(cond ...)` expression.
@@ -2476,11 +2459,10 @@
       (~> (send lambda-exp get 1)
           (send get-value)))
     (define declared-type
-      (send continuation-env get sym))
+      (send continuation-env get-type sym))
     (cond
-     ((or (eq? declared-type #u)
-          (eq? declared-type #t)
-          (eq? declared-type 'Any))
+     ((or (eq? declared-type 'Any)
+          (eq? declared-type 'Undefined))
       (set! type_
             `(->
               ,@(cond
@@ -2605,7 +2587,7 @@
                     (lambda (x)
                       (not (eq? x env)))))
       (set! type_
-            (send continuation-env get sym)))
+            (send continuation-env get-type sym)))
      (else
       (send continuation-env set-local (second exp) type_ 'Any)))
     (new VariableDeclaration

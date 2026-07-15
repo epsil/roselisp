@@ -1617,7 +1617,7 @@ sendApplySpecial_.fsource = [Symbol.for('define'), [Symbol.for('send-apply-speci
  *
  * Helper function for `send-special_` and `send-apply-special_`.
  */
-function sendMethod(...args: any[]): any {
+function sendMethod(...args: any): any {
   let [obj, method, ...restArgs]: any[] = args;
   if (typeof method === 'symbol') {
     return sendMethod(obj, method.description as string, ...restArgs);

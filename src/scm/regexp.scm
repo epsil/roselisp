@@ -57,8 +57,12 @@
 (define (regexp-match_ pattern input)
   (send input match pattern))
 
+;;; Match `pattern` against `input` and return `#t`
+;;; if it matches, otherwise `#f`.
 (define (regexp-match?_ pattern input)
-  (not (js/null? (regexp-match pattern input))))
+  (if (regexp-match pattern input)
+      #t
+      #f))
 
 ;;; Match `pattern` against `input` and replace with `insert`.
 ;;; `pattern` is a [regular expression][mdn:Regular Expressions]
@@ -73,14 +77,6 @@
   (send input replace pattern insert))
 
 (provide
-  ;; (rename-out (regexp-match?_ js-regexp-match-p_))
-  ;; (rename-out (regexp-match_ js-regexp-match_))
-  ;; (rename-out (regexp-quote_ js-regexp-quote_))
-  ;; (rename-out (regexp-replace_ js-regexp-replace_))
-  ;; (rename-out (regexp?_ js-regexp-p_))
-  ;; (rename-out (regexp_ js-regexp_))
-  (rename-out (regexp-match?_ regexp-match-p_))
-  (rename-out (regexp?_ regexp-p_))
   regexp-match?_
   regexp-match_
   regexp-quote_

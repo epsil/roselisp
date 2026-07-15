@@ -20,12 +20,12 @@
 ;;;
 ;;; [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
 (define (js-obj_ . args)
-  (define entries '())
-  (for ((i (range 0 (array-list-length args) 2)))
-    (push-right! entries
-                 (list (aget args i)
-                       (aget args (+ i 1)))))
-  (send Object fromEntries entries))
+  (let ((entries '()))
+    (for ((i (range 0 (js/length args) 2)))
+      (push-right! entries
+                   (list (js/get args i)
+                         (js/get args (+ i 1)))))
+    (send Object fromEntries entries)))
 
 ;;; Whether something is a JavaScript object.
 (define (js-obj?_ x)
@@ -65,7 +65,7 @@
 ;;; [rkt:object-get]: https://docs.racket-lang.org/javascript/runtime.html#%28def._%28%28lib._javascript%2Fruntime..rkt%29._object-get%29%29
 ;;; [cljs:oget]: https://github.com/binaryage/cljs-oops#object-operations
 (define (object-ref_ obj key)
-  (oget obj key))
+  (js/get obj key))
 
 ;;; Set the property `key` in `obj` to `val`.
 ;;;

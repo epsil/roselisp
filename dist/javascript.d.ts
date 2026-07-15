@@ -21,8 +21,8 @@
  * [js:strict-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#strict_equality_using
  * [js:strict-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
  */
-declare function jsIsStrictlyEqualP_(x: any, y: any): any;
-declare namespace jsIsStrictlyEqualP_ {
+declare function jsStrictlyEqualP_(x: any, y: any): any;
+declare namespace jsStrictlyEqualP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -32,8 +32,8 @@ declare namespace jsIsStrictlyEqualP_ {
  * [js:loose-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#loose_equality_using
  * [js:loose-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
  */
-declare function jsIsLooselyEqualP_(x: any, y: any): any;
-declare namespace jsIsLooselyEqualP_ {
+declare function jsLooselyEqualP_(x: any, y: any): any;
+declare namespace jsLooselyEqualP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -60,8 +60,8 @@ declare namespace jsSameValueZeroP_ {
  *
  * [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
  */
-declare function jsTypeof_(x: any): any;
-declare namespace jsTypeof_ {
+declare function jsTypeOf_(x: any): any;
+declare namespace jsTypeOf_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -70,8 +70,17 @@ declare namespace jsTypeof_ {
  *
  * [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
  */
-declare function jsInstanceof_(x: any, y: any): any;
-declare namespace jsInstanceof_ {
+declare function jsInstanceOfP_(x: any, y: any): any;
+declare namespace jsInstanceOfP_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Whether a number is [NaN][js:nan].
+ *
+ * [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+ */
+declare function jsNanP_(x: any, y: any): any;
+declare namespace jsNanP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -125,15 +134,6 @@ declare namespace jsNullP_ {
  */
 declare function jsFindIndex_(proc: any, seq: any): any;
 declare namespace jsFindIndex_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * JavaScript's [`eval` function][js:eval].
- *
- * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
- */
-declare function jsEval_(str: any): any;
-declare namespace jsEval_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -332,4 +332,13 @@ declare function jsRegexpReplace_(str: any, pattern: any, insert: any): any;
 declare namespace jsRegexpReplace_ {
     var fsource: (symbol | symbol[])[];
 }
-export { jsDelete_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceof_, jsIsLooselyEqualP_, jsIsStrictlyEqualP_, jsLast_, jsLength_, jsNinth_, jsNullP_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeof_ };
+/**
+ * JavaScript's [`eval` function][js:eval].
+ *
+ * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+ */
+declare function jsEval_(str: any): any;
+declare namespace jsEval_ {
+    var fsource: (symbol | symbol[])[];
+}
+export { jsDelete_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceOfP_, jsLooselyEqualP_, jsStrictlyEqualP_, jsLast_, jsLength_, jsNanP_, jsNinth_, jsNullP_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_ };

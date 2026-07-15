@@ -196,11 +196,12 @@
                   js-function?_
                   js-get_
                   js-in_
-                  js-instanceof_
-                  js-is-loosely-equal?_
-                  js-is-strictly-equal?_
+                  js-instance-of?_
+                  js-loosely-equal?_
+                  js-strictly-equal?_
                   js-last_
                   js-length_
+                  js-nan?_
                   js-ninth_
                   js-null?_
                   js-plus_
@@ -222,7 +223,7 @@
                   js-take_
                   js-tenth_
                   js-third_
-                  js-typeof_))
+                  js-type-of_))
 (require (only-in "./list"
                   append_
                   array-list-cdr_
@@ -551,7 +552,6 @@
          (,(string->symbol "js/require") ,(new Identifier "require") Any)
          (,(string->symbol "js/undefined") ,(new Identifier "undefined") Any)
          (,(string->symbol "*cons-dot*") ,cons-dot-compiled_ Any)
-         ;; (,(string->symbol "nil") ,(new Literal #n) Any)
          (,(string->symbol "nil") ,(new ArrayExpression) Any)
          (,(string->symbol "null") ,(new ArrayExpression) Any)
          (,(string->symbol "t") ,(new Literal #t) Any)
@@ -599,9 +599,9 @@
          (,js-function_ ,compile-js-function (->compiler :rest Any Any))
          (,js-get_ ,compile-js-get (->compiler :rest Any Any))
          (,js-in_ ,compile-js-in (->compiler :rest Any Any))
-         (,js-instanceof_ ,compile-js-instanceof (->compiler :rest Any Any))
-         (,js-is-loosely-equal?_ ,compile-js-is-loosely-equal (->compiler :rest Any Any))
-         (,js-is-strictly-equal?_ ,compile-js-is-strictly-equal (->compiler :rest Any Any))
+         (,js-instance-of?_ ,compile-js-instance-of (->compiler :rest Any Any))
+         (,js-loosely-equal?_ ,compile-js-loosely-equal (->compiler :rest Any Any))
+         (,js-strictly-equal?_ ,compile-js-strictly-equal (->compiler :rest Any Any))
          (,js-obj-append_ ,compile-js-obj-append (->compiler :rest Any Any))
          (,js-obj_ ,compile-js-obj (->compiler :rest Any Any))
          (,js-optional-chaining_ ,compile-js-optional-chaining (->compiler :rest Any Any))
@@ -609,7 +609,7 @@
          (,js-switch_ ,compile-js-switch (->compiler :rest Any Any))
          (,js-tagged-template_ ,compile-js-tagged-template (->compiler :rest Any Any))
          (,js-try_ ,compile-js-try (->compiler :rest Any Any))
-         (,js-typeof_ ,compile-js-typeof (->compiler :rest Any Any))
+         (,js-type-of_ ,compile-js-type-of (->compiler :rest Any Any))
          (,js-while_ ,compile-js-while (->compiler :rest Any Any))
          (,js_ ,compile-js (->compiler :rest Any Any))
          (,lambda_ ,compile-lambda (->compiler :rest Any Any))
@@ -624,7 +624,6 @@
          (,mul_ ,compile-mul (->compiler :rest Any Any))
          (,new_ ,compile-new (->compiler :rest Any Any))
          (,not_ ,compile-not (->compiler :rest Any Any))
-         (,object-ref_ ,compile-object-ref (->compiler :rest Any Any))
          (,object-set!_ ,compile-object-set (->compiler :rest Any Any))
          (,or_ ,compile-or (->compiler :rest Any Any))
          (,provide_ ,compile-provide (->compiler :rest Any Any))
@@ -767,6 +766,7 @@
    js-keys_
    js-last_
    js-length_
+   js-nan?_
    js-ninth_
    js-null?_
    js-obj-p_
@@ -818,6 +818,7 @@
    null?_
    number->string_
    number?_
+   object-ref_
    odd?_
    one?_
    plist-copy_
@@ -2711,14 +2712,14 @@
    options))
 
 ;;; Compile a `(js/=== ...)` expression.
-(define (compile-js-is-strictly-equal node env (options (js-obj)))
+(define (compile-js-strictly-equal node env (options (js-obj)))
   (compile-binary-expression
    node env options
    (js-obj "identity" #t
            "operator" "===")))
 
 ;;; Compile a `(js/== ...)` expression.
-(define (compile-js-is-loosely-equal node env (options (js-obj)))
+(define (compile-js-loosely-equal node env (options (js-obj)))
   (compile-binary-expression
    node env options
    (js-obj "identity" #t
@@ -5017,8 +5018,8 @@
             env options)
            #n)))
 
-;;; Compile a `(js/typeof ...)` expression.
-(define (compile-js-typeof node env (options (js-obj)))
+;;; Compile a `(js/type-of ...)` expression.
+(define (compile-js-type-of node env (options (js-obj)))
   (make-expression-or-statement
    (new UnaryExpression
         "typeof"
@@ -5028,8 +5029,8 @@
          env options))
    options))
 
-;;; Compile a `(js/instanceof? ...)` expression.
-(define (compile-js-instanceof node env (options (js-obj)))
+;;; Compile a `(js/instance-of? ...)` expression.
+(define (compile-js-instance-of node env (options (js-obj)))
   (make-expression-or-statement
    (new BinaryExpression
         "instanceof"
@@ -7857,10 +7858,10 @@
          (js-obj-keys ,js-keys_ (->* :rest Any Any))
          (js-obj? ,js-obj-p_ (->* :rest Any Any))
          (js/+ ,js-plus_ (->* :rest Any Any))
-         (js/== ,js-is-loosely-equal?_ (->* :rest Any Any))
-         (js/=== ,js-is-strictly-equal?_ (->* :rest Any Any))
-         (js/===? ,js-is-strictly-equal?_ (->* :rest Any Any))
-         (js/==? ,js-is-loosely-equal?_ (->* :rest Any Any))
+         (js/== ,js-loosely-equal?_ (->* :rest Any Any))
+         (js/=== ,js-strictly-equal?_ (->* :rest Any Any))
+         (js/===? ,js-strictly-equal?_ (->* :rest Any Any))
+         (js/==? ,js-loosely-equal?_ (->* :rest Any Any))
          (js/append ,js-plus_ (->* :rest Any Any))
          (js/console.log ,(get-field log console) (->* :rest Any Any))
          (js/delete ,js-delete_ (->* :rest Any Any))
@@ -7876,18 +7877,19 @@
          (js/function? ,js-function?_ (->* :rest Any Any))
          (js/get ,js-get_ (->* :rest Any Any))
          (js/in ,js-in_ (->* :rest Any Any))
-         (js/instance-of ,js-instanceof_ (->* :rest Any Any))
-         (js/instance-of? ,js-instanceof_ (->* :rest Any Any))
-         (js/instanceof ,js-instanceof_ (->* :rest Any Any))
-         (js/instanceof? ,js-instanceof_ (->* :rest Any Any))
-         (js/is-loosely-equal? ,js-is-loosely-equal?_ (->* :rest Any Any))
-         (js/is-strictly-equal? ,js-is-strictly-equal?_ (->* :rest Any Any))
+         (js/instance-of ,js-instance-of?_ (->* :rest Any Any))
+         (js/instance-of? ,js-instance-of?_ (->* :rest Any Any))
+         (js/instanceof ,js-instance-of?_ (->* :rest Any Any))
+         (js/instanceof? ,js-instance-of?_ (->* :rest Any Any))
+         (js/is-loosely-equal? ,js-loosely-equal?_ (->* :rest Any Any))
+         (js/is-strictly-equal? ,js-strictly-equal?_ (->* :rest Any Any))
          (js/js-obj ,js-obj_ (->* :rest Any Any))
          (js/js-obj-append ,js-obj-append_ (->* :rest Any Any))
          (js/js-obj? ,js-obj-p_ (->* :rest Any Any))
          (js/keys ,js-keys_ (->* :rest Any Any))
          (js/last ,js-last_ (->* :rest Any Any))
          (js/length ,js-length_ (->* :rest Any Any))
+         (js/nan? ,js-nan?_ (->* :rest Any Any))
          (js/new ,new_ (->* :rest Any Any))
          (js/ninth ,js-ninth_ (->* :rest Any Any))
          (js/null? ,js-null?_ (->* :rest Any Any))
@@ -7919,8 +7921,8 @@
          (js/take ,js-take_ (->* :rest Any Any))
          (js/tenth ,js-tenth_ (->* :rest Any Any))
          (js/third ,js-third_ (->* :rest Any Any))
-         (js/type-of ,js-typeof_ (->* :rest Any Any))
-         (js/typeof ,js-typeof_ (->* :rest Any Any))
+         (js/type-of ,js-type-of_ (->* :rest Any Any))
+         (js/typeof ,js-type-of_ (->* :rest Any Any))
          (keyword? ,keyword?_ (->* :rest Any Any))
          (keywordp ,keyword?_ (->* :rest Any Any))
          (last ,last_ (->* :rest Any Any))

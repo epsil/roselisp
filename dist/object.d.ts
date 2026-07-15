@@ -22,7 +22,7 @@
  */
 declare function jsObj_(...args: any[]): any;
 declare namespace jsObj_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[];
 }
 /**
  * Whether something is a JavaScript object.

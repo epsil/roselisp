@@ -20,7 +20,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.regexp_ = exports.regexpp_ = exports.regexpReplace_ = exports.regexpQuote_ = exports.regexpMatch_ = exports.regexpP_ = exports.regexpMatchP_ = void 0;
+exports.regexp_ = exports.regexpp_ = exports.regexpReplace_ = exports.regexpQuote_ = exports.regexpMatch_ = exports.regexpMatchP_ = void 0;
 /**
  * Convert `input` to a [regular expression][mdn:Regular Expressions] object.
  *
@@ -42,7 +42,6 @@ regexp_.fsource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('inp
 function regexpp_(obj) {
     return obj instanceof RegExp;
 }
-exports.regexpP_ = regexpp_;
 exports.regexpp_ = regexpp_;
 regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
 /**
@@ -79,11 +78,20 @@ function regexpMatch_(pattern, input) {
 }
 exports.regexpMatch_ = regexpMatch_;
 regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('match'), Symbol.for('pattern')]];
+/**
+ * Match `pattern` against `input` and return `#t`
+ * if it matches, otherwise `#f`.
+ */
 function regexpMatchP_(pattern, input) {
-    return input.match(pattern) !== null;
+    if (input.match(pattern)) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 exports.regexpMatchP_ = regexpMatchP_;
-regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('js/null?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]]];
+regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('if'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')], true, false]];
 /**
  * Match `pattern` against `input` and replace with `insert`.
  * `pattern` is a [regular expression][mdn:Regular Expressions]

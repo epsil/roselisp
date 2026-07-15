@@ -24,11 +24,11 @@
  * [js:strict-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#strict_equality_using
  * [js:strict-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
  */
-function jsIsStrictlyEqualP_(x: any, y: any): any {
+function jsStrictlyEqualP_(x: any, y: any): any {
   return x === y;
 }
 
-jsIsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-strictly-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
+jsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-strictly-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * JavaScript [loose equality][js:loose-equality],
@@ -37,11 +37,11 @@ jsIsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-strictly
  * [js:loose-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#loose_equality_using
  * [js:loose-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
  */
-function jsIsLooselyEqualP_(x: any, y: any): any {
+function jsLooselyEqualP_(x: any, y: any): any {
   return x == y;
 }
 
-jsIsLooselyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-loosely-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]];
+jsLooselyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-loosely-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * JavaScript [sameValue][js:same-value] equality.
@@ -71,11 +71,11 @@ jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value-ze
  *
  * [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
  */
-function jsTypeof_(x: any): any {
+function jsTypeOf_(x: any): any {
   return typeof x;
 }
 
-jsTypeof_.fsource = [Symbol.for('define'), [Symbol.for('js-typeof_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
+jsTypeOf_.fsource = [Symbol.for('define'), [Symbol.for('js-type-of_'), Symbol.for('x')], [Symbol.for('js/type-of'), Symbol.for('x')]];
 
 /**
  * JavaScript's [`instanceof`][js:instanceof] operator,
@@ -83,11 +83,22 @@ jsTypeof_.fsource = [Symbol.for('define'), [Symbol.for('js-typeof_'), Symbol.for
  *
  * [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
  */
-function jsInstanceof_(x: any, y: any): any {
+function jsInstanceOfP_(x: any, y: any): any {
   return x instanceof y;
 }
 
-jsInstanceof_.fsource = [Symbol.for('define'), [Symbol.for('js-instanceof_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/instanceof'), Symbol.for('x'), Symbol.for('y')]];
+jsInstanceOfP_.fsource = [Symbol.for('define'), [Symbol.for('js-instance-of?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/instance-of?'), Symbol.for('x'), Symbol.for('y')]];
+
+/**
+ * Whether a number is [NaN][js:nan].
+ *
+ * [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+ */
+function jsNanP_(x: any, y: any): any {
+  return Number.isNaN(x);
+}
+
+jsNanP_.fsource = [Symbol.for('define'), [Symbol.for('js-nan?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')]];
 
 /**
  * Variadic version of JavaScript's `+` operator.
@@ -108,7 +119,7 @@ function jsPlus_(...args: any[]): any {
   }
 }
 
-jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('array-length'), Symbol.for('args')]], undefined, [Symbol.for('js/reduce'), Symbol.for('args'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('acc'), Symbol.for('x')]]]]];
+jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('js/length'), Symbol.for('args')]], undefined, [Symbol.for('js/reduce'), Symbol.for('args'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('acc'), Symbol.for('x')]]]]];
 
 /**
  * Whether `obj` is a JavaScript function.
@@ -163,17 +174,6 @@ function jsFindIndex_(proc: any, seq: any): any {
 }
 
 jsFindIndex_.fsource = [Symbol.for('define'), [Symbol.for('js-find-index_'), Symbol.for('proc'), Symbol.for('seq')], [Symbol.for('send'), Symbol.for('seq'), Symbol.for('findIndex'), Symbol.for('proc')]];
-
-/**
- * JavaScript's [`eval` function][js:eval].
- *
- * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
- */
-function jsEval_(str: any): any {
-  return eval(str);
-}
-
-jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
 
 /**
  * JavaScript's [`in`][js:in] operator,
@@ -431,6 +431,17 @@ function jsRegexpReplace_(str: any, pattern: any, insert: any): any {
 
 jsRegexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp-replace_'), Symbol.for('str'), Symbol.for('pattern'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
 
+/**
+ * JavaScript's [`eval` function][js:eval].
+ *
+ * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+ */
+function jsEval_(str: any): any {
+  return eval(str);
+}
+
+jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
+
 export {
   jsDelete_,
   jsEighth_,
@@ -444,11 +455,12 @@ export {
   jsFunctionP_,
   jsGet_,
   jsIn_,
-  jsInstanceof_,
-  jsIsLooselyEqualP_,
-  jsIsStrictlyEqualP_,
+  jsInstanceOfP_,
+  jsLooselyEqualP_,
+  jsStrictlyEqualP_,
   jsLast_,
   jsLength_,
+  jsNanP_,
   jsNinth_,
   jsNullP_,
   jsPlus_,
@@ -470,5 +482,5 @@ export {
   jsTake_,
   jsTenth_,
   jsThird_,
-  jsTypeof_
+  jsTypeOf_
 };

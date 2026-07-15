@@ -18,7 +18,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsTypeof_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsRest_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsNullP_ = exports.jsNinth_ = exports.jsLength_ = exports.jsLast_ = exports.jsIsStrictlyEqualP_ = exports.jsIsLooselyEqualP_ = exports.jsInstanceof_ = exports.jsIn_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDelete_ = void 0;
+exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsRest_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsNullP_ = exports.jsNinth_ = exports.jsNanP_ = exports.jsLength_ = exports.jsLast_ = exports.jsStrictlyEqualP_ = exports.jsLooselyEqualP_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDelete_ = void 0;
 /**
  * JavaScript [strict equality][js:strict-equality],
  * i.e., the [`===`][js:strict-equality-operator] operator.
@@ -26,11 +26,11 @@ exports.jsTypeof_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = expo
  * [js:strict-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#strict_equality_using
  * [js:strict-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
  */
-function jsIsStrictlyEqualP_(x, y) {
+function jsStrictlyEqualP_(x, y) {
     return x === y;
 }
-exports.jsIsStrictlyEqualP_ = jsIsStrictlyEqualP_;
-jsIsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-strictly-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
+exports.jsStrictlyEqualP_ = jsStrictlyEqualP_;
+jsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-strictly-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
 /**
  * JavaScript [loose equality][js:loose-equality],
  * i.e., the [`==`][js:loose-equality-operator] operator.
@@ -38,11 +38,11 @@ jsIsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-strictly
  * [js:loose-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#loose_equality_using
  * [js:loose-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
  */
-function jsIsLooselyEqualP_(x, y) {
+function jsLooselyEqualP_(x, y) {
     return x == y;
 }
-exports.jsIsLooselyEqualP_ = jsIsLooselyEqualP_;
-jsIsLooselyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-is-loosely-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]];
+exports.jsLooselyEqualP_ = jsLooselyEqualP_;
+jsLooselyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js-loosely-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]];
 /**
  * JavaScript [sameValue][js:same-value] equality.
  *
@@ -69,22 +69,32 @@ jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value-ze
  *
  * [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
  */
-function jsTypeof_(x) {
+function jsTypeOf_(x) {
     return typeof x;
 }
-exports.jsTypeof_ = jsTypeof_;
-jsTypeof_.fsource = [Symbol.for('define'), [Symbol.for('js-typeof_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
+exports.jsTypeOf_ = jsTypeOf_;
+jsTypeOf_.fsource = [Symbol.for('define'), [Symbol.for('js-type-of_'), Symbol.for('x')], [Symbol.for('js/type-of'), Symbol.for('x')]];
 /**
  * JavaScript's [`instanceof`][js:instanceof] operator,
  * as a function.
  *
  * [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
  */
-function jsInstanceof_(x, y) {
+function jsInstanceOfP_(x, y) {
     return x instanceof y;
 }
-exports.jsInstanceof_ = jsInstanceof_;
-jsInstanceof_.fsource = [Symbol.for('define'), [Symbol.for('js-instanceof_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/instanceof'), Symbol.for('x'), Symbol.for('y')]];
+exports.jsInstanceOfP_ = jsInstanceOfP_;
+jsInstanceOfP_.fsource = [Symbol.for('define'), [Symbol.for('js-instance-of?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/instance-of?'), Symbol.for('x'), Symbol.for('y')]];
+/**
+ * Whether a number is [NaN][js:nan].
+ *
+ * [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+ */
+function jsNanP_(x, y) {
+    return Number.isNaN(x);
+}
+exports.jsNanP_ = jsNanP_;
+jsNanP_.fsource = [Symbol.for('define'), [Symbol.for('js-nan?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')]];
 /**
  * Variadic version of JavaScript's `+` operator.
  *
@@ -105,7 +115,7 @@ function jsPlus_(...args) {
     }
 }
 exports.jsPlus_ = jsPlus_;
-jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('array-length'), Symbol.for('args')]], undefined, [Symbol.for('js/reduce'), Symbol.for('args'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('acc'), Symbol.for('x')]]]]];
+jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js-plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('js/length'), Symbol.for('args')]], undefined, [Symbol.for('js/reduce'), Symbol.for('args'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('acc'), Symbol.for('x')]]]]];
 /**
  * Whether `obj` is a JavaScript function.
  */
@@ -155,16 +165,6 @@ function jsFindIndex_(proc, seq) {
 }
 exports.jsFindIndex_ = jsFindIndex_;
 jsFindIndex_.fsource = [Symbol.for('define'), [Symbol.for('js-find-index_'), Symbol.for('proc'), Symbol.for('seq')], [Symbol.for('send'), Symbol.for('seq'), Symbol.for('findIndex'), Symbol.for('proc')]];
-/**
- * JavaScript's [`eval` function][js:eval].
- *
- * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
- */
-function jsEval_(str) {
-    return eval(str);
-}
-exports.jsEval_ = jsEval_;
-jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
 /**
  * JavaScript's [`in`][js:in] operator,
  * as a function.
@@ -395,3 +395,13 @@ function jsRegexpReplace_(str, pattern, insert) {
 }
 exports.jsRegexpReplace_ = jsRegexpReplace_;
 jsRegexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp-replace_'), Symbol.for('str'), Symbol.for('pattern'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
+/**
+ * JavaScript's [`eval` function][js:eval].
+ *
+ * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+ */
+function jsEval_(str) {
+    return eval(str);
+}
+exports.jsEval_ = jsEval_;
+jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];

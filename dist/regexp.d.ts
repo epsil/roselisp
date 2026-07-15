@@ -62,9 +62,13 @@ declare function regexpMatch_(pattern: any, input: any): any;
 declare namespace regexpMatch_ {
     var fsource: (symbol | symbol[])[];
 }
+/**
+ * Match `pattern` against `input` and return `#t`
+ * if it matches, otherwise `#f`.
+ */
 declare function regexpMatchP_(pattern: any, input: any): any;
 declare namespace regexpMatchP_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (boolean | symbol | symbol[])[])[];
 }
 /**
  * Match `pattern` against `input` and replace with `insert`.
@@ -81,4 +85,4 @@ declare function regexpReplace_(pattern: any, input: any, insert: any): any;
 declare namespace regexpReplace_ {
     var fsource: (symbol | symbol[])[];
 }
-export { regexpMatchP_, regexpp_ as regexpP_, regexpMatch_, regexpQuote_, regexpReplace_, regexpp_, regexp_ };
+export { regexpMatchP_, regexpMatch_, regexpQuote_, regexpReplace_, regexpp_, regexp_ };

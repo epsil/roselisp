@@ -20,7 +20,7 @@
 ;;;
 ;;; [js:strict-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#strict_equality_using
 ;;; [js:strict-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
-(define (js-is-strictly-equal?_ x y)
+(define (js-strictly-equal?_ x y)
   (js/=== x y))
 
 ;;; JavaScript [loose equality][js:loose-equality],
@@ -28,7 +28,7 @@
 ;;;
 ;;; [js:loose-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#loose_equality_using
 ;;; [js:loose-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
-(define (js-is-loosely-equal?_ x y)
+(define (js-loosely-equal?_ x y)
   (js/== x y))
 
 ;;; JavaScript [sameValue][js:same-value] equality.
@@ -49,15 +49,21 @@
 ;;; as a function.
 ;;;
 ;;; [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
-(define (js-typeof_ x)
-  (js/typeof x))
+(define (js-type-of_ x)
+  (js/type-of x))
 
 ;;; JavaScript's [`instanceof`][js:instanceof] operator,
 ;;; as a function.
 ;;;
 ;;; [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
-(define (js-instanceof_ x y)
-  (js/instanceof x y))
+(define (js-instance-of?_ x y)
+  (js/instance-of? x y))
+
+;;; Whether a number is [NaN][js:nan].
+;;;
+;;; [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+(define (js-nan?_ x y)
+  (send Number isNaN x))
 
 ;;; Variadic version of JavaScript's `+` operator.
 ;;;
@@ -67,7 +73,7 @@
 ;;; [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
 ;;; [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
 (define (js-plus_ . args)
-  (if (zero? (array-length args))
+  (if (zero? (js/length args))
       #u
       (js/reduce args
                  (lambda (acc x)
@@ -101,12 +107,6 @@
   ;; This construct maps neatly onto
   ;; [`Array.prototype.findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex).
   (send seq findIndex proc))
-
-;;; JavaScript's [`eval` function][js:eval].
-;;;
-;;; [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
-(define (js-eval_ str)
-  (js/eval str))
 
 ;;; JavaScript's [`in`][js:in] operator,
 ;;; as a function.
@@ -232,6 +232,12 @@
 (define (js-regexp-replace_ str pattern insert)
   (send str replace pattern insert))
 
+;;; JavaScript's [`eval` function][js:eval].
+;;;
+;;; [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+(define (js-eval_ str)
+  (js/eval str))
+
 (provide
   js-delete_
   js-eighth_
@@ -245,11 +251,12 @@
   js-function?_
   js-get_
   js-in_
-  js-instanceof_
-  js-is-loosely-equal?_
-  js-is-strictly-equal?_
+  js-instance-of?_
+  js-loosely-equal?_
+  js-strictly-equal?_
   js-last_
   js-length_
+  js-nan?_
   js-ninth_
   js-null?_
   js-plus_
@@ -271,4 +278,4 @@
   js-take_
   js-tenth_
   js-third_
-  js-typeof_)
+  js-type-of_)

@@ -79,11 +79,19 @@ function regexpMatch_(pattern: any, input: any): any {
 
 regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('match'), Symbol.for('pattern')]];
 
+/**
+ * Match `pattern` against `input` and return `#t`
+ * if it matches, otherwise `#f`.
+ */
 function regexpMatchP_(pattern: any, input: any): any {
-  return input.match(pattern) !== null;
+  if (input.match(pattern)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('not'), [Symbol.for('js/null?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]]];
+regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('if'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')], true, false]];
 
 /**
  * Match `pattern` against `input` and replace with `insert`.
@@ -104,7 +112,6 @@ regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), 
 
 export {
   regexpMatchP_,
-  regexpp_ as regexpP_,
   regexpMatch_,
   regexpQuote_,
   regexpReplace_,

@@ -1165,7 +1165,7 @@ function typeOf_(x: any): any {
   return typeof x;
 }
 
-typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
+typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/type-of'), Symbol.for('x')]];
 
 /**
  * Whether `obj` is an instance of `cls`.
@@ -1178,7 +1178,7 @@ function isAP_(obj: any, cls: any): any {
   return obj instanceof cls;
 }
 
-isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instanceof?'), Symbol.for('obj'), Symbol.for('cls')]];
+isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instance-of?'), Symbol.for('obj'), Symbol.for('cls')]];
 
 export {
   add1_ as add1,

@@ -696,7 +696,7 @@
 ;;;
 ;;; [cl:type-of]: http://clhs.lisp.se/Body/f_tp_of.htm#type-of
 (define (type-of_ x)
-  (js/typeof x))
+  (js/type-of x))
 
 ;;; Whether `obj` is an instance of `cls`.
 ;;;
@@ -704,7 +704,7 @@
 ;;;
 ;;; [rkt:is-a-p]: https://docs.racket-lang.org/reference/objectutils.html#%28def._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._is-a~3f%29%29
 (define (is-a?_ obj cls)
-  (js/instanceof? obj cls))
+  (js/instance-of? obj cls))
 
 (provide
   (rename-out (add1_ add1))
@@ -776,8 +776,6 @@
   (rename-out (values_ values))
   (rename-out (variable-type?_ variable-type?))
   (rename-out (zero?_ zerop))
-  ;; (rename-out (display_ print))
-  ;; (rename-out (type-of_ type-of?))
   add1_
   add_
   apply_

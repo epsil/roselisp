@@ -34,7 +34,7 @@ function jsObj_(...args) {
     return Object.fromEntries(entries);
 }
 exports.jsObj_ = jsObj_;
-jsObj_.fsource = [Symbol.for('define'), [Symbol.for('js-obj_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('entries'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-list-length'), Symbol.for('args')], 2]]], [Symbol.for('push-right!'), Symbol.for('entries'), [Symbol.for('list'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')], [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('fromEntries'), Symbol.for('entries')]];
+jsObj_.fsource = [Symbol.for('define'), [Symbol.for('js-obj_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('entries'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('args')], 2]]], [Symbol.for('push-right!'), Symbol.for('entries'), [Symbol.for('list'), [Symbol.for('js/get'), Symbol.for('args'), Symbol.for('i')], [Symbol.for('js/get'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('fromEntries'), Symbol.for('entries')]]];
 /**
  * Whether something is a JavaScript object.
  */
@@ -95,7 +95,7 @@ function objectRef_(obj, key) {
 exports.objectGet_ = objectRef_;
 exports.oget_ = objectRef_;
 exports.objectRef_ = objectRef_;
-objectRef_.fsource = [Symbol.for('define'), [Symbol.for('object-ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('oget'), Symbol.for('obj'), Symbol.for('key')]];
+objectRef_.fsource = [Symbol.for('define'), [Symbol.for('object-ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
 /**
  * Set the property `key` in `obj` to `val`.
  *

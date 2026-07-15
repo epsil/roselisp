@@ -6187,6 +6187,20 @@ const x: any = 1;")))
                "const f: (a: number, b?: number) => number = function (x: any, y: any = 1): any {
   return x;
 };")))
+        (it "(: f (-> Any * Any)), lambda with rest argument, TS"
+            (fn ()
+              (assert-equal
+               (compile '(begin
+                           (: f (-> Any * Any))
+                           (define f
+                             (lambda x
+                               x)))
+                        compilation-environment
+                        (js-obj "language" "TypeScript"
+                                "expressionType" "statement"))
+               "const f: (...a: any) => any = function (...x: any[]): any {
+  return x;
+};")))
         (it "(: f (-> :rest Any Any)), lambda with rest argument, TS"
             (fn ()
               (assert-equal

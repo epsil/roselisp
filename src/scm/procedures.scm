@@ -76,26 +76,30 @@
 
 ;;; Whether `x` is the type of a macro.
 (define (macro-type?_ x)
-  (or (tagged-list?_ x '->macro)
+  (or (tagged-list?_ x 'macro->)
       ;; FIXME: Legacy code, remove.
+      (tagged-list?_ x '->macro)
       (eq? x "macro")))
 
 ;;; Whether `x` is the type of a fexpr.
 (define (fexpr-type?_ x)
-  (or (tagged-list?_ x '->fexpr)
+  (or (tagged-list?_ x 'fexpr->)
       ;; FIXME: Legacy code, remove.
+      (tagged-list?_ x '->fexpr)
       (eq? x "fexpr")))
 
 ;;; Whether `x` is the type of a compiler.
 (define (compiler-type?_ x)
-  (or (tagged-list?_ x '->compiler)
+  (or (tagged-list?_ x 'compiler->)
       ;; FIXME: Legacy code, remove.
+      (tagged-list?_ x '->compiler)
       (eq? x "compiler")))
 
 ;;; Whether `x` is the type of a special form.
 (define (special-type?_ x)
-  (or (tagged-list?_ x '->special)
+  (or (tagged-list?_ x 'special->)
       ;; FIXME: Legacy code, remove.
+      (tagged-list?_ x '->special)
       (eq? x "special")))
 
 ;;; Whether `x` is the type of an undefined value.

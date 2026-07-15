@@ -10340,6 +10340,38 @@ describe('compile', function (): any {
           '};'
       );
     });
+    it('(: f (-> Any * Any)), lambda with rest argument, TS', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('begin'),
+            [
+              Symbol.for(':'),
+              Symbol.for('f'),
+              [
+                Symbol.for('->'),
+                Symbol.for('Any'),
+                Symbol.for('*'),
+                Symbol.for('Any'),
+              ],
+            ],
+            [
+              Symbol.for('define'),
+              Symbol.for('f'),
+              [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            language: 'TypeScript',
+            expressionType: 'statement',
+          }
+        ),
+        'const f: (...a: any) => any = function (...x: any[]): any {\n' +
+          '  return x;\n' +
+          '};'
+      );
+    });
     it('(: f (-> :rest Any Any)), lambda with rest argument, TS', function (): any {
       return assertEqual(
         compile(

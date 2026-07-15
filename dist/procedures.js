@@ -201,49 +201,49 @@ procedureTypeP_.fsource = [Symbol.for('define'), [Symbol.for('procedure-type?_')
  * Whether `x` is the type of a macro.
  */
 function macroTypeP_(x) {
-    return ((taggedListP_(x, Symbol.for('->macro')) ||
-        (
+    return (((taggedListP_(x, Symbol.for('macro->')) ||
         // FIXME: Legacy code, remove.
-        x === 'macro')));
+        taggedListP_(x, Symbol.for('->macro'))) ||
+        (x === 'macro')));
 }
 exports.macroTypeP = macroTypeP_;
 exports.macroTypeP_ = macroTypeP_;
-macroTypeP_.fsource = [Symbol.for('define'), [Symbol.for('macro-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->macro')]], [Symbol.for('eq?'), Symbol.for('x'), 'macro']]];
+macroTypeP_.fsource = [Symbol.for('define'), [Symbol.for('macro-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('macro->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->macro')]], [Symbol.for('eq?'), Symbol.for('x'), 'macro']]];
 /**
  * Whether `x` is the type of a fexpr.
  */
 function fexprTypeP_(x) {
-    return ((taggedListP_(x, Symbol.for('->fexpr')) ||
-        (
+    return (((taggedListP_(x, Symbol.for('fexpr->')) ||
         // FIXME: Legacy code, remove.
-        x === 'fexpr')));
+        taggedListP_(x, Symbol.for('->fexpr'))) ||
+        (x === 'fexpr')));
 }
 exports.fexprTypeP = fexprTypeP_;
-fexprTypeP_.fsource = [Symbol.for('define'), [Symbol.for('fexpr-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->fexpr')]], [Symbol.for('eq?'), Symbol.for('x'), 'fexpr']]];
+fexprTypeP_.fsource = [Symbol.for('define'), [Symbol.for('fexpr-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('fexpr->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->fexpr')]], [Symbol.for('eq?'), Symbol.for('x'), 'fexpr']]];
 /**
  * Whether `x` is the type of a compiler.
  */
 function compilerTypeP_(x) {
-    return ((taggedListP_(x, Symbol.for('->compiler')) ||
-        (
+    return (((taggedListP_(x, Symbol.for('compiler->')) ||
         // FIXME: Legacy code, remove.
-        x === 'compiler')));
+        taggedListP_(x, Symbol.for('->compiler'))) ||
+        (x === 'compiler')));
 }
 exports.compilerTypeP = compilerTypeP_;
 exports.compilerTypeP_ = compilerTypeP_;
-compilerTypeP_.fsource = [Symbol.for('define'), [Symbol.for('compiler-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->compiler')]], [Symbol.for('eq?'), Symbol.for('x'), 'compiler']]];
+compilerTypeP_.fsource = [Symbol.for('define'), [Symbol.for('compiler-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('compiler->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->compiler')]], [Symbol.for('eq?'), Symbol.for('x'), 'compiler']]];
 /**
  * Whether `x` is the type of a special form.
  */
 function specialTypeP_(x) {
-    return ((taggedListP_(x, Symbol.for('->special')) ||
-        (
+    return (((taggedListP_(x, Symbol.for('special->')) ||
         // FIXME: Legacy code, remove.
-        x === 'special')));
+        taggedListP_(x, Symbol.for('->special'))) ||
+        (x === 'special')));
 }
 exports.specialTypeP = specialTypeP_;
 exports.specialTypeP_ = specialTypeP_;
-specialTypeP_.fsource = [Symbol.for('define'), [Symbol.for('special-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->special')]], [Symbol.for('eq?'), Symbol.for('x'), 'special']]];
+specialTypeP_.fsource = [Symbol.for('define'), [Symbol.for('special-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('special->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->special')]], [Symbol.for('eq?'), Symbol.for('x'), 'special']]];
 /**
  * Whether `x` is the type of an undefined value.
  */

@@ -118,18 +118,18 @@
       (oget options "notFound"))
     (define filter
       (oget options "filter"))
-    (define env this)
-    (while env
-      (when (and filter
-                 (not (filter env)))
-        (set! env #u)
-        (break))
-      (when (send env has-local key)
-        (break))
-      (set! env (get-field parent env)))
-    (if env
-        env
-        not-found))
+    (define parent
+      (get-field parent this))
+    (cond
+     ((and filter
+           (not (filter this)))
+      not-found)
+     ((send this has-local key)
+      this)
+     (parent
+      (send parent find-frame key options))
+     (else
+      not-found)))
 
   ;;; Delete the binding for `key`, if any.
   (define/public (delete key)

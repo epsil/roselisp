@@ -115,19 +115,15 @@ class Environment {
     findFrame(key, options = {}) {
         const notFound = options['notFound'];
         const filter = options['filter'];
-        let env = this;
-        while (env) {
-            if (filter && !filter(env)) {
-                env = undefined;
-                break;
-            }
-            if (env.hasLocal(key)) {
-                break;
-            }
-            env = env.parent;
+        const parent = this.parent;
+        if (filter && !filter(this)) {
+            return notFound;
         }
-        if (env) {
-            return env;
+        else if (this.hasLocal(key)) {
+            return this;
+        }
+        else if (parent) {
+            return parent.findFrame(key, options);
         }
         else {
             return notFound;

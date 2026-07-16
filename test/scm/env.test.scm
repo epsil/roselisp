@@ -49,6 +49,25 @@
           (assert-equal
            (send env find-frame 'foo (js-obj "filter" filter))
            #u)))
+    (it "find-frame, filter option, parent stack"
+        (fn ()
+          (define env1
+            (new LispEnvironment
+                 '((foo "baz" Any))))
+          (define env2
+            (new LispEnvironment
+                 '((bar "baz" Any))))
+          (define env
+            (new Environment
+                 '()
+                 (new EnvironmentStack
+                      env1
+                      env2)))
+          (define (filter x)
+            (not (eq? x env2)))
+          (assert-equal
+           (send env find-frame 'bar (js-obj "filter" filter))
+           #u)))
     (it "find-frame, parent environment, filter option"
         (fn ()
           (define env

@@ -44,6 +44,24 @@ describe('Environment', function (): any {
       undefined
     );
   });
+  it('find-frame, filter option, parent stack', function (): any {
+    const env1: any = new LispEnvironment([
+      [Symbol.for('foo'), 'baz', Symbol.for('Any')],
+    ]);
+    const env2: any = new LispEnvironment([
+      [Symbol.for('bar'), 'baz', Symbol.for('Any')],
+    ]);
+    const env: any = new Environment([], new EnvironmentStack(env1, env2));
+    function filter(x: any): any {
+      return x !== env2;
+    }
+    return assertEqual(
+      env.findFrame(Symbol.for('bar'), {
+        filter: filter,
+      }),
+      undefined
+    );
+  });
   it('find-frame, parent environment, filter option', function (): any {
     const env: any = new Environment(
       [[Symbol.for('foo'), 'bar']],

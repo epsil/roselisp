@@ -172,8 +172,8 @@ quasiquoteSpecial_.fsource = [Symbol.for('define'), [Symbol.for('quasiquote-spec
  */
 function quasiquoteHelper(exp: any, env: any): any {
   if (!((): any => {
-    const x: any = lastCdr(exp);
-    return Array.isArray(x) && (x.length === 0);
+    const x1: any = lastCdr(exp);
+    return Array.isArray(x1) && (x1.length === 0);
   })()) {
     return exp;
   } else {
@@ -1617,7 +1617,7 @@ sendApplySpecial_.fsource = [Symbol.for('define'), [Symbol.for('send-apply-speci
  *
  * Helper function for `send-special_` and `send-apply-special_`.
  */
-function sendMethod(...args: any): any {
+function sendMethod(...args: any[]): any {
   let [obj, method, ...restArgs]: any[] = args;
   if (typeof method === 'symbol') {
     return sendMethod(obj, method.description as string, ...restArgs);
@@ -2044,8 +2044,8 @@ function trySpecial_(exp: any, env: any): any {
   } catch (err) {
     for (let clause of catchClauses) {
       if (err instanceof eval_((Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && ((): any => {
-        const x: any = lastCdr(clause);
-        return Array.isArray(x) && (x.length === 0);
+        const x1: any = lastCdr(clause);
+        return Array.isArray(x1) && (x1.length === 0);
       })()) ? ((): any => {
         let i: any = 1;
         let result: any = clause;
@@ -2063,8 +2063,8 @@ function trySpecial_(exp: any, env: any): any {
         return result;
       })() : clause[1], env)) {
         result = eval_([Symbol.for('let'), [[(Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && ((): any => {
-          const x: any = lastCdr(clause);
-          return Array.isArray(x) && (x.length === 0);
+          const x1: any = lastCdr(clause);
+          return Array.isArray(x1) && (x1.length === 0);
         })()) ? ((): any => {
           let i: any = 2;
           let result: any = clause;

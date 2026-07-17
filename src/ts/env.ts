@@ -389,7 +389,7 @@ class TypedEnvironment extends Environment {
 
   /**
    * Get the type of `key`. If there is no binding,
-   * return `"#u"`.
+   * return `Undefined`.
    */
   getType(key: any, options: any = {}): any {
     const inheritedOptions: any = {
@@ -397,6 +397,19 @@ class TypedEnvironment extends Environment {
       notFound: [undefined, Symbol.for('Undefined')]
     };
     const [, typ]: any[] = this.getTypedValue(key, inheritedOptions);
+    return typ;
+  }
+
+  /**
+   * Get the local type of `key`. If there is no binding,
+   * return `Undefined`.
+   */
+  getLocalType(key: any, options: any = {}): any {
+    const inheritedOptions: any = {
+      ...options,
+      notFound: [undefined, Symbol.for('Undefined')]
+    };
+    const [, typ]: any[] = this.getTypedLocalValue(key, inheritedOptions);
     return typ;
   }
 
@@ -594,6 +607,22 @@ class ThunkedEnvironment extends TypedEnvironment {
   getType(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
     let tuple: any = this.getUnforcedTuple(key, options);
+    let [binding, found]: any[] = tuple;
+    if (found) {
+      const [, typ]: any[] = binding;
+      return typ;
+    } else {
+      return Symbol.for('Undefined');
+    }
+  }
+
+  /**
+   * Get the local type of `key`. If there is no binding,
+   * return `Undefined`.
+   */
+  getLocalType(key: any, options: any = {}): any {
+    // Obtain the type without forcing the thunk.
+    let tuple: any = this.getUnforcedLocalTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
       const [, typ]: any[] = binding;

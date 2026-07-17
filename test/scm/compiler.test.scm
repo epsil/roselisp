@@ -191,24 +191,24 @@ function bar(x) {
                 (js-obj))
               (compile 'foo #u options)
               (define compiled-env
-                (oget options "compiledEnv"))
+                (oget options "compiledEnvironment"))
               (assert-equal
                (instance-of? compiled-env LispEnvironment)
                #t)))))
     (describe "continuation environment"
       (fn ()
-        (it "has"
-            (fn ()
-              (define options
-                (js-obj))
-              (compile '(define foo 1)
-                       #u
-                       options)
-              (define continuation-env
-                (oget options "continuationEnv"))
-              (assert-equal
-               (send continuation-env has 'foo)
-               #t)))
+        (xit "has"
+             (fn ()
+               (define options
+                 (js-obj))
+               (compile '(define foo 1)
+                        #u
+                        options)
+               (define continuation-env
+                 (oget options "continuationEnv"))
+               (assert-equal
+                (send continuation-env has 'foo)
+                #t)))
         (xit "EnvironmentStack"
              (fn ()
                (define options

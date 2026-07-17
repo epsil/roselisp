@@ -328,7 +328,7 @@
     (send this get-untyped-local-value key options))
 
   ;;; Get the type of `key`. If there is no binding,
-  ;;; return `"#u"`.
+  ;;; return `Undefined`.
   (define/public (get-type key (options (js-obj)))
     (define inherited-options
       (js-obj-append
@@ -336,6 +336,17 @@
        (js-obj "notFound" '(#u Undefined))))
     (define-values (_ typ)
       (send this get-typed-value key inherited-options))
+    typ)
+
+  ;;; Get the local type of `key`. If there is no binding,
+  ;;; return `Undefined`.
+  (define/public (get-local-type key (options (js-obj)))
+    (define inherited-options
+      (js-obj-append
+       options
+       (js-obj "notFound" '(#u Undefined))))
+    (define-values (_ typ)
+      (send this get-typed-local-value key inherited-options))
     typ)
 
   ;;; Get the typed value of `key`, which is a tuple
@@ -517,6 +528,22 @@
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-tuple key options))
+    (define-values (binding found)
+      tuple)
+    (cond
+     (found
+      (define-values (_ typ)
+        binding)
+      typ)
+     (else
+      'Undefined)))
+
+  ;;; Get the local type of `key`. If there is no binding,
+  ;;; return `Undefined`.
+  (define/public (get-local-type key (options (js-obj)))
+    ;; Obtain the type without forcing the thunk.
+    (define tuple
+      (send this get-unforced-local-tuple key options))
     (define-values (binding found)
       tuple)
     (cond

@@ -142,8 +142,8 @@ quasiquoteSpecial_.fsource = [Symbol.for('define'), [Symbol.for('quasiquote-spec
  */
 function quasiquoteHelper(exp, env) {
     if (!(() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
+        const x1 = lastCdr(exp);
+        return Array.isArray(x1) && (x1.length === 0);
     })()) {
         return exp;
     }
@@ -2054,8 +2054,8 @@ function trySpecial_(exp, env) {
     catch (err) {
         for (let clause of catchClauses) {
             if (err instanceof (0, eval_1.eval_)((Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && (() => {
-                const x = lastCdr(clause);
-                return Array.isArray(x) && (x.length === 0);
+                const x1 = lastCdr(clause);
+                return Array.isArray(x1) && (x1.length === 0);
             })()) ? (() => {
                 let i = 1;
                 let result = clause;
@@ -2074,8 +2074,8 @@ function trySpecial_(exp, env) {
                 return result;
             })() : clause[1], env)) {
                 result = (0, eval_1.eval_)([Symbol.for('let'), [[(Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && (() => {
-                                const x = lastCdr(clause);
-                                return Array.isArray(x) && (x.length === 0);
+                                const x1 = lastCdr(clause);
+                                return Array.isArray(x1) && (x1.length === 0);
                             })()) ? (() => {
                                 let i = 2;
                                 let result = clause;

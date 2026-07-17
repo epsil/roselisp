@@ -179,9 +179,14 @@ declare class TypedEnvironment extends Environment {
     getLocal(key: any, options?: any): any;
     /**
      * Get the type of `key`. If there is no binding,
-     * return `"#u"`.
+     * return `Undefined`.
      */
     getType(key: any, options?: any): any;
+    /**
+     * Get the local type of `key`. If there is no binding,
+     * return `Undefined`.
+     */
+    getLocalType(key: any, options?: any): any;
     /**
      * Get the typed value of `key`, which is a tuple
      * `(value type)`.
@@ -251,6 +256,11 @@ declare class ThunkedEnvironment extends TypedEnvironment {
      * return `Undefined`.
      */
     getType(key: any, options?: any): any;
+    /**
+     * Get the local type of `key`. If there is no binding,
+     * return `Undefined`.
+     */
+    getLocalType(key: any, options?: any): any;
     setType(key: any, typ: any, options?: any): any;
     setLocalType(key: any, typ: any, options?: any): any;
 }

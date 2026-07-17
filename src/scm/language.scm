@@ -888,13 +888,14 @@
   (define compiled-env
     (new LispEnvironment))
   (define continuation-env
-    (new LispEnvironment))
-  (oset! compilation-options "lispEnvironment" lang-env)
+    (new LispEnvironment
+         '()
+         lang-env))
+  (oset! compilation-options "languageEnvironment" lang-env)
   (oset! compilation-options
          "compilationMappingEnvironment"
          mapping-env)
-  (oset! compilation-options "continuationEnv" continuation-env)
-  (oset! compilation-options "compiledEnv" compiled-env)
+  (oset! compilation-options "compiledEnvironment" compiled-env)
   (set! compilation-options
         (js-obj-append
          default-compilation-options
@@ -905,11 +906,11 @@
      (define ast
        (cond
         ((is-a? exp Module)
-         (compile-module exp lang-env compilation-options))
+         (compile-module exp continuation-env compilation-options))
         ((is-a? exp Rose)
-         (compile-rose exp lang-env compilation-options))
+         (compile-rose exp continuation-env compilation-options))
         (else
-         (compile-sexp exp lang-env compilation-options))))
+         (compile-sexp exp continuation-env compilation-options))))
      (set! ast (optimize-estree ast))
      (print-estree ast compilation-options))))
 
@@ -934,7 +935,6 @@
     (hash-set! module-map module-name module))
   (set! compiled-module-map
         (compile-module-map module-map env options))
-  ;; `(,@(send compiled-module-map values))
   (append (send compiled-module-map values)))
 
 ;;; Compile a module map.
@@ -975,17 +975,11 @@
 (define (compile-module-object module env (options (js-obj)))
   (define expressions
     (send module get-expressions))
-  (define continuation-env
-    (or (send module get-continuation-env)
-        (oget options "continuationEnv")
-        (new LispEnvironment)))
   (define module-environment
     (send module get-environment))
   (define module-options
     (js-obj-append
-     (js-obj "continuationEnv"
-             continuation-env
-             "currentModule"
+     (js-obj "currentModule"
              module
              "referencedSymbols"
              '()
@@ -1147,15 +1141,10 @@
 
 ;;; Compile a S-expression wrapped in a rose tree.
 (define (compile-rose node env (options (js-obj)))
-  (define inherited-options
-    (if (oget options "continuationEnv")
-        options
-        (js-obj-append
-         options
-         (js-obj "continuationEnv"
-                 (new LispEnvironment)))))
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define comments-option
     (oget options "comments"))
   (define node1
@@ -1169,37 +1158,24 @@
      ((= (array-list-length exp) 0)
       (set! result
             (compile-list
-             node1 env inherited-options)))
+             node1 env options)))
      (else
       (define op
         (first exp))
       (cond
        ((and (symbol? op)
-             (send continuation-env
-                   has
-                   op
-                   (js-obj "filter"
-                           (lambda (x)
-                             (not (eq? x env)))))
+             (send env has op (js-obj "filter" lang-filter))
              (not (macro-type?
-                   (send continuation-env
-                         get-type
-                         op
-                         (js-obj "filter"
-                                 (lambda (x)
-                                   (not (eq? x env)))))))
-             ;; (not (macro_?
-             ;;       (send env get op)))
-             )
+                   (send env get-type op (js-obj "filter" lang-filter)))))
         (set! result
               (compile-function-call
-               node1 env inherited-options)))
+               node1 env options)))
        ((and (symbol? op)
              (regexp-match (regexp "^\\.")
                            (symbol->string op)))
         (set! result
               (compile-dot
-               node1 env inherited-options)))
+               node1 env options)))
        (else
         (define-values (f op-type)
           (send env get-typed-value op))
@@ -1207,7 +1183,7 @@
          ((undefined-type? op-type)
           (set! result
                 (compile-function-call
-                 node1 env inherited-options)))
+                 node1 env options)))
          ((memq? f inlined-functions)
           (define inlined-exp
             (definition->macro (source f) (rest exp)))
@@ -1217,7 +1193,7 @@
                 (compile-rose inlined-node env options)))
          (else
           (define compilation-mapping-environment
-            (oget inherited-options "compilationMappingEnvironment"))
+            (oget options "compilationMappingEnvironment"))
           (define-values (compilation-f compilation-type)
             (send compilation-mapping-environment get-typed-value f))
           (cond
@@ -1226,7 +1202,7 @@
             (set! result
                   (compilation-f
                    node1 env
-                   inherited-options)))
+                   options)))
            ;; Compilation macro.
            ((macro-type? compilation-type)
             (set! result
@@ -1236,32 +1212,32 @@
                     node1
                     node1)
                    env
-                   inherited-options)))
+                   options)))
            ;; Macro call.
            ((macro-type? op-type)
             (set! result
                   (compile-macro-call
                    node1 env
-                   inherited-options)))
+                   options)))
            (else
             (set! result
                   (compile-function-call
                    node1 env
-                   inherited-options)))))))))))
+                   options)))))))))))
    ((string? exp)
     (set! result
           (compile-string
-           node1 env inherited-options)))
+           node1 env options)))
    ((symbol? exp)
     (set! result
           (compile-variable
-           node1 env inherited-options)))
+           node1 env options)))
    ((estree? exp)
     (set! result exp))
    (else
     (set! result
           (compile-atom
-           node1 env inherited-options))))
+           node1 env options))))
   (when (and comments-option
              (send node1 has-property "comments"))
     (define comments
@@ -2309,8 +2285,6 @@
 
 ;;; Compile a `(: ...)` expression.
 (define (compile-colon node env (options (js-obj)))
-  (define continuation-env
-    (oget options "continuationEnv"))
   (define sym
     (send node get 1))
   (define sym-exp
@@ -2319,8 +2293,7 @@
     (send node get 2))
   (define type-exp
     (send type_ get-value))
-  (when continuation-env
-    (send continuation-env set-local-type sym-exp type-exp))
+  (send env set-local-type sym-exp type-exp)
   (compile-nop node env options))
 
 ;;; Compile a `(cond ...)` expression.
@@ -2416,11 +2389,13 @@
 
 ;;; Compile a `(define ...)` expression.
 (define (compile-define node env (options (js-obj)))
-  (define continuation-env
-    (oget options "continuationEnv"))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define language
     (oget options "language"))
-  (define inline-lisp-source-option
+  (define inline-lisp-sources
     (oget options "inlineLispSources"))
   (define exp
     (send node get-value))
@@ -2459,7 +2434,7 @@
       (~> (send lambda-exp get 1)
           (send get-value)))
     (define declared-type
-      (send continuation-env get-type sym))
+      (send env get-local-type sym))
     (cond
      ((or (eq? declared-type 'Any)
           (eq? declared-type 'Undefined))
@@ -2475,7 +2450,7 @@
                  (else
                   (make-list (array-list-length params) 'Any)))
               ,return-type))
-      (send continuation-env set-local name-sym type_ '(-> Any * Any)))
+      (make-type-binding env name-sym type_ lang-filter))
      (else
       (set! type_ declared-type)))
     (define compiled-type
@@ -2487,7 +2462,6 @@
             (compile-define
              (make-rose
               `(define ,name-sym
-                 ;; (curry ,lambda-exp)
                  ,lambda-exp)
               node)
              env
@@ -2526,7 +2500,7 @@
                     (get-field returnType
                                compiledType)))))
     (cond
-     (inline-lisp-source-option
+     (inline-lisp-sources
       (define sym
         (string->symbol function-name))
       (define lisp-code-exp
@@ -2538,7 +2512,7 @@
       result)))
    ;; Uninitialized variable.
    ((= (array-list-length exp) 2)
-    (send continuation-env set-local (second exp) #t 'Any)
+    (make-type-binding env (second exp) 'Any lang-filter)
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (compile-expression
@@ -2580,16 +2554,13 @@
        env
        options))
     (cond
-     ((send continuation-env
+     ((send env
             has
             sym
-            (js-obj "filter"
-                    (lambda (x)
-                      (not (eq? x env)))))
-      (set! type_
-            (send continuation-env get-type sym)))
+            (js-obj "filter" lang-filter))
+      (set! type_ (send env get-type sym)))
      (else
-      (send continuation-env set-local (second exp) type_ 'Any)))
+      (make-type-binding env (second exp) type_ lang-filter)))
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (~> sym-compiled
@@ -2604,12 +2575,12 @@
 
 ;;; Compile a `(define/async ...)` expression.
 (define (compile-define-async node env (options (js-obj)))
-  (define inline-lisp-source-option
+  (define inline-lisp-sources
     (oget options "inlineLispSources"))
   (define result
     (compile-define node env options))
   (define result-f
-    (if inline-lisp-source-option
+    (if inline-lisp-sources
         (first (get-field body result))
         result))
   (when (estree-type? result-f "FunctionDeclaration")
@@ -2768,8 +2739,6 @@
 
 ;;; Compile a function call.
 (define (compile-function-call node env (options (js-obj)))
-  (define continuation-env
-    (oget options "continuationEnv"))
   (define referenced-symbols
     (oget options "referencedSymbols"))
   (define current-module
@@ -2827,44 +2796,37 @@
 ;;; Whether the language binding for `sym` should be added to
 ;;; the global environment.
 (define (should-inline? sym env (options (js-obj)))
+  ;; This may be disabled with the `shouldInline` option.
   (define should-inline-option
     (oget options "shouldInline"))
-  (define continuation-env
-    (oget options "continuationEnv"))
+  (unless should-inline-option
+    (return #f))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
+  (define (js-filter x)
+    (not (eq? x js-environment)))
   (define compilation-mapping-environment
     (oget options "compilationMappingEnvironment"))
   (define current-module
     (oget options "currentModule"))
-  ;; This may be disabled with the `shouldInline` option.
-  (unless should-inline-option
-    (return #f))
   (and (symbol? sym)
        ;; Do not inline if the symbol is listed in
        ;; `compilation-variables-env`.
        (not (send compilation-variables-env has sym))
        ;; Do not inline if there is a local binding for the
        ;; value (e.g., a `let` variable).
-       (not (and continuation-env
-                 (send continuation-env
-                       has
-                       sym
-                       (js-obj "filter"
-                               (lambda (x)
-                                 (not (eq? x env)))))))
+       (not (send env has sym (js-obj "filter" lang-filter)))
        ;; Do not inline if the current module defines the
        ;; value.
        (not (and current-module
                  (send current-module has-symbol sym)))
-       ;; Only inline if the environment binds the symbol.
-       (send env
-             find-frame
-             sym
-             (js-obj "filter"
-                     (lambda (x)
-                       ;; Do not inline if the value is a JavaScript
-                       ;; value, i.e., if it is provided by the very
-                       ;; language compiled to.
-                       (not (eq? x js-environment)))))))
+       ;; Only inline if the language environment binds the symbol.
+       ;; However, do not inline if the value is a JavaScript
+       ;; value, i.e., if it is provided by the very language
+       ;; compiled to.
+       (send language-env has sym (js-obj "filter" js-filter))))
 
 ;;; Compile a `(> ...)` expression.
 (define (compile-greater-than node env (options (js-obj)))
@@ -2984,7 +2946,6 @@
 
 ;;; Compile a `(lambda ...)` expression.
 (define (compile-lambda node env (options (js-obj)))
-  ;; (compile-js-arrow node env options)
   (compile-js-function node env options))
 
 ;;; Compile a `(js/function ...)` expression.
@@ -3002,15 +2963,16 @@
   (define language
     (oget inherited-options "language"))
   (define params '())
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
+  (define language-env
+    (oget inherited-options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
+  (define env1
+    (extend-environment (new LispEnvironment)
+                        env))
   (define args-list)
   (define regular-args)
   (define rest-arg)
-  (set! continuation-env
-        (extend-environment (new LispEnvironment)
-                            continuation-env))
-  (oset! inherited-options "continuationEnv" continuation-env)
   ;; Parse the parameter list: sort the regular parameters
   ;; from the rest parameter, if any.
   (cond
@@ -3020,7 +2982,6 @@
     (set! args-list (second exp))
     (set! regular-args (linked-list-drop-right_ args-list 1))
     (set! rest-arg
-          ;; (linked-list-last_ args-list)
           (dotted-list-tail args-list)))
    (else
     (set! regular-args (second exp))))
@@ -3032,7 +2993,7 @@
           (first arg))
         (define typ
           (third arg))
-        (send continuation-env set-local sym #t 'Any)
+        (make-type-binding env1 sym 'Any lang-filter)
         (define result
           (~> (if (= (array-list-length arg) 4)
                   (new AssignmentPattern
@@ -3040,22 +3001,22 @@
                             (print-estree
                              (compile-expression
                               (make-rose sym)
-                              env inherited-options)
+                              env1 inherited-options)
                              inherited-options))
                        (compile-expression
                         (make-rose (fourth arg))
-                        env inherited-options))
+                        env1 inherited-options))
                   (new Identifier
                        (print-estree
                         (compile-expression
                          (make-rose sym)
-                         env inherited-options)
+                         env1 inherited-options)
                         inherited-options)))
               (send set-type
-                    (compile-type typ env options))))
+                    (compile-type typ env1 options))))
         (push-right! params result))
        ((array? arg)
-        (send continuation-env set-local (first arg) #t 'Any)
+        (make-type-binding env1 (first arg) 'Any lang-filter)
         (push-right! params
                      (new AssignmentPattern
                           (new Identifier
@@ -3063,28 +3024,28 @@
                                 (compile-expression
                                  (make-rose
                                   (first arg))
-                                 env inherited-options)
+                                 env1 inherited-options)
                                 inherited-options))
                           (compile-expression
                            (make-rose
                             (second arg))
-                           env inherited-options))))
+                           env1 inherited-options))))
        (else
-        (send continuation-env set-local arg #t 'Any)
+        (make-type-binding env1 arg 'Any lang-filter)
         (push-right! params
                      (new Identifier
                           (print-estree
                            (compile-expression
                             (make-rose arg)
-                            env inherited-options)
+                            env1 inherited-options)
                            inherited-options)))))))
   (when rest-arg
-    (send continuation-env set-local rest-arg #t 'Any)
+    (make-type-binding env1 rest-arg 'Any lang-filter)
     (push-right! params
                  (new RestElement
                       (compile-expression
                        (make-rose rest-arg)
-                       env inherited-options))))
+                       env1 inherited-options))))
   (define body-statements
     (send node drop 2))
   (when (and (> (array-list-length body-statements) 0)
@@ -3097,7 +3058,7 @@
       (~> (begin-wrap-rose-smart-1
            body-statements)
           (send set-parent node))
-      env
+      env1
       (js-obj-append
        inherited-options
        (js-obj "expressionType"
@@ -3195,23 +3156,21 @@
 
 ;;; Compile a `(let* ...)` expression.
 (define (compile-let-star node env (options (js-obj)))
-  (define inherited-options
-    (js-obj-append options))
-  (define exp
-    (send node get-value))
   (define expression-type
-    (oget inherited-options
-          "expressionType"))
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
+    (oget options "expressionType"))
   (define make-block #f)
-  (set! continuation-env
-        (extend-environment (new LispEnvironment)
-                            continuation-env))
-  (oset! inherited-options "continuationEnv" continuation-env)
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
+    (define language-env
+      (oget options "languageEnvironment"))
+    (define (lang-filter x)
+      (not (eq? x language-env)))
+    (define env1
+      (extend-environment (new LispEnvironment)
+                          env))
+    (define inherited-options
+      (js-obj-append options))
     (define let-nodes
       (~> node
           (send get 1)
@@ -3227,12 +3186,10 @@
                (define sym
                  (first exp))
                (when (and (not make-block)
-                          (send continuation-env
+                          (send env1
                                 has
                                 sym
-                                (js-obj "filter"
-                                        (lambda (x)
-                                          (not (eq? x env))))))
+                                (js-obj "filter" lang-filter)))
                  (set! make-block #t))
                (make-rose
                 `(define ,(send x get 0)
@@ -3241,12 +3198,10 @@
               (else
                (define sym exp)
                (when (and (not make-block)
-                          (send continuation-env
+                          (send env1
                                 has
                                 sym
-                                (js-obj "filter"
-                                        (lambda (x)
-                                          (not (eq? x env))))))
+                                (js-obj "filter" lang-filter)))
                  (set! make-block #t))
                (make-rose
                 `(define ,x)
@@ -3261,32 +3216,30 @@
           ,@define-nodes
           ,@body-nodes)
         node)
-       env inherited-options))
+       env1 inherited-options))
     result)
    (else
     (compile-expression
-     (wrap-in-arrow-call exp)
-     env inherited-options))))
+     (wrap-in-arrow-call node)
+     env options))))
 
 ;;; Compile a `(let-values ...)` expression.
 (define (compile-let-values node env (options (js-obj)))
-  (define inherited-options
-    (js-obj-append options))
-  (define exp
-    (send node get-value))
   (define expression-type
-    (oget inherited-options
-          "expressionType"))
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
-  (define make-block #f)
-  (set! continuation-env
-        (extend-environment (new LispEnvironment)
-                            continuation-env))
-  (oset! inherited-options "continuationEnv" continuation-env)
+    (oget options "expressionType"))
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
+    (define language-env
+      (oget options "languageEnvironment"))
+    (define (lang-filter x)
+      (not (eq? x language-env)))
+    (define env1
+      (extend-environment (new LispEnvironment)
+                          env))
+    (define inherited-options
+      (js-obj-append options))
+    (define make-block #f)
     (define let-nodes
       (~> node
           (send get 1)
@@ -3301,12 +3254,10 @@
               ((symbol? exp)
                (define sym exp)
                (when (and (not make-block)
-                          (send continuation-env
+                          (send env1
                                 has
                                 sym
-                                (js-obj "filter"
-                                        (lambda (x)
-                                          (not (eq? x env))))))
+                                (js-obj "filter" lang-filter)))
                  (set! make-block #t))
                (make-rose
                 `(define ,x)))
@@ -3319,24 +3270,20 @@
                 ((symbol? variables)
                  (define sym variables)
                  (when (and (not make-block)
-                            (send continuation-env
+                            (send env1
                                   has
                                   sym
-                                  (js-obj "filter"
-                                          (lambda (x)
-                                            (not (eq? x env))))))
+                                  (js-obj "filter" lang-filter)))
                    (set! make-block #t)))
                 (else
                  (define syms
                    (flatten variables))
                  (unless make-block
                    (for ((sym (flatten variables)))
-                     (when (send continuation-env
+                     (when (send env1
                                  has
                                  sym
-                                 (js-obj "filter"
-                                         (lambda (x)
-                                           (not (eq? x env)))))
+                                 (js-obj "filter" lang-filter))
                        (set! make-block #t)
                        (break))))))
                (define expression
@@ -3355,12 +3302,12 @@
           ,@define-nodes
           ,@body-nodes)
         node)
-       env inherited-options))
+       env1 inherited-options))
     result)
    (else
     (compile-expression
-     (wrap-in-arrow-call exp)
-     env inherited-options))))
+     (wrap-in-arrow-call node)
+     env options))))
 
 ;;; Compile a `(define-values ...)` expression.
 (define (compile-define-values node env (options (js-obj)))
@@ -3371,8 +3318,10 @@
   (define expression-type
     (oget inherited-options
           "expressionType"))
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
+  (define language-env
+    (oget inherited-options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define make-block #t)
   (define hole-marker '_)
   (define variables
@@ -3405,7 +3354,7 @@
                  (make-rose variables)
                  env inherited-options)
                 inherited-options)))
-    (send continuation-env set-local variables #t 'Any))
+    (make-type-binding env variables 'Any lang-filter))
    (else
     (cond
      ((dotted-list? variables)
@@ -3423,7 +3372,7 @@
                   ((eq? x hole-marker)
                    #n)
                   (else
-                   (send continuation-env set-local x #t 'Any)
+                   (make-type-binding env x 'Any lang-filter)
                    (new Identifier
                         (print-estree
                          (compile-symbol
@@ -3432,7 +3381,7 @@
                          inherited-options)))))
                regular-vars))
     (when rest-var
-      (send continuation-env set-local rest-var #t 'Any)
+      (make-type-binding env rest-var 'Any lang-filter)
       (push-right! var-decls
                    (new RestElement
                         (new Identifier
@@ -3465,16 +3414,10 @@
     (oget inherited-options
           "expressionType"))
   (define make-block #t)
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
   (define declaration)
   (define declarator)
   (define left)
   (define right)
-  (set! continuation-env (extend-environment
-                          (new LispEnvironment)
-                          continuation-env))
-  (oset! inherited-options "continuationEnv" continuation-env)
   (set! declaration
         (compile-define-values
          (make-rose
@@ -3495,20 +3438,21 @@
 
 ;;; Compile a `(let-fields ...)` expression.
 (define (compile-let-fields node env (options (js-obj)))
-  (define inherited-options
-    (js-obj-append options))
   (define expression-type
     (oget options "expressionType"))
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
-  (define make-block #f)
-  (set! continuation-env
-        (extend-environment (new LispEnvironment)
-                            continuation-env))
-  (oset! inherited-options "continuationEnv" continuation-env)
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
+    (define language-env
+      (oget options "languageEnvironment"))
+    (define (lang-filter x)
+      (not (eq? x language-env)))
+    (define env1
+      (extend-environment (new LispEnvironment)
+                          env))
+    (define inherited-options
+      (js-obj-append options))
+    (define make-block #f)
     (define let-nodes
       (~> node
           (send get 1)
@@ -3529,12 +3473,10 @@
                      (second f)
                      f))
                (when (and (not make-block)
-                          (send continuation-env
+                          (send env1
                                 has
                                 sym
-                                (js-obj "filter"
-                                        (lambda (x)
-                                          (not (eq? x env))))))
+                                (js-obj "filter" lang-filter)))
                  (set! make-block #t)))
              (make-rose
               `(define-fields ,fields
@@ -3550,21 +3492,21 @@
           ,@define-nodes
           ,@body-nodes)
         node)
-       env inherited-options))
+       env1 inherited-options))
     result)
    (else
-    (define exp
-      (send node get-value))
     (compile-expression
-     (wrap-in-arrow-call exp)
+     (wrap-in-arrow-call node)
      env options))))
 
 ;;; Compile a `(define-fields ...)` expression.
 (define (compile-define-fields node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
-  (define continuation-env
-    (oget options "continuationEnv"))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define fields
     (send node get 1))
   (define fields-exp
@@ -3576,7 +3518,7 @@
       (if (array? f)
           (second f)
           f))
-    (send continuation-env set-local sym #t 'Any))
+    (make-type-binding env sym 'Any lang-filter))
   (define expression-statement
     (compile-set-fields
      (make-rose
@@ -3969,8 +3911,10 @@
 
 ;;; Compile a `(begin ...)` expression.
 (define (compile-begin node env (options (js-obj)))
-  (define continuation-env
-    (oget options "continuationEnv"))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define expression-type
     (oget options "expressionType"))
   (define exp
@@ -3978,9 +3922,8 @@
   (define body
     (send node drop 1))
   (define compiled-body '())
-  ;; Add defined variables to `continuation-env` environment.
-  ;; We have to handle them here since they may refer
-  ;; to each other.
+  ;; Add defined variables to environment. We have to
+  ;; handle them here since they may refer to each other.
   (for ((i (range 0 (array-list-length body))))
     (define exp
       (send (aget body i) get-value))
@@ -3990,15 +3933,15 @@
         (if (array? (second exp))
             (first (second exp))
             (second exp)))
-      (send continuation-env set-local sym #t 'Any))
+      (make-type-binding env sym 'Any lang-filter))
      ((form? exp define-macro_ env)
       (define sym
         (first (second exp)))
-      (send continuation-env set-local sym #t '(macro-> Any * Any)))
+      (make-type-binding env sym '(macro-> Any * Any) lang-filter))
      ((form? exp defmacro_ env)
       (define sym
         (second exp))
-      (send continuation-env set-local sym #t '(macro-> Any * Any)))))
+      (make-type-binding env sym '(macro-> Any * Any) lang-filter))))
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
@@ -4066,8 +4009,6 @@
     `(,@symbols))
   (define current-module
     (new Module))
-  (define continuation-env
-    (oget options "continuationEnv"))
   (define seen '())
   (define exp)
   (define internal-symbol)
@@ -4088,19 +4029,15 @@
                     (array-first (array-second exp))
                     (array-second exp)))
           (define referenced-symbols-1 '())
-          (define continuation-env-1
-            (if continuation-env
-                (send continuation-env clone)
-                #u))
+          (define env1
+            (send env clone))
           (define compiled-expression
             (compile-rose
              (make-rose exp)
-             env
+             env1
              (js-obj-append
               options
-              (js-obj "continuationEnv"
-                      continuation-env-1
-                      "currentModule"
+              (js-obj "currentModule"
                       current-module
                       "referencedSymbols"
                       referenced-symbols-1))))
@@ -4187,7 +4124,7 @@
        env
        (js-obj-append
         options
-        (js-obj "continuationEnv" (new LispEnvironment)
+        (js-obj "continuationEnvironment" (new LispEnvironment)
                 "expressionType" "expression"))))
     (define var-decl
       (compile-sexp define-values-form env options))
@@ -4416,8 +4353,10 @@
 (define (compile-require node env (options (js-obj)))
   (define es-module-interop
     (oget options "esModuleInterop"))
-  (define continuation-env
-    (oget options "continuationEnv"))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define x-node
     (send node get 1))
   (define x-exp
@@ -4461,8 +4400,8 @@
                   (js-obj "literalSymbol" #t))
                  options)))
         (unless (memq? x2-str seen)
-          (when continuation-env
-            (send continuation-env set-local x2 #t 'Any))
+          (unless (send env has x2 (js-obj "filter" lang-filter))
+            (make-type-binding env x2 'Any lang-filter))
           (push-right! seen x2)
           (push-right! specifiers
                        (new ImportSpecifier
@@ -4481,8 +4420,8 @@
                   (js-obj "literalSymbol" #t))
                  options)))
         (unless (memq? x1-str seen)
-          (when continuation-env
-            (send continuation-env set-local x1 #t 'Any))
+          (unless (send env has x1 (js-obj "filter" lang-filter))
+            (make-type-binding env x1 'Any lang-filter))
           (push-right! seen x1-str)
           (push-right! specifiers
                        (new ImportSpecifier
@@ -4515,9 +4454,9 @@
             (js-obj "literalSymbol" #t))
            options)))
   (set! src (new Literal y-exp))
-  (when (and continuation-env
-             (symbol? x-exp))
-    (send continuation-env set-local x-exp #t 'Any))
+  (when (symbol? x-exp)
+    (unless (send env has x-exp (js-obj "filter" lang-filter))
+      (make-type-binding env x-exp 'Any lang-filter)))
   (cond
    ((null? specifiers)
     (empty-program))
@@ -4684,8 +4623,10 @@
     (oget options "compileEnvironment"))
   (define camel-case-option
     (oget options "camelCase"))
-  (define continuation-env
-    (oget options "continuationEnv"))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define exp
     (send node get-value))
   (define gensymed-symbol
@@ -4730,12 +4671,10 @@
       (define i 1)
       (define regular-sym
         (string->symbol gensym-name))
-      (while (send continuation-env
+      (while (send env
                    has
                    regular-sym
-                   (js-obj "filter"
-                           (lambda (x)
-                             (not (eq? x env)))))
+                   (js-obj "filter" lang-filter))
         (set! gensym-name
               (string-append name (number->string i)))
         (set! regular-sym
@@ -4746,7 +4685,7 @@
       (define entry
         (list gensym-name name i))
       (hash-set! gensym-map exp entry)
-      (send continuation-env set-local regular-sym #t)
+      (send env set-local regular-sym #u 'Any)
       identifier)))
    (else
     (define name
@@ -4814,12 +4753,6 @@
   ;; in terms of that?
   (define inherited-options
     (js-obj-append options))
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
-  (set! continuation-env
-        (extend-environment (new LispEnvironment)
-                            continuation-env))
-  (oset! inherited-options "continuationEnv" continuation-env)
   (define language
     (oget options "language"))
   (define decls-node
@@ -5190,15 +5123,12 @@
         (slice-rose node 2)))
   (define body-exp
     (send body-node get-value))
-  (define continuation-env
-    (oget inherited-options "continuationEnv"))
-  (set! continuation-env
-        (extend-environment (new LispEnvironment)
-                            continuation-env))
-  (oset! inherited-options "continuationEnv" continuation-env)
-  (send continuation-env set-local 'super #t 'Any)
+  (define env1
+    (extend-environment (new LispEnvironment)
+                        env))
+  (make-type-binding env1 'super 'Any)
   (when (and (array? (first body-exp))
-             (not (form? (first body-exp) define_ env)))
+             (not (form? (first body-exp) define_ env1)))
     (define super-classes-node
       (send body-node get 0))
     (define super-classes
@@ -5212,7 +5142,7 @@
                   (compile-expression
                    (make-rose
                     (first super-classes))
-                   env inherited-options)
+                   env1 inherited-options)
                   inherited-options)))))
   (define body-declarations '())
   (define accessibilities
@@ -5263,9 +5193,9 @@
       (define id-compiled
         (if is-computed
             (compile-expression
-             id-node env inherited-options)
+             id-node env1 inherited-options)
             (compile-symbol
-             id-node env
+             id-node env1
              (make-expression-options
               inherited-options))))
       (define init-compiled
@@ -5275,7 +5205,7 @@
          (is-method
           (compile-js-function
            (define->lambda x (js-obj "curried"  #f))
-           env
+           env1
            (make-expression-options
             inherited-options)
            (js-obj "generator" is-generator
@@ -5283,7 +5213,7 @@
          (else
           (compile-expression
            (send x get 2)
-           env
+           env1
            (make-expression-options
             inherited-options)))))
       (cond
@@ -5572,6 +5502,10 @@
 
 ;;; Compile a `(define-macro ...)` expression.
 (define (compile-define-macro node env (options (js-obj)))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define exp
     (send node get-value))
   (define name-and-args
@@ -5584,8 +5518,6 @@
     (second macro-fn-form))
   (define body
     (drop macro-fn-form 2))
-  (define continuation-env
-    (oget options "continuationEnv"))
   (define result
     (compile-rose
      (transfer-comments
@@ -5597,19 +5529,20 @@
           (declare ,name (ftype "macro")))
        node))
      env options))
-  (when continuation-env
-    (send continuation-env set-local name #t '(macro-> Any * Any)))
+  (make-type-binding env name '(macro-> Any * Any) lang-filter)
   result)
 
 ;;; Compile a `(declare-macro ...)` expression.
 (define (compile-declare-macro node env (options (js-obj)))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
   (define name
     (~> node
         (send _ get 1)
         (send _ get-value)))
-  (define continuation-env
-    (oget options "continuationEnv"))
-  (send continuation-env set-local name #t '(macro-> Any * Any))
+  (make-type-binding env name '(macro-> Any * Any) lang-filter)
   (empty-program))
 
 ;;; Compiler macro for `(make-hash ...)` expressions.
@@ -6247,7 +6180,6 @@
 
 ;;; Evaluate an `(make-object ...)` expression.
 (define (new_ constructor . args)
-  ;; TODO: Rename to `new_`.
   ;; TODO: Express as `(apply new ...)`.
   (apply make-object constructor args))
 
@@ -6440,7 +6372,7 @@
         (if (array? let-binding)
             (first let-binding)
             let-binding))
-      (send bindings-2 set-local binding-sym #t 'Any))
+      (make-type-binding bindings-2 binding-sym 'Any))
     (define visited-let-bindings-env
       (visit-clauses-node let-bindings-env `(,@stack ,node) bindings-2))
     (define visited-body
@@ -6471,11 +6403,11 @@
          (define ids-exp (send ids get-value))
          (cond
           ((symbol? ids-exp)
-           (send bindings-2 set-local ids-exp #t 'Any))
+           (make-type-binding bindings-2 ids-exp 'Any))
           (else
            (for ((let-binding ids-exp))
              (when (symbol? let-binding)
-               (send bindings-2 set let-binding #t 'Any)))))
+               (make-type-binding bindings-2 let-binding 'Any)))))
          (define visited-ids
            (visit-forms-node ids `(,@stack ,node) bindings-2))
          (define visited-val
@@ -6540,12 +6472,12 @@
     (define body (send node drop 2))
     (cond
      ((symbol? params-exp)
-      (send bindings-2 set-local params-exp #t 'Any))
+      (make-type-binding bindings-2 params-exp 'Any))
      (else
       (for ((param params-exp))
         (when (array? param)
           (set! param (first param)))
-        (send bindings-2 set-local param #t 'Any))))
+        (make-type-binding bindings-2 param 'Any))))
     (define visited-params
       (visit-clauses-node params `(,@stack ,node) bindings-2))
     (define visited-body
@@ -6573,16 +6505,16 @@
     (define bindings-2 bindings)
     (cond
      ((array? id-exp)
-      (send bindings set-local id-sym #t '(-> Any * Any))
+      (make-type-binding bindings id-sym '(-> Any * Any))
       (for ((param (rest id-exp)))
         (when (array? param)
           (set! param (first param)))
-        (send bindings set-local param #t 'Any))
+        (make-type-binding bindings param 'Any))
       (set! bindings-2
             (extend-environment (new LispEnvironment)
                                 bindings)))
      (else
-      (send bindings set-local id-sym #t 'Any)))
+      (make-type-binding bindings id-sym 'Any)))
     (define body (send node drop 2))
     (define visited-id
       (if (array? id-exp)
@@ -6615,15 +6547,15 @@
     (define params (send node get 2))
     (define params-exp (send params get-value))
     (define body (send node drop 3))
-    (send bindings set-local id-sym #t '(macro-> Any * Any))
+    (make-type-binding bindings id-sym '(macro-> Any * Any))
     (define bindings-2
       (extend-environment (new LispEnvironment) bindings))
     (cond
      ((symbol? params-exp)
-      (send bindings-2 set-local params-exp #t 'Any))
+      (make-type-binding bindings-2 params-exp 'Any))
      (else
       (for ((param (flatten_ params-exp)))
-        (send bindings-2 set-local params #t 'Any))))
+        (make-type-binding bindings-2 params 'Any))))
     (define visited-id
       (visit-node id `(,@stack ,node) bindings-2))
     (define visited-params
@@ -6641,7 +6573,7 @@
                         ,visited-params
                         ,@visited-body)))))
     (set! result (f result stack bindings))
-    (send bindings set-local id-sym #t '(macro-> Any * Any))
+    (make-type-binding bindings id-sym '(macro-> Any * Any))
     result)
   ;; `(define-macro ...)` form.
   (define (visit-define-macro-p node)
@@ -6656,15 +6588,15 @@
     (define params-exp (cdr name-and-args-exp))
     (define params (make-rose params-exp name-and-args))
     (define body (send node drop 2))
-    (send bindings set-local id-sym #t '(macro-> Any * Any))
+    (make-type-binding bindings id-sym '(macro-> Any * Any))
     (define bindings-2
       (extend-environment (new LispEnvironment) bindings))
     (cond
      ((symbol? params-exp)
-      (send bindings-2 set-local params-exp #t 'Any))
+      (make-type-binding bindings-2 params-exp 'Any))
      (else
       (for ((param (flatten_ params-exp)))
-        (send bindings-2 set-local params #t 'Any))))
+        (make-type-binding bindings-2 params 'Any))))
     (define visited-id
       (visit-node id `(,@stack ,node) bindings-2))
     (define visited-params
@@ -6681,7 +6613,7 @@
                         ,(cons visited-id visited-params)
                         ,@visited-body)))))
     (set! result (f result stack bindings))
-    (send bindings set-local id-sym #t '(macro-> Any * Any))
+    (make-type-binding bindings id-sym '(macro-> Any * Any))
     result)
   ;; `(define-class ...)` form.
   (define (visit-define-class-p node)
@@ -7179,8 +7111,6 @@
 
   (define/public interpretation-environment)
 
-  (define/public continuation-env)
-
   (define/public module-map)
 
   (define/public symbol-map (make-hash))
@@ -7193,25 +7123,9 @@
     (send this initialize-nodes nodes))
 
   (define/public (get-continuation-env)
-    (define continuation-env
-      (get-field continuation-env this))
-    (unless continuation-env
-      (set! continuation-env (new LispEnvironment))
-      (for ((node (get-field require-nodes this)))
-        (define exp
-          (send node get-value))
-        (when (tagged-list? exp 'require)
-          (when (tagged-list? (array-list-second exp) 'only-in)
-            (define entries
-              (drop (array-list-second exp) 2))
-            (for ((entry entries))
-              (define sym
-                (if (array-list? entry)
-                    (array-list-second entry)
-                    entry))
-              (send continuation-env set-local sym #t 'Any)))))
-      (set-field! continuation-env this continuation-env))
-    continuation-env)
+    (new LispEnvironment
+         '()
+         (send this get-environment)))
 
   (define/public (get-expressions)
     (get-field expressions this))
@@ -7424,8 +7338,6 @@
       (new EnvironmentStack
            module-env
            js-environment))
-    (define continuation-env
-      (send this get-continuation-env))
     (define imported)
     (define local)
     (define module)
@@ -7468,7 +7380,7 @@
            (else
             (set! local exp1)
             (set! imported exp1)))
-          (send module-env set-local imported #t 'Any)
+          (make-type-binding module-env imported 'Any)
           (when env
             (define-values (f f-type)
               (send env get-typed-value local))
@@ -7477,7 +7389,6 @@
     ;; Iterate over `main-nodes`, evaluating definition forms
     ;; in the module environment.
     (for ((node (get-field main-nodes this)))
-      ;; TODO: Need to initialize continuation-env as well.
       (define exp
         (send node get-value))
       (cond
@@ -7494,7 +7405,6 @@
           (if (macro-definition? exp)
               '(macro-> Any * Any)
               '(-> Any * Any)))
-        (send continuation-env set-local name #t typ)
         (send module-env
               set-local
               name
@@ -7638,6 +7548,15 @@
    (else
     (set! regular-params params)))
   (values regular-params rest-param))
+
+;;; Make a type binding for `sym` in `env`,
+;;; which should be a typed environment.
+(define (make-type-binding env sym typ (filter #u))
+  (cond
+   ((send env has sym (js-obj "filter" filter))
+    (send env set-type sym typ))
+   (else
+    (send env set-local sym #u typ))))
 
 ;;; Lisp environment.
 (define lisp-environment
@@ -8227,7 +8146,7 @@
 
 ;;; Default options used when compiling.
 (define default-compilation-options
-  (js-obj "lispEnvironment"
+  (js-obj "languageEnvironment"
           lang-environment
           "compilationMappingEnvironment"
           compilation-mapping-env

@@ -649,8 +649,8 @@ function cljTry_(exp: any, env: any): any {
     const exception: any = ((): any => {
       const lst: any = cljCatchClauses[0];
       if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && ((): any => {
-        const x: any = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
+        const x1: any = lastCdr(lst);
+        return Array.isArray(x1) && (x1.length === 0);
       })()) {
         let i: any = 1;
         let result: any = lst;
@@ -673,8 +673,8 @@ function cljTry_(exp: any, env: any): any {
     const sym: any = ((): any => {
       const lst: any = cljCatchClauses[0];
       if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && ((): any => {
-        const x: any = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
+        const x1: any = lastCdr(lst);
+        return Array.isArray(x1) && (x1.length === 0);
       })()) {
         let i: any = 2;
         let result: any = lst;

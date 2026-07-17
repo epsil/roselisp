@@ -874,45 +874,51 @@ function testMacro(exp: any, env: any): any {
   const _end: any = body.length;
   for (let i: any = 0; i < _end; i = i + 3) {
     const prompt: any = (body as any)[i];
-    const expression: any = body[i + 1];
+    const exp: any = body[i + 1];
     const value: any = body[i + 2];
     if (
-      Array.isArray(expression) &&
-      expression.length >= 2 &&
-      expression[0] === Symbol.for('describe')
+      Array.isArray(exp) &&
+      exp.length >= 2 &&
+      exp[0] === Symbol.for('describe')
     ) {
       if (group.length > 0) {
         groups.push(group);
         group = [];
       }
-      const description: any = expression[1];
+      const description: any = exp[1];
       group.push(description);
     } else if (
-      Array.isArray(expression) &&
-      expression.length >= 1 &&
-      expression[0] === Symbol.for('only')
+      Array.isArray(exp) &&
+      exp.length >= 1 &&
+      exp[0] === Symbol.for('only')
     ) {
       only = true;
     } else {
-      const itDescription: any = printSexp(expression);
-      const itExpression: any = [
-        ...(only
+      const f: any =
+        prompt === Symbol.for('xit>')
+          ? [Symbol.for('xit')]
+          : only ||
+            [Symbol.for('it.only>'), Symbol.for('only>')].findIndex(function (
+              x: any
+            ): any {
+              return equalp(prompt, x);
+            }) >= 0
           ? [Symbol.for('send'), Symbol.for('it'), Symbol.for('only')]
-          : [Symbol.for('it')]),
-        itDescription,
+          : [Symbol.for('it')];
+      const description: any = printSexp(exp);
+      const test: any = [
+        ...f,
+        description,
         [
           Symbol.for('fn'),
           [],
           [
             Symbol.for('test-repl'),
-            [
-              Symbol.for('quote'),
-              [Symbol.for('roselisp'), prompt, expression, value],
-            ],
+            [Symbol.for('quote'), [Symbol.for('roselisp'), prompt, exp, value]],
           ],
         ],
       ];
-      group.push(itExpression);
+      group.push(test);
       only = false;
     }
   }

@@ -324,48 +324,51 @@
   (define group '())
   (define groups '())
   (define only #f)
-  (for ((i (range 0 (array-list-length body) 3)))
+  (for ((i (range 0 (js/length body) 3)))
     (define prompt
       (aget body i))
-    (define expression
+    (define exp
       (aget body (+ i 1)))
     (define value
       (aget body (+ i 2)))
     (cond
-     ((and (array-list? expression)
-           (>= (array-list-length expression)
-               2)
-           (eq? (array-list-first expression)
-                'describe))
-      (when (> (array-list-length group) 0)
+     ((and (array-list? exp)
+           (>= (js/length exp) 2)
+           (eq? (js/first exp) 'describe))
+      (when (> (js/length group) 0)
         (push-right groups group)
         (set! group '()))
       (define description
-        (array-list-second expression))
+        (array-list-second exp))
       (push-right! group description))
-     ((and (array-list? expression)
-           (>= (array-list-length expression)
-               1)
-           (eq? (array-list-first expression)
-                'only))
+     ((and (array-list? exp)
+           (>= (js/length exp) 1)
+           (eq? (js/first exp) 'only))
       (set! only #t))
      (else
-      (define it-description
-        (print-sexp expression))
-      (define it-expression
-        `(,@(if only
-                '(send it only)
-                '(it))
-          ,it-description
+      (define f
+        (cond
+         ((eq? prompt 'xit>)
+          '(xit))
+         ((or only
+              (member? prompt '(it.only> only>)))
+          '(send it only))
+         (else
+          '(it))))
+      (define description
+        (print-sexp exp))
+      (define test
+        `(,@f
+          ,description
           (fn ()
             (test-repl
              '(roselisp
                ,prompt
-               ,expression
+               ,exp
                ,value)))))
-      (push-right! group it-expression)
+      (push-right! group test)
       (set! only #f))))
-  (when (> (array-list-length group) 0)
+  (when (> (js/length group) 0)
     (push-right groups group))
   (define tests
     (map (lambda (group)

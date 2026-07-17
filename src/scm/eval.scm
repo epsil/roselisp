@@ -344,14 +344,16 @@
     (get-field object node))
   (define property
     (get-field property node))
+  (define computed
+    (get-field computed node))
   (define object-val
     (eval-estree object env options))
   (define property-val
     (cond
-     ((estree-type? property "Identifier")
-      (get-field name property))
+     (computed
+      (eval-estree property env options))
      (else
-      (eval-estree property env options))))
+      (get-field name property))))
   (oget object-val property-val))
 
 ;;; Evaluate an ESTree [`CallExpression`][estree:callexpression] node.

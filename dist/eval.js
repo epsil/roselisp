@@ -387,11 +387,12 @@ evalEstreeIdentifier.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-i
 function evalEstreeMemberExpression(node, env, options = {}) {
     const object = node.object;
     const property = node.property;
+    const computed = node.computed;
     const objectVal = evalEstree(object, env, options);
-    const propertyVal = (0, estree_1.estreeTypeP)(property, 'Identifier') ? property.name : evalEstree(property, env, options);
+    const propertyVal = computed ? evalEstree(property, env, options) : property.name;
     return objectVal[propertyVal];
 }
-evalEstreeMemberExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-member-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('object'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('property'), [Symbol.for('get-field'), Symbol.for('property'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('object-val'), [Symbol.for('eval-estree'), Symbol.for('object'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('property-val'), [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('property'), 'Identifier'], [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('property')]], [Symbol.for('else'), [Symbol.for('eval-estree'), Symbol.for('property'), Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('oget'), Symbol.for('object-val'), Symbol.for('property-val')]];
+evalEstreeMemberExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-member-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('object'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('property'), [Symbol.for('get-field'), Symbol.for('property'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-field'), Symbol.for('computed'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('object-val'), [Symbol.for('eval-estree'), Symbol.for('object'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('property-val'), [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('eval-estree'), Symbol.for('property'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('property')]]]], [Symbol.for('oget'), Symbol.for('object-val'), Symbol.for('property-val')]];
 /**
  * Evaluate an ESTree [`CallExpression`][estree:callexpression] node.
  *

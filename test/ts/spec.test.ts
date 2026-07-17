@@ -8,12 +8,12 @@ import { testRepl, testMacro } from './test-util';
 
 describe('#t', function (): any {
   it('#t', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, true, true]);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), true, true]);
   });
   return it('(quote #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), true],
       true,
     ]);
@@ -22,12 +22,12 @@ describe('#t', function (): any {
 
 describe('#f', function (): any {
   it('#f', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, false, false]);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), false, false]);
   });
   return it('(quote #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), false],
       false,
     ]);
@@ -36,12 +36,17 @@ describe('#f', function (): any {
 
 describe('#u', function (): any {
   it('#u', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, undefined, undefined]);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      undefined,
+      undefined,
+    ]);
   });
   it('(quote #u)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), undefined],
       undefined,
     ]);
@@ -49,7 +54,7 @@ describe('#u', function (): any {
   return it('undefined', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for('undefined'),
       undefined,
     ]);
@@ -58,12 +63,12 @@ describe('#u', function (): any {
 
 describe('#n', function (): any {
   it('#n', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, null, null]);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), null, null]);
   });
   it('(quote #n)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), null],
       null,
     ]);
@@ -71,7 +76,7 @@ describe('#n', function (): any {
   it('js-null', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for('js-null'),
       null,
     ]);
@@ -79,7 +84,7 @@ describe('#n', function (): any {
   return it('js/null', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for('js/null'),
       null,
     ]);
@@ -90,7 +95,7 @@ describe('true?', function (): any {
   it('(true? #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('true?'), true],
       true,
     ]);
@@ -98,7 +103,7 @@ describe('true?', function (): any {
   it('(true? #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('true?'), false],
       false,
     ]);
@@ -106,7 +111,7 @@ describe('true?', function (): any {
   it('(true? #u)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('true?'), undefined],
       false,
     ]);
@@ -114,7 +119,7 @@ describe('true?', function (): any {
   it('(true? #n)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('true?'), null],
       false,
     ]);
@@ -122,7 +127,7 @@ describe('true?', function (): any {
   return it('(true? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('true?'), [Symbol.for('quote'), []]],
       true,
     ]);
@@ -133,7 +138,7 @@ describe('false?', function (): any {
   it('(false? #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('false?'), true],
       false,
     ]);
@@ -141,7 +146,7 @@ describe('false?', function (): any {
   it('(false? #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('false?'), false],
       true,
     ]);
@@ -149,7 +154,7 @@ describe('false?', function (): any {
   it('(false? #u)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('false?'), undefined],
       true,
     ]);
@@ -157,7 +162,7 @@ describe('false?', function (): any {
   it('(false? #n)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('false?'), null],
       true,
     ]);
@@ -165,7 +170,7 @@ describe('false?', function (): any {
   return it('(false? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('false?'), [Symbol.for('quote'), []]],
       false,
     ]);
@@ -176,7 +181,7 @@ describe('nil', function (): any {
   it('nil', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for('nil'),
       [Symbol.for('quote'), []],
     ]);
@@ -184,7 +189,7 @@ describe('nil', function (): any {
   it('(list? nil)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list?'), Symbol.for('nil')],
       true,
     ]);
@@ -192,7 +197,7 @@ describe('nil', function (): any {
   return it('(length nil)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('length'), Symbol.for('nil')],
       0,
     ]);
@@ -203,7 +208,7 @@ describe('null', function (): any {
   it('null', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for('null'),
       [Symbol.for('quote'), []],
     ]);
@@ -211,7 +216,7 @@ describe('null', function (): any {
   it('(listp null)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('listp'), Symbol.for('null')],
       true,
     ]);
@@ -219,7 +224,7 @@ describe('null', function (): any {
   return it('(length null)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('length'), Symbol.for('null')],
       0,
     ]);
@@ -228,27 +233,32 @@ describe('null', function (): any {
 
 describe('Numbers', function (): any {
   it('0', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, 0, 0]);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), 0, 0]);
   });
   it('1', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, 1, 1]);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), 1, 1]);
   });
   return it('2', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, 2, 2]);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), 2, 2]);
   });
 });
 
 describe('Strings', function (): any {
   it('"foo"', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, 'foo', 'foo']);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), 'foo', 'foo']);
   });
   it('"\\"foo\\""', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, '"foo"', '"foo"']);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      '"foo"',
+      '"foo"',
+    ]);
   });
   return it('(eq? "	" "	")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('eq?'), '	', '	'],
       true,
     ]);
@@ -259,7 +269,7 @@ describe('keywords', function (): any {
   it(':foo', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for(':foo'),
       [Symbol.for('quote'), Symbol.for(':foo')],
     ]);
@@ -267,7 +277,7 @@ describe('keywords', function (): any {
   return it('(quote :foo)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), Symbol.for(':foo')],
       [Symbol.for('quote'), Symbol.for(':foo')],
     ]);
@@ -278,7 +288,7 @@ describe('symbol?', function (): any {
   it('(symbol? (quote foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('symbol?'), [Symbol.for('quote'), Symbol.for('foo')]],
       true,
     ]);
@@ -286,7 +296,7 @@ describe('symbol?', function (): any {
   it('(symbol? 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('symbol?'), 1],
       false,
     ]);
@@ -294,7 +304,7 @@ describe('symbol?', function (): any {
   it('(symbol? "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('symbol?'), 'foo'],
       false,
     ]);
@@ -302,7 +312,7 @@ describe('symbol?', function (): any {
   it('(symbol? (js-obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('symbol?'), [Symbol.for('js-obj')]],
       false,
     ]);
@@ -310,7 +320,7 @@ describe('symbol?', function (): any {
   return it('(symbol? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('symbol?'), [Symbol.for('quote'), []]],
       false,
     ]);
@@ -321,7 +331,7 @@ describe('symbol->string', function (): any {
   return it('(symbol->string (quote foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('symbol->string'), [Symbol.for('quote'), Symbol.for('foo')]],
       'foo',
     ]);
@@ -332,7 +342,7 @@ describe('intern', function (): any {
   return it('(intern "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('intern'), 'foo'],
       [Symbol.for('quote'), Symbol.for('foo')],
     ]);
@@ -343,7 +353,7 @@ describe('Cons cells', function (): any {
   it('(cons 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cons'), 1, 2],
       [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
     ]);
@@ -351,7 +361,7 @@ describe('Cons cells', function (): any {
   it('(cons 1 (cons 2 3))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cons'), 1, [Symbol.for('cons'), 2, 3]],
       [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
     ]);
@@ -359,7 +369,7 @@ describe('Cons cells', function (): any {
   it('(cons 1 (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cons'), 1, [Symbol.for('quote'), []]],
       [Symbol.for('quote'), [1]],
     ]);
@@ -367,7 +377,7 @@ describe('Cons cells', function (): any {
   it('(cons 1 (quote (2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cons'), 1, [Symbol.for('quote'), [2]]],
       [Symbol.for('quote'), [1, 2]],
     ]);
@@ -375,7 +385,7 @@ describe('Cons cells', function (): any {
   it('(car (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('car'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
       1,
     ]);
@@ -383,7 +393,7 @@ describe('Cons cells', function (): any {
   it('(cdr (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cdr'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
       2,
     ]);
@@ -391,7 +401,7 @@ describe('Cons cells', function (): any {
   it('(car (cons 1 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('car'), [Symbol.for('cons'), 1, 2]],
       1,
     ]);
@@ -399,7 +409,7 @@ describe('Cons cells', function (): any {
   return it('(cdr (cons 1 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cdr'), [Symbol.for('cons'), 1, 2]],
       2,
     ]);
@@ -410,7 +420,7 @@ describe('Lists', function (): any {
   it('(list 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list'), 1, 2],
       [Symbol.for('quote'), [1, 2]],
     ]);
@@ -418,7 +428,7 @@ describe('Lists', function (): any {
   it('(aget (quote (1 2)) 0)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('aget'), [Symbol.for('quote'), [1, 2]], 0],
       1,
     ]);
@@ -426,7 +436,7 @@ describe('Lists', function (): any {
   it('(aget (quote ((1 2) (3 4))) 0 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('aget'),
         [
@@ -445,41 +455,75 @@ describe('Lists', function (): any {
   it('(aref (quote (1 2)) 0)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('aref'), [Symbol.for('quote'), [1, 2]], 0],
       1,
     ]);
   });
-  it('(aset (quote (1 2)) 0 3)', function (): any {
+  it('(aset! (quote (1 2)) 0 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
-      [Symbol.for('aset'), [Symbol.for('quote'), [1, 2]], 0, 3],
+      Symbol.for('>'),
+      [Symbol.for('aset!'), [Symbol.for('quote'), [1, 2]], 0, 3],
       3,
     ]);
   });
-  it('(let ((x (quote (1 2)))) (aset x 0 3) x)', function (): any {
+  it('(let ((lst (quote (1 2)))) (aset! lst 0 3) lst)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('x'), [Symbol.for('quote'), [1, 2]]]],
-        [Symbol.for('aset'), Symbol.for('x'), 0, 3],
-        Symbol.for('x'),
+        [[Symbol.for('lst'), [Symbol.for('quote'), [1, 2]]]],
+        [Symbol.for('aset!'), Symbol.for('lst'), 0, 3],
+        Symbol.for('lst'),
       ],
       [Symbol.for('quote'), [3, 2]],
     ]);
   });
-  return it('(let ((x (quote (1 2)))) (set! (aref x 0) 3) x)', function (): any {
+  it('(let ((lst (quote (1 2))) (i 0)) (aget lst i))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('x'), [Symbol.for('quote'), [1, 2]]]],
-        [Symbol.for('set!'), [Symbol.for('aref'), Symbol.for('x'), 0], 3],
-        Symbol.for('x'),
+        [
+          [Symbol.for('lst'), [Symbol.for('quote'), [1, 2]]],
+          [Symbol.for('i'), 0],
+        ],
+        [Symbol.for('aget'), Symbol.for('lst'), Symbol.for('i')],
+      ],
+      1,
+    ]);
+  });
+  it('(let ((lst (quote (1 2))) (i 0)) (aget lst (+ i 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [
+          [Symbol.for('lst'), [Symbol.for('quote'), [1, 2]]],
+          [Symbol.for('i'), 0],
+        ],
+        [
+          Symbol.for('aget'),
+          Symbol.for('lst'),
+          [Symbol.for('+'), Symbol.for('i'), 1],
+        ],
+      ],
+      2,
+    ]);
+  });
+  return it('(let ((lst (quote (1 2)))) (set! (aref lst 0) 3) lst)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('lst'), [Symbol.for('quote'), [1, 2]]]],
+        [Symbol.for('set!'), [Symbol.for('aref'), Symbol.for('lst'), 0], 3],
+        Symbol.for('lst'),
       ],
       [Symbol.for('quote'), [3, 2]],
     ]);
@@ -490,7 +534,7 @@ describe('quote', function (): any {
   it('(quote foo)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), Symbol.for('foo')],
       [Symbol.for('quote'), Symbol.for('foo')],
     ]);
@@ -498,7 +542,7 @@ describe('quote', function (): any {
   it('(quote (1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), [1]],
       [Symbol.for('quote'), [1]],
     ]);
@@ -506,7 +550,7 @@ describe('quote', function (): any {
   it('(quote (1 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quote'), [1, 2]],
       [Symbol.for('quote'), [1, 2]],
     ]);
@@ -514,7 +558,7 @@ describe('quote', function (): any {
   return it('(quote ((1 2) (3 4)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('quote'),
         [
@@ -537,7 +581,7 @@ describe('quasoquote', function (): any {
   it('(quasiquote foo)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quasiquote'), Symbol.for('foo')],
       [Symbol.for('quote'), Symbol.for('foo')],
     ]);
@@ -545,7 +589,7 @@ describe('quasoquote', function (): any {
   it('(quasiquote foo)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quasiquote'), Symbol.for('foo')],
       [Symbol.for('quote'), Symbol.for('foo')],
     ]);
@@ -553,7 +597,7 @@ describe('quasoquote', function (): any {
   it('(quasiquote ((unquote 1)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quasiquote'), [[Symbol.for('unquote'), 1]]],
       [Symbol.for('quote'), [1]],
     ]);
@@ -561,7 +605,7 @@ describe('quasoquote', function (): any {
   it('(quasiquote (((unquote 1))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), 1]]]],
       [Symbol.for('quote'), [[1]]],
     ]);
@@ -569,7 +613,7 @@ describe('quasoquote', function (): any {
   return it('(quasiquote ((unquote-splicing (list 1 2 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('quasiquote'),
         [[Symbol.for('unquote-splicing'), [Symbol.for('list'), 1, 2, 3]]],
@@ -583,7 +627,7 @@ describe('Variables', function (): any {
   it('(let ((x 2)) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('let'), [[Symbol.for('x'), 2]], Symbol.for('x')],
       2,
     ]);
@@ -591,7 +635,7 @@ describe('Variables', function (): any {
   it('(let ((x 2) y) y)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('x'), 2], Symbol.for('y')],
@@ -603,7 +647,7 @@ describe('Variables', function (): any {
   it('(let (x) (set! x 2) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('x')],
@@ -616,7 +660,7 @@ describe('Variables', function (): any {
   it('((lambda  (define x 2) x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -631,7 +675,7 @@ describe('Variables', function (): any {
   it('((lambda  (define x) (set! x 2) x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -647,7 +691,7 @@ describe('Variables', function (): any {
   return it('(let (x y) (set! x 2) (set! y 3) (+ x y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('x'), Symbol.for('y')],
@@ -664,7 +708,7 @@ describe('Function calls', function (): any {
   it('(let ((identity (lambda (x) x))) (identity "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -681,7 +725,7 @@ describe('Function calls', function (): any {
   it('(let ((my-add (lambda (x y) (+ x y)))) (my-add 1 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -702,7 +746,7 @@ describe('Function calls', function (): any {
   return it('(let ((my-add (lambda (x y z) (+ x y z)))) (my-add 1 2 3))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -731,7 +775,7 @@ describe('define', function (): any {
   it('((lambda  (define x 1) 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -746,7 +790,7 @@ describe('define', function (): any {
   it('((lambda  (define (foo . args) args) (foo)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -765,7 +809,7 @@ describe('define', function (): any {
   it('((lambda  (define (my-add x y) (+ x y)) (my-add 2 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -784,7 +828,7 @@ describe('define', function (): any {
   it('(let ((my-add (lambda (x y) (+ x y)))) ((lambda  (define (my-add-2 x y) (my-add x y)) (my-add-2 2 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -816,7 +860,7 @@ describe('define', function (): any {
   return it('(let ((my-add (lambda (x y z) (+ x y z)))) ((lambda  (define (my-add-2 x y z) (my-add x y z)) (my-add-2 1 2 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -866,7 +910,7 @@ describe('cefun', function (): any {
   it('((lambda  (defun my-add (x y) (+ x y)) (my-add 2 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -886,7 +930,7 @@ describe('cefun', function (): any {
   it('(let ((my-add (lambda (x y) (+ x y)))) ((lambda  (defun my-add-2 (x y) (my-add x y)) (my-add-2 2 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -919,7 +963,7 @@ describe('cefun', function (): any {
   return it('(let ((my-add (lambda (x y z) (+ x y z)))) ((lambda  (defun my-add-2 (x y z) (my-add x y z)) (my-add-2 1 2 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -969,7 +1013,7 @@ describe('let', function (): any {
   it('(let ((x 0)) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('let'), [[Symbol.for('x'), 0]], Symbol.for('x')],
       0,
     ]);
@@ -977,7 +1021,7 @@ describe('let', function (): any {
   it('(let ((x 1)) (let ((y 2)) x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('x'), 1]],
@@ -989,7 +1033,7 @@ describe('let', function (): any {
   it('(let ((x (quote ((1 2) (3 4))))) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -1018,7 +1062,7 @@ describe('let', function (): any {
   it('(let (x) (set! x 1) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('x')],
@@ -1031,7 +1075,7 @@ describe('let', function (): any {
   it('(let (x) (set! x 1) (set! x 2) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('x')],
@@ -1045,7 +1089,7 @@ describe('let', function (): any {
   it('(let (x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('let'), [Symbol.for('x')]],
       undefined,
     ]);
@@ -1053,7 +1097,7 @@ describe('let', function (): any {
   it('(let ((a 1)) (+ (let ((a 2)) a) a))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('a'), 1]],
@@ -1069,7 +1113,7 @@ describe('let', function (): any {
   return it('(let ((compose (lambda (f g) (lambda (x) (f (g x))))) (square (lambda (x) (* x x))) (add1 (lambda (x) (+ x 1)))) ((compose square add1) (add1 4)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -1116,7 +1160,7 @@ describe('let*', function (): any {
   return it('(let* ((x 1)) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('let*'), [[Symbol.for('x'), 1]], Symbol.for('x')],
       1,
     ]);
@@ -1127,7 +1171,7 @@ describe('lambda', function (): any {
   it('((lambda (x) x) 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], 1],
       1,
     ]);
@@ -1135,7 +1179,7 @@ describe('lambda', function (): any {
   it('((lambda (x) x) "Lisp")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], 'Lisp'],
       'Lisp',
     ]);
@@ -1143,7 +1187,7 @@ describe('lambda', function (): any {
   it('((lambda x x) "Lisp")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')], 'Lisp'],
       [Symbol.for('quote'), ['Lisp']],
     ]);
@@ -1151,7 +1195,7 @@ describe('lambda', function (): any {
   it('((fn (x) x) 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('fn'), [Symbol.for('x')], Symbol.for('x')], 1],
       1,
     ]);
@@ -1159,7 +1203,7 @@ describe('lambda', function (): any {
   return it('((λ (x) x) 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('λ'), [Symbol.for('x')], Symbol.for('x')], 1],
       1,
     ]);
@@ -1170,7 +1214,7 @@ describe('lexical scope', function (): any {
   it('((lambda  (define (K x) (lambda  x)) ((K 42))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -1189,7 +1233,7 @@ describe('lexical scope', function (): any {
   it('((lambda  (define incrementer #u) (let ((x 1)) (set! incrementer (lambda  (set! x (+ x 1)) x))) (incrementer)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -1222,7 +1266,7 @@ describe('lexical scope', function (): any {
   return it('(let ((x 100) incrementer) (let ((x 1)) (set! incrementer (lambda  (set! x (+ x 1)) x))) (incrementer) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('x'), 100], Symbol.for('incrementer')],
@@ -1256,7 +1300,7 @@ describe('begin', function (): any {
   return it('(begin)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('begin')],
       undefined,
     ]);
@@ -1267,7 +1311,7 @@ describe('begin0', function (): any {
   return it('(begin0 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('begin0'), 1, 2],
       1,
     ]);
@@ -1278,7 +1322,7 @@ describe('if', function (): any {
   it('(if #t 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('if'), true, 1, 2],
       1,
     ]);
@@ -1286,7 +1330,7 @@ describe('if', function (): any {
   it('(if #f 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('if'), false, 1, 2],
       2,
     ]);
@@ -1294,7 +1338,7 @@ describe('if', function (): any {
   it('(if (< 1 2) 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('if'), [Symbol.for('<'), 1, 2], 1, 2],
       1,
     ]);
@@ -1302,7 +1346,7 @@ describe('if', function (): any {
   return it('(if (> 2 1) 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('if'), [Symbol.for('>'), 2, 1], 1, 2],
       1,
     ]);
@@ -1313,7 +1357,7 @@ describe('when', function (): any {
   it('(when (< 1 2) 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('when'), [Symbol.for('<'), 1, 2], 1, 2],
       2,
     ]);
@@ -1321,7 +1365,7 @@ describe('when', function (): any {
   return it('(when (> 1 2) 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('when'), [Symbol.for('>'), 1, 2], 1, 2],
       undefined,
     ]);
@@ -1332,7 +1376,7 @@ describe('unless', function (): any {
   it('(unless (< 1 2) 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('unless'), [Symbol.for('<'), 1, 2], 1, 2],
       undefined,
     ]);
@@ -1340,7 +1384,7 @@ describe('unless', function (): any {
   return it('(unless (> 1 2) 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('unless'), [Symbol.for('>'), 1, 2], 1, 2],
       2,
     ]);
@@ -1351,7 +1395,7 @@ describe('cond', function (): any {
   it('(cond (#f 1) (else 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cond'), [false, 1], [Symbol.for('else'), 2]],
       2,
     ]);
@@ -1359,7 +1403,7 @@ describe('cond', function (): any {
   it('(cond (#t 1) (#f 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cond'), [true, 1], [false, 2]],
       1,
     ]);
@@ -1367,7 +1411,7 @@ describe('cond', function (): any {
   it('(cond (#f 1) (#t 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cond'), [false, 1], [true, 2]],
       2,
     ]);
@@ -1375,7 +1419,7 @@ describe('cond', function (): any {
   return it('(cond (#f 1) (#t 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cond'), [false, 1], [true, 2]],
       2,
     ]);
@@ -1386,7 +1430,7 @@ describe('js/switch', function (): any {
   return it('((lambda  (define x "foo") (define y "bar") (js/switch x (case "foo" (set! y "baz") (break)) (default (set! y "quux"))) y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -1419,7 +1463,7 @@ describe('eq?', function (): any {
   it('(eq? #t #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('eq?'), true, true],
       true,
     ]);
@@ -1427,7 +1471,7 @@ describe('eq?', function (): any {
   it('(eq? #f #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('eq?'), false, false],
       true,
     ]);
@@ -1435,7 +1479,7 @@ describe('eq?', function (): any {
   it('(eq? #t #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('eq?'), true, false],
       false,
     ]);
@@ -1443,7 +1487,7 @@ describe('eq?', function (): any {
   it('(eq (quote _) (quote _))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('eq'),
         [Symbol.for('quote'), Symbol.for('_')],
@@ -1455,7 +1499,7 @@ describe('eq?', function (): any {
   return it('(eq _ (quote _))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('eq'),
         Symbol.for('_'),
@@ -1470,7 +1514,7 @@ describe('equal?', function (): any {
   it('(equal? #t #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('equal?'), true, true],
       true,
     ]);
@@ -1478,7 +1522,7 @@ describe('equal?', function (): any {
   it('(equal? #f #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('equal?'), false, false],
       true,
     ]);
@@ -1486,7 +1530,7 @@ describe('equal?', function (): any {
   it('(equal? #t #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('equal?'), true, false],
       false,
     ]);
@@ -1494,7 +1538,7 @@ describe('equal?', function (): any {
   it('(equal? _ (quote _))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('equal?'),
         Symbol.for('_'),
@@ -1506,7 +1550,7 @@ describe('equal?', function (): any {
   it('(equal? 1 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('equal?'), 1, 1],
       true,
     ]);
@@ -1514,7 +1558,7 @@ describe('equal?', function (): any {
   return it('(equal? (quote ) (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('equal?'),
         [Symbol.for('quote'), []],
@@ -1529,7 +1573,7 @@ describe('and', function (): any {
   it('(and)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('and')],
       true,
     ]);
@@ -1537,7 +1581,7 @@ describe('and', function (): any {
   it('(and #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('and'), true],
       true,
     ]);
@@ -1545,7 +1589,7 @@ describe('and', function (): any {
   it('(and #t #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('and'), true, true],
       true,
     ]);
@@ -1553,7 +1597,7 @@ describe('and', function (): any {
   it('(and #f #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('and'), false, false],
       false,
     ]);
@@ -1561,7 +1605,7 @@ describe('and', function (): any {
   it('(and #f #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('and'), false, true],
       false,
     ]);
@@ -1569,7 +1613,7 @@ describe('and', function (): any {
   return it('(and #t #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('and'), true, false],
       false,
     ]);
@@ -1580,7 +1624,7 @@ describe('or', function (): any {
   it('(or)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or')],
       false,
     ]);
@@ -1588,7 +1632,7 @@ describe('or', function (): any {
   it('(or #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or'), true],
       true,
     ]);
@@ -1596,7 +1640,7 @@ describe('or', function (): any {
   it('(or #t #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or'), true, true],
       true,
     ]);
@@ -1604,7 +1648,7 @@ describe('or', function (): any {
   it('(or #f #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or'), false, false],
       false,
     ]);
@@ -1612,7 +1656,7 @@ describe('or', function (): any {
   it('(or #f #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or'), false, true],
       true,
     ]);
@@ -1620,7 +1664,7 @@ describe('or', function (): any {
   it('(or #t #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or'), true, false],
       true,
     ]);
@@ -1628,7 +1672,7 @@ describe('or', function (): any {
   it('(or 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or'), 1, 2],
       1,
     ]);
@@ -1636,7 +1680,7 @@ describe('or', function (): any {
   return it('(or #u 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('or'), undefined, 2],
       2,
     ]);
@@ -1647,7 +1691,7 @@ describe('while', function (): any {
   return it('(let ((result (quote ))) (while (< (length result) 3) (set! result (cons 1 result))) result)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('result'), [Symbol.for('quote'), []]]],
@@ -1671,7 +1715,7 @@ describe('for', function (): any {
   it('(let ((result (quote ))) (for ((x (quote (1 2 3)))) (set! result (cons x result))) result)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('result'), [Symbol.for('quote'), []]]],
@@ -1692,7 +1736,7 @@ describe('for', function (): any {
   it('((lambda  (define foo (quote (1 2 3 4))) (define len (length foo)) (for ((i (range 0 len))) (pop-right! foo)) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -1721,7 +1765,7 @@ describe('for', function (): any {
   return it('((lambda  (define foo (quote (1 2 3 4))) (for ((i (range 0 (length foo)))) (pop-right! foo)) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -1757,7 +1801,7 @@ describe('break', function (): any {
   it('((lambda  (while #t (break)) 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -1772,7 +1816,7 @@ describe('break', function (): any {
   return it('(let ((result (list))) (for ((i (range 0 10))) (break) (push-right! result i)) result)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('result'), [Symbol.for('list')]]],
@@ -1793,7 +1837,7 @@ describe('continue', function (): any {
   it('(let ((result (list)) (i 0)) (while (< i 10) (set! i (+ i 1)) (when (< i 5) (continue)) (push-right! result i)) result)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -1823,7 +1867,7 @@ describe('continue', function (): any {
   return it('(let ((result (list))) (for ((i (range 0 11))) (when (< i 5) (continue)) (push-right! result i)) result)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('result'), [Symbol.for('list')]]],
@@ -1848,7 +1892,7 @@ describe('return', function (): any {
   it('((lambda  (return 1) 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('lambda'), [], [Symbol.for('return'), 1], 2]],
       1,
     ]);
@@ -1856,7 +1900,7 @@ describe('return', function (): any {
   it('((js/function  (return 1) 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('js/function'), [], [Symbol.for('return'), 1], 2]],
       1,
     ]);
@@ -1864,7 +1908,7 @@ describe('return', function (): any {
   return it('((js/arrow  (return 1) 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [[Symbol.for('js/arrow'), [], [Symbol.for('return'), 1], 2]],
       1,
     ]);
@@ -1875,7 +1919,7 @@ describe('get-field', function (): any {
   return it('(let ((obj (js-obj "foo" "bar"))) (get-field foo obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
@@ -1890,7 +1934,7 @@ describe('set-field!', function (): any {
   return it('(let ((obj (js-obj))) (set-field! foo obj "bar") (get-field foo obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('obj'), [Symbol.for('js-obj')]]],
@@ -1906,7 +1950,7 @@ describe('field-bound?', function (): any {
   return it('(let ((obj (js-obj "foo" "bar"))) (field-bound? foo obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
@@ -1921,7 +1965,7 @@ describe('oget', function (): any {
   it('(let ((obj (js-obj "prop" "foo"))) (oget obj "prop"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('obj'), [Symbol.for('js-obj'), 'prop', 'foo']]],
@@ -1933,7 +1977,7 @@ describe('oget', function (): any {
   return it('(oget _ "@@functional/placeholder")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('oget'), Symbol.for('_'), '@@functional/placeholder'],
       true,
     ]);
@@ -1944,7 +1988,7 @@ describe('send', function (): any {
   it('(let ((obj (js-obj "add" (lambda (x y) (+ x y))))) (send obj add 1 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -1969,7 +2013,7 @@ describe('send', function (): any {
   it('(let ((obj (make-hash (quote (("foo" . "foo")))))) (send obj has "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -1989,7 +2033,7 @@ describe('send', function (): any {
   return it('(let ((obj (make-hash (quote (("foo" . "foo")))))) (send obj has "bar"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -2012,7 +2056,7 @@ describe('send/apply', function (): any {
   return it('(let ((obj (make-hash (quote (("foo" . "foo")))))) (send/apply obj has (quote ("foo"))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -2040,7 +2084,7 @@ describe('new', function (): any {
   it('(let (quux) (set! quux (new (class  (define/public (bar) "baz")))) (send quux bar))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('quux')],
@@ -2064,7 +2108,7 @@ describe('new', function (): any {
   return it('(let (quux) (set! quux (new (class  (define/public val 1) (define (constructor x) (set-field! val this x)) (define/public (bar) (get-field val this))) 2)) (send quux bar))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('quux')],
@@ -2111,7 +2155,7 @@ describe('class', function (): any {
   it('((lambda  (define Foo (class object% (define/public (bar) "baz"))) (define quux (new Foo)) (send quux bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2139,7 +2183,7 @@ describe('class', function (): any {
   it('((lambda  (defclass Foo  (define/public (bar) "baz")) (define quux (new Foo)) (send quux bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2164,7 +2208,7 @@ describe('class', function (): any {
   it('((lambda  (defclass Foo  (define bar "baz")) (define quux (new Foo)) (get-field bar quux)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2189,7 +2233,7 @@ describe('class', function (): any {
   it('((lambda  (defclass Foo  (define x) (define (constructor x) (set-field! x this x)) (define (bar) (get-field x this))) (define quux (new Foo "xyzzy")) (send quux bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2229,7 +2273,7 @@ describe('class', function (): any {
   return it('((lambda  (defclass Foo (Object) (define (bar) "baz")) (define quux (new Foo)) (send quux bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2257,7 +2301,7 @@ describe('define-class', function (): any {
   return it('((lambda  (define-class Foo  (define/public (bar) "bar")) (define foo (new Foo)) (send foo bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2285,7 +2329,7 @@ describe('defclass', function (): any {
   return it('((lambda  (defclass Foo  (define/public (bar) "bar")) (define foo (new Foo)) (send foo bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2313,7 +2357,7 @@ describe('instance-of?', function (): any {
   return it('(instance-of? (new Map) Map)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('instance-of?'),
         [Symbol.for('new'), Symbol.for('Map')],
@@ -2328,7 +2372,7 @@ describe('is-a?', function (): any {
   return it('(is-a? (new Map) Map)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('is-a?'),
         [Symbol.for('new'), Symbol.for('Map')],
@@ -2343,7 +2387,7 @@ describe('js-obj', function (): any {
   it('(js-obj)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('js-obj')],
       [Symbol.for('js-obj')],
     ]);
@@ -2351,7 +2395,7 @@ describe('js-obj', function (): any {
   it('(js-obj "foo" "bar")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('js-obj'), 'foo', 'bar'],
       [Symbol.for('js-obj'), 'foo', 'bar'],
     ]);
@@ -2359,7 +2403,7 @@ describe('js-obj', function (): any {
   return it('(js-obj "foo" 1 "bar" 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('js-obj'), 'foo', 1, 'bar', 2],
       [Symbol.for('js-obj'), 'foo', 1, 'bar', 2],
     ]);
@@ -2370,7 +2414,7 @@ describe('js-keys', function (): any {
   it('(js-keys (js-obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('js-keys'), [Symbol.for('js-obj')]],
       [Symbol.for('quote'), []],
     ]);
@@ -2378,7 +2422,7 @@ describe('js-keys', function (): any {
   it('(js-keys (js-obj "foo" "bar"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('js-keys'), [Symbol.for('js-obj'), 'foo', 'bar']],
       [Symbol.for('quote'), ['foo']],
     ]);
@@ -2386,7 +2430,7 @@ describe('js-keys', function (): any {
   return it('(js-keys (js-obj "foo" "bar" "baz" "quux"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('js-keys'),
         [Symbol.for('js-obj'), 'foo', 'bar', 'baz', 'quux'],
@@ -2400,7 +2444,7 @@ describe('js/in', function (): any {
   return it('(let ((obj (js-obj "foo" "bar"))) (js/in "foo" obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
@@ -2415,7 +2459,7 @@ describe('plist->alist', function (): any {
   it('(plist->alist (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('plist->alist'), [Symbol.for('quote'), []]],
       [Symbol.for('quote'), []],
     ]);
@@ -2423,7 +2467,7 @@ describe('plist->alist', function (): any {
   it('(plist->alist (quote (foo bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('plist->alist'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
@@ -2437,7 +2481,7 @@ describe('plist->alist', function (): any {
   return it('(plist->alist (quote (foo bar baz quux)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('plist->alist'),
         [
@@ -2465,7 +2509,7 @@ describe('module', function (): any {
   return it('(module foo bar (+ 1 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('module'),
         Symbol.for('foo'),
@@ -2481,7 +2525,7 @@ describe('js/try', function (): any {
   it('(js/try (/ 1 2) (catch e (display "there was an error")) (finally (display "finally")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('js/try'),
         [Symbol.for('/'), 1, 2],
@@ -2498,7 +2542,7 @@ describe('js/try', function (): any {
   return it('(js/try (/ 1 3) (/ 1 2) (catch e (display "there was an error")) (finally (display "finally")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('js/try'),
         [Symbol.for('/'), 1, 3],
@@ -2519,7 +2563,7 @@ describe('clj/try', function (): any {
   it('(clj/try (/ 1 2) (catch Exception e "there was an error") (finally (display "finally")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('clj/try'),
         [Symbol.for('/'), 1, 2],
@@ -2537,7 +2581,7 @@ describe('clj/try', function (): any {
   return it('(clj/try (/ 1 3) (/ 1 2) (catch Exception e "there was an error") (finally (display "finally")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('clj/try'),
         [Symbol.for('/'), 1, 3],
@@ -2559,7 +2603,7 @@ describe('unwind-protect', function (): any {
   return it('(unwind-protect 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('unwind-protect'), 1, 2, 3],
       1,
     ]);
@@ -2570,7 +2614,7 @@ describe('call/cc', function (): any {
   it('(+ 5 (call/cc (lambda (x) (* 10 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('+'),
         5,
@@ -2585,7 +2629,7 @@ describe('call/cc', function (): any {
   it('(+ 5 (call/cc (lambda (x) (* 10 (x 3)))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('+'),
         5,
@@ -2604,7 +2648,7 @@ describe('call/cc', function (): any {
   it('(+ 5 (call/cc (lambda (x) (x 10) 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('+'),
         5,
@@ -2619,7 +2663,7 @@ describe('call/cc', function (): any {
   return it('(+ 5 (call/cc (lambda (x) (x 10) (error "error"))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('+'),
         5,
@@ -2642,7 +2686,7 @@ describe('define-values', function (): any {
   it('((lambda  (define-values (x y) (values 1 2))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2660,7 +2704,7 @@ describe('define-values', function (): any {
   it('((lambda  (define-values (x y) (values 1 2)) (list x y)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2679,7 +2723,7 @@ describe('define-values', function (): any {
   return it('((lambda  (define-values (x y) (values 1 2)) x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2701,7 +2745,7 @@ describe('set!-values', function (): any {
   it('(let (x y) (set!-values (x y) (values 1 2)) x)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('x'), Symbol.for('y')],
@@ -2718,7 +2762,7 @@ describe('set!-values', function (): any {
   return it('(let (x y) (set!-values (x y) (values 1 2)) (list x y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('x'), Symbol.for('y')],
@@ -2738,7 +2782,7 @@ describe('let-values', function (): any {
   it('(let-values (((x y) (values 1 2))) (list x y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let-values'),
         [
@@ -2755,7 +2799,7 @@ describe('let-values', function (): any {
   return it('(let-values (((x . y) (values 1 2))) (list x y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let-values'),
         [
@@ -2775,7 +2819,7 @@ describe('let*-values', function (): any {
   return it('(let*-values (((x y) (values 1 2)) ((w z) (values 3 4))) (list x y w z))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let*-values'),
         [
@@ -2805,7 +2849,7 @@ describe('define-fields', function (): any {
   it('((lambda  (define-fields (x) (js-obj "x" 1)) x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2824,7 +2868,7 @@ describe('define-fields', function (): any {
   it('((lambda  (define-fields (foo) (js-obj "foo" "bar")) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2843,7 +2887,7 @@ describe('define-fields', function (): any {
   return it('((lambda  (define-fields ((foo bar)) (js-obj "foo" "bar")) bar))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2865,7 +2909,7 @@ describe('set!-fields', function (): any {
   return it('((lambda  (let (x) (set!-fields (x) (js-obj "x" 1)) x)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -2891,7 +2935,7 @@ describe('destructuring-bind', function (): any {
   it('(destructuring-bind (x y) (quote (1 2)) (list x y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('destructuring-bind'),
         [Symbol.for('x'), Symbol.for('y')],
@@ -2904,7 +2948,7 @@ describe('destructuring-bind', function (): any {
   return it('(destructuring-bind (x . y) (quote (1 2)) (list x y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('destructuring-bind'),
         [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
@@ -2920,7 +2964,7 @@ describe('multiple-values-bind', function (): any {
   return it('(multiple-values-bind (x y) (values 1 2) (list x y))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('multiple-values-bind'),
         [Symbol.for('x'), Symbol.for('y')],
@@ -2936,7 +2980,7 @@ describe('hash', function (): any {
   it('(hash)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('hash')],
       [Symbol.for('new'), Symbol.for('Map')],
     ]);
@@ -2944,7 +2988,7 @@ describe('hash', function (): any {
   return it('(hash (quote (("foo" . "bar"))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash'),
         [Symbol.for('quote'), [['foo', Symbol.for('.'), 'bar']]],
@@ -2962,7 +3006,7 @@ describe('make-hash', function (): any {
   it('(make-hash)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('make-hash')],
       [Symbol.for('new'), Symbol.for('Map')],
     ]);
@@ -2970,7 +3014,7 @@ describe('make-hash', function (): any {
   return it('(make-hash (quote (("foo" . "bar"))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('make-hash'),
         [Symbol.for('quote'), [['foo', Symbol.for('.'), 'bar']]],
@@ -2988,7 +3032,7 @@ describe('hash?', function (): any {
   it('(hash? (make-hash))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('hash?'), [Symbol.for('make-hash')]],
       true,
     ]);
@@ -2996,7 +3040,7 @@ describe('hash?', function (): any {
   return it('(hash? 0)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('hash?'), 0],
       false,
     ]);
@@ -3007,7 +3051,7 @@ describe('hash-clear', function (): any {
   return it('(hash-clear (make-hash (quote (("foo" . "bar")))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash-clear'),
         [
@@ -3024,7 +3068,7 @@ describe('hash-clear!', function (): any {
   return it('(let ((ht (make-hash (quote (("foo" . "bar")))))) (hash-clear! ht) ht)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [
@@ -3048,7 +3092,7 @@ describe('hash-copy', function (): any {
   return it('(hash-copy (make-hash (quote (("foo" . "bar")))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash-copy'),
         [
@@ -3069,7 +3113,7 @@ describe('hash-keys', function (): any {
   return it('(hash-keys (make-hash (quote (("foo" . "bar")))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash-keys'),
         [
@@ -3086,7 +3130,7 @@ describe('hash-values', function (): any {
   return it('(hash-values (make-hash (quote (("foo" . "bar")))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash-values'),
         [
@@ -3103,7 +3147,7 @@ describe('hash->list', function (): any {
   return it('(hash->list (make-hash (quote (("foo" . "bar")))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash->list'),
         [
@@ -3120,7 +3164,7 @@ describe('hash-set', function (): any {
   return it('(hash-set (make-hash) "foo" "bar")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('hash-set'), [Symbol.for('make-hash')], 'foo', 'bar'],
       [
         Symbol.for('new'),
@@ -3135,7 +3179,7 @@ describe('hash-set!', function (): any {
   return it('(let ((ht (make-hash))) (hash-set! ht "foo" "bar") ht)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('ht'), [Symbol.for('make-hash')]]],
@@ -3155,7 +3199,7 @@ describe('hash-ref', function (): any {
   it('(hash-ref (make-hash (quote (("foo" . "bar")))) "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash-ref'),
         [
@@ -3170,7 +3214,7 @@ describe('hash-ref', function (): any {
   return it('(hash-ref (make-hash) "quux" #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('hash-ref'), [Symbol.for('make-hash')], 'quux', false],
       false,
     ]);
@@ -3181,7 +3225,7 @@ describe('hash-has-key?', function (): any {
   it('(hash-has-key? (make-hash (quote (("foo" . "bar")))) "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('hash-has-key?'),
         [
@@ -3196,7 +3240,7 @@ describe('hash-has-key?', function (): any {
   return it('(hash-has-key? (make-hash) "quux")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('hash-has-key?'), [Symbol.for('make-hash')], 'quux'],
       false,
     ]);
@@ -3207,7 +3251,7 @@ describe('Map', function (): any {
   it('(new Map)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('new'), Symbol.for('Map')],
       [Symbol.for('new'), Symbol.for('Map')],
     ]);
@@ -3215,7 +3259,7 @@ describe('Map', function (): any {
   return it('(~> (new Map (quote ((1 2)))) (send _ entries) (send Array from _))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('~>'),
         [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('quote'), [[1, 2]]]],
@@ -3234,12 +3278,17 @@ describe('Map', function (): any {
 
 describe('+', function (): any {
   it('(+)', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, [Symbol.for('+')], 0]);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('+')],
+      0,
+    ]);
   });
   it('(+ 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('+'), 1],
       1,
     ]);
@@ -3247,7 +3296,7 @@ describe('+', function (): any {
   it('(+ 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('+'), 1, 2],
       3,
     ]);
@@ -3255,7 +3304,7 @@ describe('+', function (): any {
   it('(+ 2 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('+'), 2, 2],
       4,
     ]);
@@ -3263,7 +3312,7 @@ describe('+', function (): any {
   it('(+ 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('+'), 1, 2, 3],
       6,
     ]);
@@ -3271,7 +3320,7 @@ describe('+', function (): any {
   it('(+ 1 2 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('+'), 1, 2, 4],
       7,
     ]);
@@ -3279,7 +3328,7 @@ describe('+', function (): any {
   it('(+ (+ 1 1) (+ 1 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('+'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 1, 1]],
       4,
     ]);
@@ -3287,7 +3336,7 @@ describe('+', function (): any {
   it('(let ((x 2)) (+ x x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('x'), 2]],
@@ -3299,7 +3348,7 @@ describe('+', function (): any {
   return it('(apply + (quote (1 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('apply'), Symbol.for('+'), [Symbol.for('quote'), [1, 2]]],
       3,
     ]);
@@ -3308,12 +3357,17 @@ describe('+', function (): any {
 
 describe('-', function (): any {
   it('(-)', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, [Symbol.for('-')], 0]);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('-')],
+      0,
+    ]);
   });
   it('(- 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('-'), 1],
       -1,
     ]);
@@ -3321,7 +3375,7 @@ describe('-', function (): any {
   it('(- 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('-'), 1, 2],
       -1,
     ]);
@@ -3329,7 +3383,7 @@ describe('-', function (): any {
   it('(- 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('-'), 1, 2, 3],
       -4,
     ]);
@@ -3337,7 +3391,7 @@ describe('-', function (): any {
   return it('(- 1 2 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('-'), 1, 2, 4],
       -5,
     ]);
@@ -3346,12 +3400,17 @@ describe('-', function (): any {
 
 describe('*', function (): any {
   it('(*)', function (): any {
-    return testRepl([Symbol.for('roselisp'), undefined, [Symbol.for('*')], 1]);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('*')],
+      1,
+    ]);
   });
   it('(* 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('*'), 1],
       1,
     ]);
@@ -3359,7 +3418,7 @@ describe('*', function (): any {
   it('(* 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('*'), 1, 2],
       2,
     ]);
@@ -3367,7 +3426,7 @@ describe('*', function (): any {
   it('(* 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('*'), 1, 2, 3],
       6,
     ]);
@@ -3375,7 +3434,7 @@ describe('*', function (): any {
   return it('(* 1 2 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('*'), 1, 2, 4],
       8,
     ]);
@@ -3386,7 +3445,7 @@ describe('/', function (): any {
   it('(/)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('/')],
       undefined,
     ]);
@@ -3394,7 +3453,7 @@ describe('/', function (): any {
   it('(/ 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('/'), 1],
       1,
     ]);
@@ -3402,7 +3461,7 @@ describe('/', function (): any {
   it('(/ 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('/'), 1, 2],
       0.5,
     ]);
@@ -3410,7 +3469,7 @@ describe('/', function (): any {
   it('(/ 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('/'), 1, 2, 3],
       [Symbol.for('/'), 1, 2, 3],
     ]);
@@ -3418,7 +3477,7 @@ describe('/', function (): any {
   return it('(/ 1 2 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('/'), 1, 2, 4],
       0.125,
     ]);
@@ -3429,7 +3488,7 @@ describe('<', function (): any {
   it('(< 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('<'), 1],
       true,
     ]);
@@ -3437,7 +3496,7 @@ describe('<', function (): any {
   it('(< 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('<'), 1, 2],
       true,
     ]);
@@ -3445,7 +3504,7 @@ describe('<', function (): any {
   it('(< 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('<'), 1, 2, 3],
       true,
     ]);
@@ -3453,7 +3512,7 @@ describe('<', function (): any {
   return it('(< 1 2 0)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('<'), 1, 2, 0],
       false,
     ]);
@@ -3464,7 +3523,7 @@ describe('>', function (): any {
   it('(> 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('>'), 1],
       true,
     ]);
@@ -3472,7 +3531,7 @@ describe('>', function (): any {
   it('(> 2 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('>'), 2, 1],
       true,
     ]);
@@ -3480,7 +3539,7 @@ describe('>', function (): any {
   it('(> 3 2 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('>'), 3, 2, 1],
       true,
     ]);
@@ -3488,7 +3547,7 @@ describe('>', function (): any {
   return it('(> 0 2 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('>'), 0, 2, 1],
       false,
     ]);
@@ -3499,7 +3558,7 @@ describe('range', function (): any {
   it('(range 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('range'), 1, 2],
       [Symbol.for('quote'), [1]],
     ]);
@@ -3507,7 +3566,7 @@ describe('range', function (): any {
   it('(range 10)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('range'), 10],
       [Symbol.for('quote'), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
     ]);
@@ -3515,7 +3574,7 @@ describe('range', function (): any {
   it('(range 10 20)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('range'), 10, 20],
       [Symbol.for('quote'), [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]],
     ]);
@@ -3523,7 +3582,7 @@ describe('range', function (): any {
   it('(range 20 40 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('range'), 20, 40, 2],
       [Symbol.for('quote'), [20, 22, 24, 26, 28, 30, 32, 34, 36, 38]],
     ]);
@@ -3531,7 +3590,7 @@ describe('range', function (): any {
   it('(range 20 10 -1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('range'), 20, 10, -1],
       [Symbol.for('quote'), [20, 19, 18, 17, 16, 15, 14, 13, 12, 11]],
     ]);
@@ -3539,7 +3598,7 @@ describe('range', function (): any {
   return it('(range 10 15 1.5)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('range'), 10, 15, 1.5],
       [Symbol.for('quote'), [10, 11.5, 13, 14.5]],
     ]);
@@ -3550,7 +3609,7 @@ describe('member', function (): any {
   it('(member 2 (list 1 2 3 4))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('member'), 2, [Symbol.for('list'), 1, 2, 3, 4]],
       [Symbol.for('quote'), [2, 3, 4]],
     ]);
@@ -3558,7 +3617,7 @@ describe('member', function (): any {
   it('(member 9 (list 1 2 3 4))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('member'), 9, [Symbol.for('list'), 1, 2, 3, 4]],
       false,
     ]);
@@ -3566,7 +3625,7 @@ describe('member', function (): any {
   return it('(member 5 (quote (3 5 1 7 2 9)) (lambda (x y) (< x y)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('member'),
         5,
@@ -3586,7 +3645,7 @@ describe('member?', function (): any {
   it('(member? 2 (list 1 2 3 4))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('member?'), 2, [Symbol.for('list'), 1, 2, 3, 4]],
       true,
     ]);
@@ -3594,7 +3653,7 @@ describe('member?', function (): any {
   return it('(member? 9 (list 1 2 3 4))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('member?'), 9, [Symbol.for('list'), 1, 2, 3, 4]],
       false,
     ]);
@@ -3605,7 +3664,7 @@ describe('take', function (): any {
   it('(take (quote (1 2 3 4)) 0)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('take'), [Symbol.for('quote'), [1, 2, 3, 4]], 0],
       [Symbol.for('quote'), []],
     ]);
@@ -3613,7 +3672,7 @@ describe('take', function (): any {
   it('(take (quote (1 2 3 4)) 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('take'), [Symbol.for('quote'), [1, 2, 3, 4]], 1],
       [Symbol.for('quote'), [1]],
     ]);
@@ -3621,7 +3680,7 @@ describe('take', function (): any {
   return it('(take (quote (1 2 3 4)) 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('take'), [Symbol.for('quote'), [1, 2, 3, 4]], 2],
       [Symbol.for('quote'), [1, 2]],
     ]);
@@ -3632,7 +3691,7 @@ describe('drop', function (): any {
   it('(drop (quote (1 2 3 4)) 0)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('drop'), [Symbol.for('quote'), [1, 2, 3, 4]], 0],
       [Symbol.for('quote'), [1, 2, 3, 4]],
     ]);
@@ -3640,7 +3699,7 @@ describe('drop', function (): any {
   return it('(drop (quote (1 2 3 4)) 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('drop'), [Symbol.for('quote'), [1, 2, 3, 4]], 1],
       [Symbol.for('quote'), [2, 3, 4]],
     ]);
@@ -3651,7 +3710,7 @@ describe('drop-right', function (): any {
   it('(drop-right (quote (1 2 3 4)) 0)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('drop-right'), [Symbol.for('quote'), [1, 2, 3, 4]], 0],
       [Symbol.for('quote'), [1, 2, 3, 4]],
     ]);
@@ -3659,7 +3718,7 @@ describe('drop-right', function (): any {
   return it('(drop-right (quote (1 2 3 4)) 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('drop-right'), [Symbol.for('quote'), [1, 2, 3, 4]], 1],
       [Symbol.for('quote'), [1, 2, 3]],
     ]);
@@ -3670,7 +3729,7 @@ describe('map', function (): any {
   it('(map list (quote (1 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('map'), Symbol.for('list'), [Symbol.for('quote'), [1, 2]]],
       [Symbol.for('quote'), [[1], [2]]],
     ]);
@@ -3678,7 +3737,7 @@ describe('map', function (): any {
   return it('((lambda  (define (fact n) (if (< n 2) 1 (* n (fact (- n 1))))) (map fact (quote (1 2 3 4 5 6)))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -3713,7 +3772,7 @@ describe('foldl', function (): any {
   return it('(foldl cons (quote ) (quote (1 2 3 4)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('foldl'),
         Symbol.for('cons'),
@@ -3729,7 +3788,7 @@ describe('foldr', function (): any {
   it('(foldr cons (quote ) (quote (1 2 3 4)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('foldr'),
         Symbol.for('cons'),
@@ -3742,7 +3801,7 @@ describe('foldr', function (): any {
   return it('(foldr (lambda (v l) (cons (add1 v) l)) (quote ) (quote (1 2 3 4)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('foldr'),
         [
@@ -3766,7 +3825,7 @@ describe('filter', function (): any {
   return it('(filter string? (quote ("foo" 1 2 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('filter'),
         Symbol.for('string?'),
@@ -3781,7 +3840,7 @@ describe('string?', function (): any {
   it('(string? "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string?'), 'foo'],
       true,
     ]);
@@ -3789,7 +3848,7 @@ describe('string?', function (): any {
   it('(string? 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string?'), 1],
       false,
     ]);
@@ -3797,7 +3856,7 @@ describe('string?', function (): any {
   it('(string? (js-obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string?'), [Symbol.for('js-obj')]],
       false,
     ]);
@@ -3805,7 +3864,7 @@ describe('string?', function (): any {
   it('(string? (list "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string?'), [Symbol.for('list'), 'foo']],
       false,
     ]);
@@ -3813,7 +3872,7 @@ describe('string?', function (): any {
   it('(string? (js-obj "foo" ""))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string?'), [Symbol.for('js-obj'), 'foo', '']],
       false,
     ]);
@@ -3821,7 +3880,7 @@ describe('string?', function (): any {
   it('(string? (js-obj "foo" (quote )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('string?'),
         [Symbol.for('js-obj'), 'foo', [Symbol.for('quote'), []]],
@@ -3832,7 +3891,7 @@ describe('string?', function (): any {
   it('(string? (js-obj "foo" (js-obj)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('string?'),
         [Symbol.for('js-obj'), 'foo', [Symbol.for('js-obj')]],
@@ -3843,7 +3902,7 @@ describe('string?', function (): any {
   it('(string? (js-obj "foo" "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string?'), [Symbol.for('js-obj'), 'foo', 'foo']],
       false,
     ]);
@@ -3851,7 +3910,7 @@ describe('string?', function (): any {
   return it('(string? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string?'), [Symbol.for('quote'), []]],
       false,
     ]);
@@ -3862,7 +3921,7 @@ describe('string-length', function (): any {
   return it('(string-length "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-length'), 'foo'],
       3,
     ]);
@@ -3873,7 +3932,7 @@ describe('string-append', function (): any {
   it('(string-append)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-append')],
       '',
     ]);
@@ -3881,7 +3940,7 @@ describe('string-append', function (): any {
   it('(string-append "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-append'), 'foo'],
       'foo',
     ]);
@@ -3889,7 +3948,7 @@ describe('string-append', function (): any {
   it('(string-append "foo" "bar")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-append'), 'foo', 'bar'],
       'foobar',
     ]);
@@ -3897,7 +3956,7 @@ describe('string-append', function (): any {
   return it('(apply string-append (quote ("foo" "bar")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('apply'),
         Symbol.for('string-append'),
@@ -3912,7 +3971,7 @@ describe('string-join', function (): any {
   it('(string-join (quote ("foo" "bar")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-join'), [Symbol.for('quote'), ['foo', 'bar']]],
       'foo bar',
     ]);
@@ -3920,7 +3979,7 @@ describe('string-join', function (): any {
   return it('(string-join (quote ("foo" "bar")) ",")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-join'), [Symbol.for('quote'), ['foo', 'bar']], ','],
       'foo,bar',
     ]);
@@ -3931,7 +3990,7 @@ describe('string-split', function (): any {
   it('(string-split "foo bar  baz")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-split'), 'foo bar  baz'],
       [Symbol.for('quote'), ['foo', 'bar', 'baz']],
     ]);
@@ -3939,7 +3998,7 @@ describe('string-split', function (): any {
   it('(string-split "foo,bar,baz" ",")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-split'), 'foo,bar,baz', ','],
       [Symbol.for('quote'), ['foo', 'bar', 'baz']],
     ]);
@@ -3947,7 +4006,7 @@ describe('string-split', function (): any {
   it('(string-split "foo, bar, baz" ", ")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-split'), 'foo, bar, baz', ', '],
       [Symbol.for('quote'), ['foo', 'bar', 'baz']],
     ]);
@@ -3957,7 +4016,7 @@ describe('string-split', function (): any {
     function (): any {
       return testRepl([
         Symbol.for('roselisp'),
-        undefined,
+        Symbol.for('>'),
         [Symbol.for('string-split'), 'foo\n' + 'bar\n' + 'baz', '\n'],
         [Symbol.for('quote'), ['foo', 'bar', 'baz']],
       ]);
@@ -3969,7 +4028,7 @@ describe('string-trim', function (): any {
   it('(string-trim "  foo bar  baz  ")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-trim'), '  foo bar  baz  '],
       'foo bar  baz',
     ]);
@@ -3977,7 +4036,7 @@ describe('string-trim', function (): any {
   return it('(string-trim "  foo bar  baz \n' + '\n' + '	")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-trim'), '  foo bar  baz \n' + '\n' + '	'],
       'foo bar  baz',
     ]);
@@ -3988,7 +4047,7 @@ describe('string-upcase', function (): any {
   return it('(string-upcase "foo")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-upcase'), 'foo'],
       'FOO',
     ]);
@@ -3999,7 +4058,7 @@ describe('string-downcase', function (): any {
   return it('(string-downcase "FOO")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('string-downcase'), 'FOO'],
       'foo',
     ]);
@@ -4010,7 +4069,7 @@ describe('substring', function (): any {
   it('(substring "Apple" 1 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('substring'), 'Apple', 1, 3],
       'pp',
     ]);
@@ -4018,7 +4077,7 @@ describe('substring', function (): any {
   return it('(substring "Apple" 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('substring'), 'Apple', 1],
       'pple',
     ]);
@@ -4029,7 +4088,7 @@ describe('as~>', function (): any {
   return it('(as~> 0 _ (+ _ 1) (+ _ 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('as~>'),
         0,
@@ -4046,7 +4105,7 @@ describe('ann', function (): any {
   return it('(ann #u Any)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('ann'), undefined, Symbol.for('Any')],
       undefined,
     ]);
@@ -4057,7 +4116,7 @@ describe('cons?', function (): any {
   return it('(cons? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cons?'), [Symbol.for('quote'), []]],
       false,
     ]);
@@ -4068,7 +4127,7 @@ describe('list?', function (): any {
   it('(list? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list?'), [Symbol.for('quote'), []]],
       true,
     ]);
@@ -4076,7 +4135,7 @@ describe('list?', function (): any {
   it('(list? (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list?'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
       false,
     ]);
@@ -4084,7 +4143,7 @@ describe('list?', function (): any {
   it('(list? (quote (1 2 . 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list?'), [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]]],
       false,
     ]);
@@ -4092,7 +4151,7 @@ describe('list?', function (): any {
   it('(list? (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list?'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]],
       true,
     ]);
@@ -4100,7 +4159,7 @@ describe('list?', function (): any {
   return it('(list? (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4114,7 +4173,7 @@ describe('vector?', function (): any {
   it('(vector? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('vector?'), [Symbol.for('quote'), []]],
       true,
     ]);
@@ -4122,7 +4181,7 @@ describe('vector?', function (): any {
   it('(vector? (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('vector?'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
       true,
     ]);
@@ -4130,7 +4189,7 @@ describe('vector?', function (): any {
   it('(vector? (quote (1 2 . 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('vector?'),
         [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
@@ -4141,7 +4200,7 @@ describe('vector?', function (): any {
   it('(vector? (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('vector?'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]],
       true,
     ]);
@@ -4149,7 +4208,7 @@ describe('vector?', function (): any {
   return it('(vector? (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('vector?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4163,7 +4222,7 @@ describe('array-list?', function (): any {
   it('(array-list? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('array-list?'), [Symbol.for('quote'), []]],
       true,
     ]);
@@ -4171,7 +4230,7 @@ describe('array-list?', function (): any {
   it('(array-list? (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('array-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
@@ -4182,7 +4241,7 @@ describe('array-list?', function (): any {
   it('(array-list? (quote (1 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('array-list?'), [Symbol.for('quote'), [1, 2]]],
       true,
     ]);
@@ -4190,7 +4249,7 @@ describe('array-list?', function (): any {
   return it('(array-list? (quote (1 2 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('array-list?'), [Symbol.for('quote'), [1, 2, 3]]],
       true,
     ]);
@@ -4201,7 +4260,7 @@ describe('linked-list?', function (): any {
   it('(linked-list? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('linked-list?'), [Symbol.for('quote'), []]],
       false,
     ]);
@@ -4209,7 +4268,7 @@ describe('linked-list?', function (): any {
   it('(linked-list? (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
@@ -4220,7 +4279,7 @@ describe('linked-list?', function (): any {
   it('(linked-list? (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), []]],
@@ -4231,7 +4290,7 @@ describe('linked-list?', function (): any {
   it('(linked-list? (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4242,7 +4301,7 @@ describe('linked-list?', function (): any {
   return it('(linked-list? (quote (1 2 . (3 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list?'),
         [
@@ -4259,7 +4318,7 @@ describe('linked-list-link?', function (): any {
   it('(linked-list-link? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('linked-list-link?'), [Symbol.for('quote'), []]],
       false,
     ]);
@@ -4267,7 +4326,7 @@ describe('linked-list-link?', function (): any {
   it('(linked-list-link? (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list-link?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
@@ -4278,7 +4337,7 @@ describe('linked-list-link?', function (): any {
   it('(linked-list-link? (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list-link?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), []]],
@@ -4289,7 +4348,7 @@ describe('linked-list-link?', function (): any {
   it('(linked-list-link? (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list-link?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4300,7 +4359,7 @@ describe('linked-list-link?', function (): any {
   return it('(linked-list-link? (quote (1 2 . (3 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('linked-list-link?'),
         [
@@ -4317,7 +4376,7 @@ describe('length', function (): any {
   it('(length (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('length'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]],
       1,
     ]);
@@ -4325,7 +4384,7 @@ describe('length', function (): any {
   it('(length (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('length'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4336,7 +4395,7 @@ describe('length', function (): any {
   return it('(length (quote (1 2 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('length'),
         [Symbol.for('quote'), [1, 2, Symbol.for('.'), []]],
@@ -4350,7 +4409,7 @@ describe('last', function (): any {
   it('(last (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('last'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]],
       1,
     ]);
@@ -4358,7 +4417,7 @@ describe('last', function (): any {
   it('(last (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('last'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4369,7 +4428,7 @@ describe('last', function (): any {
   return it('(last (quote (1 2 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('last'), [Symbol.for('quote'), [1, 2, Symbol.for('.'), []]]],
       2,
     ]);
@@ -4380,7 +4439,7 @@ describe('nth', function (): any {
   it('(nth 1 (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('nth'),
         1,
@@ -4392,7 +4451,7 @@ describe('nth', function (): any {
   return it('(nth 1 (quote (1 2 . (3 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('nth'),
         1,
@@ -4410,7 +4469,7 @@ describe('cdr', function (): any {
   it('(cdr (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('cdr'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4421,7 +4480,7 @@ describe('cdr', function (): any {
   return it('(cdr (quote (1 2 . (3 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('cdr'),
         [
@@ -4438,7 +4497,7 @@ describe('set-car!', function (): any {
   it('((lambda  (define foo (quote )) (set-car! foo (quote bar)) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4458,7 +4517,7 @@ describe('set-car!', function (): any {
   return it('((lambda  (define foo (quote (foo))) (set-car! foo (quote bar)) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4485,7 +4544,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote )) (set-cdr! foo (quote (bar))) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4505,7 +4564,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote (foo))) (set-cdr! foo (quote (bar))) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4529,7 +4588,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote (foo bar))) (set-cdr! foo (quote (baz))) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4553,7 +4612,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote (foo bar))) (set-cdr! foo (quote (baz . quux))) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4588,7 +4647,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote (foo . bar))) (set-cdr! foo (quote (baz))) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4615,7 +4674,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote (foo . bar))) (set-cdr! foo (quote (baz . quux))) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4653,7 +4712,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote (foo))) (set-cdr! foo (quote bar)) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4680,7 +4739,7 @@ describe('set-cdr!', function (): any {
   it('((lambda  (define foo (quote (foo bar . baz))) (set-cdr! foo (quote (quux))) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4712,7 +4771,7 @@ describe('set-cdr!', function (): any {
   return it('((lambda  (define foo (quote (foo bar . baz))) (set-cdr! foo (quote quux)) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -4750,7 +4809,7 @@ describe('Dotted lists', function (): any {
   return it('(equal? (quote (1 2)) (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('equal?'),
         [Symbol.for('quote'), [1, 2]],
@@ -4765,7 +4824,7 @@ describe('dotted-list?', function (): any {
   it('(dotted-list? (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('dotted-list?'), [Symbol.for('quote'), []]],
       false,
     ]);
@@ -4773,7 +4832,7 @@ describe('dotted-list?', function (): any {
   it('(dotted-list? (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
@@ -4784,7 +4843,7 @@ describe('dotted-list?', function (): any {
   it('(dotted-list? (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), []]],
@@ -4795,7 +4854,7 @@ describe('dotted-list?', function (): any {
   it('(dotted-list? (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4806,7 +4865,7 @@ describe('dotted-list?', function (): any {
   it('(dotted-list? (quote (1 . (2 . 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list?'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), 3]]],
@@ -4817,7 +4876,7 @@ describe('dotted-list?', function (): any {
   it('(dotted-list? (quote (foo . bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list?'),
         [
@@ -4831,7 +4890,7 @@ describe('dotted-list?', function (): any {
   return it('(dotted-list? (quote (foo bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list?'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
@@ -4845,7 +4904,7 @@ describe('dotted-list-length', function (): any {
   it('(dotted-list-length (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('dotted-list-length'), [Symbol.for('quote'), []]],
       0,
     ]);
@@ -4853,7 +4912,7 @@ describe('dotted-list-length', function (): any {
   it('(dotted-list-length (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-length'),
         [Symbol.for('quote'), [1, Symbol.for('.'), []]],
@@ -4864,7 +4923,7 @@ describe('dotted-list-length', function (): any {
   return it('(dotted-list-length (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-length'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4878,7 +4937,7 @@ describe('dotted-list-head', function (): any {
   it('(dotted-list-head (quote (foo . bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-head'),
         [
@@ -4892,7 +4951,7 @@ describe('dotted-list-head', function (): any {
   return it('(dotted-list-head (quote (foo bar . baz)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-head'),
         [
@@ -4914,7 +4973,7 @@ describe('dotted-list-tail', function (): any {
   it('(dotted-list-tail (quote (foo . bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-tail'),
         [
@@ -4928,7 +4987,7 @@ describe('dotted-list-tail', function (): any {
   return it('(dotted-list-tail (quote (foo bar . baz)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-tail'),
         [
@@ -4950,7 +5009,7 @@ describe('dotted-list-last', function (): any {
   it('(dotted-list-last (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('dotted-list-last'), [Symbol.for('quote'), []]],
       undefined,
     ]);
@@ -4958,7 +5017,7 @@ describe('dotted-list-last', function (): any {
   it('(dotted-list-last (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-last'),
         [Symbol.for('quote'), [1, Symbol.for('.'), []]],
@@ -4969,7 +5028,7 @@ describe('dotted-list-last', function (): any {
   return it('(dotted-list-last (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-last'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -4983,7 +5042,7 @@ describe('dotted-list-last-cdr', function (): any {
   it('(dotted-list-last-cdr (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('dotted-list-last-cdr'), [Symbol.for('quote'), []]],
       [Symbol.for('quote'), []],
     ]);
@@ -4991,7 +5050,7 @@ describe('dotted-list-last-cdr', function (): any {
   it('(dotted-list-last-cdr (quote (1 . )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-last-cdr'),
         [Symbol.for('quote'), [1, Symbol.for('.'), []]],
@@ -5002,7 +5061,7 @@ describe('dotted-list-last-cdr', function (): any {
   return it('(dotted-list-last-cdr (quote (1 . (2 . ))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list-last-cdr'),
         [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]],
@@ -5016,7 +5075,7 @@ describe('dotted-list->proper-list', function (): any {
   it('(dotted-list->proper-list (quote (foo . bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list->proper-list'),
         [
@@ -5030,7 +5089,7 @@ describe('dotted-list->proper-list', function (): any {
   return it('(dotted-list->proper-list (quote (foo bar . baz)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('dotted-list->proper-list'),
         [
@@ -5055,7 +5114,7 @@ describe('proper-list?', function (): any {
   it('(proper-list? (quote (foo bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('proper-list?'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
@@ -5066,7 +5125,7 @@ describe('proper-list?', function (): any {
   return it('(proper-list? (quote (foo . bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('proper-list?'),
         [
@@ -5083,7 +5142,7 @@ describe('circular-list?', function (): any {
   it('((lambda  (define foo (quote )) (circular-list? foo) (set-cdr! foo foo) (circular-list? foo)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -5100,7 +5159,7 @@ describe('circular-list?', function (): any {
   it('(circular-list? (quote (foo)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('circular-list?'),
         [Symbol.for('quote'), [Symbol.for('foo')]],
@@ -5111,7 +5170,7 @@ describe('circular-list?', function (): any {
   it('(circular-list? (quote (foo . bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('circular-list?'),
         [
@@ -5125,7 +5184,7 @@ describe('circular-list?', function (): any {
   it('((lambda  (define foo (quote (foo))) (set-cdr! foo foo) (circular-list? foo)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -5145,7 +5204,7 @@ describe('circular-list?', function (): any {
   it('((lambda  (define foo (quote (foo . ))) (set-cdr! foo foo) (circular-list? foo)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -5165,7 +5224,7 @@ describe('circular-list?', function (): any {
   return it('((lambda  (define foo (quote (foo bar))) (set-cdr! foo foo) (circular-list? foo)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         [
           Symbol.for('lambda'),
@@ -5188,7 +5247,7 @@ describe('proper-list->dotted-list', function (): any {
   it('(proper-list->dotted-list (quote (foo bar)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('proper-list->dotted-list'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
@@ -5202,7 +5261,7 @@ describe('proper-list->dotted-list', function (): any {
   return it('(proper-list->dotted-list (quote (foo bar baz)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('proper-list->dotted-list'),
         [
@@ -5227,7 +5286,7 @@ describe('list*', function (): any {
   it('(list*)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*')],
       undefined,
     ]);
@@ -5235,7 +5294,7 @@ describe('list*', function (): any {
   it('(list* 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*'), 1],
       1,
     ]);
@@ -5243,7 +5302,7 @@ describe('list*', function (): any {
   it('(list* 1 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*'), 1, 2],
       [Symbol.for('quote'), [1, Symbol.for('.'), 2]],
     ]);
@@ -5251,7 +5310,7 @@ describe('list*', function (): any {
   it('(list* 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*'), 1, 2, 3],
       [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
     ]);
@@ -5259,7 +5318,7 @@ describe('list*', function (): any {
   it('(list* 1 2 3 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*'), 1, 2, 3, 4],
       [Symbol.for('quote'), [1, 2, 3, Symbol.for('.'), 4]],
     ]);
@@ -5267,7 +5326,7 @@ describe('list*', function (): any {
   it('(list* 1 (quote ))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*'), 1, [Symbol.for('quote'), []]],
       [Symbol.for('quote'), [1]],
     ]);
@@ -5275,7 +5334,7 @@ describe('list*', function (): any {
   it('(list* 1 (quote (2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*'), 1, [Symbol.for('quote'), [2]]],
       [Symbol.for('quote'), [1, 2]],
     ]);
@@ -5283,7 +5342,7 @@ describe('list*', function (): any {
   return it('(list* 1 (quote (2 . 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('list*'), 1, [Symbol.for('quote'), [2, Symbol.for('.'), 3]]],
       [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
     ]);
@@ -5294,7 +5353,7 @@ describe('flatten', function (): any {
   it('(flatten (quote (1 2 3 4)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('flatten'), [Symbol.for('quote'), [1, 2, 3, 4]]],
       [Symbol.for('quote'), [1, 2, 3, 4]],
     ]);
@@ -5302,7 +5361,7 @@ describe('flatten', function (): any {
   it('(flatten (quote (1 . 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('flatten'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
       [Symbol.for('quote'), [1, 2]],
     ]);
@@ -5310,7 +5369,7 @@ describe('flatten', function (): any {
   it('(flatten (quote ((a) b (c (d) . e) )))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [
         Symbol.for('flatten'),
         [
@@ -5343,7 +5402,7 @@ describe('flatten', function (): any {
   return it('(flatten (quote ((((4))))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('flatten'), [Symbol.for('quote'), [[[[4]]]]]],
       [Symbol.for('quote'), [4]],
     ]);
@@ -5354,7 +5413,7 @@ describe('Cons dot', function (): any {
   it('*cons-dot*', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for('*cons-dot*'),
       [Symbol.for('quote'), Symbol.for('.')],
     ]);
@@ -5362,7 +5421,7 @@ describe('Cons dot', function (): any {
   it('(cons-dot)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cons-dot')],
       [Symbol.for('quote'), Symbol.for('.')],
     ]);
@@ -5370,7 +5429,7 @@ describe('Cons dot', function (): any {
   return it('(cons-dot? *cons-dot*)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       [Symbol.for('cons-dot?'), Symbol.for('*cons-dot*')],
       true,
     ]);
@@ -5381,7 +5440,7 @@ describe('license', function (): any {
   return it('license', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      undefined,
+      Symbol.for('>'),
       Symbol.for('license'),
       [Symbol.for('quote'), Symbol.for('MPL-2.0')],
     ]);

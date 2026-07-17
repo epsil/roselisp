@@ -180,15 +180,23 @@
  2
  > (aref '(1 2) 0)
  1
- > (aset '(1 2) 0 3)
+ > (aset! '(1 2) 0 3)
  3
- > (let ((x '(1 2)))
-     (aset x 0 3)
-     x)
+ > (let ((lst '(1 2)))
+     (aset! lst 0 3)
+     lst)
  '(3 2)
- > (let ((x '(1 2)))
-     (set! (aref x 0) 3)
-     x)
+ > (let ((lst '(1 2))
+         (i 0))
+     (aget lst i))
+ 1
+ > (let ((lst '(1 2))
+         (i 0))
+     (aget lst (+ i 1)))
+ 2
+ > (let ((lst '(1 2)))
+     (set! (aref lst 0) 3)
+     lst)
  '(3 2)
 
  ;; `quote`

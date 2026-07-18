@@ -338,6 +338,7 @@
                   clj-try_
                   declare_
                   defclass_
+                  define-fexpr_
                   define-private_
                   define-public_
                   defmacro_
@@ -402,6 +403,7 @@
                   error_
                   even?_
                   false?_
+                  fexpr-type?
                   fexpr?_
                   filter_
                   findf-index_
@@ -578,9 +580,11 @@
          (,colon_ ,compile-colon (compiler-> Any * Any))
          (,cond_ ,compile-cond (compiler-> Any * Any))
          (,continue_ ,compile-continue (compiler-> Any * Any))
+         (,declare-fexpr_ ,compile-declare-fexpr (compiler-> Any * Any))
          (,declare-macro_ ,compile-declare-macro (compiler-> Any * Any))
          (,define-async_ ,compile-define-async (compiler-> Any * Any))
          (,define-class_ ,compile-define-class (compiler-> Any * Any))
+         (,define-fexpr_ ,compile-define-fexpr (compiler-> Any * Any))
          (,define-fields_ ,compile-define-fields (compiler-> Any * Any))
          (,define-generator_ ,compile-define-generator (compiler-> Any * Any))
          (,define-macro_ ,compile-define-macro (compiler-> Any * Any))
@@ -605,8 +609,8 @@
          (,js-get_ ,compile-js-get (compiler-> Any * Any))
          (,js-in_ ,compile-js-in (compiler-> Any * Any))
          (,js-instance-of?_ ,compile-js-instance-of (compiler-> Any * Any))
-         (,js-new_ ,compile-js-new (compiler-> Any * Any))
          (,js-loosely-equal?_ ,compile-js-loosely-equal (compiler-> Any * Any))
+         (,js-new_ ,compile-js-new (compiler-> Any * Any))
          (,js-obj-append_ ,compile-js-obj-append (compiler-> Any * Any))
          (,js-obj_ ,compile-js-obj (compiler-> Any * Any))
          (,js-optional-chaining_ ,compile-js-optional-chaining (compiler-> Any * Any))
@@ -1171,8 +1175,8 @@
       (cond
        ((and (symbol? op)
              (send env has op (js-obj "filter" lang-filter))
-             (not (macro-type?
-                   (send env get-type op (js-obj "filter" lang-filter)))))
+             (simple-type?
+              (send env get-type op (js-obj "filter" lang-filter))))
         (set! result
               (compile-function-call
                node1 env options)))
@@ -1223,6 +1227,12 @@
            ((macro-type? op-type)
             (set! result
                   (compile-macro-call
+                   node1 env
+                   options)))
+           ;; Fexpr call.
+           ((fexpr-type? op-type)
+            (set! result
+                  (compile-fexpr-call
                    node1 env
                    options)))
            (else
@@ -3583,6 +3593,20 @@
              (send node drop 1)))
    options))
 
+;;; Compile a fexpr call.
+(define (compile-fexpr-call node env (options (js-obj)))
+  (define op
+    (send node get 0))
+  (define args
+    (send node drop 1))
+  (define quoted-args
+    (map (lambda (arg)
+           (make-rose `(quote ,arg) arg))
+         args))
+  (define call
+    (make-rose `(,op ,@quoted-args) node))
+  (compile-function-call call env options))
+
 ;;; Compile a macro call.
 (define (compile-macro-call node env (options (js-obj)))
   ;; Only expand the macro a single step, as there might be
@@ -5506,6 +5530,33 @@
     (compile-expression
      expression-exp env options))))
 
+;;; Compile a `(define-fexpr ...)` expression.
+(define (compile-define-fexpr node env (options (js-obj)))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
+  (define name-and-args
+    (send node get 1))
+  (define name
+    (~> name-and-args
+        (send _ get 0)
+        (send _ get-value)))
+  (define body
+    (send node drop 1))
+  (define result
+    (compile-rose
+     (transfer-comments
+      node
+      (make-rose
+       `(begin
+          (define ,@body)
+          (declare ,name (ftype "fexpr")))
+       node))
+     env options))
+  (make-type-binding env name '(fexpr-> Any * Any) lang-filter)
+  result)
+
 ;;; Compile a `(define-macro ...)` expression.
 (define (compile-define-macro node env (options (js-obj)))
   (define language-env
@@ -5537,6 +5588,19 @@
      env options))
   (make-type-binding env name '(macro-> Any * Any) lang-filter)
   result)
+
+;;; Compile a `(declare-fexpr ...)` expression.
+(define (compile-declare-fexpr node env (options (js-obj)))
+  (define language-env
+    (oget options "languageEnvironment"))
+  (define (lang-filter x)
+    (not (eq? x language-env)))
+  (define name
+    (~> node
+        (send _ get 1)
+        (send _ get-value)))
+  (make-type-binding env name '(fexpr-> Any * Any) lang-filter)
+  (empty-program))
 
 ;;; Compile a `(declare-macro ...)` expression.
 (define (compile-declare-macro node env (options (js-obj)))
@@ -5976,6 +6040,13 @@
     (eval_ f-exp env))
   (send env set name f '(macro-> Any * Any))
   f-exp)
+
+;;; Expand a `(declare-fexpr ...)` expression.
+(defmacro declare-fexpr_ (x)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
 
 ;;; Expand a `(declare-macro ...)` expression.
 (defmacro declare-macro_ (x)
@@ -7551,6 +7622,12 @@
    (else
     (send env set-local sym #u typ))))
 
+;;; Whether `x` is a simple type whose function call
+;;; can be compiled without further ado.
+(define (simple-type? x)
+  (and (not (macro-type? x))
+       (not (fexpr-type? x))))
+
 ;;; Lisp environment.
 (define lisp-environment
   (new LispEnvironment
@@ -8032,6 +8109,7 @@
          (defclass ,defclass_ (macro-> Any * Any))
          (define ,define_ (macro-> Any * Any))
          (define-class ,define-class_ (macro-> Any * Any))
+         (define-fexpr ,define-fexpr_ (macro-> Any * Any))
          (define-fields ,define-fields_ (macro-> Any * Any))
          (define-js-obj ,define-fields_ (macro-> Any * Any))
          (define-macro ,define-macro_ (macro-> Any * Any))

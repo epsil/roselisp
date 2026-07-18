@@ -521,6 +521,42 @@ describe('compile', function (): any {
       );
     });
   });
+  describe('fexprs', function (): any {
+    return it('(define-fexpr (foo x) x)', function (): any {
+      return assertEqual(
+        compile(
+          [
+            Symbol.for('begin'),
+            [
+              Symbol.for('define-fexpr'),
+              [Symbol.for('foo'), Symbol.for('x')],
+              Symbol.for('x'),
+            ],
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              Symbol.for('bar'),
+              [Symbol.for('foo'), Symbol.for('x')],
+            ],
+          ],
+          compilationEnvironment,
+          {
+            expressionType: 'statement',
+            language: 'JavaScript',
+          }
+        ),
+        'function foo(x) {\n' +
+          '  return x;\n' +
+          '}\n' +
+          '\n' +
+          "foo.ftype = 'fexpr';\n" +
+          '\n' +
+          'const x = 1;\n' +
+          '\n' +
+          "const bar = foo(Symbol.for('x'));"
+      );
+    });
+  });
   describe('comments', function (): any {
     it(';; comment\n' + '(foo)', function (): any {
       return assertEqual(

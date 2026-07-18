@@ -341,6 +341,30 @@ const bar = 1;")))
 foo.ftype = 'macro';
 
 const bar = 1;")))))
+    (describe "fexprs"
+      (fn ()
+        (it "(define-fexpr (foo x) x)"
+            (fn ()
+              (assert-equal
+               (compile
+                '(begin
+                   (define-fexpr (foo x)
+                     x)
+                   (define x 1)
+                   (define bar
+                     (foo x)))
+                compilation-environment
+                (js-obj "expressionType" "statement"
+                        "language" "JavaScript"))
+               "function foo(x) {
+  return x;
+}
+
+foo.ftype = 'fexpr';
+
+const x = 1;
+
+const bar = foo(Symbol.for('x'));")))))
     (describe "comments"
       (fn ()
         (it ";; comment

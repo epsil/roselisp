@@ -121,6 +121,18 @@ defmacro_.fsource = [Symbol.for('define'), [Symbol.for('defmacro_'), Symbol.for(
 defmacro_.ftype = 'macro';
 
 /**
+ * Expand a `(define-fexpr ...)` expression.
+ */
+function defineFexpr_(exp: any, env: any): any {
+  const [nameAndArgs, ...body]: any[] = exp.slice(1);
+  return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('declare'), nameAndArgs[0], [Symbol.for('ftype'), 'fexpr']]];
+}
+
+defineFexpr_.fsource = [Symbol.for('define'), [Symbol.for('define-fexpr_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare'), [Symbol.for('unquote'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('ftype'), 'fexpr']]]]];
+
+defineFexpr_.ftype = 'macro';
+
+/**
  * Expand a `(defun ...)` expression.
  */
 function defun_(exp: any, env: any): any {
@@ -752,6 +764,7 @@ export {
   cljTry_,
   declare_,
   defclass_,
+  defineFexpr_,
   definePrivate_,
   definePublic_,
   defmacro_,

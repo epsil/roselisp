@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defclass_ = exports.declare_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
 const util_1 = require("./util");
 const [cons, take, lastCdr] = (() => {
     function cons_(x, y) {
@@ -94,6 +94,16 @@ function defmacro_(exp, env) {
 exports.defmacro_ = defmacro_;
 defmacro_.fsource = [Symbol.for('define'), [Symbol.for('defmacro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define-macro'), [Symbol.for('unquote'), [Symbol.for('cons'), Symbol.for('name'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 defmacro_.ftype = 'macro';
+/**
+ * Expand a `(define-fexpr ...)` expression.
+ */
+function defineFexpr_(exp, env) {
+    const [nameAndArgs, ...body] = exp.slice(1);
+    return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('declare'), nameAndArgs[0], [Symbol.for('ftype'), 'fexpr']]];
+}
+exports.defineFexpr_ = defineFexpr_;
+defineFexpr_.fsource = [Symbol.for('define'), [Symbol.for('define-fexpr_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare'), [Symbol.for('unquote'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('ftype'), 'fexpr']]]]];
+defineFexpr_.ftype = 'macro';
 /**
  * Expand a `(defun ...)` expression.
  */

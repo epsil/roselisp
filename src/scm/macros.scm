@@ -46,6 +46,13 @@
   `(define-macro ,(cons name args)
      ,@body))
 
+;;; Expand a `(define-fexpr ...)` expression.
+(defmacro define-fexpr_ (name-and-args &rest body)
+  `(begin
+     (define ,name-and-args
+       ,@body)
+     (declare ,(car name-and-args) (ftype "fexpr"))))
+
 ;;; Expand a `(defun ...)` expression.
 (defmacro defun_ (name args &rest body)
   `(define (,name ,@args)
@@ -509,6 +516,7 @@
   clj-try_
   declare_
   defclass_
+  define-fexpr_
   define-private_
   define-public_
   defmacro_

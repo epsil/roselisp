@@ -184,6 +184,8 @@
                   hash?_
                   make-hash_))
 (require (only-in "./javascript"
+                  (js-new_ new_)
+                  js-block_
                   js-delete_
                   js-eighth_
                   js-eval_
@@ -197,11 +199,11 @@
                   js-get_
                   js-in_
                   js-instance-of?_
-                  js-loosely-equal?_
-                  js-strictly-equal?_
                   js-last_
                   js-length_
+                  js-loosely-equal?_
                   js-nan?_
+                  js-new_
                   js-ninth_
                   js-null?_
                   js-plus_
@@ -212,6 +214,7 @@
                   js-regexp?_
                   js-regexp_
                   js-rest_
+                  js-return_
                   js-reverse_
                   js-same-value-zero?_
                   js-same-value?_
@@ -219,11 +222,13 @@
                   js-seventh_
                   js-sixth_
                   js-slice_
+                  js-strictly-equal?_
                   js-tagged-template_
                   js-take_
                   js-tenth_
                   js-third_
-                  js-type-of_))
+                  js-type-of_
+                  js-yield_))
 (require (only-in "./list"
                   append_
                   array-list-cdr_
@@ -568,7 +573,6 @@
          (,array-ref_ ,compile-array-ref (compiler-> Any * Any))
          (,array-set_ ,compile-array-set (compiler-> Any * Any))
          (,begin_ ,compile-begin (compiler-> Any * Any))
-         (,block_ ,compile-block (compiler-> Any * Any))
          (,break_ ,compile-break (compiler-> Any * Any))
          (,class_ ,compile-class (compiler-> Any * Any))
          (,colon_ ,compile-colon (compiler-> Any * Any))
@@ -593,6 +597,7 @@
          (,js-arrow_ ,compile-js-arrow (compiler-> Any * Any))
          (,js-async_ ,compile-js-async (compiler-> Any * Any))
          (,js-await_ ,compile-js-await (compiler-> Any * Any))
+         (,js-block_ ,compile-js-block (compiler-> Any * Any))
          (,js-delete_ ,compile-js-delete (compiler-> Any * Any))
          (,js-do-while_ ,compile-js-do-while (compiler-> Any * Any))
          (,js-eval_ ,compile-js-eval (compiler-> Any * Any))
@@ -600,17 +605,20 @@
          (,js-get_ ,compile-js-get (compiler-> Any * Any))
          (,js-in_ ,compile-js-in (compiler-> Any * Any))
          (,js-instance-of?_ ,compile-js-instance-of (compiler-> Any * Any))
+         (,js-new_ ,compile-js-new (compiler-> Any * Any))
          (,js-loosely-equal?_ ,compile-js-loosely-equal (compiler-> Any * Any))
-         (,js-strictly-equal?_ ,compile-js-strictly-equal (compiler-> Any * Any))
          (,js-obj-append_ ,compile-js-obj-append (compiler-> Any * Any))
          (,js-obj_ ,compile-js-obj (compiler-> Any * Any))
          (,js-optional-chaining_ ,compile-js-optional-chaining (compiler-> Any * Any))
          (,js-plus_ ,compile-add (compiler-> Any * Any))
+         (,js-return_ ,compile-return (compiler-> Any * Any))
+         (,js-strictly-equal?_ ,compile-js-strictly-equal (compiler-> Any * Any))
          (,js-switch_ ,compile-js-switch (compiler-> Any * Any))
          (,js-tagged-template_ ,compile-js-tagged-template (compiler-> Any * Any))
          (,js-try_ ,compile-js-try (compiler-> Any * Any))
          (,js-type-of_ ,compile-js-type-of (compiler-> Any * Any))
          (,js-while_ ,compile-js-while (compiler-> Any * Any))
+         (,js-yield_ ,compile-yield (compiler-> Any * Any))
          (,js_ ,compile-js (compiler-> Any * Any))
          (,lambda_ ,compile-lambda (compiler-> Any * Any))
          (,let-fields_ ,compile-let-fields (compiler-> Any * Any))
@@ -622,7 +630,6 @@
          (,module_ ,compile-module (compiler-> Any * Any))
          (,modulo_ ,compile-modulo (compiler-> Any * Any))
          (,mul_ ,compile-mul (compiler-> Any * Any))
-         (,new_ ,compile-new (compiler-> Any * Any))
          (,not_ ,compile-not (compiler-> Any * Any))
          (,object-set!_ ,compile-object-set (compiler-> Any * Any))
          (,or_ ,compile-or (compiler-> Any * Any))
@@ -661,11 +668,11 @@
          (,hash-ref_ ,compile-hash-ref-macro (macro-> Any * Any))
          (,hash-remove!_ ,compile-hash-remove-macro (macro-> Any * Any))
          (,hash-remove_ ,compile-hash-remove-macro (macro-> Any * Any))
+         (,js-regexp_ ,compile-js-regexp-macro (macro-> Any * Any))
          (,make-hash_ ,compile-make-hash-macro (macro-> Any * Any))
          (,map_ ,compile-map-macro (macro-> Any * Any))
          (,member?_ ,compile-member-p-macro (macro-> Any * Any))
          (,print ,compile-display-macro (macro-> Any * Any))
-         (,regexp_ ,compile-regexp-macro (macro-> Any * Any))
          (,string-trim_ ,compile-string-trim-macro (macro-> Any * Any))
          (,string?_ ,compile-stringp-macro (macro-> Any * Any))
          (,substring_ ,compile-substring-macro (macro-> Any * Any))
@@ -776,7 +783,6 @@
    js-regexp-match_
    js-regexp-replace_
    js-regexp?_
-   js-regexp_
    js-rest_
    js-reverse_
    js-same-value?_
@@ -2168,14 +2174,14 @@
     (send node get-value))
   (define f
     (second exp))
-  (define is-make-object
+  (define is-new
     (eq? (send env get f) new_))
   (define callee
-    (if is-make-object
+    (if is-new
         (third exp)
         f))
   (define args
-    (if is-make-object
+    (if is-new
         (drop exp 3)
         (drop exp 2)))
   (define callee-compiled
@@ -2217,7 +2223,7 @@
      (else
       (push-right! args-compiled spread-element))))
   (cond
-   (is-make-object
+   (is-new
     (make-expression-or-statement
      (new NewExpression
           callee-compiled
@@ -3211,7 +3217,7 @@
       (compile-rose
        (make-rose
         `(,(if make-block
-               'block
+               'js/block
                'begin)
           ,@define-nodes
           ,@body-nodes)
@@ -3297,7 +3303,7 @@
       (compile-rose
        (make-rose
         `(,(if make-block
-               'block
+               'js/block
                'begin)
           ,@define-nodes
           ,@body-nodes)
@@ -3487,7 +3493,7 @@
       (compile-rose
        (make-rose
         `(,(if make-block
-               'block
+               'js/block
                'begin)
           ,@define-nodes
           ,@body-nodes)
@@ -3965,8 +3971,8 @@
        (wrap-in-arrow-call exp)
        env options))))))
 
-;;; Compile a `(block ...)` expression.
-(define (compile-block node env (options (js-obj)))
+;;; Compile a `(js/block ...)` expression.
+(define (compile-js-block node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -4975,8 +4981,8 @@
          env options))
    options))
 
-;;; Compile a `(new ...)` expression.
-(define (compile-new node env (options (js-obj)))
+;;; Compile a `(js/new ...)` expression.
+(define (compile-js-new node env (options (js-obj)))
   (make-expression-or-statement
    (new NewExpression
         (compile-expression
@@ -5757,8 +5763,8 @@
       (source array-list-drop-right_)
       (list lst n)))))
 
-;;; Compiler macro for `(regexp ...)` expressions.
-(defmacro compile-regexp-macro (&rest args)
+;;; Compiler macro for `(js/regexp ...)` expressions.
+(defmacro compile-js-regexp-macro (&rest args)
   `(new RegExp ,@args))
 
 ;;; Compiler macro for `(assert ...)` expressions.
@@ -5896,19 +5902,11 @@
    env
    (current-compilation-options)))
 
-;;; Expand a `(begin ...)` expression.
-(defmacro begin_ (&whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
-
-;;; Expand a `(block ...)` expression.
-(defmacro block_ (&whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
+;;; Evaluate a `(begin ...)` expression.
+(define (begin_ . args)
+  (if (zero? (js/length args))
+      #u
+      (js/last args)))
 
 ;;; Expand a `(let* ...)` expression.
 (defmacro let-star_ (&whole exp &environment env)
@@ -6177,11 +6175,6 @@
    exp
    env
    (current-compilation-options)))
-
-;;; Evaluate an `(make-object ...)` expression.
-(define (new_ constructor . args)
-  ;; TODO: Express as `(apply new ...)`.
-  (apply make-object constructor args))
 
 ;;; Expand a `(class ...)` expression.
 ;;;
@@ -6642,10 +6635,10 @@
     (form? node unless_ env))
   (define (visit-unless node stack bindings)
     (visit-nonatomic node stack bindings 1))
-  ;; `(make-object ...)` form.
-  (define (visit-make-object-p node)
+  ;; `(new ...)` form.
+  (define (visit-new-p node)
     (form? node new_ env))
-  (define visit-make-object visit-function-call)
+  (define visit-new visit-function-call)
   ;; `(return ...)` form.
   (define (visit-return-p node)
     (form? node return_ env))
@@ -6740,7 +6733,7 @@
        (,visit-get-field-p ,visit-get-field)
        (,visit-unless-p ,visit-unless)
        (,visit-define-class-p ,visit-define-class)
-       (,visit-make-object-p ,visit-make-object)
+       (,visit-new-p ,visit-new)
        (,visit-return-p ,visit-return)
        (,visit-quote-p ,visit-quote)
        (,visit-quasiquote-p ,visit-quasiquote)
@@ -6868,7 +6861,7 @@
                      (list
                       (compile-statement-or-return-statement
                        (make-rose
-                        `(block ,@consequent))
+                        `(js/block ,@consequent))
                        env options))))
               (else
                (set! test-compiled #n)
@@ -6878,7 +6871,7 @@
                      (list
                       (compile-statement-or-return-statement
                        (make-rose
-                        `(block ,@consequent))
+                        `(js/block ,@consequent))
                        env options)))))
              (new SwitchCase
                   test-compiled
@@ -7648,6 +7641,8 @@
          (aset ,array-set_ (-> Any * Any))
          (aset! ,array-set_ (-> Any * Any))
          (assert ,assert_ (-> Any * Any))
+         (begin ,begin_ (-> Any * Any))
+         (block ,js-block_ (-> Any * Any))
          (boolean? ,boolean?_ (-> Any * Any))
          (booleanp ,boolean?_ (-> Any * Any))
          (build-list ,build-list_ (-> Any * Any))
@@ -7769,6 +7764,7 @@
          (js/===? ,js-strictly-equal?_ (-> Any * Any))
          (js/==? ,js-loosely-equal?_ (-> Any * Any))
          (js/append ,js-plus_ (-> Any * Any))
+         (js/block ,js-block_ (-> Any * Any))
          (js/console.log ,(get-field log console) (-> Any * Any))
          (js/delete ,js-delete_ (-> Any * Any))
          (js/eighth ,js-eighth_ (-> Any * Any))
@@ -7789,6 +7785,7 @@
          (js/instanceof? ,js-instance-of?_ (-> Any * Any))
          (js/is-loosely-equal? ,js-loosely-equal?_ (-> Any * Any))
          (js/is-strictly-equal? ,js-strictly-equal?_ (-> Any * Any))
+         (js/new ,js-new_ (-> Any * Any))
          (js/js-obj ,js-obj_ (-> Any * Any))
          (js/js-obj-append ,js-obj-append_ (-> Any * Any))
          (js/js-obj? ,js-obj-p_ (-> Any * Any))
@@ -7796,7 +7793,6 @@
          (js/last ,js-last_ (-> Any * Any))
          (js/length ,js-length_ (-> Any * Any))
          (js/nan? ,js-nan?_ (-> Any * Any))
-         (js/new ,new_ (-> Any * Any))
          (js/ninth ,js-ninth_ (-> Any * Any))
          (js/null? ,js-null?_ (-> Any * Any))
          (js/obj ,js-obj_ (-> Any * Any))
@@ -7807,14 +7803,13 @@
          (js/object? ,js-object-type?_ (-> Any * Any))
          (js/reduce ,js-reduce_ (-> Any * Any))
          (js/reduce-right ,js-reduce-right_ (-> Any * Any))
-         ;; (js/regexp ,js-regexp_ (-> Any * Any))
-         (js/regexp ,regexp_ (-> Any * Any))
+         (js/regexp ,js-regexp_ (-> Any * Any))
          (js/regexp-match ,js-regexp-match_ (-> Any * Any))
          (js/regexp-quote ,regexp-quote_ (-> Any * Any))
          (js/regexp-replace ,js-regexp-replace_ (-> Any * Any))
          (js/regexp? ,js-regexp?_ (-> Any * Any))
-         (js/regexp? ,regexp?_ (-> Any * Any))
          (js/rest ,js-rest_ (-> Any * Any))
+         (js/return ,js-return_ (-> Any * Any))
          (js/reverse ,js-reverse_ (-> Any * Any))
          (js/same-value-zero? ,js-same-value-zero?_ (-> Any * Any))
          (js/same-value? ,js-same-value?_ (-> Any * Any))
@@ -7828,6 +7823,7 @@
          (js/tenth ,js-tenth_ (-> Any * Any))
          (js/third ,js-third_ (-> Any * Any))
          (js/type-of ,js-type-of_ (-> Any * Any))
+         (js/yield ,yield_ (-> Any * Any))
          (js/typeof ,js-type-of_ (-> Any * Any))
          (keyword? ,keyword?_ (-> Any * Any))
          (keywordp ,keyword?_ (-> Any * Any))
@@ -7876,10 +7872,10 @@
          (listp ,list?_ (-> Any * Any))
          (log ,(get-field log console) (-> Any * Any))
          (macro? ,macro?_ (-> Any * Any))
-         (make ,new_ (-> Any * Any))
+         (make ,js-new_ (-> Any * Any))
          (make-hash ,make-hash_ (-> Any * Any))
          (make-list ,make-list_ (-> Any * Any))
-         (make-object ,new_ (-> Any * Any))
+         (make-object ,js-new_ (-> Any * Any))
          (map ,map_ (-> Any * Any))
          (mapcar ,map_ (-> Any * Any))
          (member ,member_ (-> Any * Any))
@@ -7893,8 +7889,8 @@
          (mod ,modulo_ (-> Any * Any))
          (modulo ,modulo_ (-> Any * Any))
          (mul ,mul_ (-> Any * Any))
-         (new ,new_ (-> Any * Any))
-         (new* ,new_ (-> Any * Any))
+         (new ,js-new_ (-> Any * Any))
+         (new* ,js-new_ (-> Any * Any))
          (ninth ,ninth_ (-> Any * Any))
          (not ,not_ (-> Any * Any))
          (nth ,nth_ (-> Any * Any))
@@ -7931,6 +7927,7 @@
          (print ,print (-> Any * Any))
          (print-estree ,print-estree (-> Any * Any))
          (procedure? ,procedure?_ (-> Any * Any))
+         (progn ,begin_ (-> Any * Any))
          (proper-list->dotted-list ,array-list->linked-list_ (-> Any * Any))
          (proper-list-p ,proper-list?_ (-> Any * Any))
          (proper-list? ,proper-list?_ (-> Any * Any))
@@ -7941,9 +7938,9 @@
          (push-right ,push-right!_ (-> Any * Any))
          (push-right! ,push-right!_ (-> Any * Any))
          (range ,range_ (-> Any * Any))
-         (re ,regexp_ (-> Any * Any))
-         (re-pattern ,regexp_ (-> Any * Any))
-         (regexp ,regexp_ (-> Any * Any))
+         (re ,js-regexp_ (-> Any * Any))
+         (re-pattern ,js-regexp_ (-> Any * Any))
+         (regexp ,js-regexp_ (-> Any * Any))
          (regexp-match ,regexp-match_ (-> Any * Any))
          (regexp-match? ,regexp-match?_ (-> Any * Any))
          (regexp-quote ,regexp-quote_ (-> Any * Any))
@@ -7951,8 +7948,8 @@
          (regexp? ,regexp?_ (-> Any * Any))
          (rest ,rest_ (-> Any * Any))
          (reverse ,reverse_ (-> Any * Any))
-         (rx ,regexp_ (-> Any * Any))
-         (scm/new ,new_ (-> Any * Any))
+         (rx ,js-regexp_ (-> Any * Any))
+         (scm/new ,js-new_ (-> Any * Any))
          (second ,second_ (-> Any * Any))
          (self-evaluating? ,self-evaluating?_ (-> Any * Any))
          (set-car! ,set-car!_ (-> Any * Any))
@@ -8021,9 +8018,7 @@
          (async ,js-async_ (macro-> Any * Any))
          (as~> ,thread-as_ (macro-> Any * Any))
          (await ,js-await_ (macro-> Any * Any))
-         (begin ,begin_ (macro-> Any * Any))
          (begin0 ,begin0_ (macro-> Any * Any))
-         (block ,block_ (macro-> Any * Any))
          (break ,break_ (macro-> Any * Any))
          (call-method ,send_ (macro-> Any * Any))
          (case ,case_ (macro-> Any * Any))
@@ -8085,7 +8080,6 @@
          (new/apply ,new-apply_ (macro-> Any * Any))
          (or ,or_ (macro-> Any * Any))
          (prog1 ,begin0_ (macro-> Any * Any))
-         (progn ,begin_ (macro-> Any * Any))
          (provide ,provide_ (macro-> Any * Any))
          (require ,require_ (macro-> Any * Any))
          (return ,return_ (macro-> Any * Any))
@@ -8181,7 +8175,8 @@
   (rename-out (and_ and))
   (rename-out (ann_ ann))
   (rename-out (begin_ begin))
-  (rename-out (block_ block))
+  (rename-out (js-block_ block))
+  (rename-out (js-block_ block_))
   (rename-out (call-with-current-continuation_ call-with-current-continuation))
   (rename-out (call-with-current-continuation_ call/cc))
   (rename-out (clj-try_ try))

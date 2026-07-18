@@ -63,7 +63,7 @@ function jsSameValueZeroP_(x: any, y: any): any {
   return (x === y) || (Number.isNaN(x) && Number.isNaN(y));
 }
 
-jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('y')]]]];
+jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('js/nan?'), Symbol.for('x')], [Symbol.for('js/nan?'), Symbol.for('y')]]]];
 
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
@@ -392,14 +392,10 @@ jsReduceRight_.fsource = [Symbol.for('define'), [Symbol.for('js-reduce-right_'),
  * Create a JavaScript regular expression.
  */
 function jsRegexp_(input: any, flags: any = undefined): any {
-  if (typeof input === 'string') {
-    return new RegExp(input, flags);
-  } else {
-    return input;
-  }
+  return new RegExp(input, flags);
 }
 
-jsRegexp_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
+jsRegexp_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')]];
 
 /**
  * Whether `obj` is a JavaScript regular expression.
@@ -442,7 +438,48 @@ function jsEval_(str: any): any {
 
 jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
 
+/**
+ * Create a JavaScript block statement.
+ */
+function jsBlock_(...args: any[]): any {
+  if (args.length === 0) {
+    return undefined;
+  } else {
+    return args[args.length - 1];
+  }
+}
+
+jsBlock_.fsource = [Symbol.for('define'), [Symbol.for('js-block_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('js/length'), Symbol.for('args')]], undefined, [Symbol.for('js/last'), Symbol.for('args')]]];
+
+/**
+ * Create a JavaScript `new` expression.
+ */
+function jsNew_(x: any, ...args: any[]): any {
+  return new x(...args);
+}
+
+jsNew_.fsource = [Symbol.for('define'), [Symbol.for('js-new_'), Symbol.for('x'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('new/apply'), Symbol.for('x'), Symbol.for('args')]];
+
+/**
+ * Create a JavaScript `return` statement.
+ */
+function jsReturn_(x: any = undefined): any {
+  return x;
+}
+
+jsReturn_.fsource = [Symbol.for('define'), [Symbol.for('js-return_'), [Symbol.for('x'), undefined]], Symbol.for('x')];
+
+/**
+ * Create a JavaScript `yield` expression.
+ */
+function jsYield_(x: any = undefined): any {
+  return x;
+}
+
+jsYield_.fsource = [Symbol.for('define'), [Symbol.for('js-yield_'), [Symbol.for('x'), undefined]], Symbol.for('x')];
+
 export {
+  jsBlock_,
   jsDelete_,
   jsEighth_,
   jsEval_,
@@ -456,11 +493,11 @@ export {
   jsGet_,
   jsIn_,
   jsInstanceOfP_,
-  jsLooselyEqualP_,
-  jsStrictlyEqualP_,
   jsLast_,
   jsLength_,
+  jsLooselyEqualP_,
   jsNanP_,
+  jsNew_,
   jsNinth_,
   jsNullP_,
   jsPlus_,
@@ -471,6 +508,7 @@ export {
   jsRegexpP_,
   jsRegexp_,
   jsRest_,
+  jsReturn_,
   jsReverse_,
   jsSameValueZeroP_,
   jsSameValueP_,
@@ -478,9 +516,11 @@ export {
   jsSeventh_,
   jsSixth_,
   jsSlice_,
+  jsStrictlyEqualP_,
   jsTaggedTemplate_,
   jsTake_,
   jsTenth_,
   jsThird_,
-  jsTypeOf_
+  jsTypeOf_,
+  jsYield_
 };

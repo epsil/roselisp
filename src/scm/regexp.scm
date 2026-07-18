@@ -22,12 +22,12 @@
 ;;; [mdn:Regular Expressions]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
 (define (regexp_ input (flags #u))
   (if (string? input)
-      (new RegExp input flags)
+      (js/regexp input flags)
       input))
 
 ;;; Whether `obj` is a regular expression.
 (define (regexp?_ obj)
-  (is-a? obj RegExp))
+  (js/regexp? obj))
 
 ;;; Make a regexp string suitable for matching the given string.
 ;;; Pass the regexp string to `regexp` to make a regular expression.
@@ -55,7 +55,7 @@
 ;;; [mdn:String.prototype.match]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
 ;;; [rkt:regexp-match]: https://docs.racket-lang.org/reference/regexp.html#%28def._%28%28quote._~23~25kernel%29._regexp-match%29%29
 (define (regexp-match_ pattern input)
-  (send input match pattern))
+  (js/regexp-match input pattern))
 
 ;;; Match `pattern` against `input` and return `#t`
 ;;; if it matches, otherwise `#f`.
@@ -74,7 +74,7 @@
 ;;; [mdn:String.prototype.replace]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace
 ;;; [rkt:regexp-replace]: https://docs.racket-lang.org/reference/regexp.html#%28def._%28%28quote._~23~25kernel%29._regexp-replace%29%29
 (define (regexp-replace_ pattern input insert)
-  (send input replace pattern insert))
+  (js/regexp-replace input pattern insert))
 
 (provide
   regexp-match?_

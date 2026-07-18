@@ -18,7 +18,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsRest_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsNullP_ = exports.jsNinth_ = exports.jsNanP_ = exports.jsLength_ = exports.jsLast_ = exports.jsStrictlyEqualP_ = exports.jsLooselyEqualP_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDelete_ = void 0;
+exports.jsYield_ = exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsReturn_ = exports.jsRest_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsNullP_ = exports.jsNinth_ = exports.jsNew_ = exports.jsNanP_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsLast_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDelete_ = exports.jsBlock_ = void 0;
 /**
  * JavaScript [strict equality][js:strict-equality],
  * i.e., the [`===`][js:strict-equality-operator] operator.
@@ -62,7 +62,7 @@ function jsSameValueZeroP_(x, y) {
     return (x === y) || (Number.isNaN(x) && Number.isNaN(y));
 }
 exports.jsSameValueZeroP_ = jsSameValueZeroP_;
-jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('y')]]]];
+jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js-same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('js/nan?'), Symbol.for('x')], [Symbol.for('js/nan?'), Symbol.for('y')]]]];
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
  * as a function.
@@ -359,15 +359,10 @@ jsReduceRight_.fsource = [Symbol.for('define'), [Symbol.for('js-reduce-right_'),
  * Create a JavaScript regular expression.
  */
 function jsRegexp_(input, flags = undefined) {
-    if (typeof input === 'string') {
-        return new RegExp(input, flags);
-    }
-    else {
-        return input;
-    }
+    return new RegExp(input, flags);
 }
 exports.jsRegexp_ = jsRegexp_;
-jsRegexp_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
+jsRegexp_.fsource = [Symbol.for('define'), [Symbol.for('js-regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')]];
 /**
  * Whether `obj` is a JavaScript regular expression.
  */
@@ -405,3 +400,40 @@ function jsEval_(str) {
 }
 exports.jsEval_ = jsEval_;
 jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
+/**
+ * Create a JavaScript block statement.
+ */
+function jsBlock_(...args) {
+    if (args.length === 0) {
+        return undefined;
+    }
+    else {
+        return args[args.length - 1];
+    }
+}
+exports.jsBlock_ = jsBlock_;
+jsBlock_.fsource = [Symbol.for('define'), [Symbol.for('js-block_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('js/length'), Symbol.for('args')]], undefined, [Symbol.for('js/last'), Symbol.for('args')]]];
+/**
+ * Create a JavaScript `new` expression.
+ */
+function jsNew_(x, ...args) {
+    return new x(...args);
+}
+exports.jsNew_ = jsNew_;
+jsNew_.fsource = [Symbol.for('define'), [Symbol.for('js-new_'), Symbol.for('x'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('new/apply'), Symbol.for('x'), Symbol.for('args')]];
+/**
+ * Create a JavaScript `return` statement.
+ */
+function jsReturn_(x = undefined) {
+    return x;
+}
+exports.jsReturn_ = jsReturn_;
+jsReturn_.fsource = [Symbol.for('define'), [Symbol.for('js-return_'), [Symbol.for('x'), undefined]], Symbol.for('x')];
+/**
+ * Create a JavaScript `yield` expression.
+ */
+function jsYield_(x = undefined) {
+    return x;
+}
+exports.jsYield_ = jsYield_;
+jsYield_.fsource = [Symbol.for('define'), [Symbol.for('js-yield_'), [Symbol.for('x'), undefined]], Symbol.for('x')];

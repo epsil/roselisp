@@ -35,7 +35,7 @@ function regexp_(input, flags = undefined) {
     }
 }
 exports.regexp_ = regexp_;
-regexp_.fsource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
+regexp_.fsource = [Symbol.for('define'), [Symbol.for('regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('input')], [Symbol.for('js/regexp'), Symbol.for('input'), Symbol.for('flags')], Symbol.for('input')]];
 /**
  * Whether `obj` is a regular expression.
  */
@@ -43,7 +43,7 @@ function regexpp_(obj) {
     return obj instanceof RegExp;
 }
 exports.regexpp_ = regexpp_;
-regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
+regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('js/regexp?'), Symbol.for('obj')]];
 /**
  * Make a regexp string suitable for matching the given string.
  * Pass the regexp string to `regexp` to make a regular expression.
@@ -77,7 +77,7 @@ function regexpMatch_(pattern, input) {
     return input.match(pattern);
 }
 exports.regexpMatch_ = regexpMatch_;
-regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('match'), Symbol.for('pattern')]];
+regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('js/regexp-match'), Symbol.for('input'), Symbol.for('pattern')]];
 /**
  * Match `pattern` against `input` and return `#t`
  * if it matches, otherwise `#f`.
@@ -107,4 +107,4 @@ function regexpReplace_(pattern, input, insert) {
     return input.replace(pattern, insert);
 }
 exports.regexpReplace_ = regexpReplace_;
-regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('input'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
+regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('js/regexp-replace'), Symbol.for('input'), Symbol.for('pattern'), Symbol.for('insert')]];

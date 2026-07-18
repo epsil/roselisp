@@ -42,8 +42,8 @@
 ;;; [js:same-value-zero]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#same-value-zero_equality
 (define (js-same-value-zero?_ x y)
   (or (js/=== x y)
-      (and (send Number isNaN x)
-           (send Number isNaN y))))
+      (and (js/nan? x)
+           (js/nan? y))))
 
 ;;; JavaScript's [`typeof`][js:typeof] operator,
 ;;; as a function.
@@ -213,9 +213,7 @@
 
 ;;; Create a JavaScript regular expression.
 (define (js-regexp_ input (flags #u))
-  (if (string? input)
-      (new RegExp input flags)
-      input))
+  (new RegExp input flags))
 
 ;;; Whether `obj` is a JavaScript regular expression.
 (define (js-regexp?_ obj)
@@ -238,7 +236,26 @@
 (define (js-eval_ str)
   (js/eval str))
 
+;;; Create a JavaScript block statement.
+(define (js-block_ . args)
+  (if (zero? (js/length args))
+      #u
+      (js/last args)))
+
+;;; Create a JavaScript `new` expression.
+(define (js-new_ x . args)
+  (new/apply x args))
+
+;;; Create a JavaScript `return` statement.
+(define (js-return_ (x #u))
+  x)
+
+;;; Create a JavaScript `yield` expression.
+(define (js-yield_ (x #u))
+  x)
+
 (provide
+  js-block_
   js-delete_
   js-eighth_
   js-eval_
@@ -252,11 +269,11 @@
   js-get_
   js-in_
   js-instance-of?_
-  js-loosely-equal?_
-  js-strictly-equal?_
   js-last_
   js-length_
+  js-loosely-equal?_
   js-nan?_
+  js-new_
   js-ninth_
   js-null?_
   js-plus_
@@ -267,6 +284,7 @@
   js-regexp?_
   js-regexp_
   js-rest_
+  js-return_
   js-reverse_
   js-same-value-zero?_
   js-same-value?_
@@ -274,8 +292,10 @@
   js-seventh_
   js-sixth_
   js-slice_
+  js-strictly-equal?_
   js-tagged-template_
   js-take_
   js-tenth_
   js-third_
-  js-type-of_)
+  js-type-of_
+  js-yield_)

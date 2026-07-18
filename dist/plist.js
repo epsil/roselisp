@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.plistp_ = exports.plistSet_ = exports.plistSetX_ = exports.plistHasP_ = exports.plistGet_ = exports.plistCopy_ = exports.plistToAlist_ = exports.plistHas_ = exports.plistRef_ = void 0;
+exports.plistp_ = exports.plistSet_ = exports.plistSetX_ = exports.plistHasP_ = exports.plistGet_ = exports.plistToObject_ = exports.plistCopy_ = exports.plistToAlist_ = exports.plistHas_ = exports.plistRef_ = void 0;
 const [cons] = (() => {
     function cons_(x, y) {
         if (Array.isArray(y)) {
@@ -139,3 +139,22 @@ function plistToAlist_(plst) {
 }
 exports.plistToAlist_ = plistToAlist_;
 plistToAlist_.fsource = [Symbol.for('define'), [Symbol.for('plist->alist_'), Symbol.for('plst')], [Symbol.for('define'), Symbol.for('alst'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-list-length'), Symbol.for('plst')], 2]]], [Symbol.for('push-right!'), Symbol.for('alst'), [Symbol.for('cons'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], Symbol.for('alst')];
+/**
+ * Convert a property list to a JavaScript object.
+ */
+function plistToObject_(plist, normalizeKeywords = false) {
+    const result = {};
+    const _end = plist.length;
+    for (let i = 0; i < _end; i = i + 2) {
+        const key = plist[i];
+        let val = plist[i + 1];
+        let keyStr = key.description;
+        if (normalizeKeywords) {
+            keyStr = keyStr.replace(new RegExp('^:'), '');
+        }
+        result[keyStr] = val;
+    }
+    return result;
+}
+exports.plistToObject_ = plistToObject_;
+plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plist'), [Symbol.for('normalize-keywords'), false]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js-obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plist')], 2]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key-str'), [Symbol.for('symbol->string'), Symbol.for('key')]], [Symbol.for('when'), Symbol.for('normalize-keywords'), [Symbol.for('set!'), Symbol.for('key-str'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('key-str'), '']]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key-str'), Symbol.for('val')]], Symbol.for('result')];

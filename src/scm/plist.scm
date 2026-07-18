@@ -86,11 +86,31 @@
                        (aget plst (+ i 1)))))
   alst)
 
+;;; Convert a property list to a JavaScript object.
+(define (plist->object_ plist (normalize-keywords #f))
+  (define result
+    (js-obj))
+  (for ((i (range 0 (js/length plist) 2)))
+    (define key
+      (aget plist i))
+    (define val
+      (aget plist (+ i 1)))
+    (define key-str
+      (symbol->string key))
+    (when normalize-keywords
+      (set! key-str
+            (regexp-replace (regexp "^:")
+                            key-str
+                            "")))
+    (oset! result key-str val))
+  result)
+
 (provide
   (rename-out (plist-get_ plist-ref_))
   (rename-out (plist-has?_ plist-has_))
   plist->alist_
   plist-copy_
+  plist->object_
   plist-get_
   plist-has?_
   plist-set!_

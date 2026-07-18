@@ -142,11 +142,32 @@ function plistToAlist_(plst: any): any {
 
 plistToAlist_.fsource = [Symbol.for('define'), [Symbol.for('plist->alist_'), Symbol.for('plst')], [Symbol.for('define'), Symbol.for('alst'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-list-length'), Symbol.for('plst')], 2]]], [Symbol.for('push-right!'), Symbol.for('alst'), [Symbol.for('cons'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], Symbol.for('alst')];
 
+/**
+ * Convert a property list to a JavaScript object.
+ */
+function plistToObject_(plist: any, normalizeKeywords: any = false): any {
+  const result: any = {};
+  const _end: any = plist.length;
+  for (let i: any = 0; i < _end; i = i + 2) {
+    const key: any = (plist as any)[i];
+    let val: any = plist[i + 1];
+    let keyStr: any = key.description as string;
+    if (normalizeKeywords) {
+      keyStr = keyStr.replace(new RegExp('^:'), '');
+    }
+    (result as any)[keyStr] = val;
+  }
+  return result;
+}
+
+plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plist'), [Symbol.for('normalize-keywords'), false]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js-obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plist')], 2]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key-str'), [Symbol.for('symbol->string'), Symbol.for('key')]], [Symbol.for('when'), Symbol.for('normalize-keywords'), [Symbol.for('set!'), Symbol.for('key-str'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('key-str'), '']]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key-str'), Symbol.for('val')]], Symbol.for('result')];
+
 export {
   plistGet_ as plistRef_,
   plistHasP_ as plistHas_,
   plistToAlist_,
   plistCopy_,
+  plistToObject_,
   plistGet_,
   plistHasP_,
   plistSetX_,

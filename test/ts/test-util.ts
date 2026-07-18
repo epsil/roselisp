@@ -7,8 +7,8 @@
 import * as chai from 'chai';
 
 import {
+  compileWithEnvironment as compile,
   LispEnvironment,
-  compile,
   compileLisp,
   extendEnvironment,
   interpret,
@@ -469,8 +469,9 @@ function testRoselispRepl(exp: any, options: any = {}): any {
     verbose: verboseOption,
     env,
   } = {
-    compile: true,
-    ...options,
+    compile: false,
+    ...// #t
+    options,
   };
   if (verboseOption) {
     console.log('Roselisp REPL form: ', exp);

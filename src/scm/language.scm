@@ -379,6 +379,7 @@
                   tokenize))
 (require (only-in "./plist"
                   plist->alist_
+                  plist->object_
                   plist-copy_
                   plist-get_
                   plist-has?_
@@ -876,11 +877,35 @@
 ;;; Compile a Lisp expression to JavaScript or TypeScript.
 ;;; Returns a string of JavaScript or TypeScript code.
 ;;;
-;;; `exp` may be an S-expression, an S-expression wrapped in a rose
-;;; tree, or a module object.
-(define (compile exp
-                 (env (new LispEnvironment))
-                 (options (js-obj)))
+;;; `exp` may be an S-expression, an S-expression wrapped
+;;; in a rose tree, or a module object.
+;;; `args` may be a property list or, if called with
+;;; two arguments, a JavaScript object.
+(define (compile exp . args)
+  (define options
+    (if (= (js/length args) 1)
+        (js/first args)
+        (plist->object_ args #t)))
+  (define to
+    (oget options "to"))
+  (define language
+    (cond
+     ((eq? to 'typescript)
+      "TypeScript")
+     (else
+      default-language)))
+  (oset! options "language" language)
+  (define env
+    (or (oget options "environment")
+        (new LispEnvironment)))
+  (compile-with-environment exp env options))
+
+;;; Compile a Lisp expression to JavaScript or TypeScript
+;;; in the context of a given environment, `env`.
+;;; Returns a string of JavaScript or TypeScript code.
+(define (compile-with-environment exp
+                                  (env (new LispEnvironment))
+                                  (options (js-obj)))
   (define language-option
     (or (oget options "language")
         default-language))
@@ -959,7 +984,7 @@
   (for ((key (send module-object-map keys)))
     (set! module (send module-object-map get key))
     (set! compiled-module
-          (compile module env options))
+          (compile-with-environment module env options))
     (hash-set! result key compiled-module))
   result)
 
@@ -1123,9 +1148,9 @@
     (set! module
           (send module-map get module-name))
     (set! code
-          (compile module
-                   compilation-environment
-                   compilation-options))
+          (compile-with-environment module
+                                    compilation-environment
+                                    compilation-options))
     (set! out-file
           (join out-dir-option
                 (string-append module-name
@@ -7731,6 +7756,7 @@
          (cdr ,cdr_ (-> Any * Any))
          (circular-list-p ,circular-list?_ (-> Any * Any))
          (circular-list? ,circular-list?_ (-> Any * Any))
+         (compile ,compile (-> Any * Any))
          (cons ,cons_ (-> Any * Any))
          (cons* ,list-star_ (-> Any * Any))
          (cons-dot ,cons-dot-f_ (-> Any * Any))
@@ -7987,6 +8013,7 @@
          (oset ,object-set!_ (-> Any * Any))
          (oset! ,object-set!_ (-> Any * Any))
          (plist->alist ,plist->alist_ (-> Any * Any))
+         (plist->object ,plist->object_ (-> Any * Any))
          (plist-copy ,plist-copy_ (-> Any * Any))
          (plist-get ,plist-get_ (-> Any * Any))
          (plist-has ,plist-has?_ (-> Any * Any))
@@ -8260,8 +8287,8 @@
   (rename-out (clj-try_ try))
   (rename-out (clj-try_ try_))
   (rename-out (colon_ colon))
-  (rename-out (compile compile-lisp))
-  (rename-out (compile compile-lisp-to-javascript))
+  (rename-out (compile-with-environment compile-lisp))
+  (rename-out (compile-with-environment compile-lisp-to-javascript))
   (rename-out (cond_ cond))
   (rename-out (define-async_ define-async))
   (rename-out (define-async_ define/async))
@@ -8342,6 +8369,7 @@
   compile-files!
   compile-module-map
   compile-modules
+  compile-with-environment
   cond_
   continue_
   define->define-class

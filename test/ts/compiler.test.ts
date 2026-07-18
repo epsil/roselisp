@@ -1,9 +1,9 @@
 import { I } from '../../src/ts/combinators';
 
 import {
+  compileWithEnvironment as compile,
   LispEnvironment,
   compilationEnvironment,
-  compile,
   compileModules,
   definitionToMacro,
   defineMacroToLambdaForm,

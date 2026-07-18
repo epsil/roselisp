@@ -4,8 +4,8 @@
 
 (require chai "chai")
 (require (only-in "../../src/ts/language"
+                  (compile-with-environment compile)
                   LispEnvironment
-                  compile
                   compile-lisp
                   extend-environment
                   interpret
@@ -183,7 +183,8 @@
                   (verbose verbose-option)
                   env)
     (js-obj-append
-     (js-obj "compile" #t)
+     (js-obj "compile" #f ; #t
+             )
      options))
   (when verbose-option
     (display "Roselisp REPL form: " exp))

@@ -265,7 +265,7 @@ describe('Strings', function (): any {
   });
 });
 
-describe('keywords', function (): any {
+describe('Keywords', function (): any {
   it(':foo', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -515,7 +515,7 @@ describe('Lists', function (): any {
       2,
     ]);
   });
-  return it('(let ((lst (quote (1 2)))) (set! (aref lst 0) 3) lst)', function (): any {
+  it('(let ((lst (quote (1 2)))) (set! (aref lst 0) 3) lst)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -526,6 +526,17 @@ describe('Lists', function (): any {
         Symbol.for('lst'),
       ],
       [Symbol.for('quote'), [3, 2]],
+    ]);
+  });
+  return it('(compile (quote (list 1 2)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('list'), 1, 2]],
+      ],
+      '[1, 2]',
     ]);
   });
 });
@@ -3345,12 +3356,39 @@ describe('+', function (): any {
       4,
     ]);
   });
-  return it('(apply + (quote (1 2)))', function (): any {
+  it('(apply + (quote (1 2)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('apply'), Symbol.for('+'), [Symbol.for('quote'), [1, 2]]],
       3,
+    ]);
+  });
+  it('(compile (quote (+ 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('+'), 1]]],
+      '1',
+    ]);
+  });
+  it('(compile (quote (+ 1 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('+'), 1, 1]]],
+      '1 + 1',
+    ]);
+  });
+  return it('(compile (quote (+ 1 1 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('+'), 1, 1, 1]],
+      ],
+      '1 + 1 + 1',
     ]);
   });
 });
@@ -3388,12 +3426,39 @@ describe('-', function (): any {
       -4,
     ]);
   });
-  return it('(- 1 2 4)', function (): any {
+  it('(- 1 2 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('-'), 1, 2, 4],
       -5,
+    ]);
+  });
+  it('(compile (quote (- 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('-'), 1]]],
+      '-1',
+    ]);
+  });
+  it('(compile (quote (- 1 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('-'), 1, 1]]],
+      '1 - 1',
+    ]);
+  });
+  return it('(compile (quote (- 1 1 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('-'), 1, 1, 1]],
+      ],
+      '1 - 1 - 1',
     ]);
   });
 });
@@ -3431,12 +3496,31 @@ describe('*', function (): any {
       6,
     ]);
   });
-  return it('(* 1 2 4)', function (): any {
+  it('(* 1 2 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('*'), 1, 2, 4],
       8,
+    ]);
+  });
+  it('(compile (quote (* 1 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('*'), 1, 1]]],
+      '1 * 1',
+    ]);
+  });
+  return it('(compile (quote (* 1 1 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('*'), 1, 1, 1]],
+      ],
+      '1 * 1 * 1',
     ]);
   });
 });
@@ -3474,12 +3558,31 @@ describe('/', function (): any {
       [Symbol.for('/'), 1, 2, 3],
     ]);
   });
-  return it('(/ 1 2 4)', function (): any {
+  it('(/ 1 2 4)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('/'), 1, 2, 4],
       0.125,
+    ]);
+  });
+  it('(compile (quote (/ 1 2)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('/'), 1, 2]]],
+      '1 / 2',
+    ]);
+  });
+  return it('(compile (quote (/ 1 2 4)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('/'), 1, 2, 4]],
+      ],
+      '1 / 2 / 4',
     ]);
   });
 });
@@ -4102,12 +4205,36 @@ describe('as~>', function (): any {
 });
 
 describe('ann', function (): any {
-  return it('(ann #u Any)', function (): any {
+  it('(ann #u Any)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('ann'), undefined, Symbol.for('Any')],
       undefined,
+    ]);
+  });
+  it('(compile (quote (ann #t Any)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]],
+      ],
+      'true',
+    ]);
+  });
+  return it('(compile (quote (ann #t Any)) :to (quote typescript))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'true as any',
     ]);
   });
 });

@@ -116,7 +116,7 @@
  #t
 
  ;; Keywords
- > (describe "keywords")
+ > (describe "Keywords")
  _
  > :foo
  ':foo
@@ -198,6 +198,8 @@
      (set! (aref lst 0) 3)
      lst)
  '(3 2)
+ > (compile '(list 1 2))
+ "[1, 2]"
 
  ;; `quote`
  > (describe "quote")
@@ -1180,6 +1182,12 @@
  4
  > (apply + '(1 2))
  3
+ > (compile '(+ 1))
+ "1"
+ > (compile '(+ 1 1))
+ "1 + 1"
+ > (compile '(+ 1 1 1))
+ "1 + 1 + 1"
 
  ;; `-`
  > (describe "-")
@@ -1194,6 +1202,12 @@
  -4
  > (- 1 2 4)
  -5
+ > (compile '(- 1))
+ "-1"
+ > (compile '(- 1 1))
+ "1 - 1"
+ > (compile '(- 1 1 1))
+ "1 - 1 - 1"
 
  ;; `*`
  > (describe "*")
@@ -1208,6 +1222,10 @@
  6
  > (* 1 2 4)
  8
+ > (compile '(* 1 1))
+ "1 * 1"
+ > (compile '(* 1 1 1))
+ "1 * 1 * 1"
 
  ;; `/`
  > (describe "/")
@@ -1222,6 +1240,10 @@
  (/ 1 2 3)
  > (/ 1 2 4)
  0.125
+ > (compile '(/ 1 2))
+ "1 / 2"
+ > (compile '(/ 1 2 4))
+ "1 / 2 / 4"
 
  ;; `<`
  > (describe "<")
@@ -1447,8 +1469,10 @@
  _
  > (ann #u Any)
  #u
- ;; > ((ann #u Any))
- ;; #u
+ > (compile '(ann #t Any))
+ "true"
+ > (compile '(ann #t Any) :to 'typescript)
+ "true as any"
 
  ;; `cons?`
  > (describe "cons?")

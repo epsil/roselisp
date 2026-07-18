@@ -1,9 +1,9 @@
 (require (only-in "../../src/ts/combinators"
                   I))
 (require (only-in "../../src/ts/language"
+                  (compile-with-environment compile)
                   LispEnvironment
                   compilation-environment
-                  compile
                   compile-modules
                   definition-to-macro
                   define-macro-to-lambda-form

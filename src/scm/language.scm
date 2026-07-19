@@ -478,6 +478,7 @@
                   string-append_
                   string-downcase_
                   string-join_
+                  string-length_
                   string-object?_
                   string-primitive?_
                   string-ref_
@@ -851,6 +852,7 @@
    string->symbol_
    string-downcase_
    string-join_
+   string-length_
    string-object?_
    string-primitive?_
    string-ref_
@@ -895,6 +897,17 @@
      (else
       default-language)))
   (oset! options "language" language)
+  (define as
+    (oget options "as"))
+  (define expression-type
+    (cond
+     ((eq? as 'return-statement)
+      "return")
+     ((eq? as 'statement)
+      "statement")
+     (else
+      "expression")))
+  (oset! options "expressionType" expression-type)
   (define env
     (or (oget options "environment")
         (new LispEnvironment)))
@@ -3636,7 +3649,7 @@
 (define (compile-macro-call node env (options (js-obj)))
   ;; Only expand the macro a single step, as there might be
   ;; compilers defined for the immediate expansion.
-  (define-values (expansion)
+  (define expansion
     (macroexpand-1 node env))
   (compile-rose expansion env options))
 
@@ -3644,29 +3657,53 @@
 ;;; expanding the result until something that is not
 ;;; a macro call is obtained.
 ;;;
-;;; Similar to [`macroexpand` in Common Lisp][cl:macroexpand]
+;;; Similar to [`macroexpand` in Guile][guile:macroexpand]
 ;;; and [`macroexpand` in Emacs Lisp][el:macroexpand].
 ;;;
-;;; [cl:macroexpand]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand
+;;; [guile:macroexpand]: https://doc.guix.gnu.org/guile/latest/en/html_node/Macro-Expansion.html
 ;;; [el:macroexpand]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand
-(define (macroexpand exp env)
+(define (macroexpand exp (env #u))
+  (define-values (expansion)
+    (macroexpand* exp env))
+  expansion)
+
+;;; Expand the macro call `exp` in `env`, and keep
+;;; expanding the result until something that is not
+;;; a macro call is obtained. Returns a tuple
+;;; `(expansion expanded)`, where `expanded` is `#t`
+;;; if macro expansion took place and `#f` otherwise.
+;;;
+;;; Similar to [`macroexpand` in Common Lisp][cl:macroexpand].
+;;;
+;;; [cl:macroexpand]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand
+(define (macroexpand* exp (env #u))
   (define result exp)
   (define expanded #f)
   (define expanded1 #t)
   (while expanded1
     (set!-values (result expanded1)
-                 (macroexpand-1 result env))
+                 (macroexpand*-1 result env))
     (set! expanded (or expanded expanded1)))
   (values result expanded))
 
-;;; Expand the macro call `exp` in `env`.
+;;; Expand the macro call `exp` in `env` a single step.
 ;;;
-;;; Similar to [`macroexpand-1` in Common Lisp][cl:macroexpand-1]
-;;; and [`macroexpand-1` in Emacs Lisp][el:macroexpand-1].
+;;; Similar to [`macroexpand-1` in Emacs Lisp][el:macroexpand-1].
+;;;
+;;; [el:macroexpand-1]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand_002d1
+(define (macroexpand-1 exp (env #u))
+  (define-values (expansion)
+    (macroexpand*-1 exp env))
+  expansion)
+
+;;; Expand the macro call `exp` in `env` a single step.
+;;; Returns a tuple `(expansion expanded)`, where `expanded`
+;;; is `#t` if macro expansion took place and `#f` otherwise.
+;;;
+;;; Similar to [`macroexpand-1` in Common Lisp][cl:macroexpand-1].
 ;;;
 ;;; [cl:macroexpand-1]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand-1
-;;; [el:macroexpand-1]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand_002d1
-(define (macroexpand-1 exp env)
+(define (macroexpand*-1 exp (env #u))
   (define node exp)
   (define result exp)
   (define expanded #f)
@@ -3712,7 +3749,7 @@
   (while (and expanded1
               (> i 0))
     (set!-values (result expanded1)
-                 (macroexpand-1 result env))
+                 (macroexpand*-1 result env))
     (set! expanded (or expanded expanded1))
     (set! i (- i 1)))
   (values result expanded))
@@ -3725,7 +3762,7 @@
   (define result exp)
   (while (and (macro-call? result env)
               (pred result))
-    (set!-values (result) (macroexpand-1 result env)))
+    (set!-values (result) (macroexpand*-1 result env)))
   result)
 
 ;;; Expand all macro calls in `exp` in `env`.
@@ -7975,6 +8012,10 @@
          (listp ,list?_ (-> Any * Any))
          (log ,(get-field log console) (-> Any * Any))
          (macro? ,macro?_ (-> Any * Any))
+         (macroexpand ,macroexpand (-> Any * Any))
+         (macroexpand* ,macroexpand* (-> Any * Any))
+         (macroexpand*-1 ,macroexpand*-1 (-> Any * Any))
+         (macroexpand-1 ,macroexpand-1 (-> Any * Any))
          (make ,js-new_ (-> Any * Any))
          (make-hash ,make-hash_ (-> Any * Any))
          (make-list ,make-list_ (-> Any * Any))
@@ -8070,7 +8111,7 @@
          (string-append ,string-append_ (-> Any * Any))
          (string-downcase ,string-downcase_ (-> Any * Any))
          (string-join ,string-join_ (-> Any * Any))
-         (string-length ,length_ (-> Any * Any))
+         (string-length ,string-length_ (-> Any * Any))
          (string-object? ,string-object?_ (-> Any * Any))
          (string-primitive? ,string-primitive?_ (-> Any * Any))
          (string-ref ,string-ref_ (-> Any * Any))
@@ -8353,7 +8394,7 @@
   (rename-out (set-values_ set!-values))
   (rename-out (set-values_ set-values))
   (rename-out (sexp read-from-string))
-  ;; (rename-out (macroexpand-1 macroexpand1))
+  ;; (rename-out (macroexpand*-1 macroexpand1))
   Module
   and_
   ann_
@@ -8405,6 +8446,8 @@
   lisp
   lisp-environment
   macroexpand
+  macroexpand*
+  macroexpand*-1
   macroexpand-1
   macroexpand-all
   macroexpand-all-until

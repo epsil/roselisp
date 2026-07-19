@@ -22,37 +22,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.tokenize = exports.readSexp = exports.readRose = exports.read = exports.parseSexp = exports.parseRose = exports.isCommentLevel = exports.getCommentLevel = exports.TrailingCommentToken = exports.Token = exports.SymbolToken = exports.StringToken = exports.NumberToken = exports.LeadingCommentToken = exports.CommentToken = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
-const [stringLength] = (() => {
-    function length_(lst) {
-        if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-            return (() => {
-                function linkedListLength_(lst) {
-                    let len = 0;
-                    let current = lst;
-                    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
-                        len = len + (lst.length - 2);
-                        current = current[current.length - 1];
-                    }
-                    return len;
-                }
-                return linkedListLength_;
-            })()(lst);
-        }
-        else {
-            return lst.length;
-        }
-    }
-    function linkedListLength_(lst) {
-        let len = 0;
-        let current = lst;
-        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
-            len = len + (lst.length - 2);
-            current = current[current.length - 1];
-        }
-        return len;
-    }
-    return [length_];
-})();
 /**
  * Parse a string of Lisp code and return an S-expression.
  */
@@ -102,7 +71,7 @@ function tokenize(str, options = {}) {
         comments = true;
     }
     let pos = 0;
-    let len = str.length;
+    const len = str.length;
     let char = '';
     let buffer = '';
     const result = [];
@@ -509,7 +478,7 @@ attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), 
  */
 function getCommentLevel(comment) {
     const str = (typeof comment === 'string') ? comment : comment.value;
-    return stringLength(str.match(new RegExp('^[ ]*;*'))[0].trim());
+    return str.match(new RegExp('^[ ]*;*'))[0].trim().length;
 }
 exports.getCommentLevel = getCommentLevel;
 getCommentLevel.fsource = [Symbol.for('define'), [Symbol.for('get-comment-level'), Symbol.for('comment')], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('comment')], Symbol.for('comment'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('comment')]]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^[ ]*;*'], Symbol.for('_')], [Symbol.for('ann'), Symbol.for('_'), Symbol.for('Any')], [Symbol.for('first'), Symbol.for('_')], [Symbol.for('string-trim'), Symbol.for('_')], [Symbol.for('string-length'), Symbol.for('_')]]];

@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.substring_ = exports.stringUpcase_ = exports.stringTrim_ = exports.stringSplit_ = exports.stringReplace_ = exports.stringRepeat_ = exports.stringRef_ = exports.stringJoin_ = exports.stringDowncase_ = exports.stringAppend_ = exports.indentString = exports.substring = exports.stringp_ = exports.stringp = exports.stringReplace = exports.stringPrimitiveP_ = exports.stringObjectP_ = exports.stringAppend = exports.stringToNumber_ = exports.numberToString_ = void 0;
+exports.substring_ = exports.stringUpcase_ = exports.stringTrim_ = exports.stringSplit_ = exports.stringReplace_ = exports.stringRepeat_ = exports.stringRef_ = exports.stringLength_ = exports.stringJoin_ = exports.stringDowncase_ = exports.stringAppend_ = exports.indentString = exports.substring = exports.stringp_ = exports.stringp = exports.stringReplace = exports.stringPrimitiveP_ = exports.stringObjectP_ = exports.stringAppend = exports.stringToNumber_ = exports.numberToString_ = void 0;
 const [plistGet] = (() => {
     function plistGet_(plist, prop) {
         let val = undefined;
@@ -63,6 +63,14 @@ function stringObjectP_(obj) {
 }
 exports.stringObjectP_ = stringObjectP_;
 stringObjectP_.fsource = [Symbol.for('define'), [Symbol.for('string-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('String')]];
+/**
+ * The length of a string.
+ */
+function stringLength_(x) {
+    return x.length;
+}
+exports.stringLength_ = stringLength_;
+stringLength_.fsource = [Symbol.for('define'), [Symbol.for('string-length_'), Symbol.for('x')], [Symbol.for('js/length'), Symbol.for('x')]];
 /**
  * Concatenate one or more strings together.
  *

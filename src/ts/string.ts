@@ -65,6 +65,15 @@ function stringObjectP_(obj: any): any {
 stringObjectP_.fsource = [Symbol.for('define'), [Symbol.for('string-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('String')]];
 
 /**
+ * The length of a string.
+ */
+function stringLength_(x: any): any {
+  return x.length;
+}
+
+stringLength_.fsource = [Symbol.for('define'), [Symbol.for('string-length_'), Symbol.for('x')], [Symbol.for('js/length'), Symbol.for('x')]];
+
+/**
  * Concatenate one or more strings together.
  *
  * Similar to [`string-append` in Racket][rkt:string-append].
@@ -252,6 +261,7 @@ export {
   stringAppend_,
   stringDowncase_,
   stringJoin_,
+  stringLength_,
   stringRef_,
   stringRepeat_,
   stringReplace_,

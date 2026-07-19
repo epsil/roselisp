@@ -30,37 +30,6 @@ import {
   makeRose
 } from './rose';
 
-const [stringLength]: any[] = ((): any => {
-  function length_(lst: any): any {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-      return ((): any => {
-        function linkedListLength_(lst: any): any {
-          let len: any = 0;
-          let current: any = lst;
-          while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
-            len = len + (lst.length - 2);
-            current = current[current.length - 1];
-          }
-          return len;
-        }
-        return linkedListLength_;
-      })()(lst);
-    } else {
-      return lst.length;
-    }
-  }
-  function linkedListLength_(lst: any): any {
-    let len: any = 0;
-    let current: any = lst;
-    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
-      len = len + (lst.length - 2);
-      current = current[current.length - 1];
-    }
-    return len;
-  }
-  return [length_];
-})();
-
 /**
  * Parse a string of Lisp code and return an S-expression.
  */
@@ -113,7 +82,7 @@ function tokenize(str: any, options: any = {}): any {
     comments = true;
   }
   let pos: any = 0;
-  let len: any = str.length;
+  const len: any = str.length;
   let char: any = '';
   let buffer: any = '';
   const result: any = [];
@@ -501,7 +470,7 @@ attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), 
  */
 function getCommentLevel(comment: any): any {
   const str: any = (typeof comment === 'string') ? comment : comment.value;
-  return stringLength((str.match(new RegExp('^[ ]*;*')) as any)[0].trim());
+  return (str.match(new RegExp('^[ ]*;*')) as any)[0].trim().length;
 }
 
 getCommentLevel.fsource = [Symbol.for('define'), [Symbol.for('get-comment-level'), Symbol.for('comment')], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('comment')], Symbol.for('comment'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('comment')]]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^[ ]*;*'], Symbol.for('_')], [Symbol.for('ann'), Symbol.for('_'), Symbol.for('Any')], [Symbol.for('first'), Symbol.for('_')], [Symbol.for('string-trim'), Symbol.for('_')], [Symbol.for('string-length'), Symbol.for('_')]]];

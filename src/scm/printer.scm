@@ -756,8 +756,16 @@
 
 ;;; Print an `ExpressionStatement` ESTree node to a `Doc` object.
 (define (print-expression-statement node (options (js-obj)))
+  (define expression
+    (get-field expression node))
+  (define wrap-in-parentheses
+    (estree-type? expression "ObjectExpression"))
+  (define expression-printed
+    (print-node expression options))
   (list
-   (print-node (get-field expression node) options)
+   (if wrap-in-parentheses
+       (doc-wrap expression-printed options)
+       expression-printed)
    ";"))
 
 ;;; Print a `ReturnStatement` ESTree node to a `Doc` object.

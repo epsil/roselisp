@@ -33,6 +33,10 @@
 (define (string-object?_ obj)
   (is-a? obj String))
 
+;;; The length of a string.
+(define (string-length_ x)
+  (js/length x))
+
 ;;; Concatenate one or more strings together.
 ;;;
 ;;; Similar to [`string-append` in Racket][rkt:string-append].
@@ -180,6 +184,7 @@
   string-append_
   string-downcase_
   string-join_
+  string-length_
   string-object?_
   string-primitive?_
   string-ref_

@@ -41,6 +41,13 @@ declare namespace stringObjectP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
+ * The length of a string.
+ */
+declare function stringLength_(x: any): any;
+declare namespace stringLength_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
  * Concatenate one or more strings together.
  *
  * Similar to [`string-append` in Racket][rkt:string-append].
@@ -175,4 +182,4 @@ declare function indentString(str: any, n?: any, options?: any): any;
 declare namespace indentString {
     var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
 }
-export { numberToString_, stringToNumber_, stringAppend_ as stringAppend, stringObjectP_, stringPrimitiveP_, stringReplace_ as stringReplace, stringp_ as stringp, stringp_, substring_ as substring, indentString, stringAppend_, stringDowncase_, stringJoin_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringTrim_, stringUpcase_, substring_ };
+export { numberToString_, stringToNumber_, stringAppend_ as stringAppend, stringObjectP_, stringPrimitiveP_, stringReplace_ as stringReplace, stringp_ as stringp, stringp_, substring_ as substring, indentString, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringTrim_, stringUpcase_, substring_ };

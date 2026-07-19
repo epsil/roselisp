@@ -57,7 +57,7 @@ exports.writeToString = exports.printSexpAsExpression = exports.printSexp = expo
 const estree_1 = require("./estree");
 const rose_1 = require("./rose");
 const visitor_1 = require("./visitor");
-const [stringLength, length, findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedurep, arrayp, take, lastCdr] = (() => {
+const [length, findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedurep, arrayp, take, lastCdr] = (() => {
     function length_(lst) {
         if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
             return (() => {
@@ -140,7 +140,7 @@ const [stringLength, length, findf, symbolp, booleanp, undefinedp, jsNullP, stri
         }
         return len;
     }
-    return [length_, length_, findf_, symbolp_, booleanp_, undefinedp_, jsNullP_, stringp_, procedurep_, arrayp_, take_, lastCdr_];
+    return [length_, findf_, symbolp_, booleanp_, undefinedp_, jsNullP_, stringp_, procedurep_, arrayp_, take_, lastCdr_];
 })();
 /**
  * `DocCommand` class.
@@ -290,7 +290,7 @@ docHasCommentsP.fsource = [Symbol.for('define'), [Symbol.for('doc-has-comments?'
 function docWrap(doc, options = {}, settings = {}) {
     const open = settings['open'] || '(';
     const close = settings['close'] || ')';
-    const offset = stringLength(open);
+    const offset = open.length;
     if (options['has-comments'] || docHasCommentsP(doc)) {
         return printDoc([open, line, align(offset, doc), line, close], options);
     }
@@ -754,9 +754,12 @@ printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symb
  * Print an `ExpressionStatement` ESTree node to a `Doc` object.
  */
 function printExpressionStatement(node, options = {}) {
-    return [printNode(node.expression, options), ';'];
+    const expression = node.expression;
+    const wrapInParentheses = (0, estree_1.estreeTypeP)(expression, 'ObjectExpression');
+    const expressionPrinted = printNode(expression, options);
+    return [wrapInParentheses ? docWrap(expressionPrinted, options) : expressionPrinted, ';'];
 }
-printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('list'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')], Symbol.for('options')], ';']];
+printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('wrap-in-parentheses'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'ObjectExpression']], [Symbol.for('define'), Symbol.for('expression-printed'), [Symbol.for('print-node'), Symbol.for('expression'), Symbol.for('options')]], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('wrap-in-parentheses'), [Symbol.for('doc-wrap'), Symbol.for('expression-printed'), Symbol.for('options')], Symbol.for('expression-printed')], ';']];
 /**
  * Print a `ReturnStatement` ESTree node to a `Doc` object.
  */

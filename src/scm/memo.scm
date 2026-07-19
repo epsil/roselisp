@@ -97,9 +97,9 @@
 (define (memoize-with-arg f (arity (get-field length f)))
   (define (memoized-f . args)
     (define map
-      (array-list-last args))
+      (js/last args))
     (cond
-     ((and (= (array-list-length args) arity)
+     ((and (= (js/length args) arity)
            (hash? map))
       (define args1
         (drop-right args 1))

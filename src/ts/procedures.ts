@@ -108,7 +108,7 @@ function apply_(f: any, ...args: any[]): any {
   return f.apply(null, args);
 }
 
-apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('array-list-last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, Symbol.for('args')]];
+apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('js/last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, Symbol.for('args')]];
 
 /**
  * Call `f` with `args`.
@@ -348,7 +348,7 @@ function lt_(...args: any[]): any {
   }
 }
 
-lt_.fsource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+lt_.fsource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 
 /**
  * Less than or equal operator.
@@ -373,7 +373,7 @@ function lte_(...args: any[]): any {
   }
 }
 
-lte_.fsource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+lte_.fsource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 
 /**
  * Greater than operator.
@@ -398,7 +398,7 @@ function gt_(...args: any[]): any {
   }
 }
 
-gt_.fsource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+gt_.fsource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 
 /**
  * Greater than or equal operator.
@@ -423,7 +423,7 @@ function gte_(...args: any[]): any {
   }
 }
 
-gte_.fsource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('array-list-length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+gte_.fsource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
 
 /**
  * Modulo operation.
@@ -494,7 +494,7 @@ function sub_(...args: any[]): any {
   }
 }
 
-sub_.fsource = [Symbol.for('define'), [Symbol.for('sub_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('array-list-length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], 0], [[Symbol.for('one?'), Symbol.for('len')], [Symbol.for('-'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('-'), Symbol.for('result'), [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]]]], Symbol.for('result')]]]]];
+sub_.fsource = [Symbol.for('define'), [Symbol.for('sub_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('js/length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], 0], [[Symbol.for('one?'), Symbol.for('len')], [Symbol.for('-'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('-'), Symbol.for('result'), [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]]]], Symbol.for('result')]]]]];
 
 /**
  * Return `(- x 1)`.
@@ -548,7 +548,7 @@ function div_(...args: any[]): any {
   }
 }
 
-div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('array-list-length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]]]], Symbol.for('result')]]]];
+div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]]]], Symbol.for('result')]]]];
 
 /**
  * Whether a value is the number zero.
@@ -997,7 +997,7 @@ function intersection_(...args: any[]): any {
   }
 }
 
-intersection_.fsource = [Symbol.for('define'), [Symbol.for('intersection_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('intersection2'), Symbol.for('arr1'), Symbol.for('arr2')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr1')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('arr2')], [Symbol.for('not'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], Symbol.for('result')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 0], [Symbol.for('quote'), []]], [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('intersection2'), Symbol.for('acc'), Symbol.for('x')]], [Symbol.for('first'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('args')]]]]];
+intersection_.fsource = [Symbol.for('define'), [Symbol.for('intersection_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('intersection2'), Symbol.for('arr1'), Symbol.for('arr2')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr1')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('arr2')], [Symbol.for('not'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], Symbol.for('result')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 0], [Symbol.for('quote'), []]], [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('intersection2'), Symbol.for('acc'), Symbol.for('x')]], [Symbol.for('first'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('args')]]]]];
 
 /**
  * Return the union of multiple lists.
@@ -1068,7 +1068,7 @@ function compose_(...args: any[]): any {
   };
 }
 
-compose_.fsource = [Symbol.for('define'), [Symbol.for('compose_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('functions'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('last-function'), [Symbol.for('array-list-last'), Symbol.for('args')]]], [Symbol.for('lambda'), Symbol.for('args'), [Symbol.for('let'), [[Symbol.for('val'), [Symbol.for('apply'), Symbol.for('last-function'), Symbol.for('args')]]], [Symbol.for('foldr'), [Symbol.for('lambda'), [Symbol.for('f'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]], Symbol.for('val'), Symbol.for('functions')]]]]];
+compose_.fsource = [Symbol.for('define'), [Symbol.for('compose_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('functions'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('last-function'), [Symbol.for('js/last'), Symbol.for('args')]]], [Symbol.for('lambda'), Symbol.for('args'), [Symbol.for('let'), [[Symbol.for('val'), [Symbol.for('apply'), Symbol.for('last-function'), Symbol.for('args')]]], [Symbol.for('foldr'), [Symbol.for('lambda'), [Symbol.for('f'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]], Symbol.for('val'), Symbol.for('functions')]]]]];
 
 /**
  * Left-to-right function composition.

@@ -205,7 +205,7 @@
          ;; the arguments have to be evaluated first.
          (define f op)
          (cond
-          ((or (= (array-list-length args) 0)
+          ((or (= (js/length args) 0)
                (fexpr? f))
            ;; Fexpr call. The function is called with its
            ;; arguments unevaluated.
@@ -1004,7 +1004,7 @@
    ((eq? left-type "ArrayPattern")
     (define elements
       (get-field elements left))
-    (for ((i (range 0 (array-list-length elements))))
+    (for ((i (range 0 (js/length elements))))
       (define x
         (aget elements i))
       (define x-type
@@ -1117,7 +1117,7 @@
       (try
         (set! result
               (eval-estree
-               (if (= (array-list-length params) 0)
+               (if (= (js/length params) 0)
                    body
                    (new BlockStatement
                         `(,(new VariableDeclaration
@@ -1142,7 +1142,7 @@
          (try
            (set! result
                  (eval-estree
-                  (if (= (array-list-length params) 0)
+                  (if (= (js/length params) 0)
                       body
                       (new BlockStatement
                            `(,(new VariableDeclaration

@@ -24,10 +24,10 @@
 ;;; [rkt:apply]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._apply%29%29
 ;;; [cl:apply]: http://clhs.lisp.se/Body/f_apply.htm#apply
 (define (apply_ f . args)
-  (when (> (array-list-length args) 0)
+  (when (> (js/length args) 0)
     (set! args
           (append (drop-right args 1)
-                  (array-list-last args))))
+                  (js/last args))))
   (send f apply #n args))
 
 ;;; Call `f` with `args`.
@@ -142,10 +142,10 @@
 ;;; [cl:lt]: http://clhs.lisp.se/Body/f_eq_sle.htm#LT
 (define (lt_ . args)
   (cond
-   ((< (array-list-length args) 2)
+   ((< (js/length args) 2)
     #t)
    (else
-    (for ((i (range 1 (array-list-length args))))
+    (for ((i (range 1 (js/length args))))
       ;; !(x < y) === (x >= y)
       (when (>= (array-list-nth (- i 1) args)
                 (array-list-nth i args))
@@ -160,10 +160,10 @@
 ;;; [cl:lte]: http://clhs.lisp.se/Body/f_eq_sle.htm#LTEQ
 (define (lte_ . args)
   (cond
-   ((< (array-list-length args) 2)
+   ((< (js/length args) 2)
     #t)
    (else
-    (for ((i (range 1 (array-list-length args))))
+    (for ((i (range 1 (js/length args))))
       ;; !(x <= y) === (x > y)
       (when (> (array-list-nth (- i 1) args)
                (array-list-nth i args))
@@ -178,10 +178,10 @@
 ;;; [cl:gt]: http://clhs.lisp.se/Body/f_eq_sle.htm#GT
 (define (gt_ . args)
   (cond
-   ((< (array-list-length args) 2)
+   ((< (js/length args) 2)
     #t)
    (else
-    (for ((i (range 1 (array-list-length args))))
+    (for ((i (range 1 (js/length args))))
       ;; !(x > y) === (x <= y)
       (when (<= (array-list-nth (- i 1) args)
                 (array-list-nth i args))
@@ -196,10 +196,10 @@
 ;;; [cl:gte]: http://clhs.lisp.se/Body/f_eq_sle.htm#GTEQ
 (define (gte_ . args)
   (cond
-   ((< (array-list-length args) 2)
+   ((< (js/length args) 2)
     #t)
    (else
-    (for ((i (range 1 (array-list-length args))))
+    (for ((i (range 1 (js/length args))))
       ;; !(x >= y) === (x < y)
       (when (< (array-list-nth (- i 1) args)
                (array-list-nth i args))
@@ -244,7 +244,7 @@
 ;;; [rkt:sub]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._-%29%29
 ;;; [cl:sub]: http://clhs.lisp.se/Body/f__.htm
 (define (sub_ . args)
-  (let ((len (array-list-length args)))
+  (let ((len (js/length args)))
     (cond
      ((zero? len)
       0)
@@ -286,11 +286,11 @@
 ;;; [cl:div]: http://clhs.lisp.se/Body/f_sl.htm
 (define (div_ . args)
   (cond
-   ((= (array-list-length args) 1)
+   ((= (js/length args) 1)
     (/ 1 (first args)))
    (else
     (let ((result (first args)))
-      (for ((i (range 1 (array-list-length args))))
+      (for ((i (range 1 (js/length args))))
         (set! result
               (/ result (array-list-nth i args))))
       result))))
@@ -571,9 +571,9 @@
           (push-right! result element)))
       result))
   (cond
-   ((= (array-list-length args) 0)
+   ((= (js/length args) 0)
     '())
-   ((= (array-list-length args) 1)
+   ((= (js/length args) 1)
     (first args))
    (else
     (foldl (lambda (x acc)
@@ -623,7 +623,7 @@
 ;;; [rkt:compose]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._compose%29%29
 (define (compose_ . args)
   (let ((functions (drop-right args 1))
-        (last-function (array-list-last args)))
+        (last-function (js/last args)))
     (lambda args
       (let ((val (apply last-function args)))
         (foldr (lambda (f x)

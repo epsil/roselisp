@@ -61,7 +61,7 @@
 ;;; Expand a `(begin0 ...)` or `(prog1 ...)` expression.
 (defmacro begin0_ (x &rest xs)
   (cond
-   ((= (array-list-length xs) 0)
+   ((= (js/length xs) 0)
     x)
    (else
     (define result
@@ -82,7 +82,7 @@
   ;; support for creating a new object on the basis of by-name
   ;; initialization arguments; it only supports by-position
   ;; initialization arguments, which are passed to the constructor.
-  `(make-object ,constructor ,@(map array-list-second args)))
+  `(make-object ,constructor ,@(map js/second args)))
 
 ;;; Expand an `(if ...)` expression.
 (defmacro if_ (condition then-clause &rest else-clauses)
@@ -90,7 +90,7 @@
     (,condition
      ,then-clause)
     ,@(cond
-       ((> (array-list-length else-clauses) 0)
+       ((> (js/length else-clauses) 0)
         `((else ,@else-clauses)))
        (else
         '()))))
@@ -177,9 +177,9 @@
 ;;; [clj:thread-first]: https://clojuredocs.org/clojure.core/-%3E
 (defmacro thread-first_ (x &rest forms)
   (define hole-marker '_)
-  (when (and (> (array-list-length forms) 1)
-             (eq? (array-list-first forms) ':hole-marker))
-    (set! hole-marker (array-list-second forms))
+  (when (and (> (js/length forms) 1)
+             (eq? (js/first forms) ':hole-marker))
+    (set! hole-marker (js/second forms))
     (set! forms (drop forms 2)))
   (define (f val acc)
     (cond
@@ -189,7 +189,7 @@
                        (eq? x hole-marker))
                      val)
          0)
-      `(,@acc (,(array-list-first val)
+      `(,@acc (,(js/first val)
                ,hole-marker
                ,@(rest val))))
      (else
@@ -205,9 +205,9 @@
 ;;; [clj:thread-last]: https://clojuredocs.org/clojure.core/-%3E%3E
 (defmacro thread-last_ (x &rest forms)
   (define hole-marker '_)
-  (when (and (> (array-list-length forms) 1)
-             (eq? (array-list-first forms) ':hole-marker))
-    (set! hole-marker (array-list-second forms))
+  (when (and (> (js/length forms) 1)
+             (eq? (js/first forms) ':hole-marker))
+    (set! hole-marker (js/second forms))
     (set! forms (drop forms 2)))
   (define (f val acc)
     (cond
@@ -236,16 +236,16 @@
   (cond
    ;; For expressions with no bindings, we wrap
    ;; the expansion in `begin`.
-   ((= (array-list-length bindings) 0)
+   ((= (js/length bindings) 0)
     (define result
       `(begin
-         (js/while (not ,(array-list-first tests))
+         (js/while (not ,(js/first tests))
            ,@body)
          ,@(drop tests 1)))
     ;; If there is no finishing expression,
     ;; the code can be simplified further.
-    (when (= (array-list-length result) 2)
-      (set! result (array-list-second result)))
+    (when (= (js/length result) 2)
+      (set! result (js/second result)))
     result)
    ;; For expressions with bindings, we wrap
    ;; the expansion in `let`.
@@ -255,13 +255,13 @@
     (for ((binding bindings))
       (push-right! let-bindings
                    (take binding 2))
-      (when (= (array-list-length binding) 3)
+      (when (= (js/length binding) 3)
         (push-right! setters
-                     `(set! ,(array-list-first binding)
-                            ,(array-list-third binding)))))
+                     `(set! ,(js/first binding)
+                            ,(js/third binding)))))
     (define result
       `(let ,let-bindings
-         (js/while (not ,(array-list-first tests))
+         (js/while (not ,(js/first tests))
            ,@body
            ,@setters)
          ,@(drop tests 1)))
@@ -279,20 +279,20 @@
   (define tests '())
   (for ((arg args))
     (define init
-      (array-list-first arg))
+      (js/first arg))
     (define test
-      (array-list-second arg))
+      (js/second arg))
     (define update
-      (array-list-third arg))
+      (js/third arg))
     (when (tagged-list? init 'define)
       (set! init (drop init 1)))
     (when (tagged-list? update 'set!)
-      (set! update (array-list-third init)))
+      (set! update (js/third init)))
     (push-right! inits `(,@init ,update))
     (push-right! tests test))
   (define test-exp
-    (if (= (array-list-length tests) 1)
-        (array-list-first tests)
+    (if (= (js/length tests) 1)
+        (js/first tests)
         `(and ,@tests)))
   `(do ,inits
        ((not ,test-exp))
@@ -303,9 +303,9 @@
   (define bindings
     (map (lambda (x)
            (define left
-             (array-list-first x))
+             (js/first x))
            (define right
-             (array-list-second x))
+             (js/second x))
            (list left `(js-keys ,right)))
          args))
   `(js/for-of ,bindings
@@ -316,11 +316,11 @@
   (define bindings
     (map (lambda (x)
            (define left
-             (array-list-first x))
+             (js/first x))
            (define right
-             (array-list-second x))
+             (js/second x))
            (when (tagged-list? left 'define)
-             (set! left (array-list-second left)))
+             (set! left (js/second left)))
            (list left right))
          args))
   `(for ,bindings
@@ -337,8 +337,8 @@
   (define (is-complex-value x)
     (not (is-simple-value x)))
   (for ((x clauses))
-    (when (and (not (eq? (array-list-first x) 'else))
-               (memf? is-complex-value (array-list-first x)))
+    (when (and (not (eq? (js/first x) 'else))
+               (memf? is-complex-value (js/first x)))
       (set! has-complex-clauses #t)
       (break)))
   (cond
@@ -354,11 +354,11 @@
     (define cond-clauses
       (map (lambda (x)
              (cond
-              ((eq? (array-list-first x) 'else)
+              ((eq? (js/first x) 'else)
                x)
               (else
                `((member? ,value-var
-                          ',(array-list-first x)
+                          ',(js/first x)
                           equal?)
                  ,@(rest x)))))
            clauses))
@@ -380,8 +380,8 @@
 (defmacro case-eq_ (val &rest clauses)
   (define has-complex-clauses #f)
   (for ((x clauses))
-    (when (and (not (eq? (array-list-first x) 'else))
-               (> (array-list-length (array-list-first x)) 1))
+    (when (and (not (eq? (js/first x) 'else))
+               (> (js/length (js/first x)) 1))
       (set! has-complex-clauses #t)
       (break)))
   (cond
@@ -398,10 +398,10 @@
     (define cond-clauses
       (map (lambda (x)
              (cond
-              ((eq? (array-list-first x) 'else)
+              ((eq? (js/first x) 'else)
                x)
               (else
-               `((member? ,value-var ',(array-list-first x))
+               `((member? ,value-var ',(js/first x))
                  ,@(rest x)))))
            clauses))
     (define result
@@ -419,10 +419,10 @@
     (define switch-clauses
       (map (lambda (x)
              (cond
-              ((eq? (array-list-first x) 'else)
+              ((eq? (js/first x) 'else)
                `(default ,@(rest x)))
               (else
-               `(case ',(array-list-first (array-list-first x))
+               `(case ',(js/first (js/first x))
                   ,@(rest x)
                   (break)))))
            clauses))
@@ -438,7 +438,7 @@
 
 ;;; Expand a `(set ...)` expression.
 (defmacro set_ (sym val)
-  `(set! ,(array-list-second sym) ,val))
+  `(set! ,(js/second sym) ,val))
 
 ;;; Expand a `(new/apply ...)` expression.
 (defmacro new-apply_ (&rest args)
@@ -462,13 +462,13 @@
       (push-right! finalizer-clauses x))
      (else
       (push-right! body-exps x))))
-  (when (> (array-list-length clj-catch-clauses) 0)
+  (when (> (js/length clj-catch-clauses) 0)
     (define exception
       (second (first clj-catch-clauses)))
     (define sym
       (third (first clj-catch-clauses)))
     (cond
-     ((and (= (array-list-length clj-catch-clauses) 1)
+     ((and (= (js/length clj-catch-clauses) 1)
            (memq? exception
                   '(_
                     js/Object
@@ -504,9 +504,9 @@
 (defmacro declare_ (name &rest specs)
   `(begin
      ,@(map (lambda (spec)
-              `(set-field! ,(array-list-first spec)
+              `(set-field! ,(js/first spec)
                            ,name
-                           ,(array-list-second spec)))
+                           ,(js/second spec)))
             specs)))
 
 (provide

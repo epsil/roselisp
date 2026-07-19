@@ -57,7 +57,7 @@
   (define map-path
     (drop-right path 1))
   (define map-key
-    (array-list-last path))
+    (js/last path))
   (define current-map map)
   (for ((key map-path))
     (define current-value
@@ -128,10 +128,10 @@
                   (not (eq? x "")))
                 _)))
   (cond
-   ((= (array-list-length segments) 0)
+   ((= (js/length segments) 0)
     "")
-   ((= (array-list-length segments) 1)
-    (array-list-first segments))
+   ((= (js/length segments) 1)
+    (js/first segments))
    (else
     (define-values (first-segment . rest-segments)
       segments)
@@ -201,7 +201,7 @@
     (colon-form? (send exp get-value)))
    (else
     (and (array? exp)
-         (>= (array-list-length exp) 3)
+         (>= (js/length exp) 3)
          (eq? (array-second exp) ':)))))
 
 
@@ -232,7 +232,7 @@
    ((symbol? params)
     (push-right! bindings `(,params ',args)))
    (else
-    (for ((i (range 0 (array-list-length params))))
+    (for ((i (range 0 (js/length params))))
       (define param
         (aget params i))
       (define name
@@ -240,7 +240,7 @@
             (first param)
             param))
       (define value
-        (if (>= i (array-list-length args))
+        (if (>= i (js/length args))
             (if (array? param)
                 (second param)
                 #u)
@@ -287,7 +287,7 @@
   (cond
    ((not (list? expressions))
     expressions)
-   ((= (array-list-length expressions) 1)
+   ((= (js/length expressions) 1)
     (first expressions))
    (else
     (begin-wrap expressions))))
@@ -305,7 +305,7 @@
     (for ((entry methods))
       (define-values (params function-definition)
         entry)
-      (when (args-matches-params args params)
+      (when (args-matches-params? args params)
         (return (apply function-definition args))))
     (if f
         (apply f args)
@@ -329,11 +329,11 @@
   (send generic-function defmethod arglist function-definition))
 
 ;;; Helper function for `defGeneric`.
-(define (args-matches-params args params)
-  (unless (= (array-list-length args)
-             (array-list-length params))
+(define (args-matches-params? args params)
+  (unless (= (js/length args)
+             (js/length params))
     (return #f))
-  (for ((i (range 0 (array-list-length params))))
+  (for ((i (range 0 (js/length params))))
     (define param
       (aget params i))
     (define arg

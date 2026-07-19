@@ -63,7 +63,7 @@
     (set! comments #t))
   (define pos 0)
   (define len
-    (array-list-length str))
+    (js/length str))
   (define char "")
   (define buffer "")
   (define result '())
@@ -278,7 +278,7 @@
                current-exp-node
                parent-val-node)))
   ;; Iterate over the list of tokens.
-  (for ((i (range 0 (array-list-length tokens))))
+  (for ((i (range 0 (js/length tokens))))
     ;; The current token.
     (define token
       (aget tokens i))
@@ -353,8 +353,8 @@
                       current-val-node)
                      entry)
         (define parent-entry
-          (if (> (array-list-length stack) 0)
-              (array-list-last stack)
+          (if (> (js/length stack) 0)
+              (js/last stack)
               '(#u #u #u #u)))
         (set!-values (parent-exp
                       parent-val
@@ -438,7 +438,7 @@
         (make-rose node)))
   (when (and comments-option
              comments
-             (> (array-list-length comments) 0))
+             (> (js/length comments) 0))
     (send result set-property "comments" comments))
   (values result '()))
 

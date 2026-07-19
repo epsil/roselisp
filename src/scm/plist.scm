@@ -80,7 +80,7 @@
 ;;; Convert a plist to an association list.
 (define (plist->alist_ plst)
   (define alst '())
-  (for ((i (range 0 (array-list-length plst) 2)))
+  (for ((i (range 0 (js/length plst) 2)))
     (push-right! alst
                  (cons (aget plst i)
                        (aget plst (+ i 1)))))

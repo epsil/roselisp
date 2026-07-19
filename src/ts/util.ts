@@ -417,7 +417,7 @@ function defineGeneric(f: any): any {
     const methods: any = genericFunction.methods;
     for (let entry of methods) {
       const [params, functionDefinition]: any[] = entry;
-      if (argsMatchesParams(args, params)) {
+      if (argsMatchesParamsP(args, params)) {
         return functionDefinition(...args);
       }
     }
@@ -450,7 +450,7 @@ function defineMethod(genericFunction: any, arglist: any, functionDefinition: an
 /**
  * Helper function for `defGeneric`.
  */
-function argsMatchesParams(args: any, params: any): any {
+function argsMatchesParamsP(args: any, params: any): any {
   if (args.length !== params.length) {
     return false;
   }

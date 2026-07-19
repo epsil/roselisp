@@ -110,7 +110,7 @@
 ;;; Evaluate a `(setq ...)` form.
 (define (setq-special_ exp env)
   (define assignments '())
-  (for ((i (range 1 (- (array-list-length exp) 1) 2)))
+  (for ((i (range 1 (- (js/length exp) 1) 2)))
     (define sym
       (aget exp i))
     (define val
@@ -119,7 +119,7 @@
       `(set ',sym ,val))
     (push-right! assignments assignment))
   (define set-exp '())
-  (if (> (array-list-length assignments) 1)
+  (if (> (js/length assignments) 1)
       (set! set-exp `(begin ,@assignments))
       (set! set-exp (first assignments)))
   (eval_ set-exp env))
@@ -139,7 +139,7 @@
       (eval_ (second params) env))
     (cond
      ((and (list? sym)
-           (= (array-list-length sym) 2))
+           (= (js/length sym) 2))
       (define prop
         (first sym))
       (define obj
@@ -177,7 +177,7 @@
 
 ;;; Helper function for `begin-special_`.
 (define (begin-helper expressions env val)
-  (if (= (array-list-length expressions) 0)
+  (if (= (js/length expressions) 0)
       val
       (tcall begin-helper
              (rest expressions)
@@ -221,7 +221,7 @@
   (define body
     (drop exp 2))
   (define let-bindings '())
-  (for ((i (range 0 (array-list-length bindings))))
+  (for ((i (range 0 (js/length bindings))))
     (define result
       (gensym
        (string-append
@@ -245,18 +245,18 @@
       (set! regular-bindings
             (drop-right binding-list 1))
       (set! rest-binding
-            (array-list-last binding-list)))
+            (js/last binding-list)))
      (else
       (set! regular-bindings binding-vars)))
     (push-right! let-bindings (list result binding-exp))
-    (for ((j (range 0 (array-list-length regular-bindings))))
+    (for ((j (range 0 (js/length regular-bindings))))
       (push-right! let-bindings
                    (list (aget regular-bindings j)
                          `(aget ,result ,j))))
     (when rest-binding
       (push-right! let-bindings
                    (list rest-binding
-                         `(nthcdr ,(array-list-length
+                         `(nthcdr ,(js/length
                                     regular-bindings)
                                   ,result)))))
   (eval_ `(let* ,let-bindings
@@ -281,17 +281,17 @@
     (set! regular-bindings
           (drop-right binding-list 1))
     (set! rest-binding
-          (array-list-last binding-list)))
+          (js/last binding-list)))
    (else
     (set! regular-bindings ids)))
   (set! result (eval_ val env))
-  (for ((i (range 0 (array-list-length regular-bindings))))
+  (for ((i (range 0 (js/length regular-bindings))))
     (eval_ `(define ,(aget regular-bindings i)
               ',(aget result i))
            env))
   (when rest-binding
     (eval_ `(define ,rest-binding
-              ',(nthcdr (array-list-length
+              ',(nthcdr (js/length
                          regular-bindings)
                         result))
            env))
@@ -315,17 +315,17 @@
     (set! regular-bindings
           (drop-right binding-list 1))
     (set! rest-binding
-          (array-list-last binding-list)))
+          (js/last binding-list)))
    (else
     (set! regular-bindings ids)))
   (set! result (eval_ val env))
-  (for ((i (range 0 (array-list-length regular-bindings))))
+  (for ((i (range 0 (js/length regular-bindings))))
     (eval_ `(set! ,(aget regular-bindings i)
                   ',(aget result i))
            env))
   (when rest-binding
     (eval_ `(set! ,rest-binding
-                  ',(nthcdr (array-list-length
+                  ',(nthcdr (js/length
                              regular-bindings)
                             result))
            env))
@@ -358,7 +358,7 @@
       (define curried-params
         (rest curried-name-and-params))
       (define curried-arity
-        (array-list-length curried-params))
+        (js/length curried-params))
       (define curried-function-exp
         `(curry
           (lambda ,curried-params
@@ -378,7 +378,7 @@
       (send env set-local f-name val)
       val)))
    ;; Class definition.
-   ((and (= (array-list-length exp) 3)
+   ((and (= (js/length exp) 3)
          ;; (form? (third exp) env define-class_)
          (tagged-list? (third exp) 'define-class))
     (eval_ (define->define-class exp) env))
@@ -464,7 +464,7 @@
     (set! body (drop exp 2)))
   (cond
    ((list? args)
-    (for ((i (range 0 (array-list-length args))))
+    (for ((i (range 0 (js/length args))))
       (define arg
         (aget args i))
       (cond
@@ -515,7 +515,7 @@
   (define macro-args '())
   (cond
    ((list? args)
-    (for ((i (range 0 (array-list-length args))))
+    (for ((i (range 0 (js/length args))))
       (define arg
         (aget args i))
       (cond
@@ -665,7 +665,7 @@
 ;;; Evaluate a `(cond ...)` form.
 (define (cond-special_ exp env)
   (cond
-   ((<= (array-list-length exp) 1)
+   ((<= (js/length exp) 1)
     #f)
    (else
     (define clause
@@ -689,7 +689,7 @@
   (cond
    (condition
     (tcall eval-t then-expr env))
-   ((= (array-list-length clauses) 0)
+   ((= (js/length clauses) 0)
     #u)
    (else
     (define clause1
@@ -761,9 +761,9 @@
         (map (lambda (x)
                (eval_ x env))
              args))
-  (when (> (array-list-length args) 0)
+  (when (> (js/length args) 0)
     (set! args (append (drop-right args 1)
-                       (array-list-last args))))
+                       (js/last args))))
   (apply send-method obj method args))
 
 ;;; Call a method on an object.
@@ -857,7 +857,7 @@
                         ,exp)
                      env)))
       (define arity
-        (array-list-length args))
+        (js/length args))
       (define constructor-fn
         (send constructors get arity))
       (when (procedure? constructor-fn)
@@ -884,7 +884,7 @@
     (set! definitions (rest definitions))
     ;; JavaScript supports single inheritance only,
     ;; so only the first class is used.
-    (when (> (array-list-length super-classes) 0)
+    (when (> (js/length super-classes) 0)
       (set! base-class (eval_ (first super-classes) env))))
   (when base-class
     ;; <https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Inheritance#setting_teachers_prototype_and_constructor_reference>
@@ -908,7 +908,7 @@
     (define def-body
       (rest def-params))
     (define arity
-      (array-list-length def-args))
+      (js/length def-args))
     ;; Create a method function that binds JavaScript's
     ;; `this` value to the Lisp symbol `this`.
     (define method-fn
@@ -922,7 +922,7 @@
                 (first arg-exp)
                 arg-exp))
           (define value
-            (if (>= i (array-list-length args))
+            (if (>= i (js/length args))
                 #u
                 (aget args i)))
           (define var-exp
@@ -965,7 +965,7 @@
      (else
       (push-right! body-clauses x))))
   (set! body
-        (if (= (array-list-length body-clauses) 1)
+        (if (= (js/length body-clauses) 1)
             (first body-clauses)
             `(begin ,@body-clauses)))
   (try
@@ -979,7 +979,7 @@
                        env))
           (break))))
     (finally
-      (when (> (array-list-length finally-clauses) 0)
+      (when (> (js/length finally-clauses) 0)
         (eval_ `(begin
                   ,@(drop (first finally-clauses) 1))
                env))))

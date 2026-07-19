@@ -171,7 +171,7 @@
     (set! result
           (make-rose
            `(begin ,@(send result drop 3))))
-    (when (= (array-list-length (send result get-value)) 2)
+    (when (= (js/length (send result get-value)) 2)
       (set! result (send result get 1))))
   result)
 
@@ -205,12 +205,12 @@
   (define is-spread-last
     (and (number? spread-idx)
          (= spread-idx
-            (- (array-list-length args) 1))))
+            (- (js/length args) 1))))
   (define args-decompiled
     (cond
      ((and is-spread
            (not is-spread-last)
-           (> (array-list-length args) 1))
+           (> (js/length args) 1))
       `((append
          ,@(map (lambda (x)
                   (define result
@@ -446,7 +446,7 @@
   (define result
     (~> (make-rose decls)
         (send set-value (new RoseSplice))))
-  (when (= (array-list-length decls) 1)
+  (when (= (js/length decls) 1)
     (set! result (send result get 0)))
   result)
 
@@ -675,11 +675,11 @@
   (define alternate-exp
     (and alternate (send alternate get-value)))
   (when (and (tagged-list? consequent-exp 'begin)
-             (= (array-list-length consequent-exp) 2))
+             (= (js/length consequent-exp) 2))
     (set! consequent (send consequent get 1))
     (set! consequent-exp (send consequent get-value)))
   (when (and (tagged-list? alternate-exp 'begin)
-             (= (array-list-length alternate-exp) 2))
+             (= (js/length alternate-exp) 2))
     (set! alternate (send alternate get 1))
     (set! alternate-exp (send alternate get-value)))
   (cond
@@ -717,7 +717,7 @@
         ,@(if (tagged-list? alternate-consequent-exp 'begin)
               (send alternate-consequent drop 1)
               (list alternate-consequent)))
-       ,@(if (> (array-list-length alternate-exp) 3)
+       ,@(if (> (js/length alternate-exp) 3)
              (list `(else ,@(send alternate drop 3)))
              '()))))
    ((tagged-list? alternate-exp 'cond)
@@ -790,7 +790,7 @@
   (define body-exp
     (send body get-value))
   (when (and (tagged-list? body-exp 'begin)
-             (= (array-list-length body-exp) 2))
+             (= (js/length body-exp) 2))
     (set! body (send body get 1)))
   (define result
     (make-rose
@@ -818,7 +818,7 @@
         (send update drop 1)
         (list update)))
   (define bindings '())
-  (for ((i (range 0 (array-list-length inits))))
+  (for ((i (range 0 (js/length inits))))
     (define current-init
       (aget inits i))
     (define current-init-exp
@@ -851,7 +851,7 @@
   (define body
     (decompile-estree (get-field body node) options))
   (cond
-   ((and (= (array-list-length bindings) 1)
+   ((and (= (js/length bindings) 1)
          (or (tagged-list? test '<)
              (tagged-list? test '>)))
     (define binding
@@ -1016,8 +1016,8 @@
   (define arguments_
     (get-field arguments node))
   (define is-spread
-    (and (> (array-list-length arguments_) 0)
-         (estree-type? (array-list-last arguments_) "SpreadElement")))
+    (and (> (js/length arguments_) 0)
+         (estree-type? (js/last arguments_) "SpreadElement")))
   (make-rose
    `(,@(if is-spread
            '(apply)
@@ -1046,10 +1046,10 @@
   (define specifiers
     (get-field specifiers node))
   (cond
-   ((= (array-list-length specifiers) 0)
+   ((= (js/length specifiers) 0)
     (make-rose
      `(require ,source-decompiled)))
-   ((and (= (array-list-length specifiers) 1)
+   ((and (= (js/length specifiers) 1)
          (estree-type? (first specifiers)
                        "ImportNamespaceSpecifier"))
     (make-rose
@@ -1132,14 +1132,14 @@
                    (decompile-estree (get-field value prop)
                                      options)))))
   (cond
-   ((= (array-list-length spreads) 0)
+   ((= (js/length spreads) 0)
     (make-rose
      `(js-obj ,@properties)))
    (else
     (make-rose
      `(js-obj-append
        ,@spreads
-       ,@(if (> (array-list-length properties) 0)
+       ,@(if (> (js/length properties) 0)
              (list `(js-obj ,@properties))
              '()))))))
 
@@ -1168,7 +1168,7 @@
   (define str "")
   (define quasis
     (get-field quasis node))
-  (when (> (array-list-length quasis) 0)
+  (when (> (js/length quasis) 0)
     (set! str
           (~> (first quasis)
               (get-field value _)
@@ -1201,14 +1201,14 @@
         (decompile-estree x options)
         '_))
   (cond
-   ((and (> (array-list-length elements) 0)
-         (array-list-last elements)
-         (estree-type? (array-list-last elements) "RestElement"))
+   ((and (> (js/length elements) 0)
+         (js/last elements)
+         (estree-type? (js/last elements) "RestElement"))
     (define regular-elements
       (map decompile-element
            (drop-right elements 1)))
     (define rest-element
-      (decompile-element (array-list-last elements)))
+      (decompile-element (js/last elements)))
     (make-rose
      (apply list*
             `(,@regular-elements ,rest-element))))
@@ -1470,7 +1470,7 @@
         (decompile-estree params options)
         '()))
   (cond
-   ((= (array-list-length params-decompiled) 0)
+   ((= (js/length params-decompiled) 0)
     (make-rose name-decompiled))
    (else
     (make-rose
@@ -1521,11 +1521,11 @@
     (map (lambda (x)
            (decompile-parameter x options))
          (get-field params node)))
-  (when (and (> (array-list-length params) 0)
-             (estree-type? (array-list-last (get-field params node))
+  (when (and (> (js/length params) 0)
+             (estree-type? (js/last (get-field params node))
                            "RestElement"))
-    (if (= (array-list-length params) 1)
-        (set! params (array-list-last params))
+    (if (= (js/length params) 1)
+        (set! params (js/last params))
         (set! params (apply list* params))))
   (define body
     (remove-return-tail-call
@@ -1594,13 +1594,13 @@
   (define exp (send node get-value))
   (cond
    ((and (tagged-list? exp 'return)
-         (= (array-list-length exp) 2))
+         (= (js/length exp) 2))
     (send node get 1))
    ((tagged-list? exp 'begin)
     (make-rose
      `(,@(send node drop-right 1)
        ,(remove-return-tail-call
-         (send node get (- (array-list-length exp) 1))))
+         (send node get (- (js/length exp) 1))))
      node))
    ((tagged-list? exp 'if)
     (make-rose
@@ -1618,7 +1618,7 @@
                    ,(remove-return-tail-call
                      (send x
                            get
-                           (- (array-list-length (send x get-value))
+                           (- (js/length (send x get-value))
                               1))))
                  node))
               (send node drop 1)))

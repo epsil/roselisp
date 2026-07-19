@@ -1156,7 +1156,7 @@ function linkEnvironmentFrames(frames: any): any {
   return firstFrame;
 }
 
-linkEnvironmentFrames.fsource = [Symbol.for('define'), [Symbol.for('link-environment-frames'), Symbol.for('frames')], [Symbol.for('define'), Symbol.for('first-frame'), undefined], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('frames')], 1], -1, -1]]], [Symbol.for('define'), Symbol.for('frame'), [Symbol.for('aget'), Symbol.for('frames'), Symbol.for('i')]], [Symbol.for('set-field!'), Symbol.for('parent'), Symbol.for('frame'), Symbol.for('first-frame')], [Symbol.for('set!'), Symbol.for('first-frame'), Symbol.for('frame')]], Symbol.for('first-frame')];
+linkEnvironmentFrames.fsource = [Symbol.for('define'), [Symbol.for('link-environment-frames'), Symbol.for('frames')], [Symbol.for('define'), Symbol.for('first-frame'), undefined], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('frames')], 1], -1, -1]]], [Symbol.for('define'), Symbol.for('frame'), [Symbol.for('aget'), Symbol.for('frames'), Symbol.for('i')]], [Symbol.for('set-field!'), Symbol.for('parent'), Symbol.for('frame'), Symbol.for('first-frame')], [Symbol.for('set!'), Symbol.for('first-frame'), Symbol.for('frame')]], Symbol.for('first-frame')];
 
 /**
  * Prefix a set of bindings.

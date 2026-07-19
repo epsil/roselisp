@@ -159,7 +159,7 @@
   ;;; Pop a function call off the call stack.
   (define/public (pop-call)
     (cond
-     ((zero? (array-list-length (get-field calls this)))
+     ((zero? (js/length (get-field calls this)))
       #u)
      (else
       (pop! (get-field calls this)))))
@@ -167,7 +167,7 @@
   ;;; Pop a value off the value stack.
   (define/public (pop-value)
     (cond
-     ((zero? (array-list-length (get-field values this)))
+     ((zero? (js/length (get-field values this)))
       #u)
      (else
       (pop! (get-field values this)))))
@@ -197,7 +197,7 @@
 
   ;;; The number of function calls on the call stack.
   (define/public (size)
-    (array-list-length (get-field calls this)))
+    (js/length (get-field calls this)))
 
   ;;; Pop a single function call off the call stack
   ;;; and evaluate it. The value thus obtained is
@@ -235,7 +235,7 @@
     (define call1
       (send call map-right f))
     (cond
-     ((> (array-list-length nested-calls) 0)
+     ((> (js/length nested-calls) 0)
       (send tramp push-call call1)
       (for ((nested-call nested-calls))
         (send tramp push-call nested-call)))
@@ -266,8 +266,9 @@
   ;;; Evaluate the function call.
   (define/public (evaluate)
     (cond
-     ((= (~> (get-field call this)
-             (array-list-length _))
+     ((= (~> this
+             (get-field call _)
+             (js/length _))
          0)
       #u)
      (else
@@ -285,7 +286,8 @@
   ;;; Map a function over the function call,
   ;;; from left to right.
   (define/public (map-left f)
-    (~> (get-field call this)
+    (~> this
+        (get-field call _)
         (map f _)
         (apply new TrampolineCall _)))
 
@@ -294,7 +296,8 @@
   (define/public (map-right f)
     (define call '())
     (for ((i (range (- (send this size) 1) -1 -1)))
-      (~> (get-field call this)
+      (~> this
+          (get-field call _)
           (aget _ i)
           (f _)
           (push! call _)))
@@ -307,12 +310,14 @@
 
   ;;; Pop a value off the beginning of the call.
   (define/public (pop-left)
-    (~> (get-field call this)
+    (~> this
+        (get-field call _)
         (pop-left! _)))
 
   ;;; Pop a value off the end of the call.
   (define/public (pop-right)
-    (~> (get-field call this)
+    (~> this
+        (get-field call _)
         (pop-right! _)))
 
   ;;; Push a value onto the call
@@ -322,21 +327,24 @@
 
   ;;; Push a value onto the beginning of the call.
   (define/public (push-left value)
-    (~> (get-field call this)
+    (~> this
+        (get-field call _)
         (push-left! _ value))
     this)
 
   ;;; Push a value onto the end of the call.
   (define/public (push-right value)
-    (~> (get-field call this)
+    (~> this
+        (get-field call _)
         (push-right! _ value))
     this)
 
   ;;; Return the size of the call
   ;;; (i.e., number of arguments plus one).
   (define/public (size)
-    (~> (get-field call this)
-        (array-list-length _))))
+    (~> this
+        (get-field call _)
+        (js/length _))))
 
 ;;; Run a trampolined function.
 ;;;

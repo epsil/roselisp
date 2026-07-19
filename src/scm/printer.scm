@@ -122,7 +122,7 @@
 ;;; Join a list of documents with a separator.
 (define (join sep docs)
   (define result '())
-  (for ((i (range 0 (array-list-length docs))))
+  (for ((i (range 0 (js/length docs))))
     (unless (= i 0)
       (push-right! result sep))
     (push-right! result (aget docs i)))
@@ -162,7 +162,7 @@
 (define (doc-should-break? doc)
   (cond
    ((is-a? doc DocCommand)
-    (oget (array-list-last (get-field args doc)) "should-break"))
+    (oget (js/last (get-field args doc)) "should-break"))
    (else
     #f)))
 
@@ -170,7 +170,7 @@
 (define (doc-has-comments? doc)
   (cond
    ((is-a? doc DocCommand)
-    (oget (array-list-last (get-field args doc)) "has-comments"))
+    (oget (js/last (get-field args doc)) "has-comments"))
    (else
     #f)))
 
@@ -212,7 +212,7 @@
   (define trailing-comments "")
   (when (or (eq? comments-option #f)
             (not comments)
-            (= (array-list-length comments) 0))
+            (= (js/length comments) 0))
     (return result))
   (for ((i (range 0 (length comments))))
     (define comment
@@ -222,7 +222,7 @@
       (define block-comment
         (make-block-comment
          (get-field original-text comment)))
-      (when (and (= i (- (array-list-length comments) 1))
+      (when (and (= i (- (js/length comments) 1))
                  (eq? code ""))
         (set! block-comment
               (regexp-replace (regexp "\\n*$")
@@ -241,7 +241,7 @@
       (define leading-comment
         (make-line-comment
          (get-field original-text comment)))
-      (when (and (= i (- (array-list-length comments) 1))
+      (when (and (= i (- (js/length comments) 1))
                  (eq? code ""))
         (set! leading-comment
               (regexp-replace (regexp "\\n$")
@@ -342,7 +342,7 @@
 
 ;;; Whether an ESTree node has any comments.
 (define (estree-has-comments? node)
-  (> (array-list-length (get-field comments node)) 0))
+  (> (js/length (get-field comments node)) 0))
 
 ;;; Whether an ESTree node has any block comments.
 (define (estree-has-block-comment? node)
@@ -526,7 +526,7 @@
   (define result
     (list
      (join space elements1)
-     (if (> (array-list-length elements2) 0)
+     (if (> (js/length elements2) 0)
          (list
           line
           (indent
@@ -680,13 +680,13 @@
     (define result '())
     (define indentation
       (string-repeat " " offset))
-    (when (> (array-list-length contents-printed) 0)
+    (when (> (js/length contents-printed) 0)
       (push-right! result indentation))
-    (for ((i (range 0 (array-list-length contents-printed))))
+    (for ((i (range 0 (js/length contents-printed))))
       (define current
         (aget contents-printed i))
       (define next
-        (if (< i (- (array-list-length contents-printed) 1))
+        (if (< i (- (js/length contents-printed) 1))
             (aget contents-printed (+ i 1))
             empty))
       (push-right! result current)
@@ -1141,7 +1141,7 @@
   (set! result
         (join (list "," space)
               expressions-printed))
-  (when (> (array-list-length expressions) 1)
+  (when (> (js/length expressions) 1)
     (set! result
           (doc-wrap result options)))
   result)
@@ -1153,7 +1153,7 @@
   (define body-modified
     (begin
       (when (and (get-field comments node)
-                 (> (array-list-length body) 0))
+                 (> (js/length body) 0))
         (set-field! comments
                     (first body)
                     (append (get-field comments node)
@@ -1880,7 +1880,7 @@
   (define source
     (get-field source node))
   (cond
-   ((and (= (array-list-length specifiers) 1)
+   ((and (= (js/length specifiers) 1)
          (not (estree-type? (first specifiers)
                             "ImportSpecifier")))
     (list
@@ -1996,7 +1996,7 @@
     (get-field properties node))
   (list
    "{"
-   (if (= (array-list-length properties) 0)
+   (if (= (js/length properties) 0)
        empty
        (list
         line
@@ -2120,7 +2120,7 @@
   (define consequent
     (get-field consequent node))
   (define is-block-statement
-    (and (= (array-list-length consequent) 1)
+    (and (= (js/length consequent) 1)
          (first consequent)
          (estree-type? (first consequent) "BlockStatement")))
   (define consequent-printed

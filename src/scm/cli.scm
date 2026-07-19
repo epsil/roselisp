@@ -178,7 +178,7 @@ Options:
    (eval-flag
     (display (interpret-string eval-flag)))
    ((or repl-flag
-        (= (array-list-length input) 0))
+        (= (js/length input) 0))
     (repl))
    (decompile-flag
     (decompile-files! input flags))

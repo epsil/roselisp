@@ -608,12 +608,12 @@
   (cond
    ((not (array? nodes))
     nodes)
-   ((and (= (array-list-length nodes) 1)
+   ((and (= (js/length nodes) 1)
          (array? (~> (first nodes)
                      (send _ get-value)))
          (> (~> (first nodes)
                 (send _ get-value)
-                (array-list-length _))
+                (js/length _))
             0)
          (eq? (~> (first nodes)
                   (send _ get-value)
@@ -628,7 +628,7 @@
   (cond
    ((not (array? nodes))
     nodes)
-   ((= (array-list-length nodes) 1)
+   ((= (js/length nodes) 1)
     (first nodes))
    (else
     (begin-wrap-rose nodes))))
@@ -654,7 +654,7 @@
       (hash-ref cache exp))
     (define val
       (aget entry idx))
-    (unless (>= idx (- (array-list-length entry) 1))
+    (unless (>= idx (- (js/length entry) 1))
       (set! idx (+ idx 1)))
     (hash-set! indices exp idx)
     val)

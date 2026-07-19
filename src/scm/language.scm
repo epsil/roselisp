@@ -1203,7 +1203,7 @@
   (cond
    ((array? exp)
     (cond
-     ((= (array-list-length exp) 0)
+     ((= (js/length exp) 0)
       (set! result
             (compile-list
              node1 env options)))
@@ -1296,7 +1296,7 @@
              (send node1 has-property "comments"))
     (define comments
       (send node1 get-property "comments"))
-    (when (> (array-list-length comments) 0)
+    (when (> (js/length comments) 0)
       (set-field! comments
                   result
                   (compile-comments comments))))
@@ -1337,7 +1337,7 @@
   (define result '())
   (define return-idx -1)
   (when (eq? expression-type "return")
-    (for ((i (range (- (array-list-length statements) 1) -1 -1)))
+    (for ((i (range (- (js/length statements) 1) -1 -1)))
       (define statement
         (aget statements i))
       (unless (or (form? statement break_ env)
@@ -1345,7 +1345,7 @@
                   (form? statement yield_ env))
         (set! return-idx i)
         (break))))
-  (for ((i (range 0 (array-list-length statements))))
+  (for ((i (range 0 (js/length statements))))
     (define statement
       (aget statements i))
     (cond
@@ -1534,11 +1534,11 @@
       (define fragment-comments
         (get-field comments fragment))
       (cond
-       ((> (array-list-length fragment-statements) 0)
+       ((> (js/length fragment-statements) 0)
         (transfer-comments fragment (first fragment-statements))
         (set! statements
               (append statements fragment-statements)))
-       ((> (array-list-length fragment-comments) 0)
+       ((> (js/length fragment-comments) 0)
         (push-right! statements statement))))
      (else
       (push-right! statements statement))))
@@ -1566,7 +1566,7 @@
   (unless (estree-type? exp "BlockStatement")
     (return exp))
   (define unwrapped-exp exp)
-  (while (and (= (array-list-length (get-field body unwrapped-exp))
+  (while (and (= (js/length (get-field body unwrapped-exp))
                  1)
               (estree-type? (first (get-field body unwrapped-exp))
                             "BlockStatement"))
@@ -1680,7 +1680,7 @@
     (macro-call? (send exp get-value) env))
    (else
     (and (array? exp)
-         (> (array-list-length exp) 1)
+         (> (js/length exp) 1)
          (symbol? (first exp))
          (procedure-type?
           (send env get-type (first exp)))))))
@@ -1692,7 +1692,7 @@
     (macro-call? (send exp get-value) env))
    (else
     (and (array? exp)
-         (> (array-list-length exp) 1)
+         (> (js/length exp) 1)
          (symbol? (first exp))
          (macro-type?
           (send env get-type (first exp)))))))
@@ -1704,7 +1704,7 @@
     (macro-call? (send exp get-value) env))
    (else
     (and (array? exp)
-         (> (array-list-length exp) 1)
+         (> (js/length exp) 1)
          (symbol? (first exp))
          (special-type?
           (send env get-type (first exp)))))))
@@ -1729,7 +1729,7 @@
   (when should-curry
     (set! params (rest (flatten name-and-params)))
     (when (and (dotted-list? name-and-params)
-               (= (array-list-length params) 1))
+               (= (js/length params) 1))
       (set! params (first params))))
   (make-rose
    `(lambda ,params
@@ -1741,7 +1741,7 @@
   ;; FIXME: When a complex argument is referenced inside of a `lambda`
   ;; expression, we should store the value in a local variable.
   (define params
-    (cdr (array-list-second exp)))
+    (cdr (js/second exp)))
   (define-values (regular-params rest-param)
     (parse-params-list params))
   (when rest-param
@@ -1751,37 +1751,37 @@
   (define params-list
     (map (lambda (x)
            (if (array? x)
-               (array-first x)
+               (js/first x)
                x))
          params))
   (define regular-args '())
   (define rest-arg '(list))
-  (for ((i (range 0 (array-list-length args))))
+  (for ((i (range 0 (js/length args))))
     (define arg
       (aget args i))
     (cond
-     ((< i (array-list-length regular-params))
+     ((< i (js/length regular-params))
       (push-right! regular-args arg))
      (rest-param
       (push-right! rest-arg arg))))
   (define args-list
     (append regular-args
             (if (and rest-param
-                     (> (array-list-length rest-arg 1)))
+                     (> (js/length rest-arg 1)))
                 (list rest-arg)
                 '())))
   (define body
     (drop exp 2))
   (cond
-   ((= (array-list-length params-list) 0)
+   ((= (js/length params-list) 0)
     (cond
-     ((= (array-list-length body) 1)
+     ((= (js/length body) 1)
       (first body))
      (else
       `(begin ,@body))))
    (else
     (define counts
-      (build-list (array-list-length args-list)
+      (build-list (js/length args-list)
                   (const 0)))
     (define should-make-lambda #f)
     (define should-make-let #f)
@@ -1801,7 +1801,7 @@
                              (+ (aget counts idx)
                                 1))
                   (cond
-                   ((< idx (array-list-length args-list))
+                   ((< idx (js/length args-list))
                     (aget args-list idx))
                    (else
                     (define current-param
@@ -1818,7 +1818,7 @@
     ;; Determine whether a complex argument is referenced
     ;; more than once. If so, we need to make a `lambda`
     ;; expression instead.
-    (for ((i (range 0 (array-list-length args-list))))
+    (for ((i (range 0 (js/length args-list))))
       (define count
         (aget counts i))
       (define arg
@@ -1835,10 +1835,10 @@
       (define let-bindings-env '())
       (define gensym-map
         (make-hash))
-      (for ((i (range 0 (array-list-length params-list))))
+      (for ((i (range 0 (js/length params-list))))
         (define arg-exp
           (cond
-           ((< i (array-list-length args-list))
+           ((< i (js/length args-list))
             (aget args-list i))
            (else
             (define current-param
@@ -1879,7 +1879,7 @@
         ,@args))
      (else
       (cond
-       ((= (array-list-length result) 1)
+       ((= (js/length result) 1)
         (first result))
        (else
         `(begin ,@result))))))))
@@ -1902,7 +1902,7 @@
   (cond
    ((list? args)
     (define i 0)
-    (while (< i (array-list-length args))
+    (while (< i (js/length args))
       (define arg
         (aget args i))
       (cond
@@ -1984,7 +1984,7 @@
              (form? f-exp js-function_ env)
              (form? f-exp js-arrow_ env))
          (array? (second f-exp))
-         (= (array-list-length (second f-exp)) 1))
+         (= (js/length (second f-exp)) 1))
     f-exp)
    (else
     ;; Curried function application, i.e., the **A** combinator
@@ -2113,32 +2113,32 @@
     (define params
       (drop exp 1))
     (define return-value
-      (array-list-last params))
+      (js/last params))
     (set! params (drop-right params 1))
     (define plist '())
-    (for ((i (range 0 (array-list-length params))))
+    (for ((i (range 0 (js/length params))))
       (when (keyword? (aget params i))
         (set! plist (drop params i))
         (set! params
               (drop-right params
-                          (- (array-list-length params) i)))
+                          (- (js/length params) i)))
         (break)))
     (define rest-param #u)
     (cond
-     ((eq? (array-list-last params) '*)
+     ((eq? (js/last params) '*)
       (pop-right! params)
       (set! rest-param (pop-right! params)))
      (else
       (set! rest-param (plist-get_ plist ':rest))))
     (define mandatory-params
       (if (and (tagged-list? exp '->*)
-               (>= (array-list-length params) 1))
-          (array-list-first params)
+               (>= (js/length params) 1))
+          (js/first params)
           params))
     (define optional-params
       (if (and (tagged-list? exp '->*)
-               (>= (array-list-length params) 2))
-          (array-list-second params)
+               (>= (js/length params) 2))
+          (js/second params)
           '()))
     (define pos 0)
     (define (compile-param param
@@ -2181,14 +2181,14 @@
                  rest-params-compiled)
          return-value-compiled))
    ((and (array? exp)
-         (> (array-list-length exp) 0))
+         (> (js/length exp) 0))
     (define name
       (new Identifier
            (symbol->string (first exp))))
     (define params
       (map symbol->string (rest exp)))
     (cond
-     ((> (array-list-length params) 0)
+     ((> (js/length params) 0)
       (new TSTypeReference
            name
            (new TSTypeParameterInstantiation
@@ -2237,7 +2237,7 @@
      (make-rose callee)
      env options))
   (define args-compiled '())
-  (when (> (array-list-length args) 0)
+  (when (> (js/length args) 0)
     (define regular-args
       (drop-right args 1))
     (for ((arg regular-args))
@@ -2246,7 +2246,7 @@
                     (make-rose arg)
                     env options)))
     (define rest-arg
-      (array-list-last args))
+      (js/last args))
     (define rest-arg-compiled
       (compile-expression (make-rose rest-arg) env options))
     (define spread-element
@@ -2312,7 +2312,7 @@
   (define indices
     (drop-right (drop exp 2) 1))
   (define value
-    (aget exp (- (array-list-length exp) 1)))
+    (aget exp (- (js/length exp) 1)))
   (compile-rose
    (insert-sexp-into-rose
     `(set! (array-ref ,arr ,@indices) ,value)
@@ -2357,7 +2357,7 @@
   (define cond-clauses
     (send node drop 1))
   (cond
-   ((= (array-list-length cond-clauses) 0)
+   ((= (js/length cond-clauses) 0)
     (make-expression-or-statement
      (new Literal #f)
      options))
@@ -2397,7 +2397,7 @@
               options)
              compiled-exp))))
     (cond
-     ((eq? (~> (array-list-last cond-clauses)
+     ((eq? (~> (js/last cond-clauses)
                (send get 0)
                (send get-value))
            'else)
@@ -2406,20 +2406,20 @@
          ((or (eq? expression-type "statement")
               (eq? expression-type "return"))
           (transfer-and-compile-comments
-           (array-list-last cond-clauses)
+           (js/last cond-clauses)
            (wrap-in-block-statement-smart
             (compile-statement-or-return-statement
              (begin-wrap-rose-smart-1
-              (send (array-list-last cond-clauses)
+              (send (js/last cond-clauses)
                     drop 1))
              env options))
            options))
          (else
           (transfer-and-compile-comments
-           (array-list-last cond-clauses)
+           (js/last cond-clauses)
            (compile-expression
             (begin-wrap-rose
-             (send (array-list-last cond-clauses)
+             (send (js/last cond-clauses)
                    drop 1))
             env options)
            options))))
@@ -2499,10 +2499,10 @@
                   (list '(Listof Any)))
                  ((dotted-list? params)
                   (append
-                   (make-list (- (array-list-length params) 2) 'Any)
+                   (make-list (- (js/length params) 2) 'Any)
                    (list '(Listof Any))))
                  (else
-                  (make-list (array-list-length params) 'Any)))
+                  (make-list (js/length params) 'Any)))
               ,return-type))
       (make-type-binding env name-sym type_ lang-filter))
      (else
@@ -2538,7 +2538,7 @@
              (js-obj "functionName" function-name
                      "returnType" return-type)))
       (when (is-a? compiled-type TSFunctionType)
-        (for ((i (range 0 (array-list-length (get-field params result)))))
+        (for ((i (range 0 (js/length (get-field params result)))))
           (define param
             (aget (get-field params result) i))
           (define type-param
@@ -2565,7 +2565,7 @@
      (else
       result)))
    ;; Uninitialized variable.
-   ((= (array-list-length exp) 2)
+   ((= (js/length exp) 2)
     (make-type-binding env (second exp) 'Any lang-filter)
     (new VariableDeclaration
          (list (new VariableDeclarator
@@ -2662,11 +2662,11 @@
   (define exp
     (send node get-value))
   (cond
-   ((= (array-list-length exp) 1)
+   ((= (js/length exp) 1)
     (compile-expression
      (make-rose #u node)
      env options))
-   ((= (array-list-length exp) 2)
+   ((= (js/length exp) 2)
     (compile-div
      (make-rose
       `(/ 1 ,(send node get 1))
@@ -2766,7 +2766,7 @@
    ;; Function expression is a `lambda` form:
    ;; swap the two first arguments.
    ((and (form? exp lambda_ env)
-         (>= (array-list-length (second exp)) 2))
+         (>= (js/length (second exp)) 2))
     `(lambda (,(second (second exp))
               ,(first (second exp))
               ,@(drop (second exp) 2))
@@ -2886,11 +2886,11 @@
 (define (compile-greater-than node env (options (js-obj)))
   (define exp (send node get-value))
   (cond
-   ((< (array-list-length exp) 3)
+   ((< (js/length exp) 3)
     (compile-rose
      (make-rose #t)
      env options))
-   ((= (array-list-length exp) 3)
+   ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
      (js-obj "identity" #t
@@ -2899,7 +2899,7 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (array-list-length exp))))
+    (for ((i (range 2 (js/length exp))))
       (push-right! and-exp
                    `(> ,(aget exp (- i 1))
                        ,(aget exp i))))
@@ -2912,11 +2912,11 @@
   (define exp
     (send node get-value))
   (cond
-   ((< (array-list-length exp) 3)
+   ((< (js/length exp) 3)
     (compile-rose
      (make-rose #t)
      env options))
-   ((= (array-list-length exp) 3)
+   ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
      (js-obj "identity" #t
@@ -2925,7 +2925,7 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (array-list-length exp))))
+    (for ((i (range 2 (js/length exp))))
       (push-right! and-exp
                    `(>= ,(aget exp (- i 1))
                         ,(aget exp i))))
@@ -2947,7 +2947,7 @@
   (define operands
     (send node drop 1))
   (cond
-   ((= (array-list-length operands) 0)
+   ((= (js/length operands) 0)
     (define identity
       (oget settings "identity"))
     (make-expression-or-statement
@@ -2955,7 +2955,7 @@
       (make-rose identity)
       env options)
      options))
-   ((= (array-list-length operands) 1)
+   ((= (js/length operands) 1)
     (make-expression-or-statement
      (compile-rose
       (first operands)
@@ -3049,7 +3049,7 @@
           (third arg))
         (make-type-binding env1 sym 'Any lang-filter)
         (define result
-          (~> (if (= (array-list-length arg) 4)
+          (~> (if (= (js/length arg) 4)
                   (new AssignmentPattern
                        (new Identifier
                             (print-estree
@@ -3102,7 +3102,7 @@
                        env1 inherited-options))))
   (define body-statements
     (send node drop 2))
-  (when (and (> (array-list-length body-statements) 0)
+  (when (and (> (js/length body-statements) 0)
              (eq? (send (first body-statements) get-value)
                   ':))
     (set! body-statements (drop body-statements 2)))
@@ -3155,11 +3155,11 @@
   (define exp
     (send node get-value))
   (cond
-   ((< (array-list-length exp) 3)
+   ((< (js/length exp) 3)
     (compile-rose
      (make-rose #t)
      env options))
-   ((= (array-list-length exp) 3)
+   ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
      (js-obj "identity" #t
@@ -3168,7 +3168,7 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (array-list-length exp))))
+    (for ((i (range 2 (js/length exp))))
       (push-right! and-exp
                    `(< ,(aget exp (- i 1))
                        ,(aget exp i))))
@@ -3181,11 +3181,11 @@
   (define exp
     (send node get-value))
   (cond
-   ((< (array-list-length exp) 3)
+   ((< (js/length exp) 3)
     (compile-rose
      (make-rose #t)
      env options))
-   ((= (array-list-length exp) 3)
+   ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
      (js-obj "identity" #t
@@ -3194,7 +3194,7 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (array-list-length exp))))
+    (for ((i (range 2 (js/length exp))))
       (push-right! and-exp
                    `(<= ,(aget exp (- i 1))
                         ,(aget exp i))))
@@ -3417,7 +3417,7 @@
       (set! regular-vars
             (drop-right var-list 1))
       (set! rest-var
-            (array-list-last var-list)))
+            (js/last var-list)))
      (else
       (set! regular-vars variables)))
     (set! var-decls
@@ -4028,7 +4028,7 @@
   (define compiled-body '())
   ;; Add defined variables to environment. We have to
   ;; handle them here since they may refer to each other.
-  (for ((i (range 0 (array-list-length body))))
+  (for ((i (range 0 (js/length body))))
     (define exp
       (send (aget body i) get-value))
     (cond
@@ -4060,7 +4060,7 @@
    (else
     ;; Wrap in an arrow function.
     (cond
-     ((= (array-list-length exp) 2)
+     ((= (js/length exp) 2)
       (compile-expression
        (send node get 1)
        env options))
@@ -4094,7 +4094,7 @@
 ;;; if there are no symbols.
 (define (make-global-environment-exp symbols env options)
   (cond
-   ((= (array-list-length symbols) 0)
+   ((= (js/length symbols) 0)
     #f)
    ((oget options "inlineFunctions")
     (make-define-values-exp symbols env options))
@@ -4118,7 +4118,7 @@
   (define internal-symbol)
   (define symbol)
   (define value)
-  (while (> (array-list-length referenced-symbols) 0)
+  (while (> (js/length referenced-symbols) 0)
     (set! symbol (pop! referenced-symbols))
     (push-right! seen symbol)
     (when (and (not (memq? symbol external-symbols))
@@ -4130,8 +4130,8 @@
         (when (tagged-list? exp 'define)
           (set! internal-symbol
                 (if (array? (second exp))
-                    (array-first (array-second exp))
-                    (array-second exp)))
+                    (js/first (js/second exp))
+                    (js/second exp)))
           (define referenced-symbols-1 '())
           (define env1
             (send env clone))
@@ -4196,7 +4196,7 @@
       (when (memq? symbol symbols)
         (push-right! internal-symbols internal-symbol)
         (push-right! external-symbols symbol))))
-  (when (> (array-list-length external-symbols) 0)
+  (when (> (js/length external-symbols) 0)
     (set! definitions
           `(define-values ,external-symbols
              ((js/arrow ()
@@ -4259,18 +4259,18 @@
       options
       (js-obj "inlineFunctions" #t))))
   (cond
-   ((> (array-list-length global-environment-exp) 1)
+   ((> (js/length global-environment-exp) 1)
     (define lambda-call
       (aget global-environment-exp 2))
     (define lambda-exp
       (aget lambda-call 0))
     (define values-exp
-      (array-list-last lambda-exp))
+      (js/last lambda-exp))
     (define sym
       (second values-exp))
     (define result lambda-call)
     (cond
-     ((and (= (array-list-length lambda-exp) 4)
+     ((and (= (js/length lambda-exp) 4)
            (symbol? (second (third lambda-exp))))
       ;; In simple cases, where there is only a single
       ;; `(define sym ...)` form, no `lambda` expression
@@ -4281,7 +4281,7 @@
       ;; Change the return value of the `lambda` function
       ;; from a `(values ...)` form to a single value.
       (list-set! lambda-exp
-                 (- (array-list-length lambda-exp) 1)
+                 (- (js/length lambda-exp) 1)
                  sym)))
     result)
    (else
@@ -4318,7 +4318,7 @@
            (compile-expression source env options)))
     (push-right! results result))
   ;; Compile other expressions.
-  (when (> (array-list-length other-expressions) 0)
+  (when (> (js/length other-expressions) 0)
     (define specifiers '())
     (define seen '())
     (for ((x other-expressions))
@@ -4377,7 +4377,7 @@
            specifiers))
     (push-right! results result))
   (cond
-   ((= (array-list-length results) 1)
+   ((= (js/length results) 1)
     (first results))
    (else
     (make-program-fragment results))))
@@ -4642,7 +4642,7 @@
     (define lines
       (string-split str (regexp "^" "gm")))
     (cond
-     ((<= (array-list-length lines) 1)
+     ((<= (js/length lines) 1)
       (compile-atom node env options))
      (else
       ;; TODO: We could compile to a template literal instead.
@@ -4662,7 +4662,7 @@
   (define exp
     (send node get-value))
   (cond
-   ((= (array-list-length exp) 2)
+   ((= (js/length exp) 2)
     (define num
       (send node get 1))
     (define num-compiled
@@ -4882,15 +4882,15 @@
   (cond
    ((form? vals-exp range_ env)
     (define start
-      (if (>= (array-list-length vals-exp) 2)
+      (if (>= (js/length vals-exp) 2)
           (second vals-exp)
           #u))
     (define end
-      (if (>= (array-list-length vals-exp) 3)
+      (if (>= (js/length vals-exp) 3)
           (third vals-exp)
           #u))
     (define step
-      (if (>= 4 (array-list-length vals-exp))
+      (if (>= 4 (js/length vals-exp))
           (fourth vals-exp)
           #u))
     (set! start
@@ -5188,9 +5188,9 @@
   (define exp
     (send node get-value))
   (cond
-   ((<= (array-list-length exp) 0)
+   ((<= (js/length exp) 0)
     (compile-rose "" env options))
-   ((= (array-list-length exp) 2)
+   ((= (js/length exp) 2)
     (compile-rose
      (send node get 1) env options))
    (else
@@ -5239,7 +5239,7 @@
       (send super-classes-node get-value))
     (set! body-node (slice-rose body-node 1))
     (set! body-exp (send body-node get-value))
-    (when (> (array-list-length super-classes) 0)
+    (when (> (js/length super-classes) 0)
       (set! super-class
             (new Identifier
                  (print-estree
@@ -5261,7 +5261,7 @@
       (hash-set! accessibilities (second exp) "private"))
      (else
       (define is-initialized
-        (>= (array-list-length exp) 3))
+        (>= (js/length exp) 3))
       (define id
         (second exp))
       (define is-method
@@ -5284,7 +5284,7 @@
         (tagged-list? exp 'define/generator))
       (define is-constructor
         (and is-method
-             (> (array-list-length (second exp)) 0)
+             (> (js/length (second exp)) 0)
              (eq? id 'constructor)))
       (when (or is-constructor is-generator)
         (set! accessibility "public"))
@@ -5371,7 +5371,7 @@
   (define exp
     (send node get-value))
   (define properties '())
-  (for ((i (range 1 (array-list-length exp) 2)))
+  (for ((i (range 1 (js/length exp) 2)))
     (define key-node
       (send node get i))
     (define key-value
@@ -5448,10 +5448,10 @@
     (cond
      ((estree-type? el "ArrayExpression")
       (cond
-       ((= (array-list-length (get-field elements el)) 0)
+       ((= (js/length (get-field elements el)) 0)
         ;; Ignore empty arrays.
         )
-       ((= (array-list-length (get-field elements el)) 1)
+       ((= (js/length (get-field elements el)) 1)
         ;; Unwrap singleton arrays.
         (push-right! elements (aget (get-field elements el) 0)))
        (else
@@ -5697,11 +5697,11 @@
      ((and (or (tagged-list? assocs 'quasiquote)
                (tagged-list? assocs 'quote))
            (list? (second assocs))
-           (= (array-list-length
+           (= (js/length
                (filter
                 (lambda (x)
                   (or (not (array? x))
-                      (and (= (array-list-length x) 2)
+                      (and (= (js/length x) 2)
                            (or (tagged-list? x 'unquote)
                                (and (tagged-list? x 'unquote-splicing)
                                     (not (tagged-list?
@@ -5794,8 +5794,8 @@
 ;;; Compiler macro for `(string-trim ...)` expressions.
 (defmacro compile-string-trim-macro (&rest args)
   (cond
-   ((= (array-length args) 1)
-    `(send ,(array-first args) trim))
+   ((= (js/length args) 1)
+    `(send ,(js/first args) trim))
    (else
     (definition->macro (source string-trim_) args))))
 
@@ -7096,7 +7096,7 @@
     (set! val (oget node key))
     (cond
      ((array? val)
-      (for ((i (range 0 (array-list-length val))))
+      (for ((i (range 0 (js/length val))))
         (set! el (aget val i))
         (set! el1 (traverse-estree el enter leave replace))
         (unless (eq? el el1)
@@ -7180,7 +7180,7 @@
                 (lambda (x)
                   (or (not (get-field init x))
                       (not (zero?
-                            (array-list-length
+                            (js/length
                              (find-estree
                               (lambda (y)
                                 (and (estree-type? y "Identifier")
@@ -7316,7 +7316,7 @@
           (set! header-comment-strings
                 (array-drop-right comment-strings 1))
           (set! initial-node-comment-string
-                (array-list-last comment-strings))
+                (js/last comment-strings))
           (when (regexp-match (regexp "\\n\\n$")
                               initial-node-comment-string)
             (push-right! header-comment-strings
@@ -7324,11 +7324,11 @@
             (set! initial-node-comment-string #u))
           (when (> (length header-comment-strings) 0)
             (aset! header-comment-strings
-                   (- (array-length header-comment-strings) 1)
+                   (- (js/length header-comment-strings) 1)
                    (regexp-replace
                     (regexp "\\n*$")
                     (aget header-comment-strings
-                          (- (array-length header-comment-strings) 1))
+                          (- (js/length header-comment-strings) 1))
                     "")))))
       (when (> (length header-comment-strings) 0)
         (define header-exp
@@ -7405,7 +7405,7 @@
       (set! exp (send node get-value))
       (cond
        ((and (tagged-list? exp 'require)
-             (> (array-list-length exp) 1)
+             (> (js/length exp) 1)
              (tagged-list? (second exp) 'only-in))
         (define module-name
           (second (second exp)))
@@ -7427,8 +7427,8 @@
            (else
             (send (get-field symbol-map this) set x #t)))))
        ((and (tagged-list? exp 'require)
-             (> (array-list-length exp) 1))
-        (let* ((module-name-symbol (array-list-last exp))
+             (> (js/length exp) 1))
+        (let* ((module-name-symbol (js/last exp))
                (module-name module-name-symbol))
           (cond
            ((symbol? module-name-symbol)
@@ -7493,7 +7493,7 @@
         (send node get-value))
       (cond
        ((and (tagged-list? exp 'require)
-             (> (array-list-length exp) 1)
+             (> (js/length exp) 1)
              (tagged-list? (second exp) 'only-in))
         (set! module-name (second (second exp)))
         (when (symbol? module-name)

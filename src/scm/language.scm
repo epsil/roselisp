@@ -3677,14 +3677,14 @@
 ;;;
 ;;; [cl:macroexpand]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand
 (define (macroexpand* exp (env #u))
-  (define result exp)
+  (define expansion exp)
   (define expanded #f)
   (define expanded1 #t)
   (while expanded1
-    (set!-values (result expanded1)
-                 (macroexpand*-1 result env))
+    (set!-values (expansion expanded1)
+                 (macroexpand*-1 expansion env))
     (set! expanded (or expanded expanded1)))
-  (values result expanded))
+  (values expansion expanded))
 
 ;;; Expand the macro call `exp` in `env` a single step.
 ;;;
@@ -3705,7 +3705,7 @@
 ;;; [cl:macroexpand-1]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand-1
 (define (macroexpand*-1 exp (env #u))
   (define node exp)
-  (define result exp)
+  (define expansion exp)
   (define expanded #f)
   (set! exp
         (if (is-a? node Rose)
@@ -3717,11 +3717,11 @@
             (empty-environment)))
   (cond
    ((not (list? exp))
-    (set! result exp))
+    (set! expansion exp))
    ((null? exp)
-    (set! result exp))
+    (set! expansion exp))
    ((quote? exp)
-    (set! result
+    (set! expansion
           (text-of-quotation exp)))
    (else
     (define op
@@ -3729,12 +3729,12 @@
     (define-values (macro-f typ)
       (send env get-typed-value op))
     (when (macro-type? typ)
-      (set! result (macro-f exp env))
+      (set! expansion (macro-f exp env))
       (set! expanded #t))))
   (values
    (if (is-a? node Rose)
-       (make-rose result node)
-       result)
+       (make-rose expansion node)
+       expansion)
    expanded))
 
 ;;; Expand the macro call `exp` in `env`, and keep
@@ -3742,28 +3742,40 @@
 ;;; expansions, or until something that is not a
 ;;; macro call is obtained.
 (define (macroexpand-n exp env (n 1))
+  (define-values (expansion)
+    (macroexpand*-n exp env n))
+  expansion)
+
+;;; Expand the macro call `exp` in `env`, and keep
+;;; expanding the result for a total number of `n`
+;;; expansions, or until something that is not a
+;;; macro call is obtained. Returns a tuple
+;;; `(expansion expanded)`, where `expanded` is `#t`
+;;; if macro expansion took place and `#f` otherwise.
+(define (macroexpand*-n exp env (n 1))
   (define i n)
-  (define result exp)
+  (define expansion exp)
   (define expanded #f)
   (define expanded1 #t)
   (while (and expanded1
               (> i 0))
-    (set!-values (result expanded1)
-                 (macroexpand*-1 result env))
+    (set!-values (expansion expanded1)
+                 (macroexpand*-1 expansion env))
     (set! expanded (or expanded expanded1))
     (set! i (- i 1)))
-  (values result expanded))
+  (values expansion expanded))
 
 ;;; Expand the macro call `exp` in `env`, and keep
 ;;; expanding the result until `pred` returns `#f`,
 ;;; or until something that is not a macro call
 ;;; is obtained.
 (define (macroexpand-until exp env pred)
-  (define result exp)
-  (while (and (macro-call? result env)
-              (pred result))
-    (set!-values (result) (macroexpand*-1 result env)))
-  result)
+  (define expansion exp)
+  (while (and (macro-call? expansion env)
+              (pred expansion))
+    (set!-values (expansion)
+                 (macroexpand*-1 expansion env)))
+  expansion)
 
 ;;; Expand all macro calls in `exp` in `env`.
 ;;;
@@ -3800,12 +3812,12 @@
            (pred-f x)))
     (cond
      ((macro-call? x env)
-      (define result
+      (define expansion
         (macroexpand-until x env pred-f-1))
-      (unless (macro-call? result env)
-        (set! result
-              (map-sexp f result env stack bindings)))
-      result)
+      (unless (macro-call? expansion env)
+        (set! expansion
+              (map-sexp f expansion env stack bindings)))
+      expansion)
      (else
       x)))
   (map-sexp f exp env stack bindings))
@@ -3815,9 +3827,9 @@
 (define (macroexpand-compiler-macros exp env)
   (define compiler-macro-env
     (make-macro-environment env))
-  (define result
+  (define expansion
     (macroexpand-all exp compiler-macro-env))
-  result)
+  expansion)
 
 ;;; Compile a `(. ...)` expression.
 ;;; Also handles `(.method obj ...)` calls.
@@ -8448,6 +8460,7 @@
   macroexpand
   macroexpand*
   macroexpand*-1
+  macroexpand*-n
   macroexpand-1
   macroexpand-all
   macroexpand-all-until

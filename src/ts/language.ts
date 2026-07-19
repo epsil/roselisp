@@ -3805,7 +3805,7 @@ compileFexprCall.fsource = [Symbol.for('define'), [Symbol.for('compile-fexpr-cal
 function compileMacroCall(node: any, env: any, options: any = {}): any {
   // Only expand the macro a single step, as there might be
   // compilers defined for the immediate expansion.
-  const expansion: any = macroexpand1(node, env);
+  let expansion: any = macroexpand1(node, env);
   return compileRose(expansion, env, options);
 }
 
@@ -3823,7 +3823,7 @@ compileMacroCall.fsource = [Symbol.for('define'), [Symbol.for('compile-macro-cal
  * [el:macroexpand]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand
  */
 function macroexpand(exp: any, env: any = undefined): any {
-  const [expansion]: any[] = macroexpandStar(exp, env);
+  let [expansion]: any[] = macroexpandStar(exp, env);
   return expansion;
 }
 
@@ -3841,17 +3841,17 @@ macroexpand.fsource = [Symbol.for('define'), [Symbol.for('macroexpand'), Symbol.
  * [cl:macroexpand]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand
  */
 function macroexpandStar(exp: any, env: any = undefined): any {
-  let result: any = exp;
+  let expansion: any = exp;
   let expanded: any = false;
   let expanded1: any = true;
   while (expanded1) {
-    [result, expanded1] = macroexpandstar1(result, env);
+    [expansion, expanded1] = macroexpandstar1(expansion, env);
     expanded = expanded || expanded1;
   }
-  return [result, expanded];
+  return [expansion, expanded];
 }
 
-macroexpandStar.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*'), Symbol.for('exp'), [Symbol.for('env'), undefined]], [Symbol.for('define'), Symbol.for('result'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('expanded'), false], [Symbol.for('define'), Symbol.for('expanded1'), true], [Symbol.for('while'), Symbol.for('expanded1'), [Symbol.for('set!-values'), [Symbol.for('result'), Symbol.for('expanded1')], [Symbol.for('macroexpand*-1'), Symbol.for('result'), Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('expanded'), [Symbol.for('or'), Symbol.for('expanded'), Symbol.for('expanded1')]]], [Symbol.for('values'), Symbol.for('result'), Symbol.for('expanded')]];
+macroexpandStar.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*'), Symbol.for('exp'), [Symbol.for('env'), undefined]], [Symbol.for('define'), Symbol.for('expansion'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('expanded'), false], [Symbol.for('define'), Symbol.for('expanded1'), true], [Symbol.for('while'), Symbol.for('expanded1'), [Symbol.for('set!-values'), [Symbol.for('expansion'), Symbol.for('expanded1')], [Symbol.for('macroexpand*-1'), Symbol.for('expansion'), Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('expanded'), [Symbol.for('or'), Symbol.for('expanded'), Symbol.for('expanded1')]]], [Symbol.for('values'), Symbol.for('expansion'), Symbol.for('expanded')]];
 
 /**
  * Expand the macro call `exp` in `env` a single step.
@@ -3861,7 +3861,7 @@ macroexpandStar.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*'), Sy
  * [el:macroexpand-1]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand_002d1
  */
 function macroexpand1(exp: any, env: any = undefined): any {
-  const [expansion]: any[] = macroexpandstar1(exp, env);
+  let [expansion]: any[] = macroexpandstar1(exp, env);
   return expansion;
 }
 
@@ -3878,7 +3878,7 @@ macroexpand1.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-1'), Symb
  */
 function macroexpandstar1(exp: any, env: any = undefined): any {
   let node: any = exp;
-  let result: any = exp;
+  let expansion: any = exp;
   let expanded: any = false;
   exp = (node instanceof Rose) ? node.getValue() : node;
   env = env || currentEnvironment_() || emptyEnvironment();
@@ -3886,23 +3886,23 @@ function macroexpandstar1(exp: any, env: any = undefined): any {
     const x: any = lastCdr(exp);
     return Array.isArray(x) && (x.length === 0);
   })()) {
-    result = exp;
+    expansion = exp;
   } else if (Array.isArray(exp) && (exp.length === 0)) {
-    result = exp;
+    expansion = exp;
   } else if (quotep(exp)) {
-    result = textOfQuotation(exp);
+    expansion = textOfQuotation(exp);
   } else {
     const op: any = exp[0];
     const [macroF, typ]: any[] = env.getTypedValue(op);
     if (macroTypeP(typ)) {
-      result = macroF(exp, env);
+      expansion = macroF(exp, env);
       expanded = true;
     }
   }
-  return [(node instanceof Rose) ? makeRose(result, node) : result, expanded];
+  return [(node instanceof Rose) ? makeRose(expansion, node) : expansion, expanded];
 }
 
-macroexpandstar1.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*-1'), Symbol.for('exp'), [Symbol.for('env'), undefined]], [Symbol.for('define'), Symbol.for('node'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('expanded'), false], [Symbol.for('set!'), Symbol.for('exp'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')], Symbol.for('node')]], [Symbol.for('set!'), Symbol.for('env'), [Symbol.for('or'), Symbol.for('env'), [Symbol.for('current-environment_')], [Symbol.for('empty-environment')]]], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('list?'), Symbol.for('exp')]], [Symbol.for('set!'), Symbol.for('result'), Symbol.for('exp')]], [[Symbol.for('null?'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('result'), Symbol.for('exp')]], [[Symbol.for('quote?'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('text-of-quotation'), Symbol.for('exp')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('exp')]], [Symbol.for('define-values'), [Symbol.for('macro-f'), Symbol.for('typ')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get-typed-value'), Symbol.for('op')]], [Symbol.for('when'), [Symbol.for('macro-type?'), Symbol.for('typ')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('macro-f'), Symbol.for('exp'), Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('expanded'), true]]]], [Symbol.for('values'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], [Symbol.for('make-rose'), Symbol.for('result'), Symbol.for('node')], Symbol.for('result')], Symbol.for('expanded')]];
+macroexpandstar1.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*-1'), Symbol.for('exp'), [Symbol.for('env'), undefined]], [Symbol.for('define'), Symbol.for('node'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('expansion'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('expanded'), false], [Symbol.for('set!'), Symbol.for('exp'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')], Symbol.for('node')]], [Symbol.for('set!'), Symbol.for('env'), [Symbol.for('or'), Symbol.for('env'), [Symbol.for('current-environment_')], [Symbol.for('empty-environment')]]], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('list?'), Symbol.for('exp')]], [Symbol.for('set!'), Symbol.for('expansion'), Symbol.for('exp')]], [[Symbol.for('null?'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('expansion'), Symbol.for('exp')]], [[Symbol.for('quote?'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('expansion'), [Symbol.for('text-of-quotation'), Symbol.for('exp')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('exp')]], [Symbol.for('define-values'), [Symbol.for('macro-f'), Symbol.for('typ')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get-typed-value'), Symbol.for('op')]], [Symbol.for('when'), [Symbol.for('macro-type?'), Symbol.for('typ')], [Symbol.for('set!'), Symbol.for('expansion'), [Symbol.for('macro-f'), Symbol.for('exp'), Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('expanded'), true]]]], [Symbol.for('values'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], [Symbol.for('make-rose'), Symbol.for('expansion'), Symbol.for('node')], Symbol.for('expansion')], Symbol.for('expanded')]];
 
 /**
  * Expand the macro call `exp` in `env`, and keep
@@ -3911,19 +3911,34 @@ macroexpandstar1.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*-1'),
  * macro call is obtained.
  */
 function macroexpandN(exp: any, env: any, n: any = 1): any {
+  let [expansion]: any[] = macroexpandstarN(exp, env, n);
+  return expansion;
+}
+
+macroexpandN.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-n'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('n'), 1]], [Symbol.for('define-values'), [Symbol.for('expansion')], [Symbol.for('macroexpand*-n'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('n')]], Symbol.for('expansion')];
+
+/**
+ * Expand the macro call `exp` in `env`, and keep
+ * expanding the result for a total number of `n`
+ * expansions, or until something that is not a
+ * macro call is obtained. Returns a tuple
+ * `(expansion expanded)`, where `expanded` is `#t`
+ * if macro expansion took place and `#f` otherwise.
+ */
+function macroexpandstarN(exp: any, env: any, n: any = 1): any {
   let i: any = n;
-  let result: any = exp;
+  let expansion: any = exp;
   let expanded: any = false;
   let expanded1: any = true;
   while (expanded1 && (i > 0)) {
-    [result, expanded1] = macroexpandstar1(result, env);
+    [expansion, expanded1] = macroexpandstar1(expansion, env);
     expanded = expanded || expanded1;
     i--;
   }
-  return [result, expanded];
+  return [expansion, expanded];
 }
 
-macroexpandN.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-n'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('n'), 1]], [Symbol.for('define'), Symbol.for('i'), Symbol.for('n')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('expanded'), false], [Symbol.for('define'), Symbol.for('expanded1'), true], [Symbol.for('while'), [Symbol.for('and'), Symbol.for('expanded1'), [Symbol.for('>'), Symbol.for('i'), 0]], [Symbol.for('set!-values'), [Symbol.for('result'), Symbol.for('expanded1')], [Symbol.for('macroexpand*-1'), Symbol.for('result'), Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('expanded'), [Symbol.for('or'), Symbol.for('expanded'), Symbol.for('expanded1')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], [Symbol.for('values'), Symbol.for('result'), Symbol.for('expanded')]];
+macroexpandstarN.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*-n'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('n'), 1]], [Symbol.for('define'), Symbol.for('i'), Symbol.for('n')], [Symbol.for('define'), Symbol.for('expansion'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('expanded'), false], [Symbol.for('define'), Symbol.for('expanded1'), true], [Symbol.for('while'), [Symbol.for('and'), Symbol.for('expanded1'), [Symbol.for('>'), Symbol.for('i'), 0]], [Symbol.for('set!-values'), [Symbol.for('expansion'), Symbol.for('expanded1')], [Symbol.for('macroexpand*-1'), Symbol.for('expansion'), Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('expanded'), [Symbol.for('or'), Symbol.for('expanded'), Symbol.for('expanded1')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], [Symbol.for('values'), Symbol.for('expansion'), Symbol.for('expanded')]];
 
 /**
  * Expand the macro call `exp` in `env`, and keep
@@ -3932,14 +3947,14 @@ macroexpandN.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-n'), Symb
  * is obtained.
  */
 function macroexpandUntil(exp: any, env: any, pred: any): any {
-  let result: any = exp;
-  while (macroCallP(result, env) && pred(result)) {
-    [result] = macroexpandstar1(result, env);
+  let expansion: any = exp;
+  while (macroCallP(expansion, env) && pred(expansion)) {
+    [expansion] = macroexpandstar1(expansion, env);
   }
-  return result;
+  return expansion;
 }
 
-macroexpandUntil.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-until'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('pred')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('exp')], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('macro-call?'), Symbol.for('result'), Symbol.for('env')], [Symbol.for('pred'), Symbol.for('result')]], [Symbol.for('set!-values'), [Symbol.for('result')], [Symbol.for('macroexpand*-1'), Symbol.for('result'), Symbol.for('env')]]], Symbol.for('result')];
+macroexpandUntil.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-until'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('pred')], [Symbol.for('define'), Symbol.for('expansion'), Symbol.for('exp')], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('macro-call?'), Symbol.for('expansion'), Symbol.for('env')], [Symbol.for('pred'), Symbol.for('expansion')]], [Symbol.for('set!-values'), [Symbol.for('expansion')], [Symbol.for('macroexpand*-1'), Symbol.for('expansion'), Symbol.for('env')]]], Symbol.for('expansion')];
 
 /**
  * Expand all macro calls in `exp` in `env`.
@@ -3976,20 +3991,20 @@ function macroexpandAllUntil(exp: any, env: any, pred: any = undefined, stack: a
     }
     predF1.fsource = [Symbol.for('define'), [Symbol.for('pred-f-1'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('x')]], [Symbol.for('define-values'), Symbol.for('b-type'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('get-type'), Symbol.for('op')]], [Symbol.for('and'), [Symbol.for('or'), [Symbol.for('macro-type?'), Symbol.for('b-type')], [Symbol.for('undefined-type?'), Symbol.for('b-type')]], [Symbol.for('pred-f'), Symbol.for('x')]]];
     if (macroCallP(x, env)) {
-      let result: any = macroexpandUntil(x, env, predF1);
-      if (!macroCallP(result, env)) {
-        result = mapSexp(f, result, env, stack, bindings);
+      let expansion: any = macroexpandUntil(x, env, predF1);
+      if (!macroCallP(expansion, env)) {
+        expansion = mapSexp(f, expansion, env, stack, bindings);
       }
-      return result;
+      return expansion;
     } else {
       return x;
     }
   }
-  f.fsource = [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x'), Symbol.for('stack'), Symbol.for('bindings')], [Symbol.for('define'), Symbol.for('pred-f'), [Symbol.for('or'), Symbol.for('pred'), [Symbol.for('const'), true]]], [Symbol.for('define'), [Symbol.for('pred-f-1'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('x')]], [Symbol.for('define-values'), Symbol.for('b-type'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('get-type'), Symbol.for('op')]], [Symbol.for('and'), [Symbol.for('or'), [Symbol.for('macro-type?'), Symbol.for('b-type')], [Symbol.for('undefined-type?'), Symbol.for('b-type')]], [Symbol.for('pred-f'), Symbol.for('x')]]], [Symbol.for('cond'), [[Symbol.for('macro-call?'), Symbol.for('x'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('macroexpand-until'), Symbol.for('x'), Symbol.for('env'), Symbol.for('pred-f-1')]], [Symbol.for('unless'), [Symbol.for('macro-call?'), Symbol.for('result'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('map-sexp'), Symbol.for('f'), Symbol.for('result'), Symbol.for('env'), Symbol.for('stack'), Symbol.for('bindings')]]], Symbol.for('result')], [Symbol.for('else'), Symbol.for('x')]]];
+  f.fsource = [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x'), Symbol.for('stack'), Symbol.for('bindings')], [Symbol.for('define'), Symbol.for('pred-f'), [Symbol.for('or'), Symbol.for('pred'), [Symbol.for('const'), true]]], [Symbol.for('define'), [Symbol.for('pred-f-1'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('x')]], [Symbol.for('define-values'), Symbol.for('b-type'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('get-type'), Symbol.for('op')]], [Symbol.for('and'), [Symbol.for('or'), [Symbol.for('macro-type?'), Symbol.for('b-type')], [Symbol.for('undefined-type?'), Symbol.for('b-type')]], [Symbol.for('pred-f'), Symbol.for('x')]]], [Symbol.for('cond'), [[Symbol.for('macro-call?'), Symbol.for('x'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('expansion'), [Symbol.for('macroexpand-until'), Symbol.for('x'), Symbol.for('env'), Symbol.for('pred-f-1')]], [Symbol.for('unless'), [Symbol.for('macro-call?'), Symbol.for('expansion'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('expansion'), [Symbol.for('map-sexp'), Symbol.for('f'), Symbol.for('expansion'), Symbol.for('env'), Symbol.for('stack'), Symbol.for('bindings')]]], Symbol.for('expansion')], [Symbol.for('else'), Symbol.for('x')]]];
   return mapSexp(f, exp, env, stack, bindings);
 }
 
-macroexpandAllUntil.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-all-until'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('pred'), undefined], [Symbol.for('stack'), [Symbol.for('quote'), []]], [Symbol.for('bindings'), [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x'), Symbol.for('stack'), Symbol.for('bindings')], [Symbol.for('define'), Symbol.for('pred-f'), [Symbol.for('or'), Symbol.for('pred'), [Symbol.for('const'), true]]], [Symbol.for('define'), [Symbol.for('pred-f-1'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('x')]], [Symbol.for('define-values'), Symbol.for('b-type'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('get-type'), Symbol.for('op')]], [Symbol.for('and'), [Symbol.for('or'), [Symbol.for('macro-type?'), Symbol.for('b-type')], [Symbol.for('undefined-type?'), Symbol.for('b-type')]], [Symbol.for('pred-f'), Symbol.for('x')]]], [Symbol.for('cond'), [[Symbol.for('macro-call?'), Symbol.for('x'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('macroexpand-until'), Symbol.for('x'), Symbol.for('env'), Symbol.for('pred-f-1')]], [Symbol.for('unless'), [Symbol.for('macro-call?'), Symbol.for('result'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('map-sexp'), Symbol.for('f'), Symbol.for('result'), Symbol.for('env'), Symbol.for('stack'), Symbol.for('bindings')]]], Symbol.for('result')], [Symbol.for('else'), Symbol.for('x')]]], [Symbol.for('map-sexp'), Symbol.for('f'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('stack'), Symbol.for('bindings')]];
+macroexpandAllUntil.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-all-until'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('pred'), undefined], [Symbol.for('stack'), [Symbol.for('quote'), []]], [Symbol.for('bindings'), [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x'), Symbol.for('stack'), Symbol.for('bindings')], [Symbol.for('define'), Symbol.for('pred-f'), [Symbol.for('or'), Symbol.for('pred'), [Symbol.for('const'), true]]], [Symbol.for('define'), [Symbol.for('pred-f-1'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('x')]], [Symbol.for('define-values'), Symbol.for('b-type'), [Symbol.for('send'), Symbol.for('bindings'), Symbol.for('get-type'), Symbol.for('op')]], [Symbol.for('and'), [Symbol.for('or'), [Symbol.for('macro-type?'), Symbol.for('b-type')], [Symbol.for('undefined-type?'), Symbol.for('b-type')]], [Symbol.for('pred-f'), Symbol.for('x')]]], [Symbol.for('cond'), [[Symbol.for('macro-call?'), Symbol.for('x'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('expansion'), [Symbol.for('macroexpand-until'), Symbol.for('x'), Symbol.for('env'), Symbol.for('pred-f-1')]], [Symbol.for('unless'), [Symbol.for('macro-call?'), Symbol.for('expansion'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('expansion'), [Symbol.for('map-sexp'), Symbol.for('f'), Symbol.for('expansion'), Symbol.for('env'), Symbol.for('stack'), Symbol.for('bindings')]]], Symbol.for('expansion')], [Symbol.for('else'), Symbol.for('x')]]], [Symbol.for('map-sexp'), Symbol.for('f'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('stack'), Symbol.for('bindings')]];
 
 /**
  * Macroexpand all compiler macros.
@@ -3997,11 +4012,11 @@ macroexpandAllUntil.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-al
  */
 function macroexpandCompilerMacros(exp: any, env: any): any {
   const compilerMacroEnv: any = makeMacroEnvironment(env);
-  let result: any = macroexpandAll(exp, compilerMacroEnv);
-  return result;
+  let expansion: any = macroexpandAll(exp, compilerMacroEnv);
+  return expansion;
 }
 
-macroexpandCompilerMacros.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-compiler-macros'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('compiler-macro-env'), [Symbol.for('make-macro-environment'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('macroexpand-all'), Symbol.for('exp'), Symbol.for('compiler-macro-env')]], Symbol.for('result')];
+macroexpandCompilerMacros.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-compiler-macros'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('compiler-macro-env'), [Symbol.for('make-macro-environment'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('expansion'), [Symbol.for('macroexpand-all'), Symbol.for('exp'), Symbol.for('compiler-macro-env')]], Symbol.for('expansion')];
 
 /**
  * Compile a `(. ...)` expression.
@@ -9212,6 +9227,7 @@ export {
   macroexpand,
   macroexpandStar,
   macroexpandstar1,
+  macroexpandstarN,
   macroexpand1,
   macroexpandAll,
   macroexpandAllUntil,

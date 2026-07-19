@@ -7,6 +7,7 @@
 (require (only-in "../../src/ts"
                   LispEnvironment
                   macroexpand
+                  macroexpand*
                   macroexpand-1
                   macroexpand-all
                   make-lisp))
@@ -23,14 +24,35 @@
             '(foo bar)
             (new LispEnvironment
                  `((foo ,(fn (exp env) '(baz)) "macro"))))
-           (values '(baz) #t))))
+           '(baz))))
     (it "(+ 1 1)"
         (fn ()
           (assert-equal
            (macroexpand
             '(+ 1 1)
             (new LispEnvironment))
-           (values '(+ 1 1) #f))))
+           '(+ 1 1))))))
+
+(describe "macroexpand*"
+  (fn ()
+    (it "(foo bar)"
+        (fn ()
+          (assert-equal
+           (macroexpand*
+            '(foo bar)
+            (new LispEnvironment
+                 `((foo ,(fn (exp env) '(baz)) "macro"))))
+           (values '(baz) #t))))
+    (it "(+ 1 1)"
+        (fn ()
+          (assert-equal
+           (macroexpand*
+            '(+ 1 1)
+            (new LispEnvironment))
+           (values '(+ 1 1) #f))))))
+
+(describe "macroexpand-1"
+  (fn ()
     (it "(~> \"a b c d\" ...)"
         (fn ()
           (assert-equal
@@ -41,30 +63,26 @@
                  (.split " ")
                  first)
             (make-lisp))
-           (values
-            '(as~> "a b c d" _
-               (.toUpperCase _)
-               (.replace _ "A" "X")
-               (.split _ " ")
-               (first _))
-            #t))))
+           '(as~> "a b c d" _
+              (.toUpperCase _)
+              (.replace _ "A" "X")
+              (.split _ " ")
+              (first _)))))
     (it "(~>> foo)"
         (fn ()
           (assert-equal
            (macroexpand-1
             '(~>> foo)
             (make-lisp))
-           (values '(as~> foo _) #t))))
+           '(as~> foo _))))
     (it "(~>> foo (bar))"
         (fn ()
           (assert-equal
            (macroexpand-1
             '(~>> foo (bar))
             (make-lisp))
-           (values
-            '(as~> foo _
-               (bar _))
-            #t))))
+           '(as~> foo _
+              (bar _)))))
     (it "(~>> (range) ...)"
         (fn ()
           (assert-equal
@@ -75,13 +93,11 @@
                   (take 10)
                   (reduce +))
             (make-lisp))
-           (values
-            '(as~> (range) _
-               (map (fn (x) (* x x)) _)
-               (filter even? _)
-               (take 10 _)
-               (reduce + _))
-            #t))))))
+           '(as~> (range) _
+              (map (fn (x) (* x x)) _)
+              (filter even? _)
+              (take 10 _)
+              (reduce + _)))))))
 
 (describe "macroexpand-all"
   (fn ()

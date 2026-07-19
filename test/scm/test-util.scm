@@ -294,6 +294,12 @@
    (else
     exp)))
 
+;;; Whether `exp` is a list whose first element is `tag`.
+(define (tagged-list? exp tag)
+  (and (array? exp)
+       (>= (array-length exp) 1)
+       (eq? (array-first exp) tag)))
+
 (define (print-sexp exp)
   (cond
    ((undefined? exp)
@@ -302,7 +308,23 @@
     "#n")
    ((boolean? exp)
     (if exp "#t" "#f"))
-   ((cons? exp)
+   ((tagged-list? exp 'quote)
+    (string-append
+     "'"
+     (print-sexp (js/second exp))))
+   ((tagged-list? exp 'quasiquote)
+    (string-append
+     "`"
+     (print-sexp (js/second exp))))
+   ((tagged-list? exp 'unquote)
+    (string-append
+     ","
+     (print-sexp (js/second exp))))
+   ((tagged-list? exp 'unquote-splicing)
+    (string-append
+     ",@"
+     (print-sexp (js/second exp))))
+   ((array? exp)
     (string-append
      "("
      (string-join
@@ -352,7 +374,7 @@
          ((eq? prompt 'xit>)
           '(xit))
          ((or only
-              (member? prompt '(it.only> only>)))
+              (memq? prompt '(it.only> only>)))
           '(send it only))
          (else
           '(it))))

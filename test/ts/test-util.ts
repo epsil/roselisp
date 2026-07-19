@@ -831,6 +831,13 @@ function compileReplForm(exp: any, options: any = {}): any {
   }
 }
 
+/**
+ * Whether `exp` is a list whose first element is `tag`.
+ */
+function taggedListP(exp: any, tag: any): any {
+  return Array.isArray(exp) && exp.length >= 1 && exp[0] === tag;
+}
+
 function printSexp(exp: any): any {
   if (exp === undefined) {
     return '#u';
@@ -842,7 +849,15 @@ function printSexp(exp: any): any {
     } else {
       return '#f';
     }
-  } else if (Array.isArray(exp) && !(Array.isArray(exp) && exp.length === 0)) {
+  } else if (taggedListP(exp, Symbol.for('quote'))) {
+    return "'" + printSexp(exp[1]);
+  } else if (taggedListP(exp, Symbol.for('quasiquote'))) {
+    return '`' + printSexp(exp[1]);
+  } else if (taggedListP(exp, Symbol.for('unquote'))) {
+    return ',' + printSexp(exp[1]);
+  } else if (taggedListP(exp, Symbol.for('unquote-splicing'))) {
+    return ',@' + printSexp(exp[1]);
+  } else if (Array.isArray(exp)) {
     return (
       '(' +
       exp
@@ -899,11 +914,7 @@ function testMacro(exp: any, env: any): any {
         prompt === Symbol.for('xit>')
           ? [Symbol.for('xit')]
           : only ||
-            [Symbol.for('it.only>'), Symbol.for('only>')].findIndex(function (
-              x: any
-            ): any {
-              return equalp(prompt, x);
-            }) >= 0
+            [Symbol.for('it.only>'), Symbol.for('only>')].includes(prompt)
           ? [Symbol.for('send'), Symbol.for('it'), Symbol.for('only')]
           : [Symbol.for('it')];
       const description: any = printSexp(exp);

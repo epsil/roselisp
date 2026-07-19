@@ -9,6 +9,7 @@ import {
 import {
   LispEnvironment,
   macroexpand,
+  macroexpandStar,
   macroexpand1,
   macroexpandAll,
   makeLisp,
@@ -56,15 +57,44 @@ describe('macroexpand', function (): any {
           ],
         ])
       ),
+      [Symbol.for('baz')]
+    );
+  });
+  return it('(+ 1 1)', function (): any {
+    return assertEqual(
+      macroexpand([Symbol.for('+'), 1, 1], new LispEnvironment()),
+      [Symbol.for('+'), 1, 1]
+    );
+  });
+});
+
+describe('macroexpand*', function (): any {
+  it('(foo bar)', function (): any {
+    return assertEqual(
+      macroexpandStar(
+        [Symbol.for('foo'), Symbol.for('bar')],
+        new LispEnvironment([
+          [
+            Symbol.for('foo'),
+            function (exp: any, env: any): any {
+              return [Symbol.for('baz')];
+            },
+            'macro',
+          ],
+        ])
+      ),
       [[Symbol.for('baz')], true]
     );
   });
-  it('(+ 1 1)', function (): any {
+  return it('(+ 1 1)', function (): any {
     return assertEqual(
-      macroexpand([Symbol.for('+'), 1, 1], new LispEnvironment()),
+      macroexpandStar([Symbol.for('+'), 1, 1], new LispEnvironment()),
       [[Symbol.for('+'), 1, 1], false]
     );
   });
+});
+
+describe('macroexpand-1', function (): any {
   it('(~> "a b c d" ...)', function (): any {
     return assertEqual(
       macroexpand1(
@@ -79,23 +109,20 @@ describe('macroexpand', function (): any {
         makeLisp()
       ),
       [
-        [
-          Symbol.for('as~>'),
-          'a b c d',
-          Symbol.for('_'),
-          [Symbol.for('.toUpperCase'), Symbol.for('_')],
-          [Symbol.for('.replace'), Symbol.for('_'), 'A', 'X'],
-          [Symbol.for('.split'), Symbol.for('_'), ' '],
-          [Symbol.for('first'), Symbol.for('_')],
-        ],
-        true,
+        Symbol.for('as~>'),
+        'a b c d',
+        Symbol.for('_'),
+        [Symbol.for('.toUpperCase'), Symbol.for('_')],
+        [Symbol.for('.replace'), Symbol.for('_'), 'A', 'X'],
+        [Symbol.for('.split'), Symbol.for('_'), ' '],
+        [Symbol.for('first'), Symbol.for('_')],
       ]
     );
   });
   it('(~>> foo)', function (): any {
     return assertEqual(
       macroexpand1([Symbol.for('~>>'), Symbol.for('foo')], makeLisp()),
-      [[Symbol.for('as~>'), Symbol.for('foo'), Symbol.for('_')], true]
+      [Symbol.for('as~>'), Symbol.for('foo'), Symbol.for('_')]
     );
   });
   it('(~>> foo (bar))', function (): any {
@@ -105,13 +132,10 @@ describe('macroexpand', function (): any {
         makeLisp()
       ),
       [
-        [
-          Symbol.for('as~>'),
-          Symbol.for('foo'),
-          Symbol.for('_'),
-          [Symbol.for('bar'), Symbol.for('_')],
-        ],
-        true,
+        Symbol.for('as~>'),
+        Symbol.for('foo'),
+        Symbol.for('_'),
+        [Symbol.for('bar'), Symbol.for('_')],
       ]
     );
   });
@@ -136,24 +160,21 @@ describe('macroexpand', function (): any {
         makeLisp()
       ),
       [
+        Symbol.for('as~>'),
+        [Symbol.for('range')],
+        Symbol.for('_'),
         [
-          Symbol.for('as~>'),
-          [Symbol.for('range')],
-          Symbol.for('_'),
+          Symbol.for('map'),
           [
-            Symbol.for('map'),
-            [
-              Symbol.for('fn'),
-              [Symbol.for('x')],
-              [Symbol.for('*'), Symbol.for('x'), Symbol.for('x')],
-            ],
-            Symbol.for('_'),
+            Symbol.for('fn'),
+            [Symbol.for('x')],
+            [Symbol.for('*'), Symbol.for('x'), Symbol.for('x')],
           ],
-          [Symbol.for('filter'), Symbol.for('even?'), Symbol.for('_')],
-          [Symbol.for('take'), 10, Symbol.for('_')],
-          [Symbol.for('reduce'), Symbol.for('+'), Symbol.for('_')],
+          Symbol.for('_'),
         ],
-        true,
+        [Symbol.for('filter'), Symbol.for('even?'), Symbol.for('_')],
+        [Symbol.for('take'), 10, Symbol.for('_')],
+        [Symbol.for('reduce'), Symbol.for('+'), Symbol.for('_')],
       ]
     );
   });

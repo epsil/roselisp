@@ -16,6 +16,8 @@
  #t
  > '#t
  #t
+ > (compile #t)
+ "true"
 
  ;; `#f`
  > (describe "#f")
@@ -24,6 +26,8 @@
  #f
  > '#f
  #f
+ > (compile #f)
+ "false"
 
  ;; `#u`
  > (describe "#u")
@@ -34,6 +38,8 @@
  #u
  > undefined
  #u
+ > (compile #u)
+ "undefined"
 
  ;; `#n`
  > (describe "#n")
@@ -46,6 +52,8 @@
  #n
  > js/null
  #n
+ > (compile #n)
+ "null"
 
  ;; `true?`
  > (describe "true?")
@@ -104,16 +112,38 @@
  1
  > 2
  2
+ > (compile 0)
+ "0"
+ > (compile 1)
+ "1"
+ > (compile 2)
+ "2"
 
  ;; Strings
  > (describe "Strings")
  _
+ > ""
+ ""
  > "foo"
  "foo"
  > "\"foo\""
  "\"foo\""
  > (eq? "\t" "	")
  #t
+ > (compile "")
+ "''"
+ > (compile "foo")
+ "'foo'"
+
+ ;; Symbols
+ > (describe "Symbols")
+ _
+ > 'foo
+ 'foo
+ > (compile 'foo)
+ "foo"
+ > (compile ''foo)
+ "Symbol.for('foo')"
 
  ;; Keywords
  > (describe "Keywords")
@@ -122,6 +152,8 @@
  ':foo
  > ':foo
  ':foo
+ > (compile ':foo)
+ "Symbol.for(':foo')"
 
  ;; `symbol?`
  > (describe "symbol?")
@@ -149,6 +181,14 @@
  > (intern "foo")
  'foo
 
+ ;; `gensym`
+ > (describe "gensym")
+ _
+ > (symbol? (gensym "foo"))
+ #t
+ > (compile '(gensym "foo"))
+ "Symbol('foo')"
+
  ;; Cons cells
  > (describe "Cons cells")
  _
@@ -168,6 +208,12 @@
  1
  > (cdr (cons 1 2))
  2
+ > (compile ''(1 . ()))
+ "[1, Symbol.for('.'), []]"
+ > (compile ''(1 . 2))
+ "[1, Symbol.for('.'), 2]"
+ > (compile ''(1 2 . 3))
+ "[1, 2, Symbol.for('.'), 3]"
 
  ;; Lists
  > (describe "Lists")
@@ -198,6 +244,16 @@
      (set! (aref lst 0) 3)
      lst)
  '(3 2)
+ > (compile ''())
+ "[]"
+ > (compile '(list))
+ "[]"
+ > (compile ''(1))
+ "[1]"
+ > (compile '(list 1))
+ "[1]"
+ > (compile ''(1 2))
+ "[1, 2]"
  > (compile '(list 1 2))
  "[1, 2]"
 
@@ -212,6 +268,14 @@
  '(1 2)
  > (quote ((1 2) (3 4)))
  '((1 2) (3 4))
+ > (compile '(quote foo))
+ "Symbol.for('foo')"
+ > (compile '(quote (1)))
+ "[1]"
+ > (compile '(quote (1 2)))
+ "[1, 2]"
+ > (compile '(quote ((1 2) (3 4))))
+ "[[1, 2], [3, 4]]"
 
  ;; `quasiquote`
  > (describe "quasoquote")
@@ -226,6 +290,14 @@
  '((1))
  > (quasiquote (,@(list 1 2 3)))
  '(1 2 3)
+ > (compile '(quasiquote foo))
+ "Symbol.for('foo')"
+ > (compile '(quasiquote (,1)))
+ "[1]"
+ > (compile '(quasiquote ((,1))))
+ "[[1]]"
+ > (compile '(quasiquote (,@(list 1 2 3))))
+ "[...[1, 2, 3]]"
 
  ;; Variables
  > (describe "Variables")
@@ -456,6 +528,14 @@
  1
  > (if (> 2 1) 1 2)
  1
+ > (compile '(if #t (foo) (bar)) :as 'expression)
+ "true ? foo() : bar()"
+ > (compile '(if #t (foo) (bar)) :as 'statement)
+ "if (true) {
+  foo();
+} else {
+  bar();
+}"
 
  ;; `when`
  > (describe "when")
@@ -466,6 +546,14 @@
  > (when (> 1 2)
      1 2)
  #u
+ > (compile '(when (< 1 2)
+               (foo)
+               (bar))
+             :as 'statement)
+ "if (1 < 2) {
+  foo();
+  bar();
+}"
 
  ;; `unless`
  > (describe "unless")
@@ -476,6 +564,14 @@
  > (unless (> 1 2)
      1 2)
  2
+ > (compile '(unless (> 1 2)
+               (foo)
+               (bar))
+             :as 'statement)
+ "if (!(1 > 2)) {
+  foo();
+  bar();
+}"
 
  ;; `cond`
  > (describe "cond")
@@ -504,6 +600,24 @@
     (#t
      2))
  2
+ > (compile '(cond
+              (#f
+               (foo))
+              (else
+               (bar)))
+             :as 'expression)
+ "false ? foo() : bar()"
+ > (compile '(cond
+              (#f
+               (foo))
+              (else
+               (bar)))
+             :as 'statement)
+ "if (false) {
+  foo();
+} else {
+  bar();
+}"
 
  ;; `js/switch`
  > (describe "js/switch")
@@ -533,6 +647,8 @@
  #t
  > (eq _ '_)
  #f
+ > (compile '(eq? #t #t))
+ "true === true"
 
  ;; `equal?`
  > (describe "equal?")
@@ -565,6 +681,8 @@
  #f
  > (and #t #f)
  #f
+ > (compile '(and #t #t))
+ "true && true"
 
  ;; `or`
  > (describe "or")
@@ -585,6 +703,8 @@
  1
  > (or #u 2)
  2
+ > (compile '(or #t #t))
+ "true || true"
 
  ;; `while`
  > (describe "while")
@@ -594,6 +714,12 @@
        (set! result (cons 1 result)))
      result)
  '(1 1 1)
+  > (compile '(while (> x 0)
+                (set! x (- x 1)))
+              :as 'statement)
+  "while (x > 0) {
+  x--;
+}"
 
  ;; `for`
  > (describe "for")
@@ -619,6 +745,12 @@
         (pop-right! foo))
       foo))
  '()
+  > (compile '(for ((i (range 0 10)))
+                (foo))
+              :as 'statement)
+  "for (let i = 0; i < 10; i++) {
+  foo();
+}"
 
  ;; `break`
  > (describe "break")
@@ -634,6 +766,12 @@
        (push-right! result i))
      result)
  '()
+ > (compile '(while #t
+               (break))
+             :as 'statement)
+ "while (true) {
+  break;
+}"
 
  ;; `continue`
  > (describe "continue")
@@ -654,6 +792,12 @@
         (push-right! result i))
       result)
  '(5 6 7 8 9 10)
+ > (compile '(while #f
+               (continue))
+             :as 'statement)
+ "while (false) {
+  continue;
+}"
 
  ;; `return`
  > (describe "return")
@@ -670,6 +814,12 @@
       (return 1)
       2))
  1
+ > (compile '(while #t
+               (return 0))
+             :as 'statement)
+ "while (true) {
+  return 0;
+}"
 
  ;; `get-field`
  > (describe "get-field")
@@ -677,6 +827,8 @@
  > (let ((obj (js-obj "foo" "bar")))
      (get-field foo obj))
  "bar"
+ > (compile '(get-field foo obj))
+ "obj.foo"
 
  ;; `set-field!`
  > (describe "set-field!")
@@ -685,6 +837,9 @@
      (set-field! foo obj "bar")
      (get-field foo obj))
  "bar"
+ > (compile '(set-field! foo obj "bar")
+             :as 'statement)
+ "obj.foo = 'bar';"
 
  ;; `field-bound?`
  > (describe "field-bound?")
@@ -701,6 +856,10 @@
  "foo"
  > (oget _ "@@functional/placeholder")
  #t
+ > (compile '(oget obj "prop"))
+ "obj['prop']"
+ > (compile '(oget obj x))
+ "obj[x]"
 
  ;; `send`
  > (describe "send")
@@ -714,6 +873,8 @@
  > (let ((obj (make-hash '(("foo" . "foo")))))
      (send obj has "bar"))
  #f
+ > (compile '(send obj m arg))
+ "obj.m(arg)"
 
  ;; `send/apply`
  > (describe "send/apply")
@@ -721,6 +882,8 @@
  > (let ((obj (make-hash '(("foo" . "foo")))))
      (send/apply obj has '("foo")))
  #t
+ > (compile '(send/apply obj m args))
+ "obj.m(...args)"
 
  ;; `new`
  > (describe "new")
@@ -743,6 +906,16 @@
                 2))
      (send quux bar))
  2
+ > (compile '(new Foo))
+ "new Foo()"
+ > (compile '(new Foo x))
+ "new Foo(x)"
+
+ ;; `new/apply`
+ > (describe "new/apply")
+ _
+ > (compile '(new/apply Foo args))
+ "new Foo(...args)"
 
  ;; `class`
  > (describe "class")
@@ -790,6 +963,15 @@
         (new Foo))
       (send quux bar)))
  "baz"
+ > (compile '(class ()
+               (define/public (bar)
+                 "bar")))
+ "class {
+  bar() {
+    return 'bar';
+  }
+}"
+
 
  ;; `define-class`
  > (describe "define-class")
@@ -802,6 +984,14 @@
         (new Foo))
       (send foo bar)))
  "bar"
+ > (compile '(define-class Foo ()
+               (define/public (bar)
+                 "bar")))
+ "class Foo {
+  bar() {
+    return 'bar';
+  }
+}"
 
  ;; `defclass`
  > (describe "defclass")
@@ -814,18 +1004,30 @@
         (new Foo))
       (send foo bar)))
  "bar"
+ > (compile '(defclass Foo ()
+               (define/public (bar)
+                 "bar")))
+ "class Foo {
+  bar() {
+    return 'bar';
+  }
+}"
 
  ;; `instance-of?`
  > (describe "instance-of?")
  _
  > (instance-of? (new Map) Map)
  #t
+ > (compile '(instance-of? x Foo))
+ "x instanceof Foo"
 
  ;; `is-a?`
  > (describe "is-a?")
  _
  > (is-a? (new Map) Map)
  #t
+ > (compile '(is-a? x Foo))
+ "x instanceof Foo"
 
  ;; `js-obj`
  > (describe "js-obj")
@@ -836,6 +1038,31 @@
  (js-obj "foo" "bar")
  > (js-obj "foo" 1 "bar" 2)
  (js-obj "foo" 1 "bar" 2)
+ > (compile '(js-obj))
+ "{}"
+ > (compile '(js-obj "foo" "bar"))
+ "{
+  foo: 'bar'
+}"
+ > (compile '(js-obj "foo" 1 "bar" 2))
+ "{
+  foo: 1,
+  bar: 2
+}"
+ > (compile '(js-obj)
+             :as 'statement)
+ "({});"
+ > (compile '(js-obj "foo" "bar")
+             :as 'statement)
+ "({
+  foo: 'bar'
+});"
+ > (compile '(js-obj "foo" 1 "bar" 2)
+             :as 'statement)
+ "({
+  foo: 1,
+  bar: 2
+});"
 
  ;; `js-keys`
  > (describe "js-keys")
@@ -847,6 +1074,8 @@
  > (js-keys (js-obj "foo" "bar"
                     "baz" "quux"))
  '("foo" "baz")
+ > (compile '(js-keys x))
+ "Object.keys(x)"
 
  ;; `js/in`
  > (describe "js/in")
@@ -854,6 +1083,8 @@
  > (let ((obj (js-obj "foo" "bar")))
      (js/in "foo" obj))
  #t
+ > (compile '(js/in "foo" obj))
+ "'foo' in obj"
 
  ;; `plist->alist`
  > (describe "plist->alist")
@@ -864,6 +1095,17 @@
  '((foo . bar))
  > (plist->alist '(foo bar baz quux))
  '((foo . bar) (baz . quux))
+
+ ;; `plist->object`
+ > (describe "plist->object")
+ _
+ > (plist->object '())
+ (js-obj)
+ > (plist->object '(foo bar))
+ (js-obj "foo" 'bar)
+ > (plist->object '(foo bar baz quux))
+ (js-obj "foo" 'bar
+         "baz" 'quux)
 
  ;; `module`
  > (describe "module")
@@ -890,6 +1132,19 @@
     (finally
       (display "finally")))
  0.5
+ > (compile '(js/try
+              (/ 1 2)
+              (catch e
+                  (display "there was an error"))
+              (finally
+                (display "finally"))))
+ "try {
+  1 / 2;
+} catch (e) {
+  console.log('there was an error');
+} finally {
+  console.log('finally');
+}"
 
  ;; `clj/try`
  > (describe "clj/try")
@@ -909,12 +1164,48 @@
     (finally
       (display "finally")))
  0.5
+ > (compile '(clj/try
+              (/ 1 2)
+              (catch Object e
+                (display "there was an error"))
+              (finally
+                (display "finally"))))
+ "try {
+  1 / 2;
+} catch (e) {
+  console.log('there was an error');
+} finally {
+  console.log('finally');
+}"
+ > (compile '(clj/try
+              (/ 1 2)
+              (catch Exception e
+                (display "there was an error"))
+              (finally
+                (display "finally"))))
+ "try {
+  1 / 2;
+} catch (e) {
+  if (e instanceof Exception) {
+    console.log('there was an error');
+  } else {
+    throw e;
+  }
+} finally {
+  console.log('finally');
+}"
 
  ;; `unwind-protect`
  > (describe "unwind-protect")
  _
  > (unwind-protect 1 2 3)
  1
+ > (compile '(unwind-protect (foo) (bar)))
+ "try {
+  foo();
+} finally {
+  bar();
+}"
 
  ;; `call/cc`
  > (describe "call/cc")
@@ -970,6 +1261,8 @@
      (set!-values (x y) (values 1 2))
      (list x y))
  '(1 2)
+ > (compile '(set!-values (x y) (values 1 2)))
+ "[x, y] = [1, 2];"
 
  ;; `let-values`
  > (describe "let-values")
@@ -980,6 +1273,13 @@
  > (let-values (((x . y) (values 1 2)))
      (list x y))
  '(1 (2))
+ > (compile '(let-values (((x y) (values 1 2)))
+               (define z
+                 (+ x y)))
+             :as 'statement)
+ "const [x, y] = [1, 2];
+
+const z = x + y;"
 
  ;; `let*-values`
  > (describe "let*-values")
@@ -988,6 +1288,16 @@
                  ((w z) (values 3 4)))
      (list x y w z))
  '(1 2 3 4)
+ > (compile '(let*-values (((x y) (values 1 2))
+                           ((w z) (values 3 4)))
+               (define z
+                 (+ x y w z)))
+             :as 'statement)
+ "const [x, y] = [1, 2];
+
+const [w, z] = [3, 4];
+
+const z = x + y + w + z;"
 
  ;; `define-fields`
  > (describe "define-fields")
@@ -1007,6 +1317,16 @@
         (js-obj "foo" "bar"))
       bar))
  "bar"
+ > (compile '(define-fields (foo)
+               (js-obj "foo" "bar")))
+ "const {foo} = {
+  foo: 'bar'
+};"
+ > (compile '(define-fields ((foo bar))
+               (js-obj "foo" "bar")))
+ "const {foo: bar} = {
+  foo: 'bar'
+};"
 
  ;; `set!-fields`
  > (describe "set!-fields")
@@ -1016,6 +1336,10 @@
         (set!-fields (x) (js-obj "x" 1))
         x)))
  1
+ > (compile '(set!-fields (x) (js-obj "x" 1)))
+ "({x} = {
+  x: 1
+});"
 
  ;; `destructuring-bind`
  > (describe "destructuring-bind")
@@ -1028,6 +1352,20 @@
                        '(1 2)
                         (list x y))
  '(1 (2))
+ > (compile '(destructuring-bind (x y)
+                                 '(1 2)
+                                  (list x y))
+             :as 'statement)
+ "const [x, y] = [1, 2];
+
+[x, y];"
+ > (compile '(destructuring-bind (x . y)
+                                 '(1 2)
+                                  (list x y))
+             :as 'statement)
+ "const [x, ...y] = [1, 2];
+
+[x, y];"
 
  ;; `multiple-values-bind`
  > (describe "multiple-values-bind")
@@ -1036,6 +1374,13 @@
                          (values 1 2)
                          (list x y))
  '(1 2)
+ > (compile '(multiple-values-bind (x y)
+                                   (values 1 2)
+                                   (list x y))
+             :as 'statement)
+ "const [x, y] = [1, 2];
+
+[x, y];"
 
  ;; `hash`
  > (describe "hash")
@@ -1044,6 +1389,10 @@
  (new Map)
  > (hash '(("foo" . "bar")))
  (new Map '(("foo" "bar")))
+ > (compile '(hash))
+ "new Map()"
+ > (compile '(hash '(("foo" . "bar"))))
+ "new Map([['foo', 'bar']])"
 
  ;; `make-hash`
  > (describe "make-hash")
@@ -1052,6 +1401,10 @@
  (new Map)
  > (make-hash '(("foo" . "bar")))
  (new Map '(("foo" "bar")))
+ > (compile '(make-hash))
+ "new Map()"
+ > (compile '(make-hash '(("foo" . "bar"))))
+ "new Map([['foo', 'bar']])"
 
  ;; `hash?`
  > (describe "hash?")
@@ -1060,6 +1413,8 @@
  #t
  > (hash? 0)
  #f
+ > (compile '(hash? x))
+ "x instanceof Map"
 
  ;; `hash-clear`
  > (describe "hash-clear")
@@ -1076,6 +1431,8 @@
      (hash-clear! ht)
      ht)
  (new Map)
+ > (compile '(hash-clear! x))
+ "x.clear()"
 
  ;; `hash-copy`
  > (describe "hash-copy")
@@ -1084,6 +1441,8 @@
     (make-hash
      '(("foo" . "bar"))))
  (new Map '(("foo" "bar")))
+ > (compile '(hash-copy x))
+ "new Map(x)"
 
  ;; `hash-keys`
  > (describe "hash-keys")
@@ -1092,14 +1451,18 @@
     (make-hash
      '(("foo" . "bar"))))
  '("foo")
+ > (compile '(hash-keys x))
+ "[...x.keys()]"
 
  ;; `hash-values`
-  > (describe "hash-values")
-  _
-  > (hash-values
-     (make-hash
-      '(("foo" . "bar"))))
-  '("bar")
+ > (describe "hash-values")
+ _
+ > (hash-values
+    (make-hash
+     '(("foo" . "bar"))))
+ '("bar")
+ > (compile '(hash-values x))
+ "[...x.values()]"
 
  ;; `hash->list`
  > (describe "hash->list")
@@ -1127,6 +1490,8 @@
      ht)
  (new Map
       '(("foo" "bar")))
+ > (compile '(hash-set! ht key val))
+ "ht.set(key, val)"
 
  ;; `hash-ref`
  > (describe "hash-ref")
@@ -1138,6 +1503,8 @@
  "bar"
  > (hash-ref (make-hash) "quux" #f)
  #f
+ > (compile '(hash-ref ht "foo"))
+ "ht.get('foo')"
 
  ;; `hash-has-key?`
  > (describe "hash-has-key?")
@@ -1149,6 +1516,8 @@
  #t
  > (hash-has-key? (make-hash) "quux")
  #f
+ > (compile '(hash-has-key? ht "quux"))
+ "ht.has('quux')"
 
  ;; `Map`
  > (describe "Map")
@@ -1256,6 +1625,8 @@
  #t
  > (< 1 2 0)
  #f
+ > (compile '(< 1 2))
+ "1 < 2"
 
  ;; `>`
  > (describe ">")
@@ -1268,6 +1639,8 @@
  #t
  > (> 0 2 1)
  #f
+ > (compile '(> 2 1))
+ "2 > 1"
 
  ;; `range`
  > (describe "range")
@@ -1288,9 +1661,9 @@
  ;; `member`
  > (describe "member")
  _
- > (member 2 (list 1 2 3 4))
+ > (member 2 '(1 2 3 4))
  '(2 3 4)
- > (member 9 (list 1 2 3 4))
+ > (member 9 '(1 2 3 4))
  #f
  > (member 5
            '(3 5 1 7 2 9)
@@ -1301,10 +1674,20 @@
  ;; `member?`
  > (describe "member?")
  _
- > (member? 2 (list 1 2 3 4))
+ > (member? 2 '(1 2 3 4))
  #t
- > (member? 9 (list 1 2 3 4))
+ > (member? 9 '(1 2 3 4))
  #f
+
+ ;; `memq?`
+ > (describe "memq?")
+ _
+ > (memq? 2 '(1 2 3 4))
+ #t
+ > (memq? 9 '(1 2 3 4))
+ #f
+ > (compile '(memq? x lst))
+ "lst.includes(x)"
 
  ;; `take`
  > (describe "take")
@@ -1344,29 +1727,55 @@
             (* n (fact (- n 1)))))
       (map fact '(1 2 3 4 5 6))))
  '(1 2 6 24 120 720)
+ > (compile '(map f lst))
+ "lst.map(function (x) {
+  return f(x);
+})"
+ > (compile '(map (lambda (x) x) lst))
+ "lst.map(function (x) {
+  return x;
+})"
 
  ;; `foldl`
  > (describe "foldl")
  _
  > (foldl cons '() '(1 2 3 4))
  '(4 3 2 1)
+ > (compile '(foldl (lambda (x acc) x) v lst))
+ "lst.reduce(function (acc, x) {
+  return x;
+}, v)"
+ > (compile '(foldl f v lst))
+ "lst.reduce(function (acc, x) {
+  return f(x, acc);
+}, v)"
 
  ;; `foldr`
  > (describe "foldr")
  _
  > (foldr cons '() '(1 2 3 4))
  '(1 2 3 4)
- > (foldr (lambda (v l)
-            (cons (add1 v) l))
-          '()
-           '(1 2 3 4))
- '(2 3 4 5)
+  > (foldr (lambda (v l)
+             (cons (add1 v) l))
+           '()
+            '(1 2 3 4))
+  '(2 3 4 5)
+ > (compile '(foldr (lambda (x acc) x) v lst))
+ "lst.reduceRight(function (acc, x) {
+  return x;
+}, v)"
+ > (compile '(foldr f v lst))
+ "lst.reduceRight(function (acc, x) {
+  return f(x, acc);
+}, v)"
 
  ;; `filter`
  > (describe "filter")
  _
  > (filter string? '("foo" 1 2 3))
  '("foo")
+ > (compile '(filter f lst))
+ "lst.filter(f)"
 
  ;; `string?`
  > (describe "string?")
@@ -1389,12 +1798,16 @@
  #f
  > (string? (quote ()))
  #f
+ > (compile '(string? x))
+ "typeof x === 'string'"
 
  ;; `string-length`
  > (describe "string-length")
  _
  > (string-length "foo")
  3
+ > (compile '(string-length x))
+ "x.length"
 
  ;; `string-append`
  > (describe "string-append")
@@ -1407,6 +1820,12 @@
  "foobar"
  > (apply string-append '("foo" "bar"))
  "foobar"
+ > (compile '(string-append "foo"))
+ "'foo'"
+ > (compile '(string-append "foo" "bar"))
+ "'foo' + 'bar'"
+ > (compile '(string-append "foo" "bar" "baz"))
+ "'foo' + 'bar' + 'baz'"
 
  ;; `string-join`
  > (describe "string-join")
@@ -1415,6 +1834,8 @@
  "foo bar"
  > (string-join '("foo" "bar") ",")
  "foo,bar"
+ > (compile '(string-join '("foo" "bar") ","))
+ "['foo', 'bar'].join(',')"
 
  ;; `string-split`
  > (describe "string-split")
@@ -1427,6 +1848,8 @@
  '("foo" "bar" "baz")
  > (string-split "foo\nbar\nbaz" "\n")
  '("foo" "bar" "baz")
+ > (compile '(string-split "foo,bar,baz" ","))
+ "'foo,bar,baz'.split(',')"
 
  ;; `string-trim`
  > (describe "string-trim")
@@ -1435,18 +1858,24 @@
  "foo bar  baz"
  > (string-trim "  foo bar  baz \r\n\t")
  "foo bar  baz"
+ > (compile '(string-trim x))
+ "x.trim()"
 
  ;; `string-upcase`
  > (describe "string-upcase")
  _
  > (string-upcase "foo")
  "FOO"
+ > (compile '(string-upcase x))
+ "x.toUpperCase()"
 
  ;; `string-downcase`
  > (describe "string-downcase")
  _
  > (string-downcase "FOO")
  "foo"
+ > (compile '(string-downcase x))
+ "x.toLowerCase()"
 
  ;; `substring`
  > (describe "substring")
@@ -1455,6 +1884,10 @@
  "pp"
  > (substring "Apple" 1)
  "pple"
+ > (compile '(substring str i))
+ "str.substring(i)"
+ > (compile '(substring str i j))
+ "str.substring(i, j)"
 
  ;; `as~>`
  > (describe "as~>")
@@ -1463,6 +1896,14 @@
      (+ _ 1)
      (+ _ 1))
  2
+ > (macroexpand '(as~> 0 _
+                   (+ _ 1)
+                   (+ _ 1)))
+ '(+ (+ 0 1) 1)
+ > (compile '(as~> 0 _
+               (+ _ 1)
+               (+ _ 1)))
+ "0 + 1 + 1"
 
  ;; `ann`
  > (describe "ann")

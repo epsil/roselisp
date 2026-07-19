@@ -62,6 +62,8 @@
                   curry
                   curry-n
                   dashify))
+(require (only-in "./decompiler"
+                  (decompile decompile1)))
 (require (only-in "./env"
                   Environment
                   EnvironmentPipe
@@ -884,34 +886,80 @@
 ;;; `args` may be a property list or, if called with
 ;;; two arguments, a JavaScript object.
 (define (compile exp . args)
+  (define (language-symbol->language-string sym)
+    (cond
+     ((eq? sym 'typescript)
+      "TypeScript")
+     ((eq? sym 'javascript)
+      "JavaScript")
+     (else
+      "Roselisp")))
   (define options
     (if (= (js/length args) 1)
         (js/first args)
         (plist->object_ args #t)))
+  (define from
+    (or (oget options "from")
+        'roselisp))
   (define to
-    (oget options "to"))
-  (define language
-    (cond
-     ((eq? to 'typescript)
-      "TypeScript")
-     (else
-      default-language)))
-  (oset! options "language" language)
-  (define as
-    (oget options "as"))
-  (define expression-type
-    (cond
-     ((eq? as 'return-statement)
-      "return")
-     ((eq? as 'statement)
-      "statement")
-     (else
-      "expression")))
-  (oset! options "expressionType" expression-type)
-  (define env
-    (or (oget options "environment")
-        (new LispEnvironment)))
-  (compile-with-environment exp env options))
+    (or (oget options "to")
+        'javascript))
+  (define from-language
+    (language-symbol->language-string from))
+  (define to-language
+    (language-symbol->language-string to))
+  (cond
+   ((eq? to-language "Roselisp")
+    (define inherited-options
+      (js-obj-append
+       options
+       (js-obj "language" from-language
+               "sexp" #t)))
+    (decompile1 exp inherited-options))
+   (else
+    (define as
+      (oget options "as"))
+    (define expression-type
+      (cond
+       ((eq? as 'return-statement)
+        "return")
+       ((eq? as 'statement)
+        "statement")
+       (else
+        "expression")))
+    (define inherited-options
+      (js-obj-append
+       options
+       (js-obj "language" to-language
+               "expressionType" expression-type)))
+    (define env
+      (or (oget options "environment")
+          (new LispEnvironment)))
+    (compile-with-environment
+     exp env inherited-options))))
+
+;;; Decompile a JavaScript or TypeScript string to
+;;; a Lisp expression. The inverse of `compile`.
+(define (decompile exp . args)
+  ;; This function is little more than a wrapper
+  ;; around `compile` that defaults to Roselisp
+  ;; as the target language.
+  (define options
+    (if (= (js/length args) 1)
+        (js/first args)
+        (plist->object_ args #t)))
+  (define from
+    (or (oget options "from")
+        'javascript))
+  (define to
+    (or (oget options "to")
+        'roselisp))
+  (define inherited-options
+    (js-obj-append
+     options
+     (js-obj "from" from
+             "to" to)))
+  (compile exp inherited-options))
 
 ;;; Compile a Lisp expression to JavaScript or TypeScript
 ;;; in the context of a given environment, `env`.
@@ -7818,6 +7866,7 @@
          (current-environment ,current-environment_ (-> Any * Any))
          (curry ,curry (-> Any * Any))
          (curry-n ,curry-n (-> Any * Any))
+         (decompile ,decompile (-> Any * Any))
          (delete ,js-delete_ (-> Any * Any))
          (display ,display_ (-> Any * Any))
          (div ,div_ (-> Any * Any))

@@ -2265,6 +2265,38 @@ const z = x + y + w + z;"
  > (cons-dot? *cons-dot*)
  #t
 
+ ;; `compile`
+ > (describe "compile")
+ _
+ > (compile #t)
+ "true"
+ > (compile #t :to 'javascript)
+ "true"
+ > (compile #t :from 'roselisp :to 'javascript)
+ "true"
+ > (compile '(ann #t Any) :from 'roselisp :to 'typescript)
+ "true as any"
+ > (compile "true" :to 'roselisp)
+ #t
+ > (compile "true" :from 'javascript :to 'roselisp)
+ #t
+ > (compile "true as any" :from 'typescript :to 'roselisp)
+ '(ann #t Any)
+
+ ;; `decompile`
+ > (describe "decompile")
+ _
+ > (decompile "true")
+ #t
+ > (decompile "true" :from 'javascript)
+ #t
+ > (decompile "true" :from 'javascript :to 'roselisp)
+ #t
+ > (decompile "true as any" :from 'typescript)
+ '(ann #t Any)
+ > (decompile "true as any" :from 'typescript :to 'roselisp)
+ '(ann #t Any)
+
  ;; `license`
  > (describe "license")
  _

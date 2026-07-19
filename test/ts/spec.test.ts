@@ -7331,6 +7331,170 @@ describe('Cons dot', function (): any {
   });
 });
 
+describe('compile', function (): any {
+  it('(compile #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), true],
+      'true',
+    ]);
+  });
+  it("(compile #t :to 'javascript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        true,
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('javascript')],
+      ],
+      'true',
+    ]);
+  });
+  it("(compile #t :from 'roselisp :to 'javascript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        true,
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('roselisp')],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('javascript')],
+      ],
+      'true',
+    ]);
+  });
+  it("(compile '(ann #t Any) :from 'roselisp :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]],
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('roselisp')],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'true as any',
+    ]);
+  });
+  it('(compile "true" :to \'roselisp)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        'true',
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('roselisp')],
+      ],
+      true,
+    ]);
+  });
+  it('(compile "true" :from \'javascript :to \'roselisp)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        'true',
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('javascript')],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('roselisp')],
+      ],
+      true,
+    ]);
+  });
+  return it('(compile "true as any" :from \'typescript :to \'roselisp)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        'true as any',
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('roselisp')],
+      ],
+      [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]],
+    ]);
+  });
+});
+
+describe('decompile', function (): any {
+  it('(decompile "true")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('decompile'), 'true'],
+      true,
+    ]);
+  });
+  it('(decompile "true" :from \'javascript)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('decompile'),
+        'true',
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('javascript')],
+      ],
+      true,
+    ]);
+  });
+  it('(decompile "true" :from \'javascript :to \'roselisp)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('decompile'),
+        'true',
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('javascript')],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('roselisp')],
+      ],
+      true,
+    ]);
+  });
+  it('(decompile "true as any" :from \'typescript)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('decompile'),
+        'true as any',
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]],
+    ]);
+  });
+  return it('(decompile "true as any" :from \'typescript :to \'roselisp)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('decompile'),
+        'true as any',
+        Symbol.for(':from'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('roselisp')],
+      ],
+      [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]],
+    ]);
+  });
+});
+
 describe('license', function (): any {
   return it('license', function (): any {
     return testRepl([

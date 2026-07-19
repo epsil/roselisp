@@ -31,7 +31,7 @@ import { quotep } from './util';
  */
 declare function compile(exp: any, ...args: any[]): any;
 declare namespace compile {
-    var fsource: (symbol | (string | symbol)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (string | symbol)[] | (string | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (string | symbol)[] | (string | (symbol | symbol[])[])[])[])[] | (symbol | ((string | symbol)[] | (symbol | (symbol | (string | boolean | symbol)[])[])[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[] | (string | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 /**
  * Compile a Lisp expression to JavaScript or TypeScript

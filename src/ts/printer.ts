@@ -279,6 +279,15 @@ function docType(doc: any): any {
 docType.fsource = [Symbol.for('define'), [Symbol.for('doc-type'), Symbol.for('doc')], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('doc')], 'string'], [[Symbol.for('array?'), Symbol.for('doc')], 'array'], [[Symbol.for('is-a?'), Symbol.for('doc'), Symbol.for('DocCommand')], [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('doc')]], [Symbol.for('else'), 'undefined']]];
 
 /**
+ * Whether the type of a `Doc` object is `typ`.
+ */
+function docTypeP(doc: any, typ: any): any {
+  return docType(doc) === typ;
+}
+
+docTypeP.fsource = [Symbol.for('define'), [Symbol.for('doc-type?'), Symbol.for('doc'), Symbol.for('typ')], [Symbol.for('eq?'), [Symbol.for('doc-type'), Symbol.for('doc')], Symbol.for('typ')]];
+
+/**
  * Unwrap a `Doc` command.
  */
 function docValue(doc: any): any {
@@ -1193,13 +1202,12 @@ printBlockStatement.fsource = [Symbol.for('define'), [Symbol.for('print-block-st
 function printMemberExpression(node: any, options: any = {}): any {
   const language: any = options['language'];
   const object: any = node.object;
-  const objectType: any = estreeType(object);
   let objectPrinted: any = printNode(object, options);
   const property: any = node.property;
   const propertyPrinted: any = printNode(property, options);
   const computed: any = node.computed;
   const optional: any = node.optional;
-  if (!estreeSimpleP(object) || (objectType === 'ObjectExpression')) {
+  if (!estreeSimpleP(object) || estreeTypeP(object, 'ObjectExpression')) {
     // If the object expression is complicated, wrap it in
     // parentheses.
     objectPrinted = docWrap(objectPrinted, options);
@@ -1217,7 +1225,7 @@ function printMemberExpression(node: any, options: any = {}): any {
   }
 }
 
-printMemberExpression.fsource = [Symbol.for('define'), [Symbol.for('print-member-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('object'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('object-type'), [Symbol.for('estree-type'), Symbol.for('object')]], [Symbol.for('define'), Symbol.for('object-printed'), [Symbol.for('print-node'), Symbol.for('object'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('property'), [Symbol.for('get-field'), Symbol.for('property'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('property-printed'), [Symbol.for('print-node'), Symbol.for('property'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-field'), Symbol.for('computed'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('get-field'), Symbol.for('optional'), Symbol.for('node')]], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('not'), [Symbol.for('estree-simple?'), Symbol.for('object')]], [Symbol.for('eq?'), Symbol.for('object-type'), 'ObjectExpression']], [Symbol.for('set!'), Symbol.for('object-printed'), [Symbol.for('doc-wrap'), Symbol.for('object-printed'), Symbol.for('options')]]], [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), Symbol.for('property')], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('object-printed'), [Symbol.for('doc-wrap'), [Symbol.for('list'), Symbol.for('object-printed'), ' as any'], Symbol.for('options')]]], [Symbol.for('list'), Symbol.for('object-printed'), '[', Symbol.for('property-printed'), ']']], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('object-printed'), [Symbol.for('if'), Symbol.for('optional'), '?.', '.'], Symbol.for('property-printed')]]]];
+printMemberExpression.fsource = [Symbol.for('define'), [Symbol.for('print-member-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('object'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('object-printed'), [Symbol.for('print-node'), Symbol.for('object'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('property'), [Symbol.for('get-field'), Symbol.for('property'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('property-printed'), [Symbol.for('print-node'), Symbol.for('property'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-field'), Symbol.for('computed'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('get-field'), Symbol.for('optional'), Symbol.for('node')]], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('not'), [Symbol.for('estree-simple?'), Symbol.for('object')]], [Symbol.for('estree-type?'), Symbol.for('object'), 'ObjectExpression']], [Symbol.for('set!'), Symbol.for('object-printed'), [Symbol.for('doc-wrap'), Symbol.for('object-printed'), Symbol.for('options')]]], [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), Symbol.for('property')], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('object-printed'), [Symbol.for('doc-wrap'), [Symbol.for('list'), Symbol.for('object-printed'), ' as any'], Symbol.for('options')]]], [Symbol.for('list'), Symbol.for('object-printed'), '[', Symbol.for('property-printed'), ']']], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('object-printed'), [Symbol.for('if'), Symbol.for('optional'), '?.', '.'], Symbol.for('property-printed')]]]];
 
 /**
  * Print an `UpdateExpression` ESTree node to a `Doc` object.

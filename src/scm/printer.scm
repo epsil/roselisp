@@ -146,6 +146,10 @@
    (else
     "undefined")))
 
+;;; Whether the type of a `Doc` object is `typ`.
+(define (doc-type? doc typ)
+  (eq? (doc-type doc) typ))
+
 ;;; Unwrap a `Doc` command.
 (define (doc-value doc)
   (cond
@@ -1185,8 +1189,6 @@
     (oget options "language"))
   (define object
     (get-field object node))
-  (define object-type
-    (estree-type object))
   (define object-printed
     (print-node object options))
   (define property
@@ -1198,7 +1200,7 @@
   (define optional
     (get-field optional node))
   (when (or (not (estree-simple? object))
-            (eq? object-type "ObjectExpression"))
+            (estree-type? object "ObjectExpression"))
     ;; If the object expression is complicated, wrap it in
     ;; parentheses.
     (set! object-printed

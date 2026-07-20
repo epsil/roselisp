@@ -35,10 +35,9 @@
 ;;; [npm:minimist-options]: https://www.npmjs.com/package/minimist-options
 (define cli-options
   (js-obj
-   "camelCase" (js-obj
-                "alias" "camel-case"
-                "default" #t
-                "type" "boolean")
+   "case" (js-obj
+           "default" "camelcase"
+           "type" "string")
    "comments" (js-obj
                "default" #t
                "type" "boolean")

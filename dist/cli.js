@@ -33,10 +33,9 @@ const repl_1 = require("./repl");
  * [npm:minimist-options]: https://www.npmjs.com/package/minimist-options
  */
 const cliOptions = {
-    camelCase: {
-        alias: 'camel-case',
-        default: true,
-        type: 'boolean'
+    case: {
+        default: 'camelcase',
+        type: 'string'
     },
     comments: {
         default: true,

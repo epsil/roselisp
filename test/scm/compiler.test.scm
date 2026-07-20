@@ -1044,7 +1044,7 @@ import * as foo from 'foo';")))
               (assert-equal
                (compile 'foo-bar
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "fooBar")))
         (it "foo/bar, camelCase"
@@ -1052,7 +1052,7 @@ import * as foo from 'foo';")))
               (assert-equal
                (compile 'foo/bar
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "fooBar")))
         (it "foo-bar!, camelCase"
@@ -1060,7 +1060,7 @@ import * as foo from 'foo';")))
               (assert-equal
                (compile 'foo-bar!
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "fooBarX")))
         (it "foo-bar?, camelCase"
@@ -1068,7 +1068,7 @@ import * as foo from 'foo';")))
               (assert-equal
                (compile 'foo-bar?
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "fooBarP")))
         (it "*foo-bar*, camelCase"
@@ -1076,7 +1076,7 @@ import * as foo from 'foo';")))
               (assert-equal
                (compile '*foo-bar*
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "starFooBarStar")))
         (it "'*foo-bar*, camelCase"
@@ -1084,7 +1084,7 @@ import * as foo from 'foo';")))
               (assert-equal
                (compile '(quote *foo-bar*)
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "Symbol.for('*foo-bar*')")))
         (it "A, camelCase"
@@ -1092,7 +1092,7 @@ import * as foo from 'foo';")))
               (assert-equal
                (compile 'A
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "A")))
         (xit "x, camelCase"
@@ -1114,7 +1114,7 @@ import * as foo from 'foo';")))
                            (define lst
                              (map symbol? '(a b c))))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "const lst = [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')].map(function (x) {
   return typeof x === 'symbol';
@@ -1191,7 +1191,7 @@ const x2 = 1;
                            (define lst
                              `(,symbol? ,boolean?)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [symbolp, booleanp] = (() => {
@@ -1375,7 +1375,7 @@ const fooBar = stringAppend('foo', 'bar');")))
                             (define bar
                               (my-foldl + 0 '(1 2 3 4))))
                          compilation-environment
-                         (js-obj "camelCase" #t
+                         (js-obj "case" "camelcase"
                                  "inlineFunctions" #t
                                  "language" "JavaScript"))
                 "const [add] = (function () {
@@ -1401,7 +1401,7 @@ const bar = myFoldl(add, 0, [1, 2, 3, 4]);")))
                             (define (my-foldl f v l)
                               (foldl f v l)))
                          compilation-environment
-                         (js-obj "camelCase" #t
+                         (js-obj "case" "camelcase"
                                  "inlineFunctions" #t
                                  "language" "JavaScript"))
                 "let [foldl] = (function () {
@@ -1425,7 +1425,7 @@ function myFoldl(f, v, l) {
                            (define bar
                              (my-map first '((1) (2) (3)))))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [first] = (() => {
@@ -1451,7 +1451,7 @@ const bar = myMap(first, [[1], [2], [3]]);")))
                             (define (my-push-4 lst x)
                               (foo push! lst x)))
                          compilation-environment
-                         (js-obj "camelCase" #t
+                         (js-obj "case" "camelcase"
                                  "inlineFunctions" #t
                                  "language" "JavaScript"))
                 "let [pushX] = (function () {
@@ -1478,7 +1478,7 @@ function myPush4(lst, x) {
                             (define (my-push-4 lst x)
                               ((get-push-function) lst x)))
                          compilation-environment
-                         (js-obj "camelCase" #t
+                         (js-obj "case" "camelcase"
                                  "inlineFunctions" #t
                                  "language" "JavaScript"))
                 "let [pushX] = (function () {
@@ -1503,7 +1503,7 @@ function myPush4(lst, x) {
                            (define (my-cdr x)
                              (cdr x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [cdr] = (() => {
@@ -1527,7 +1527,7 @@ function myCdr(x) {
                            (define (my-intersection x y)
                              (intersection x y)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [intersection] = (() => {
@@ -2170,7 +2170,7 @@ three"
                (compile '(define (identity-function x)
                            x)
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function identityFunction(x) {
   return x;
@@ -5266,7 +5266,7 @@ for (let i: any = _start; i < _end; i++) {
                                       arg env inherited-options)))
                              (.join ", "))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "regularArgs.map(function (arg) {
   return compileExpression(arg, env, inheritedOptions);
@@ -5612,7 +5612,7 @@ const y = 2;")))
                             (define x 1)
                             (define *lisp-map* #t))
                          compilation-environment
-                         (js-obj "camelCase" #t
+                         (js-obj "case" "camelcase"
                                  "language" "JavaScript"))
                 "function I(x) {
   return x;
@@ -5631,7 +5631,7 @@ const x = 1;")))
 
   (define (I x) x))")
                  compilation-environment
-                 (js-obj "camelCase" #t
+                 (js-obj "case" "camelcase"
                          "language" "JavaScript"))
                 "// inline-lisp-sources: true
 
@@ -5649,7 +5649,7 @@ I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.fo
                             (define x 1)
                             (define *lisp-map* #t))
                          compilation-environment
-                         (js-obj "camelCase" #t
+                         (js-obj "case" "camelcase"
                                  "language" "JavaScript"))
                 "import {
   I
@@ -5665,7 +5665,7 @@ const x = 1;")))
                             (define x 1)
                             (define *lisp-map* #t))
                          compilation-environment
-                         (js-obj "camelCase" #t
+                         (js-obj "case" "camelcase"
                                  "language" "TypeScript"))
                 "import {
   I
@@ -5679,7 +5679,7 @@ const x: any = 1;")))
                            (define (js_ str)
                              (js/eval str)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function js_(str) {
   return eval(str);
@@ -5691,7 +5691,7 @@ const x: any = 1;")))
                            (define (my-fn foldl f v l)
                              (foldl f v l)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myFn(foldl, f, v, l) {
   return foldl(f, v, l);
@@ -5703,7 +5703,7 @@ const x: any = 1;")))
                            (define (my-foldl-obj obj f v l)
                              (.foldl obj f v l)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myFoldlObj(obj, f, v, l) {
   return obj.foldl(f, v, l);
@@ -5716,7 +5716,7 @@ const x: any = 1;")))
                              (define/public (foldl f v l)
                                l)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "class Foo {
   foldl(f, v, l) {
@@ -5730,7 +5730,7 @@ const x: any = 1;")))
                            (define (my-pop lst x)
                              (pop! lst x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPop(lst, x) {
   return lst.shift();
@@ -5742,7 +5742,7 @@ const x: any = 1;")))
                            (define (my-pop-2 lst x)
                              (pop! (append lst) x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPop2(lst, x) {
   return [...lst].shift();
@@ -5754,7 +5754,7 @@ const x: any = 1;")))
                            (define (my-pop-right lst x)
                              (pop-right! lst x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPopRight(lst, x) {
   return lst.pop();
@@ -5766,7 +5766,7 @@ const x: any = 1;")))
                            (define (my-pop-right-2 lst x)
                              (pop-right! (append lst) x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPopRight2(lst, x) {
   return [...lst].pop();
@@ -5778,7 +5778,7 @@ const x: any = 1;")))
                            (define (my-push lst x)
                              (push! lst x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPush(lst, x) {
   lst.unshift(x);
@@ -5791,7 +5791,7 @@ const x: any = 1;")))
                            (define (my-push-2 lst x)
                              (push! (append lst) x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPush2(lst, x) {
   return (function (lst, x) {
@@ -5807,7 +5807,7 @@ const x: any = 1;")))
                              (push! lst x)
                              lst))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPush3(lst, x) {
   lst.unshift(x);
@@ -5820,7 +5820,7 @@ const x: any = 1;")))
                            (define (my-push-right lst x)
                              (push-right! lst x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPushRight(lst, x) {
   lst.push(x);
@@ -5833,7 +5833,7 @@ const x: any = 1;")))
                            (define (my-push-right-2 lst x)
                              (push-right! (append lst) x)))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPushRight2(lst, x) {
   return (function (lst, x) {
@@ -5849,7 +5849,7 @@ const x: any = 1;")))
                              (push-right! lst x)
                              lst))
                         compilation-environment
-                        (js-obj "camelCase" #t
+                        (js-obj "case" "camelcase"
                                 "language" "JavaScript"))
                "function myPushRight3(lst, x) {
   lst.push(x);

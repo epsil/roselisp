@@ -4773,8 +4773,6 @@
     (oget settings "quotedSymbol"))
   (define compile-environment-option
     (oget options "compileEnvironment"))
-  (define camel-case-option
-    (oget options "camelCase"))
   (define language-env
     (oget options "languageEnvironment"))
   (define (lang-filter x)
@@ -4854,12 +4852,12 @@
   ;; FIXME: Kludge.
   (unless compile-environment-option
     (return str))
-  (define camel-case-option
-    (oget options "camelCase"))
+  (define case-option
+    (oget options "case"))
   (define result
     (make-js-identifier-string-helper str))
   (cond
-   ((eq? camel-case-option #f)
+   ((eq? case-option "snakecase")
     (kebab-case->snake-case result))
    (else
     (kebab-case->camel-case result))))

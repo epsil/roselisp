@@ -97,7 +97,9 @@
     (js-obj-append options))
   (js/delete (get-field compile evaluation-options))
   (define compilation-options
-    evaluation-options)
+    (js-obj-append
+     evaluation-options
+     (js-obj "case" "camelcase")))
   (set! interpret-flag
         (if (eq? interpret-flag #u)
             #t

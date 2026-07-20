@@ -818,8 +818,13 @@ function compile(exp: any, ...args: any[]): any {
   } else {
     const as: any = options['as'];
     const expressionType: any = (as === Symbol.for('return-statement')) ? 'return' : ((as === Symbol.for('statement')) ? 'statement' : 'expression');
+    let caseOption: any = options['case'];
+    if (!validJsCasingStyleP(caseOption)) {
+      caseOption = 'camelcase';
+    }
     const inheritedOptions: any = {
       ...options,
+      case: caseOption,
       language: toLanguage,
       expressionType: expressionType
     };
@@ -828,7 +833,7 @@ function compile(exp: any, ...args: any[]): any {
   }
 }
 
-compile.fsource = [Symbol.for('define'), [Symbol.for('compile'), Symbol.for('exp'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('language-symbol->language-string'), Symbol.for('sym')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('typescript')]], 'TypeScript'], [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('javascript')]], 'JavaScript'], [Symbol.for('else'), 'Roselisp']]], [Symbol.for('define'), Symbol.for('options'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('js/first'), Symbol.for('args')], [Symbol.for('plist->object_'), Symbol.for('args'), true]]], [Symbol.for('define'), Symbol.for('from'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'from'], [Symbol.for('quote'), Symbol.for('roselisp')]]], [Symbol.for('define'), Symbol.for('to'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'to'], [Symbol.for('quote'), Symbol.for('javascript')]]], [Symbol.for('define'), Symbol.for('from-language'), [Symbol.for('language-symbol->language-string'), Symbol.for('from')]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('language-symbol->language-string'), Symbol.for('to')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('to-language'), 'Roselisp'], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options'), [Symbol.for('js-obj'), 'language', Symbol.for('from-language'), 'sexp', true]]], [Symbol.for('decompile1'), Symbol.for('exp'), Symbol.for('inherited-options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('as'), [Symbol.for('oget'), Symbol.for('options'), 'as']], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('as'), [Symbol.for('quote'), Symbol.for('return-statement')]], 'return'], [[Symbol.for('eq?'), Symbol.for('as'), [Symbol.for('quote'), Symbol.for('statement')]], 'statement'], [Symbol.for('else'), 'expression']]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options'), [Symbol.for('js-obj'), 'language', Symbol.for('to-language'), 'expressionType', Symbol.for('expression-type')]]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'environment'], [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('compile-with-environment'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('inherited-options')]]]];
+compile.fsource = [Symbol.for('define'), [Symbol.for('compile'), Symbol.for('exp'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('language-symbol->language-string'), Symbol.for('sym')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('typescript')]], 'TypeScript'], [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('javascript')]], 'JavaScript'], [Symbol.for('else'), 'Roselisp']]], [Symbol.for('define'), Symbol.for('options'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('js/first'), Symbol.for('args')], [Symbol.for('plist->object_'), Symbol.for('args'), true]]], [Symbol.for('define'), Symbol.for('from'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'from'], [Symbol.for('quote'), Symbol.for('roselisp')]]], [Symbol.for('define'), Symbol.for('to'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'to'], [Symbol.for('quote'), Symbol.for('javascript')]]], [Symbol.for('define'), Symbol.for('from-language'), [Symbol.for('language-symbol->language-string'), Symbol.for('from')]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('language-symbol->language-string'), Symbol.for('to')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('to-language'), 'Roselisp'], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options'), [Symbol.for('js-obj'), 'language', Symbol.for('from-language'), 'sexp', true]]], [Symbol.for('decompile1'), Symbol.for('exp'), Symbol.for('inherited-options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('as'), [Symbol.for('oget'), Symbol.for('options'), 'as']], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('as'), [Symbol.for('quote'), Symbol.for('return-statement')]], 'return'], [[Symbol.for('eq?'), Symbol.for('as'), [Symbol.for('quote'), Symbol.for('statement')]], 'statement'], [Symbol.for('else'), 'expression']]], [Symbol.for('define'), Symbol.for('case-option'), [Symbol.for('oget'), Symbol.for('options'), 'case']], [Symbol.for('unless'), [Symbol.for('valid-js-casing-style?'), Symbol.for('case-option')], [Symbol.for('set!'), Symbol.for('case-option'), 'camelcase']], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options'), [Symbol.for('js-obj'), 'case', Symbol.for('case-option'), 'language', Symbol.for('to-language'), 'expressionType', Symbol.for('expression-type')]]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'environment'], [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('compile-with-environment'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('inherited-options')]]]];
 
 /**
  * Decompile a JavaScript or TypeScript string to
@@ -5418,7 +5423,7 @@ function compileSymbol(node: any, env: any, options: any = {}, settings: any = {
   if (quotedSymbolOption) {
     return compileExpression(makeRose([Symbol.for('string->symbol'), str]), env, options);
   } else if (literalSymbolOption) {
-    let name: any = makeJsIdentifierString(str, options);
+    let name: any = makeIdentifierString(str, options);
     return new Identifier(name);
   } else if (compilationVariablesEnv.has(exp)) {
     return compilationVariablesEnv.get(exp);
@@ -5435,7 +5440,7 @@ function compileSymbol(node: any, env: any, options: any = {}, settings: any = {
       let identifier: any = new Identifier(gensymName);
       return identifier;
     } else {
-      let name: any = makeJsIdentifierString(str, options);
+      let name: any = makeIdentifierString(str, options);
       let gensymName: any = name;
       let i: any = 1;
       let regularSym: any = Symbol.for(gensymName);
@@ -5453,40 +5458,40 @@ function compileSymbol(node: any, env: any, options: any = {}, settings: any = {
       return identifier;
     }
   } else {
-    let name: any = makeJsIdentifierString(str, options);
+    let name: any = makeIdentifierString(str, options);
     return new Identifier(name);
   }
 }
 
-compileSymbol.fsource = [Symbol.for('define'), [Symbol.for('compile-symbol'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]], [Symbol.for('settings'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('literal-symbol-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('settings'), 'literalSymbol'], false]], [Symbol.for('define'), Symbol.for('quoted-symbol-option'), [Symbol.for('oget'), Symbol.for('settings'), 'quotedSymbol']], [Symbol.for('define'), Symbol.for('compile-environment-option'), [Symbol.for('oget'), Symbol.for('options'), 'compileEnvironment']], [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('gensymed-symbol'), [Symbol.for('gensym?'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('symbol->string'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^:'], Symbol.for('str')], [Symbol.for('set!'), Symbol.for('quoted-symbol-option'), true]], [Symbol.for('cond'), [Symbol.for('quoted-symbol-option'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('string->symbol'), [Symbol.for('unquote'), Symbol.for('str')]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('literal-symbol-option'), [Symbol.for('define'), Symbol.for('name'), [Symbol.for('make-js-identifier-string'), Symbol.for('str'), Symbol.for('options')]], [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('name')]], [[Symbol.for('send'), Symbol.for('compilation-variables-env'), Symbol.for('has'), Symbol.for('exp')], [Symbol.for('send'), Symbol.for('compilation-variables-env'), Symbol.for('get'), Symbol.for('exp')]], [[Symbol.for('eq?'), Symbol.for('str'), 'this'], [Symbol.for('new'), Symbol.for('ThisExpression')]], [Symbol.for('gensymed-symbol'), [Symbol.for('define'), Symbol.for('gensym-map'), [Symbol.for('oget'), Symbol.for('options'), 'gensymMap']], [Symbol.for('unless'), Symbol.for('gensym-map'), [Symbol.for('set!'), Symbol.for('gensym-map'), [Symbol.for('make-hash')]], [Symbol.for('oset!'), Symbol.for('options'), 'gensymMap', Symbol.for('gensym-map')]], [Symbol.for('cond'), [[Symbol.for('hash-has-key?'), Symbol.for('gensym-map'), Symbol.for('exp')], [Symbol.for('define-values'), [Symbol.for('gensym-name'), Symbol.for('name'), Symbol.for('i')], [Symbol.for('hash-ref'), Symbol.for('gensym-map'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('gensym-name')]], Symbol.for('identifier')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('name'), [Symbol.for('make-js-identifier-string'), Symbol.for('str'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('gensym-name'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('i'), 1], [Symbol.for('define'), Symbol.for('regular-sym'), [Symbol.for('string->symbol'), Symbol.for('gensym-name')]], [Symbol.for('while'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('regular-sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]], [Symbol.for('set!'), Symbol.for('gensym-name'), [Symbol.for('string-append'), Symbol.for('name'), [Symbol.for('number->string'), Symbol.for('i')]]], [Symbol.for('set!'), Symbol.for('regular-sym'), [Symbol.for('string->symbol'), Symbol.for('gensym-name')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('gensym-name')]], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('list'), Symbol.for('gensym-name'), Symbol.for('name'), Symbol.for('i')]], [Symbol.for('hash-set!'), Symbol.for('gensym-map'), Symbol.for('exp'), Symbol.for('entry')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local'), Symbol.for('regular-sym'), undefined, [Symbol.for('quote'), Symbol.for('Any')]], Symbol.for('identifier')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('name'), [Symbol.for('make-js-identifier-string'), Symbol.for('str'), Symbol.for('options')]], [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('name')]]]];
+compileSymbol.fsource = [Symbol.for('define'), [Symbol.for('compile-symbol'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]], [Symbol.for('settings'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('literal-symbol-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('settings'), 'literalSymbol'], false]], [Symbol.for('define'), Symbol.for('quoted-symbol-option'), [Symbol.for('oget'), Symbol.for('settings'), 'quotedSymbol']], [Symbol.for('define'), Symbol.for('compile-environment-option'), [Symbol.for('oget'), Symbol.for('options'), 'compileEnvironment']], [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('gensymed-symbol'), [Symbol.for('gensym?'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('symbol->string'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^:'], Symbol.for('str')], [Symbol.for('set!'), Symbol.for('quoted-symbol-option'), true]], [Symbol.for('cond'), [Symbol.for('quoted-symbol-option'), [Symbol.for('compile-expression'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('string->symbol'), [Symbol.for('unquote'), Symbol.for('str')]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('literal-symbol-option'), [Symbol.for('define'), Symbol.for('name'), [Symbol.for('make-identifier-string'), Symbol.for('str'), Symbol.for('options')]], [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('name')]], [[Symbol.for('send'), Symbol.for('compilation-variables-env'), Symbol.for('has'), Symbol.for('exp')], [Symbol.for('send'), Symbol.for('compilation-variables-env'), Symbol.for('get'), Symbol.for('exp')]], [[Symbol.for('eq?'), Symbol.for('str'), 'this'], [Symbol.for('new'), Symbol.for('ThisExpression')]], [Symbol.for('gensymed-symbol'), [Symbol.for('define'), Symbol.for('gensym-map'), [Symbol.for('oget'), Symbol.for('options'), 'gensymMap']], [Symbol.for('unless'), Symbol.for('gensym-map'), [Symbol.for('set!'), Symbol.for('gensym-map'), [Symbol.for('make-hash')]], [Symbol.for('oset!'), Symbol.for('options'), 'gensymMap', Symbol.for('gensym-map')]], [Symbol.for('cond'), [[Symbol.for('hash-has-key?'), Symbol.for('gensym-map'), Symbol.for('exp')], [Symbol.for('define-values'), [Symbol.for('gensym-name'), Symbol.for('name'), Symbol.for('i')], [Symbol.for('hash-ref'), Symbol.for('gensym-map'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('gensym-name')]], Symbol.for('identifier')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('name'), [Symbol.for('make-identifier-string'), Symbol.for('str'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('gensym-name'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('i'), 1], [Symbol.for('define'), Symbol.for('regular-sym'), [Symbol.for('string->symbol'), Symbol.for('gensym-name')]], [Symbol.for('while'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('regular-sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]], [Symbol.for('set!'), Symbol.for('gensym-name'), [Symbol.for('string-append'), Symbol.for('name'), [Symbol.for('number->string'), Symbol.for('i')]]], [Symbol.for('set!'), Symbol.for('regular-sym'), [Symbol.for('string->symbol'), Symbol.for('gensym-name')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('gensym-name')]], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('list'), Symbol.for('gensym-name'), Symbol.for('name'), Symbol.for('i')]], [Symbol.for('hash-set!'), Symbol.for('gensym-map'), Symbol.for('exp'), Symbol.for('entry')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local'), Symbol.for('regular-sym'), undefined, [Symbol.for('quote'), Symbol.for('Any')]], Symbol.for('identifier')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('name'), [Symbol.for('make-identifier-string'), Symbol.for('str'), Symbol.for('options')]], [Symbol.for('new'), Symbol.for('Identifier'), Symbol.for('name')]]]];
 
 /**
- * Transform a string to a valid JavaScript identifier string.
+ * Transform a string to a valid JavaScript identifier
+ * string, provided an appropriate casing style
+ * (camel case or snake case) is specified in `options`.
+ * The input is assumed to be kebab case.
  */
-function makeJsIdentifierString(str: any, options: any = {}): any {
-  // TODO: This function could benefit from memoization.
-  // Need to use a custom memoization map to handle `options`,
-  // though... an equality map using `equal?` should suffice.
-  const compileEnvironmentOption: any = options['compileEnvironment'];
-  // FIXME: Kludge.
-  if (!compileEnvironmentOption) {
-    return str;
+function makeIdentifierString(str: any, options: any = {}): any {
+  let result: any = str;
+  let caseOption: any = options['case'] || 'none';
+  if (validJsCasingStyleP(caseOption)) {
+    result = makeIdentifierStringHelper(result);
   }
-  const caseOption: any = options['case'];
-  let result: any = makeJsIdentifierStringHelper(str);
-  if (caseOption === 'snakecase') {
+  if (caseOption === 'camelcase') {
+    return kebabCaseToCamelCase(result);
+  } else if (caseOption === 'snakecase') {
     return kebabCaseToSnakeCase(result);
   } else {
-    return kebabCaseToCamelCase(result);
+    return result;
   }
 }
 
-makeJsIdentifierString.fsource = [Symbol.for('define'), [Symbol.for('make-js-identifier-string'), Symbol.for('str'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('compile-environment-option'), [Symbol.for('oget'), Symbol.for('options'), 'compileEnvironment']], [Symbol.for('unless'), Symbol.for('compile-environment-option'), [Symbol.for('return'), Symbol.for('str')]], [Symbol.for('define'), Symbol.for('case-option'), [Symbol.for('oget'), Symbol.for('options'), 'case']], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('make-js-identifier-string-helper'), Symbol.for('str')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('case-option'), 'snakecase'], [Symbol.for('kebab-case->snake-case'), Symbol.for('result')]], [Symbol.for('else'), [Symbol.for('kebab-case->camel-case'), Symbol.for('result')]]]];
+makeIdentifierString.fsource = [Symbol.for('define'), [Symbol.for('make-identifier-string'), Symbol.for('str'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('result'), Symbol.for('str')], [Symbol.for('define'), Symbol.for('case-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'case'], 'none']], [Symbol.for('when'), [Symbol.for('valid-js-casing-style?'), Symbol.for('case-option')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('make-identifier-string-helper'), Symbol.for('result')]]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('case-option'), 'camelcase'], [Symbol.for('kebab-case->camel-case'), Symbol.for('result')]], [[Symbol.for('eq?'), Symbol.for('case-option'), 'snakecase'], [Symbol.for('kebab-case->snake-case'), Symbol.for('result')]], [Symbol.for('else'), Symbol.for('result')]]];
 
 /**
- * Helper function for `make-js-identifier-string`.
+ * Helper function for `make-identifier-string`.
  */
-function makeJsIdentifierStringHelper(str: any): any {
+function makeIdentifierStringHelper(str: any): any {
   let result: any = str.replace(new RegExp('^\\+$', 'g'), '_add').replace(new RegExp('^-$', 'g'), '_sub').replace(new RegExp('^\\*$', 'g'), '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(new RegExp('%', 'g'), '').replace(new RegExp('/', 'g'), '-').replace(new RegExp('!', 'g'), '-x').replace(new RegExp(':', 'g'), '-').replace(new RegExp('->', 'g'), '-to-').replace(new RegExp('\\+', 'g'), '_').replace(new RegExp('\\*$', 'g'), '-star').replace(new RegExp('\\*', 'g'), 'star-');
   if (result.match(new RegExp('-', 'g'))) {
     result = result.replace(new RegExp('\\?', 'g'), '-p');
@@ -5496,7 +5501,7 @@ function makeJsIdentifierStringHelper(str: any): any {
   return result;
 }
 
-makeJsIdentifierStringHelper.fsource = [Symbol.for('define'), [Symbol.for('make-js-identifier-string-helper'), Symbol.for('str')], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\+$', 'g'], Symbol.for('_'), '_add'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^-$', 'g'], Symbol.for('_'), '_sub'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\*$', 'g'], Symbol.for('_'), '_mul'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^/$', 'g'], Symbol.for('_'), '_div'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '%', 'g'], Symbol.for('_'), ''], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '/', 'g'], Symbol.for('_'), '-'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '!', 'g'], Symbol.for('_'), '-x'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ':', 'g'], Symbol.for('_'), '-'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '->', 'g'], Symbol.for('_'), '-to-'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\+', 'g'], Symbol.for('_'), '_'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\*$', 'g'], Symbol.for('_'), '-star'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\*', 'g'], Symbol.for('_'), 'star-']]], [Symbol.for('cond'), [[Symbol.for('regexp-match'), [Symbol.for('regexp'), '-', 'g'], Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\?', 'g'], Symbol.for('result'), '-p']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\?', 'g'], Symbol.for('result'), 'p']]]], Symbol.for('result')];
+makeIdentifierStringHelper.fsource = [Symbol.for('define'), [Symbol.for('make-identifier-string-helper'), Symbol.for('str')], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\+$', 'g'], Symbol.for('_'), '_add'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^-$', 'g'], Symbol.for('_'), '_sub'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\*$', 'g'], Symbol.for('_'), '_mul'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^/$', 'g'], Symbol.for('_'), '_div'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '%', 'g'], Symbol.for('_'), ''], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '/', 'g'], Symbol.for('_'), '-'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '!', 'g'], Symbol.for('_'), '-x'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ':', 'g'], Symbol.for('_'), '-'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '->', 'g'], Symbol.for('_'), '-to-'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\+', 'g'], Symbol.for('_'), '_'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\*$', 'g'], Symbol.for('_'), '-star'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\*', 'g'], Symbol.for('_'), 'star-']]], [Symbol.for('cond'), [[Symbol.for('regexp-match'), [Symbol.for('regexp'), '-', 'g'], Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\?', 'g'], Symbol.for('result'), '-p']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\?', 'g'], Symbol.for('result'), 'p']]]], Symbol.for('result')];
 
 /**
  * Whether something is an equality expression.
@@ -8025,7 +8030,7 @@ jsSwitch_.ftype = 'macro';
  */
 function fieldBoundP_(exp: any, env: any): any {
   let [id, obj]: any[] = exp.slice(1);
-  const prop: any = makeJsIdentifierString(id.description as string, currentCompilationOptions());
+  const prop: any = makeIdentifierString(id.description as string, currentCompilationOptions());
   if (typeof obj === 'symbol') {
     return [Symbol.for('and'), obj, [Symbol.for('js/in'), prop, obj]];
   } else {
@@ -8034,7 +8039,7 @@ function fieldBoundP_(exp: any, env: any): any {
   }
 }
 
-fieldBoundP_.fsource = [Symbol.for('define'), [Symbol.for('field-bound?_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('id'), Symbol.for('obj')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('make-js-identifier-string'), [Symbol.for('symbol->string'), Symbol.for('id')], [Symbol.for('current-compilation-options')]]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('js/in'), [Symbol.for('unquote'), Symbol.for('prop')], [Symbol.for('unquote'), Symbol.for('obj')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj-sym'), [Symbol.for('gensym'), 'obj']], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('unquote'), Symbol.for('obj')]]], [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('js/in'), [Symbol.for('unquote'), Symbol.for('prop')], [Symbol.for('unquote'), Symbol.for('obj-sym')]]]]]]]];
+fieldBoundP_.fsource = [Symbol.for('define'), [Symbol.for('field-bound?_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('id'), Symbol.for('obj')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('make-identifier-string'), [Symbol.for('symbol->string'), Symbol.for('id')], [Symbol.for('current-compilation-options')]]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('js/in'), [Symbol.for('unquote'), Symbol.for('prop')], [Symbol.for('unquote'), Symbol.for('obj')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj-sym'), [Symbol.for('gensym'), 'obj']], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('unquote'), Symbol.for('obj')]]], [Symbol.for('and'), [Symbol.for('unquote'), Symbol.for('obj-sym')], [Symbol.for('js/in'), [Symbol.for('unquote'), Symbol.for('prop')], [Symbol.for('unquote'), Symbol.for('obj-sym')]]]]]]]];
 
 fieldBoundP_.ftype = 'macro';
 
@@ -9060,6 +9065,18 @@ function simpleTypeP(x: any): any {
 }
 
 simpleTypeP.fsource = [Symbol.for('define'), [Symbol.for('simple-type?'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('macro-type?'), Symbol.for('x')]], [Symbol.for('not'), [Symbol.for('fexpr-type?'), Symbol.for('x')]]]];
+
+/**
+ * Whether `casing-style` is a casing style that is
+ * appropriate for JavaScript identifiers. Camel case
+ * and snake case can be used in JavaScript, but
+ * kebab case cannot.
+ */
+function validJsCasingStyleP(casingStyle: any): any {
+  return ['camelcase', 'snakecase'].includes(casingStyle);
+}
+
+validJsCasingStyleP.fsource = [Symbol.for('define'), [Symbol.for('valid-js-casing-style?'), Symbol.for('casing-style')], [Symbol.for('memq?'), Symbol.for('casing-style'), [Symbol.for('quote'), ['camelcase', 'snakecase']]]];
 
 /**
  * Lisp environment.

@@ -357,7 +357,15 @@ describe('Symbols', function (): any {
       'foo',
     ]);
   });
-  return it("(compile ''foo)", function (): any {
+  it("(compile 'foo-bar)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), Symbol.for('foo-bar')]],
+      'fooBar',
+    ]);
+  });
+  it("(compile ''foo)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -366,6 +374,17 @@ describe('Symbols', function (): any {
         [Symbol.for('quote'), [Symbol.for('quote'), Symbol.for('foo')]],
       ],
       "Symbol.for('foo')",
+    ]);
+  });
+  return it("(compile ''foo-bar)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('quote'), Symbol.for('foo-bar')]],
+      ],
+      "Symbol.for('foo-bar')",
     ]);
   });
 });

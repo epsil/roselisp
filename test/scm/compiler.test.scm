@@ -697,7 +697,8 @@ function truish(x) {
     ;; Return x wrapped in a list.
     `(,x)))")
                 compilation-environment
-                (js-obj "language" "JavaScript"))
+                (js-obj "case" "camelcase"
+                        "language" "JavaScript"))
                "/**
  * Wrap a value in a list.
  */
@@ -1038,7 +1039,7 @@ import * as foo from 'foo';")))
                (compile 'foo-bar
                         compilation-environment
                         (js-obj "language" "JavaScript"))
-               "fooBar")))
+               "foo-bar")))
         (it "foo-bar, camelCase"
             (fn ()
               (assert-equal
@@ -1243,7 +1244,8 @@ const lst = [symbolp, booleanp];")))
                            (define one-plus-one
                              (apply + '(1 1))))
                         compilation-environment
-                        (js-obj "inlineFunctions" #t
+                        (js-obj "case" "camelcase"
+                                "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [_add] = (() => {
   function add_(...args) {
@@ -1264,7 +1266,8 @@ const onePlusOne = _add(1, 1);")))
                            (define one-minus-one
                              (apply - '(1 1))))
                         compilation-environment
-                        (js-obj "inlineFunctions" #t
+                        (js-obj "case" "camelcase"
+                                "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [_sub] = (() => {
   function sub_(...args) {
@@ -1292,7 +1295,8 @@ const oneMinusOne = _sub(1, 1);")))
                            (define one-minus-one
                              (apply - '(1 1))))
                         compilation-environment
-                        (js-obj "inlineFunctions" #f
+                        (js-obj "case" "camelcase"
+                                "inlineFunctions" #f
                                 "language" "JavaScript"))
                "import {
   _sub
@@ -1306,7 +1310,8 @@ const oneMinusOne = _sub(1, 1);")))
                            (define one-times-one
                              (apply * '(1 1))))
                         compilation-environment
-                        (js-obj "inlineFunctions" #t
+                        (js-obj "case" "camelcase"
+                                "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [_mul] = (() => {
   function mul_(...args) {
@@ -1327,7 +1332,8 @@ const oneTimesOne = _mul(1, 1);")))
                            (define one-divided-by-one
                              (apply / '(1 1))))
                         compilation-environment
-                        (js-obj "inlineFunctions" #t
+                        (js-obj "case" "camelcase"
+                                "inlineFunctions" #t
                                 "language" "JavaScript"))
                "const [_div] = (() => {
   function div_(...args) {
@@ -1354,7 +1360,8 @@ const oneDividedByOne = _div(1, 1);")))
                    (define foo-bar
                      (apply string-append '("foo" "bar"))))
                 compilation-environment
-                (js-obj "inlineFunctions" #t
+                (js-obj "case" "camelcase"
+                        "inlineFunctions" #t
                         "language" "JavaScript"))
                "const [stringAppend] = (() => {
   function stringAppend_(...args) {
@@ -1568,7 +1575,8 @@ function myIntersection(x, y) {
   (define one-plus-one
     (apply + '(1 1))))")
                 compilation-environment
-                (js-obj "inlineFunctions" #t
+                (js-obj "case" "camelcase"
+                        "inlineFunctions" #t
                         "language" "JavaScript"))
                "/**
  * Module header.
@@ -1598,7 +1606,8 @@ const onePlusOne = _add(1, 1);")))
   (define one-plus-one
     (apply + '(1 1))))")
                 compilation-environment
-                (js-obj "inlineFunctions" #t
+                (js-obj "case" "camelcase"
+                        "inlineFunctions" #t
                         "language" "JavaScript"))
                "/**
  * Module header.
@@ -1716,7 +1725,8 @@ three"
               (assert-equal
                (compile '(truep x)
                         compilation-environment
-                        (js-obj "language" "JavaScript"))
+                        (js-obj "case" "camelcase"
+                                "language" "JavaScript"))
                "(() => {
   function truep(x) {
     if (x) {
@@ -1732,7 +1742,8 @@ three"
               (assert-equal
                (compile '(falsep x)
                         compilation-environment
-                        (js-obj "language" "JavaScript"))
+                        (js-obj "case" "camelcase"
+                                "language" "JavaScript"))
                "(() => {
   function falsep(x) {
     return !truep(x);
@@ -1972,7 +1983,8 @@ three"
                            `(("foo" . ,test-fn)
                              ("bar" . ,test-fn)))
                         compilation-environment
-                        (js-obj "language" "JavaScript"))
+                        (js-obj "case" "camelcase"
+                                "language" "JavaScript"))
                "const testMap1 = [['foo', Symbol.for('.'), testFn], ['bar', Symbol.for('.'), testFn]];")))
         (it "`((1))"
             (fn ()
@@ -2054,7 +2066,8 @@ three"
                                        (quote (unquote args))))
                                   (unquote-splicing body))))
                         compilation-environment
-                        (js-obj "expressionType" "statement"
+                        (js-obj "case" "camelcase"
+                                "expressionType" "statement"
                                 "language" "JavaScript"))
                "letExp = [Symbol.for('let'), [[argList, [Symbol.for('quote'), args]]], ...body];")))))
     (describe "apply"
@@ -2434,7 +2447,8 @@ three"
                                     (aget (aget m2 j) i)))))
                        matrix)))
                 compilation-environment
-                (js-obj "language" "JavaScript"))
+                (js-obj "case" "camelcase"
+                        "language" "JavaScript"))
                "function addMatrix(m1, m2) {
   const l1 = m1.length;
   const l2 = m2.length;
@@ -2820,7 +2834,8 @@ return x;")))
                                compilation-env
                                options))))))
                 compilation-environment
-                (js-obj "language" "TypeScript"))
+                (js-obj "case" "camelcase"
+                        "language" "TypeScript"))
                "const makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {
   let language: any = options['language'];
   language = language || defaultLanguage;
@@ -3413,7 +3428,8 @@ and(x, or(y, z));")))))
               (assert-equal
                (compile '(provide (rename-out (x js/undefined)))
                         compilation-environment
-                        (js-obj "expressionType" "statement"
+                        (js-obj "case" "camelcase"
+                                "expressionType" "statement"
                                 "language" "JavaScript"))
                "export {
   x as jsUndefined
@@ -4226,7 +4242,8 @@ const quux = [['foo', Symbol.for('.'), foo], ['bar', Symbol.for('.'), bar]];")))
                                  (push! (get-field methods generic-function) entry)
                                  generic-function)))
                 compilation-environment
-                (js-obj "language" "JavaScript"))
+                (js-obj "case" "camelcase"
+                        "language" "JavaScript"))
                "genericFunction.defMethod = function (arglist, functionDefinition) {
   const entry = [arglist, functionDefinition];
   genericFunction.methods.unshift(entry);
@@ -6124,7 +6141,8 @@ const x: any = 1;")))
                            (define (hello-world)
                              (display "Hello world!")))
                         compilation-environment
-                        (js-obj "language" "JavaScript"
+                        (js-obj "case" "camelcase"
+                                "language" "JavaScript"
                                 "expressionType" "statement"))
                "function helloWorld() {
   console.log('Hello world!');
@@ -6137,7 +6155,8 @@ const x: any = 1;")))
                            (define (hello-world)
                              (display "Hello world!")))
                         compilation-environment
-                        (js-obj "language" "TypeScript"
+                        (js-obj "case" "camelcase"
+                                "language" "TypeScript"
                                 "expressionType" "statement"))
                "function helloWorld(): void {
   console.log('Hello world!');
@@ -6504,7 +6523,8 @@ const bar = foo && ('baz' in foo);")))
                            (define bar
                              (field-bound? baz-baz foo)))
                         compilation-environment
-                        (js-obj "language" "JavaScript"
+                        (js-obj "case" "camelcase"
+                                "language" "JavaScript"
                                 "expressionType" "statement"))
                "const foo = {};
 

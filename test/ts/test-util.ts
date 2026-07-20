@@ -319,7 +319,10 @@ function testLisp(
     ...options,
   };
   delete evaluationOptions.compile;
-  const compilationOptions: any = evaluationOptions;
+  const compilationOptions: any = {
+    ...evaluationOptions,
+    case: 'camelcase',
+  };
   interpretFlag = interpretFlag === undefined ? true : compile;
   compile = compile === undefined ? true : compile;
   let interpretedValue: any = undefined;

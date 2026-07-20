@@ -142,8 +142,12 @@
  'foo
  > (compile 'foo)
  "foo"
+ > (compile 'foo-bar)
+ "fooBar"
  > (compile ''foo)
  "Symbol.for('foo')"
+ > (compile ''foo-bar)
+ "Symbol.for('foo-bar')"
 
  ;; Keywords
  > (describe "Keywords")

@@ -927,10 +927,15 @@
         "statement")
        (else
         "expression")))
+    (define case-option
+      (oget options "case"))
+    (unless (valid-js-casing-style? case-option)
+      (set! case-option "camelcase"))
     (define inherited-options
       (js-obj-append
        options
-       (js-obj "language" to-language
+       (js-obj "case" case-option
+               "language" to-language
                "expressionType" expression-type)))
     (define env
       (or (oget options "environment")
@@ -4795,7 +4800,7 @@
      env options))
    (literal-symbol-option
     (define name
-      (make-js-identifier-string str options))
+      (make-identifier-string str options))
     (new Identifier name))
    ((send compilation-variables-env has exp)
     (send compilation-variables-env get exp))
@@ -4816,7 +4821,7 @@
       identifier)
      (else
       (define name
-        (make-js-identifier-string str options))
+        (make-identifier-string str options))
       (define gensym-name name)
       (define i 1)
       (define regular-sym
@@ -4839,31 +4844,31 @@
       identifier)))
    (else
     (define name
-      (make-js-identifier-string str options))
+      (make-identifier-string str options))
     (new Identifier name))))
 
-;;; Transform a string to a valid JavaScript identifier string.
-(define (make-js-identifier-string str (options (js-obj)))
-  ;; TODO: This function could benefit from memoization.
-  ;; Need to use a custom memoization map to handle `options`,
-  ;; though... an equality map using `equal?` should suffice.
-  (define compile-environment-option
-    (oget options "compileEnvironment"))
-  ;; FIXME: Kludge.
-  (unless compile-environment-option
-    (return str))
+;;; Transform a string to a valid JavaScript identifier
+;;; string, provided an appropriate casing style
+;;; (camel case or snake case) is specified in `options`.
+;;; The input is assumed to be kebab case.
+(define (make-identifier-string str (options (js-obj)))
+  (define result str)
   (define case-option
-    (oget options "case"))
-  (define result
-    (make-js-identifier-string-helper str))
+    (or (oget options "case")
+        "none"))
+  (when (valid-js-casing-style? case-option)
+    (set! result
+          (make-identifier-string-helper result)))
   (cond
+   ((eq? case-option "camelcase")
+    (kebab-case->camel-case result))
    ((eq? case-option "snakecase")
     (kebab-case->snake-case result))
    (else
-    (kebab-case->camel-case result))))
+    result)))
 
-;;; Helper function for `make-js-identifier-string`.
-(define (make-js-identifier-string-helper str)
+;;; Helper function for `make-identifier-string`.
+(define (make-identifier-string-helper str)
   (define result
     (~> str
         (regexp-replace (regexp "^\\+$" "g") _ "_add")
@@ -7086,7 +7091,7 @@
 ;;; Expand a `(field-bound? ...)` expression.
 (defmacro field-bound?_ (id obj)
   (define prop
-    (make-js-identifier-string
+    (make-identifier-string
      (symbol->string id)
      (current-compilation-options)))
   (cond
@@ -7747,6 +7752,15 @@
 (define (simple-type? x)
   (and (not (macro-type? x))
        (not (fexpr-type? x))))
+
+;;; Whether `casing-style` is a casing style that is
+;;; appropriate for JavaScript identifiers. Camel case
+;;; and snake case can be used in JavaScript, but
+;;; kebab case cannot.
+(define (valid-js-casing-style? casing-style)
+  (memq? casing-style
+         '("camelcase"
+           "snakecase")))
 
 ;;; Lisp environment.
 (define lisp-environment

@@ -910,6 +910,7 @@ describe('compile', function (): any {
           ),
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
           }
         ),
@@ -1289,7 +1290,7 @@ describe('compile', function (): any {
         compile(Symbol.for('foo-bar'), compilationEnvironment, {
           language: 'JavaScript',
         }),
-        'fooBar'
+        'foo-bar'
       );
     });
     it('foo-bar, camelCase', function (): any {
@@ -1622,6 +1623,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
           }
@@ -1659,6 +1661,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
           }
@@ -1703,6 +1706,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: false,
             language: 'JavaScript',
           }
@@ -1733,6 +1737,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
           }
@@ -1770,6 +1775,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
           }
@@ -1812,6 +1818,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
           }
@@ -2170,6 +2177,7 @@ describe('compile', function (): any {
           ),
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
           }
@@ -2205,6 +2213,7 @@ describe('compile', function (): any {
           ),
           compilationEnvironment,
           {
+            case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
           }
@@ -2337,6 +2346,7 @@ describe('compile', function (): any {
           [Symbol.for('truep'), Symbol.for('x')],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
           }
         ),
@@ -2358,6 +2368,7 @@ describe('compile', function (): any {
           [Symbol.for('falsep'), Symbol.for('x')],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
           }
         ),
@@ -2745,6 +2756,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
           }
         ),
@@ -2952,6 +2964,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             expressionType: 'statement',
             language: 'JavaScript',
           }
@@ -3816,6 +3829,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
           }
         ),
@@ -4454,6 +4468,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'TypeScript',
           }
         ),
@@ -5491,6 +5506,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             expressionType: 'statement',
             language: 'JavaScript',
           }
@@ -6810,6 +6826,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
           }
         ),
@@ -10192,6 +10209,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
             expressionType: 'statement',
           }
@@ -10217,6 +10235,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'TypeScript',
             expressionType: 'statement',
           }
@@ -10955,6 +10974,7 @@ describe('compile', function (): any {
           ],
           compilationEnvironment,
           {
+            case: 'camelcase',
             language: 'JavaScript',
             expressionType: 'statement',
           }

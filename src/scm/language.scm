@@ -168,7 +168,8 @@
 (require (only-in "./eval"
                   call-evaluator
                   default-evaluator
-                  eval_))
+                  eval_
+                  eval-estree))
 (require (only-in "./hash"
                   hash->list_
                   hash-clear!_
@@ -187,7 +188,6 @@
                   make-hash_))
 (require (only-in "./javascript"
                   (js-new_ new_)
-                  js-block_
                   js-delete_
                   js-eighth_
                   js-eval_
@@ -975,6 +975,10 @@
   (define language-option
     (or (oget options "language")
         default-language))
+  (define estree-option
+    (oget options "estree"))
+  (define optimize-option
+    (oget options "optimize"))
   (define lang-env
     (if (extends-lisp-environment? env)
         env
@@ -1012,8 +1016,11 @@
          (compile-rose exp continuation-env compilation-options))
         (else
          (compile-sexp exp continuation-env compilation-options))))
-     (set! ast (optimize-estree ast))
-     (print-estree ast compilation-options))))
+     (when optimize-option
+       (set! ast (optimize-estree ast)))
+     (if estree-option
+         ast
+         (print-estree ast compilation-options)))))
 
 ;;; Compile a set of modules together.
 ;;; The modules may reference one another.
@@ -1315,7 +1322,8 @@
                    env
                    options)))
            ;; Macro call.
-           ((macro-type? op-type)
+           ((or (macro?_ f)
+                (macro-type? op-type))
             (set! result
                   (compile-macro-call
                    node1 env
@@ -1422,7 +1430,33 @@
 ;;; by {@link Environment}. The expression is evaluated in
 ;;; context of a basic Lisp environment defining such constructs
 ;;; as `(if ...)`, `(cond ...)`, and so on.
-(define interpret
+(define (interpret exp (env (default-environment)) (options (js-obj)))
+  (define expression-type
+    (or (oget options "expressionType")
+        "statement"))
+  (define inherited-options
+    (js-obj-append
+     options
+     (js-obj
+      "expressionType" expression-type
+      "estree" #t
+      "shouldInline" #f)))
+  (define environment
+    (make-interpretation-environment env inherited-options))
+  ;; TODO: Memoize compilation?
+  (define ast
+    (compile-with-environment exp environment inherited-options))
+  (define result
+    (eval-estree ast environment inherited-options))
+  result)
+
+;;; Evaluate a Lisp expression `exp` with environment `env`.
+;;;
+;;; `env`, if specified, must be a Lisp environment as returned
+;;; by {@link Environment}. The expression is evaluated in
+;;; context of a basic Lisp environment defining such constructs
+;;; as `(if ...)`, `(cond ...)`, and so on.
+(define interpret1
   (dashify
    (lambda (exp (env (default-environment)) (options (js-obj)))
      (define evaluator
@@ -2422,8 +2456,19 @@
         (begin-wrap-rose-smart
          (send cond-clause drop 1)))
       (cond
-       ((or (eq? expression-type "statement")
-            (eq? expression-type "return"))
+       ((eq? expression-type "expression")
+        (new ConditionalExpression
+             (compile-expression
+              condition
+              env options)
+             (transfer-and-compile-comments
+              cond-clause
+              (compile-expression
+               then-clauses
+               env options)
+              options)
+             compiled-exp))
+       (else
         (new IfStatement
              (compile-expression
               condition
@@ -2436,18 +2481,6 @@
                  then-clauses
                  env options)))
               options)
-             compiled-exp))
-       (else
-        (new ConditionalExpression
-             (compile-expression
-              condition
-              env options)
-             (transfer-and-compile-comments
-              cond-clause
-              (compile-expression
-               then-clauses
-               env options)
-              options)
              compiled-exp))))
     (cond
      ((eq? (~> (js/last cond-clauses)
@@ -2456,8 +2489,16 @@
            'else)
       (define final-clause
         (cond
-         ((or (eq? expression-type "statement")
-              (eq? expression-type "return"))
+         ((eq? expression-type "expression")
+          (transfer-and-compile-comments
+           (js/last cond-clauses)
+           (compile-expression
+            (begin-wrap-rose
+             (send (js/last cond-clauses)
+                   drop 1))
+            env options)
+           options))
+         (else
           (transfer-and-compile-comments
            (js/last cond-clauses)
            (wrap-in-block-statement-smart
@@ -2466,15 +2507,6 @@
               (send (js/last cond-clauses)
                     drop 1))
              env options))
-           options))
-         (else
-          (transfer-and-compile-comments
-           (js/last cond-clauses)
-           (compile-expression
-            (begin-wrap-rose
-             (send (js/last cond-clauses)
-                   drop 1))
-            env options)
            options))))
       (unless (or (not (eq? expression-type
                             "statement"))
@@ -2488,10 +2520,9 @@
              (drop-right cond-clauses 1)))
      (else
       (foldr reducing-f
-             (if (or (eq? expression-type "statement")
-                     (eq? expression-type "return"))
-                 #n
-                 (new Identifier "undefined"))
+             (if (eq? expression-type "expression")
+                 (new Identifier "undefined")
+                 #n)
              cond-clauses))))))
 
 ;;; Compile a `(define ...)` expression.
@@ -3267,8 +3298,11 @@
     (oget options "expressionType"))
   (define make-block #f)
   (cond
-   ((or (eq? expression-type "statement")
-        (eq? expression-type "return"))
+   ((eq? expression-type "expression")
+    (compile-expression
+     (wrap-in-arrow-call node)
+     env options))
+   (else
     (define language-env
       (oget options "languageEnvironment"))
     (define (lang-filter x)
@@ -3324,19 +3358,18 @@
           ,@body-nodes)
         node)
        env1 inherited-options))
-    result)
-   (else
-    (compile-expression
-     (wrap-in-arrow-call node)
-     env options))))
+    result)))
 
 ;;; Compile a `(let-values ...)` expression.
 (define (compile-let-values node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
-   ((or (eq? expression-type "statement")
-        (eq? expression-type "return"))
+   ((eq? expression-type "expression")
+    (compile-expression
+     (wrap-in-arrow-call node)
+     env options))
+   (else
     (define language-env
       (oget options "languageEnvironment"))
     (define (lang-filter x)
@@ -3410,11 +3443,7 @@
           ,@body-nodes)
         node)
        env1 inherited-options))
-    result)
-   (else
-    (compile-expression
-     (wrap-in-arrow-call node)
-     env options))))
+    result)))
 
 ;;; Compile a `(define-values ...)` expression.
 (define (compile-define-values node env (options (js-obj)))
@@ -3548,8 +3577,11 @@
   (define expression-type
     (oget options "expressionType"))
   (cond
-   ((or (eq? expression-type "statement")
-        (eq? expression-type "return"))
+   ((eq? expression-type "expression")
+    (compile-expression
+     (wrap-in-arrow-call node)
+     env options))
+   (else
     (define language-env
       (oget options "languageEnvironment"))
     (define (lang-filter x)
@@ -3600,11 +3632,7 @@
           ,@body-nodes)
         node)
        env1 inherited-options))
-    result)
-   (else
-    (compile-expression
-     (wrap-in-arrow-call node)
-     env options))))
+    result)))
 
 ;;; Compile a `(define-fields ...)` expression.
 (define (compile-define-fields node env (options (js-obj)))
@@ -3781,7 +3809,8 @@
       (first exp))
     (define-values (macro-f typ)
       (send env get-typed-value op))
-    (when (macro-type? typ)
+    (when (or (macro?_ macro-f)
+              (macro-type? typ))
       (set! expansion (macro-f exp env))
       (set! expanded #t))))
   (values
@@ -4100,17 +4129,7 @@
         (second exp))
       (make-type-binding env sym '(macro-> Any * Any) lang-filter))))
   (cond
-   ((or (eq? expression-type "statement")
-        (eq? expression-type "return"))
-    (define body-statements
-      (compile-statements body env options))
-    ;; Note that this returns a `Program` node, but in
-    ;; some contexts, a `BlockStatement` node is wanted.
-    ;; One can convert a `Program` node to a
-    ;; `BlockStatement` node with
-    ;; `wrap-in-block-statement`.
-    (make-program-fragment body-statements))
-   (else
+   ((eq? expression-type "expression")
     ;; Wrap in an arrow function.
     (cond
      ((= (js/length exp) 2)
@@ -4120,19 +4139,27 @@
      (else
       (compile-expression
        (wrap-in-arrow-call exp)
-       env options))))))
+       env options))))
+   (else
+    (define body-statements
+      (compile-statements body env options))
+    ;; Note that this returns a `Program` node, but in
+    ;; some contexts, a `BlockStatement` node is wanted.
+    ;; One can convert a `Program` node to a
+    ;; `BlockStatement` node with
+    ;; `wrap-in-block-statement`.
+    (make-program-fragment body-statements))))
 
 ;;; Compile a `(js/block ...)` expression.
 (define (compile-js-block node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
-   ((or (eq? expression-type "statement")
-        (eq? expression-type "return"))
-    (wrap-in-block-statement
-     (compile-begin node env options)))
+   ((eq? expression-type "expression")
+    (compile-begin node env options))
    (else
-    (compile-begin node env options))))
+    (wrap-in-block-statement
+     (compile-begin node env options)))))
 
 ;;; Make and compile a `(require ...)` or `(define-values ...)` form
 ;;; that defines referenced values from the language environment.
@@ -6024,6 +6051,13 @@
   ;; TODO: Disable if `eval-option` is `#f`.
   (define eval-option
     (oget options "eval"))
+  ;; FIXME: Kludge.
+  (define compiling-to-js
+    (valid-js-casing-style? (oget options "case")))
+  (define eval-f
+    (if compiling-to-js
+        "eval"
+        "js/eval"))
   ;; TODO: Make `#f` the default.
   (set! eval-option #t)
   (define str
@@ -6038,7 +6072,7 @@
    (else
     (make-expression-or-statement
      (new CallExpression
-          (new Identifier "eval")
+          (new Identifier eval-f)
           (list
            (compile-expression str env options)))
      options))))
@@ -6091,11 +6125,19 @@
    env
    (current-compilation-options)))
 
-;;; Evaluate a `(begin ...)` expression.
-(define (begin_ . args)
-  (if (zero? (js/length args))
-      #u
-      (js/last args)))
+;;; Expand a `(js/block ...)` expression.
+(defmacro js-block_ (&whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(begin ...)` expression.
+(defmacro begin_ (&whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
 
 ;;; Expand a `(let* ...)` expression.
 (defmacro let-star_ (&whole exp &environment env)
@@ -6154,6 +6196,7 @@
 ;;; [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
 ;;; [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
 (defmacro define-macro_ (&whole exp &environment env)
+  ;; FIXME: Kludge, remove.
   (define name
     (first (second exp)))
   (define f-exp
@@ -6162,7 +6205,7 @@
      env
      (current-compilation-options)))
   (define f
-    (eval_ f-exp env))
+    (eval_ `(begin ,f-exp ,name) env))
   (send env set name f '(macro-> Any * Any))
   f-exp)
 
@@ -7025,8 +7068,11 @@
   (define expression-type
     (oget options "expressionType"))
   (cond
-   ((or (eq? expression-type "statement")
-        (eq? expression-type "return"))
+   ((eq? expression-type "expression")
+    (compile-expression
+     (wrap-in-arrow-call node)
+     env options))
+   (else
     (define discriminant
       (send node get 1))
     (define discriminant-compiled
@@ -7075,11 +7121,7 @@
            cases))
     (new SwitchStatement
          discriminant-compiled
-         cases-compiled))
-   (else
-    (compile-expression
-     (wrap-in-arrow-call node)
-     env options))))
+         cases-compiled))))
 
 ;;; Expand a `(js/switch ...)` expression.
 (defmacro js-switch_ (&whole exp &environment env)
@@ -7601,8 +7643,10 @@
                (lambda ()
                  (define result #u)
                  (try
+                   (define begin-exp
+                     `(begin ,exp ,name))
                    (set! result
-                         (eval_ `(begin ,exp ,name)
+                         (eval_ begin-exp
                                 module-interpretation-env))
                    (catch Error e
                      ;; Do nothing
@@ -7852,8 +7896,6 @@
          (aset ,array-set_ (-> Any * Any))
          (aset! ,array-set_ (-> Any * Any))
          (assert ,assert_ (-> Any * Any))
-         (begin ,begin_ (-> Any * Any))
-         (block ,js-block_ (-> Any * Any))
          (boolean? ,boolean?_ (-> Any * Any))
          (booleanp ,boolean?_ (-> Any * Any))
          (build-list ,build-list_ (-> Any * Any))
@@ -7977,7 +8019,6 @@
          (js/===? ,js-strictly-equal?_ (-> Any * Any))
          (js/==? ,js-loosely-equal?_ (-> Any * Any))
          (js/append ,js-plus_ (-> Any * Any))
-         (js/block ,js-block_ (-> Any * Any))
          (js/console.log ,(get-field log console) (-> Any * Any))
          (js/delete ,js-delete_ (-> Any * Any))
          (js/eighth ,js-eighth_ (-> Any * Any))
@@ -8145,7 +8186,6 @@
          (print ,print (-> Any * Any))
          (print-estree ,print-estree (-> Any * Any))
          (procedure? ,procedure?_ (-> Any * Any))
-         (progn ,begin_ (-> Any * Any))
          (proper-list->dotted-list ,array-list->linked-list_ (-> Any * Any))
          (proper-list-p ,proper-list?_ (-> Any * Any))
          (proper-list? ,proper-list?_ (-> Any * Any))
@@ -8236,7 +8276,9 @@
          (async ,js-async_ (macro-> Any * Any))
          (as~> ,thread-as_ (macro-> Any * Any))
          (await ,js-await_ (macro-> Any * Any))
+         (begin ,begin_ (macro-> Any * Any))
          (begin0 ,begin0_ (macro-> Any * Any))
+         (block ,js-block_ (macro-> Any * Any))
          (break ,break_ (macro-> Any * Any))
          (call-method ,send_ (macro-> Any * Any))
          (case ,case_ (macro-> Any * Any))
@@ -8274,6 +8316,7 @@
          (js/arrow ,js-arrow_ (macro-> Any * Any))
          (js/async ,js-async_ (macro-> Any * Any))
          (js/await ,js-await_ (macro-> Any * Any))
+         (js/block ,js-block_ (macro-> Any * Any))
          (js/do-while ,js-do-while_ (macro-> Any * Any))
          (js/for ,js/for_ (macro-> Any * Any))
          (js/for-in ,js/for-in_ (macro-> Any * Any))
@@ -8299,6 +8342,7 @@
          (new/apply ,new-apply_ (macro-> Any * Any))
          (or ,or_ (macro-> Any * Any))
          (prog1 ,begin0_ (macro-> Any * Any))
+         (progn ,begin_ (macro-> Any * Any))
          (provide ,provide_ (macro-> Any * Any))
          (require ,require_ (macro-> Any * Any))
          (return ,return_ (macro-> Any * Any))

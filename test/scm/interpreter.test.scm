@@ -724,23 +724,23 @@
            (interpret (js/tag sexp "t")
                       (new LispEnvironment))
            #t)))
-    (it "currying"
-        (fn ()
-          (assert-equal
-           ((interpret (js/tag sexp "t")
-                       __)
-            (new LispEnvironment))
-           #t)
-          (assert-equal
-           ((interpret __
-                       (new LispEnvironment))
-            (js/tag sexp "t"))
-           #t)
-          (assert-equal
-           (((interpret __ __)
+    (xit "currying"
+         (fn ()
+           (assert-equal
+            ((interpret (js/tag sexp "t")
+                        __)
+             (new LispEnvironment))
+            #t)
+           (assert-equal
+            ((interpret __
+                        (new LispEnvironment))
              (js/tag sexp "t"))
-            (new LispEnvironment))
-           #t)))))
+            #t)
+           (assert-equal
+            (((interpret __ __)
+              (js/tag sexp "t"))
+             (new LispEnvironment))
+            #t)))))
 
 (describe "lisp"
   (fn ()

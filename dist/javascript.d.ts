@@ -342,13 +342,6 @@ declare namespace jsEval_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
- * Create a JavaScript block statement.
- */
-declare function jsBlock_(...args: any[]): any;
-declare namespace jsBlock_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[];
-}
-/**
  * Create a JavaScript `new` expression.
  */
 declare function jsNew_(x: any, ...args: any[]): any;
@@ -369,4 +362,4 @@ declare function jsYield_(x?: any): any;
 declare namespace jsYield_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
-export { jsBlock_, jsDelete_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceOfP_, jsLast_, jsLength_, jsLooselyEqualP_, jsNanP_, jsNew_, jsNinth_, jsNullP_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsYield_ };
+export { jsDelete_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceOfP_, jsLast_, jsLength_, jsLooselyEqualP_, jsNanP_, jsNew_, jsNinth_, jsNullP_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsYield_ };

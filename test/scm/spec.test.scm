@@ -374,9 +374,22 @@
           (my-add x y z))
         (my-add-2 1 2 3))))
  6
+ > (compile '(define x 1))
+ "let x = 1;"
+ > (compile '(define (foo x)
+               x))
+ "function foo(x) {
+  return x;
+}"
+ > (compile '(define foo
+               (lambda (x)
+                 x)))
+ "let foo = function (x) {
+  return x;
+};"
 
  ;; `defun`
- > (describe "cefun")
+ > (describe "defun")
  _
  > ((lambda ()
       (defun my-add (x y)
@@ -1281,9 +1294,9 @@
                (define z
                  (+ x y)))
              :as 'statement)
- "const [x, y] = [1, 2];
+ "let [x, y] = [1, 2];
 
-const z = x + y;"
+let z = x + y;"
 
  ;; `let*-values`
  > (describe "let*-values")
@@ -1297,11 +1310,11 @@ const z = x + y;"
                (define z
                  (+ x y w z)))
              :as 'statement)
- "const [x, y] = [1, 2];
+ "let [x, y] = [1, 2];
 
-const [w, z] = [3, 4];
+let [w, z] = [3, 4];
 
-const z = x + y + w + z;"
+let z = x + y + w + z;"
 
  ;; `define-fields`
  > (describe "define-fields")
@@ -1323,12 +1336,12 @@ const z = x + y + w + z;"
  "bar"
  > (compile '(define-fields (foo)
                (js-obj "foo" "bar")))
- "const {foo} = {
+ "let {foo} = {
   foo: 'bar'
 };"
  > (compile '(define-fields ((foo bar))
                (js-obj "foo" "bar")))
- "const {foo: bar} = {
+ "let {foo: bar} = {
   foo: 'bar'
 };"
 
@@ -1360,14 +1373,14 @@ const z = x + y + w + z;"
                                  '(1 2)
                                   (list x y))
              :as 'statement)
- "const [x, y] = [1, 2];
+ "let [x, y] = [1, 2];
 
 [x, y];"
  > (compile '(destructuring-bind (x . y)
                                  '(1 2)
                                   (list x y))
              :as 'statement)
- "const [x, ...y] = [1, 2];
+ "let [x, ...y] = [1, 2];
 
 [x, y];"
 
@@ -1382,7 +1395,7 @@ const z = x + y + w + z;"
                                    (values 1 2)
                                    (list x y))
              :as 'statement)
- "const [x, y] = [1, 2];
+ "let [x, y] = [1, 2];
 
 [x, y];"
 

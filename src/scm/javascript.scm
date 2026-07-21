@@ -236,12 +236,6 @@
 (define (js-eval_ str)
   (js/eval str))
 
-;;; Create a JavaScript block statement.
-(define (js-block_ . args)
-  (if (zero? (js/length args))
-      #u
-      (js/last args)))
-
 ;;; Create a JavaScript `new` expression.
 (define (js-new_ x . args)
   (new/apply x args))
@@ -255,7 +249,6 @@
   x)
 
 (provide
-  js-block_
   js-delete_
   js-eighth_
   js-eval_

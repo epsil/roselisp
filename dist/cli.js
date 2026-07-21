@@ -78,6 +78,10 @@ const cliOptions = {
     language: {
         type: 'string'
     },
+    optimize: {
+        default: true,
+        type: 'boolean'
+    },
     outDir: {
         alias: 'out-dir',
         type: 'string',

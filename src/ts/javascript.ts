@@ -439,19 +439,6 @@ function jsEval_(str: any): any {
 jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js-eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
 
 /**
- * Create a JavaScript block statement.
- */
-function jsBlock_(...args: any[]): any {
-  if (args.length === 0) {
-    return undefined;
-  } else {
-    return args[args.length - 1];
-  }
-}
-
-jsBlock_.fsource = [Symbol.for('define'), [Symbol.for('js-block_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('js/length'), Symbol.for('args')]], undefined, [Symbol.for('js/last'), Symbol.for('args')]]];
-
-/**
  * Create a JavaScript `new` expression.
  */
 function jsNew_(x: any, ...args: any[]): any {
@@ -479,7 +466,6 @@ function jsYield_(x: any = undefined): any {
 jsYield_.fsource = [Symbol.for('define'), [Symbol.for('js-yield_'), [Symbol.for('x'), undefined]], Symbol.for('x')];
 
 export {
-  jsBlock_,
   jsDelete_,
   jsEighth_,
   jsEval_,

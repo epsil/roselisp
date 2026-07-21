@@ -26,8 +26,11 @@
  * Used for evaluating `BreakStatement` and `(break)`.
  */
 class BreakException extends Error {
-  constructor() {
+  value: any;
+
+  constructor(value: any = undefined) {
     super('BreakException');
+    this.value = value;
   }
 }
 
@@ -50,7 +53,7 @@ class ContinueException extends Error {
 class YieldException extends Error {
   value: any;
 
-  constructor(value: any) {
+  constructor(value: any = undefined) {
     super('YieldException');
     this.value = value;
   }
@@ -64,7 +67,7 @@ class YieldException extends Error {
 class ReturnException extends Error {
   value: any;
 
-  constructor(value: any) {
+  constructor(value: any = undefined) {
     super('ReturnException');
     this.value = value;
   }

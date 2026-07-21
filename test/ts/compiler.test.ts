@@ -36,6 +36,7 @@ describe('compile-modules', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         ['function I(x) {\n' + '  return x;\n' + '}']
@@ -78,6 +79,7 @@ describe('compile-modules', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         [
@@ -136,6 +138,7 @@ describe('compile-modules', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         [
@@ -198,6 +201,7 @@ describe('compile-modules', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         [
@@ -264,6 +268,7 @@ describe('compile-modules', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         [
@@ -333,6 +338,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo(exp, env) {\n' +
@@ -364,6 +370,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo(exp, env) {\n' +
@@ -403,6 +410,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo(exp, env) {\n' +
@@ -439,6 +447,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo(exp, env) {\n' +
@@ -475,6 +484,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo(exp, env) {\n' +
@@ -508,6 +518,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo(exp, env) {\n' +
@@ -543,6 +554,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo(x) {\n' +
@@ -563,6 +575,7 @@ describe('compile', function (): any {
         compile(readRose(';; comment\n' + '(foo)'), compilationEnvironment, {
           expressionType: 'statement',
           language: 'JavaScript',
+          optimize: true,
         }),
         '// comment\n' + 'foo();'
       );
@@ -575,6 +588,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '// multi-line\n' + '// comment\n' + 'foo();'
@@ -590,6 +604,7 @@ describe('compile', function (): any {
             {
               expressionType: 'statement',
               language: 'JavaScript',
+              optimize: true,
             }
           ),
           '// multi-line\n' + '//\n' + '// comment\n' + 'foo();'
@@ -604,6 +619,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '// multiple\n' + '\n' + '// comments\n' + 'foo();'
@@ -625,6 +641,7 @@ describe('compile', function (): any {
             {
               expressionType: 'statement',
               language: 'JavaScript',
+              optimize: true,
             }
           ),
           '(\n' + ' // foo\n' + ' foo +\n' + ' // bar\n' + ' bar\n' + ');'
@@ -651,6 +668,7 @@ describe('compile', function (): any {
             {
               expressionType: 'statement',
               language: 'JavaScript',
+              optimize: true,
             }
           ),
           '[\n' +
@@ -679,6 +697,7 @@ describe('compile', function (): any {
             {
               expressionType: 'statement',
               language: 'JavaScript',
+              optimize: true,
             }
           ),
           '(\n' + ' // foo\n' + ' foo +\n' + ' // bar\n' + ' bar\n' + ');'
@@ -690,6 +709,7 @@ describe('compile', function (): any {
         compile(readRose(';; comment\n' + '(foo)'), compilationEnvironment, {
           expressionType: 'statement',
           language: 'JavaScript',
+          optimize: true,
         }),
         '// comment\n' + 'foo();'
       );
@@ -710,6 +730,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -741,6 +762,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -765,6 +787,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -790,6 +813,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -819,6 +843,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -848,6 +873,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -882,6 +908,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -912,6 +939,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -946,6 +974,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -986,6 +1015,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -1022,6 +1052,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -1054,6 +1085,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -1090,6 +1122,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -1127,6 +1160,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -1144,6 +1178,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' + ' * Foo\n' + ' */\n' + '\n' + "import * as foo from 'foo';"
@@ -1156,6 +1191,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '// Foo\n' +
@@ -1173,6 +1209,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '// Foo\n' +
@@ -1190,6 +1227,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const foo =\n' + '  // bar\n' + '  bar;'
@@ -1203,6 +1241,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'foo =\n' + '  // bar\n' + '  bar;'
@@ -1214,6 +1253,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(true, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'true'
       );
@@ -1222,6 +1262,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(false, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'false'
       );
@@ -1233,6 +1274,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`undefined`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'undefined'
       );
@@ -1241,6 +1283,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`js/undefined`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'undefined'
       );
@@ -1249,6 +1292,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`js-undefined`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'undefined'
       );
@@ -1257,6 +1301,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`js/null`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'null'
       );
@@ -1265,6 +1310,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`js-null`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'null'
       );
@@ -1273,6 +1319,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`nil`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'null'
       );
@@ -1281,6 +1328,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`null`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[]'
       );
@@ -1289,6 +1337,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(Symbol.for('foo-bar'), compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'foo-bar'
       );
@@ -1298,6 +1347,7 @@ describe('compile', function (): any {
         compile(Symbol.for('foo-bar'), compilationEnvironment, {
           case: 'camelcase',
           language: 'JavaScript',
+          optimize: true,
         }),
         'fooBar'
       );
@@ -1307,6 +1357,7 @@ describe('compile', function (): any {
         compile(Symbol.for('foo/bar'), compilationEnvironment, {
           case: 'camelcase',
           language: 'JavaScript',
+          optimize: true,
         }),
         'fooBar'
       );
@@ -1316,6 +1367,7 @@ describe('compile', function (): any {
         compile(Symbol.for('foo-bar!'), compilationEnvironment, {
           case: 'camelcase',
           language: 'JavaScript',
+          optimize: true,
         }),
         'fooBarX'
       );
@@ -1325,6 +1377,7 @@ describe('compile', function (): any {
         compile(Symbol.for('foo-bar?'), compilationEnvironment, {
           case: 'camelcase',
           language: 'JavaScript',
+          optimize: true,
         }),
         'fooBarP'
       );
@@ -1334,6 +1387,7 @@ describe('compile', function (): any {
         compile(Symbol.for('*foo-bar*'), compilationEnvironment, {
           case: 'camelcase',
           language: 'JavaScript',
+          optimize: true,
         }),
         'starFooBarStar'
       );
@@ -1346,6 +1400,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "Symbol.for('*foo-bar*')"
@@ -1356,6 +1411,7 @@ describe('compile', function (): any {
         compile(Symbol.for('A'), compilationEnvironment, {
           case: 'camelcase',
           language: 'JavaScript',
+          optimize: true,
         }),
         'A'
       );
@@ -1364,6 +1420,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(Symbol.for('x'), new LispEnvironment([['x', 1, 'variable']]), {
           language: 'JavaScript',
+          optimize: true,
         }),
         '1'
       );
@@ -1392,6 +1449,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "const lst = [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')].map(function (x) {\n" +
@@ -1405,6 +1463,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('gensym'), 'x'], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "Symbol('x')"
       );
@@ -1416,6 +1475,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const x = 1;'
@@ -1433,6 +1493,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x = 0;\n' + '\n' + 'const x1 = 1;'
@@ -1451,6 +1512,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x = 0;\n' +
@@ -1480,6 +1542,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x = 0;\n' +
@@ -1518,6 +1581,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [symbolp, booleanp] = (() => {\n' +
@@ -1587,6 +1651,7 @@ describe('compile', function (): any {
             language: 'JavaScript',
             inlineFunctions: true,
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const [, regexp] = (() => {\n' +
@@ -1626,6 +1691,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [_add] = (() => {\n' +
@@ -1664,6 +1730,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [_sub] = (() => {\n' +
@@ -1709,6 +1776,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: false,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' +
@@ -1740,6 +1808,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [_mul] = (() => {\n' +
@@ -1778,6 +1847,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [_div] = (() => {\n' +
@@ -1821,6 +1891,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [stringAppend] = (() => {\n' +
@@ -1873,6 +1944,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [add] = (function () {\n' +
@@ -1921,6 +1993,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'let [foldl] = (function () {\n' +
@@ -1964,6 +2037,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [first] = (() => {\n' +
@@ -2015,6 +2089,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'let [pushX] = (function () {\n' +
@@ -2061,6 +2136,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'let [pushX] = (function () {\n' +
@@ -2098,6 +2174,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [cdr] = (() => {\n' +
@@ -2134,6 +2211,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [intersection] = (() => {\n' +
@@ -2180,6 +2258,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -2216,6 +2295,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             inlineFunctions: true,
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '/**\n' +
@@ -2245,6 +2325,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile('', compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "''"
       );
@@ -2253,6 +2334,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile('foo', compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'foo'"
       );
@@ -2261,6 +2343,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile("don't", compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'don\\'t'"
       );
@@ -2269,6 +2352,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile('newline\n' + 'test', compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'newline\\n' +\n" + "  'test'"
       );
@@ -2277,6 +2361,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile('newline\n' + 'test', compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'newline\\n' +\n" + "  'test'"
       );
@@ -2285,6 +2370,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile('newline\n' + 'test\n' + 'three', compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'newline\\n' +\n" + "  'test\\n' +\n" + "  'three'"
       );
@@ -2293,6 +2379,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile('\\t', compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '	'
       );
@@ -2301,6 +2388,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile('\\s', compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'\\\\s'"
       );
@@ -2309,6 +2397,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile(sexp`"\\\\s"`, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'\\\\s'"
       );
@@ -2330,6 +2419,7 @@ describe('compile', function (): any {
           ]),
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '(function {\n' +
@@ -2348,6 +2438,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '(() => {\n' +
@@ -2370,6 +2461,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '(() => {\n' +
@@ -2393,6 +2485,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[]'
       );
@@ -2403,6 +2496,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('list')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[]'
       );
@@ -2411,6 +2505,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('list'), 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[1]'
       );
@@ -2422,6 +2517,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[[1]]'
@@ -2441,6 +2537,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[1, 2, 3, 4].findIndex(function (x) {\n' +
@@ -2461,6 +2558,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[1, 2, 3, 4].findIndex(function (x) {\n' +
@@ -2477,6 +2575,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[1, 2, 3, 4].includes(2)'
@@ -2493,6 +2592,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[1, 2, 3, 4].includes(1 + 1)'
@@ -2504,6 +2604,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('append')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[]'
       );
@@ -2515,6 +2616,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[...foo]'
@@ -2527,6 +2629,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[...foo, ...bar]'
@@ -2539,6 +2642,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[]'
@@ -2551,6 +2655,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[x]'
@@ -2567,6 +2672,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "['foo', 'bar']"
@@ -2581,6 +2687,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "Symbol.for('x')"
@@ -2590,6 +2697,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('quote'), []], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[]'
       );
@@ -2598,6 +2706,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('quote'), [1]], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[1]'
       );
@@ -2609,6 +2718,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[1, Symbol.for('.'), 2]"
@@ -2618,6 +2728,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('quote'), [[1]]], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[[1]]'
       );
@@ -2632,6 +2743,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]"
@@ -2641,6 +2753,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('quote'), [true, false]], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[true, false]'
       );
@@ -2654,6 +2767,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "Symbol.for('x')"
@@ -2663,6 +2777,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('quasiquote'), []], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[]'
       );
@@ -2671,6 +2786,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('quasiquote'), [1]], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[1]'
       );
@@ -2682,6 +2798,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[1, Symbol.for('.'), 2]"
@@ -2694,6 +2811,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[[1, Symbol.for('.'), 2]]"
@@ -2709,6 +2827,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[[1, Symbol.for('.'), 2]]"
@@ -2727,6 +2846,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[[1, Symbol.for('.'), 2], [3, Symbol.for('.'), 4]]"
@@ -2758,6 +2878,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "const testMap1 = [['foo', Symbol.for('.'), testFn], ['bar', Symbol.for('.'), testFn]];"
@@ -2767,6 +2888,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('quasiquote'), [[1]]], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '[[1]]'
       );
@@ -2781,6 +2903,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]"
@@ -2800,6 +2923,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), z]"
@@ -2819,6 +2943,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), ...z]"
@@ -2838,6 +2963,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), [Symbol.for('quasiquote'), Symbol.for('z')]]"
@@ -2857,6 +2983,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), [Symbol.for('quasiquote'), [Symbol.for('z')]]]"
@@ -2879,6 +3006,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('z')]]]]"
@@ -2901,6 +3029,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "[Symbol.for('x'), Symbol.for('y'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('z')]]]]"
@@ -2916,6 +3045,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[...x]'
@@ -2934,6 +3064,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[...x, ...y]'
@@ -2967,6 +3098,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "letExp = [Symbol.for('let'), [[argList, [Symbol.for('quote'), args]]], ...body];"
@@ -2981,6 +3113,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'f(...args)'
@@ -2998,6 +3131,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'f(x, ...args)'
@@ -3015,6 +3149,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'new Foo(...args)'
@@ -3034,6 +3169,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'new Foo(x, y, ...args)'
@@ -3052,6 +3188,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'obj.method(...args)'
@@ -3068,6 +3205,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'obj.method(...args)'
@@ -3084,6 +3222,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'obj.method(...args)'
@@ -3099,6 +3238,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'let x;'
@@ -3112,6 +3252,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'let x: any;'
@@ -3124,6 +3265,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const x = 1;'
@@ -3136,6 +3278,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const x: any = 1;'
@@ -3152,6 +3295,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function I(x) {\n' + '  return x;\n' + '}'
@@ -3172,6 +3316,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const I = memoize(function (x) {\n' + '  return x;\n' + '});'
@@ -3189,6 +3334,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function identityFunction(x) {\n' + '  return x;\n' + '}'
@@ -3205,6 +3351,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function I(x) {\n' + '  return x;\n' + '}'
@@ -3221,6 +3368,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function K(x, y) {\n' + '  return x;\n' + '}'
@@ -3246,6 +3394,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function S(f, g, x) {\n' + '  return f(x, g(x));\n' + '}'
@@ -3270,6 +3419,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function S(f, g, x) {\n' + '  return f(x)(g(x));\n' + '}'
@@ -3291,6 +3441,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function C(f, x, y) {\n' + '  return f(y, x);\n' + '}'
@@ -3307,6 +3458,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function U(f) {\n' + '  return f(f);\n' + '}'
@@ -3328,6 +3480,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function A(f, ...args) {\n' + '  return f(...args);\n' + '}'
@@ -3349,6 +3502,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function A(f: any, ...args: any[]): any {\n' +
@@ -3419,6 +3573,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function Q(...args) {\n' +
@@ -3487,6 +3642,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function T(...args) {\n' +
@@ -3545,6 +3701,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function Y(f) {\n' +
@@ -3575,6 +3732,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function compose(f, g) {\n' +
@@ -3604,6 +3762,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo() {\n' + '  x++;\n' + '  return ++y;\n' + '}'
@@ -3633,6 +3792,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function mapGet(map, path) {\n' +
@@ -3652,6 +3812,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const _ = {\n' + '  dash: true\n' + '};'
@@ -3668,6 +3829,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const __ = {\n' + '  dash: true\n' + '};'
@@ -3728,6 +3890,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function (env: any, options: any = {}): any {\n' +
@@ -3831,6 +3994,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function addMatrix(m1, m2) {\n' +
@@ -3855,6 +4019,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'f(x)'
@@ -3872,6 +4037,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'f(x, y)'
@@ -3886,6 +4052,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function (x) {\n' + '  return x;\n' + '}'
@@ -3898,6 +4065,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function (x: any): any {\n' + '  return x;\n' + '}'
@@ -3910,6 +4078,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function (...args) {\n' + '  return args;\n' + '}'
@@ -3926,6 +4095,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function (x, ...args) {\n' + '  return args;\n' + '}'
@@ -3947,6 +4117,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function (x, y, ...args) {\n' + '  return args;\n' + '}'
@@ -3963,6 +4134,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function (x) {\n' +
@@ -3984,6 +4156,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function (x) {\n' + '  const y = 1;\n' + '  return y;\n' + '}'
@@ -4006,6 +4179,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "function (given, surname = 'Smith') {\n" +
@@ -4030,6 +4204,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         "function (given: any, surname: any = 'Smith'): any {\n" +
@@ -4051,6 +4226,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function (arg: any, options: any = {}): any {\n' +
@@ -4069,6 +4245,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function (arg: any): any {\n' + '  return arg;\n' + '}'
@@ -4085,6 +4262,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function (...args: any[]): any {\n' + '  return args;\n' + '}'
@@ -4101,6 +4279,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function (this: any, arg: any): any {\n' + '  return arg;\n' + '}'
@@ -4117,6 +4296,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function (this: any, ...args: any[]): any {\n' +
@@ -4134,6 +4314,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'let x;'
@@ -4147,6 +4328,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'let x;\n' + '\n' + 'return x;'
@@ -4160,6 +4342,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '(() => {\n' + '  let x;\n' + '  return x;\n' + '})()'
@@ -4173,6 +4356,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'let x: any;\n' + '\n' + 'return x;'
@@ -4186,6 +4370,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const x = 1;\n' + '\n' + 'return x;'
@@ -4199,6 +4384,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const x: any = 1;\n' + '\n' + 'return x;'
@@ -4220,6 +4406,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const a = 1;\n' +
@@ -4281,6 +4468,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const compose = function (f, g) {\n' +
@@ -4326,6 +4514,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const and = function (x, y) {\n' +
@@ -4357,6 +4546,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'x;\n' + '\n' + 'const x: any = 1;\n' + '\n' + 'return x;'
@@ -4375,6 +4565,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'x;\n' + '\n' + '{\n' + '  const x: any = 1;\n' + '  x;\n' + '}'
@@ -4396,6 +4587,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'if (foo) {\n' +
@@ -4470,6 +4662,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {\n' +
@@ -4494,6 +4687,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             expressionType: 'return',
+            optimize: true,
           }
         ),
         'if (foo) {\n' +
@@ -4523,6 +4717,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const value = foo(bar, baz);\n' + '\n' + 'return value;'
@@ -4545,6 +4740,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [value] = foo(bar, baz);\n' + '\n' + 'return value;'
@@ -4567,6 +4763,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const [value]: any[] = foo(bar, baz);\n' + '\n' + 'return value;'
@@ -4598,6 +4795,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [x, ...fs] = args;\n' +
@@ -4633,6 +4831,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const [x, ...fs]: any[] = args;\n' +
@@ -4657,6 +4856,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [value1] = foo(bar);\n' +
@@ -4687,6 +4887,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'value;\n' +
@@ -4710,6 +4911,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const value = foo(bar, baz);'
@@ -4727,6 +4929,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const [value] = foo(bar, baz);'
@@ -4744,6 +4947,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const [value]: any[] = foo(bar, baz);'
@@ -4761,6 +4965,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const [, , value]: any[] = foo(bar, baz);'
@@ -4780,6 +4985,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const [_, , value]: any[] = foo(bar, baz);'
@@ -4817,6 +5023,7 @@ describe('compile', function (): any {
         {
           inlineFunctions: false,
           language: 'TypeScript',
+          optimize: true,
         }
       ),
       'function foo(): any {\n' +
@@ -4839,6 +5046,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[value] = foo(bar, baz);'
@@ -4856,6 +5064,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[, value] = foo(bar, baz);'
@@ -4875,6 +5084,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[_, , value] = foo(bar, baz);'
@@ -4894,6 +5104,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const {prop} = obj;\n' + '\n' + 'prop;'
@@ -4913,6 +5124,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const {prop} = obj;'
@@ -4930,6 +5142,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const {prop} = obj;'
@@ -4947,6 +5160,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const {x: y, z} = obj;'
@@ -4964,6 +5178,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'const {x: y, z} = obj;'
@@ -4996,6 +5211,7 @@ describe('compile', function (): any {
           {
             inlineFunctions: false,
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function foo(): any {\n' +
@@ -5028,6 +5244,7 @@ describe('compile', function (): any {
           {
             inlineFunctions: false,
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function foo(): any {\n' +
@@ -5047,6 +5264,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '({prop} = obj);'
@@ -5062,6 +5280,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x = 1;'
@@ -5079,6 +5298,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '++x'
@@ -5096,6 +5316,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '--x'
@@ -5113,6 +5334,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '++x'
@@ -5130,6 +5352,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x++;'
@@ -5147,6 +5370,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'return ++x;'
@@ -5162,6 +5386,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x = 1;'
@@ -5173,6 +5398,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('+'), Symbol.for('x'), 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'x + 1'
       );
@@ -5184,6 +5410,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x + 1 + 2'
@@ -5195,6 +5422,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('-'), Symbol.for('x')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '-x'
       );
@@ -5206,6 +5434,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x'
@@ -5215,6 +5444,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('-'), Symbol.for('x'), 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'x - 1'
       );
@@ -5226,6 +5456,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x - 1 - 2'
@@ -5240,6 +5471,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x % y'
@@ -5260,6 +5492,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x;\n' + '\n' + 'y;\n' + '\n' + 'z;'
@@ -5277,6 +5510,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x;\n' + '\n' + 'y;\n' + '\n' + 'z;'
@@ -5295,6 +5529,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '(() => {\n' + '  x;\n' + '  y;\n' + '  return z;\n' + '})()'
@@ -5325,6 +5560,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function and(x, y) {\n' +
@@ -5364,6 +5600,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' +
@@ -5381,6 +5618,7 @@ describe('compile', function (): any {
         compile([Symbol.for('provide')], compilationEnvironment, {
           expressionType: 'statement',
           language: 'JavaScript',
+          optimize: true,
         }),
         ''
       );
@@ -5393,6 +5631,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x\n' + '};'
@@ -5406,6 +5645,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x,\n' + '  y\n' + '};'
@@ -5422,6 +5662,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x as y\n' + '};'
@@ -5442,6 +5683,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x as y,\n' + '  w as z\n' + '};'
@@ -5459,6 +5701,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x,\n' + '  y as z\n' + '};'
@@ -5472,6 +5715,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x\n' + '};'
@@ -5489,6 +5733,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x\n' + '};'
@@ -5509,6 +5754,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'export {\n' + '  x as jsUndefined\n' + '};'
@@ -5522,6 +5768,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "export * from 'foo';"
@@ -5539,6 +5786,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "export * from 'foo';\n" + '\n' + 'export {\n' + '  bar\n' + '};'
@@ -5552,6 +5800,7 @@ describe('compile', function (): any {
           expressionType: 'statement',
           language: 'JavaScript',
           esModuleInterop: false,
+          optimize: true,
         }),
         "import * as foo from 'foo';"
       );
@@ -5562,6 +5811,7 @@ describe('compile', function (): any {
           expressionType: 'statement',
           language: 'JavaScript',
           esModuleInterop: true,
+          optimize: true,
         }),
         "import foo from 'foo';"
       );
@@ -5575,6 +5825,7 @@ describe('compile', function (): any {
             expressionType: 'statement',
             language: 'JavaScript',
             esModuleInterop: false,
+            optimize: true,
           }
         ),
         "import * as foo from 'bar';"
@@ -5589,6 +5840,7 @@ describe('compile', function (): any {
             expressionType: 'statement',
             language: 'JavaScript',
             esModuleInterop: true,
+            optimize: true,
           }
         ),
         "import foo from 'bar';"
@@ -5600,6 +5852,7 @@ describe('compile', function (): any {
           expressionType: 'statement',
           language: 'JavaScript',
           esModuleInterop: true,
+          optimize: true,
         }),
         "import foo from 'bar';"
       );
@@ -5615,6 +5868,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' + '  bar\n' + "} from 'foo';"
@@ -5635,6 +5889,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' + '  bar as baz\n' + "} from 'foo';"
@@ -5655,6 +5910,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' + '  bar as baz\n' + "} from 'foo';"
@@ -5676,6 +5932,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' + '  bar\n' + "} from 'foo';"
@@ -5697,6 +5954,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' + '  bar\n' + "} from 'foo';"
@@ -5714,6 +5972,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "import foo from 'bar';"
@@ -5732,6 +5991,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "import bar from 'foo';"
@@ -5748,6 +6008,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "import bar from 'foo';"
@@ -5761,6 +6022,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "import bar from 'foo';"
@@ -5789,6 +6051,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function I(x) {\n' +
@@ -5825,6 +6088,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const I = function (x) {\n' +
@@ -5852,6 +6116,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function foo(length: any): any {\n' + '  return length;\n' + '}'
@@ -5878,6 +6143,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function foo(length: number): number {\n' + '  return length;\n' + '}'
@@ -5916,6 +6182,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const I = curryN(1, function (x) {\n' +
@@ -5944,6 +6211,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const truish = true;\n' + '\n' + 'const falsy = !truish;'
@@ -5956,6 +6224,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "const foo = [Symbol.for('foo')];"
@@ -5973,6 +6242,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const foo = 1;\n' + '\n' + 'const bar = [foo];'
@@ -5992,6 +6262,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const foo = 1;\n' +
@@ -6011,6 +6282,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (x) {\n' + '  return y;\n' + '}'
@@ -6024,6 +6296,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x ? y : undefined'
@@ -6041,6 +6314,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x ? y : z'
@@ -6058,6 +6332,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x ? y : (() => {\n' + '  w;\n' + '  return z;\n' + '})()'
@@ -6075,6 +6350,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (x) {\n' + '  return y;\n' + '} else {\n' + '  return z;\n' + '}'
@@ -6095,6 +6371,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if ((x = y)) {\n' +
@@ -6114,6 +6391,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (x) {\n' + '  y;\n' + '} else {\n' + '  z;\n' + '}'
@@ -6127,6 +6405,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x ? y : undefined'
@@ -6140,6 +6419,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x ? y : z'
@@ -6153,6 +6433,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (x) {\n' + '  return y;\n' + '} else {\n' + '  return z;\n' + '}'
@@ -6166,6 +6447,7 @@ describe('compile', function (): any {
           {
             expressionType: 'expression',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "'foo' ? 'bar' : 'baz'"
@@ -6184,6 +6466,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (x) {\n' +
@@ -6207,6 +6490,7 @@ describe('compile', function (): any {
           {
             expressionType: 'return',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if ((x = y)) {\n' +
@@ -6231,6 +6515,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (x) {\n' + '  y;\n' + '  z;\n' + '}'
@@ -6277,6 +6562,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (args.length > 0) {\n' +
@@ -6299,6 +6585,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'if (!x) {\n' + '  y;\n' + '  z;\n' + '}'
@@ -6313,6 +6600,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'args[0]'
@@ -6325,6 +6613,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'args[0][1]'
@@ -6339,6 +6628,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'args[0]'
@@ -6351,6 +6641,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'args[0][1]'
@@ -6366,6 +6657,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'args[0] = 1;'
@@ -6381,6 +6673,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'args[0] = 1;'
@@ -6392,6 +6685,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('='), 1, 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '1 === 1'
       );
@@ -6403,6 +6697,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x === y'
@@ -6414,6 +6709,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('<'), 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'true'
       );
@@ -6422,6 +6718,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('<'), 1, 2], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '1 < 2'
       );
@@ -6430,6 +6727,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('<'), 1, 2, 3], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '(1 < 2) && (2 < 3)'
       );
@@ -6440,6 +6738,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('>'), 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'true'
       );
@@ -6448,6 +6747,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('>'), 2, 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '2 > 1'
       );
@@ -6456,6 +6756,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('>'), 3, 2, 1], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '(3 > 2) && (2 > 1)'
       );
@@ -6472,6 +6773,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '!(x && y)'
@@ -6484,6 +6786,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '1 !== 2'
@@ -6496,6 +6799,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '!(1 > 2)'
@@ -6508,6 +6812,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '!f(x)'
@@ -6524,6 +6829,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '!f(x) && !g(y)'
@@ -6535,6 +6841,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('and')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'true'
       );
@@ -6543,6 +6850,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('and'), Symbol.for('x')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'x'
       );
@@ -6554,6 +6862,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x && y'
@@ -6571,6 +6880,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x && y && z'
@@ -6588,6 +6898,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x && y && w(z)'
@@ -6605,6 +6916,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x && y && (w || z)'
@@ -6616,6 +6928,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('or')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'false'
       );
@@ -6624,6 +6937,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('or'), Symbol.for('x')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'x'
       );
@@ -6635,6 +6949,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x || y'
@@ -6647,6 +6962,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x || y || z'
@@ -6661,6 +6977,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "map.get('foo')"
@@ -6673,6 +6990,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "map.get('foo')"
@@ -6685,6 +7003,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'arr.length'
@@ -6699,6 +7018,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "map.get('foo')"
@@ -6718,6 +7038,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'map.get(...foo)'
@@ -6735,6 +7056,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "map.get('foo')"
@@ -6749,6 +7071,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'arr.length'
@@ -6765,6 +7088,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'arr[len - 1]'
@@ -6784,6 +7108,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'obj.prop = val'
@@ -6828,6 +7153,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'genericFunction.defMethod = function (arglist, functionDefinition) {\n' +
@@ -6846,6 +7172,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.length'
@@ -6865,6 +7192,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'l.reduce(function (acc, x) {\n' + '  return f(x, acc);\n' + '}, v)'
@@ -6886,6 +7214,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'l.reduce(function (acc, x) {\n' + '  return f(x, acc);\n' + '}, v)'
@@ -6903,6 +7232,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[1, 2, 3, 4].reduce(function (acc, x) {\n' +
@@ -6924,6 +7254,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.reduceRight((function (f) {\n' +
@@ -6945,6 +7276,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.reduceRight((function (f) {\n' +
@@ -6966,6 +7298,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '[1, 2, 3, 4].reduceRight((function (f) {\n' +
@@ -6984,6 +7317,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x[1]'
@@ -6996,6 +7330,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x[1][2]'
@@ -7010,6 +7345,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.slice(1)'
@@ -7024,6 +7360,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.slice(1)'
@@ -7038,6 +7375,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.slice(0, -1)'
@@ -7056,6 +7394,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let x of [1, 2, 3]) {\n' + '  console.log(x);\n' + '}'
@@ -7072,6 +7411,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let x of [1, 2, 3]) {\n' + '  break;\n' + '}'
@@ -7088,6 +7428,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let x of [1, 2, 3]) {\n' + '  continue;\n' + '}'
@@ -7108,6 +7449,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let x of [1, 2, 3]) {\n' +
@@ -7133,6 +7475,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let x of [1, 2, 3]) {\n' +
@@ -7157,6 +7500,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let x of [1, 2, 3]) {\n' +
@@ -7177,6 +7521,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let i = 0; i < 10; i++) {\n' + '  console.log(x);\n' + '}'
@@ -7193,6 +7538,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'for (let i: any = 0; i < 10; i++) {\n' + '  console.log(x);\n' + '}'
@@ -7209,6 +7555,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let i = 1; i < 10; i = i + 2) {\n' + '  console.log(x);\n' + '}'
@@ -7225,6 +7572,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let i = 10; i > 1; i--) {\n' + '  console.log(x);\n' + '}'
@@ -7241,6 +7589,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'for (let i = 10; i > 1; i = i - 2) {\n' + '  console.log(x);\n' + '}'
@@ -7263,6 +7612,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const _end = 1 + 1;\n' +
@@ -7293,6 +7643,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const _start = 1 + 1;\n' +
@@ -7325,6 +7676,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const _start: any = 1 + 1;\n' +
@@ -7364,6 +7716,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const _start: any = 0;\n' +
@@ -7413,6 +7766,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const _start: any = 1 + 1;\n' +
@@ -7443,6 +7797,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function foo() {\n' +
@@ -7475,6 +7830,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'while (result.length < 3) {\n' + '  console.log(result);\n' + '}'
@@ -7505,6 +7861,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'do {\n' + '  console.log(result);\n' + '} while (result.length < 3);'
@@ -7527,6 +7884,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'while (result.length < 3) {\n' + '  console.log(result);\n' + '}'
@@ -7551,6 +7909,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'while ((() => {\n' +
@@ -7578,6 +7937,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'do {\n' + '  console.log(result);\n' + '} while (result.length < 3);'
@@ -7602,6 +7962,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'do {\n' +
@@ -7619,6 +7980,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x[0]'
@@ -7630,6 +7992,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('last'), Symbol.for('x')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'x[x.length - 1]'
       );
@@ -7647,6 +8010,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class {\n' + '  bar() {\n' + "    return 'bar';\n" + '  }\n' + '}'
@@ -7661,6 +8025,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' + '}'
@@ -7678,6 +8043,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' + '  bar() {\n' + "    return 'bar';\n" + '  }\n' + '}'
@@ -7696,6 +8062,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -7723,6 +8090,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -7763,6 +8131,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -7806,6 +8175,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -7849,6 +8219,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -7892,6 +8263,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo extends Object {\n' +
@@ -7935,6 +8307,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo extends Object {\n' +
@@ -7978,6 +8351,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'class Foo extends Object {\n' +
@@ -8024,6 +8398,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -8069,6 +8444,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -8120,6 +8496,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -8175,6 +8552,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -8238,6 +8616,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -8268,6 +8647,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' + '}'
@@ -8284,6 +8664,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo extends Bar {\n' + '}'
@@ -8295,6 +8676,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('js'), '1'], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '1'
       );
@@ -8306,6 +8688,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function I(x) { return x; }'
@@ -8317,6 +8700,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('make-hash')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'new Map()'
       );
@@ -8337,6 +8721,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "new Map([['foo', 'bar'], ['baz', 'quux']])"
@@ -8358,6 +8743,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "new Map([['foo', ['bar']], ['baz', ['quux']]])"
@@ -8379,6 +8765,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "new Map([['foo', 'bar'], ['baz', 'quux']])"
@@ -8404,6 +8791,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "new Map([['foo', 'bar'], ['baz', 'quux'], ...xyzzy.entries()])"
@@ -8429,6 +8817,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "new Map([...[['foo', 'bar'], ['baz', 'quux']], ...xyzzy.entries()])"
@@ -8450,6 +8839,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "new Map([['foo', ['bar']], ['baz', ['quux']]])"
@@ -8461,6 +8851,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile({}, compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '{}'
       );
@@ -8470,10 +8861,12 @@ describe('compile', function (): any {
         compile(
           {
             foo: 'bar',
+            optimize: true,
           },
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "{ foo: 'bar' }"
@@ -8485,6 +8878,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('js-obj')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '{}'
       );
@@ -8496,6 +8890,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '{\n' + "  [foo]: 'bar'\n" + '}'
@@ -8505,6 +8900,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('js-obj'), 'foo', 'bar'], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         '{\n' + "  foo: 'bar'\n" + '}'
       );
@@ -8516,6 +8912,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '{\n' + "  'foo bar': 'foo bar'\n" + '}'
@@ -8528,6 +8925,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '{\n' + '  foo: {\n' + "    bar: 'baz'\n" + '  }\n' + '}'
@@ -8546,6 +8944,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '{\n' +
@@ -8573,6 +8972,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '{\n' +
@@ -8613,6 +9013,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '{\n' + '  ...obj,\n' + "  foo: 'bar'\n" + '}'
@@ -8627,6 +9028,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'Object.keys(x)'
@@ -8641,6 +9043,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'foo`bar`'
@@ -8660,6 +9063,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "x.foo('bar').baz()"
@@ -8690,6 +9094,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'regularArgs.map(function (arg) {\n' +
@@ -8703,6 +9108,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('js/try')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'try {\n' + '}'
       );
@@ -8717,6 +9123,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' + '  x = 2 / 1;\n' + '}'
@@ -8733,6 +9140,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8758,6 +9166,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8785,6 +9194,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8812,6 +9222,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8829,6 +9240,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('clj/try')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'try {\n' + '}'
       );
@@ -8843,6 +9255,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' + '  x = 2 / 1;\n' + '}'
@@ -8859,6 +9272,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8885,6 +9299,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8914,6 +9329,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8948,6 +9364,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'try {\n' +
@@ -8969,6 +9386,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.map(function (x) {\n' + '  return f(x);\n' + '})'
@@ -8985,6 +9403,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.map(function (x) {\n' + '  return x;\n' + '})'
@@ -9001,6 +9420,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'x.map((function (f) {\n' +
@@ -9022,6 +9442,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "throw new Error('An error');"
@@ -9036,6 +9457,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'delete x'
@@ -9047,6 +9469,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('return')], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'return;'
       );
@@ -9055,6 +9478,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('return'), 0], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         'return 0;'
       );
@@ -9066,6 +9490,7 @@ describe('compile', function (): any {
         compile([Symbol.for('yield')], compilationEnvironment, {
           expressionType: 'statement',
           language: 'JavaScript',
+          optimize: true,
         }),
         'yield;'
       );
@@ -9075,6 +9500,7 @@ describe('compile', function (): any {
         compile([Symbol.for('yield'), 0], compilationEnvironment, {
           expressionType: 'statement',
           language: 'JavaScript',
+          optimize: true,
         }),
         'yield 0;'
       );
@@ -9089,6 +9515,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'await foo();'
@@ -9106,6 +9533,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'async function (x) {\n' + '  return x;\n' + '}'
@@ -9125,6 +9553,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'async function foo(x) {\n' + '  return x;\n' + '}'
@@ -9144,6 +9573,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'async function foo(x: any): Promise<any> {\n' + '  return x;\n' + '}'
@@ -9160,6 +9590,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'async function foo(x) {\n' + '  return x;\n' + '}'
@@ -9181,6 +9612,7 @@ describe('compile', function (): any {
           {
             expressionType: 'statement',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'const x = 1;\n' + '\n' + 'const y = 2;'
@@ -9205,6 +9637,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function I(x) {\n' +
@@ -9229,6 +9662,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '// inline-lisp-sources: true\n' +
@@ -9258,6 +9692,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'import {\n' +
@@ -9285,6 +9720,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'import {\n' +
@@ -9311,6 +9747,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function js_(str) {\n' + '  return eval(str);\n' + '}'
@@ -9344,6 +9781,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myFn(foldl, f, v, l) {\n' + '  return foldl(f, v, l);\n' + '}'
@@ -9378,6 +9816,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myFoldlObj(obj, f, v, l) {\n' +
@@ -9412,6 +9851,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -9438,6 +9878,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPop(lst, x) {\n' + '  return lst.shift();\n' + '}'
@@ -9464,6 +9905,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPop2(lst, x) {\n' + '  return [...lst].shift();\n' + '}'
@@ -9486,6 +9928,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPopRight(lst, x) {\n' + '  return lst.pop();\n' + '}'
@@ -9516,6 +9959,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPopRight2(lst, x) {\n' + '  return [...lst].pop();\n' + '}'
@@ -9538,6 +9982,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPush(lst, x) {\n' +
@@ -9567,6 +10012,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPush2(lst, x) {\n' +
@@ -9595,6 +10041,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPush3(lst, x) {\n' +
@@ -9620,6 +10067,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPushRight(lst, x) {\n' +
@@ -9653,6 +10101,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPushRight2(lst, x) {\n' +
@@ -9685,6 +10134,7 @@ describe('compile', function (): any {
           {
             case: 'camelcase',
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         'function myPushRight3(lst, x) {\n' +
@@ -9699,6 +10149,7 @@ describe('compile', function (): any {
       return assertEqual(
         compile([Symbol.for('string-append'), 'a'], compilationEnvironment, {
           language: 'JavaScript',
+          optimize: true,
         }),
         "'a'"
       );
@@ -9710,6 +10161,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         "'a' + 'b'"
@@ -9724,6 +10176,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'JavaScript',
+            optimize: true,
           }
         ),
         '1'
@@ -9736,6 +10189,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         '1 as number'
@@ -9748,6 +10202,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         '[] as any'
@@ -9760,6 +10215,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         '[] as any'
@@ -9776,6 +10232,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'x as [any]'
@@ -9792,6 +10249,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'x as [number, any]'
@@ -9804,6 +10262,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'x as NN'
@@ -9820,6 +10279,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'x as NN<any>'
@@ -9836,6 +10296,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'x as NN<any,any>'
@@ -9855,6 +10316,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         '(function (x: any): any {\n' + '  return x;\n' + '} as any)(1)'
@@ -9875,6 +10337,7 @@ describe('compile', function (): any {
           compilationEnvironment,
           {
             language: 'TypeScript',
+            optimize: true,
           }
         ),
         'function (x: any): any {\n' + '  return x.foo() as any;\n' + '}'
@@ -9894,6 +10357,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x = 1;'
@@ -9911,6 +10375,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: any = 1;'
@@ -9928,6 +10393,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         "const x: string = '1';"
@@ -9945,6 +10411,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number = 1;'
@@ -9962,6 +10429,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number = 1;'
@@ -9979,6 +10447,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number = 1;'
@@ -9996,6 +10465,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number = 1;'
@@ -10017,6 +10487,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         "const x: Symbol = Symbol.for('x');"
@@ -10034,6 +10505,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: boolean = true;'
@@ -10051,6 +10523,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: true = true;'
@@ -10068,6 +10541,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: false = false;'
@@ -10089,6 +10563,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number | string = 1;'
@@ -10115,6 +10590,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number | string | boolean = 1;'
@@ -10140,6 +10616,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number | (string | boolean) = 1;'
@@ -10161,6 +10638,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: number[] = [1];'
@@ -10186,6 +10664,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         "const x: (number | Symbol)[] = [1, Symbol.for('.'), 2];"
@@ -10212,6 +10691,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function helloWorld() {\n' + "  console.log('Hello world!');\n" + '}'
@@ -10238,6 +10718,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function helloWorld(): void {\n' +
@@ -10265,6 +10746,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function f(x: number): number {\n' + '  return x;\n' + '}'
@@ -10290,6 +10772,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: (a: number) => number = function (x: any): any {\n' +
@@ -10320,6 +10803,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: (a: number) => number = foo(function (x: any): any {\n' +
@@ -10352,6 +10836,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function f(x: number, y: number = 1): number {\n' +
@@ -10388,6 +10873,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: (a: number, b?: number) => number = function (x: any, y: any = 1): any {\n' +
@@ -10420,6 +10906,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: (...a: any) => any = function (...x: any[]): any {\n' +
@@ -10452,6 +10939,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: (...a: any) => any = function (...x: any[]): any {\n' +
@@ -10484,6 +10972,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: (...a: any) => any = function (...x: any[]): any {\n' +
@@ -10516,6 +11005,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: (...a: any[]) => any = function (...x: any[]): any {\n' +
@@ -10539,6 +11029,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x: Foo = new Foo();'
@@ -10558,6 +11049,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         ''
@@ -10575,6 +11067,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'type NN = (a: number) => number;'
@@ -10601,6 +11094,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f = function (x) {\n' + '  return x;\n' + '};'
@@ -10627,6 +11121,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'type NN = (a: number) => number;\n' +
@@ -10652,6 +11147,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: any = function (x: number): any {\n' + '  return x;\n' + '};'
@@ -10673,6 +11169,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const f: any = (x: number): any => {\n' + '  return x;\n' + '};'
@@ -10693,6 +11190,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function f(x: number): any {\n' + '  return x;\n' + '}'
@@ -10715,6 +11213,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function f(x: number, ...args: any[]): any {\n' + '  return x;\n' + '}'
@@ -10737,6 +11236,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function id(x: number): number {\n' + '  return x;\n' + '}'
@@ -10759,6 +11259,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function f(x: number = 1): number {\n' + '  return x;\n' + '}'
@@ -10786,6 +11287,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'function f(options: any = {}): any {\n' + '  return x;\n' + '}'
@@ -10820,6 +11322,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -10862,6 +11365,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'class Foo {\n' +
@@ -10894,6 +11398,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'type NN = (a: number) => number;\n' +
@@ -10919,6 +11424,7 @@ describe('compile', function (): any {
           {
             language: 'TypeScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         '// NN type alias.\n' +
@@ -10951,6 +11457,7 @@ describe('compile', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const foo = {};\n' + '\n' + "const bar = foo && ('baz' in foo);"
@@ -10977,6 +11484,7 @@ describe('compile', function (): any {
             case: 'camelcase',
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const foo = {};\n' + '\n' + "const bar = foo && ('bazBaz' in foo);"
@@ -11090,6 +11598,7 @@ describe('unsorted', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x = foo?.bar;'
@@ -11110,6 +11619,7 @@ describe('unsorted', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x = foo?.bar(baz);'
@@ -11127,6 +11637,7 @@ describe('unsorted', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'const x = foo?.(bar);'
@@ -11346,6 +11857,7 @@ describe('unsorted', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'statement',
+            optimize: true,
           }
         ),
         'switch (x) {\n' +
@@ -11377,6 +11889,7 @@ describe('unsorted', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'return',
+            optimize: true,
           }
         ),
         'switch (x) {\n' +
@@ -11408,6 +11921,7 @@ describe('unsorted', function (): any {
           {
             language: 'JavaScript',
             expressionType: 'expression',
+            optimize: true,
           }
         ),
         '(() => {\n' +
@@ -11445,6 +11959,7 @@ describe('compilation options', function (): any {
           {
             language: 'JavaScript',
             inlineLispSources: true,
+            optimize: true,
           }
         ),
         'function foo(x) {\n' +
@@ -11471,6 +11986,7 @@ describe('compilation options', function (): any {
           {
             language: 'JavaScript',
             inlineLispSources: true,
+            optimize: true,
           }
         ),
         'const foo = function (x) {\n' +
@@ -11500,6 +12016,7 @@ describe('compilation options', function (): any {
           {
             language: 'JavaScript',
             inlineLispSources: true,
+            optimize: true,
           }
         ),
         'async function foo(x) {\n' +
@@ -11517,6 +12034,7 @@ describe('assert', function (): any {
     return assertEqual(
       compile([Symbol.for('assert'), true], compilationEnvironment, {
         language: 'JavaScript',
+        optimize: true,
       }),
       'console.assert(true)'
     );
@@ -11525,6 +12043,7 @@ describe('assert', function (): any {
     return assertEqual(
       compile([Symbol.for('assert'), true, 'test'], compilationEnvironment, {
         language: 'JavaScript',
+        optimize: true,
       }),
       "console.assert(true, 'test')"
     );
@@ -11536,6 +12055,7 @@ describe('display', function (): any {
     return assertEqual(
       compile([Symbol.for('display'), true], compilationEnvironment, {
         language: 'JavaScript',
+        optimize: true,
       }),
       'console.log(true)'
     );
@@ -11544,6 +12064,7 @@ describe('display', function (): any {
     return assertEqual(
       compile([Symbol.for('display'), true, 'test'], compilationEnvironment, {
         language: 'JavaScript',
+        optimize: true,
       }),
       "console.log(true, 'test')"
     );

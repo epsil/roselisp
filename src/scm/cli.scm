@@ -70,6 +70,9 @@
              "type" "number")
    "language" (js-obj
                "type" "string")
+   "optimize" (js-obj
+               "default" #t
+               "type" "boolean")
    "outDir" (js-obj
              "alias" "out-dir"
              "type" "string"

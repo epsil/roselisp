@@ -28,8 +28,9 @@ exports.ReturnException = exports.YieldException = exports.ContinueException = e
  * Used for evaluating `BreakStatement` and `(break)`.
  */
 class BreakException extends Error {
-    constructor() {
+    constructor(value = undefined) {
         super('BreakException');
+        this.value = value;
     }
 }
 exports.BreakException = BreakException;
@@ -50,7 +51,7 @@ exports.ContinueException = ContinueException;
  * Used for evaluating `YieldExpression` and `(yield ...)`.
  */
 class YieldException extends Error {
-    constructor(value) {
+    constructor(value = undefined) {
         super('YieldException');
         this.value = value;
     }
@@ -62,7 +63,7 @@ exports.YieldException = YieldException;
  * Used for evaluating `ReturnStatement` and `(return ...)`.
  */
 class ReturnException extends Error {
-    constructor(value) {
+    constructor(value = undefined) {
         super('ReturnException');
         this.value = value;
     }

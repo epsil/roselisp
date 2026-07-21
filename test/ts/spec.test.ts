@@ -1213,7 +1213,7 @@ describe('define', function (): any {
       5,
     ]);
   });
-  return it('(let ((my-add (lambda (x y z) (+ x y z)))) ((lambda () (define (my-add-2 x y z) (my-add x y z)) (my-add-2 1 2 3))))', function (): any {
+  it('(let ((my-add (lambda (x y z) (+ x y z)))) ((lambda () (define (my-add-2 x y z) (my-add x y z)) (my-add-2 1 2 3))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -1260,9 +1260,56 @@ describe('define', function (): any {
       6,
     ]);
   });
+  it("(compile '(define x 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), 1]],
+      ],
+      'let x = 1;',
+    ]);
+  });
+  it("(compile '(define (foo x) x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('foo'), Symbol.for('x')],
+            Symbol.for('x'),
+          ],
+        ],
+      ],
+      'function foo(x) {\n' + '  return x;\n' + '}',
+    ]);
+  });
+  return it("(compile '(define foo (lambda (x) x)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('define'),
+            Symbol.for('foo'),
+            [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+          ],
+        ],
+      ],
+      'let foo = function (x) {\n' + '  return x;\n' + '};',
+    ]);
+  });
 });
 
-describe('cefun', function (): any {
+describe('defun', function (): any {
   it('((lambda () (defun my-add (x y) (+ x y)) (my-add 2 3)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -3925,7 +3972,7 @@ describe('let-values', function (): any {
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('statement')],
       ],
-      'const [x, y] = [1, 2];\n' + '\n' + 'const z = x + y;',
+      'let [x, y] = [1, 2];\n' + '\n' + 'let z = x + y;',
     ]);
   });
 });
@@ -3994,11 +4041,11 @@ describe('let*-values', function (): any {
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('statement')],
       ],
-      'const [x, y] = [1, 2];\n' +
+      'let [x, y] = [1, 2];\n' +
         '\n' +
-        'const [w, z] = [3, 4];\n' +
+        'let [w, z] = [3, 4];\n' +
         '\n' +
-        'const z = x + y + w + z;',
+        'let z = x + y + w + z;',
     ]);
   });
 });
@@ -4076,7 +4123,7 @@ describe('define-fields', function (): any {
           ],
         ],
       ],
-      'const {foo} = {\n' + "  foo: 'bar'\n" + '};',
+      'let {foo} = {\n' + "  foo: 'bar'\n" + '};',
     ]);
   });
   return it('(compile \'(define-fields ((foo bar)) (js-obj "foo" "bar")))', function (): any {
@@ -4094,7 +4141,7 @@ describe('define-fields', function (): any {
           ],
         ],
       ],
-      'const {foo: bar} = {\n' + "  foo: 'bar'\n" + '};',
+      'let {foo: bar} = {\n' + "  foo: 'bar'\n" + '};',
     ]);
   });
 });
@@ -4188,7 +4235,7 @@ describe('destructuring-bind', function (): any {
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('statement')],
       ],
-      'const [x, y] = [1, 2];\n' + '\n' + '[x, y];',
+      'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
     ]);
   });
   return it("(compile '(destructuring-bind (x . y) '(1 2) (list x y)) :as 'statement)", function (): any {
@@ -4209,7 +4256,7 @@ describe('destructuring-bind', function (): any {
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('statement')],
       ],
-      'const [x, ...y] = [1, 2];\n' + '\n' + '[x, y];',
+      'let [x, ...y] = [1, 2];\n' + '\n' + '[x, y];',
     ]);
   });
 });
@@ -4246,7 +4293,7 @@ describe('multiple-values-bind', function (): any {
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('statement')],
       ],
-      'const [x, y] = [1, 2];\n' + '\n' + '[x, y];',
+      'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
     ]);
   });
 });

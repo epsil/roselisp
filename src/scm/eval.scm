@@ -329,6 +329,8 @@
   (define name
     (get-field name node))
   (cond
+   ;; JavaScript's `undefined` is parsed as an `Identifier`,
+   ;; and not as a `Literal`, as one might expect.
    ((eq? name "undefined")
     #u)
    (else
@@ -599,6 +601,10 @@
   (cond
    ((eq? operator "!")
     (not (eval-estree argument env options)))
+   ((eq? operator "+")
+    (eval-estree argument env options))
+   ((eq? operator "-")
+    (- (eval-estree argument env options)))
    ((or (eq? operator "++")
         (eq? operator "--"))
     (define is-add
@@ -932,6 +938,7 @@
     (eval-estree discriminant env options))
   (define cases
     (get-field cases node))
+  (define result #u)
   (try
     (for ((x cases))
       (define test
@@ -939,9 +946,10 @@
       (when (or (not test)
                 (eq? discriminant-val
                      (eval-estree test env options)))
-        (eval-estree x env options)))
-    (catch BreakException e))
-  #u)
+        (set! result (eval-estree x env options))))
+    (catch BreakException e
+      (set! result (get-field value e))))
+  result)
 
 ;;; Evaluate an ESTree [`SwitchCase`][estree:switchcase] node.
 ;;;
@@ -949,9 +957,18 @@
 (define (eval-estree-switch-case node env (options (js-obj)))
   (define consequent
     (get-field consequent node))
-  (for ((x consequent))
-    (eval-estree x env options))
-  #u)
+  (when (and (= (js/length consequent) 1)
+             (estree-type? (js/first consequent)
+                           "BlockStatement"))
+    (set! consequent
+          (get-field body (js/first consequent))))
+  (define result #u)
+  (try
+    (for ((x consequent))
+      (set! result (eval-estree x env options)))
+    (catch BreakException e
+      (throw (new BreakException result))))
+  result)
 
 ;;; Evaluate a TSESTree `TSAsExpression` node.
 (define (eval-estree-ts-as-expression node env (options (js-obj)))
@@ -1083,7 +1100,7 @@
        (else
         (get-field value prop))))
     (oset! obj-val prop-val right-val)
-    obj-val)
+    right-val)
    ;; TODO: Chain expressions
    (else
     #u)))

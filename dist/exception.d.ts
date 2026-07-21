@@ -23,7 +23,8 @@
  * Used for evaluating `BreakStatement` and `(break)`.
  */
 declare class BreakException extends Error {
-    constructor();
+    value: any;
+    constructor(value?: any);
 }
 /**
  * `ContinueException`.
@@ -40,7 +41,7 @@ declare class ContinueException extends Error {
  */
 declare class YieldException extends Error {
     value: any;
-    constructor(value: any);
+    constructor(value?: any);
 }
 /**
  * `ReturnException`.
@@ -49,6 +50,6 @@ declare class YieldException extends Error {
  */
 declare class ReturnException extends Error {
     value: any;
-    constructor(value: any);
+    constructor(value?: any);
 }
 export { BreakException, ContinueException, YieldException, ReturnException };

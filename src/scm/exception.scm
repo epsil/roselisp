@@ -22,8 +22,11 @@
 ;;;
 ;;; Used for evaluating `BreakStatement` and `(break)`.
 (define-class BreakException (Error)
-  (define/public (constructor)
-    (super "BreakException")))
+  (define/public value)
+
+  (define/public (constructor (value #u))
+    (super "BreakException")
+    (set-field! value this value)))
 
 ;;; `ContinueException`.
 ;;;
@@ -38,7 +41,7 @@
 (define-class YieldException (Error)
   (define/public value)
 
-  (define/public (constructor value)
+  (define/public (constructor (value #u))
     (super "YieldException")
     (set-field! value this value)))
 
@@ -48,7 +51,7 @@
 (define-class ReturnException (Error)
   (define/public value)
 
-  (define/public (constructor value)
+  (define/public (constructor (value #u))
     (super "ReturnException")
     (set-field! value this value)))
 

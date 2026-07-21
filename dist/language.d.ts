@@ -14,7 +14,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-import { jsNew_ as new_, jsBlock_ } from './javascript';
+import { jsNew_ as new_ } from './javascript';
 import { cljTry_, definePublic_ } from './macros';
 import { read, readRose, readSexp, tokenize } from './parser';
 import { isAP_, typeOf_ } from './procedures';
@@ -40,7 +40,7 @@ declare namespace compile {
  */
 declare function compileWithEnvironment(exp: any, env?: any, options?: any): any;
 declare namespace compileWithEnvironment {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (string | symbol)[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (boolean | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (string | symbol)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Compile a set of modules together.
@@ -82,7 +82,10 @@ declare namespace compileFileX {
  * context of a basic Lisp environment defining such constructs
  * as `(if ...)`, `(cond ...)`, and so on.
  */
-declare const interpret: any;
+declare function interpret(exp: any, env?: any, options?: any): any;
+declare namespace interpret {
+    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (string | boolean | symbol)[])[])[])[];
+}
 /**
  * Interpret a string of Lisp code.
  */
@@ -317,11 +320,20 @@ declare namespace module_ {
     var ftype: string;
 }
 /**
- * Evaluate a `(begin ...)` expression.
+ * Expand a `(js/block ...)` expression.
  */
-declare function begin_(...args: any[]): any;
+declare function jsBlock_(exp: any, env: any): any;
+declare namespace jsBlock_ {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+    var ftype: string;
+}
+/**
+ * Expand a `(begin ...)` expression.
+ */
+declare function begin_(exp: any, env: any): any;
 declare namespace begin_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
+    var ftype: string;
 }
 /**
  * Expand a `(let* ...)` expression.
@@ -390,7 +402,7 @@ declare namespace defineAsync_ {
  */
 declare function defineMacro_(exp: any, env: any): any;
 declare namespace defineMacro_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
 }
 /**

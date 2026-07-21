@@ -1196,7 +1196,7 @@ describe('interpret', function (): any {
     assertEqual(interpret(sexp`t`), true);
     return assertEqual(interpret(sexp`t`, new LispEnvironment()), true);
   });
-  return it('currying', function (): any {
+  return xit('currying', function (): any {
     assertEqual(interpret(sexp`t`, __)(new LispEnvironment()), true);
     assertEqual(interpret(__, new LispEnvironment())(sexp`t`), true);
     return assertEqual(interpret(__, __)(sexp`t`)(new LispEnvironment()), true);

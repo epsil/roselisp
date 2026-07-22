@@ -210,6 +210,14 @@ let x2 = 1;
   let x1 = 0;
   let x2 = 1;
 }"
+ > (compile `(begin
+               (define foo
+                 ,(gensym "test"))
+               (define bar
+                 ,(gensym "test"))))
+ "let foo = test;
+
+let bar = test1;"
 
  ;; Global environment
  > (describe "Global environment")
@@ -1096,6 +1104,19 @@ return x;"
   let x: any = 1;
   x;
 }"
+ > (compile '(begin
+               (let ((x 1))
+                 (display x))
+               (let ((x 1))
+                 (display x))))
+ "let x = 1;
+
+console.log(x);
+
+{
+  let x = 1;
+  console.log(x);
+}"
  > (compile '(cond
               (foo
                bar)
@@ -1941,6 +1962,22 @@ export {
 
 for (let i = 0; i < _end; i++) {
   console.log(i);
+}"
+ > (compile '(begin
+               (for ((i (range 0 (+ 1 1))))
+                 (display i))
+               (for ((j (range 0 (+ 2 2))))
+                 (display j))))
+ "let _end = 1 + 1;
+
+for (let i = 0; i < _end; i++) {
+  console.log(i);
+}
+
+let _end1 = 2 + 2;
+
+for (let j = 0; j < _end1; j++) {
+  console.log(j);
 }"
  > (compile '(for ((i (range (+ 1 1) (+ 2 2))))
                (display i)))

@@ -3297,7 +3297,6 @@
 (define (compile-let-star node env (options (js-obj)))
   (define expression-type
     (oget options "expressionType"))
-  (define make-block #f)
   (cond
    ((eq? expression-type "expression")
     (compile-expression
@@ -3308,11 +3307,9 @@
       (oget options "languageEnvironment"))
     (define (lang-filter x)
       (not (eq? x language-env)))
-    (define env1
-      (extend-environment (new LispEnvironment)
-                          env))
     (define inherited-options
       (js-obj-append options))
+    (define make-block #f)
     (define let-nodes
       (~> node
           (send get 1)
@@ -3328,7 +3325,7 @@
                (define sym
                  (first exp))
                (when (and (not make-block)
-                          (send env1
+                          (send env
                                 has
                                 sym
                                 (js-obj "filter" lang-filter)))
@@ -3340,7 +3337,7 @@
               (else
                (define sym exp)
                (when (and (not make-block)
-                          (send env1
+                          (send env
                                 has
                                 sym
                                 (js-obj "filter" lang-filter)))
@@ -3349,6 +3346,11 @@
                 `(define ,x)
                 x))))
            let-nodes))
+    (define env1
+      (if make-block
+          (extend-environment (new LispEnvironment)
+                              env)
+          env))
     (define result
       (compile-rose
        (make-rose
@@ -3375,9 +3377,6 @@
       (oget options "languageEnvironment"))
     (define (lang-filter x)
       (not (eq? x language-env)))
-    (define env1
-      (extend-environment (new LispEnvironment)
-                          env))
     (define inherited-options
       (js-obj-append options))
     (define make-block #f)
@@ -3395,7 +3394,7 @@
               ((symbol? exp)
                (define sym exp)
                (when (and (not make-block)
-                          (send env1
+                          (send env
                                 has
                                 sym
                                 (js-obj "filter" lang-filter)))
@@ -3411,7 +3410,7 @@
                 ((symbol? variables)
                  (define sym variables)
                  (when (and (not make-block)
-                            (send env1
+                            (send env
                                   has
                                   sym
                                   (js-obj "filter" lang-filter)))
@@ -3421,7 +3420,7 @@
                    (flatten variables))
                  (unless make-block
                    (for ((sym (flatten variables)))
-                     (when (send env1
+                     (when (send env
                                  has
                                  sym
                                  (js-obj "filter" lang-filter))
@@ -3434,6 +3433,11 @@
                    ,(send x get 1))
                 x))))
            let-nodes))
+    (define env1
+      (if make-block
+          (extend-environment (new LispEnvironment)
+                              env)
+          env))
     (define result
       (compile-rose
        (make-rose
@@ -3587,9 +3591,6 @@
       (oget options "languageEnvironment"))
     (define (lang-filter x)
       (not (eq? x language-env)))
-    (define env1
-      (extend-environment (new LispEnvironment)
-                          env))
     (define inherited-options
       (js-obj-append options))
     (define make-block #f)
@@ -3613,7 +3614,7 @@
                      (second f)
                      f))
                (when (and (not make-block)
-                          (send env1
+                          (send env
                                 has
                                 sym
                                 (js-obj "filter" lang-filter)))
@@ -3623,6 +3624,11 @@
                  ,obj)
               x))
            let-nodes))
+    (define env1
+      (if make-block
+          (extend-environment (new LispEnvironment)
+                              env)
+          env))
     (define result
       (compile-rose
        (make-rose

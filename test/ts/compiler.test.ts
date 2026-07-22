@@ -539,7 +539,7 @@ describe('gensym', function (): any {
         '}',
     ]);
   });
-  return xit('(compile (let ((gensym-x (gensym "x"))) `(let ((x 0)) (define ,gensym-x 1) (let ((x1 0)) (define ,gensym-x 1)))))', function (): any {
+  xit('(compile (let ((gensym-x (gensym "x"))) `(let ((x 0)) (define ,gensym-x 1) (let ((x1 0)) (define ,gensym-x 1)))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -579,6 +579,32 @@ describe('gensym', function (): any {
         '  let x1 = 0;\n' +
         '  let x2 = 1;\n' +
         '}',
+    ]);
+  });
+  return it('(compile `(begin (define foo ,(gensym "test")) (define bar ,(gensym "test"))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [
+              Symbol.for('define'),
+              Symbol.for('foo'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'test']],
+            ],
+            [
+              Symbol.for('define'),
+              Symbol.for('bar'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'test']],
+            ],
+          ],
+        ],
+      ],
+      'let foo = test;\n' + '\n' + 'let bar = test1;',
     ]);
   });
 });
@@ -3538,6 +3564,39 @@ describe('let', function (): any {
       'x;\n' + '\n' + '{\n' + '  let x: any = 1;\n' + '  x;\n' + '}',
     ]);
   });
+  it("(compile '(begin (let ((x 1)) (display x)) (let ((x 1)) (display x))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('begin'),
+            [
+              Symbol.for('let'),
+              [[Symbol.for('x'), 1]],
+              [Symbol.for('display'), Symbol.for('x')],
+            ],
+            [
+              Symbol.for('let'),
+              [[Symbol.for('x'), 1]],
+              [Symbol.for('display'), Symbol.for('x')],
+            ],
+          ],
+        ],
+      ],
+      'let x = 1;\n' +
+        '\n' +
+        'console.log(x);\n' +
+        '\n' +
+        '{\n' +
+        '  let x = 1;\n' +
+        '  console.log(x);\n' +
+        '}',
+    ]);
+  });
   it("(compile '(cond (foo bar) (else x (let ((x 1)) x))) :as 'return :to 'typescript)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -6420,6 +6479,52 @@ describe('for', function (): any {
         '\n' +
         'for (let i = 0; i < _end; i++) {\n' +
         '  console.log(i);\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(begin (for ((i (range 0 (+ 1 1)))) (display i)) (for ((j (range 0 (+ 2 2)))) (display j))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('begin'),
+            [
+              Symbol.for('for'),
+              [
+                [
+                  Symbol.for('i'),
+                  [Symbol.for('range'), 0, [Symbol.for('+'), 1, 1]],
+                ],
+              ],
+              [Symbol.for('display'), Symbol.for('i')],
+            ],
+            [
+              Symbol.for('for'),
+              [
+                [
+                  Symbol.for('j'),
+                  [Symbol.for('range'), 0, [Symbol.for('+'), 2, 2]],
+                ],
+              ],
+              [Symbol.for('display'), Symbol.for('j')],
+            ],
+          ],
+        ],
+      ],
+      'let _end = 1 + 1;\n' +
+        '\n' +
+        'for (let i = 0; i < _end; i++) {\n' +
+        '  console.log(i);\n' +
+        '}\n' +
+        '\n' +
+        'let _end1 = 2 + 2;\n' +
+        '\n' +
+        'for (let j = 0; j < _end1; j++) {\n' +
+        '  console.log(j);\n' +
         '}',
     ]);
   });

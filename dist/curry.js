@@ -135,8 +135,8 @@ function dashify(f, placeholder = __) {
             // `h` is a function that receives remaining arguments.
             // When all arguments have been received, it invokes `f`.
             function h(...remainingArgs) {
-                const _end = remainingArgs.length;
-                for (let i = 0; i < _end; i++) {
+                const _end1 = remainingArgs.length;
+                for (let i = 0; i < _end1; i++) {
                     if (indices.length === 0) {
                         break;
                     }

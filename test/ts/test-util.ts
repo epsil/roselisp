@@ -16,7 +16,7 @@ import {
   writeToString,
 } from '../../src/ts/language';
 
-const [equalp, lastCdr, length, last]: any[] = ((): any => {
+const [equalp, lastCdr, length, last, keywordp]: any[] = ((): any => {
   function equalp_(x: any, y: any): any {
     if (x === y) {
       return true;
@@ -196,6 +196,12 @@ const [equalp, lastCdr, length, last]: any[] = ((): any => {
       return lst[lst.length - 1];
     }
   }
+  function keywordp_(obj: any): any {
+    return (
+      typeof obj === 'symbol' &&
+      (obj.description as string).match(new RegExp('^:'))
+    );
+  }
   function cdr_(lst: any): any {
     if (Array.isArray(lst) && lst.length === 3 && lst[1] === Symbol.for('.')) {
       return lst[2];
@@ -239,7 +245,7 @@ const [equalp, lastCdr, length, last]: any[] = ((): any => {
     }
     return result;
   }
-  return [equalp_, lastCdr_, length_, last_];
+  return [equalp_, lastCdr_, length_, last_, keywordp_];
 })();
 
 const assertEqual: any = chai.assert.deepEqual;
@@ -887,14 +893,34 @@ function printSexp(exp: any): any {
 
 function testMacro(exp: any, env: any): any {
   const body: any = exp.slice(1);
+  const options: any = {};
+  let bodyExps: any = [];
+  let len: any =
+    // FIXME: Bug in `for`.
+    body.length;
+  for (let i: any = 0; i < len; i = i + 2) {
+    const exp: any = (body as any)[i];
+    if (keywordp(exp)) {
+      const key: any = (exp.description as string).replace(
+        new RegExp('^:'),
+        ''
+      );
+      const val: any = body[i + 1];
+      (options as any)[key] = val;
+    } else {
+      bodyExps = i === 0 ? body : body.slice(i);
+      break;
+    }
+  }
+  // Parse tests.
   let group: any = [];
   const groups: any = [];
   let only: any = false;
-  const _end: any = body.length;
+  const _end: any = bodyExps.length;
   for (let i: any = 0; i < _end; i = i + 3) {
-    const prompt: any = (body as any)[i];
-    const exp: any = body[i + 1];
-    const value: any = body[i + 2];
+    const prompt: any = (bodyExps as any)[i];
+    const exp: any = bodyExps[i + 1];
+    const value: any = bodyExps[i + 2];
     if (
       Array.isArray(exp) &&
       exp.length >= 2 &&

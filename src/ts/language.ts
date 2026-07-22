@@ -1823,8 +1823,8 @@ function definitionToMacro(exp: any, args: any): any {
     // Determine whether a complex argument is referenced
     // more than once. If so, we need to make a `lambda`
     // expression instead.
-    const _end: any = argsList.length;
-    for (let i: any = 0; i < _end; i++) {
+    const _end1: any = argsList.length;
+    for (let i: any = 0; i < _end1; i++) {
       const count: any = (counts as any)[i];
       const arg: any = (argsList as any)[i];
       if ((count > 1) && !((typeof arg === 'symbol') || (typeof arg === 'boolean') || (typeof arg === 'string') || Number.isFinite(arg))) {
@@ -1835,8 +1835,8 @@ function definitionToMacro(exp: any, args: any): any {
     if (shouldMakeLet) {
       const letBindingsEnv: any = [];
       let gensymMap: any = new Map();
-      const _end: any = paramsList.length;
-      for (let i: any = 0; i < _end; i++) {
+      const _end2: any = paramsList.length;
+      for (let i: any = 0; i < _end2; i++) {
         const argExp: any = (i < argsList.length) ? (argsList as any)[i] : ((): any => {
           const currentParam: any = (params as any)[i];
           if (Array.isArray(currentParam)) {
@@ -3551,7 +3551,6 @@ compileLet.fsource = [Symbol.for('define'), [Symbol.for('compile-let'), Symbol.f
  */
 function compileLetStar(node: any, env: any, options: any = {}): any {
   const expressionType: any = options['expressionType'];
-  let makeBlock: any = false;
   if (expressionType === 'expression') {
     return compileExpression(wrapInArrowCall(node), env, options);
   } else {
@@ -3560,17 +3559,17 @@ function compileLetStar(node: any, env: any, options: any = {}): any {
       return x !== languageEnv;
     }
     langFilter.fsource = [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]];
-    const env1: any = extendEnvironment(new LispEnvironment(), env);
     const inheritedOptions: any = {
       ...options
     };
+    let makeBlock: any = false;
     const letNodes: any = node.get(1).getNodes();
     const bodyNodes: any = node.drop(2);
     const defineNodes: any = letNodes.map(function (x: any): any {
       let exp: any = x.getValue();
       if (Array.isArray(exp)) {
         const sym: any = exp[0];
-        if (!makeBlock && env1.has(sym, {
+        if (!makeBlock && env.has(sym, {
           filter: langFilter
         })) {
           makeBlock = true;
@@ -3578,7 +3577,7 @@ function compileLetStar(node: any, env: any, options: any = {}): any {
         return makeRose([Symbol.for('define'), x.get(0), x.get(1)], x);
       } else {
         const sym: any = exp;
-        if (!makeBlock && env1.has(sym, {
+        if (!makeBlock && env.has(sym, {
           filter: langFilter
         })) {
           makeBlock = true;
@@ -3586,12 +3585,13 @@ function compileLetStar(node: any, env: any, options: any = {}): any {
         return makeRose([Symbol.for('define'), x], x);
       }
     });
+    const env1: any = makeBlock ? extendEnvironment(new LispEnvironment(), env) : env;
     let result: any = compileRose(makeRose([makeBlock ? Symbol.for('js/block') : Symbol.for('begin'), ...defineNodes, ...bodyNodes], node), env1, inheritedOptions);
     return result;
   }
 }
 
-compileLetStar.fsource = [Symbol.for('define'), [Symbol.for('compile-let-star'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('define'), Symbol.for('make-block'), false], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('env1'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('let-nodes'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('get-nodes')]]], [Symbol.for('define'), Symbol.for('body-nodes'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('define-nodes'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('first'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env1'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0]], [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]]]], Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('sym'), Symbol.for('exp')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env1'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('x')]]], Symbol.for('x')]]]], Symbol.for('let-nodes')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('compile-rose'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('quote'), Symbol.for('js/block')], [Symbol.for('quote'), Symbol.for('begin')]]], [Symbol.for('unquote-splicing'), Symbol.for('define-nodes')], [Symbol.for('unquote-splicing'), Symbol.for('body-nodes')]]], Symbol.for('node')], Symbol.for('env1'), Symbol.for('inherited-options')]], Symbol.for('result')]]];
+compileLetStar.fsource = [Symbol.for('define'), [Symbol.for('compile-let-star'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('make-block'), false], [Symbol.for('define'), Symbol.for('let-nodes'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('get-nodes')]]], [Symbol.for('define'), Symbol.for('body-nodes'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('define-nodes'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('first'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0]], [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]]]], Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('sym'), Symbol.for('exp')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('x')]]], Symbol.for('x')]]]], Symbol.for('let-nodes')]], [Symbol.for('define'), Symbol.for('env1'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')], Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('compile-rose'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('quote'), Symbol.for('js/block')], [Symbol.for('quote'), Symbol.for('begin')]]], [Symbol.for('unquote-splicing'), Symbol.for('define-nodes')], [Symbol.for('unquote-splicing'), Symbol.for('body-nodes')]]], Symbol.for('node')], Symbol.for('env1'), Symbol.for('inherited-options')]], Symbol.for('result')]]];
 
 /**
  * Compile a `(let-values ...)` expression.
@@ -3606,7 +3606,6 @@ function compileLetValues(node: any, env: any, options: any = {}): any {
       return x !== languageEnv;
     }
     langFilter.fsource = [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]];
-    const env1: any = extendEnvironment(new LispEnvironment(), env);
     const inheritedOptions: any = {
       ...options
     };
@@ -3617,7 +3616,7 @@ function compileLetValues(node: any, env: any, options: any = {}): any {
       let exp: any = x.getValue();
       if (typeof exp === 'symbol') {
         const sym: any = exp;
-        if (!makeBlock && env1.has(sym, {
+        if (!makeBlock && env.has(sym, {
           filter: langFilter
         })) {
           makeBlock = true;
@@ -3627,7 +3626,7 @@ function compileLetValues(node: any, env: any, options: any = {}): any {
         const variables: any = x.get(0).getValue();
         if (typeof variables === 'symbol') {
           const sym: any = variables;
-          if (!makeBlock && env1.has(sym, {
+          if (!makeBlock && env.has(sym, {
             filter: langFilter
           })) {
             makeBlock = true;
@@ -3636,7 +3635,7 @@ function compileLetValues(node: any, env: any, options: any = {}): any {
           const syms: any = flatten(variables);
           if (!makeBlock) {
             for (let sym of flatten(variables)) {
-              if (env1.has(sym, {
+              if (env.has(sym, {
                 filter: langFilter
               })) {
                 makeBlock = true;
@@ -3649,12 +3648,13 @@ function compileLetValues(node: any, env: any, options: any = {}): any {
         return makeRose([Symbol.for('define-values'), x.get(0), x.get(1)], x);
       }
     });
+    const env1: any = makeBlock ? extendEnvironment(new LispEnvironment(), env) : env;
     let result: any = compileRose(makeRose([makeBlock ? Symbol.for('js/block') : Symbol.for('begin'), ...defineNodes, ...bodyNodes], node), env1, inheritedOptions);
     return result;
   }
 }
 
-compileLetValues.fsource = [Symbol.for('define'), [Symbol.for('compile-let-values'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('env1'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('make-block'), false], [Symbol.for('define'), Symbol.for('let-nodes'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('get-nodes')]]], [Symbol.for('define'), Symbol.for('body-nodes'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('define-nodes'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('sym'), Symbol.for('exp')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env1'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('x')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('variables'), [Symbol.for('~>'), Symbol.for('x'), [Symbol.for('send'), Symbol.for('get'), 0], [Symbol.for('send'), Symbol.for('get-value')]]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('variables')], [Symbol.for('define'), Symbol.for('sym'), Symbol.for('variables')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env1'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('syms'), [Symbol.for('flatten'), Symbol.for('variables')]], [Symbol.for('unless'), Symbol.for('make-block'), [Symbol.for('for'), [[Symbol.for('sym'), [Symbol.for('flatten'), Symbol.for('variables')]]], [Symbol.for('when'), [Symbol.for('send'), Symbol.for('env1'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]], [Symbol.for('set!'), Symbol.for('make-block'), true], [Symbol.for('break')]]]]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define-values'), [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0]], [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]]]], Symbol.for('x')]]]], Symbol.for('let-nodes')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('compile-rose'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('quote'), Symbol.for('js/block')], [Symbol.for('quote'), Symbol.for('begin')]]], [Symbol.for('unquote-splicing'), Symbol.for('define-nodes')], [Symbol.for('unquote-splicing'), Symbol.for('body-nodes')]]], Symbol.for('node')], Symbol.for('env1'), Symbol.for('inherited-options')]], Symbol.for('result')]]];
+compileLetValues.fsource = [Symbol.for('define'), [Symbol.for('compile-let-values'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('make-block'), false], [Symbol.for('define'), Symbol.for('let-nodes'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('get-nodes')]]], [Symbol.for('define'), Symbol.for('body-nodes'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('define-nodes'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get-value')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('sym'), Symbol.for('exp')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('x')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('variables'), [Symbol.for('~>'), Symbol.for('x'), [Symbol.for('send'), Symbol.for('get'), 0], [Symbol.for('send'), Symbol.for('get-value')]]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('variables')], [Symbol.for('define'), Symbol.for('sym'), Symbol.for('variables')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('syms'), [Symbol.for('flatten'), Symbol.for('variables')]], [Symbol.for('unless'), Symbol.for('make-block'), [Symbol.for('for'), [[Symbol.for('sym'), [Symbol.for('flatten'), Symbol.for('variables')]]], [Symbol.for('when'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]], [Symbol.for('set!'), Symbol.for('make-block'), true], [Symbol.for('break')]]]]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define-values'), [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0]], [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]]]], Symbol.for('x')]]]], Symbol.for('let-nodes')]], [Symbol.for('define'), Symbol.for('env1'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')], Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('compile-rose'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('quote'), Symbol.for('js/block')], [Symbol.for('quote'), Symbol.for('begin')]]], [Symbol.for('unquote-splicing'), Symbol.for('define-nodes')], [Symbol.for('unquote-splicing'), Symbol.for('body-nodes')]]], Symbol.for('node')], Symbol.for('env1'), Symbol.for('inherited-options')]], Symbol.for('result')]]];
 
 /**
  * Compile a `(define-values ...)` expression.
@@ -3753,7 +3753,6 @@ function compileLetFields(node: any, env: any, options: any = {}): any {
       return x !== languageEnv;
     }
     langFilter.fsource = [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]];
-    const env1: any = extendEnvironment(new LispEnvironment(), env);
     const inheritedOptions: any = {
       ...options
     };
@@ -3784,7 +3783,7 @@ function compileLetFields(node: any, env: any, options: any = {}): any {
           }
           return result;
         })() : f[1]) : f;
-        if (!makeBlock && env1.has(sym, {
+        if (!makeBlock && env.has(sym, {
           filter: langFilter
         })) {
           makeBlock = true;
@@ -3792,12 +3791,13 @@ function compileLetFields(node: any, env: any, options: any = {}): any {
       }
       return makeRose([Symbol.for('define-fields'), fields, obj], x);
     });
+    const env1: any = makeBlock ? extendEnvironment(new LispEnvironment(), env) : env;
     let result: any = compileRose(makeRose([makeBlock ? Symbol.for('js/block') : Symbol.for('begin'), ...defineNodes, ...bodyNodes], node), env1, inheritedOptions);
     return result;
   }
 }
 
-compileLetFields.fsource = [Symbol.for('define'), [Symbol.for('compile-let-fields'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('env1'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('make-block'), false], [Symbol.for('define'), Symbol.for('let-nodes'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('get-nodes')]]], [Symbol.for('define'), Symbol.for('body-nodes'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('define-nodes'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('fields'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0]], [Symbol.for('define'), Symbol.for('fields-exp'), [Symbol.for('send'), Symbol.for('fields'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]], [Symbol.for('for'), [[Symbol.for('f'), Symbol.for('fields-exp')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('if'), [Symbol.for('array?'), Symbol.for('f')], [Symbol.for('second'), Symbol.for('f')], Symbol.for('f')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env1'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define-fields'), [Symbol.for('unquote'), Symbol.for('fields')], [Symbol.for('unquote'), Symbol.for('obj')]]], Symbol.for('x')]], Symbol.for('let-nodes')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('compile-rose'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('quote'), Symbol.for('js/block')], [Symbol.for('quote'), Symbol.for('begin')]]], [Symbol.for('unquote-splicing'), Symbol.for('define-nodes')], [Symbol.for('unquote-splicing'), Symbol.for('body-nodes')]]], Symbol.for('node')], Symbol.for('env1'), Symbol.for('inherited-options')]], Symbol.for('result')]]];
+compileLetFields.fsource = [Symbol.for('define'), [Symbol.for('compile-let-fields'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language-env'), [Symbol.for('oget'), Symbol.for('options'), 'languageEnvironment']], [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js-obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('make-block'), false], [Symbol.for('define'), Symbol.for('let-nodes'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('get-nodes')]]], [Symbol.for('define'), Symbol.for('body-nodes'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('define-nodes'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('fields'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0]], [Symbol.for('define'), Symbol.for('fields-exp'), [Symbol.for('send'), Symbol.for('fields'), Symbol.for('get-value')]], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]], [Symbol.for('for'), [[Symbol.for('f'), Symbol.for('fields-exp')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('if'), [Symbol.for('array?'), Symbol.for('f')], [Symbol.for('second'), Symbol.for('f')], Symbol.for('f')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('make-block')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('has'), Symbol.for('sym'), [Symbol.for('js-obj'), 'filter', Symbol.for('lang-filter')]]], [Symbol.for('set!'), Symbol.for('make-block'), true]]], [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [Symbol.for('define-fields'), [Symbol.for('unquote'), Symbol.for('fields')], [Symbol.for('unquote'), Symbol.for('obj')]]], Symbol.for('x')]], Symbol.for('let-nodes')]], [Symbol.for('define'), Symbol.for('env1'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')], Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('compile-rose'), [Symbol.for('make-rose'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), Symbol.for('make-block'), [Symbol.for('quote'), Symbol.for('js/block')], [Symbol.for('quote'), Symbol.for('begin')]]], [Symbol.for('unquote-splicing'), Symbol.for('define-nodes')], [Symbol.for('unquote-splicing'), Symbol.for('body-nodes')]]], Symbol.for('node')], Symbol.for('env1'), Symbol.for('inherited-options')]], Symbol.for('result')]]];
 
 /**
  * Compile a `(define-fields ...)` expression.

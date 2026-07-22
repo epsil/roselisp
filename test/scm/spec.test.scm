@@ -9,6 +9,8 @@
 (declare-macro test-macro)
 
 (test-macro
+ :repl #t
+
  ;; `#t`
  > (describe "#t")
  _

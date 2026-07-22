@@ -4,7 +4,7 @@
  * Tests that have not been sorted yet.
  */
 
-import { assertEqual, testRepl } from './test-util';
+import { assertEqual, testRepl, testMacro } from './test-util';
 
 const [callCc]: any[] = ((): any => {
   function callWithCurrentContinuation_(
@@ -36,18 +36,21 @@ const [callCc]: any[] = ((): any => {
 /**
  * Test inbox
  */
-describe('Unsorted tests', function (): any {
-  return describe('call/cc', function (): any {
-    return it('(try ... (+ 5 (call/cc (lambda (x) (error "error")))) ...)', function (): any {
-      let result: any = 0;
-      try {
-        result =
-          5 +
-          callCc(function (x: any): any {
-            throw new Error('error');
-          });
-      } catch (e) {}
-      return assertEqual(result, 0);
-    });
+describe('call/cc', function (): any {
+  return it('(let ((result 0)) (try (set! result (+ 5 (call/cc (lambda (x) (error "error"))))) (catch Object e)) result)', function (): any {
+    return assertEqual(
+      ((): any => {
+        let result: any = 0;
+        try {
+          result =
+            5 +
+            callCc(function (x: any): any {
+              throw new Error('error');
+            });
+        } catch (e) {}
+        return result;
+      })(),
+      0
+    );
   });
 });

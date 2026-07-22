@@ -4,20 +4,22 @@
 
 (require (only-in "./test-util"
                   assert-equal
-                  test-repl))
+                  test-repl
+                  test-macro))
+
+(declare-macro test-macro)
 
 ;;; Test inbox
-(describe "Unsorted tests"
-  (fn ()
-    (describe "call/cc"
-      (fn ()
-        (it "(try ... (+ 5 (call/cc (lambda (x) (error \"error\")))) ...)"
-            (fn ()
-              (define result 0)
-              (try
-                (set! result
-                      (+ 5 (call/cc
-                            (lambda (x)
-                              (error "error")))))
-                (catch Object e))
-              (assert-equal result 0)))))))
+(test-macro
+ ;; `call/cc`
+ > (describe "call/cc")
+ _
+ > (let ((result 0))
+     (try
+       (set! result
+             (+ 5 (call/cc
+                   (lambda (x)
+                     (error "error")))))
+       (catch Object e))
+     result)
+ 0)

@@ -20,6 +20,8 @@
 (declare-macro test-macro)
 
 (test-macro
+ :repl #t
+
  ;; Macros
  > (describe "Macros")
  _

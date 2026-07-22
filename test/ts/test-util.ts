@@ -403,7 +403,7 @@ function testRepl(exp: any, options: any = {}): any {
 function testNodeRepl(exp: any): any {
   const clauses: any = parseReplForm(exp);
   for (let clause of clauses) {
-    const actual: any = eval(clause[0]);
+    const expected: any = eval(clause[0]);
     if (
       (Array.isArray(clause) &&
       clause.length >= 3 &&
@@ -434,7 +434,7 @@ function testNodeRepl(exp: any): any {
           })()
         : clause[1]) !== '_'
     ) {
-      const expected: any = eval(
+      let actual: any = eval(
         Array.isArray(clause) &&
           clause.length >= 3 &&
           clause[clause.length - 2] === Symbol.for('.') &&
@@ -464,7 +464,7 @@ function testNodeRepl(exp: any): any {
             })()
           : clause[1]
       );
-      assertEqual(actual, expected);
+      assertEqual(expected, actual);
     }
   }
 }
@@ -491,7 +491,7 @@ function testRoselispRepl(exp: any, options: any = {}): any {
   );
   const clauses: any = parseReplForm(exp);
   for (let clause of clauses) {
-    const actual: any = interpret(clause[0], testEnv);
+    const expected: any = interpret(clause[0], testEnv);
     if (
       (Array.isArray(clause) &&
       clause.length >= 3 &&
@@ -522,7 +522,7 @@ function testRoselispRepl(exp: any, options: any = {}): any {
           })()
         : clause[1]) !== Symbol.for('_')
     ) {
-      const expected: any = interpret(
+      let actual: any = interpret(
         Array.isArray(clause) &&
           clause.length >= 3 &&
           clause[clause.length - 2] === Symbol.for('.') &&
@@ -553,7 +553,7 @@ function testRoselispRepl(exp: any, options: any = {}): any {
           : clause[1],
         testEnv
       );
-      assertEqual(actual, expected);
+      assertEqual(expected, actual);
     }
   }
   if (compileOption) {
@@ -893,12 +893,11 @@ function printSexp(exp: any): any {
 
 function testMacro(exp: any, env: any): any {
   const body: any = exp.slice(1);
+  // Parse options.
   const options: any = {};
   let bodyExps: any = [];
-  let len: any =
-    // FIXME: Bug in `for`.
-    body.length;
-  for (let i: any = 0; i < len; i = i + 2) {
+  const _end: any = body.length;
+  for (let i: any = 0; i < _end; i = i + 2) {
     const exp: any = (body as any)[i];
     if (keywordp(exp)) {
       const key: any = (exp.description as string).replace(
@@ -912,15 +911,16 @@ function testMacro(exp: any, env: any): any {
       break;
     }
   }
-  // Parse tests.
+  const replOption: any = options['repl'];
+  // Create tests.
   let group: any = [];
   const groups: any = [];
   let only: any = false;
-  const _end: any = bodyExps.length;
-  for (let i: any = 0; i < _end; i = i + 3) {
+  const _end1: any = bodyExps.length;
+  for (let i: any = 0; i < _end1; i = i + 3) {
     const prompt: any = (bodyExps as any)[i];
     const exp: any = bodyExps[i + 1];
-    const value: any = bodyExps[i + 2];
+    const expected: any = bodyExps[i + 2];
     if (
       Array.isArray(exp) &&
       exp.length >= 2 &&
@@ -930,7 +930,7 @@ function testMacro(exp: any, env: any): any {
         groups.push(group);
         group = [];
       }
-      const description: any = exp[1];
+      let description: any = exp[1];
       group.push(description);
     } else if (
       Array.isArray(exp) &&
@@ -946,17 +946,31 @@ function testMacro(exp: any, env: any): any {
             [Symbol.for('it.only>'), Symbol.for('only>')].includes(prompt)
           ? [Symbol.for('send'), Symbol.for('it'), Symbol.for('only')]
           : [Symbol.for('it')];
-      const description: any = printSexp(exp);
+      let description: any = '';
+      let actual: any = undefined;
+      if (taggedListP(exp, Symbol.for('it'))) {
+        description = exp[1];
+        actual =
+          exp.length > 3 ? [Symbol.for('begin'), ...exp.slice(2)] : exp[2];
+      } else {
+        description = printSexp(exp);
+        actual = exp;
+      }
       const test: any = [
         ...f,
         description,
         [
           Symbol.for('fn'),
           [],
-          [
-            Symbol.for('test-repl'),
-            [Symbol.for('quote'), [Symbol.for('roselisp'), prompt, exp, value]],
-          ],
+          replOption
+            ? [
+                Symbol.for('test-repl'),
+                [
+                  Symbol.for('quote'),
+                  [Symbol.for('roselisp'), prompt, actual, expected],
+                ],
+              ]
+            : [Symbol.for('assert-equal'), actual, expected],
         ],
       ];
       group.push(test);

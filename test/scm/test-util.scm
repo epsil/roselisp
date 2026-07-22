@@ -172,12 +172,12 @@
   (define clauses
     (parse-repl-form exp))
   (for ((clause clauses))
-    (define actual
+    (define expected
       (js/eval (first clause)))
     (unless (eq? (second clause) "_")
-      (define expected
+      (define actual
         (js/eval (second clause)))
-      (assert-equal actual expected))))
+      (assert-equal expected actual))))
 
 ;;; Test a Roselisp REPL form.
 (define (test-roselisp-repl exp (options (js-obj)))
@@ -197,12 +197,12 @@
   (define clauses
     (parse-repl-form exp))
   (for ((clause clauses))
-    (define actual
+    (define expected
       (interpret (first clause) test-env))
     (unless (eq? (second clause) '_)
-      (define expected
+      (define actual
         (interpret (second clause) test-env))
-      (assert-equal actual expected)))
+      (assert-equal expected actual)))
   (when compile-option
     (define node-repl-form
       (compile-repl-form
@@ -299,8 +299,8 @@
 ;;; Whether `exp` is a list whose first element is `tag`.
 (define (tagged-list? exp tag)
   (and (array? exp)
-       (>= (array-length exp) 1)
-       (eq? (array-first exp) tag)))
+       (>= (js/length exp) 1)
+       (eq? (js/first exp) tag)))
 
 (define (print-sexp exp)
   (cond
@@ -346,27 +346,49 @@
     (string-append exp ""))))
 
 (defmacro test-macro (&rest body)
+  ;; Parse options.
+  (define options
+    (js-obj))
+  (define body-exps '())
+  (for ((i (range 0 (js/length body) 2)))
+    (define exp
+      (aget body i))
+    (cond
+     ((keyword? exp)
+      (define key
+        (~> exp
+            (symbol->string _)
+            (regexp-replace (regexp "^:") _ "")))
+      (define val
+        (aget body (+ i 1)))
+      (oset! options key val))
+     (else
+      (set! body-exps (drop body i))
+      (break))))
+  (define repl-option
+    (oget options "repl"))
+  ;; Create tests.
   (define group '())
   (define groups '())
   (define only #f)
-  (for ((i (range 0 (js/length body) 3)))
+  (for ((i (range 0 (js/length body-exps) 3)))
     (define prompt
-      (aget body i))
+      (aget body-exps i))
     (define exp
-      (aget body (+ i 1)))
-    (define value
-      (aget body (+ i 2)))
+      (aget body-exps (+ i 1)))
+    (define expected
+      (aget body-exps (+ i 2)))
     (cond
-     ((and (array-list? exp)
+     ((and (array? exp)
            (>= (js/length exp) 2)
            (eq? (js/first exp) 'describe))
       (when (> (js/length group) 0)
         (push-right groups group)
         (set! group '()))
       (define description
-        (array-list-second exp))
+        (js/second exp))
       (push-right! group description))
-     ((and (array-list? exp)
+     ((and (array? exp)
            (>= (js/length exp) 1)
            (eq? (js/first exp) 'only))
       (set! only #t))
@@ -380,17 +402,31 @@
           '(send it only))
          (else
           '(it))))
-      (define description
-        (print-sexp exp))
+      (define description "")
+      (define actual #u)
+      (cond
+       ((tagged-list? exp 'it)
+        (set! description (js/second exp))
+        (set! actual
+              (if (> (js/length exp) 3)
+                  `(begin ,@(drop exp 2))
+                  (js/third exp))))
+       (else
+        (set! description (print-sexp exp))
+        (set! actual exp)))
       (define test
         `(,@f
           ,description
           (fn ()
-            (test-repl
-             '(roselisp
-               ,prompt
-               ,exp
-               ,value)))))
+            ,(if repl-option
+                 `(test-repl
+                   '(roselisp
+                     ,prompt
+                     ,actual
+                     ,expected))
+                 `(assert-equal
+                   ,actual
+                   ,expected)))))
       (push-right! group test)
       (set! only #f))))
   (when (> (js/length group) 0)

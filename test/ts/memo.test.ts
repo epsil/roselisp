@@ -2,32 +2,113 @@ import { I, K } from '../../src/ts/combinators';
 
 import { eof, memoize } from '../../src/ts/memo';
 
-import { assertEqual } from './test-util';
+import { assertEqual, testMacro } from './test-util';
 
 describe('memoize', function (): any {
-  it('cache property', function (): any {
-    const memoizedF: any = memoize(I);
-    return assertEqual(memoizedF.cache instanceof Map, true);
-  });
-  it('cache I()', function (): any {
-    const memoizedF: any = memoize(I);
-    assertEqual(memoizedF() === undefined, true);
-    return assertEqual(memoizedF.cache, new Map([[eof, undefined]]));
-  });
-  it('cache I(1)', function (): any {
-    const memoizedF: any = memoize(I);
-    assertEqual(memoizedF(1), 1);
-    assertEqual(memoizedF.cache, new Map([[1, new Map([[eof, 1]])]]));
-    // Change cached value and verify that
-    // the cached value is returned.
-    memoizedF.cache = new Map([[1, new Map([[eof, 500]])]]);
-    return assertEqual(memoizedF(1), 500);
-  });
-  return it('cache K(1, 2)', function (): any {
-    const memoizedF: any = memoize(K);
-    assertEqual(memoizedF(1, 2), 1);
+  it('cache', function (): any {
     return assertEqual(
-      memoizedF.cache,
+      ((): any => {
+        const IM: any = memoize(I);
+        return IM.cache instanceof Map;
+      })(),
+      true
+    );
+  });
+  it('(I)', function (): any {
+    return assertEqual(
+      ((): any => {
+        const IM: any = memoize(I);
+        return IM() === undefined;
+      })(),
+      true
+    );
+  });
+  it('(I), (I)', function (): any {
+    return assertEqual(
+      ((): any => {
+        const IM: any = memoize(I);
+        IM();
+        return IM() === undefined;
+      })(),
+      true
+    );
+  });
+  it('(I), cache', function (): any {
+    return assertEqual(
+      ((): any => {
+        const IM: any = memoize(I);
+        IM();
+        return IM.cache;
+      })(),
+      new Map([[eof, undefined]])
+    );
+  });
+  it('(I 1)', function (): any {
+    return assertEqual(
+      ((): any => {
+        const IM: any = memoize(I);
+        return IM(1);
+      })(),
+      1
+    );
+  });
+  it('(I 1), (I 1)', function (): any {
+    return assertEqual(
+      ((): any => {
+        const IM: any = memoize(I);
+        IM(1);
+        return IM(1);
+      })(),
+      1
+    );
+  });
+  it('(I 1), cache', function (): any {
+    return assertEqual(
+      ((): any => {
+        const IM: any = memoize(I);
+        IM(1);
+        return IM.cache;
+      })(),
+      new Map([[1, new Map([[eof, 1]])]])
+    );
+  });
+  it('(I 1), change cache', function (): any {
+    return assertEqual(
+      ((): any => {
+        const IM: any = memoize(I);
+        IM(1);
+        IM.cache = new Map([[1, new Map([[eof, 500]])]]);
+        return IM(1);
+      })(),
+      500
+    );
+  });
+  it('(K 1 2)', function (): any {
+    return assertEqual(
+      ((): any => {
+        const KM: any = memoize(K);
+        return KM(1, 2);
+      })(),
+      1
+    );
+  });
+  it('(K 1 2), (K 1 2)', function (): any {
+    return assertEqual(
+      ((): any => {
+        const KM: any = memoize(K);
+        KM(1, 2);
+        return KM(1, 2);
+      })(),
+      1
+    );
+  });
+  return it('(K 1 2), cache', function (): any {
+    return assertEqual(
+      ((): any => {
+        const KM: any = memoize(K);
+        KM(1, 2);
+        return KM.cache;
+      })(),
       new Map([[1, new Map([[2, new Map([[eof, 1]])]])]])
     );
   });

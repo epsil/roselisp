@@ -3,33 +3,26 @@
 (require (only-in "../../src/ts/symbol"
                   symbolp_))
 (require (only-in "./test-util"
-                  assert-equal))
+                  assert-equal
+                  test-macro))
 
-(describe "s"
-  (fn ()
-    (it "s('foo')"
-        (fn ()
-          (assert-equal
-           (js/tag s "foo")
-           (send Symbol for "foo"))
-          (assert-equal
-           (s "foo")
-           (send Symbol for "foo"))))
-    (it "s`${'foo'}`"
-        (fn ()
-          (assert-equal
-           (js/tag s "${'foo'}")
-           (send Symbol for "foo"))))
-    (it "s`foo${2}`"
-        (fn ()
-          (assert-equal
-           (js/tag s "foo${2}")
-           (send Symbol for "foo2"))))))
+(declare-macro test-macro)
 
-(describe "symbolp"
-  (fn ()
-    (it "s`foo`"
-        (fn ()
-          (assert-equal
-           (symbolp_ (js/tag s "foo"))
-           #t)))))
+(test-macro
+ ;; `s`
+ > (describe "s")
+ _
+ > (js/tag s "foo")
+ 'foo
+ > (s "foo")
+ 'foo
+ > (js/tag s "${'foo'}")
+ 'foo
+ > (js/tag s "foo${2}")
+ 'foo2
+
+ ;; `symbolp`
+ > (describe "symbolp")
+ _
+ > (symbolp_ (js/tag s "foo"))
+ #t)

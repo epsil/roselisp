@@ -188,6 +188,7 @@
                   make-hash_))
 (require (only-in "./javascript"
                   (js-new_ new_)
+                  js-array?_
                   js-delete_
                   js-eighth_
                   js-eval_
@@ -770,6 +771,7 @@
    hash?_
    index-where_
    is-a?_
+   js-array?_
    js-eighth_
    js-fifth_
    js-find-index_
@@ -7965,6 +7967,7 @@
          (intersection ,intersection_ (-> Any * Any))
          (is-a? ,is-a?_ (-> Any * Any))
          (js ,js_ (-> Any * Any))
+         (js/array? ,js-array?_ (-> Any * Any))
          (js-field ,array-ref_ (-> Any * Any))
          (js-keys ,js-keys_ (-> Any * Any))
          (js-obj ,js-obj_ (-> Any * Any))

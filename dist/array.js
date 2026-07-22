@@ -25,7 +25,7 @@ function arrayp_(obj) {
     return Array.isArray(obj);
 }
 exports.arrayp_ = arrayp_;
-arrayp_.fsource = [Symbol.for('define'), [Symbol.for('array?_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('obj')]];
+arrayp_.fsource = [Symbol.for('define'), [Symbol.for('array?_'), Symbol.for('obj')], [Symbol.for('js/array?'), Symbol.for('obj')]];
 /**
  * Return the last element of an array.
  */

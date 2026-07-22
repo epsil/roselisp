@@ -132,6 +132,10 @@
   ;; invoking `delete`.
   #u)
 
+;;; Whether something is a JavaScript array.
+(define (js-array?_ obj)
+  (send Array isArray obj))
+
 ;;; Return the last element of a JavaScript array.
 (define (js-last_ arr)
   (js/get arr (- (js/length arr) 1)))
@@ -249,6 +253,7 @@
   x)
 
 (provide
+  js-array?_
   js-delete_
   js-eighth_
   js-eval_

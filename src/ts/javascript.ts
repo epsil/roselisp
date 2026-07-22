@@ -215,6 +215,15 @@ function jsDelete_(x: any): any {
 jsDelete_.fsource = [Symbol.for('define'), [Symbol.for('js-delete_'), Symbol.for('x')], undefined];
 
 /**
+ * Whether something is a JavaScript array.
+ */
+function jsArrayP_(obj: any): any {
+  return Array.isArray(obj);
+}
+
+jsArrayP_.fsource = [Symbol.for('define'), [Symbol.for('js-array?_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('obj')]];
+
+/**
  * Return the last element of a JavaScript array.
  */
 function jsLast_(arr: any): any {
@@ -466,6 +475,7 @@ function jsYield_(x: any = undefined): any {
 jsYield_.fsource = [Symbol.for('define'), [Symbol.for('js-yield_'), [Symbol.for('x'), undefined]], Symbol.for('x')];
 
 export {
+  jsArrayP_,
   jsDelete_,
   jsEighth_,
   jsEval_,

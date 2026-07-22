@@ -16,7 +16,7 @@
 
 ;;; Whether something is an array.
 (define (array?_ obj)
-  (send Array isArray obj))
+  (js/array? obj))
 
 ;;; Return the last element of an array.
 (define (array-last_ arr)

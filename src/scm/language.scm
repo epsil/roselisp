@@ -504,13 +504,13 @@
                   begin-wrap
                   colon-form?
                   form?
-                  kebab-case->camel-case
-                  kebab-case->snake-case
                   lambda->let
+                  make-identifier-string
                   map-tree
                   quote?
                   tagged-list?
-                  text-of-quotation))
+                  text-of-quotation
+                  valid-js-casing-style?))
 (require (only-in "./visitor"
                   make-visitor
                   visit))
@@ -897,7 +897,8 @@
   (define options
     (if (= (js/length args) 1)
         (js/first args)
-        (plist->object_ args #t)))
+        (plist->object_ args
+                        (js-obj "case" "camelcase"))))
   (define from
     (or (oget options "from")
         'roselisp))
@@ -921,16 +922,16 @@
       (oget options "as"))
     (define expression-type
       (cond
-       ((eq? as 'return-statement)
+       ((eq? as 'expression)
+        "expression")
+       ((memq? as '(return-statement
+                    return))
         "return")
-       ((eq? as 'statement)
-        "statement")
        (else
-        "expression")))
+        "statement")))
     (define case-option
-      (oget options "case"))
-    (unless (valid-js-casing-style? case-option)
-      (set! case-option "camelcase"))
+      (or (oget options "case")
+          "camelcase"))
     (define inherited-options
       (js-obj-append
        options
@@ -952,7 +953,7 @@
   (define options
     (if (= (js/length args) 1)
         (js/first args)
-        (plist->object_ args #t)))
+        (plist->object_ args (js-obj "case" "camelcase"))))
   (define from
     (or (oget options "from")
         'javascript))
@@ -4520,7 +4521,8 @@
                  ((tagged-list? exp 'quasiquote)
                   (compile-quote
                    (make-rose `(quote ,exp))
-                   env options))
+                   env
+                   (make-expression-options options)))
                  ((tagged-list? exp 'unquote)
                   (compile-expression
                    (send x get 1) env options))
@@ -4874,51 +4876,6 @@
       (make-identifier-string str options))
     (new Identifier name))))
 
-;;; Transform a string to a valid JavaScript identifier
-;;; string, provided an appropriate casing style
-;;; (camel case or snake case) is specified in `options`.
-;;; The input is assumed to be kebab case.
-(define (make-identifier-string str (options (js-obj)))
-  (define result str)
-  (define case-option
-    (or (oget options "case")
-        "none"))
-  (when (valid-js-casing-style? case-option)
-    (set! result
-          (make-identifier-string-helper result)))
-  (cond
-   ((eq? case-option "camelcase")
-    (kebab-case->camel-case result))
-   ((eq? case-option "snakecase")
-    (kebab-case->snake-case result))
-   (else
-    result)))
-
-;;; Helper function for `make-identifier-string`.
-(define (make-identifier-string-helper str)
-  (define result
-    (~> str
-        (regexp-replace (regexp "^\\+$" "g") _ "_add")
-        (regexp-replace (regexp "^-$" "g") _ "_sub")
-        (regexp-replace (regexp "^\\*$" "g") _ "_mul")
-        (regexp-replace (regexp "^/$" "g") _ "_div")
-        (regexp-replace (regexp "%" "g") _ "")
-        (regexp-replace (regexp "/" "g") _ "-")
-        (regexp-replace (regexp "!" "g") _ "-x")
-        (regexp-replace (regexp ":" "g") _ "-")
-        (regexp-replace (regexp "->" "g") _ "-to-")
-        (regexp-replace (regexp "\\+" "g") _ "_")
-        (regexp-replace (regexp "\\*$" "g") _ "-star")
-        (regexp-replace (regexp "\\*" "g") _ "star-")))
-  (cond
-   ((regexp-match (regexp "-" "g") result)
-    (set! result
-          (regexp-replace (regexp "\\?" "g") result "-p")))
-   (else
-    (set! result
-          (regexp-replace (regexp "\\?" "g") result "p"))))
-  result)
-
 ;;; Whether something is an equality expression.
 (define (is-equality-expression exp env)
   (or (form? exp eq?_ env)
@@ -5216,12 +5173,14 @@
 
 ;;; Compile a `(js/delete ...)` expression.
 (define (compile-js-delete node env (options (js-obj)))
-  (new UnaryExpression
-       "delete"
-       #t
-       (compile-expression
-        (send node get 1)
-        env options)))
+  (make-expression-or-statement
+   (new UnaryExpression
+        "delete"
+        #t
+        (compile-expression
+         (send node get 1)
+         env options))
+   options))
 
 ;;; Compile a `(return ...)` expression.
 (define (compile-return node env (options (js-obj)))
@@ -5503,18 +5462,20 @@
   (define tag
     (send node get 1))
   (define tag-compiled
-    (compile-rose tag env options))
+    (compile-expression tag env options))
   (define str
     (send node get 2))
   (define str-exp
     (send str get-value))
-  (new TaggedTemplateExpression
-       tag-compiled
-       (new TemplateLiteral
-            (list
-             (new TemplateElement
-                  #t
-                  str-exp)))))
+  (make-expression-or-statement
+   (new TaggedTemplateExpression
+        tag-compiled
+        (new TemplateLiteral
+             (list
+              (new TemplateElement
+                   #t
+                   str-exp))))
+   options))
 
 ;;; Compile an `(append ...)` expression.
 (define (compile-append node env (options (js-obj)))
@@ -7796,15 +7757,6 @@
 (define (simple-type? x)
   (and (not (macro-type? x))
        (not (fexpr-type? x))))
-
-;;; Whether `casing-style` is a casing style that is
-;;; appropriate for JavaScript identifiers. Camel case
-;;; and snake case can be used in JavaScript, but
-;;; kebab case cannot.
-(define (valid-js-casing-style? casing-style)
-  (memq? casing-style
-         '("camelcase"
-           "snakecase")))
 
 ;;; Lisp environment.
 (define lisp-environment

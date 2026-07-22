@@ -113,6 +113,60 @@
     (set! i (+ i 1)))
   result)
 
+;;; Whether `casing-style` is a casing style that is
+;;; appropriate for JavaScript identifiers. Camel case
+;;; and snake case can be used in JavaScript, but
+;;; kebab case cannot.
+(define (valid-js-casing-style? casing-style)
+  (memq? casing-style
+         '("camelcase"
+           "snakecase")))
+
+;;; Transform a string to a valid JavaScript identifier
+;;; string, provided an appropriate casing style
+;;; (camel case or snake case) is specified in `options`.
+;;; The input is assumed to be kebab case.
+(define (make-identifier-string str (options (js-obj)))
+  (define result str)
+  (define case-option
+    (or (oget options "case")
+        "none"))
+  (when (valid-js-casing-style? case-option)
+    (set! result
+          (make-identifier-string-helper result)))
+  (cond
+   ((eq? case-option "camelcase")
+    (kebab-case->camel-case result))
+   ((eq? case-option "snakecase")
+    (kebab-case->snake-case result))
+   (else
+    result)))
+
+;;; Helper function for `make-identifier-string`.
+(define (make-identifier-string-helper str)
+  (define result
+    (~> str
+        (regexp-replace (regexp "^\\+$" "g") _ "_add")
+        (regexp-replace (regexp "^-$" "g") _ "_sub")
+        (regexp-replace (regexp "^\\*$" "g") _ "_mul")
+        (regexp-replace (regexp "^/$" "g") _ "_div")
+        (regexp-replace (regexp "%" "g") _ "")
+        (regexp-replace (regexp "/" "g") _ "-")
+        (regexp-replace (regexp "!" "g") _ "-x")
+        (regexp-replace (regexp ":" "g") _ "-")
+        (regexp-replace (regexp "->" "g") _ "-to-")
+        (regexp-replace (regexp "\\+" "g") _ "_")
+        (regexp-replace (regexp "\\*$" "g") _ "-star")
+        (regexp-replace (regexp "\\*" "g") _ "star-")))
+  (cond
+   ((regexp-match (regexp "-" "g") result)
+    (set! result
+          (regexp-replace (regexp "\\?" "g") result "-p")))
+   (else
+    (set! result
+          (regexp-replace (regexp "\\?" "g") result "p"))))
+  result)
+
 ;;; Convert an identifier string from kebab case
 ;;; to camel case.
 ;;;
@@ -381,6 +435,7 @@
   kebab-case->camel-case
   kebab-case->snake-case
   lambda->let
+  make-identifier-string
   make-unique-symbol
   map-get
   map-get-tuple
@@ -392,4 +447,5 @@
   tagged-list?
   text-of-quotation
   unquote-splicing?
-  unquote?)
+  unquote?
+  valid-js-casing-style?)

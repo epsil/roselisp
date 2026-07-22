@@ -23,7 +23,7 @@ describe('#t', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), true],
-      'true',
+      'true;',
     ]);
   });
 });
@@ -45,7 +45,7 @@ describe('#f', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), false],
-      'false',
+      'false;',
     ]);
   });
 });
@@ -80,7 +80,7 @@ describe('#u', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), undefined],
-      'undefined',
+      'undefined;',
     ]);
   });
 });
@@ -118,7 +118,7 @@ describe('#n', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), null],
-      'null',
+      'null;',
     ]);
   });
 });
@@ -278,7 +278,7 @@ describe('Numbers', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), 0],
-      '0',
+      '0;',
     ]);
   });
   it('(compile 1)', function (): any {
@@ -286,7 +286,7 @@ describe('Numbers', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), 1],
-      '1',
+      '1;',
     ]);
   });
   return it('(compile 2)', function (): any {
@@ -294,7 +294,7 @@ describe('Numbers', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), 2],
-      '2',
+      '2;',
     ]);
   });
 });
@@ -327,7 +327,7 @@ describe('Strings', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), ''],
-      "''",
+      "'';",
     ]);
   });
   return it('(compile "foo")', function (): any {
@@ -335,7 +335,7 @@ describe('Strings', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), 'foo'],
-      "'foo'",
+      "'foo';",
     ]);
   });
 });
@@ -354,7 +354,7 @@ describe('Symbols', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), Symbol.for('foo')]],
-      'foo',
+      'foo;',
     ]);
   });
   it("(compile 'foo-bar)", function (): any {
@@ -362,7 +362,7 @@ describe('Symbols', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), Symbol.for('foo-bar')]],
-      'fooBar',
+      'fooBar;',
     ]);
   });
   it("(compile ''foo)", function (): any {
@@ -373,7 +373,7 @@ describe('Symbols', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), Symbol.for('foo')]],
       ],
-      "Symbol.for('foo')",
+      "Symbol.for('foo');",
     ]);
   });
   return it("(compile ''foo-bar)", function (): any {
@@ -384,7 +384,7 @@ describe('Symbols', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), Symbol.for('foo-bar')]],
       ],
-      "Symbol.for('foo-bar')",
+      "Symbol.for('foo-bar');",
     ]);
   });
 });
@@ -411,7 +411,7 @@ describe('Keywords', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), Symbol.for(':foo')]],
-      "Symbol.for(':foo')",
+      "Symbol.for(':foo');",
     ]);
   });
 });
@@ -498,7 +498,7 @@ describe('gensym', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('gensym'), 'foo']],
       ],
-      "Symbol('foo')",
+      "Symbol('foo');",
     ]);
   });
 });
@@ -576,7 +576,7 @@ describe('Cons cells', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]],
       ],
-      "[1, Symbol.for('.'), []]",
+      "[1, Symbol.for('.'), []];",
     ]);
   });
   it("(compile ''(1 . 2))", function (): any {
@@ -587,7 +587,7 @@ describe('Cons cells', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]],
       ],
-      "[1, Symbol.for('.'), 2]",
+      "[1, Symbol.for('.'), 2];",
     ]);
   });
   return it("(compile ''(1 2 . 3))", function (): any {
@@ -601,7 +601,7 @@ describe('Cons cells', function (): any {
           [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]],
         ],
       ],
-      "[1, 2, Symbol.for('.'), 3]",
+      "[1, 2, Symbol.for('.'), 3];",
     ]);
   });
 });
@@ -723,7 +723,7 @@ describe('Lists', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('quote'), []]]],
-      '[]',
+      '[];',
     ]);
   });
   it("(compile '(list))", function (): any {
@@ -731,7 +731,7 @@ describe('Lists', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('list')]]],
-      '[]',
+      '[];',
     ]);
   });
   it("(compile ''(1))", function (): any {
@@ -742,7 +742,7 @@ describe('Lists', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), [1]]],
       ],
-      '[1]',
+      '[1];',
     ]);
   });
   it("(compile '(list 1))", function (): any {
@@ -750,7 +750,7 @@ describe('Lists', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('list'), 1]]],
-      '[1]',
+      '[1];',
     ]);
   });
   it("(compile ''(1 2))", function (): any {
@@ -761,7 +761,7 @@ describe('Lists', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), [1, 2]]],
       ],
-      '[1, 2]',
+      '[1, 2];',
     ]);
   });
   return it("(compile '(list 1 2))", function (): any {
@@ -772,7 +772,7 @@ describe('Lists', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('list'), 1, 2]],
       ],
-      '[1, 2]',
+      '[1, 2];',
     ]);
   });
 });
@@ -830,7 +830,7 @@ describe('quote', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), Symbol.for('foo')]],
       ],
-      "Symbol.for('foo')",
+      "Symbol.for('foo');",
     ]);
   });
   it("(compile ''(1))", function (): any {
@@ -841,7 +841,7 @@ describe('quote', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), [1]]],
       ],
-      '[1]',
+      '[1];',
     ]);
   });
   it("(compile ''(1 2))", function (): any {
@@ -852,7 +852,7 @@ describe('quote', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quote'), [1, 2]]],
       ],
-      '[1, 2]',
+      '[1, 2];',
     ]);
   });
   return it("(compile ''((1 2) (3 4)))", function (): any {
@@ -872,7 +872,7 @@ describe('quote', function (): any {
           ],
         ],
       ],
-      '[[1, 2], [3, 4]]',
+      '[[1, 2], [3, 4]];',
     ]);
   });
 });
@@ -929,7 +929,7 @@ describe('quasoquote', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('quasiquote'), Symbol.for('foo')]],
       ],
-      "Symbol.for('foo')",
+      "Symbol.for('foo');",
     ]);
   });
   it("(compile '`(,1))", function (): any {
@@ -943,7 +943,7 @@ describe('quasoquote', function (): any {
           [Symbol.for('quasiquote'), [[Symbol.for('unquote'), 1]]],
         ],
       ],
-      '[1]',
+      '[1];',
     ]);
   });
   it("(compile '`((,1)))", function (): any {
@@ -957,7 +957,7 @@ describe('quasoquote', function (): any {
           [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), 1]]]],
         ],
       ],
-      '[[1]]',
+      '[[1]];',
     ]);
   });
   return it("(compile '`(,@(list 1 2 3)))", function (): any {
@@ -974,7 +974,7 @@ describe('quasoquote', function (): any {
           ],
         ],
       ],
-      '[...[1, 2, 3]]',
+      '[...[1, 2, 3]];',
     ]);
   });
 });
@@ -1754,7 +1754,21 @@ describe('if', function (): any {
       1,
     ]);
   });
-  it("(compile '(if #t (foo) (bar)) :as 'expression)", function (): any {
+  it("(compile '(if #t (foo) (bar)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]],
+        ],
+      ],
+      'if (true) {\n' + '  foo();\n' + '} else {\n' + '  bar();\n' + '}',
+    ]);
+  });
+  return it("(compile '(if #t (foo) (bar)) :as 'expression)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -1768,22 +1782,6 @@ describe('if', function (): any {
         [Symbol.for('quote'), Symbol.for('expression')],
       ],
       'true ? foo() : bar()',
-    ]);
-  });
-  return it("(compile '(if #t (foo) (bar)) :as 'statement)", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]],
-        ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
-      ],
-      'if (true) {\n' + '  foo();\n' + '} else {\n' + '  bar();\n' + '}',
     ]);
   });
 });
@@ -1805,7 +1803,7 @@ describe('when', function (): any {
       undefined,
     ]);
   });
-  return it("(compile '(when (< 1 2) (foo) (bar)) :as 'statement)", function (): any {
+  return it("(compile '(when (< 1 2) (foo) (bar)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -1820,8 +1818,6 @@ describe('when', function (): any {
             [Symbol.for('bar')],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'if (1 < 2) {\n' + '  foo();\n' + '  bar();\n' + '}',
     ]);
@@ -1845,7 +1841,7 @@ describe('unless', function (): any {
       2,
     ]);
   });
-  return it("(compile '(unless (> 1 2) (foo) (bar)) :as 'statement)", function (): any {
+  return it("(compile '(unless (> 1 2) (foo) (bar)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -1860,8 +1856,6 @@ describe('unless', function (): any {
             [Symbol.for('bar')],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'if (!(1 > 2)) {\n' + '  foo();\n' + '  bar();\n' + '}',
     ]);
@@ -1901,7 +1895,25 @@ describe('cond', function (): any {
       2,
     ]);
   });
-  it("(compile '(cond (#f (foo)) (else (bar))) :as 'expression)", function (): any {
+  it("(compile '(cond (#f (foo)) (else (bar))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('cond'),
+            [false, [Symbol.for('foo')]],
+            [Symbol.for('else'), [Symbol.for('bar')]],
+          ],
+        ],
+      ],
+      'if (false) {\n' + '  foo();\n' + '} else {\n' + '  bar();\n' + '}',
+    ]);
+  });
+  return it("(compile '(cond (#f (foo)) (else (bar))) :as 'expression)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -1919,26 +1931,6 @@ describe('cond', function (): any {
         [Symbol.for('quote'), Symbol.for('expression')],
       ],
       'false ? foo() : bar()',
-    ]);
-  });
-  return it("(compile '(cond (#f (foo)) (else (bar))) :as 'statement)", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('cond'),
-            [false, [Symbol.for('foo')]],
-            [Symbol.for('else'), [Symbol.for('bar')]],
-          ],
-        ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
-      ],
-      'if (false) {\n' + '  foo();\n' + '} else {\n' + '  bar();\n' + '}',
     ]);
   });
 });
@@ -2033,7 +2025,7 @@ describe('eq?', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('eq?'), true, true]],
       ],
-      'true === true',
+      'true === true;',
     ]);
   });
 });
@@ -2154,7 +2146,7 @@ describe('and', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('and'), true, true]],
       ],
-      'true && true',
+      'true && true;',
     ]);
   });
 });
@@ -2232,7 +2224,7 @@ describe('or', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('or'), true, true]],
       ],
-      'true || true',
+      'true || true;',
     ]);
   });
 });
@@ -2259,7 +2251,7 @@ describe('while', function (): any {
       [Symbol.for('quote'), [1, 1, 1]],
     ]);
   });
-  return it("(compile '(while (> x 0) (set! x (- x 1))) :as 'statement)", function (): any {
+  return it("(compile '(while (> x 0) (set! x (- x 1))))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2277,8 +2269,6 @@ describe('while', function (): any {
             ],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'while (x > 0) {\n' + '  x--;\n' + '}',
     ]);
@@ -2369,7 +2359,7 @@ describe('for', function (): any {
       [Symbol.for('quote'), []],
     ]);
   });
-  return it("(compile '(for ((i (range 0 10))) (foo)) :as 'statement)", function (): any {
+  return it("(compile '(for ((i (range 0 10))) (foo)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2383,8 +2373,6 @@ describe('for', function (): any {
             [Symbol.for('foo')],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'for (let i = 0; i < 10; i++) {\n' + '  foo();\n' + '}',
     ]);
@@ -2425,7 +2413,7 @@ describe('break', function (): any {
       [Symbol.for('quote'), []],
     ]);
   });
-  return it("(compile '(while #t (break)) :as 'statement)", function (): any {
+  return it("(compile '(while #t (break)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2435,8 +2423,6 @@ describe('break', function (): any {
           Symbol.for('quote'),
           [Symbol.for('while'), true, [Symbol.for('break')]],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'while (true) {\n' + '  break;\n' + '}',
     ]);
@@ -2496,7 +2482,7 @@ describe('continue', function (): any {
       [Symbol.for('quote'), [5, 6, 7, 8, 9, 10]],
     ]);
   });
-  return it("(compile '(while #f (continue)) :as 'statement)", function (): any {
+  return it("(compile '(while #f (continue)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2506,8 +2492,6 @@ describe('continue', function (): any {
           Symbol.for('quote'),
           [Symbol.for('while'), false, [Symbol.for('continue')]],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'while (false) {\n' + '  continue;\n' + '}',
     ]);
@@ -2539,7 +2523,7 @@ describe('return', function (): any {
       1,
     ]);
   });
-  return it("(compile '(while #t (return 0)) :as 'statement)", function (): any {
+  return it("(compile '(while #t (return 0)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2549,8 +2533,6 @@ describe('return', function (): any {
           Symbol.for('quote'),
           [Symbol.for('while'), true, [Symbol.for('return'), 0]],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'while (true) {\n' + '  return 0;\n' + '}',
     ]);
@@ -2581,7 +2563,7 @@ describe('get-field', function (): any {
           [Symbol.for('get-field'), Symbol.for('foo'), Symbol.for('obj')],
         ],
       ],
-      'obj.foo',
+      'obj.foo;',
     ]);
   });
 });
@@ -2600,7 +2582,7 @@ describe('set-field!', function (): any {
       'bar',
     ]);
   });
-  return it('(compile \'(set-field! foo obj "bar") :as \'statement)', function (): any {
+  return it('(compile \'(set-field! foo obj "bar"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2615,8 +2597,6 @@ describe('set-field!', function (): any {
             'bar',
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       "obj.foo = 'bar';",
     ]);
@@ -2667,7 +2647,7 @@ describe('oget', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('oget'), Symbol.for('obj'), 'prop']],
       ],
-      "obj['prop']",
+      "obj['prop'];",
     ]);
   });
   return it("(compile '(oget obj x))", function (): any {
@@ -2681,7 +2661,7 @@ describe('oget', function (): any {
           [Symbol.for('oget'), Symbol.for('obj'), Symbol.for('x')],
         ],
       ],
-      'obj[x]',
+      'obj[x];',
     ]);
   });
 });
@@ -2768,7 +2748,7 @@ describe('send', function (): any {
           ],
         ],
       ],
-      'obj.m(arg)',
+      'obj.m(arg);',
     ]);
   });
 });
@@ -2815,7 +2795,7 @@ describe('send/apply', function (): any {
           ],
         ],
       ],
-      'obj.m(...args)',
+      'obj.m(...args);',
     ]);
   });
 });
@@ -2897,7 +2877,7 @@ describe('new', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('new'), Symbol.for('Foo')]],
       ],
-      'new Foo()',
+      'new Foo();',
     ]);
   });
   return it("(compile '(new Foo x))", function (): any {
@@ -2911,7 +2891,7 @@ describe('new', function (): any {
           [Symbol.for('new'), Symbol.for('Foo'), Symbol.for('x')],
         ],
       ],
-      'new Foo(x)',
+      'new Foo(x);',
     ]);
   });
 });
@@ -2928,7 +2908,7 @@ describe('new/apply', function (): any {
           [Symbol.for('new/apply'), Symbol.for('Foo'), Symbol.for('args')],
         ],
       ],
-      'new Foo(...args)',
+      'new Foo(...args);',
     ]);
   });
 });
@@ -3215,7 +3195,7 @@ describe('instance-of?', function (): any {
           [Symbol.for('instance-of?'), Symbol.for('x'), Symbol.for('Foo')],
         ],
       ],
-      'x instanceof Foo',
+      'x instanceof Foo;',
     ]);
   });
 });
@@ -3244,7 +3224,7 @@ describe('is-a?', function (): any {
           [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Foo')],
         ],
       ],
-      'x instanceof Foo',
+      'x instanceof Foo;',
     ]);
   });
 });
@@ -3279,7 +3259,7 @@ describe('js-obj', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js-obj')]]],
-      '{}',
+      '({});',
     ]);
   });
   it('(compile \'(js-obj "foo" "bar"))', function (): any {
@@ -3290,7 +3270,7 @@ describe('js-obj', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 'bar']],
       ],
-      '{\n' + "  foo: 'bar'\n" + '}',
+      '({\n' + "  foo: 'bar'\n" + '});',
     ]);
   });
   it('(compile \'(js-obj "foo" 1 "bar" 2))', function (): any {
@@ -3301,10 +3281,10 @@ describe('js-obj', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 1, 'bar', 2]],
       ],
-      '{\n' + '  foo: 1,\n' + '  bar: 2\n' + '}',
+      '({\n' + '  foo: 1,\n' + '  bar: 2\n' + '});',
     ]);
   });
-  it("(compile '(js-obj) :as 'statement)", function (): any {
+  it("(compile '(js-obj) :as 'expression)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -3312,12 +3292,12 @@ describe('js-obj', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('js-obj')]],
         Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
+        [Symbol.for('quote'), Symbol.for('expression')],
       ],
-      '({});',
+      '{}',
     ]);
   });
-  it('(compile \'(js-obj "foo" "bar") :as \'statement)', function (): any {
+  it('(compile \'(js-obj "foo" "bar") :as \'expression)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -3325,12 +3305,12 @@ describe('js-obj', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 'bar']],
         Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
+        [Symbol.for('quote'), Symbol.for('expression')],
       ],
-      '({\n' + "  foo: 'bar'\n" + '});',
+      '{\n' + "  foo: 'bar'\n" + '}',
     ]);
   });
-  return it('(compile \'(js-obj "foo" 1 "bar" 2) :as \'statement)', function (): any {
+  return it('(compile \'(js-obj "foo" 1 "bar" 2) :as \'expression)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -3338,9 +3318,9 @@ describe('js-obj', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 1, 'bar', 2]],
         Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
+        [Symbol.for('quote'), Symbol.for('expression')],
       ],
-      '({\n' + '  foo: 1,\n' + '  bar: 2\n' + '});',
+      '{\n' + '  foo: 1,\n' + '  bar: 2\n' + '}',
     ]);
   });
 });
@@ -3381,7 +3361,7 @@ describe('js-keys', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('js-keys'), Symbol.for('x')]],
       ],
-      'Object.keys(x)',
+      'Object.keys(x);',
     ]);
   });
 });
@@ -3407,7 +3387,7 @@ describe('js/in', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('js/in'), 'foo', Symbol.for('obj')]],
       ],
-      "'foo' in obj",
+      "'foo' in obj;",
     ]);
   });
 });
@@ -3946,7 +3926,7 @@ describe('let-values', function (): any {
       [Symbol.for('quote'), [1, [2]]],
     ]);
   });
-  return it("(compile '(let-values (((x y) (values 1 2))) (define z (+ x y))) :as 'statement)", function (): any {
+  return it("(compile '(let-values (((x y) (values 1 2))) (define z (+ x y))))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -3969,8 +3949,6 @@ describe('let-values', function (): any {
             ],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'let [x, y] = [1, 2];\n' + '\n' + 'let z = x + y;',
     ]);
@@ -4005,7 +3983,7 @@ describe('let*-values', function (): any {
       [Symbol.for('quote'), [1, 2, 3, 4]],
     ]);
   });
-  return it("(compile '(let*-values (((x y) (values 1 2)) ((w z) (values 3 4))) (define z (+ x y w z))) :as 'statement)", function (): any {
+  return it("(compile '(let*-values (((x y) (values 1 2)) ((w z) (values 3 4))) (define z (+ x y w z))))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4038,8 +4016,6 @@ describe('let*-values', function (): any {
             ],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'let [x, y] = [1, 2];\n' +
         '\n' +
@@ -4217,7 +4193,7 @@ describe('destructuring-bind', function (): any {
       [Symbol.for('quote'), [1, [2]]],
     ]);
   });
-  it("(compile '(destructuring-bind (x y) '(1 2) (list x y)) :as 'statement)", function (): any {
+  it("(compile '(destructuring-bind (x y) '(1 2) (list x y)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4232,13 +4208,11 @@ describe('destructuring-bind', function (): any {
             [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
     ]);
   });
-  return it("(compile '(destructuring-bind (x . y) '(1 2) (list x y)) :as 'statement)", function (): any {
+  return it("(compile '(destructuring-bind (x . y) '(1 2) (list x y)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4253,8 +4227,6 @@ describe('destructuring-bind', function (): any {
             [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'let [x, ...y] = [1, 2];\n' + '\n' + '[x, y];',
     ]);
@@ -4275,7 +4247,7 @@ describe('multiple-values-bind', function (): any {
       [Symbol.for('quote'), [1, 2]],
     ]);
   });
-  return it("(compile '(multiple-values-bind (x y) (values 1 2) (list x y)) :as 'statement)", function (): any {
+  return it("(compile '(multiple-values-bind (x y) (values 1 2) (list x y)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4290,8 +4262,6 @@ describe('multiple-values-bind', function (): any {
             [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
           ],
         ],
-        Symbol.for(':as'),
-        [Symbol.for('quote'), Symbol.for('statement')],
       ],
       'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
     ]);
@@ -4327,7 +4297,7 @@ describe('hash', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('hash')]]],
-      'new Map()',
+      'new Map();',
     ]);
   });
   return it('(compile \'(hash \'(("foo" . "bar"))))', function (): any {
@@ -4344,7 +4314,7 @@ describe('hash', function (): any {
           ],
         ],
       ],
-      "new Map([['foo', 'bar']])",
+      "new Map([['foo', 'bar']]);",
     ]);
   });
 });
@@ -4378,7 +4348,7 @@ describe('make-hash', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('make-hash')]]],
-      'new Map()',
+      'new Map();',
     ]);
   });
   return it('(compile \'(make-hash \'(("foo" . "bar"))))', function (): any {
@@ -4395,7 +4365,7 @@ describe('make-hash', function (): any {
           ],
         ],
       ],
-      "new Map([['foo', 'bar']])",
+      "new Map([['foo', 'bar']]);",
     ]);
   });
 });
@@ -4425,7 +4395,7 @@ describe('hash?', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('hash?'), Symbol.for('x')]],
       ],
-      'x instanceof Map',
+      'x instanceof Map;',
     ]);
   });
 });
@@ -4477,7 +4447,7 @@ describe('hash-clear!', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('hash-clear!'), Symbol.for('x')]],
       ],
-      'x.clear()',
+      'x.clear();',
     ]);
   });
 });
@@ -4509,7 +4479,7 @@ describe('hash-copy', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('hash-copy'), Symbol.for('x')]],
       ],
-      'new Map(x)',
+      'new Map(x);',
     ]);
   });
 });
@@ -4537,7 +4507,7 @@ describe('hash-keys', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('hash-keys'), Symbol.for('x')]],
       ],
-      '[...x.keys()]',
+      '[...x.keys()];',
     ]);
   });
 });
@@ -4565,7 +4535,7 @@ describe('hash-values', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('hash-values'), Symbol.for('x')]],
       ],
-      '[...x.values()]',
+      '[...x.values()];',
     ]);
   });
 });
@@ -4636,7 +4606,7 @@ describe('hash-set!', function (): any {
           ],
         ],
       ],
-      'ht.set(key, val)',
+      'ht.set(key, val);',
     ]);
   });
 });
@@ -4676,7 +4646,7 @@ describe('hash-ref', function (): any {
           [Symbol.for('hash-ref'), Symbol.for('ht'), 'foo'],
         ],
       ],
-      "ht.get('foo')",
+      "ht.get('foo');",
     ]);
   });
 });
@@ -4716,7 +4686,7 @@ describe('hash-has-key?', function (): any {
           [Symbol.for('hash-has-key?'), Symbol.for('ht'), 'quux'],
         ],
       ],
-      "ht.has('quux')",
+      "ht.has('quux');",
     ]);
   });
 });
@@ -4832,7 +4802,7 @@ describe('+', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('+'), 1]]],
-      '1',
+      '1;',
     ]);
   });
   it("(compile '(+ 1 1))", function (): any {
@@ -4840,7 +4810,7 @@ describe('+', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('+'), 1, 1]]],
-      '1 + 1',
+      '1 + 1;',
     ]);
   });
   return it("(compile '(+ 1 1 1))", function (): any {
@@ -4851,7 +4821,7 @@ describe('+', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('+'), 1, 1, 1]],
       ],
-      '1 + 1 + 1',
+      '1 + 1 + 1;',
     ]);
   });
 });
@@ -4902,7 +4872,7 @@ describe('-', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('-'), 1]]],
-      '-1',
+      '-1;',
     ]);
   });
   it("(compile '(- 1 1))", function (): any {
@@ -4910,7 +4880,7 @@ describe('-', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('-'), 1, 1]]],
-      '1 - 1',
+      '1 - 1;',
     ]);
   });
   return it("(compile '(- 1 1 1))", function (): any {
@@ -4921,7 +4891,7 @@ describe('-', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('-'), 1, 1, 1]],
       ],
-      '1 - 1 - 1',
+      '1 - 1 - 1;',
     ]);
   });
 });
@@ -4972,7 +4942,7 @@ describe('*', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('*'), 1, 1]]],
-      '1 * 1',
+      '1 * 1;',
     ]);
   });
   return it("(compile '(* 1 1 1))", function (): any {
@@ -4983,7 +4953,7 @@ describe('*', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('*'), 1, 1, 1]],
       ],
-      '1 * 1 * 1',
+      '1 * 1 * 1;',
     ]);
   });
 });
@@ -5034,7 +5004,7 @@ describe('/', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('/'), 1, 2]]],
-      '1 / 2',
+      '1 / 2;',
     ]);
   });
   return it("(compile '(/ 1 2 4))", function (): any {
@@ -5045,7 +5015,7 @@ describe('/', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('/'), 1, 2, 4]],
       ],
-      '1 / 2 / 4',
+      '1 / 2 / 4;',
     ]);
   });
 });
@@ -5088,7 +5058,7 @@ describe('<', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('<'), 1, 2]]],
-      '1 < 2',
+      '1 < 2;',
     ]);
   });
 });
@@ -5131,7 +5101,7 @@ describe('>', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('>'), 2, 1]]],
-      '2 > 1',
+      '2 > 1;',
     ]);
   });
 });
@@ -5270,7 +5240,7 @@ describe('memq?', function (): any {
           [Symbol.for('memq?'), Symbol.for('x'), Symbol.for('lst')],
         ],
       ],
-      'lst.includes(x)',
+      'lst.includes(x);',
     ]);
   });
 });
@@ -5392,7 +5362,7 @@ describe('map', function (): any {
           [Symbol.for('map'), Symbol.for('f'), Symbol.for('lst')],
         ],
       ],
-      'lst.map(function (x) {\n' + '  return f(x);\n' + '})',
+      'lst.map(function (x) {\n' + '  return f(x);\n' + '});',
     ]);
   });
   return it("(compile '(map (lambda (x) x) lst))", function (): any {
@@ -5410,7 +5380,7 @@ describe('map', function (): any {
           ],
         ],
       ],
-      'lst.map(function (x) {\n' + '  return x;\n' + '})',
+      'lst.map(function (x) {\n' + '  return x;\n' + '});',
     ]);
   });
 });
@@ -5449,7 +5419,7 @@ describe('foldl', function (): any {
           ],
         ],
       ],
-      'lst.reduce(function (acc, x) {\n' + '  return x;\n' + '}, v)',
+      'lst.reduce(function (acc, x) {\n' + '  return x;\n' + '}, v);',
     ]);
   });
   return it("(compile '(foldl f v lst))", function (): any {
@@ -5468,7 +5438,7 @@ describe('foldl', function (): any {
           ],
         ],
       ],
-      'lst.reduce(function (acc, x) {\n' + '  return f(x, acc);\n' + '}, v)',
+      'lst.reduce(function (acc, x) {\n' + '  return f(x, acc);\n' + '}, v);',
     ]);
   });
 });
@@ -5528,7 +5498,7 @@ describe('foldr', function (): any {
           ],
         ],
       ],
-      'lst.reduceRight(function (acc, x) {\n' + '  return x;\n' + '}, v)',
+      'lst.reduceRight(function (acc, x) {\n' + '  return x;\n' + '}, v);',
     ]);
   });
   return it("(compile '(foldr f v lst))", function (): any {
@@ -5549,7 +5519,7 @@ describe('foldr', function (): any {
       ],
       'lst.reduceRight(function (acc, x) {\n' +
         '  return f(x, acc);\n' +
-        '}, v)',
+        '}, v);',
     ]);
   });
 });
@@ -5578,7 +5548,7 @@ describe('filter', function (): any {
           [Symbol.for('filter'), Symbol.for('f'), Symbol.for('lst')],
         ],
       ],
-      'lst.filter(f)',
+      'lst.filter(f);',
     ]);
   });
 });
@@ -5670,7 +5640,7 @@ describe('string?', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string?'), Symbol.for('x')]],
       ],
-      "typeof x === 'string'",
+      "typeof x === 'string';",
     ]);
   });
 });
@@ -5692,7 +5662,7 @@ describe('string-length', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string-length'), Symbol.for('x')]],
       ],
-      'x.length',
+      'x.length;',
     ]);
   });
 });
@@ -5742,7 +5712,7 @@ describe('string-append', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string-append'), 'foo']],
       ],
-      "'foo'",
+      "'foo';",
     ]);
   });
   it('(compile \'(string-append "foo" "bar"))', function (): any {
@@ -5753,7 +5723,7 @@ describe('string-append', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string-append'), 'foo', 'bar']],
       ],
-      "'foo' + 'bar'",
+      "'foo' + 'bar';",
     ]);
   });
   return it('(compile \'(string-append "foo" "bar" "baz"))', function (): any {
@@ -5767,7 +5737,7 @@ describe('string-append', function (): any {
           [Symbol.for('string-append'), 'foo', 'bar', 'baz'],
         ],
       ],
-      "'foo' + 'bar' + 'baz'",
+      "'foo' + 'bar' + 'baz';",
     ]);
   });
 });
@@ -5804,7 +5774,7 @@ describe('string-join', function (): any {
           ],
         ],
       ],
-      "['foo', 'bar'].join(',')",
+      "['foo', 'bar'].join(',');",
     ]);
   });
 });
@@ -5850,7 +5820,7 @@ describe('string-split', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string-split'), 'foo,bar,baz', ',']],
       ],
-      "'foo,bar,baz'.split(',')",
+      "'foo,bar,baz'.split(',');",
     ]);
   });
 });
@@ -5880,7 +5850,7 @@ describe('string-trim', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string-trim'), Symbol.for('x')]],
       ],
-      'x.trim()',
+      'x.trim();',
     ]);
   });
 });
@@ -5902,7 +5872,7 @@ describe('string-upcase', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string-upcase'), Symbol.for('x')]],
       ],
-      'x.toUpperCase()',
+      'x.toUpperCase();',
     ]);
   });
 });
@@ -5924,7 +5894,7 @@ describe('string-downcase', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('string-downcase'), Symbol.for('x')]],
       ],
-      'x.toLowerCase()',
+      'x.toLowerCase();',
     ]);
   });
 });
@@ -5957,7 +5927,7 @@ describe('substring', function (): any {
           [Symbol.for('substring'), Symbol.for('str'), Symbol.for('i')],
         ],
       ],
-      'str.substring(i)',
+      'str.substring(i);',
     ]);
   });
   return it("(compile '(substring str i j))", function (): any {
@@ -5976,7 +5946,7 @@ describe('substring', function (): any {
           ],
         ],
       ],
-      'str.substring(i, j)',
+      'str.substring(i, j);',
     ]);
   });
 });
@@ -6033,7 +6003,7 @@ describe('as~>', function (): any {
           ],
         ],
       ],
-      '0 + 1 + 1',
+      '0 + 1 + 1;',
     ]);
   });
 });
@@ -6055,7 +6025,7 @@ describe('ann', function (): any {
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]],
       ],
-      'true',
+      'true;',
     ]);
   });
   return it("(compile '(ann #t Any) :to 'typescript)", function (): any {
@@ -6068,7 +6038,7 @@ describe('ann', function (): any {
         Symbol.for(':to'),
         [Symbol.for('quote'), Symbol.for('typescript')],
       ],
-      'true as any',
+      'true as any;',
     ]);
   });
 });
@@ -7403,7 +7373,7 @@ describe('compile', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), true],
-      'true',
+      'true;',
     ]);
   });
   it("(compile #t :to 'javascript)", function (): any {
@@ -7416,7 +7386,7 @@ describe('compile', function (): any {
         Symbol.for(':to'),
         [Symbol.for('quote'), Symbol.for('javascript')],
       ],
-      'true',
+      'true;',
     ]);
   });
   it("(compile #t :from 'roselisp :to 'javascript)", function (): any {
@@ -7431,7 +7401,7 @@ describe('compile', function (): any {
         Symbol.for(':to'),
         [Symbol.for('quote'), Symbol.for('javascript')],
       ],
-      'true',
+      'true;',
     ]);
   });
   it("(compile '(ann #t Any) :from 'roselisp :to 'typescript)", function (): any {
@@ -7446,7 +7416,7 @@ describe('compile', function (): any {
         Symbol.for(':to'),
         [Symbol.for('quote'), Symbol.for('typescript')],
       ],
-      'true as any',
+      'true as any;',
     ]);
   });
   it('(compile "true" :to \'roselisp)', function (): any {

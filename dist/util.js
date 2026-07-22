@@ -16,7 +16,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
 const [lastCdr] = (() => {
@@ -143,6 +143,52 @@ function makeUniqueSymbol(lst = [], prefix = Symbol.for('x')) {
     return result;
 }
 exports.makeUniqueSymbol = makeUniqueSymbol;
+/**
+ * Whether `casing-style` is a casing style that is
+ * appropriate for JavaScript identifiers. Camel case
+ * and snake case can be used in JavaScript, but
+ * kebab case cannot.
+ */
+function validJsCasingStyleP(casingStyle) {
+    return ['camelcase', 'snakecase'].includes(casingStyle);
+}
+exports.validJsCasingStyleP = validJsCasingStyleP;
+/**
+ * Transform a string to a valid JavaScript identifier
+ * string, provided an appropriate casing style
+ * (camel case or snake case) is specified in `options`.
+ * The input is assumed to be kebab case.
+ */
+function makeIdentifierString(str, options = {}) {
+    let result = str;
+    const caseOption = options['case'] || 'none';
+    if (validJsCasingStyleP(caseOption)) {
+        result = makeIdentifierStringHelper(result);
+    }
+    if (caseOption === 'camelcase') {
+        return kebabCaseToCamelCase(result);
+    }
+    else if (caseOption === 'snakecase') {
+        return kebabCaseToSnakeCase(result);
+    }
+    else {
+        return result;
+    }
+}
+exports.makeIdentifierString = makeIdentifierString;
+/**
+ * Helper function for `make-identifier-string`.
+ */
+function makeIdentifierStringHelper(str) {
+    let result = str.replace(new RegExp('^\\+$', 'g'), '_add').replace(new RegExp('^-$', 'g'), '_sub').replace(new RegExp('^\\*$', 'g'), '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(new RegExp('%', 'g'), '').replace(new RegExp('/', 'g'), '-').replace(new RegExp('!', 'g'), '-x').replace(new RegExp(':', 'g'), '-').replace(new RegExp('->', 'g'), '-to-').replace(new RegExp('\\+', 'g'), '_').replace(new RegExp('\\*$', 'g'), '-star').replace(new RegExp('\\*', 'g'), 'star-');
+    if (result.match(new RegExp('-', 'g'))) {
+        result = result.replace(new RegExp('\\?', 'g'), '-p');
+    }
+    else {
+        result = result.replace(new RegExp('\\?', 'g'), 'p');
+    }
+    return result;
+}
 /**
  * Convert an identifier string from kebab case
  * to camel case.

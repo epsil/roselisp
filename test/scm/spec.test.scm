@@ -17,7 +17,7 @@
  > '#t
  #t
  > (compile #t)
- "true"
+ "true;"
 
  ;; `#f`
  > (describe "#f")
@@ -27,7 +27,7 @@
  > '#f
  #f
  > (compile #f)
- "false"
+ "false;"
 
  ;; `#u`
  > (describe "#u")
@@ -39,7 +39,7 @@
  > undefined
  #u
  > (compile #u)
- "undefined"
+ "undefined;"
 
  ;; `#n`
  > (describe "#n")
@@ -53,7 +53,7 @@
  > js/null
  #n
  > (compile #n)
- "null"
+ "null;"
 
  ;; `true?`
  > (describe "true?")
@@ -113,11 +113,11 @@
  > 2
  2
  > (compile 0)
- "0"
+ "0;"
  > (compile 1)
- "1"
+ "1;"
  > (compile 2)
- "2"
+ "2;"
 
  ;; Strings
  > (describe "Strings")
@@ -131,9 +131,9 @@
  > (eq? "\t" "	")
  #t
  > (compile "")
- "''"
+ "'';"
  > (compile "foo")
- "'foo'"
+ "'foo';"
 
  ;; Symbols
  > (describe "Symbols")
@@ -141,13 +141,13 @@
  > 'foo
  'foo
  > (compile 'foo)
- "foo"
+ "foo;"
  > (compile 'foo-bar)
- "fooBar"
+ "fooBar;"
  > (compile ''foo)
- "Symbol.for('foo')"
+ "Symbol.for('foo');"
  > (compile ''foo-bar)
- "Symbol.for('foo-bar')"
+ "Symbol.for('foo-bar');"
 
  ;; Keywords
  > (describe "Keywords")
@@ -157,7 +157,7 @@
  > ':foo
  ':foo
  > (compile ':foo)
- "Symbol.for(':foo')"
+ "Symbol.for(':foo');"
 
  ;; `symbol?`
  > (describe "symbol?")
@@ -191,7 +191,7 @@
  > (symbol? (gensym "foo"))
  #t
  > (compile '(gensym "foo"))
- "Symbol('foo')"
+ "Symbol('foo');"
 
  ;; Cons cells
  > (describe "Cons cells")
@@ -213,11 +213,11 @@
  > (cdr (cons 1 2))
  2
  > (compile ''(1 . ()))
- "[1, Symbol.for('.'), []]"
+ "[1, Symbol.for('.'), []];"
  > (compile ''(1 . 2))
- "[1, Symbol.for('.'), 2]"
+ "[1, Symbol.for('.'), 2];"
  > (compile ''(1 2 . 3))
- "[1, 2, Symbol.for('.'), 3]"
+ "[1, 2, Symbol.for('.'), 3];"
 
  ;; Lists
  > (describe "Lists")
@@ -249,17 +249,17 @@
      lst)
  '(3 2)
  > (compile ''())
- "[]"
+ "[];"
  > (compile '(list))
- "[]"
+ "[];"
  > (compile ''(1))
- "[1]"
+ "[1];"
  > (compile '(list 1))
- "[1]"
+ "[1];"
  > (compile ''(1 2))
- "[1, 2]"
+ "[1, 2];"
  > (compile '(list 1 2))
- "[1, 2]"
+ "[1, 2];"
 
  ;; `quote`
  > (describe "quote")
@@ -273,13 +273,13 @@
  > (quote ((1 2) (3 4)))
  '((1 2) (3 4))
  > (compile '(quote foo))
- "Symbol.for('foo')"
+ "Symbol.for('foo');"
  > (compile '(quote (1)))
- "[1]"
+ "[1];"
  > (compile '(quote (1 2)))
- "[1, 2]"
+ "[1, 2];"
  > (compile '(quote ((1 2) (3 4))))
- "[[1, 2], [3, 4]]"
+ "[[1, 2], [3, 4]];"
 
  ;; `quasiquote`
  > (describe "quasoquote")
@@ -295,13 +295,13 @@
  > (quasiquote (,@(list 1 2 3)))
  '(1 2 3)
  > (compile '(quasiquote foo))
- "Symbol.for('foo')"
+ "Symbol.for('foo');"
  > (compile '(quasiquote (,1)))
- "[1]"
+ "[1];"
  > (compile '(quasiquote ((,1))))
- "[[1]]"
+ "[[1]];"
  > (compile '(quasiquote (,@(list 1 2 3))))
- "[...[1, 2, 3]]"
+ "[...[1, 2, 3]];"
 
  ;; Variables
  > (describe "Variables")
@@ -545,14 +545,14 @@
  1
  > (if (> 2 1) 1 2)
  1
- > (compile '(if #t (foo) (bar)) :as 'expression)
- "true ? foo() : bar()"
- > (compile '(if #t (foo) (bar)) :as 'statement)
+ > (compile '(if #t (foo) (bar)))
  "if (true) {
   foo();
 } else {
   bar();
 }"
+ > (compile '(if #t (foo) (bar)) :as 'expression)
+ "true ? foo() : bar()"
 
  ;; `when`
  > (describe "when")
@@ -565,8 +565,7 @@
  #u
  > (compile '(when (< 1 2)
                (foo)
-               (bar))
-             :as 'statement)
+               (bar)))
  "if (1 < 2) {
   foo();
   bar();
@@ -583,8 +582,7 @@
  2
  > (compile '(unless (> 1 2)
                (foo)
-               (bar))
-             :as 'statement)
+               (bar)))
  "if (!(1 > 2)) {
   foo();
   bar();
@@ -621,20 +619,19 @@
               (#f
                (foo))
               (else
-               (bar)))
-             :as 'expression)
- "false ? foo() : bar()"
- > (compile '(cond
-              (#f
-               (foo))
-              (else
-               (bar)))
-             :as 'statement)
+               (bar))))
  "if (false) {
   foo();
 } else {
   bar();
 }"
+ > (compile '(cond
+              (#f
+               (foo))
+              (else
+               (bar)))
+            :as 'expression)
+ "false ? foo() : bar()"
 
  ;; `js/switch`
  > (describe "js/switch")
@@ -665,7 +662,7 @@
  > (eq _ '_)
  #f
  > (compile '(eq? #t #t))
- "true === true"
+ "true === true;"
 
  ;; `equal?`
  > (describe "equal?")
@@ -699,7 +696,7 @@
  > (and #t #f)
  #f
  > (compile '(and #t #t))
- "true && true"
+ "true && true;"
 
  ;; `or`
  > (describe "or")
@@ -721,7 +718,7 @@
  > (or #u 2)
  2
  > (compile '(or #t #t))
- "true || true"
+ "true || true;"
 
  ;; `while`
  > (describe "while")
@@ -732,8 +729,7 @@
      result)
  '(1 1 1)
   > (compile '(while (> x 0)
-                (set! x (- x 1)))
-              :as 'statement)
+                (set! x (- x 1))))
   "while (x > 0) {
   x--;
 }"
@@ -763,8 +759,7 @@
       foo))
  '()
   > (compile '(for ((i (range 0 10)))
-                (foo))
-              :as 'statement)
+                (foo)))
   "for (let i = 0; i < 10; i++) {
   foo();
 }"
@@ -784,8 +779,7 @@
      result)
  '()
  > (compile '(while #t
-               (break))
-             :as 'statement)
+               (break)))
  "while (true) {
   break;
 }"
@@ -810,8 +804,7 @@
       result)
  '(5 6 7 8 9 10)
  > (compile '(while #f
-               (continue))
-             :as 'statement)
+               (continue)))
  "while (false) {
   continue;
 }"
@@ -832,8 +825,7 @@
       2))
  1
  > (compile '(while #t
-               (return 0))
-             :as 'statement)
+               (return 0)))
  "while (true) {
   return 0;
 }"
@@ -845,7 +837,7 @@
      (get-field foo obj))
  "bar"
  > (compile '(get-field foo obj))
- "obj.foo"
+ "obj.foo;"
 
  ;; `set-field!`
  > (describe "set-field!")
@@ -854,8 +846,7 @@
      (set-field! foo obj "bar")
      (get-field foo obj))
  "bar"
- > (compile '(set-field! foo obj "bar")
-             :as 'statement)
+ > (compile '(set-field! foo obj "bar"))
  "obj.foo = 'bar';"
 
  ;; `field-bound?`
@@ -874,9 +865,9 @@
  > (oget _ "@@functional/placeholder")
  #t
  > (compile '(oget obj "prop"))
- "obj['prop']"
+ "obj['prop'];"
  > (compile '(oget obj x))
- "obj[x]"
+ "obj[x];"
 
  ;; `send`
  > (describe "send")
@@ -891,7 +882,7 @@
      (send obj has "bar"))
  #f
  > (compile '(send obj m arg))
- "obj.m(arg)"
+ "obj.m(arg);"
 
  ;; `send/apply`
  > (describe "send/apply")
@@ -900,7 +891,7 @@
      (send/apply obj has '("foo")))
  #t
  > (compile '(send/apply obj m args))
- "obj.m(...args)"
+ "obj.m(...args);"
 
  ;; `new`
  > (describe "new")
@@ -924,15 +915,15 @@
      (send quux bar))
  2
  > (compile '(new Foo))
- "new Foo()"
+ "new Foo();"
  > (compile '(new Foo x))
- "new Foo(x)"
+ "new Foo(x);"
 
  ;; `new/apply`
  > (describe "new/apply")
  _
  > (compile '(new/apply Foo args))
- "new Foo(...args)"
+ "new Foo(...args);"
 
  ;; `class`
  > (describe "class")
@@ -1036,7 +1027,7 @@
  > (instance-of? (new Map) Map)
  #t
  > (compile '(instance-of? x Foo))
- "x instanceof Foo"
+ "x instanceof Foo;"
 
  ;; `is-a?`
  > (describe "is-a?")
@@ -1044,7 +1035,7 @@
  > (is-a? (new Map) Map)
  #t
  > (compile '(is-a? x Foo))
- "x instanceof Foo"
+ "x instanceof Foo;"
 
  ;; `js-obj`
  > (describe "js-obj")
@@ -1056,30 +1047,27 @@
  > (js-obj "foo" 1 "bar" 2)
  (js-obj "foo" 1 "bar" 2)
  > (compile '(js-obj))
- "{}"
- > (compile '(js-obj "foo" "bar"))
- "{
-  foo: 'bar'
-}"
- > (compile '(js-obj "foo" 1 "bar" 2))
- "{
-  foo: 1,
-  bar: 2
-}"
- > (compile '(js-obj)
-             :as 'statement)
  "({});"
- > (compile '(js-obj "foo" "bar")
-             :as 'statement)
+ > (compile '(js-obj "foo" "bar"))
  "({
   foo: 'bar'
 });"
- > (compile '(js-obj "foo" 1 "bar" 2)
-             :as 'statement)
+ > (compile '(js-obj "foo" 1 "bar" 2))
  "({
   foo: 1,
   bar: 2
 });"
+ > (compile '(js-obj) :as 'expression)
+ "{}"
+ > (compile '(js-obj "foo" "bar") :as 'expression)
+ "{
+  foo: 'bar'
+}"
+ > (compile '(js-obj "foo" 1 "bar" 2) :as 'expression)
+ "{
+  foo: 1,
+  bar: 2
+}"
 
  ;; `js-keys`
  > (describe "js-keys")
@@ -1092,7 +1080,7 @@
                     "baz" "quux"))
  '("foo" "baz")
  > (compile '(js-keys x))
- "Object.keys(x)"
+ "Object.keys(x);"
 
  ;; `js/in`
  > (describe "js/in")
@@ -1101,7 +1089,7 @@
      (js/in "foo" obj))
  #t
  > (compile '(js/in "foo" obj))
- "'foo' in obj"
+ "'foo' in obj;"
 
  ;; `plist->alist`
  > (describe "plist->alist")
@@ -1292,8 +1280,7 @@
  '(1 (2))
  > (compile '(let-values (((x y) (values 1 2)))
                (define z
-                 (+ x y)))
-             :as 'statement)
+                 (+ x y))))
  "let [x, y] = [1, 2];
 
 let z = x + y;"
@@ -1308,8 +1295,7 @@ let z = x + y;"
  > (compile '(let*-values (((x y) (values 1 2))
                            ((w z) (values 3 4)))
                (define z
-                 (+ x y w z)))
-             :as 'statement)
+                 (+ x y w z))))
  "let [x, y] = [1, 2];
 
 let [w, z] = [3, 4];
@@ -1371,15 +1357,13 @@ let z = x + y + w + z;"
  '(1 (2))
  > (compile '(destructuring-bind (x y)
                                  '(1 2)
-                                  (list x y))
-             :as 'statement)
+                                  (list x y)))
  "let [x, y] = [1, 2];
 
 [x, y];"
  > (compile '(destructuring-bind (x . y)
                                  '(1 2)
-                                  (list x y))
-             :as 'statement)
+                                  (list x y)))
  "let [x, ...y] = [1, 2];
 
 [x, y];"
@@ -1393,8 +1377,7 @@ let z = x + y + w + z;"
  '(1 2)
  > (compile '(multiple-values-bind (x y)
                                    (values 1 2)
-                                   (list x y))
-             :as 'statement)
+                                   (list x y)))
  "let [x, y] = [1, 2];
 
 [x, y];"
@@ -1407,9 +1390,9 @@ let z = x + y + w + z;"
  > (hash '(("foo" . "bar")))
  (new Map '(("foo" "bar")))
  > (compile '(hash))
- "new Map()"
+ "new Map();"
  > (compile '(hash '(("foo" . "bar"))))
- "new Map([['foo', 'bar']])"
+ "new Map([['foo', 'bar']]);"
 
  ;; `make-hash`
  > (describe "make-hash")
@@ -1419,9 +1402,9 @@ let z = x + y + w + z;"
  > (make-hash '(("foo" . "bar")))
  (new Map '(("foo" "bar")))
  > (compile '(make-hash))
- "new Map()"
+ "new Map();"
  > (compile '(make-hash '(("foo" . "bar"))))
- "new Map([['foo', 'bar']])"
+ "new Map([['foo', 'bar']]);"
 
  ;; `hash?`
  > (describe "hash?")
@@ -1431,7 +1414,7 @@ let z = x + y + w + z;"
  > (hash? 0)
  #f
  > (compile '(hash? x))
- "x instanceof Map"
+ "x instanceof Map;"
 
  ;; `hash-clear`
  > (describe "hash-clear")
@@ -1449,7 +1432,7 @@ let z = x + y + w + z;"
      ht)
  (new Map)
  > (compile '(hash-clear! x))
- "x.clear()"
+ "x.clear();"
 
  ;; `hash-copy`
  > (describe "hash-copy")
@@ -1459,7 +1442,7 @@ let z = x + y + w + z;"
      '(("foo" . "bar"))))
  (new Map '(("foo" "bar")))
  > (compile '(hash-copy x))
- "new Map(x)"
+ "new Map(x);"
 
  ;; `hash-keys`
  > (describe "hash-keys")
@@ -1469,7 +1452,7 @@ let z = x + y + w + z;"
      '(("foo" . "bar"))))
  '("foo")
  > (compile '(hash-keys x))
- "[...x.keys()]"
+ "[...x.keys()];"
 
  ;; `hash-values`
  > (describe "hash-values")
@@ -1479,7 +1462,7 @@ let z = x + y + w + z;"
      '(("foo" . "bar"))))
  '("bar")
  > (compile '(hash-values x))
- "[...x.values()]"
+ "[...x.values()];"
 
  ;; `hash->list`
  > (describe "hash->list")
@@ -1508,7 +1491,7 @@ let z = x + y + w + z;"
  (new Map
       '(("foo" "bar")))
  > (compile '(hash-set! ht key val))
- "ht.set(key, val)"
+ "ht.set(key, val);"
 
  ;; `hash-ref`
  > (describe "hash-ref")
@@ -1521,7 +1504,7 @@ let z = x + y + w + z;"
  > (hash-ref (make-hash) "quux" #f)
  #f
  > (compile '(hash-ref ht "foo"))
- "ht.get('foo')"
+ "ht.get('foo');"
 
  ;; `hash-has-key?`
  > (describe "hash-has-key?")
@@ -1534,7 +1517,7 @@ let z = x + y + w + z;"
  > (hash-has-key? (make-hash) "quux")
  #f
  > (compile '(hash-has-key? ht "quux"))
- "ht.has('quux')"
+ "ht.has('quux');"
 
  ;; `Map`
  > (describe "Map")
@@ -1569,11 +1552,11 @@ let z = x + y + w + z;"
  > (apply + '(1 2))
  3
  > (compile '(+ 1))
- "1"
+ "1;"
  > (compile '(+ 1 1))
- "1 + 1"
+ "1 + 1;"
  > (compile '(+ 1 1 1))
- "1 + 1 + 1"
+ "1 + 1 + 1;"
 
  ;; `-`
  > (describe "-")
@@ -1589,11 +1572,11 @@ let z = x + y + w + z;"
  > (- 1 2 4)
  -5
  > (compile '(- 1))
- "-1"
+ "-1;"
  > (compile '(- 1 1))
- "1 - 1"
+ "1 - 1;"
  > (compile '(- 1 1 1))
- "1 - 1 - 1"
+ "1 - 1 - 1;"
 
  ;; `*`
  > (describe "*")
@@ -1609,9 +1592,9 @@ let z = x + y + w + z;"
  > (* 1 2 4)
  8
  > (compile '(* 1 1))
- "1 * 1"
+ "1 * 1;"
  > (compile '(* 1 1 1))
- "1 * 1 * 1"
+ "1 * 1 * 1;"
 
  ;; `/`
  > (describe "/")
@@ -1627,9 +1610,9 @@ let z = x + y + w + z;"
  > (/ 1 2 4)
  0.125
  > (compile '(/ 1 2))
- "1 / 2"
+ "1 / 2;"
  > (compile '(/ 1 2 4))
- "1 / 2 / 4"
+ "1 / 2 / 4;"
 
  ;; `<`
  > (describe "<")
@@ -1643,7 +1626,7 @@ let z = x + y + w + z;"
  > (< 1 2 0)
  #f
  > (compile '(< 1 2))
- "1 < 2"
+ "1 < 2;"
 
  ;; `>`
  > (describe ">")
@@ -1657,7 +1640,7 @@ let z = x + y + w + z;"
  > (> 0 2 1)
  #f
  > (compile '(> 2 1))
- "2 > 1"
+ "2 > 1;"
 
  ;; `range`
  > (describe "range")
@@ -1704,7 +1687,7 @@ let z = x + y + w + z;"
  > (memq? 9 '(1 2 3 4))
  #f
  > (compile '(memq? x lst))
- "lst.includes(x)"
+ "lst.includes(x);"
 
  ;; `take`
  > (describe "take")
@@ -1747,11 +1730,11 @@ let z = x + y + w + z;"
  > (compile '(map f lst))
  "lst.map(function (x) {
   return f(x);
-})"
+});"
  > (compile '(map (lambda (x) x) lst))
  "lst.map(function (x) {
   return x;
-})"
+});"
 
  ;; `foldl`
  > (describe "foldl")
@@ -1761,11 +1744,11 @@ let z = x + y + w + z;"
  > (compile '(foldl (lambda (x acc) x) v lst))
  "lst.reduce(function (acc, x) {
   return x;
-}, v)"
+}, v);"
  > (compile '(foldl f v lst))
  "lst.reduce(function (acc, x) {
   return f(x, acc);
-}, v)"
+}, v);"
 
  ;; `foldr`
  > (describe "foldr")
@@ -1780,11 +1763,11 @@ let z = x + y + w + z;"
  > (compile '(foldr (lambda (x acc) x) v lst))
  "lst.reduceRight(function (acc, x) {
   return x;
-}, v)"
+}, v);"
  > (compile '(foldr f v lst))
  "lst.reduceRight(function (acc, x) {
   return f(x, acc);
-}, v)"
+}, v);"
 
  ;; `filter`
  > (describe "filter")
@@ -1792,7 +1775,7 @@ let z = x + y + w + z;"
  > (filter string? '("foo" 1 2 3))
  '("foo")
  > (compile '(filter f lst))
- "lst.filter(f)"
+ "lst.filter(f);"
 
  ;; `string?`
  > (describe "string?")
@@ -1816,7 +1799,7 @@ let z = x + y + w + z;"
  > (string? (quote ()))
  #f
  > (compile '(string? x))
- "typeof x === 'string'"
+ "typeof x === 'string';"
 
  ;; `string-length`
  > (describe "string-length")
@@ -1824,7 +1807,7 @@ let z = x + y + w + z;"
  > (string-length "foo")
  3
  > (compile '(string-length x))
- "x.length"
+ "x.length;"
 
  ;; `string-append`
  > (describe "string-append")
@@ -1838,11 +1821,11 @@ let z = x + y + w + z;"
  > (apply string-append '("foo" "bar"))
  "foobar"
  > (compile '(string-append "foo"))
- "'foo'"
+ "'foo';"
  > (compile '(string-append "foo" "bar"))
- "'foo' + 'bar'"
+ "'foo' + 'bar';"
  > (compile '(string-append "foo" "bar" "baz"))
- "'foo' + 'bar' + 'baz'"
+ "'foo' + 'bar' + 'baz';"
 
  ;; `string-join`
  > (describe "string-join")
@@ -1852,7 +1835,7 @@ let z = x + y + w + z;"
  > (string-join '("foo" "bar") ",")
  "foo,bar"
  > (compile '(string-join '("foo" "bar") ","))
- "['foo', 'bar'].join(',')"
+ "['foo', 'bar'].join(',');"
 
  ;; `string-split`
  > (describe "string-split")
@@ -1866,7 +1849,7 @@ let z = x + y + w + z;"
  > (string-split "foo\nbar\nbaz" "\n")
  '("foo" "bar" "baz")
  > (compile '(string-split "foo,bar,baz" ","))
- "'foo,bar,baz'.split(',')"
+ "'foo,bar,baz'.split(',');"
 
  ;; `string-trim`
  > (describe "string-trim")
@@ -1876,7 +1859,7 @@ let z = x + y + w + z;"
  > (string-trim "  foo bar  baz \r\n\t")
  "foo bar  baz"
  > (compile '(string-trim x))
- "x.trim()"
+ "x.trim();"
 
  ;; `string-upcase`
  > (describe "string-upcase")
@@ -1884,7 +1867,7 @@ let z = x + y + w + z;"
  > (string-upcase "foo")
  "FOO"
  > (compile '(string-upcase x))
- "x.toUpperCase()"
+ "x.toUpperCase();"
 
  ;; `string-downcase`
  > (describe "string-downcase")
@@ -1892,7 +1875,7 @@ let z = x + y + w + z;"
  > (string-downcase "FOO")
  "foo"
  > (compile '(string-downcase x))
- "x.toLowerCase()"
+ "x.toLowerCase();"
 
  ;; `substring`
  > (describe "substring")
@@ -1902,9 +1885,9 @@ let z = x + y + w + z;"
  > (substring "Apple" 1)
  "pple"
  > (compile '(substring str i))
- "str.substring(i)"
+ "str.substring(i);"
  > (compile '(substring str i j))
- "str.substring(i, j)"
+ "str.substring(i, j);"
 
  ;; `as~>`
  > (describe "as~>")
@@ -1920,7 +1903,7 @@ let z = x + y + w + z;"
  > (compile '(as~> 0 _
                (+ _ 1)
                (+ _ 1)))
- "0 + 1 + 1"
+ "0 + 1 + 1;"
 
  ;; `ann`
  > (describe "ann")
@@ -1928,9 +1911,9 @@ let z = x + y + w + z;"
  > (ann #u Any)
  #u
  > (compile '(ann #t Any))
- "true"
+ "true;"
  > (compile '(ann #t Any) :to 'typescript)
- "true as any"
+ "true as any;"
 
  ;; `cons?`
  > (describe "cons?")
@@ -2286,13 +2269,13 @@ let z = x + y + w + z;"
  > (describe "compile")
  _
  > (compile #t)
- "true"
+ "true;"
  > (compile #t :to 'javascript)
- "true"
+ "true;"
  > (compile #t :from 'roselisp :to 'javascript)
- "true"
+ "true;"
  > (compile '(ann #t Any) :from 'roselisp :to 'typescript)
- "true as any"
+ "true as any;"
  > (compile "true" :to 'roselisp)
  #t
  > (compile "true" :from 'javascript :to 'roselisp)

@@ -14,6 +14,9 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "./util"
+                  make-identifier-string))
+
 ;;; Whether something is a property list.
 ;;;
 ;;; Similar to [`plistp` in Emacs Lisp][el:plistp].
@@ -87,22 +90,20 @@
   alst)
 
 ;;; Convert a property list to a JavaScript object.
-(define (plist->object_ plist (normalize-keywords #f))
+(define (plist->object_ plist (options (js-obj)))
   (define result
     (js-obj))
   (for ((i (range 0 (js/length plist) 2)))
-    (define key
+    (define prop
       (aget plist i))
     (define val
       (aget plist (+ i 1)))
-    (define key-str
-      (symbol->string key))
-    (when normalize-keywords
-      (set! key-str
-            (regexp-replace (regexp "^:")
-                            key-str
-                            "")))
-    (oset! result key-str val))
+    (define key
+      (~> prop
+          (symbol->string _)
+          (regexp-replace (regexp "^:") _ "")
+          (make-identifier-string _ options)))
+    (oset! result key val))
   result)
 
 (provide

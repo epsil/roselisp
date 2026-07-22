@@ -37,6 +37,20 @@ declare function mapSetX(map: any, path: any, value: any): any;
  */
 declare function makeUniqueSymbol(lst?: any, prefix?: any): any;
 /**
+ * Whether `casing-style` is a casing style that is
+ * appropriate for JavaScript identifiers. Camel case
+ * and snake case can be used in JavaScript, but
+ * kebab case cannot.
+ */
+declare function validJsCasingStyleP(casingStyle: any): any;
+/**
+ * Transform a string to a valid JavaScript identifier
+ * string, provided an appropriate casing style
+ * (camel case or snake case) is specified in `options`.
+ * The input is assumed to be kebab case.
+ */
+declare function makeIdentifierString(str: any, options?: any): any;
+/**
  * Convert an identifier string from kebab case
  * to camel case.
  *
@@ -135,4 +149,4 @@ declare function defineGeneric(f: any): any;
  * [cl:defmethod]: http://clhs.lisp.se/Body/m_defmet.htm
  */
 declare function defineMethod(genericFunction: any, arglist: any, functionDefinition: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineGeneric, defineMethod, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep };
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineGeneric, defineMethod, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };

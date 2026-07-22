@@ -151,6 +151,50 @@ function makeUniqueSymbol(lst: any = [], prefix: any = Symbol.for('x')): any {
 }
 
 /**
+ * Whether `casing-style` is a casing style that is
+ * appropriate for JavaScript identifiers. Camel case
+ * and snake case can be used in JavaScript, but
+ * kebab case cannot.
+ */
+function validJsCasingStyleP(casingStyle: any): any {
+  return ['camelcase', 'snakecase'].includes(casingStyle);
+}
+
+/**
+ * Transform a string to a valid JavaScript identifier
+ * string, provided an appropriate casing style
+ * (camel case or snake case) is specified in `options`.
+ * The input is assumed to be kebab case.
+ */
+function makeIdentifierString(str: any, options: any = {}): any {
+  let result: any = str;
+  const caseOption: any = options['case'] || 'none';
+  if (validJsCasingStyleP(caseOption)) {
+    result = makeIdentifierStringHelper(result);
+  }
+  if (caseOption === 'camelcase') {
+    return kebabCaseToCamelCase(result);
+  } else if (caseOption === 'snakecase') {
+    return kebabCaseToSnakeCase(result);
+  } else {
+    return result;
+  }
+}
+
+/**
+ * Helper function for `make-identifier-string`.
+ */
+function makeIdentifierStringHelper(str: any): any {
+  let result: any = str.replace(new RegExp('^\\+$', 'g'), '_add').replace(new RegExp('^-$', 'g'), '_sub').replace(new RegExp('^\\*$', 'g'), '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(new RegExp('%', 'g'), '').replace(new RegExp('/', 'g'), '-').replace(new RegExp('!', 'g'), '-x').replace(new RegExp(':', 'g'), '-').replace(new RegExp('->', 'g'), '-to-').replace(new RegExp('\\+', 'g'), '_').replace(new RegExp('\\*$', 'g'), '-star').replace(new RegExp('\\*', 'g'), 'star-');
+  if (result.match(new RegExp('-', 'g'))) {
+    result = result.replace(new RegExp('\\?', 'g'), '-p');
+  } else {
+    result = result.replace(new RegExp('\\?', 'g'), 'p');
+  }
+  return result;
+}
+
+/**
  * Convert an identifier string from kebab case
  * to camel case.
  *
@@ -504,6 +548,7 @@ export {
   kebabCaseToCamelCase,
   kebabCaseToSnakeCase,
   lambdaToLet,
+  makeIdentifierString,
   makeUniqueSymbol,
   mapGet,
   mapGetTuple,
@@ -515,5 +560,6 @@ export {
   taggedListP,
   textOfQuotation,
   unquoteSplicingP,
-  unquotep
+  unquotep,
+  validJsCasingStyleP
 };

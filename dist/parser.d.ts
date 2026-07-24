@@ -25,9 +25,9 @@ declare namespace read {
 /**
  * Parse a string of Lisp code and return an S-expression.
  */
-declare function readSexp(str: any): any;
+declare function readSexp(str: any, options?: any): any;
 declare namespace readSexp {
-    var fsource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Parse a string of Lisp code and return an S-expression

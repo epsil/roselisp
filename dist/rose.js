@@ -44,7 +44,7 @@
  * [w:Rose tree]: https://en.wikipedia.org/wiki/Rose_tree
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapSexpInRose = exports.transferComments = exports.sliceRose = exports.rosep = exports.makeSimpleRoseMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeRoseMap = exports.makeRose = exports.makeListRose = exports.insertSexpIntoRose = exports.forestp = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = void 0;
+exports.wrapSexpInRose = exports.transferComments = exports.sliceRose = exports.rosep = exports.roseToSexp = exports.makeSimpleRoseMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeRoseMap = exports.makeRose = exports.makeListRose = exports.insertSexpIntoRose = exports.forestp = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.sexpToRose = void 0;
 const visitor_1 = require("./visitor");
 /**
  * Rose tree node class.
@@ -770,6 +770,7 @@ function makeRose(exp, node = undefined) {
     const indices = new Map();
     return makeRoseHelper(exp, node, cache, indices);
 }
+exports.sexpToRose = makeRose;
 exports.makeRose = makeRose;
 /**
  * Helper function for `make-rose`.
@@ -990,3 +991,10 @@ function transferComments(from, to) {
     return to;
 }
 exports.transferComments = transferComments;
+/**
+ * Convert a rose tree to an S-expression.
+ */
+function roseToSexp(node) {
+    return node.getValue();
+}
+exports.roseToSexp = roseToSexp;

@@ -27,7 +27,8 @@ import {
 
 import {
   Rose,
-  makeRose
+  roseToSexp,
+  sexpToRose
 } from './rose';
 
 /**
@@ -42,11 +43,11 @@ read.fsource = [Symbol.for('define'), [Symbol.for('read'), Symbol.for('input')],
 /**
  * Parse a string of Lisp code and return an S-expression.
  */
-function readSexp(str: any): any {
-  return readRose(str).getValue();
+function readSexp(str: any, options: any = {}): any {
+  return roseToSexp(readRose(str, options));
 }
 
-readSexp.fsource = [Symbol.for('define'), [Symbol.for('read-sexp'), Symbol.for('str')], [Symbol.for('~>'), [Symbol.for('read-rose'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('_'), Symbol.for('get-value')]]];
+readSexp.fsource = [Symbol.for('define'), [Symbol.for('read-sexp'), Symbol.for('str'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('read-rose'), Symbol.for('_'), Symbol.for('options')], [Symbol.for('rose->sexp'), Symbol.for('_')]]];
 
 /**
  * Parse a string of Lisp code and return an S-expression
@@ -62,7 +63,7 @@ function readRose(str: any, options: any = {}): any {
   return parseRose(tokenize(str, options), options);
 }
 
-readRose.fsource = [Symbol.for('define'), [Symbol.for('read-rose'), Symbol.for('str'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('~>'), [Symbol.for('tokenize'), Symbol.for('str'), Symbol.for('options')], [Symbol.for('parse-rose'), Symbol.for('_'), Symbol.for('options')]]];
+readRose.fsource = [Symbol.for('define'), [Symbol.for('read-rose'), Symbol.for('str'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('tokenize'), Symbol.for('_'), Symbol.for('options')], [Symbol.for('parse-rose'), Symbol.for('_'), Symbol.for('options')]]];
 
 /**
  * Convert a string of Lisp code to an array of tokens.
@@ -386,10 +387,10 @@ parseRose.fsource = [Symbol.for('define'), [Symbol.for('parse-rose'), Symbol.for
  * can be evaluated in a Lisp environment.
  */
 function parseSexp(tokens: any, options: any = {}): any {
-  return parseRose(tokens, options).getValue();
+  return roseToSexp(parseRose(tokens, options));
 }
 
-parseSexp.fsource = [Symbol.for('define'), [Symbol.for('parse-sexp'), Symbol.for('tokens'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('~>'), [Symbol.for('parse-rose'), Symbol.for('tokens'), Symbol.for('options')], [Symbol.for('send'), Symbol.for('get-value')]]];
+parseSexp.fsource = [Symbol.for('define'), [Symbol.for('parse-sexp'), Symbol.for('tokens'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('~>'), Symbol.for('tokens'), [Symbol.for('parse-rose'), Symbol.for('_'), Symbol.for('options')], [Symbol.for('rose->sexp'), Symbol.for('_')]]];
 
 /**
  * Remove indentation from a multi-line string.
@@ -455,14 +456,14 @@ function attachComments(node: any, comments: any, options: any = {}): any {
   if (commentsOption === undefined) {
     commentsOption = true;
   }
-  const result: any = (node instanceof Rose) ? node : makeRose(node);
+  const result: any = (node instanceof Rose) ? node : sexpToRose(node);
   if (commentsOption && comments && (comments.length > 0)) {
     result.setProperty('comments', comments);
   }
   return [result, []];
 }
 
-attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), Symbol.for('node'), Symbol.for('comments'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('when'), [Symbol.for('undefined?'), Symbol.for('comments-option')], [Symbol.for('set!'), Symbol.for('comments-option'), true]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], Symbol.for('node'), [Symbol.for('make-rose'), Symbol.for('node')]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('comments-option'), Symbol.for('comments'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('comments')], 0]], [Symbol.for('send'), Symbol.for('result'), Symbol.for('set-property'), 'comments', Symbol.for('comments')]], [Symbol.for('values'), Symbol.for('result'), [Symbol.for('quote'), []]]];
+attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), Symbol.for('node'), Symbol.for('comments'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('when'), [Symbol.for('undefined?'), Symbol.for('comments-option')], [Symbol.for('set!'), Symbol.for('comments-option'), true]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], Symbol.for('node'), [Symbol.for('sexp->rose'), Symbol.for('node')]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('comments-option'), Symbol.for('comments'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('comments')], 0]], [Symbol.for('send'), Symbol.for('result'), Symbol.for('set-property'), 'comments', Symbol.for('comments')]], [Symbol.for('values'), Symbol.for('result'), [Symbol.for('quote'), []]]];
 
 /**
  * Whether `comment` is a `;;`-comment (level 2),

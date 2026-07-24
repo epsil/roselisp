@@ -524,4 +524,8 @@ declare function wrapSexpInRose(exp: any, cache?: any): any;
  * The nodes may be rose tree nodes or ESTree nodes.
  */
 declare function transferComments(from: any, to: any): any;
-export { Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, forestp, insertSexpIntoRose, makeListRose, makeRose, makeRoseMap, makeRoseNonrecursive, makeSexpRose, makeSimpleRoseMap, rosep, sliceRose, transferComments, wrapSexpInRose };
+/**
+ * Convert a rose tree to an S-expression.
+ */
+declare function roseToSexp(node: any): any;
+export { makeRose as sexpToRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, forestp, insertSexpIntoRose, makeListRose, makeRose, makeRoseMap, makeRoseNonrecursive, makeSexpRose, makeSimpleRoseMap, roseToSexp, rosep, sliceRose, transferComments, wrapSexpInRose };

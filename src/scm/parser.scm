@@ -23,16 +23,18 @@
                   unquote-splicing-sym_))
 (require (only-in "./rose"
                   Rose
-                  make-rose))
+                  rose->sexp
+                  sexp->rose))
 
 ;;; Parse a string of Lisp code and return an S-expression.
 (define (read input)
   (read-sexp input))
 
 ;;; Parse a string of Lisp code and return an S-expression.
-(define (read-sexp str)
-  (~> (read-rose str)
-      (send _ get-value)))
+(define (read-sexp str (options (js-obj)))
+  (~> str
+      (read-rose _ options)
+      (rose->sexp _)))
 
 ;;; Parse a string of Lisp code and return an S-expression
 ;;; wrapped in a rose tree.
@@ -43,7 +45,8 @@
   ;; tokens, which is represented as an array of Lisp symbols.
   ;; The syntax analysis stage converts the token stream to a rose
   ;; tree, which contains an S-expression that can be evaluated.
-  (~> (tokenize str options)
+  (~> str
+      (tokenize _ options)
       (parse-rose _ options)))
 
 ;;; Convert a string of Lisp code to an array of tokens.
@@ -390,8 +393,9 @@
 ;;; The output of this function is a fully valid S-expression which
 ;;; can be evaluated in a Lisp environment.
 (define (parse-sexp tokens (options (js-obj)))
-  (~> (parse-rose tokens options)
-      (send get-value)))
+  (~> tokens
+      (parse-rose _ options)
+      (rose->sexp _)))
 
 ;;; Remove indentation from a multi-line string.
 (define (remove-indentation str)
@@ -435,7 +439,7 @@
   (define result
     (if (is-a? node Rose)
         node
-        (make-rose node)))
+        (sexp->rose node)))
   (when (and comments-option
              comments
              (> (js/length comments) 0))

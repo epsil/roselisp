@@ -30,11 +30,6 @@ import {
 } from './list';
 
 import {
-  Rose,
-  makeRose
-} from './rose';
-
-import {
   countTree,
   mapTree,
   taggedListP

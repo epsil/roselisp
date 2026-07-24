@@ -23,7 +23,8 @@ import {
 } from './constants';
 
 import {
-  Rose
+  Rose,
+  roseToSexp
 } from './rose';
 
 const [lastCdr]: any[] = ((): any => {
@@ -245,7 +246,7 @@ function kebabCaseToSnakeCase(str: any): any {
  */
 function taggedListP(exp: any, tag: any, len: any = undefined): any {
   if (exp instanceof Rose) {
-    return taggedListP(exp.getValue(), tag, len);
+    return taggedListP(roseToSexp(exp), tag, len);
   } else if (Number.isFinite(len)) {
     return taggedListP(exp, tag) && (exp.length === len);
   } else {
@@ -285,7 +286,7 @@ function textOfQuotation(exp: any): any {
  */
 function formp(exp: any, f: any, env: any): any {
   if (exp instanceof Rose) {
-    return formp(exp.getValue(), f, env);
+    return formp(roseToSexp(exp), f, env);
   } else {
     return Array.isArray(exp) && (exp.length > 0) && (typeof exp[0] === 'symbol') && (env.get(exp[0]) === f);
   }
@@ -296,7 +297,7 @@ function formp(exp: any, f: any, env: any): any {
  */
 function colonFormP(exp: any): any {
   if (exp instanceof Rose) {
-    return colonFormP(exp.getValue());
+    return colonFormP(roseToSexp(exp));
   } else {
     return Array.isArray(exp) && (exp.length >= 3) && (exp[1] === Symbol.for(':'));
   }

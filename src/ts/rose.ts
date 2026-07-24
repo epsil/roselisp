@@ -1057,7 +1057,15 @@ function transferComments(from: any, to: any): any {
   return to;
 }
 
+/**
+ * Convert a rose tree to an S-expression.
+ */
+function roseToSexp(node: any): any {
+  return node.getValue();
+}
+
 export {
+  makeRose as sexpToRose,
   Forest,
   Rose,
   RoseSplice,
@@ -1072,6 +1080,7 @@ export {
   makeRoseNonrecursive,
   makeSexpRose,
   makeSimpleRoseMap,
+  roseToSexp,
   rosep,
   sliceRose,
   transferComments,

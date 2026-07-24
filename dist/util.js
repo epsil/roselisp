@@ -242,7 +242,7 @@ exports.kebabCaseToSnakeCase = kebabCaseToSnakeCase;
  */
 function taggedListP(exp, tag, len = undefined) {
     if (exp instanceof rose_1.Rose) {
-        return taggedListP(exp.getValue(), tag, len);
+        return taggedListP((0, rose_1.roseToSexp)(exp), tag, len);
     }
     else if (Number.isFinite(len)) {
         return taggedListP(exp, tag) && (exp.length === len);
@@ -286,7 +286,7 @@ exports.textOfQuotation = textOfQuotation;
  */
 function formp(exp, f, env) {
     if (exp instanceof rose_1.Rose) {
-        return formp(exp.getValue(), f, env);
+        return formp((0, rose_1.roseToSexp)(exp), f, env);
     }
     else {
         return Array.isArray(exp) && (exp.length > 0) && (typeof exp[0] === 'symbol') && (env.get(exp[0]) === f);
@@ -298,7 +298,7 @@ exports.formp = formp;
  */
 function colonFormP(exp) {
     if (exp instanceof rose_1.Rose) {
-        return colonFormP(exp.getValue());
+        return colonFormP((0, rose_1.roseToSexp)(exp));
     }
     else {
         return Array.isArray(exp) && (exp.length >= 3) && (exp[1] === Symbol.for(':'));

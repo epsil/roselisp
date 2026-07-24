@@ -54,8 +54,9 @@
                   (funcall tcall)))
 (require (only-in "./rose"
                   Rose
-                  make-rose
+                  rose->sexp
                   rose?
+                  sexp->rose
                   transfer-comments))
 ;; (require (only-in "./trampoline"
 ;;                   tcall))
@@ -399,7 +400,7 @@
     (define superclass
       (send (send node get 2) get 1))
     (define superclass-exp
-      (send superclass get-value))
+      (rose->sexp superclass))
     (define superclass-list
       (if (or (eq? superclass-exp 'object%)
               (eq? superclass-exp 'object)
@@ -408,13 +409,15 @@
           (list superclass)))
     (transfer-comments
      node
-     (make-rose
+     (sexp->rose
       `(define-class ,(send node get 1)
-         ,(make-rose superclass-list)
+         ,(sexp->rose superclass-list)
          ,@(send (send node get 2) drop 2)))))
    (else
-    (~> (define->define-class (make-rose node))
-        (send _ get-value)))))
+    (~> node
+        (sexp->rose _)
+        (define->define-class _)
+        (rose->sexp _)))))
 
 ;;; Evaluate a `(define/public ...)` form.
 (define (define-public-special_ exp env)

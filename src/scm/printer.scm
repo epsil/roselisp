@@ -67,6 +67,7 @@
                   estree-type?
                   estree-type))
 (require (only-in "./rose"
+                  rose->sexp
                   rose?))
 (require (only-in "./visitor"
                   make-visitor
@@ -380,7 +381,7 @@
 
 ;;; Print a rose tree.
 (define (print-rose node (options (js-obj)))
-  (print-sexp (send node get-value) options))
+  (print-sexp (rose->sexp node) options))
 
 ;;; Print an S-expression.
 (define (print-sexp exp (options (js-obj)))
@@ -416,7 +417,7 @@
        ;; Rose tree.
        (,rose?
         ,(lambda (obj)
-           (write-to-doc (send obj get-value) options)))
+           (write-to-doc (rose->sexp obj) options)))
        ;; Symbol.
        (,symbol?
         ,(lambda (obj)

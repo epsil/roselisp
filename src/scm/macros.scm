@@ -21,9 +21,6 @@
                   eval_))
 (require (only-in "./list"
                   flatten))
-(require (only-in "./rose"
-                  Rose
-                  make-rose))
 (require (only-in "./util"
                   count-tree
                   map-tree

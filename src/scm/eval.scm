@@ -63,7 +63,8 @@
                   undefined-type?
                   variable-type?))
 (require (only-in "./rose"
-                  Rose))
+                  Rose
+                  rose->sexp))
 (require (only-in "./util"
                   tagged-list?))
 
@@ -256,9 +257,9 @@
 
 ;;; Evaluate an S-expression wrapped in a rose tree.
 (define (eval-rose node env (options (js-obj)))
-  (eval-sexp (send node get-value)
-             env
-             options))
+  (~> node
+      (rose->sexp _)
+      (eval-sexp _ env options)))
 
 ;;; Evaluate an [ESTree][github:estree] node
 ;;; (i.e., a JavaScript [AST][w:Abstract syntax tree]).
@@ -329,8 +330,9 @@
   (define name
     (get-field name node))
   (cond
-   ;; JavaScript's `undefined` is parsed as an `Identifier`,
-   ;; and not as a `Literal`, as one might expect.
+   ;; JavaScript's `undefined` is parsed as an `Identifier`
+   ;; (and not as a `Literal`, as one might expect), so it
+   ;; has to be handled here.
    ((eq? name "undefined")
     #u)
    (else
@@ -862,7 +864,10 @@
                  set-local
                  handler-param-sym
                  err)
-           (eval-estree handler-body handler-env options))))
+           (set! result
+                 (eval-estree handler-body
+                              handler-env
+                              options)))))
        (else
         (throw err))))
     (finally

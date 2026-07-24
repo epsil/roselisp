@@ -19,7 +19,8 @@
                   unquote-sym_
                   unquote-splicing-sym_))
 (require (only-in "./rose"
-                  Rose))
+                  Rose
+                  rose->sexp))
 
 ;;; Get the value stored under `path` in the map `map`.
 (define (map-get map path)
@@ -223,7 +224,7 @@
 (define (tagged-list? exp tag (len #u))
   (cond
    ((is-a? exp Rose)
-    (tagged-list? (send exp get-value) tag len))
+    (tagged-list? (rose->sexp exp) tag len))
    ((number? len)
     (and (tagged-list? exp tag)
          (= (array-length exp) len)))
@@ -240,7 +241,7 @@
 (define (form? exp f env)
   (cond
    ((is-a? exp Rose)
-    (form? (send exp get-value) f env))
+    (form? (rose->sexp exp) f env))
    (else
     (and (array? exp)
          (> (array-length exp) 0)
@@ -252,7 +253,7 @@
 (define (colon-form? exp)
   (cond
    ((is-a? exp Rose)
-    (colon-form? (send exp get-value)))
+    (colon-form? (rose->sexp exp)))
    (else
     (and (array? exp)
          (>= (js/length exp) 3)

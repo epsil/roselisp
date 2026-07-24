@@ -840,7 +840,12 @@
       (set-field! comments to comments))))
   to)
 
+;;; Convert a rose tree to an S-expression.
+(define (rose->sexp node)
+  (send node get-value))
+
 (provide
+  (rename-out (make-rose sexp->rose))
   Forest
   Rose
   RoseSplice
@@ -855,6 +860,7 @@
   make-rose-nonrecursive
   make-sexp-rose
   make-simple-rose-map
+  rose->sexp
   rose?
   slice-rose
   transfer-comments

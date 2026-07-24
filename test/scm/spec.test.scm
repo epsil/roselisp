@@ -284,7 +284,7 @@
  "[[1, 2], [3, 4]];"
 
  ;; `quasiquote`
- > (describe "quasoquote")
+ > (describe "quasiquote")
  _
  > `foo
  'foo
@@ -642,11 +642,11 @@
       (define x "foo")
       (define y "bar")
       (js/switch x
-        (case "foo"
-          (set! y "baz")
-          (break))
-        (default
-          (set! y "quux")))
+                 (case "foo"
+                   (set! y "baz")
+                   (break))
+                 (default
+                   (set! y "quux")))
       y))
  "baz"
 
@@ -730,9 +730,9 @@
        (set! result (cons 1 result)))
      result)
  '(1 1 1)
-  > (compile '(while (> x 0)
-                (set! x (- x 1))))
-  "while (x > 0) {
+ > (compile '(while (> x 0)
+               (set! x (- x 1))))
+ "while (x > 0) {
   x--;
 }"
 
@@ -745,13 +745,13 @@
      result)
  '(3 2 1)
  > ((lambda ()
-     (define foo
-       '(1 2 3 4))
-     (define len
-       (length foo))
-     (for ((i (range 0 len)))
-       (pop-right! foo))
-     foo))
+      (define foo
+        '(1 2 3 4))
+      (define len
+        (length foo))
+      (for ((i (range 0 len)))
+        (pop-right! foo))
+      foo))
  '()
  > ((lambda ()
       (define foo
@@ -760,9 +760,9 @@
         (pop-right! foo))
       foo))
  '()
-  > (compile '(for ((i (range 0 10)))
-                (foo)))
-  "for (let i = 0; i < 10; i++) {
+ > (compile '(for ((i (range 0 10)))
+               (foo)))
+ "for (let i = 0; i < 10; i++) {
   foo();
 }"
 
@@ -799,11 +799,11 @@
      result)
  '(5 6 7 8 9 10)
  > (let ((result (list)))
-      (for ((i (range 0 11)))
-        (when (< i 5)
-          (continue))
-        (push-right! result i))
-      result)
+     (for ((i (range 0 11)))
+       (when (< i 5)
+         (continue))
+       (push-right! result i))
+     result)
  '(5 6 7 8 9 10)
  > (compile '(while #f
                (continue)))
@@ -1351,21 +1351,21 @@ let z = x + y + w + z;"
  _
  > (destructuring-bind (x y)
                        '(1 2)
-                        (list x y))
+                       (list x y))
  '(1 2)
  > (destructuring-bind (x . y)
                        '(1 2)
-                        (list x y))
+                       (list x y))
  '(1 (2))
  > (compile '(destructuring-bind (x y)
                                  '(1 2)
-                                  (list x y)))
+                                 (list x y)))
  "let [x, y] = [1, 2];
 
 [x, y];"
  > (compile '(destructuring-bind (x . y)
                                  '(1 2)
-                                  (list x y)))
+                                 (list x y)))
  "let [x, ...y] = [1, 2];
 
 [x, y];"
@@ -1669,8 +1669,8 @@ let z = x + y + w + z;"
  #f
  > (member 5
            '(3 5 1 7 2 9)
-            (lambda (x y)
-              (< x y)))
+           (lambda (x y)
+             (< x y)))
  '(7 2 9)
 
  ;; `member?`
@@ -1757,11 +1757,11 @@ let z = x + y + w + z;"
  _
  > (foldr cons '() '(1 2 3 4))
  '(1 2 3 4)
-  > (foldr (lambda (v l)
-             (cons (add1 v) l))
-           '()
-            '(1 2 3 4))
-  '(2 3 4 5)
+ > (foldr (lambda (v l)
+            (cons (add1 v) l))
+          '()
+          '(1 2 3 4))
+ '(2 3 4 5)
  > (compile '(foldr (lambda (x acc) x) v lst))
  "lst.reduceRight(function (acc, x) {
   return x;
@@ -2024,8 +2024,8 @@ let z = x + y + w + z;"
  _
  > (cdr '(1 . (2 . ())))
  '(2 . ())
-  > (cdr '(1 2 . (3 . ())))
-  '(2 . (3 . ()))
+ > (cdr '(1 2 . (3 . ())))
+ '(2 . (3 . ()))
 
  ;; `set-car!`
  > (describe "set-car!")
@@ -2099,11 +2099,11 @@ let z = x + y + w + z;"
       foo))
  '(foo . quux)
 
-  ;; Dotted lists
-  > (describe "Dotted lists")
-  _
-  > (equal? '(1 2) '(1 . (2 . ())))
-  #t
+ ;; Dotted lists
+ > (describe "Dotted lists")
+ _
+ > (equal? '(1 2) '(1 . (2 . ())))
+ #t
 
  ;; `dotted-list?`
  > (describe "dotted-list?")
@@ -2254,8 +2254,8 @@ let z = x + y + w + z;"
  '(1 2)
  > (flatten '((a) b (c (d) . e) ()))
  '(a b c d e)
-  > (flatten '((((4)))))
-  '(4)
+ > (flatten '((((4)))))
+ '(4)
 
  ;; Cons dot
  > (describe "Cons dot")

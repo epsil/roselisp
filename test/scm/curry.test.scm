@@ -3,81 +3,92 @@
                   curry))
 (require (only-in "./test-util"
                   assert-equal
-                  assert-not-equal))
+                  test-macro))
 
-(describe "curry"
-  (fn ()
-    (it "a"
-        (fn ()
-          (define (a b)
-            (list b))
-          (define curriedA
-            (curry a))
-          (assert-equal
-           (curriedA 1)
-           '(1))
-          (assert-equal
-           ((curriedA) 1)
-           '(1))))
-    (it "ab"
-        (fn ()
-          (define (ab a b)
-            (list a b))
-          (define curriedAB
-            (curry ab))
-          (assert-equal
-           (curriedAB 1 2)
-           '(1 2))
-          (assert-equal
-           ((curriedAB 1) 2)
-           '(1 2))
-          (assert-equal
-           (((curriedAB) 1) 2)
-           '(1 2))))
-    (it "abc"
-        (fn ()
-          (define (abc a b c)
-            (list a b c))
-          (define curriedABC
-            (curry abc))
-          (assert-equal
-           (curriedABC 1 2 3)
-           '(1 2 3))
-          (assert-equal
-           ((curriedABC 1 2) 3)
-           '(1 2 3))
-          (assert-equal
-           (((curriedABC 1) 2) 3)
-           '(1 2 3))
-          (assert-equal
-           ((((curriedABC) 1) 2) 3)
-           '(1 2 3))))
-    (it "arity"
-        (fn ()
-          (define (abc a b c)
-            (list a b c))
-          (define curriedABC1
-            (curry abc 1))
-          (assert-equal
-           (curriedABC1 1)
-           '(1 #u #u))
-          (assert-equal
-           (curriedABC1 1 2)
-           '(1 2 #u))
-          (assert-equal
-           (curriedABC1 1 2 3)
-           '(1 2 3))))
-    (it "wildcards"
-        (fn ()
-          (define (abc a b c)
-            (list a b c))
-          (define curriedABC1
-            (curry abc))
-          (assert-equal
-           ((curriedABC1 __ __ __) 1 2 3)
-           '(1 2 3))))
-    (it "__ !== '_"
-        (fn ()
-          (assert-not-equal
-           __
-           '_)))))
+(declare-macro test-macro)
+
+(test-macro
+ ;; `curry`
+ > (describe "curry")
+ _
+ > (it "(a 1)"
+       (let* ((a (lambda (x)
+                   (list x)))
+              (a-c (curry a)))
+         (a-c 1)))
+ '(1)
+ > (it "((a) 1)"
+       (let* ((a (lambda (x)
+                   (list x)))
+              (a-c (curry a)))
+         ((a-c) 1)))
+ '(1)
+ > (it "(ab 1 2)"
+       (let* ((ab (lambda (x y)
+                    (list x y)))
+              (ab-c (curry ab)))
+         (ab-c 1 2)))
+ '(1 2)
+ > (it "((ab 1) 2)"
+       (let* ((ab (lambda (x y)
+                    (list x y)))
+              (ab-c (curry ab)))
+         ((ab-c 1) 2)))
+ '(1 2)
+ > (it "(((ab) 1) 2)"
+       (let* ((ab (lambda (x y)
+                    (list x y)))
+              (ab-c (curry ab)))
+         (((ab-c) 1) 2)))
+ '(1 2)
+ > (it "(abc 1 2 3)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc)))
+         (abc-c 1 2 3)))
+ '(1 2 3)
+ > (it "((abc 1 2) 3)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc)))
+         ((abc-c 1 2) 3)))
+ '(1 2 3)
+ > (it "(((abc 1) 2) 3)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc)))
+         (((abc-c 1) 2) 3)))
+ '(1 2 3)
+ > (it "((((abc) 1) 2) 3)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc)))
+         ((((abc-c) 1) 2) 3)))
+ '(1 2 3)
+ > (it "(abc 1)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc 1)))
+         (abc-c 1)))
+ '(1 #u #u)
+ > (it "(abc 1 2)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc 1)))
+         (abc-c 1 2)))
+ '(1 2 #u)
+ > (it "(abc 1 2 3)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc 1)))
+         (abc-c 1 2 3)))
+ '(1 2 3)
+ > (it "((abc _ _ _) 1 2 3)"
+       (let* ((abc (lambda (x y z)
+                     (list x y z)))
+              (abc-c (curry abc)))
+         ((abc-c __ __ __) 1 2 3)))
+ '(1 2 3)
+ > (it "_ !== '_"
+       (eq? __ '_))
+ #f)

@@ -37,7 +37,7 @@ const [callCc]: any[] = ((): any => {
  * Test inbox
  */
 describe('call/cc', function (): any {
-  return it('(let ((result 0)) (try (set! result (+ 5 (call/cc (lambda (x) (error "error"))))) (catch Object e)) result)', function (): any {
+  return it('(try ... (+ 5 (call/cc (lambda (x) (error ...)))) ...)', function (): any {
     return assertEqual(
       ((): any => {
         let result: any = 0;

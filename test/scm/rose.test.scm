@@ -1,114 +1,87 @@
-(require (only-in "../../src/ts/language"
-                  sexp))
 (require (only-in "../../src/ts/rose"
                   Rose
                   Forest
                   wrap-sexp-in-rose))
 (require (only-in "./test-util"
-                  assert-equal))
+                  assert-equal
+                  test-macro))
 
-(describe "Rose"
-  (fn ()
-    (describe "insert"
-      (fn ()
-        (it "foo/bar"
-            (fn ()
-              (define foo
-                (new Rose "foo"))
-              (define bar
-                (new Rose "bar"))
-              (send foo insert bar)
-              (assert-equal
-               (send foo get-forest)
-               (send (new Forest bar)
-                     set-parent
-                     foo))))))))
+(declare-macro test-macro)
 
-(describe "wrap-sexp-in-rose"
-  (fn ()
-    (it "1"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose 1)
-           (new Rose 1))))
-    (it "\"1\""
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose "1")
-           (new Rose "1"))))
-    (it "foo"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose 'foo)
-           (new Rose 'foo))))
-    (it "(foo bar)"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose '(foo bar))
+(test-macro
+ ;; `Rose`
+ > (describe "Rose")
+ _
+ > (it "insert"
+       (let ((foo (new Rose "foo"))
+             (bar (new Rose "bar")))
+         (send foo insert bar)
+         (assert-equal
+          (send foo get-forest)
+          (send (new Forest bar)
+                set-parent
+                foo))))
+ _
+
+ ;; `wrap-sexp-in-rose`
+ > (describe "wrap-sexp-in-rose")
+ _
+ > (wrap-sexp-in-rose 1)
+ (new Rose 1)
+ > (wrap-sexp-in-rose "1")
+ (new Rose "1")
+ > (wrap-sexp-in-rose 'foo)
+ (new Rose 'foo)
+ > (wrap-sexp-in-rose '(foo bar))
+ (new Rose
+      '(foo bar)
+      (new Forest
+           (new Rose 'foo)
+           (new Rose 'bar)))
+ > (wrap-sexp-in-rose '(+ 1 1))
+ (new Rose
+      '(+ 1 1)
+      (new Forest
+           (new Rose '+)
+           (new Rose 1)
+           (new Rose 1)))
+ > (wrap-sexp-in-rose '(+ 1 2))
+ (new Rose
+      '(+ 1 2)
+      (new Forest
+           (new Rose '+)
+           (new Rose 1)
+           (new Rose 2)))
+ > (wrap-sexp-in-rose '(+ (+ 1)))
+ (new Rose
+      '(+ (+ 1))
+      (new Forest
+           (new Rose '+)
            (new Rose
-                '(foo bar)
+                '(+ 1)
                 (new Forest
-                     (new Rose 'foo)
-                     (new Rose 'bar))))))
-    (it "(+ 1 1)"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose '(+ 1 1))
+                     (new Rose '+)
+                     (new Rose 1)))))
+ > (wrap-sexp-in-rose '(+ (+ 1 1)))
+ (new Rose
+      '(+ (+ 1 1))
+      (new Forest
+           (new Rose '+)
            (new Rose
                 '(+ 1 1)
                 (new Forest
                      (new Rose '+)
                      (new Rose 1)
-                     (new Rose 1))))))
-    (it "(+ 1 2)"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose '(+ 1 2))
+                     (new Rose 1)))))
+ > (wrap-sexp-in-rose '(+ (+ 1 1) 2))
+ (new Rose
+      '(+ (+ 1 1) 2)
+      (new Forest
+           (new Rose '+)
            (new Rose
-                '(+ 1 2)
+                '(+ 1 1)
                 (new Forest
                      (new Rose '+)
                      (new Rose 1)
-                     (new Rose 2))))))
-    (it "(+ (+ 1))"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose '(+ (+ 1)))
-           (new Rose
-                '(+ (+ 1))
-                (new Forest
-                     (new Rose '+)
-                     (new Rose
-                          '(+ 1)
-                          (new Forest
-                               (new Rose '+)
-                               (new Rose 1))))))))
-    (it "(+ (+ 1 1))"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose '(+ (+ 1 1)))
-           (new Rose
-                '(+ (+ 1 1))
-                (new Forest
-                     (new Rose '+)
-                     (new Rose
-                          '(+ 1 1)
-                          (new Forest
-                               (new Rose '+)
-                               (new Rose 1)
-                               (new Rose 1))))))))
-    (it "(+ (+ 1 1) 2)"
-        (fn ()
-          (assert-equal
-           (wrap-sexp-in-rose '(+ (+ 1 1) 2))
-           (new Rose
-                '(+ (+ 1 1) 2)
-                (new Forest
-                     (new Rose '+)
-                     (new Rose
-                          '(+ 1 1)
-                          (new Forest
-                               (new Rose '+)
-                               (new Rose 1)
-                               (new Rose 1)))
-                     (new Rose 2))))))))
+                     (new Rose 1)))
+           (new Rose 2))))

@@ -345,6 +345,8 @@
    (else
     (string-append exp ""))))
 
+;;; Macro for expanding tests written in "REPL style"
+;;; to Mocha tests.
 (defmacro test-macro (&rest body)
   ;; Parse options.
   (define options
@@ -415,18 +417,27 @@
         (set! description (print-sexp exp))
         (set! actual exp)))
       (define test
-        `(,@f
-          ,description
-          (fn ()
-            ,(if repl-option
+        (cond
+         ((and (eq? expected '_)
+               (not (tagged-list? exp 'it)))
+          actual)
+         (else
+          `(,@f
+            ,description
+            (fn ()
+              ,(cond
+                (repl-option
                  `(test-repl
                    '(roselisp
                      ,prompt
                      ,actual
-                     ,expected))
+                     ,expected)))
+                ((eq? expected '_)
+                 actual)
+                (else
                  `(assert-equal
                    ,actual
-                   ,expected)))))
+                   ,expected))))))))
       (push-right! group test)
       (set! only #f))))
   (when (> (js/length group) 0)

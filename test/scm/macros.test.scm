@@ -13,370 +13,295 @@
                   make-lisp))
 (require (only-in "./test-util"
                   assert-equal
-                  test-repl))
+                  test-repl
+                  test-macro))
 
-(describe "macroexpand"
-  (fn ()
-    (it "(foo bar)"
-        (fn ()
-          (assert-equal
-           (macroexpand
-            '(foo bar)
-            (new LispEnvironment
-                 `((foo ,(fn (exp env) '(baz)) "macro"))))
-           '(baz))))
-    (it "(+ 1 1)"
-        (fn ()
-          (assert-equal
-           (macroexpand
-            '(+ 1 1)
-            (new LispEnvironment))
-           '(+ 1 1))))))
+(declare-macro test-macro)
 
-(describe "macroexpand*"
-  (fn ()
-    (it "(foo bar)"
-        (fn ()
-          (assert-equal
-           (macroexpand*
-            '(foo bar)
-            (new LispEnvironment
-                 `((foo ,(fn (exp env) '(baz)) "macro"))))
-           (values '(baz) #t))))
-    (it "(+ 1 1)"
-        (fn ()
-          (assert-equal
-           (macroexpand*
-            '(+ 1 1)
-            (new LispEnvironment))
-           (values '(+ 1 1) #f))))))
+(test-macro
+ ;; `macroexpand`
+ > (describe "macroexpand")
+ _
+ > (macroexpand
+    '(foo bar)
+    (new LispEnvironment
+         `((foo ,(fn (exp env) '(baz)) "macro"))))
+ '(baz)
+ > (macroexpand
+    '(+ 1 1)
+    (new LispEnvironment))
+ '(+ 1 1)
 
-(describe "macroexpand-1"
-  (fn ()
-    (it "(~> \"a b c d\" ...)"
-        (fn ()
-          (assert-equal
-           (macroexpand-1
-            '(~> "a b c d"
-                 .toUpperCase
-                 (.replace "A" "X")
-                 (.split " ")
-                 first)
-            (make-lisp))
-           '(as~> "a b c d" _
-              (.toUpperCase _)
-              (.replace _ "A" "X")
-              (.split _ " ")
-              (first _)))))
-    (it "(~>> foo)"
-        (fn ()
-          (assert-equal
-           (macroexpand-1
-            '(~>> foo)
-            (make-lisp))
-           '(as~> foo _))))
-    (it "(~>> foo (bar))"
-        (fn ()
-          (assert-equal
-           (macroexpand-1
-            '(~>> foo (bar))
-            (make-lisp))
-           '(as~> foo _
-              (bar _)))))
-    (it "(~>> (range) ...)"
-        (fn ()
-          (assert-equal
-           (macroexpand-1
-            '(~>> (range)
-                  (map (fn (x) (* x x)))
-                  (filter even?)
-                  (take 10)
-                  (reduce +))
-            (make-lisp))
-           '(as~> (range) _
-              (map (fn (x) (* x x)) _)
-              (filter even? _)
-              (take 10 _)
-              (reduce + _)))))))
+ ;; `macroexpand*`
+ > (describe "macroexpand*")
+ _
+ > (macroexpand*
+    '(foo bar)
+    (new LispEnvironment
+         `((foo ,(fn (exp env) '(baz)) "macro"))))
+ (values '(baz) #t)
+ > (macroexpand*
+    '(+ 1 1)
+    (new LispEnvironment))
+ (values '(+ 1 1) #f)
 
-(describe "macroexpand-all"
-  (fn ()
-    (it "(~> ...)"
-        (fn ()
-          (assert-equal
-           (macroexpand-all
-            '(~> "a b c d"
-                 .toUpperCase
-                 (.replace "A" "X")
-                 (.split " ")
-                 first)
-            (make-lisp))
-           '(first
-             (.split
-              (.replace
-               (.toUpperCase "a b c d")
-               "A" "X")
-              " ")))))
-    (xit "(begin (~> ...))"
-         (fn ()
-           (assert-equal
-            (macroexpand-all
-             '(begin
-                (~> "a b c d"
-                    .toUpperCase
-                    (.replace "A" "X")
-                    (.split " ")
-                    first))
-             (make-lisp))
-            '(begin
-               (first
-                (.split
-                 (.replace
-                  (.toUpperCase "a b c d")
-                  "A" "X")
-                 " "))))))
-    (xit "(begin (~> ... (~> ...) ...))"
-         (fn ()
-           (assert-equal
-            (macroexpand-all
-             '(begin
-                (~> "a b c d"
-                    .toUpperCase
-                    (.replace "A"
-                              (~> "x"
-                                  (.toUpperCase)))
-                    (.split " ")
-                    first))
-             (make-lisp))
-            '(begin
-               (first
-                (.split
-                 (.replace
-                  (.toUpperCase "a b c d")
-                  "A"
-                  (.toUpperCase "x"))
-                 " "))))))))
+ ;; `macroexpand-1`
+ > (describe "macroexpand-1")
+ _
+ > (macroexpand-1
+    '(~> "a b c d"
+         .toUpperCase
+         (.replace "A" "X")
+         (.split " ")
+         first)
+    (make-lisp))
+ '(as~> "a b c d" _
+    (.toUpperCase _)
+    (.replace _ "A" "X")
+    (.split _ " ")
+    (first _))
+ > (macroexpand-1
+    '(~>> foo)
+    (make-lisp))
+ '(as~> foo _)
+ > (macroexpand-1
+    '(~>> foo (bar))
+    (make-lisp))
+ '(as~> foo _
+    (bar _))
+ > (macroexpand-1
+    '(~>> (range)
+          (map (fn (x) (* x x)))
+          (filter even?)
+          (take 10)
+          (reduce +))
+    (make-lisp))
+ '(as~> (range) _
+    (map (fn (x) (* x x)) _)
+    (filter even? _)
+    (take 10 _)
+    (reduce + _))
 
-(describe "as~>"
-  (fn ()
-    (it "(as~> x _)"
-        (fn ()
-          (assert-equal
-           (thread-as_ '(as~> x _))
-           'x)))
-    (it "(as~> x _ (foo))"
-        (fn ()
-          (assert-equal
-           (thread-as_
-            '(as~> x _
-               (foo)))
-           '(begin
-              x
-              (foo)))))
-    (it "(as~> x _ (foo) (bar))"
-        (fn ()
-          (assert-equal
-           (thread-as_
-            '(as~> x _
-               (foo)
-               (bar)))
-           '(begin
-              x
-              (foo)
-              (bar)))))
-    (it "(as~> x _ (+ _ 1))"
-        (fn ()
-          (assert-equal
-           (thread-as_
-            '(as~> x _
-               (+ _ 1)))
-           '(+ x 1))))
-    (it "(as~> x _ (+ _ _))"
-        (fn ()
-          (assert-equal
-           (thread-as_
-            '(as~> x _
-               (+ _ _)))
-           '(let ((_ x))
-              (set! _ (+ _ _))
-              _))))
-    (it "(as~> x _ (+ _ _))"
-        (fn ()
-          (assert-equal
-           (thread-as_
-            '(as~> x _
-               (+ _ 1)
-               (+ _ 1)))
-           '(+ (+ x 1) 1))))
-    (it "(as~> x _ (+ _ _))"
-        (fn ()
-          (assert-equal
-           (thread-as_
-            '(as~> x _
-               (+ _ 1)
-               (+ _ _)))
-           '(let ((_ (+ x 1)))
-              (set! _ (+ _ _))
-              _))))))
+ ;; `macroexpand-all`
+ > (describe "macroexpand-all")
+ _
+ > (macroexpand-all
+    '(~> "a b c d"
+         .toUpperCase
+         (.replace "A" "X")
+         (.split " ")
+         first)
+    (make-lisp))
+ '(first
+   (.split
+    (.replace
+     (.toUpperCase "a b c d")
+     "A" "X")
+    " "))
+ xit> (macroexpand-all
+       '(begin
+          (~> "a b c d"
+              .toUpperCase
+              (.replace "A" "X")
+              (.split " ")
+              first))
+       (make-lisp))
+ '(begin
+    (first
+     (.split
+      (.replace
+       (.toUpperCase "a b c d")
+       "A" "X")
+      " ")))
+ xit> (macroexpand-all
+       '(begin
+          (~> "a b c d"
+              .toUpperCase
+              (.replace "A"
+                        (~> "x"
+                            (.toUpperCase)))
+              (.split " ")
+              first))
+       (make-lisp))
+ '(begin
+    (first
+     (.split
+      (.replace
+       (.toUpperCase "a b c d")
+       "A"
+       (.toUpperCase "x"))
+      " ")))
 
-(describe "~>"
-  (fn ()
-    (it "(~> x foo)"
-        (fn ()
-          (assert-equal
-           (thread-first_
-            '(~> x
-                 foo))
-           '(as~> x _
-              (foo _)))))
-    (it "(~> x (foo))"
-        (fn ()
-          (assert-equal
-           (thread-first_
-            '(~> x
-                 (foo)))
-           '(as~> x _
-              (foo _)))))
-    (it "(~> x (foo _))"
-        (fn ()
-          (assert-equal
-           (thread-first_
-            '(~> x
-                 (foo _)))
-           '(as~> x _
-              (foo _)))))
-    (it "(~> x :hole-marker * (foo *))"
-        (fn ()
-          (assert-equal
-           (thread-first_
-            '(~> x
-                 :hole-marker *
-                 (foo *)))
-           '(as~> x *
-              (foo *)))))))
+ ;; `as->`
+ > (describe "as->")
+ _
+ > (thread-as_ '(as~> x _))
+ 'x
+ > (thread-as_
+    '(as~> x _
+       (foo)))
+ '(begin
+    x
+    (foo))
+ > (thread-as_
+    '(as~> x _
+       (foo)
+       (bar)))
+ '(begin
+    x
+    (foo)
+    (bar))
+ > (thread-as_
+    '(as~> x _
+       (+ _ 1)))
+ '(+ x 1)
+ > (thread-as_
+    '(as~> x _
+       (+ _ _)))
+ '(let ((_ x))
+    (set! _ (+ _ _))
+    _)
+ > (thread-as_
+    '(as~> x _
+       (+ _ 1)
+       (+ _ 1)))
+ '(+ (+ x 1) 1)
+ > (thread-as_
+    '(as~> x _
+       (+ _ 1)
+       (+ _ _)))
+ '(let ((_ (+ x 1)))
+    (set! _ (+ _ _))
+    _)
 
-(describe "~>>"
-  (fn ()
-    (it "(~>> x foo)"
-        (fn ()
-          (assert-equal
-           (thread-last_
-            '(~>> x
-                  foo))
-           '(as~> x _
-              (foo _)))))
-    (it "(~>> x (foo))"
-        (fn ()
-          (assert-equal
-           (thread-last_
-            '(~>> x
-                  (foo)))
-           '(as~> x _
-              (foo _)))))
-    (it "(~>> x (foo _))"
-        (fn ()
-          (assert-equal
-           (thread-last_
-            '(~>> x
-                  (foo _)))
-           '(as~> x _
-              (foo _)))))
-    (it "(~>> x :hole-marker * (foo *))"
-        (fn ()
-          (assert-equal
-           (thread-last_
-            '(~>> x
-                  :hole-marker *
-                  (foo *)))
-           '(as~> x *
-              (foo *)))))))
+ ;; `~>`
+ > (describe "~>")
+ _
+ > (thread-first_
+    '(~> x
+         foo))
+ '(as~> x _
+    (foo _))
+ > (thread-first_
+    '(~> x
+         (foo)))
+ '(as~> x _
+    (foo _))
+ > (thread-first_
+    '(~> x
+         (foo _)))
+ '(as~> x _
+    (foo _))
+ > (thread-first_
+    '(~> x
+         :hole-marker *
+         (foo *)))
+ '(as~> x *
+    (foo *))
 
-(describe "case/eq"
-  (fn ()
-    (it "(case/eq x ((\"foo\") foo) (else bar))"
-        (fn ()
-          (assert-equal
+ ;; `~>>`
+ > (describe "~>>")
+ _
+ > (thread-last_
+    '(~>> x
+          foo))
+ '(as~> x _
+    (foo _))
+ > (thread-last_
+    '(~>> x
+          (foo)))
+ '(as~> x _
+    (foo _))
+ > (thread-last_
+    '(~>> x
+          (foo _)))
+ '(as~> x _
+    (foo _))
+ > (thread-last_
+    '(~>> x
+          :hole-marker *
+          (foo *)))
+ '(as~> x *
+    (foo *))
+
+ ;; `case/eq`
+ > (describe "case/eq")
+ _
+ > (case-eq_
+    '(case/eq x
+              (("foo")
+               foo)
+              (else
+               bar)))
+ '(js/switch x
+             (case (quote "foo")
+               foo
+               (break))
+             (default
+               bar))
+ > (case-eq_
+    '(case/eq x
+              (("foo" "bar")
+               foo)
+              (else
+               baz)))
+ '(cond
+   ((member? x '("foo" "bar"))
+    foo)
+   (else
+    baz))
+ > (let* ((actual
            (case-eq_
-            '(case/eq x
-                      (("foo")
-                       foo)
-                      (else
-                       bar)))
-           '(js/switch x
-                       (case (quote "foo")
-                         foo
-                         (break))
-                       (default
-                         bar)))))
-    (it "(case/eq x ((\"foo\" \"bar\") foo) (else baz))"
-        (fn ()
-          (assert-equal
-           (case-eq_
-            '(case/eq x
+            '(case/eq (get-field prop x)
                       (("foo" "bar")
                        foo)
                       (else
-                       baz)))
-           '(cond
-             ((member? x '("foo" "bar"))
-              foo)
-             (else
-              baz)))))
-    (it "(case/eq x ((\"foo\" \"bar\") foo) (else baz))"
-        (fn ()
-          (define actual
-            (case-eq_
-             '(case/eq (get-field prop x)
-                       (("foo" "bar")
-                        foo)
-                       (else
-                        baz))))
-          (define result-var
-            (first (first (second actual))))
-          (define expected
-            `(let ((,result-var (get-field prop x)))
-               (cond
-                ((member? ,result-var '("foo" "bar"))
-                 foo)
-                (else
-                 baz))))
-          (assert-equal actual expected)))))
+                       baz))))
+          (result-var
+           (first (first (second actual))))
+          (expected
+           `(let ((,result-var (get-field prop x)))
+              (cond
+               ((member? ,result-var '("foo" "bar"))
+                foo)
+               (else
+                baz)))))
+     (assert-equal actual expected))
+ #u
 
-(describe "case"
-  (fn ()
-    (it "(case x ((\"foo\") foo) (else bar))"
-        (fn ()
-          (assert-equal
-           (case_
-            '(case x
-               (("foo")
-                foo)
-               (else
-                bar)))
-           '(case/eq x
-                     (("foo")
-                      foo)
-                     (else
-                      bar)))))
-    (it "(case x (((\"foo\")) foo) (else bar))"
-        (fn ()
-          (assert-equal
-           (case_
-            '(case x
-               ((("foo"))
-                foo)
-               (else
-                bar)))
-           '(cond
-             ((member? x '(("foo")) equal?)
-              foo)
-             (else
-              bar)))))
-    (it "> (case 'foo ((foo) 1))"
-        (fn ()
-          (test-repl
-           '(roselisp
-             > (case 'foo
-                 ((foo)
-                  1))
-             1))))))
+ ;; `case`
+ > (describe "case")
+ _
+ > (case_
+    '(case x
+       (("foo")
+        foo)
+       (else
+        bar)))
+ '(case/eq x
+           (("foo")
+            foo)
+           (else
+            bar))
+ > (case_
+    '(case x
+       ((("foo"))
+        foo)
+       (else
+        bar)))
+ '(cond
+   ((member? x '(("foo")) equal?)
+    foo)
+   (else
+    bar)))
+
+(test-macro
+ :repl #t
+
+ ;; `case`
+ > (describe "case")
+ _
+ > (case 'foo
+     ((foo)
+      1))
+ 1)

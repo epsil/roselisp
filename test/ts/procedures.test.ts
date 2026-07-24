@@ -7,16 +7,19 @@ import { stringp } from '../../src/ts/string';
 import { assertEqual, testMacro } from './test-util';
 
 describe('stringp', function (): any {
+  it('(stringp "foo")', function (): any {
+    return assertEqual(stringp('foo'), true);
+  });
   it('(stringp (new String "foo"))', function (): any {
     return assertEqual(stringp(new String('foo')), true);
   });
-  return it('(stringp (js/tag s "foo"))', function (): any {
-    return assertEqual(stringp(s`foo`), false);
+  return it("(stringp 'foo)", function (): any {
+    return assertEqual(stringp(Symbol.for('foo')), false);
   });
 });
 
 describe('compose', function (): any {
-  it('(let ((f (lambda (x) (+ x 1))) (g (lambda (x) (+ x 2)))) ((compose g f) 1))', function (): any {
+  it('g . f', function (): any {
     return assertEqual(
       ((): any => {
         const f: any = function (x: any): any {
@@ -30,7 +33,7 @@ describe('compose', function (): any {
       4
     );
   });
-  return it('(let ((f (lambda (x) (+ x 1))) (g (lambda (x) (+ x 2))) (h (lambda (x) (+ x 3)))) ((compose h g f) 1))', function (): any {
+  return it('h . g . f', function (): any {
     return assertEqual(
       ((): any => {
         const f: any = function (x: any): any {
@@ -50,7 +53,7 @@ describe('compose', function (): any {
 });
 
 describe('pipe', function (): any {
-  it('(let ((f (lambda (x) (+ x 1))) (g (lambda (x) (+ x 2)))) ((pipe f g) 1))', function (): any {
+  it('f ; g', function (): any {
     return assertEqual(
       ((): any => {
         const f: any = function (x: any): any {
@@ -64,7 +67,7 @@ describe('pipe', function (): any {
       4
     );
   });
-  return it('(let ((f (lambda (x) (+ x 1))) (g (lambda (x) (+ x 2))) (h (lambda (x) (+ x 3)))) ((pipe f g h) 1))', function (): any {
+  return it('f ; g ; h', function (): any {
     return assertEqual(
       ((): any => {
         const f: any = function (x: any): any {

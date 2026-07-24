@@ -15,7 +15,7 @@ import {
   makeLisp,
 } from '../../src/ts';
 
-import { assertEqual, testRepl } from './test-util';
+import { assertEqual, testRepl, testMacro } from './test-util';
 
 const [lastCdr]: any[] = ((): any => {
   function lastCdr_(lst: any): any {
@@ -43,7 +43,7 @@ const [lastCdr]: any[] = ((): any => {
 })();
 
 describe('macroexpand', function (): any {
-  it('(foo bar)', function (): any {
+  it('(macroexpand \'(foo bar) (new LispEnvironment `((foo ,(fn (exp env) \'(baz)) "macro"))))', function (): any {
     return assertEqual(
       macroexpand(
         [Symbol.for('foo'), Symbol.for('bar')],
@@ -60,7 +60,7 @@ describe('macroexpand', function (): any {
       [Symbol.for('baz')]
     );
   });
-  return it('(+ 1 1)', function (): any {
+  return it("(macroexpand '(+ 1 1) (new LispEnvironment))", function (): any {
     return assertEqual(
       macroexpand([Symbol.for('+'), 1, 1], new LispEnvironment()),
       [Symbol.for('+'), 1, 1]
@@ -69,7 +69,7 @@ describe('macroexpand', function (): any {
 });
 
 describe('macroexpand*', function (): any {
-  it('(foo bar)', function (): any {
+  it('(macroexpand* \'(foo bar) (new LispEnvironment `((foo ,(fn (exp env) \'(baz)) "macro"))))', function (): any {
     return assertEqual(
       macroexpandStar(
         [Symbol.for('foo'), Symbol.for('bar')],
@@ -86,7 +86,7 @@ describe('macroexpand*', function (): any {
       [[Symbol.for('baz')], true]
     );
   });
-  return it('(+ 1 1)', function (): any {
+  return it("(macroexpand* '(+ 1 1) (new LispEnvironment))", function (): any {
     return assertEqual(
       macroexpandStar([Symbol.for('+'), 1, 1], new LispEnvironment()),
       [[Symbol.for('+'), 1, 1], false]
@@ -95,7 +95,7 @@ describe('macroexpand*', function (): any {
 });
 
 describe('macroexpand-1', function (): any {
-  it('(~> "a b c d" ...)', function (): any {
+  it('(macroexpand-1 \'(~> "a b c d" .toUpperCase (.replace "A" "X") (.split " ") first) (make-lisp))', function (): any {
     return assertEqual(
       macroexpand1(
         [
@@ -119,13 +119,13 @@ describe('macroexpand-1', function (): any {
       ]
     );
   });
-  it('(~>> foo)', function (): any {
+  it("(macroexpand-1 '(~>> foo) (make-lisp))", function (): any {
     return assertEqual(
       macroexpand1([Symbol.for('~>>'), Symbol.for('foo')], makeLisp()),
       [Symbol.for('as~>'), Symbol.for('foo'), Symbol.for('_')]
     );
   });
-  it('(~>> foo (bar))', function (): any {
+  it("(macroexpand-1 '(~>> foo (bar)) (make-lisp))", function (): any {
     return assertEqual(
       macroexpand1(
         [Symbol.for('~>>'), Symbol.for('foo'), [Symbol.for('bar')]],
@@ -139,7 +139,7 @@ describe('macroexpand-1', function (): any {
       ]
     );
   });
-  return it('(~>> (range) ...)', function (): any {
+  return it("(macroexpand-1 '(~>> (range) (map (fn (x) (* x x))) (filter even?) (take 10) (reduce +)) (make-lisp))", function (): any {
     return assertEqual(
       macroexpand1(
         [
@@ -181,7 +181,7 @@ describe('macroexpand-1', function (): any {
 });
 
 describe('macroexpand-all', function (): any {
-  it('(~> ...)', function (): any {
+  it('(macroexpand-all \'(~> "a b c d" .toUpperCase (.replace "A" "X") (.split " ") first) (make-lisp))', function (): any {
     return assertEqual(
       macroexpandAll(
         [
@@ -209,7 +209,7 @@ describe('macroexpand-all', function (): any {
       ]
     );
   });
-  xit('(begin (~> ...))', function (): any {
+  xit('(macroexpand-all \'(begin (~> "a b c d" .toUpperCase (.replace "A" "X") (.split " ") first)) (make-lisp))', function (): any {
     return assertEqual(
       macroexpandAll(
         [
@@ -243,7 +243,7 @@ describe('macroexpand-all', function (): any {
       ]
     );
   });
-  return xit('(begin (~> ... (~> ...) ...))', function (): any {
+  return xit('(macroexpand-all \'(begin (~> "a b c d" .toUpperCase (.replace "A" (~> "x" (.toUpperCase))) (.split " ") first)) (make-lisp))', function (): any {
     return assertEqual(
       macroexpandAll(
         [
@@ -283,14 +283,14 @@ describe('macroexpand-all', function (): any {
   });
 });
 
-describe('as~>', function (): any {
-  it('(as~> x _)', function (): any {
+describe('as->', function (): any {
+  it("(thread-as_ '(as~> x _))", function (): any {
     return assertEqual(
       threadAs_([Symbol.for('as~>'), Symbol.for('x'), Symbol.for('_')]),
       Symbol.for('x')
     );
   });
-  it('(as~> x _ (foo))', function (): any {
+  it("(thread-as_ '(as~> x _ (foo)))", function (): any {
     return assertEqual(
       threadAs_([
         Symbol.for('as~>'),
@@ -301,7 +301,7 @@ describe('as~>', function (): any {
       [Symbol.for('begin'), Symbol.for('x'), [Symbol.for('foo')]]
     );
   });
-  it('(as~> x _ (foo) (bar))', function (): any {
+  it("(thread-as_ '(as~> x _ (foo) (bar)))", function (): any {
     return assertEqual(
       threadAs_([
         Symbol.for('as~>'),
@@ -318,7 +318,7 @@ describe('as~>', function (): any {
       ]
     );
   });
-  it('(as~> x _ (+ _ 1))', function (): any {
+  it("(thread-as_ '(as~> x _ (+ _ 1)))", function (): any {
     return assertEqual(
       threadAs_([
         Symbol.for('as~>'),
@@ -329,7 +329,7 @@ describe('as~>', function (): any {
       [Symbol.for('+'), Symbol.for('x'), 1]
     );
   });
-  it('(as~> x _ (+ _ _))', function (): any {
+  it("(thread-as_ '(as~> x _ (+ _ _)))", function (): any {
     return assertEqual(
       threadAs_([
         Symbol.for('as~>'),
@@ -349,7 +349,7 @@ describe('as~>', function (): any {
       ]
     );
   });
-  it('(as~> x _ (+ _ _))', function (): any {
+  it("(thread-as_ '(as~> x _ (+ _ 1) (+ _ 1)))", function (): any {
     return assertEqual(
       threadAs_([
         Symbol.for('as~>'),
@@ -361,7 +361,7 @@ describe('as~>', function (): any {
       [Symbol.for('+'), [Symbol.for('+'), Symbol.for('x'), 1], 1]
     );
   });
-  return it('(as~> x _ (+ _ _))', function (): any {
+  return it("(thread-as_ '(as~> x _ (+ _ 1) (+ _ _)))", function (): any {
     return assertEqual(
       threadAs_([
         Symbol.for('as~>'),
@@ -385,7 +385,7 @@ describe('as~>', function (): any {
 });
 
 describe('~>', function (): any {
-  it('(~> x foo)', function (): any {
+  it("(thread-first_ '(~> x foo))", function (): any {
     return assertEqual(
       threadFirst_([Symbol.for('~>'), Symbol.for('x'), Symbol.for('foo')]),
       [
@@ -396,7 +396,7 @@ describe('~>', function (): any {
       ]
     );
   });
-  it('(~> x (foo))', function (): any {
+  it("(thread-first_ '(~> x (foo)))", function (): any {
     return assertEqual(
       threadFirst_([Symbol.for('~>'), Symbol.for('x'), [Symbol.for('foo')]]),
       [
@@ -407,7 +407,7 @@ describe('~>', function (): any {
       ]
     );
   });
-  it('(~> x (foo _))', function (): any {
+  it("(thread-first_ '(~> x (foo _)))", function (): any {
     return assertEqual(
       threadFirst_([
         Symbol.for('~>'),
@@ -422,7 +422,7 @@ describe('~>', function (): any {
       ]
     );
   });
-  return it('(~> x :hole-marker * (foo *))', function (): any {
+  return it("(thread-first_ '(~> x :hole-marker * (foo *)))", function (): any {
     return assertEqual(
       threadFirst_([
         Symbol.for('~>'),
@@ -442,7 +442,7 @@ describe('~>', function (): any {
 });
 
 describe('~>>', function (): any {
-  it('(~>> x foo)', function (): any {
+  it("(thread-last_ '(~>> x foo))", function (): any {
     return assertEqual(
       threadLast_([Symbol.for('~>>'), Symbol.for('x'), Symbol.for('foo')]),
       [
@@ -453,7 +453,7 @@ describe('~>>', function (): any {
       ]
     );
   });
-  it('(~>> x (foo))', function (): any {
+  it("(thread-last_ '(~>> x (foo)))", function (): any {
     return assertEqual(
       threadLast_([Symbol.for('~>>'), Symbol.for('x'), [Symbol.for('foo')]]),
       [
@@ -464,7 +464,7 @@ describe('~>>', function (): any {
       ]
     );
   });
-  it('(~>> x (foo _))', function (): any {
+  it("(thread-last_ '(~>> x (foo _)))", function (): any {
     return assertEqual(
       threadLast_([
         Symbol.for('~>>'),
@@ -479,7 +479,7 @@ describe('~>>', function (): any {
       ]
     );
   });
-  return it('(~>> x :hole-marker * (foo *))', function (): any {
+  return it("(thread-last_ '(~>> x :hole-marker * (foo *)))", function (): any {
     return assertEqual(
       threadLast_([
         Symbol.for('~>>'),
@@ -499,7 +499,7 @@ describe('~>>', function (): any {
 });
 
 describe('case/eq', function (): any {
-  it('(case/eq x (("foo") foo) (else bar))', function (): any {
+  it('(case-eq_ \'(case/eq x (("foo") foo) (else bar)))', function (): any {
     return assertEqual(
       caseEq_([
         Symbol.for('case/eq'),
@@ -520,7 +520,7 @@ describe('case/eq', function (): any {
       ]
     );
   });
-  it('(case/eq x (("foo" "bar") foo) (else baz))', function (): any {
+  it('(case-eq_ \'(case/eq x (("foo" "bar") foo) (else baz)))', function (): any {
     return assertEqual(
       caseEq_([
         Symbol.for('case/eq'),
@@ -542,70 +542,75 @@ describe('case/eq', function (): any {
       ]
     );
   });
-  return it('(case/eq x (("foo" "bar") foo) (else baz))', function (): any {
-    const actual: any = caseEq_([
-      Symbol.for('case/eq'),
-      [Symbol.for('get-field'), Symbol.for('prop'), Symbol.for('x')],
-      [['foo', 'bar'], Symbol.for('foo')],
-      [Symbol.for('else'), Symbol.for('baz')],
-    ]);
-    const resultVar: any = (
-      Array.isArray(actual) &&
-      actual.length >= 3 &&
-      actual[actual.length - 2] === Symbol.for('.') &&
+  return it('(let* ((actual (case-eq_ \'(case/eq (get-field prop x) (("foo" "bar") foo) (else baz)))) (result-var (first (first (second actual)))) (expected `(let ((,result-var (get-field prop x))) (cond ((member? ,result-var \'("foo" "bar")) foo) (else baz))))) (assert-equal actual expected))', function (): any {
+    return assertEqual(
       ((): any => {
-        const x: any = lastCdr(actual);
-        return Array.isArray(x) && x.length === 0;
-      })()
-        ? ((): any => {
-            let i: any = 1;
-            let result: any = actual;
-            while (i > 0) {
-              if (
-                Array.isArray(result) &&
-                result.length === 3 &&
-                result[1] === Symbol.for('.')
-              ) {
-                result = actual[actual.length - 1];
-              } else {
-                result = actual.slice(1);
-              }
-              i--;
-            }
-            if (Array.isArray(result)) {
-              result = result[0];
-            }
-            return result;
-          })()
-        : actual[1]
-    )[0][0];
-    const expected: any = [
-      Symbol.for('let'),
-      [
-        [
-          resultVar,
+        const actual: any = caseEq_([
+          Symbol.for('case/eq'),
           [Symbol.for('get-field'), Symbol.for('prop'), Symbol.for('x')],
-        ],
-      ],
-      [
-        Symbol.for('cond'),
-        [
+          [['foo', 'bar'], Symbol.for('foo')],
+          [Symbol.for('else'), Symbol.for('baz')],
+        ]);
+        const resultVar: any = (
+          Array.isArray(actual) &&
+          actual.length >= 3 &&
+          actual[actual.length - 2] === Symbol.for('.') &&
+          ((): any => {
+            const x: any = lastCdr(actual);
+            return Array.isArray(x) && x.length === 0;
+          })()
+            ? ((): any => {
+                let i: any = 1;
+                let result: any = actual;
+                while (i > 0) {
+                  if (
+                    Array.isArray(result) &&
+                    result.length === 3 &&
+                    result[1] === Symbol.for('.')
+                  ) {
+                    result = actual[actual.length - 1];
+                  } else {
+                    result = actual.slice(1);
+                  }
+                  i--;
+                }
+                if (Array.isArray(result)) {
+                  result = result[0];
+                }
+                return result;
+              })()
+            : actual[1]
+        )[0][0];
+        const expected: any = [
+          Symbol.for('let'),
           [
-            Symbol.for('member?'),
-            resultVar,
-            [Symbol.for('quote'), ['foo', 'bar']],
+            [
+              resultVar,
+              [Symbol.for('get-field'), Symbol.for('prop'), Symbol.for('x')],
+            ],
           ],
-          Symbol.for('foo'),
-        ],
-        [Symbol.for('else'), Symbol.for('baz')],
-      ],
-    ];
-    return assertEqual(actual, expected);
+          [
+            Symbol.for('cond'),
+            [
+              [
+                Symbol.for('member?'),
+                resultVar,
+                [Symbol.for('quote'), ['foo', 'bar']],
+              ],
+              Symbol.for('foo'),
+            ],
+            [Symbol.for('else'), Symbol.for('baz')],
+          ],
+        ];
+        return assertEqual(actual, expected);
+      })(),
+      undefined
+    );
   });
 });
 
 describe('case', function (): any {
-  it('(case x (("foo") foo) (else bar))', function (): any {
+  it('(case_ \'(case x (("foo") foo) (else bar)))', function (): any {
     return assertEqual(
       case_([
         Symbol.for('case'),
@@ -621,7 +626,7 @@ describe('case', function (): any {
       ]
     );
   });
-  it('(case x ((("foo")) foo) (else bar))', function (): any {
+  return it('(case_ \'(case x ((("foo")) foo) (else bar)))', function (): any {
     return assertEqual(
       case_([
         Symbol.for('case'),
@@ -644,7 +649,10 @@ describe('case', function (): any {
       ]
     );
   });
-  return it("> (case 'foo ((foo) 1))", function (): any {
+});
+
+describe('case', function (): any {
+  return it("(case 'foo ((foo) 1))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),

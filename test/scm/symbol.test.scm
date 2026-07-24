@@ -12,17 +12,17 @@
  ;; `s`
  > (describe "s")
  _
- > (js/tag s "foo")
- 'foo
  > (s "foo")
  'foo
+ > (js/tag s "foo")
+ 'foo
+ > (js/tag s "foo${1}")
+ 'foo1
  > (js/tag s "${'foo'}")
  'foo
- > (js/tag s "foo${2}")
- 'foo2
 
  ;; `symbolp`
  > (describe "symbolp")
  _
- > (symbolp_ (js/tag s "foo"))
+ > (symbolp_ 'foo)
  #t)

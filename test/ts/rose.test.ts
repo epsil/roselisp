@@ -1,34 +1,30 @@
-import { sexp } from '../../src/ts/language';
-
 import { Rose, Forest, wrapSexpInRose } from '../../src/ts/rose';
 
-import { assertEqual } from './test-util';
+import { assertEqual, testMacro } from './test-util';
 
 describe('Rose', function (): any {
-  return describe('insert', function (): any {
-    return it('foo/bar', function (): any {
-      const foo: any = new Rose('foo');
-      const bar: any = new Rose('bar');
-      foo.insert(bar);
-      return assertEqual(foo.getForest(), new Forest(bar).setParent(foo));
-    });
+  return it('insert', function (): any {
+    const foo: any = new Rose('foo');
+    const bar: any = new Rose('bar');
+    foo.insert(bar);
+    return assertEqual(foo.getForest(), new Forest(bar).setParent(foo));
   });
 });
 
 describe('wrap-sexp-in-rose', function (): any {
-  it('1', function (): any {
+  it('(wrap-sexp-in-rose 1)', function (): any {
     return assertEqual(wrapSexpInRose(1), new Rose(1));
   });
-  it('"1"', function (): any {
+  it('(wrap-sexp-in-rose "1")', function (): any {
     return assertEqual(wrapSexpInRose('1'), new Rose('1'));
   });
-  it('foo', function (): any {
+  it("(wrap-sexp-in-rose 'foo)", function (): any {
     return assertEqual(
       wrapSexpInRose(Symbol.for('foo')),
       new Rose(Symbol.for('foo'))
     );
   });
-  it('(foo bar)', function (): any {
+  it("(wrap-sexp-in-rose '(foo bar))", function (): any {
     return assertEqual(
       wrapSexpInRose([Symbol.for('foo'), Symbol.for('bar')]),
       new Rose(
@@ -37,7 +33,7 @@ describe('wrap-sexp-in-rose', function (): any {
       )
     );
   });
-  it('(+ 1 1)', function (): any {
+  it("(wrap-sexp-in-rose '(+ 1 1))", function (): any {
     return assertEqual(
       wrapSexpInRose([Symbol.for('+'), 1, 1]),
       new Rose(
@@ -46,7 +42,7 @@ describe('wrap-sexp-in-rose', function (): any {
       )
     );
   });
-  it('(+ 1 2)', function (): any {
+  it("(wrap-sexp-in-rose '(+ 1 2))", function (): any {
     return assertEqual(
       wrapSexpInRose([Symbol.for('+'), 1, 2]),
       new Rose(
@@ -55,7 +51,7 @@ describe('wrap-sexp-in-rose', function (): any {
       )
     );
   });
-  it('(+ (+ 1))', function (): any {
+  it("(wrap-sexp-in-rose '(+ (+ 1)))", function (): any {
     return assertEqual(
       wrapSexpInRose([Symbol.for('+'), [Symbol.for('+'), 1]]),
       new Rose(
@@ -70,7 +66,7 @@ describe('wrap-sexp-in-rose', function (): any {
       )
     );
   });
-  it('(+ (+ 1 1))', function (): any {
+  it("(wrap-sexp-in-rose '(+ (+ 1 1)))", function (): any {
     return assertEqual(
       wrapSexpInRose([Symbol.for('+'), [Symbol.for('+'), 1, 1]]),
       new Rose(
@@ -85,7 +81,7 @@ describe('wrap-sexp-in-rose', function (): any {
       )
     );
   });
-  return it('(+ (+ 1 1) 2)', function (): any {
+  return it("(wrap-sexp-in-rose '(+ (+ 1 1) 2))", function (): any {
     return assertEqual(
       wrapSexpInRose([Symbol.for('+'), [Symbol.for('+'), 1, 1], 2]),
       new Rose(

@@ -877,7 +877,7 @@ describe('quote', function (): any {
   });
 });
 
-describe('quasoquote', function (): any {
+describe('quasiquote', function (): any {
   it('`foo', function (): any {
     return testRepl([
       Symbol.for('roselisp'),

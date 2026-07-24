@@ -3,45 +3,36 @@
 (require (only-in "../../src/ts/estree"
                   BinaryExpression))
 (require (only-in "./test-util"
-                  assert-equal))
+                  assert-equal
+                  test-macro))
 
-(describe "ESTree"
-  (fn ()
-    (describe "parsing"
-      (fn ()
-        (xit "const hello: string = 'world';"
-             (fn ()
-               (define code
-                 "const hello: string = 'world';")
-               (define ast
-                 (parse code (js-obj "loc" #t "range" #t)))
-               (assert-equal
-                ast
-                (js-obj))))
-        (xit "foo();"
-             (fn ()
-               (define code
-                 "foo();")
-               (define ast
-                 (parse code (js-obj "loc" #t "range" #t)))
-               (assert-equal
-                ast
-                (js-obj))))
-        (xit "foo.bar();"
-             (fn ()
-               (define code
-                 "foo.bar();")
-               (define ast
-                 (parse code (js-obj "loc" #t "range" #t)))
-               (assert-equal
-                ast
-                (js-obj))))
-        (xit "let foo = function () { return undefined };"
-             (fn ()
-               (define code
-                 "let foo = function () { return undefined };")
-               (define ast
-                 (parse code (js-obj "loc" #t "range" #t)))
-               (assert-equal
-                ast
-                (js-obj))))))))
+(declare-macro test-macro)
+
+(test-macro
+ ;; ESTree
+ > (describe "ESTree")
+ _
+ xit> (it "const hello: string = 'world';"
+          (let* ((code "const hello: string = 'world';")
+                 (ast (parse code (js-obj "loc" #t
+                                          "range" #t))))
+            ast))
+ (js-obj)
+ xit> (it "foo();"
+          (let* ((code "foo();")
+                 (ast (parse code (js-obj "loc" #t
+                                          "range" #t))))
+            ast))
+ (js-obj)
+ xit> (it "foo.bar();"
+          (let* ((code "foo.bar();")
+                 (ast (parse code (js-obj "loc" #t
+                                          "range" #t))))
+            ast))
+ (js-obj)
+ xit> (it "let foo = function () { return undefined };"
+          (let* ((code "let foo = function () { return undefined };")
+                 (ast (parse code (js-obj "loc" #t
+                                          "range" #t))))
+            ast))
+ (js-obj))

@@ -1,27 +1,27 @@
 import { equalp_ } from '../../src/ts/equal';
 
-import { assertEqual } from './test-util';
+import { assertEqual, testMacro } from './test-util';
 
 describe('equal?', function (): any {
-  it('(equal? "" "")', function (): any {
+  it('(equal?_ "" "")', function (): any {
     return assertEqual(equalp_('', ''), true);
   });
-  it('(equal? "foo" "foo")', function (): any {
+  it('(equal?_ "foo" "foo")', function (): any {
     return assertEqual(equalp_('foo', 'foo'), true);
   });
-  it('(equal? "foo" "bar")', function (): any {
+  it('(equal?_ "foo" "bar")', function (): any {
     return assertEqual(equalp_('foo', 'bar'), false);
   });
-  it("(equal? '() '())", function (): any {
+  it("(equal?_ '() '())", function (): any {
     return assertEqual(equalp_([], []), true);
   });
-  it("(equal? '(1 2 3) '(1 2 3))", function (): any {
+  it("(equal?_ '(1 2 3) '(1 2 3))", function (): any {
     return assertEqual(equalp_([1, 2, 3], [1, 2, 3]), true);
   });
-  it('(equal? (make-hash) (make-hash))', function (): any {
+  it('(equal?_ (make-hash) (make-hash))', function (): any {
     return assertEqual(equalp_(new Map(), new Map()), true);
   });
-  it('(equal? (make-hash \'(("foo" . "bar"))) (make-hash \'(("foo" . "bar"))))', function (): any {
+  it('(equal?_ (make-hash \'(("foo" . "bar"))) (make-hash \'(("foo" . "bar"))))', function (): any {
     return assertEqual(
       equalp_(
         new Map([['foo', 'bar']] as any),
@@ -30,10 +30,10 @@ describe('equal?', function (): any {
       true
     );
   });
-  it('(equal? (js-obj) (js-obj))', function (): any {
+  it('(equal?_ (js-obj) (js-obj))', function (): any {
     return assertEqual(equalp_({}, {}), true);
   });
-  it('(equal? (js-obj "foo" "bar") (js-obj "foo" "bar"))', function (): any {
+  it('(equal?_ (js-obj "foo" "bar") (js-obj "foo" "bar"))', function (): any {
     return assertEqual(
       equalp_(
         {
@@ -46,7 +46,7 @@ describe('equal?', function (): any {
       true
     );
   });
-  return it('(equal? (js-obj "foo" (js-obj "bar" "baz")) (js-obj "foo" (js-obj "bar" "baz")))', function (): any {
+  return it('(equal?_ (js-obj "foo" (js-obj "bar" "baz")) (js-obj "foo" (js-obj "bar" "baz")))', function (): any {
     return assertEqual(
       equalp_(
         {

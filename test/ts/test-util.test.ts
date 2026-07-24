@@ -9,86 +9,83 @@ import {
   compileReplForm,
   simplifyReplForm,
   testRepl,
+  testMacro,
 } from './test-util';
 
 describe('test-repl', function (): any {
-  describe('roselisp REPL', function (): any {
-    it('(> ...)', function (): any {
-      return testRepl([Symbol.for('>'), [Symbol.for('+'), 1, 1], 2]);
-    });
-    it('(_ > ...)', function (): any {
-      return testRepl([
-        Symbol.for('_'),
-        Symbol.for('>'),
-        [Symbol.for('+'), 1, 1],
-        2,
-      ]);
-    });
-    it('(repl > ...)', function (): any {
-      return testRepl([
-        Symbol.for('repl'),
-        Symbol.for('>'),
-        [Symbol.for('+'), 1, 1],
-        2,
-      ]);
-    });
-    it('(shell > ...)', function (): any {
-      return testRepl([
-        Symbol.for('shell'),
-        Symbol.for('>'),
-        [Symbol.for('+'), 1, 1],
-        2,
-      ]);
-    });
-    it('(roselisp > ...)', function (): any {
-      return testRepl([
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
-        [Symbol.for('+'), 1, 1],
-        2,
-      ]);
-    });
-    it('($ roselisp > ...)', function (): any {
-      return testRepl([
-        Symbol.for('$'),
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
-        [Symbol.for('+'), 1, 1],
-        2,
-      ]);
-    });
-    it('(+ 2 2)', function (): any {
-      return testRepl([
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
-        [Symbol.for('+'), 2, 2],
-        4,
-      ]);
-    });
-    return it('(list 1 2 3 4)', function (): any {
-      return testRepl([
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
-        [Symbol.for('list'), 1, 2, 3, 4],
-        [Symbol.for('quote'), [1, 2, 3, 4]],
-      ]);
-    });
+  it('(> ...)', function (): any {
+    return testRepl([Symbol.for('>'), [Symbol.for('+'), 1, 1], 2]);
   });
-  return describe('node REPL', function (): any {
-    it('1 + 1', function (): any {
-      return testRepl([Symbol.for('node'), Symbol.for('>'), '1 + 1', '2']);
-    });
-    return xit('const n = 1', function (): any {
-      return testRepl([
-        Symbol.for('node'),
-        Symbol.for('>'),
-        'const n = 1',
-        'undefined',
-        Symbol.for('>'),
-        'n + 1',
-        '2',
-      ]);
-    });
+  it('(_ > ...)', function (): any {
+    return testRepl([
+      Symbol.for('_'),
+      Symbol.for('>'),
+      [Symbol.for('+'), 1, 1],
+      2,
+    ]);
+  });
+  it('(repl > ...)', function (): any {
+    return testRepl([
+      Symbol.for('repl'),
+      Symbol.for('>'),
+      [Symbol.for('+'), 1, 1],
+      2,
+    ]);
+  });
+  it('(shell > ...)', function (): any {
+    return testRepl([
+      Symbol.for('shell'),
+      Symbol.for('>'),
+      [Symbol.for('+'), 1, 1],
+      2,
+    ]);
+  });
+  it('(roselisp > ...)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('+'), 1, 1],
+      2,
+    ]);
+  });
+  it('($ roselisp > ...)', function (): any {
+    return testRepl([
+      Symbol.for('$'),
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('+'), 1, 1],
+      2,
+    ]);
+  });
+  it('(+ 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('+'), 2, 2],
+      4,
+    ]);
+  });
+  it('(list 1 2 3 4)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('list'), 1, 2, 3, 4],
+      [Symbol.for('quote'), [1, 2, 3, 4]],
+    ]);
+  });
+  it('1 + 1', function (): any {
+    return testRepl([Symbol.for('node'), Symbol.for('>'), '1 + 1', '2']);
+  });
+  return xit('const n = 1', function (): any {
+    return testRepl([
+      Symbol.for('node'),
+      Symbol.for('>'),
+      'const n = 1',
+      'undefined',
+      Symbol.for('>'),
+      'n + 1',
+      '2',
+    ]);
   });
 });
 

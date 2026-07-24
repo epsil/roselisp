@@ -6,83 +6,145 @@ import { __, LispEnvironment, interpret, lisp } from '../../src/ts/language';
 
 import { s, sexp } from '../../src/ts/sexp';
 
-import { assertEqual, assertThrows, testLisp, testRepl } from './test-util';
+import {
+  assertEqual,
+  assertThrows,
+  testLisp,
+  testRepl,
+  testMacro,
+} from './test-util';
 
 describe('boolean values', function (): any {
   it('true', function (): any {
-    testLisp(sexp`true`, true);
-    testLisp(sexp`t`, true);
-    return testLisp(sexp`#t`, true);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      Symbol.for('true'),
+      true,
+    ]);
   });
-  return it('false', function (): any {
-    testLisp(sexp`false`, false);
-    return testLisp(sexp`#f`, false);
+  it('t', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      Symbol.for('t'),
+      true,
+    ]);
+  });
+  it('#t', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), true, true]);
+  });
+  it('false', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      Symbol.for('false'),
+      false,
+    ]);
+  });
+  return it('#f', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), false, false]);
   });
 });
 
 describe('truep', function (): any {
   it('(truep true)', function (): any {
-    return testLisp([Symbol.for('truep'), Symbol.for('true')], true);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('truep'), Symbol.for('true')],
+      true,
+    ]);
   });
   it('(truep false)', function (): any {
-    return testLisp([Symbol.for('truep'), Symbol.for('false')], false);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('truep'), Symbol.for('false')],
+      false,
+    ]);
   });
   it('(truep undefined)', function (): any {
-    return testLisp([s`truep`, undefined], false);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('truep'), Symbol.for('undefined')],
+      false,
+    ]);
   });
   return it('(truep true)', function (): any {
-    return testLisp([s`truep`, s`true`], true);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('truep'), Symbol.for('true')],
+      true,
+    ]);
   });
 });
 
 describe('falsep', function (): any {
   it('(falsep true)', function (): any {
-    return assertEqual(
-      interpret([Symbol.for('falsep'), Symbol.for('true')]),
-      false
-    );
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('falsep'), Symbol.for('true')],
+      false,
+    ]);
   });
   it('(falsep false)', function (): any {
-    return assertEqual(
-      interpret([Symbol.for('falsep'), Symbol.for('false')]),
-      true
-    );
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('falsep'), Symbol.for('false')],
+      true,
+    ]);
   });
   return it('(falsep undefined)', function (): any {
-    return assertEqual(
-      interpret([Symbol.for('falsep'), Symbol.for('undefined')]),
-      true
-    );
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('falsep'), Symbol.for('undefined')],
+      true,
+    ]);
   });
 });
 
-describe('variables', function (): any {
-  return xit('(setq a 1 b 2 c 3)', function (): any {
-    return testLisp(
+describe('Variables', function (): any {
+  return xit("'(begin (setq a 1 b 2 c 3) (list a b c))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
-        Symbol.for('begin'),
+        Symbol.for('quote'),
         [
-          Symbol.for('setq'),
-          Symbol.for('a'),
-          1,
-          Symbol.for('b'),
-          2,
-          Symbol.for('c'),
-          3,
+          Symbol.for('begin'),
+          [
+            Symbol.for('setq'),
+            Symbol.for('a'),
+            1,
+            Symbol.for('b'),
+            2,
+            Symbol.for('c'),
+            3,
+          ],
+          [
+            Symbol.for('list'),
+            Symbol.for('a'),
+            Symbol.for('b'),
+            Symbol.for('c'),
+          ],
         ],
-        [Symbol.for('list'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')],
       ],
-      [1, 2, 3],
-      {
-        compile: false,
-      }
-    );
+      [Symbol.for('quote'), [1, 2, 3]],
+    ]);
   });
 });
 
-describe('function calls', function (): any {
-  xit('((add _ 2 3) 1)', function (): any {
-    return testLisp(
+describe('Function calls', function (): any {
+  xit('(begin (define ((((my-add) x) y) z) (+ x y z)) ((my-add _ 2 3) 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -95,11 +157,13 @@ describe('function calls', function (): any {
         ],
         [[Symbol.for('my-add'), Symbol.for('_'), 2, 3], 1],
       ],
-      6
-    );
+      6,
+    ]);
   });
-  xit('((my-add _ _ _) 1 2 3)', function (): any {
-    return testLisp(
+  xit('(begin (define ((((my-add) x) y) z) (+ x y z)) ((my-add _ _ _) 1 2 3))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -122,11 +186,13 @@ describe('function calls', function (): any {
           3,
         ],
       ],
-      6
-    );
+      6,
+    ]);
   });
-  xit('(((add _ _ 3) 1) 2)', function (): any {
-    return testLisp(
+  xit('(begin (define ((((my-add) x) y) z) (+ x y z)) (((my-add _ _ 3) 1) 2))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -139,11 +205,13 @@ describe('function calls', function (): any {
         ],
         [[[Symbol.for('my-add'), Symbol.for('_'), Symbol.for('_'), 3], 1], 2],
       ],
-      6
-    );
+      6,
+    ]);
   });
-  return xit('((add _ _ 3) 1 2)', function (): any {
-    return testLisp(
+  return xit('(begin (define ((((my-add) x) y) z) (+ x y z)) ((my-add _ _ 3) 1 2))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -156,14 +224,16 @@ describe('function calls', function (): any {
         ],
         [[Symbol.for('my-add'), Symbol.for('_'), Symbol.for('_'), 3], 1, 2],
       ],
-      6
-    );
+      6,
+    ]);
   });
 });
 
 describe('define', function (): any {
-  it('(define ((my-add x) y) ...)', function (): any {
-    return testLisp(
+  it('(begin (define ((my-add x) y) (+ x y)) (my-add 2 3))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
         Symbol.for('begin'),
         [
@@ -173,11 +243,13 @@ describe('define', function (): any {
         ],
         [Symbol.for('my-add'), 2, 3],
       ],
-      5
-    );
+      5,
+    ]);
   });
-  xit('(define ((my-add x) y) ...)', function (): any {
-    return testLisp(
+  xit('(begin (define ((my-add x) y) (+ x y)) ((my-add 2) 3))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -187,11 +259,13 @@ describe('define', function (): any {
         ],
         [[Symbol.for('my-add'), 2], 3],
       ],
-      5
-    );
+      5,
+    ]);
   });
-  xit('(define (((add) x) y) ...)', function (): any {
-    return testLisp(
+  xit('(begin (define (((my-add) x) y) (+ x y)) (((my-add) 2) 3))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -201,11 +275,13 @@ describe('define', function (): any {
         ],
         [[[Symbol.for('my-add')], 2], 3],
       ],
-      5
-    );
+      5,
+    ]);
   });
-  return it('(define ((add x y) z) ...)', function (): any {
-    return testLisp(
+  return xit('(begin (define ((my-add x y) z) (+ x y z)) (my-add 1 2 3))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -218,241 +294,201 @@ describe('define', function (): any {
         ],
         [Symbol.for('my-add'), 1, 2, 3],
       ],
-      6
-    );
+      6,
+    ]);
   });
 });
 
-// (test-lisp
-//  '(begin
-//     (define ((my-add x y) z)
-//       (+ x y z))
-//     ((my-add 1 2) 3))
-//  6)
-// (test-lisp
-//  '(begin
-//     (define ((my-add x y) z)
-//       (+ x y z))
-//     ((my-add 1) 2 3))
-//  6)
-// (test-lisp
-//  '(begin
-//     (define ((my-add x y) z)
-//       (+ x y z))
-//     (((my-add 1) 2) 3))
-//  6)
-// (test-lisp
-//  '(begin
-//     (define ((my-add x y) z)
-//       (+ x y z))
-//     ((((my-add) 1) 2) 3))
-//  6)
-// (test-lisp
-//  '(begin
-//     (define ((((my-add) x) y) z)
-//       (+ x y z))
-//     ((((my-add) 1) 2) 3))
-//  6)
 describe('define-macro', function (): any {
-  it('(define-macro (foo x) x)', function (): any {
-    return testRepl(
+  xit("((lambda () (define-macro (foo x) x) (foo '(foo 1))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
         [
-          Symbol.for('define-macro'),
-          [Symbol.for('foo'), Symbol.for('x')],
-          Symbol.for('x'),
-        ],
-        Symbol.for('_'),
-        Symbol.for('>'),
-        [Symbol.for('foo'), [Symbol.for('quote'), [Symbol.for('foo'), 1]]],
-        [Symbol.for('quote'), [Symbol.for('foo'), 1]],
-      ],
-      {
-        compile: false,
-      }
-    );
-  });
-  it('(define-macro (foo x) `(+ ,x ,x))', function (): any {
-    return testRepl(
-      [
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
-        [
-          Symbol.for('define-macro'),
-          [Symbol.for('foo'), Symbol.for('x')],
+          Symbol.for('lambda'),
+          [],
           [
-            Symbol.for('quasiquote'),
+            Symbol.for('define-macro'),
+            [Symbol.for('foo'), Symbol.for('x')],
+            Symbol.for('x'),
+          ],
+          [Symbol.for('foo'), [Symbol.for('quote'), [Symbol.for('foo'), 1]]],
+        ],
+      ],
+      [Symbol.for('quote'), [Symbol.for('foo'), 1]],
+    ]);
+  });
+  xit('((lambda () (define-macro (foo x) `(+ ,x ,x)) (foo 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        [
+          Symbol.for('lambda'),
+          [],
+          [
+            Symbol.for('define-macro'),
+            [Symbol.for('foo'), Symbol.for('x')],
             [
-              Symbol.for('+'),
-              [Symbol.for('unquote'), Symbol.for('x')],
-              [Symbol.for('unquote'), Symbol.for('x')],
+              Symbol.for('quasiquote'),
+              [
+                Symbol.for('+'),
+                [Symbol.for('unquote'), Symbol.for('x')],
+                [Symbol.for('unquote'), Symbol.for('x')],
+              ],
             ],
           ],
+          [Symbol.for('foo'), 1],
         ],
-        Symbol.for('_'),
-        Symbol.for('>'),
-        [Symbol.for('foo'), 1],
-        2,
       ],
-      {
-        compile: false,
-      }
-    );
+      2,
+    ]);
   });
-  return xit('(define-macro my-macro (x) ...)', function (): any {
-    return testLisp(
+  return xit('((lambda () (define-macro my-macro (x) `(begin ,x)) (my-macro 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
-        Symbol.for('begin'),
         [
-          Symbol.for('define-macro'),
-          Symbol.for('my-macro'),
-          [Symbol.for('x')],
+          Symbol.for('lambda'),
+          [],
           [
-            Symbol.for('quasiquote'),
-            [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
+            Symbol.for('define-macro'),
+            Symbol.for('my-macro'),
+            [Symbol.for('x')],
+            [
+              Symbol.for('quasiquote'),
+              [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
+            ],
           ],
+          [Symbol.for('my-macro'), 1],
         ],
-        [Symbol.for('my-macro'), 1],
       ],
       1,
-      {
-        compile: false,
-      }
-    );
+    ]);
   });
 });
 
 describe('defmacro', function (): any {
-  it('(defmacro foo (x) x)', function (): any {
-    return testRepl(
+  xit("((lambda () (defmacro foo (x) x) (foo '(foo 1))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
-        Symbol.for('roselisp'),
-        Symbol.for('>'),
         [
-          Symbol.for('defmacro'),
-          Symbol.for('foo'),
-          [Symbol.for('x')],
-          Symbol.for('x'),
+          Symbol.for('lambda'),
+          [],
+          [
+            Symbol.for('defmacro'),
+            Symbol.for('foo'),
+            [Symbol.for('x')],
+            Symbol.for('x'),
+          ],
+          [Symbol.for('foo'), [Symbol.for('quote'), [Symbol.for('foo'), 1]]],
         ],
-        Symbol.for('_'),
-        Symbol.for('>'),
-        [Symbol.for('foo'), [Symbol.for('quote'), [Symbol.for('foo'), 1]]],
-        [Symbol.for('quote'), [Symbol.for('foo'), 1]],
       ],
-      {
-        compile: false,
-      }
-    );
+      [Symbol.for('quote'), [Symbol.for('foo'), 1]],
+    ]);
   });
-  xit('(defmacro my-macro (&environment env) ...)', function (): any {
-    return testLisp(
+  xit("((lambda () (defmacro my-macro (&environment env) (send env has '+)) (my-macro)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
-        Symbol.for('begin'),
         [
-          Symbol.for('defmacro'),
-          Symbol.for('my-macro'),
-          [Symbol.for('&environment'), Symbol.for('env')],
+          Symbol.for('lambda'),
+          [],
           [
-            Symbol.for('send'),
-            Symbol.for('env'),
-            Symbol.for('has'),
-            [Symbol.for('quote'), Symbol.for('+')],
+            Symbol.for('defmacro'),
+            Symbol.for('my-macro'),
+            [Symbol.for('&environment'), Symbol.for('env')],
+            [
+              Symbol.for('send'),
+              Symbol.for('env'),
+              Symbol.for('has'),
+              [Symbol.for('quote'), Symbol.for('+')],
+            ],
           ],
+          [Symbol.for('my-macro')],
         ],
-        [Symbol.for('my-macro')],
-      ],
-      true,
-      {
-        compile: false,
-        env: new LispEnvironment([
-          [
-            Symbol.for('+'),
-            function (x: any, y: any): any {
-              return x + y;
-            },
-            'function',
-          ],
-        ]),
-      }
-    );
-  });
-  xit('(defmacro my-macro (&environment env-arg) ...)', function (): any {
-    return testLisp(
-      [
-        Symbol.for('begin'),
-        [
-          Symbol.for('defmacro'),
-          Symbol.for('my-macro'),
-          [Symbol.for('&environment'), Symbol.for('env-arg')],
-          [
-            Symbol.for('send'),
-            Symbol.for('env-arg'),
-            Symbol.for('has'),
-            [Symbol.for('quote'), Symbol.for('+')],
-          ],
-        ],
-        [Symbol.for('my-macro')],
       ],
       true,
-      {
-        compile: false,
-        env: new LispEnvironment([
-          [
-            Symbol.for('+'),
-            function (x: any, y: any): any {
-              return x + y;
-            },
-            'function',
-          ],
-        ]),
-      }
-    );
+    ]);
   });
-  return xit('(defmacro (my-macro x) ...)', function (): any {
-    return testLisp(
+  xit("((lambda () (defmacro my-macro (&environment env-arg) (send env-arg has '+)) (my-macro)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
-        Symbol.for('begin'),
         [
-          Symbol.for('defmacro'),
-          [Symbol.for('my-macro'), Symbol.for('x')],
+          Symbol.for('lambda'),
+          [],
           [
-            Symbol.for('quasiquote'),
-            [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
+            Symbol.for('defmacro'),
+            Symbol.for('my-macro'),
+            [Symbol.for('&environment'), Symbol.for('env-arg')],
+            [
+              Symbol.for('send'),
+              Symbol.for('env-arg'),
+              Symbol.for('has'),
+              [Symbol.for('quote'), Symbol.for('+')],
+            ],
           ],
+          [Symbol.for('my-macro')],
         ],
-        [Symbol.for('my-macro'), 1],
+      ],
+      true,
+    ]);
+  });
+  return xit('((lambda () (defmacro (my-macro x) `(begin ,x)) (my-macro 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        [
+          Symbol.for('lambda'),
+          [],
+          [
+            Symbol.for('defmacro'),
+            [Symbol.for('my-macro'), Symbol.for('x')],
+            [
+              Symbol.for('quasiquote'),
+              [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
+            ],
+          ],
+          [Symbol.for('my-macro'), 1],
+        ],
       ],
       1,
-      {
-        compile: false,
-      }
-    );
+    ]);
   });
 });
 
 describe('lambda', function (): any {
-  return it('(<fn> 1 1)', function (): any {
-    return testLisp(
+  return it('((lambda (x y) (+ x y)) 1 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
-        function (x: any, y: any): any {
-          return x + y;
-        },
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('x'), Symbol.for('y')],
+          [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')],
+        ],
         1,
         1,
       ],
       2,
-      {
-        wrapParens: true,
-      }
-    );
+    ]);
   });
 });
 
 describe('nlambda', function (): any {
-  xit('(define f (nlambda ...))', function (): any {
-    return testLisp(
+  xit('(begin (setq a 1 b 2 c 3) (define f (nlambda (x y z) (list x y z))) (f a b c))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -480,14 +516,16 @@ describe('nlambda', function (): any {
         ],
         [Symbol.for('f'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')],
       ],
-      [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')],
-      {
-        compile: false,
-      }
-    );
+      [
+        Symbol.for('quote'),
+        [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')],
+      ],
+    ]);
   });
-  return xit('((nlambda ...) ...)', function (): any {
-    return testLisp(
+  return xit('(begin (setq a 1 b 2 c 3) ((nlambda (x y z) (list x y z)) a b c))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -515,23 +553,30 @@ describe('nlambda', function (): any {
           Symbol.for('c'),
         ],
       ],
-      [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')],
-      {
-        compile: false,
-      }
-    );
+      [
+        Symbol.for('quote'),
+        [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')],
+      ],
+    ]);
   });
 });
 
 describe('if', function (): any {
   return xit('(if "" 1 2)', function (): any {
-    return testLisp([Symbol.for('if'), '', 1, 2], 1);
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [Symbol.for('if'), '', 1, 2],
+      1,
+    ]);
   });
 });
 
 describe('eq?', function (): any {
-  it("(eq (my-unit 'foo) 'foo)", function (): any {
-    return testLisp(
+  it("(begin (define (my-unit x) x) (my-unit 'foo))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
         Symbol.for('begin'),
         [
@@ -541,11 +586,13 @@ describe('eq?', function (): any {
         ],
         [Symbol.for('my-unit'), [Symbol.for('quote'), Symbol.for('foo')]],
       ],
-      Symbol.for('foo')
-    );
+      [Symbol.for('quote'), Symbol.for('foo')],
+    ]);
   });
-  return it("(eq (my-curried-unit '_) '_)", function (): any {
-    return testLisp(
+  return xit("(begin (define ((my-curried-unit) x) x) (my-curried-unit '_))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('begin'),
         [
@@ -555,14 +602,16 @@ describe('eq?', function (): any {
         ],
         [Symbol.for('my-curried-unit'), [Symbol.for('quote'), Symbol.for('_')]],
       ],
-      Symbol.for('_')
-    );
+      [Symbol.for('quote'), Symbol.for('_')],
+    ]);
   });
 });
 
 describe('for', function (): any {
-  return xit('(let ... (for ((x ...) (y ...)) ...) ...)', function (): any {
-    return testLisp(
+  return xit("(let ((result '())) (for ((x '(1 2 3)) (y '(4 5 6))) (set! result (cons x result)) (set! result (cons y result))) result)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('let'),
         [[Symbol.for('result'), [Symbol.for('quote'), []]]],
@@ -585,14 +634,16 @@ describe('for', function (): any {
         ],
         Symbol.for('result'),
       ],
-      [6, 3, 5, 2, 4, 1]
-    );
+      [Symbol.for('quote'), [6, 3, 5, 2, 4, 1]],
+    ]);
   });
 });
 
 describe('send', function (): any {
   xit("(send obj 'add 1 1)", function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('send'),
         Symbol.for('obj'),
@@ -601,24 +652,12 @@ describe('send', function (): any {
         1,
       ],
       2,
-      {
-        compile: false,
-        env: new LispEnvironment([
-          [
-            Symbol.for('obj'),
-            {
-              add: function (x: any, y: any): any {
-                return x + y;
-              },
-            },
-            'variable',
-          ],
-        ]),
-      }
-    );
+    ]);
   });
   return it('(send (make-hash \'(("foo" . "foo"))) has \'("foo"))', function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
         Symbol.for('send'),
         [
@@ -628,94 +667,119 @@ describe('send', function (): any {
         Symbol.for('has'),
         [Symbol.for('quote'), ['foo']],
       ],
-      false
-    );
+      false,
+    ]);
   });
 });
 
 describe('dot', function (): any {
-  it('(. obj add1 1)', function (): any {
-    return testLisp(
-      [Symbol.for('.'), Symbol.for('obj'), Symbol.for('add1'), 1],
-      2,
-      {
-        compile: false,
-        env: new LispEnvironment([
+  it('(let ((obj (js-obj "add1" (lambda (x) (+ x 1))))) (. obj add1 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [
           [
             Symbol.for('obj'),
-            {
-              add1: function (x: any): any {
-                return x + 1;
-              },
-            },
-            'variable',
+            [
+              Symbol.for('js-obj'),
+              'add1',
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('x')],
+                [Symbol.for('+'), Symbol.for('x'), 1],
+              ],
+            ],
           ],
-        ]),
-      }
-    );
-  });
-  it('(.add1 obj 1)', function (): any {
-    return testLisp([Symbol.for('.add1'), Symbol.for('obj'), 1], 2, {
-      compile: false,
-      env: new LispEnvironment([
-        [
-          Symbol.for('obj'),
-          {
-            add1: function (x: any): any {
-              return x + 1;
-            },
-          },
-          'variable',
         ],
-      ]),
-    });
+        [Symbol.for('.'), Symbol.for('obj'), Symbol.for('add1'), 1],
+      ],
+      2,
+    ]);
   });
-  it('(.add obj 1 1)', function (): any {
-    return testLisp([Symbol.for('.add'), Symbol.for('obj'), 1, 1], 2, {
-      compile: false,
-      env: new LispEnvironment([
+  it('(let ((obj (js-obj "add1" (lambda (x) (+ x 1))))) (.add1 obj 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
         [
-          Symbol.for('obj'),
-          {
-            add: function (x: any, y: any): any {
-              return x + y;
-            },
-          },
-          'variable',
+          [
+            Symbol.for('obj'),
+            [
+              Symbol.for('js-obj'),
+              'add1',
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('x')],
+                [Symbol.for('+'), Symbol.for('x'), 1],
+              ],
+            ],
+          ],
         ],
-      ]),
-    });
+        [Symbol.for('.add1'), Symbol.for('obj'), 1],
+      ],
+      2,
+    ]);
   });
-  it('(.-prop obj)', function (): any {
-    return testLisp(
+  it('(let ((obj (js-obj "add" (lambda (x y) (+ x y))))) (.add obj 1 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [
+          [
+            Symbol.for('obj'),
+            [
+              Symbol.for('js-obj'),
+              'add',
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('x'), Symbol.for('y')],
+                [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')],
+              ],
+            ],
+          ],
+        ],
+        [Symbol.for('.add'), Symbol.for('obj'), 1, 1],
+      ],
+      2,
+    ]);
+  });
+  it('(let ((obj (js-obj))) (set! (.-prop obj) "bar") (.-prop obj))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('obj'), [Symbol.for('js-obj')]]],
         [Symbol.for('set!'), [Symbol.for('.-prop'), Symbol.for('obj')], 'bar'],
         [Symbol.for('.-prop'), Symbol.for('obj')],
       ],
-      'bar'
-    );
+      'bar',
+    ]);
   });
-  return it('(.-prop obj) 2', function (): any {
-    return testLisp([Symbol.for('.-prop'), Symbol.for('obj')], 'foo', {
-      compile: false,
-      env: new LispEnvironment([
-        [
-          Symbol.for('obj'),
-          {
-            prop: 'foo',
-          },
-          'variable',
-        ],
-      ]),
-    });
+  return it('(let ((obj (js-obj "prop" "foo"))) (.-prop obj))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'prop', 'foo']]],
+        [Symbol.for('.-prop'), Symbol.for('obj')],
+      ],
+      'foo',
+    ]);
   });
 });
 
 describe('new', function (): any {
-  return it('(new (class ...)) extending Object', function (): any {
-    return testLisp(
+  return it('(let (quux) (set! quux (new (class (Object) (define/public val 1) (define (constructor x) (set! (.-val this) x)) (define/public (bar) (.-val this))) 2)) (.bar quux))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
         Symbol.for('let'),
         [Symbol.for('quux')],
@@ -749,19 +813,18 @@ describe('new', function (): any {
         [Symbol.for('.bar'), Symbol.for('quux')],
       ],
       2,
-      {
-        compile: false,
-        env: new LispEnvironment([[Symbol.for('Object'), Object, 'function']]),
-      }
-    );
+    ]);
   });
 });
 
 describe('class', function (): any {
-  xit('(defclass Foo ...) with constructor and new', function (): any {
-    return testLisp(
+  it('(defclass Foo ...) with constructor and new', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
-        Symbol.for('begin'),
+        Symbol.for('let'),
+        [Symbol.for('quux')],
         [
           Symbol.for('defclass'),
           Symbol.for('Foo'),
@@ -785,20 +848,20 @@ describe('class', function (): any {
         [
           Symbol.for('set!'),
           Symbol.for('quux'),
-          [Symbol.for('new'), Symbol.for('Foo'), [Symbol.for('x'), 'xyzzy']],
+          [Symbol.for('new'), Symbol.for('Foo'), 'xyzzy'],
         ],
         [Symbol.for('.bar'), Symbol.for('quux')],
       ],
       'xyzzy',
-      {
-        compile: false,
-      }
-    );
+    ]);
   });
   return xit('(defclass Foo ...) with no arguments', function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
-        Symbol.for('begin'),
+        Symbol.for('let'),
+        [Symbol.for('quux')],
         [
           Symbol.for('defclass'),
           Symbol.for('Foo'),
@@ -827,29 +890,15 @@ describe('class', function (): any {
         [Symbol.for('.bar'), Symbol.for('quux')],
       ],
       'wobble',
-      {
-        compile: false,
-      }
-    );
-  });
-});
-
-describe('error', function (): any {
-  it('(error)', function (): any {
-    return assertThrows(function (): any {
-      return interpret([Symbol.for('error')], new LispEnvironment());
-    });
-  });
-  return it('(error "foo")', function (): any {
-    return assertThrows(function (): any {
-      return interpret([Symbol.for('error'), 'foo'], new LispEnvironment());
-    });
+    ]);
   });
 });
 
 describe('clj/try', function (): any {
-  return xit('(throw (new Error "an error"))', function (): any {
-    return testLisp(
+  return it('(clj/try (throw (new Error "an error")) (catch Error e "there was an error") (finally (display "finally")))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
         Symbol.for('clj/try'),
         [
@@ -864,223 +913,131 @@ describe('clj/try', function (): any {
         ],
         [Symbol.for('finally'), [Symbol.for('display'), 'finally']],
       ],
-      'there was an error'
-    );
-  });
-});
-
-describe('Map', function (): any {
-  it('(new Map), Map bound in environment', function (): any {
-    return assertEqual(
-      interpret(
-        [Symbol.for('new'), Symbol.for('Map')],
-        new LispEnvironment([[Symbol.for('Map'), Map, 'function']])
-      ) instanceof Map,
-      true
-    );
-  });
-  return xit('(new Map (list (list 1 2))), new, Map bound in environment', function (): any {
-    return assertEqual(
-      Array.from(
-        interpret(
-          [
-            Symbol.for('new'),
-            Symbol.for('Map'),
-            [Symbol.for('quote'), [[1, 2]]],
-          ],
-          new LispEnvironment([[Symbol.for('Map'), Map, 'function']])
-        ).entries()
-      ),
-      [[1, 2]]
-    );
+      'there was an error',
+    ]);
   });
 });
 
 describe('+', function (): any {
-  it('(+ 1 1), custom function', function (): any {
-    return testLisp([Symbol.for('+'), 1, 1], 2, {
-      env: new LispEnvironment([
-        [
-          Symbol.for('+'),
-          function (x: any, y: any): any {
-            return x + y;
-          },
-          'function',
-        ],
-      ]),
-    });
+  it('(+ 1 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('+'), 1, 1],
+      2,
+    ]);
   });
-  it('(+ 1 1), custom function', function (): any {
-    return testLisp([Symbol.for('+'), 1, 1], 2, {
-      env: new LispEnvironment([
-        [
-          Symbol.for('+'),
-          function (x: any, y: any): any {
-            return x + y;
-          },
-          'function',
-        ],
-      ]),
-    });
+  it('(let ((x 1)) (+ x x))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('x'), 1]],
+        [Symbol.for('+'), Symbol.for('x'), Symbol.for('x')],
+      ],
+      2,
+    ]);
   });
-  // (it "(+ x x), custom function and variable"
-  //     (fn ()
-  //       (test-lisp
-  //        '(+ x x)
-  //        2
-  //        (js-obj "env"
-  //                (new LispEnvironment
-  //                     `((x
-  //                        1
-  //                        "variable")
-  //                       (+
-  //                        ,(lambda (x y)
-  //                           (+ x y))
-  //                        "function")))))))
-  it('(+ x x), custom function and variable', function (): any {
-    return testLisp([Symbol.for('+'), Symbol.for('x'), Symbol.for('x')], 2, {
-      env: new LispEnvironment([
-        [Symbol.for('x'), 1, 'variable'],
-        [
-          Symbol.for('+'),
-          function (x: any, y: any): any {
-            return x + y;
-          },
-          'function',
-        ],
-      ]),
-    });
-  });
-  it('(+ x x), custom function and variable', function (): any {
-    return testLisp([Symbol.for('+'), Symbol.for('x'), Symbol.for('x')], 2, {
-      env: new LispEnvironment([
-        [Symbol.for('x'), 1, 'variable'],
-        [
-          Symbol.for('+'),
-          function (x: any, y: any): any {
-            return x + y;
-          },
-          'function',
-        ],
-      ]),
-    });
-  });
-  return it('(+ (+ 1 1) (+ 1 1)), custom function', function (): any {
-    return testLisp(
+  return it('(+ (+ 1 1) (+ 1 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [Symbol.for('+'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 1, 1]],
       4,
-      {
-        env: new LispEnvironment([
-          [
-            Symbol.for('+'),
-            function (x: any, y: any): any {
-              return x + y;
-            },
-            'function',
-          ],
-        ]),
-      }
-    );
+    ]);
   });
 });
 
-describe('string functions', function (): any {
-  describe('string-split', function (): any {
-    return xit('(string-split "  foo bar  baz \\r\\n\\t")', function (): any {
+describe('String functions', function (): any {
+  it('(string-split "foo bar baz" " ")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('string-split'), 'foo bar baz', ' '],
+      [Symbol.for('quote'), ['foo', 'bar', 'baz']],
+    ]);
+  });
+  xit('(string-split "  foo bar  baz \n' + '\n' + '	")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [Symbol.for('string-split'), '  foo bar  baz \n' + '\n' + '	'],
+      [Symbol.for('quote'), ['foo', 'bar', 'baz']],
+    ]);
+  });
+  it('(string-trim "_foo bar  baz_" "_")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('string-trim'), '_foo bar  baz_', '_'],
+      'foo bar  baz',
+    ]);
+  });
+  it('(string-trim "__foo bar  baz__" "_" :repeat? #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('string-trim'),
+        '__foo bar  baz__',
+        '_',
+        Symbol.for(':repeat?'),
+        true,
+      ],
+      'foo bar  baz',
+    ]);
+  });
+  return it(
+    '(string-trim "  foo bar  baz \n' + '\n' + '	" " " :repeat? #t)',
+    function (): any {
       return testRepl([
         Symbol.for('roselisp'),
         Symbol.for('>'),
-        [Symbol.for('string-split'), '  foo bar  baz \n' + '\n' + '	'],
-        [Symbol.for('quote'), ['foo', 'bar', 'baz']],
+        [
+          Symbol.for('string-trim'),
+          '  foo bar  baz \n' + '\n' + '	',
+          ' ',
+          Symbol.for(':repeat?'),
+          true,
+        ],
+        'foo bar  baz \n' + '\n' + '	',
       ]);
-    });
-  });
-  return describe('string-trim', function (): any {
-    it('> (string-trim "_foo bar  baz_" "_")', function (): any {
-      return testRepl(
-        [
-          Symbol.for('roselisp'),
-          Symbol.for('>'),
-          [Symbol.for('string-trim'), '_foo bar  baz_', '_'],
-          'foo bar  baz',
-        ],
-        {
-          compile: false,
-        }
-      );
-    });
-    it('> (string-trim "__foo bar  baz__" "_" :repeat? #t)', function (): any {
-      return testRepl(
-        [
-          Symbol.for('roselisp'),
-          Symbol.for('>'),
-          [
-            Symbol.for('string-trim'),
-            '__foo bar  baz__',
-            '_',
-            Symbol.for(':repeat?'),
-            true,
-          ],
-          'foo bar  baz',
-        ],
-        {
-          compile: false,
-        }
-      );
-    });
-    return it('> (string-trim "  foo bar  baz \\r\\n\\t" " " :repeat? #t)', function (): any {
-      return testRepl(
-        [
-          Symbol.for('roselisp'),
-          Symbol.for('>'),
-          [
-            Symbol.for('string-trim'),
-            '  foo bar  baz \n' + '\n' + '	',
-            ' ',
-            Symbol.for(':repeat?'),
-            true,
-          ],
-          'foo bar  baz \n' + '\n' + '	',
-        ],
-        {
-          compile: false,
-        }
-      );
-    });
-  });
+    }
+  );
 });
 
 describe('apply', function (): any {
   it("(apply new make-hash '())", function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
       [
         Symbol.for('apply'),
         Symbol.for('new'),
         Symbol.for('make-hash'),
         [Symbol.for('quote'), []],
       ],
-      new Map(),
-      {
-        compile: false,
-      }
-    );
+      [Symbol.for('new'), Symbol.for('Map')],
+    ]);
   });
   xit("(apply new make-hash '())", function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('apply'),
         Symbol.for('new'),
         Symbol.for('make-hash'),
         [Symbol.for('quote'), []],
       ],
-      new Map(),
-      {
-        compile: false,
-      }
-    );
+      [Symbol.for('new'), Symbol.for('Map')],
+    ]);
   });
   xit('(apply send (make-hash) \'has \'("foo"))', function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('apply'),
         Symbol.for('send'),
@@ -1088,11 +1045,13 @@ describe('apply', function (): any {
         [Symbol.for('quote'), Symbol.for('has')],
         [Symbol.for('quote'), ['foo']],
       ],
-      false
-    );
+      false,
+    ]);
   });
   return xit('(apply send (make-hash) \'(has "foo"))', function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [
         Symbol.for('apply'),
         Symbol.for('send'),
@@ -1100,79 +1059,82 @@ describe('apply', function (): any {
         [Symbol.for('quote'), [Symbol.for('has'), 'foo']],
       ],
       false,
-      {
-        compile: false,
-      }
-    );
+    ]);
   });
 });
 
 describe('Y combinator', function (): any {
-  return it('6!', function (): any {
+  return it('(let ((Y (lambda (f) ((lambda (future) (f (lambda (arg) ((future future) arg)))) (lambda (future) (f (lambda (arg) ((future future) arg)))))))) ((Y (lambda (f) (lambda (x) (if (zero? x) 1 (* x (f (- x 1))))))) 6))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
-        Symbol.for('define'),
-        [Symbol.for('Y'), Symbol.for('f')],
+        Symbol.for('let'),
         [
           [
-            Symbol.for('lambda'),
-            [Symbol.for('future')],
-            [
-              Symbol.for('f'),
-              [
-                Symbol.for('lambda'),
-                [Symbol.for('arg')],
-                [
-                  [Symbol.for('future'), Symbol.for('future')],
-                  Symbol.for('arg'),
-                ],
-              ],
-            ],
-          ],
-          [
-            Symbol.for('lambda'),
-            [Symbol.for('future')],
-            [
-              Symbol.for('f'),
-              [
-                Symbol.for('lambda'),
-                [Symbol.for('arg')],
-                [
-                  [Symbol.for('future'), Symbol.for('future')],
-                  Symbol.for('arg'),
-                ],
-              ],
-            ],
-          ],
-        ],
-      ],
-      undefined,
-      Symbol.for('>'),
-      [
-        [
-          Symbol.for('Y'),
-          [
-            Symbol.for('lambda'),
-            [Symbol.for('f')],
+            Symbol.for('Y'),
             [
               Symbol.for('lambda'),
-              [Symbol.for('x')],
+              [Symbol.for('f')],
               [
-                Symbol.for('if'),
-                [Symbol.for('zero?'), Symbol.for('x')],
-                1,
                 [
-                  Symbol.for('*'),
-                  Symbol.for('x'),
-                  [Symbol.for('f'), [Symbol.for('-'), Symbol.for('x'), 1]],
+                  Symbol.for('lambda'),
+                  [Symbol.for('future')],
+                  [
+                    Symbol.for('f'),
+                    [
+                      Symbol.for('lambda'),
+                      [Symbol.for('arg')],
+                      [
+                        [Symbol.for('future'), Symbol.for('future')],
+                        Symbol.for('arg'),
+                      ],
+                    ],
+                  ],
+                ],
+                [
+                  Symbol.for('lambda'),
+                  [Symbol.for('future')],
+                  [
+                    Symbol.for('f'),
+                    [
+                      Symbol.for('lambda'),
+                      [Symbol.for('arg')],
+                      [
+                        [Symbol.for('future'), Symbol.for('future')],
+                        Symbol.for('arg'),
+                      ],
+                    ],
+                  ],
                 ],
               ],
             ],
           ],
         ],
-        6,
+        [
+          [
+            Symbol.for('Y'),
+            [
+              Symbol.for('lambda'),
+              [Symbol.for('f')],
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('x')],
+                [
+                  Symbol.for('if'),
+                  [Symbol.for('zero?'), Symbol.for('x')],
+                  1,
+                  [
+                    Symbol.for('*'),
+                    Symbol.for('x'),
+                    [Symbol.for('f'), [Symbol.for('-'), Symbol.for('x'), 1]],
+                  ],
+                ],
+              ],
+            ],
+          ],
+          6,
+        ],
       ],
       720,
     ]);
@@ -1181,33 +1143,124 @@ describe('Y combinator', function (): any {
 
 describe('ann', function (): any {
   return xit('((ann #u Any))', function (): any {
-    return testLisp(
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
       [[Symbol.for('ann'), undefined, Symbol.for('Any')]],
       undefined,
-      {
-        compile: false,
-      }
+    ]);
+  });
+});
+
+describe('interpret', function (): any {
+  return it("(interpret 't)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('interpret'), [Symbol.for('quote'), Symbol.for('t')]],
+      true,
+    ]);
+  });
+});
+
+describe('current-environment', function (): any {
+  return it("((lambda (x) (send (current-environment) get 'x)) 1)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('x')],
+          [
+            Symbol.for('send'),
+            [Symbol.for('current-environment')],
+            Symbol.for('get'),
+            [Symbol.for('quote'), Symbol.for('x')],
+          ],
+        ],
+        1,
+      ],
+      1,
+    ]);
+  });
+});
+
+describe('js/eval', function (): any {
+  it('(js/eval "1")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/eval'), '1'],
+      1,
+    ]);
+  });
+  it('(interpret \'(js/eval "1") #u (js-obj "eval" #t))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('interpret'),
+        [Symbol.for('quote'), [Symbol.for('js/eval'), '1']],
+        undefined,
+        [Symbol.for('js-obj'), 'eval', true],
+      ],
+      1,
+    ]);
+  });
+  return xit('(interpret \'js/eval #u (js-obj "eval" #f))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('interpret'),
+        [Symbol.for('quote'), Symbol.for('js/eval')],
+        undefined,
+        [Symbol.for('js-obj'), 'eval', false],
+      ],
+      undefined,
+    ]);
+  });
+});
+
+describe('interpret', function (): any {
+  it("(interpret 't)", function (): any {
+    return assertEqual(interpret(Symbol.for('t')), true);
+  });
+  it("(interpret 't (new LispEnvironment))", function (): any {
+    return assertEqual(interpret(Symbol.for('t'), new LispEnvironment()), true);
+  });
+  xit("((interpret 't __) (new LispEnvironment))", function (): any {
+    return assertEqual(
+      interpret(Symbol.for('t'), __)(new LispEnvironment()),
+      true
+    );
+  });
+  xit("((interpret __ (new LispEnvironment)) 't)", function (): any {
+    return assertEqual(
+      interpret(__, new LispEnvironment())(Symbol.for('t')),
+      true
+    );
+  });
+  return xit("(((interpret __ __) 't) (new LispEnvironment))", function (): any {
+    return assertEqual(
+      interpret(__, __)(Symbol.for('t'))(new LispEnvironment()),
+      true
     );
   });
 });
 
 describe('interpret', function (): any {
-  it('default environment', function (): any {
-    assertEqual(interpret(sexp`t`), true);
-    return assertEqual(interpret(sexp`t`, new LispEnvironment()), true);
-  });
-  return xit('currying', function (): any {
-    assertEqual(interpret(sexp`t`, __)(new LispEnvironment()), true);
-    assertEqual(interpret(__, new LispEnvironment())(sexp`t`), true);
-    return assertEqual(interpret(__, __)(sexp`t`)(new LispEnvironment()), true);
+  return it("(interpret 't)", function (): any {
+    return assertEqual(interpret(Symbol.for('t')), true);
   });
 });
 
 describe('lisp', function (): any {
-  it('(quote foo)', function (): any {
-    return assertEqual(lisp('(quote foo)'), s`foo`);
+  it('(lisp "(quote foo)")', function (): any {
+    return assertEqual(lisp('(quote foo)'), Symbol.for('foo'));
   });
-  it('(identity1 "foo")', function (): any {
+  it('(lisp "(identity1 \\"foo\\")" (new LispEnvironment `((identity1 ,(lambda (x) x) "variable"))))', function (): any {
     return assertEqual(
       lisp(
         '(identity1 "foo")',
@@ -1224,107 +1277,82 @@ describe('lisp', function (): any {
       'foo'
     );
   });
-  it('(list 1 2)', function (): any {
+  it('(lisp "(list 1 2)")', function (): any {
     return assertEqual(lisp('(list 1 2)'), [1, 2]);
   });
-  return describe('+', function (): any {
-    it('(+ 1 1)', function (): any {
-      return assertEqual(
-        lisp(
-          '(+ 1 1)',
-          new LispEnvironment([
-            [
-              Symbol.for('+'),
-              function (x: any, y: any): any {
-                return x + y;
-              },
-              'function',
-            ],
-          ])
-        ),
-        2
-      );
-    });
-    return it('(+ foo foo)', function (): any {
-      return assertEqual(
-        lisp(
-          '(+ foo foo)',
-          new LispEnvironment([
-            [Symbol.for('foo'), 2, 'variable'],
-            [
-              Symbol.for('+'),
-              function (x: any, y: any): any {
-                return x + y;
-              },
-              'function',
-            ],
-          ])
-        ),
-        4
-      );
-    });
-  });
-});
-
-describe('current-environment', function (): any {
-  return it("(send (current-environment) get 'x)", function (): any {
-    return testLisp(
-      [
-        [
-          Symbol.for('lambda'),
-          [Symbol.for('x')],
+  it('(lisp "(+ 1 1)" (new LispEnvironment `((+ ,(lambda (x y) (+ x y)) "function"))))', function (): any {
+    return assertEqual(
+      lisp(
+        '(+ 1 1)',
+        new LispEnvironment([
           [
-            Symbol.for('send'),
-            [Symbol.for('current-environment')],
-            Symbol.for('get'),
-            [Symbol.for('quote'), Symbol.for('x')],
+            Symbol.for('+'),
+            function (x: any, y: any): any {
+              return x + y;
+            },
+            'function',
           ],
-        ],
-        1,
-      ],
-      1,
-      {
-        compile: false,
-      }
+        ])
+      ),
+      2
+    );
+  });
+  return it('(lisp "(+ foo foo)" (new LispEnvironment `((foo 2 "variable") (+ ,(lambda (x y) (+ x y)) "function"))))', function (): any {
+    return assertEqual(
+      lisp(
+        '(+ foo foo)',
+        new LispEnvironment([
+          [Symbol.for('foo'), 2, 'variable'],
+          [
+            Symbol.for('+'),
+            function (x: any, y: any): any {
+              return x + y;
+            },
+            'function',
+          ],
+        ])
+      ),
+      4
     );
   });
 });
 
-describe('eval', function (): any {
-  // (it "1 + 1, eval true"
-  //     (fn ()
-  //       (assert-equal
-  //        (interpret '(+ 1 1) #u (js-obj "eval" #t))
-  //        2)))
-  // (it "1 + 1, eval false"
-  //     (fn ()
-  //       (assert-equal
-  //        (interpret '(+ 1 1) #u (js-obj "eval" #f))
-  //        2)))
-  // (send it only "js/eval, eval true"
-  //       (fn ()
-  //         (assert-equal
-  //          (interpret 'js/eval #u (js-obj "eval" #t))
-  //          js/eval)))
-  it('js/eval, eval true', function (): any {
+describe('Map', function (): any {
+  it('(~> (interpret \'(new Map) (new LispEnvironment `((Map ,Map "function")))) (instance-of? Map))', function (): any {
     return assertEqual(
-      interpret([Symbol.for('js/eval'), '1'], undefined, {
-        eval: true,
-      }),
-      1
+      interpret(
+        [Symbol.for('new'), Symbol.for('Map')],
+        new LispEnvironment([[Symbol.for('Map'), Map, 'function']])
+      ) instanceof Map,
+      true
     );
   });
-  // (send it only "js/eval, eval true"
-  //       (fn ()
-  //         (assert-equal
-  //          (interpret '(js/eval "1") #u (js-obj "eval" #f))
-  //          #u)))
-  return it('js/eval, eval false', function (): any {
+  return xit('(~> (interpret \'(new Map \'((1 2))) (new LispEnvironment `((Map ,Map "function")))) (send entries) (send Array from _))', function (): any {
     return assertEqual(
-      interpret(Symbol.for('js/eval'), undefined, {
-        eval: false,
-      }),
-      undefined
+      Array.from(
+        interpret(
+          [
+            Symbol.for('new'),
+            Symbol.for('Map'),
+            [Symbol.for('quote'), [[1, 2]]],
+          ],
+          new LispEnvironment([[Symbol.for('Map'), Map, 'function']])
+        ).entries()
+      ),
+      [[1, 2]]
     );
+  });
+});
+
+describe('error', function (): any {
+  it('(error)', function (): any {
+    return assertThrows(function (): any {
+      return interpret([Symbol.for('error')], new LispEnvironment());
+    });
+  });
+  return it('(error "foo")', function (): any {
+    return assertThrows(function (): any {
+      return interpret([Symbol.for('error'), 'foo'], new LispEnvironment());
+    });
   });
 });

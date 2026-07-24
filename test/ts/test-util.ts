@@ -891,6 +891,10 @@ function printSexp(exp: any): any {
   }
 }
 
+/**
+ * Macro for expanding tests written in "REPL style"
+ * to Mocha tests.
+ */
 function testMacro(exp: any, env: any): any {
   const body: any = exp.slice(1);
   // Parse options.
@@ -956,23 +960,28 @@ function testMacro(exp: any, env: any): any {
         description = printSexp(exp);
         actual = exp;
       }
-      const test: any = [
-        ...f,
-        description,
-        [
-          Symbol.for('fn'),
-          [],
-          replOption
-            ? [
-                Symbol.for('test-repl'),
-                [
-                  Symbol.for('quote'),
-                  [Symbol.for('roselisp'), prompt, actual, expected],
-                ],
-              ]
-            : [Symbol.for('assert-equal'), actual, expected],
-        ],
-      ];
+      const test: any =
+        expected === Symbol.for('_') && !taggedListP(exp, Symbol.for('it'))
+          ? actual
+          : [
+              ...f,
+              description,
+              [
+                Symbol.for('fn'),
+                [],
+                replOption
+                  ? [
+                      Symbol.for('test-repl'),
+                      [
+                        Symbol.for('quote'),
+                        [Symbol.for('roselisp'), prompt, actual, expected],
+                      ],
+                    ]
+                  : expected === Symbol.for('_')
+                  ? actual
+                  : [Symbol.for('assert-equal'), actual, expected],
+              ],
+            ];
       group.push(test);
       only = false;
     }

@@ -1,1055 +1,608 @@
 import { I } from '../../src/ts/combinators';
 
-import { decompile } from '../../src/ts/decompiler';
+import { decompile } from '../../src/ts/language';
 
 import { writeToString } from '../../src/ts/printer';
 
 import { sexp } from '../../src/ts/sexp';
 
-import { assertEqual } from './test-util';
+import { assertEqual, testMacro } from './test-util';
 
 describe('decompile', function (): any {
-  describe('boolean values', function (): any {
-    it('true', function (): any {
-      const actual: any = decompile('true;', {
-        language: 'JavaScript',
-        sexp: true,
-      });
-      return assertEqual(actual, sexp`#t`);
-    });
-    return it('false', function (): any {
-      return assertEqual(
-        decompile('false', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        false
-      );
-    });
+  it('(decompile "true;")', function (): any {
+    return assertEqual(decompile('true;'), true);
   });
-  describe('undefined', function (): any {
-    return it('undefined', function (): any {
-      return assertEqual(
-        decompile('const foo = undefined;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('foo'), Symbol.for('undefined')]
-      );
-    });
+  it('(decompile "false")', function (): any {
+    return assertEqual(decompile('false'), false);
   });
-  describe('null', function (): any {
-    return it('null', function (): any {
-      return assertEqual(
-        decompile('const foo = null;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('foo'), Symbol.for('js/null')]
-      );
-    });
+  it('(decompile "const foo = undefined;")', function (): any {
+    return assertEqual(decompile('const foo = undefined;'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      Symbol.for('undefined'),
+    ]);
   });
-  describe('this', function (): any {
-    return it('this', function (): any {
-      return assertEqual(
-        decompile('const foo = this;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('foo'), Symbol.for('this')]
-      );
-    });
+  it('(decompile "const foo = null;")', function (): any {
+    return assertEqual(decompile('const foo = null;'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      Symbol.for('js/null'),
+    ]);
   });
-  describe('numbers', function (): any {
-    it('0', function (): any {
-      return assertEqual(
-        decompile('0', {
-          language: 'JavaScript',
-        }),
-        '0'
-      );
-    });
-    it('1', function (): any {
-      return assertEqual(
-        decompile('1', {
-          language: 'JavaScript',
-        }),
-        '1'
-      );
-    });
-    return it('-1', function (): any {
-      return assertEqual(
-        decompile('-1', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        -1
-      );
-    });
+  it('(decompile "const foo = this;")', function (): any {
+    return assertEqual(decompile('const foo = this;'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      Symbol.for('this'),
+    ]);
   });
-  describe('strings', function (): any {
-    it("'foo'", function (): any {
-      return assertEqual(
-        decompile("'foo'", {
-          language: 'JavaScript',
-        }),
-        '"foo"'
-      );
-    });
-    it("'foo'", function (): any {
-      return assertEqual(
-        decompile('const foo = `bar`;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('foo'), 'bar']
-      );
-    });
-    it('bar`baz`', function (): any {
-      return assertEqual(
-        decompile('const foo = bar`baz`;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define'),
-          Symbol.for('foo'),
-          [Symbol.for('js/tag'), Symbol.for('bar'), 'baz'],
-        ]
-      );
-    });
-    return it("'foo'", function (): any {
-      return assertEqual(
-        decompile('const foo = `bar\n' + '\\`baz`;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('foo'), 'bar\n' + '`baz']
-      );
-    });
+  it('(decompile "0")', function (): any {
+    return assertEqual(decompile('0'), 0);
   });
-  describe('regexps', function (): any {
-    it('/foo/', function (): any {
-      return assertEqual(
-        decompile('/foo/', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('js/regexp'), 'foo']
-      );
-    });
-    it('/foo/g', function (): any {
-      return assertEqual(
-        decompile('/foo/g', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('js/regexp'), 'foo', 'g']
-      );
-    });
-    it('const exp = /.*/;, JS', function (): any {
-      return assertEqual(
-        decompile('const exp = /.*/;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define'),
-          Symbol.for('exp'),
-          [Symbol.for('js/regexp'), '.*'],
-        ]
-      );
-    });
-    return it('const exp = /.*/;, TS', function (): any {
-      return assertEqual(
-        decompile('const exp = /.*/;', {
-          language: 'TypeScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define'),
-          Symbol.for('exp'),
-          [Symbol.for('js/regexp'), '.*'],
-        ]
-      );
-    });
+  it('(decompile "1")', function (): any {
+    return assertEqual(decompile('1'), 1);
   });
-  describe('arrays', function (): any {
-    it('[]', function (): any {
-      return assertEqual(
-        decompile('[]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('list')]
-      );
-    });
-    it('const foo = [];', function (): any {
-      return assertEqual(
-        decompile('const foo = [];', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('list')]]
-      );
-    });
-    it('[1, 2, 3]', function (): any {
-      return assertEqual(
-        decompile('[1, 2, 3]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('list'), 1, 2, 3]
-      );
-    });
-    it('[...x]', function (): any {
-      return assertEqual(
-        decompile('[...x]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('append'), Symbol.for('x')]
-      );
-    });
-    it('[x, ...y]', function (): any {
-      return assertEqual(
-        decompile('[x, ...y]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('append'),
-          [Symbol.for('list'), Symbol.for('x')],
-          Symbol.for('y'),
-        ]
-      );
-    });
-    it('x[0]', function (): any {
-      return assertEqual(
-        decompile('x[0]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('aget'), Symbol.for('x'), 0]
-      );
-    });
-    it('x[0](a, b)', function (): any {
-      return assertEqual(
-        decompile('x[0](a, b)', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          [Symbol.for('aget'), Symbol.for('x'), 0],
-          Symbol.for('a'),
-          Symbol.for('b'),
-        ]
-      );
-    });
-    it('x[0][1]', function (): any {
-      return assertEqual(
-        decompile('x[0][1]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('aget'), Symbol.for('x'), 0, 1]
-      );
-    });
-    it('x[len]', function (): any {
-      return assertEqual(
-        decompile('x[len]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('oget'), Symbol.for('x'), Symbol.for('len')]
-      );
-    });
-    it('x[len - 1]', function (): any {
-      return assertEqual(
-        decompile('x[len - 1]', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('oget'),
-          Symbol.for('x'),
-          [Symbol.for('-'), Symbol.for('len'), 1],
-        ]
-      );
-    });
-    it('x[0] = 1', function (): any {
-      return assertEqual(
-        decompile('x[0] = 1', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('aset!'), Symbol.for('x'), 0, 1]
-      );
-    });
-    return it("x['foo'] = 1", function (): any {
-      return assertEqual(
-        decompile("x['foo'] = 1", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('oset!'), Symbol.for('x'), 'foo', 1]
-      );
-    });
+  it('(decompile "-1")', function (): any {
+    return assertEqual(decompile('-1'), -1);
   });
-  describe('!', function (): any {
-    return it('!foo', function (): any {
-      return assertEqual(
-        decompile('!foo', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('not'), Symbol.for('foo')]
-      );
-    });
+  it('(decompile "\'foo\'")', function (): any {
+    return assertEqual(decompile("'foo'"), 'foo');
   });
-  describe('+', function (): any {
-    it('1 + 2', function (): any {
-      return assertEqual(
-        decompile('1 + 2', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('+'), 1, 2]
-      );
-    });
-    it('1 + 2 + 3', function (): any {
-      return assertEqual(
-        decompile('1 + 2 + 3', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('+'), 1, 2, 3]
-      );
-    });
-    it("1 + ''", function (): any {
-      return assertEqual(
-        decompile("1 + ''", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('string-append'), 1, '']
-      );
-    });
-    return it("1 + 2 + ''", function (): any {
-      return assertEqual(
-        decompile("1 + 2 + ''", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('string-append'), 1, 2, '']
-      );
-    });
+  it('(decompile "const foo = `bar`;")', function (): any {
+    return assertEqual(decompile('const foo = `bar`;'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      'bar',
+    ]);
   });
-  describe('-', function (): any {
-    it('-1', function (): any {
-      return assertEqual(
-        decompile('-1', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        -1
-      );
-    });
-    it('-(1)', function (): any {
-      return assertEqual(
-        decompile('-(1)', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        -1
-      );
-    });
-    it('-x', function (): any {
-      return assertEqual(
-        decompile('-x', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('-'), Symbol.for('x')]
-      );
-    });
-    it('1 - 2', function (): any {
-      return assertEqual(
-        decompile('1 - 2', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('-'), 1, 2]
-      );
-    });
-    it('1 - 2 - 3', function (): any {
-      return assertEqual(
-        decompile('1 - 2 - 3', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('-'), 1, 2, 3]
-      );
-    });
-    return it('1 - (2 - 3)', function (): any {
-      return assertEqual(
-        decompile('1 - (2 - 3)', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('-'), 1, [Symbol.for('-'), 2, 3]]
-      );
-    });
+  it('(decompile "const foo = bar`baz`;")', function (): any {
+    return assertEqual(decompile('const foo = bar`baz`;'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      [Symbol.for('js/tag'), Symbol.for('bar'), 'baz'],
+    ]);
   });
-  describe('*', function (): any {
-    it('1 * 2', function (): any {
-      return assertEqual(
-        decompile('1 * 2', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('*'), 1, 2]
-      );
-    });
-    return it('1 * 2 * 3', function (): any {
-      return assertEqual(
-        decompile('1 * 2 * 3', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('*'), 1, 2, 3]
-      );
-    });
+  it('(decompile "const foo = `bar\n' + '\\\\`baz`;")', function (): any {
+    return assertEqual(decompile('const foo = `bar\n' + '\\`baz`;'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      'bar\n' + '`baz',
+    ]);
   });
-  describe('/', function (): any {
-    it('1 / 2', function (): any {
-      return assertEqual(
-        decompile('1 / 2', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('/'), 1, 2]
-      );
-    });
-    return xit('1 / 2 / 3', function (): any {
-      return assertEqual(
-        decompile('1 / 2 / 3', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('/'), 1, 2, 3]
-      );
-    });
+  it('(decompile "/foo/")', function (): any {
+    return assertEqual(decompile('/foo/'), [Symbol.for('js/regexp'), 'foo']);
   });
-  describe('&&', function (): any {
-    it('x && y', function (): any {
-      return assertEqual(
-        decompile('x && y', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')]
-      );
-    });
-    it('x && y && z', function (): any {
-      return assertEqual(
-        decompile('x && y && z', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('and'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]
-      );
-    });
-    return it("typeof x === 'number' && typeof y === 'number'", function (): any {
-      return assertEqual(
-        decompile("typeof x === 'number' && typeof y === 'number'", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('and'),
-          [
-            Symbol.for('eq?'),
-            [Symbol.for('type-of'), Symbol.for('x')],
-            'number',
-          ],
-          [
-            Symbol.for('eq?'),
-            [Symbol.for('type-of'), Symbol.for('y')],
-            'number',
-          ],
-        ]
-      );
-    });
+  it('(decompile "/foo/g")', function (): any {
+    return assertEqual(decompile('/foo/g'), [
+      Symbol.for('js/regexp'),
+      'foo',
+      'g',
+    ]);
   });
-  describe('||', function (): any {
-    it('x || y', function (): any {
-      return assertEqual(
-        decompile('x || y', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')]
-      );
-    });
-    return it('x || y || z', function (): any {
-      return assertEqual(
-        decompile('x || y || z', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('or'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]
-      );
-    });
+  it('(decompile "const exp = /.*/;")', function (): any {
+    return assertEqual(decompile('const exp = /.*/;'), [
+      Symbol.for('define'),
+      Symbol.for('exp'),
+      [Symbol.for('js/regexp'), '.*'],
+    ]);
   });
-  describe('===', function (): any {
-    return it('x === y', function (): any {
-      return assertEqual(
-        decompile('x === y', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')]
-      );
-    });
+  it('(decompile "const exp = /.*/;")', function (): any {
+    return assertEqual(decompile('const exp = /.*/;'), [
+      Symbol.for('define'),
+      Symbol.for('exp'),
+      [Symbol.for('js/regexp'), '.*'],
+    ]);
   });
-  describe('!==', function (): any {
-    return it('x !== y', function (): any {
-      return assertEqual(
-        decompile('x !== y', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('not'),
-          [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')],
-        ]
-      );
-    });
+  it('(decompile "[]")', function (): any {
+    return assertEqual(decompile('[]'), [Symbol.for('list')]);
   });
-  describe('in', function (): any {
-    return it('x in y', function (): any {
-      return assertEqual(
-        decompile('x in y', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('js/in'), Symbol.for('x'), Symbol.for('y')]
-      );
-    });
+  it('(decompile "const foo = [];")', function (): any {
+    return assertEqual(decompile('const foo = [];'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      [Symbol.for('list')],
+    ]);
   });
-  describe('instanceof', function (): any {
-    return it('x instanceof y', function (): any {
-      return assertEqual(
-        decompile('x instanceof y', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('y')]
-      );
-    });
+  it('(decompile "[1, 2, 3]")', function (): any {
+    return assertEqual(decompile('[1, 2, 3]'), [Symbol.for('list'), 1, 2, 3]);
   });
-  describe('typeof', function (): any {
-    return it('typeof x', function (): any {
-      return assertEqual(
-        decompile('typeof x', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('type-of'), Symbol.for('x')]
-      );
-    });
+  it('(decompile "[...x]")', function (): any {
+    return assertEqual(decompile('[...x]'), [
+      Symbol.for('append'),
+      Symbol.for('x'),
+    ]);
   });
-  describe('function call', function (): any {
-    it('foo(bar);, JS', function (): any {
-      return assertEqual(
-        decompile('foo(bar);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), Symbol.for('bar')]
-      );
-    });
-    it('foo(bar);, TS', function (): any {
-      return assertEqual(
-        decompile('foo(bar);', {
-          language: 'TypeScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), Symbol.for('bar')]
-      );
-    });
-    it('foo(bar);, JS, module', function (): any {
-      return assertEqual(
-        decompile('foo(bar);', {
-          language: 'JavaScript',
-          module: true,
-          sexp: true,
-        }),
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [Symbol.for('foo'), Symbol.for('bar')],
-        ]
-      );
-    });
-    it('foo(bar);, TS, module', function (): any {
-      return assertEqual(
-        decompile('foo(bar);', {
-          language: 'TypeScript',
-          module: true,
-          sexp: true,
-        }),
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [Symbol.for('foo'), Symbol.for('bar')],
-        ]
-      );
-    });
-    it("foo('bar');, JS", function (): any {
-      return assertEqual(
-        decompile("foo('bar');", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), 'bar']
-      );
-    });
-    it("foo('bar');, TS", function (): any {
-      return assertEqual(
-        decompile("foo('bar');", {
-          language: 'TypeScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), 'bar']
-      );
-    });
-    it("foo('bar', 'baz');, JS", function (): any {
-      return assertEqual(
-        decompile("foo('bar', 'baz');", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), 'bar', 'baz']
-      );
-    });
-    it("foo('bar', 'baz');, TS", function (): any {
-      return assertEqual(
-        decompile("foo('bar', 'baz');", {
-          language: 'TypeScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), 'bar', 'baz']
-      );
-    });
-    it('foo(1, 2, 3);, JS', function (): any {
-      return assertEqual(
-        decompile('foo(1, 2, 3);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), 1, 2, 3]
-      );
-    });
-    it('foo(...args);', function (): any {
-      return assertEqual(
-        decompile('foo(...args);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('apply'), Symbol.for('foo'), Symbol.for('args')]
-      );
-    });
-    it('foo(x, ...args);', function (): any {
-      return assertEqual(
-        decompile('foo(x, ...args);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('apply'),
-          Symbol.for('foo'),
-          Symbol.for('x'),
-          Symbol.for('args'),
-        ]
-      );
-    });
-    it('foo(...args, x);', function (): any {
-      return assertEqual(
-        decompile('foo(...args, x);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('apply'),
-          Symbol.for('foo'),
-          [
-            Symbol.for('append'),
-            Symbol.for('args'),
-            [Symbol.for('list'), Symbol.for('x')],
-          ],
-        ]
-      );
-    });
-    it('foo(x, ...args, y);', function (): any {
-      return assertEqual(
-        decompile('foo(x, ...args, y);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('apply'),
-          Symbol.for('foo'),
-          [
-            Symbol.for('append'),
-            [Symbol.for('list'), Symbol.for('x')],
-            Symbol.for('args'),
-            [Symbol.for('list'), Symbol.for('y')],
-          ],
-        ]
-      );
-    });
-    return xit('// comment\n' + 'foo(bar);, TS', function (): any {
-      return assertEqual(
-        decompile('// comment\n' + 'foo(bar);', {
-          language: 'TypeScript',
-          sexp: true,
-        }),
-        [Symbol.for('foo'), Symbol.for('bar')]
-      );
-    });
+  it('(decompile "[x, ...y]")', function (): any {
+    return assertEqual(decompile('[x, ...y]'), [
+      Symbol.for('append'),
+      [Symbol.for('list'), Symbol.for('x')],
+      Symbol.for('y'),
+    ]);
   });
-  describe('assignment', function (): any {
-    it('x = 1;', function (): any {
-      return assertEqual(
-        decompile('x = 1;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('set!'), Symbol.for('x'), 1]
-      );
-    });
-    return it('x += 1;', function (): any {
-      return assertEqual(
-        decompile('x += 1;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('set!'),
-          Symbol.for('x'),
-          [Symbol.for('+'), Symbol.for('x'), 1],
-        ]
-      );
-    });
+  it('(decompile "x[0]")', function (): any {
+    return assertEqual(decompile('x[0]'), [
+      Symbol.for('aget'),
+      Symbol.for('x'),
+      0,
+    ]);
   });
-  describe('variables', function (): any {
-    it('let x = 1;', function (): any {
-      return assertEqual(
-        decompile('let x = 1;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('x'), 1]
-      );
-    });
-    it('let x = undefined;', function (): any {
-      return assertEqual(
-        decompile('let x = undefined;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('x'), Symbol.for('undefined')]
-      );
-    });
-    it('let x;', function (): any {
-      return assertEqual(
-        decompile('let x;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('x')]
-      );
-    });
-    it('let x = 1, y = 2;', function (): any {
-      return assertEqual(
-        decompile('let x = 1, y = 2;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('begin'),
-          [Symbol.for('define'), Symbol.for('x'), 1],
-          [Symbol.for('define'), Symbol.for('y'), 2],
-        ]
-      );
-    });
-    it('let x = 1, y = 2; let z = 3;', function (): any {
-      return assertEqual(
-        decompile('let x = 1, y = 2;\n' + 'let z = 3;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('begin'),
-          [Symbol.for('define'), Symbol.for('x'), 1],
-          [Symbol.for('define'), Symbol.for('y'), 2],
-          [Symbol.for('define'), Symbol.for('z'), 3],
-        ]
-      );
-    });
-    it('const x = 1;', function (): any {
-      return assertEqual(
-        decompile('const x = 1', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define'), Symbol.for('x'), 1]
-      );
-    });
-    it('let [x] = arr;', function (): any {
-      return assertEqual(
-        decompile('let [x] = arr;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define-values'), [Symbol.for('x')], Symbol.for('arr')]
-      );
-    });
-    it('let [x, y] = arr;', function (): any {
-      return assertEqual(
-        decompile('let [x, y] = arr;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define-values'),
-          [Symbol.for('x'), Symbol.for('y')],
-          Symbol.for('arr'),
-        ]
-      );
-    });
-    it('[x, y] = arr;', function (): any {
-      return assertEqual(
-        decompile('[x, y] = arr;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('set!-values'),
-          [Symbol.for('x'), Symbol.for('y')],
-          Symbol.for('arr'),
-        ]
-      );
-    });
-    it('let [x, ...y] = arr;', function (): any {
-      return assertEqual(
-        decompile('let [x, ...y] = arr;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define-values'),
-          [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
-          Symbol.for('arr'),
-        ]
-      );
-    });
-    it('let [, y] = arr;', function (): any {
-      return assertEqual(
-        decompile('let [, y] = arr;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define-values'),
-          [Symbol.for('_'), Symbol.for('y')],
-          Symbol.for('arr'),
-        ]
-      );
-    });
-    it('let {x, y} = obj;', function (): any {
-      return assertEqual(
-        decompile('let {x, y} = obj;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define-fields'),
-          [Symbol.for('x'), Symbol.for('y')],
-          Symbol.for('obj'),
-        ]
-      );
-    });
-    it('({x, y} = obj);', function (): any {
-      return assertEqual(
-        decompile('({x, y} = obj);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('set!-fields'),
-          [Symbol.for('x'), Symbol.for('y')],
-          Symbol.for('obj'),
-        ]
-      );
-    });
-    return it('let {x: y, z} = obj;', function (): any {
-      return assertEqual(
-        decompile('let {x: y, z} = obj;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define-fields'),
-          [[Symbol.for('x'), Symbol.for('y')], Symbol.for('z')],
-          Symbol.for('obj'),
-        ]
-      );
-    });
+  it('(decompile "x[0](a, b)")', function (): any {
+    return assertEqual(decompile('x[0](a, b)'), [
+      [Symbol.for('aget'), Symbol.for('x'), 0],
+      Symbol.for('a'),
+      Symbol.for('b'),
+    ]);
   });
-  describe('fields', function (): any {
-    it('x.y;', function (): any {
-      return assertEqual(
-        decompile('x.y;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('get-field'), Symbol.for('y'), Symbol.for('x')]
-      );
-    });
-    it('x?.y;', function (): any {
-      return assertEqual(
-        decompile('x?.y;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('and'),
-          [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('x')],
-          [Symbol.for('get-field'), Symbol.for('y'), Symbol.for('x')],
-        ]
-      );
-    });
-    it('foo()?.y;', function (): any {
-      return assertEqual(
-        decompile('foo()?.y;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('~>'),
-          [Symbol.for('foo')],
-          [
-            Symbol.for('and'),
-            [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('_')],
-            [Symbol.for('get-field'), Symbol.for('y'), Symbol.for('_')],
-          ],
-        ]
-      );
-    });
-    return it('x.y = z;', function (): any {
-      return assertEqual(
-        decompile('x.y = z;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('set-field!'),
-          Symbol.for('y'),
-          Symbol.for('x'),
-          Symbol.for('z'),
-        ]
-      );
-    });
+  it('(decompile "x[0][1]")', function (): any {
+    return assertEqual(decompile('x[0][1]'), [
+      Symbol.for('aget'),
+      Symbol.for('x'),
+      0,
+      1,
+    ]);
   });
-  describe('methods', function (): any {
-    it('x.y();', function (): any {
-      return assertEqual(
-        decompile('x.y();', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('send'), Symbol.for('x'), Symbol.for('y')]
-      );
-    });
-    it('x?.y();', function (): any {
-      return assertEqual(
-        decompile('x?.y();', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('and'),
-          [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('x')],
-          [Symbol.for('send'), Symbol.for('x'), Symbol.for('y')],
-        ]
-      );
-    });
-    it('foo()?.y();', function (): any {
-      return assertEqual(
-        decompile('foo()?.y();', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('~>'),
-          [Symbol.for('foo')],
-          [
-            Symbol.for('and'),
-            [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('_')],
-            [Symbol.for('send'), Symbol.for('_'), Symbol.for('y')],
-          ],
-        ]
-      );
-    });
-    it('x.y(z);', function (): any {
-      return assertEqual(
-        decompile('x.y(z);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('send'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]
-      );
-    });
-    return it('x.y(...z);', function (): any {
-      return assertEqual(
-        decompile('x.y(...z);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('send/apply'),
-          Symbol.for('x'),
-          Symbol.for('y'),
-          Symbol.for('z'),
-        ]
-      );
-    });
+  it('(decompile "x[len]")', function (): any {
+    return assertEqual(decompile('x[len]'), [
+      Symbol.for('oget'),
+      Symbol.for('x'),
+      Symbol.for('len'),
+    ]);
   });
-  describe('function definitions', function (): any {
-    it('function I(x) { return x; }', function (): any {
+  it('(decompile "x[len - 1]")', function (): any {
+    return assertEqual(decompile('x[len - 1]'), [
+      Symbol.for('oget'),
+      Symbol.for('x'),
+      [Symbol.for('-'), Symbol.for('len'), 1],
+    ]);
+  });
+  it('(decompile "x[0] = 1")', function (): any {
+    return assertEqual(decompile('x[0] = 1'), [
+      Symbol.for('aset!'),
+      Symbol.for('x'),
+      0,
+      1,
+    ]);
+  });
+  it('(decompile "x[\'foo\'] = 1")', function (): any {
+    return assertEqual(decompile("x['foo'] = 1"), [
+      Symbol.for('oset!'),
+      Symbol.for('x'),
+      'foo',
+      1,
+    ]);
+  });
+  it('(decompile "!foo")', function (): any {
+    return assertEqual(decompile('!foo'), [
+      Symbol.for('not'),
+      Symbol.for('foo'),
+    ]);
+  });
+  it('(decompile "1 + 2")', function (): any {
+    return assertEqual(decompile('1 + 2'), [Symbol.for('+'), 1, 2]);
+  });
+  it('(decompile "1 + 2 + 3")', function (): any {
+    return assertEqual(decompile('1 + 2 + 3'), [Symbol.for('+'), 1, 2, 3]);
+  });
+  it('(decompile "1 + \'\'")', function (): any {
+    return assertEqual(decompile("1 + ''"), [
+      Symbol.for('string-append'),
+      1,
+      '',
+    ]);
+  });
+  it('(decompile "1 + 2 + \'\'")', function (): any {
+    return assertEqual(decompile("1 + 2 + ''"), [
+      Symbol.for('string-append'),
+      1,
+      2,
+      '',
+    ]);
+  });
+  it('(decompile "-1")', function (): any {
+    return assertEqual(decompile('-1'), -1);
+  });
+  it('(decompile "-(1)")', function (): any {
+    return assertEqual(decompile('-(1)'), -1);
+  });
+  it('(decompile "-x")', function (): any {
+    return assertEqual(decompile('-x'), [Symbol.for('-'), Symbol.for('x')]);
+  });
+  it('(decompile "1 - 2")', function (): any {
+    return assertEqual(decompile('1 - 2'), [Symbol.for('-'), 1, 2]);
+  });
+  it('(decompile "1 - 2 - 3")', function (): any {
+    return assertEqual(decompile('1 - 2 - 3'), [Symbol.for('-'), 1, 2, 3]);
+  });
+  it('(decompile "1 - (2 - 3)")', function (): any {
+    return assertEqual(decompile('1 - (2 - 3)'), [
+      Symbol.for('-'),
+      1,
+      [Symbol.for('-'), 2, 3],
+    ]);
+  });
+  it('(decompile "1 * 2")', function (): any {
+    return assertEqual(decompile('1 * 2'), [Symbol.for('*'), 1, 2]);
+  });
+  it('(decompile "1 * 2 * 3")', function (): any {
+    return assertEqual(decompile('1 * 2 * 3'), [Symbol.for('*'), 1, 2, 3]);
+  });
+  it('(decompile "1 / 2")', function (): any {
+    return assertEqual(decompile('1 / 2'), [Symbol.for('/'), 1, 2]);
+  });
+  xit('(decompile "1 / 2 / 3")', function (): any {
+    return assertEqual(decompile('1 / 2 / 3'), [Symbol.for('/'), 1, 2, 3]);
+  });
+  it('(decompile "x && y")', function (): any {
+    return assertEqual(decompile('x && y'), [
+      Symbol.for('and'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x && y && z")', function (): any {
+    return assertEqual(decompile('x && y && z'), [
+      Symbol.for('and'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+      Symbol.for('z'),
+    ]);
+  });
+  it("(decompile \"typeof x === 'number' && typeof y === 'number'\")", function (): any {
+    return assertEqual(
+      decompile("typeof x === 'number' && typeof y === 'number'"),
+      [
+        Symbol.for('and'),
+        [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'number'],
+        [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('y')], 'number'],
+      ]
+    );
+  });
+  it('(decompile "x || y")', function (): any {
+    return assertEqual(decompile('x || y'), [
+      Symbol.for('or'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x || y || z")', function (): any {
+    return assertEqual(decompile('x || y || z'), [
+      Symbol.for('or'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+      Symbol.for('z'),
+    ]);
+  });
+  it('(decompile "x === y")', function (): any {
+    return assertEqual(decompile('x === y'), [
+      Symbol.for('eq?'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x !== y")', function (): any {
+    return assertEqual(decompile('x !== y'), [
+      Symbol.for('not'),
+      [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')],
+    ]);
+  });
+  it('(decompile "x in y")', function (): any {
+    return assertEqual(decompile('x in y'), [
+      Symbol.for('js/in'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x instanceof y")', function (): any {
+    return assertEqual(decompile('x instanceof y'), [
+      Symbol.for('is-a?'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "typeof x")', function (): any {
+    return assertEqual(decompile('typeof x'), [
+      Symbol.for('type-of'),
+      Symbol.for('x'),
+    ]);
+  });
+  it('(decompile "foo(bar);")', function (): any {
+    return assertEqual(decompile('foo(bar);'), [
+      Symbol.for('foo'),
+      Symbol.for('bar'),
+    ]);
+  });
+  it('(decompile "foo(bar);")', function (): any {
+    return assertEqual(decompile('foo(bar);'), [
+      Symbol.for('foo'),
+      Symbol.for('bar'),
+    ]);
+  });
+  it('(decompile "foo(bar);" :module #t)', function (): any {
+    return assertEqual(decompile('foo(bar);', Symbol.for(':module'), true), [
+      Symbol.for('module'),
+      Symbol.for('m'),
+      Symbol.for('scheme'),
+      [Symbol.for('foo'), Symbol.for('bar')],
+    ]);
+  });
+  it('(decompile "foo(bar);" :module #t)', function (): any {
+    return assertEqual(decompile('foo(bar);', Symbol.for(':module'), true), [
+      Symbol.for('module'),
+      Symbol.for('m'),
+      Symbol.for('scheme'),
+      [Symbol.for('foo'), Symbol.for('bar')],
+    ]);
+  });
+  it('(decompile "foo(\'bar\');")', function (): any {
+    return assertEqual(decompile("foo('bar');"), [Symbol.for('foo'), 'bar']);
+  });
+  it('(decompile "foo(\'bar\');")', function (): any {
+    return assertEqual(decompile("foo('bar');"), [Symbol.for('foo'), 'bar']);
+  });
+  it("(decompile \"foo('bar', 'baz');\")", function (): any {
+    return assertEqual(decompile("foo('bar', 'baz');"), [
+      Symbol.for('foo'),
+      'bar',
+      'baz',
+    ]);
+  });
+  it("(decompile \"foo('bar', 'baz');\")", function (): any {
+    return assertEqual(decompile("foo('bar', 'baz');"), [
+      Symbol.for('foo'),
+      'bar',
+      'baz',
+    ]);
+  });
+  it('(decompile "foo(1, 2, 3);")', function (): any {
+    return assertEqual(decompile('foo(1, 2, 3);'), [
+      Symbol.for('foo'),
+      1,
+      2,
+      3,
+    ]);
+  });
+  it('(decompile "foo(...args);")', function (): any {
+    return assertEqual(decompile('foo(...args);'), [
+      Symbol.for('apply'),
+      Symbol.for('foo'),
+      Symbol.for('args'),
+    ]);
+  });
+  it('(decompile "foo(x, ...args);")', function (): any {
+    return assertEqual(decompile('foo(x, ...args);'), [
+      Symbol.for('apply'),
+      Symbol.for('foo'),
+      Symbol.for('x'),
+      Symbol.for('args'),
+    ]);
+  });
+  it('(decompile "foo(...args, x);")', function (): any {
+    return assertEqual(decompile('foo(...args, x);'), [
+      Symbol.for('apply'),
+      Symbol.for('foo'),
+      [
+        Symbol.for('append'),
+        Symbol.for('args'),
+        [Symbol.for('list'), Symbol.for('x')],
+      ],
+    ]);
+  });
+  it('(decompile "foo(x, ...args, y);")', function (): any {
+    return assertEqual(decompile('foo(x, ...args, y);'), [
+      Symbol.for('apply'),
+      Symbol.for('foo'),
+      [
+        Symbol.for('append'),
+        [Symbol.for('list'), Symbol.for('x')],
+        Symbol.for('args'),
+        [Symbol.for('list'), Symbol.for('y')],
+      ],
+    ]);
+  });
+  xit('(decompile "// comment\n' + 'foo(bar);")', function (): any {
+    return assertEqual(decompile('// comment\n' + 'foo(bar);'), [
+      Symbol.for('foo'),
+      Symbol.for('bar'),
+    ]);
+  });
+  it('(decompile "x = 1;")', function (): any {
+    return assertEqual(decompile('x = 1;'), [
+      Symbol.for('set!'),
+      Symbol.for('x'),
+      1,
+    ]);
+  });
+  it('(decompile "x += 1;")', function (): any {
+    return assertEqual(decompile('x += 1;'), [
+      Symbol.for('set!'),
+      Symbol.for('x'),
+      [Symbol.for('+'), Symbol.for('x'), 1],
+    ]);
+  });
+  it('(decompile "let x = 1;")', function (): any {
+    return assertEqual(decompile('let x = 1;'), [
+      Symbol.for('define'),
+      Symbol.for('x'),
+      1,
+    ]);
+  });
+  it('(decompile "let x = undefined;")', function (): any {
+    return assertEqual(decompile('let x = undefined;'), [
+      Symbol.for('define'),
+      Symbol.for('x'),
+      Symbol.for('undefined'),
+    ]);
+  });
+  it('(decompile "let x;")', function (): any {
+    return assertEqual(decompile('let x;'), [
+      Symbol.for('define'),
+      Symbol.for('x'),
+    ]);
+  });
+  it('(decompile "let x = 1, y = 2;")', function (): any {
+    return assertEqual(decompile('let x = 1, y = 2;'), [
+      Symbol.for('begin'),
+      [Symbol.for('define'), Symbol.for('x'), 1],
+      [Symbol.for('define'), Symbol.for('y'), 2],
+    ]);
+  });
+  it('(decompile "let x = 1, y = 2;\n' + 'let z = 3;")', function (): any {
+    return assertEqual(decompile('let x = 1, y = 2;\n' + 'let z = 3;'), [
+      Symbol.for('begin'),
+      [Symbol.for('define'), Symbol.for('x'), 1],
+      [Symbol.for('define'), Symbol.for('y'), 2],
+      [Symbol.for('define'), Symbol.for('z'), 3],
+    ]);
+  });
+  it('(decompile "const x = 1")', function (): any {
+    return assertEqual(decompile('const x = 1'), [
+      Symbol.for('define'),
+      Symbol.for('x'),
+      1,
+    ]);
+  });
+  it('(decompile "let [x] = arr;")', function (): any {
+    return assertEqual(decompile('let [x] = arr;'), [
+      Symbol.for('define-values'),
+      [Symbol.for('x')],
+      Symbol.for('arr'),
+    ]);
+  });
+  it('(decompile "let [x, y] = arr;")', function (): any {
+    return assertEqual(decompile('let [x, y] = arr;'), [
+      Symbol.for('define-values'),
+      [Symbol.for('x'), Symbol.for('y')],
+      Symbol.for('arr'),
+    ]);
+  });
+  it('(decompile "[x, y] = arr;")', function (): any {
+    return assertEqual(decompile('[x, y] = arr;'), [
+      Symbol.for('set!-values'),
+      [Symbol.for('x'), Symbol.for('y')],
+      Symbol.for('arr'),
+    ]);
+  });
+  it('(decompile "let [x, ...y] = arr;")', function (): any {
+    return assertEqual(decompile('let [x, ...y] = arr;'), [
+      Symbol.for('define-values'),
+      [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
+      Symbol.for('arr'),
+    ]);
+  });
+  it('(decompile "let [, y] = arr;")', function (): any {
+    return assertEqual(decompile('let [, y] = arr;'), [
+      Symbol.for('define-values'),
+      [Symbol.for('_'), Symbol.for('y')],
+      Symbol.for('arr'),
+    ]);
+  });
+  it('(decompile "let {x, y} = obj;")', function (): any {
+    return assertEqual(decompile('let {x, y} = obj;'), [
+      Symbol.for('define-fields'),
+      [Symbol.for('x'), Symbol.for('y')],
+      Symbol.for('obj'),
+    ]);
+  });
+  it('(decompile "({x, y} = obj);")', function (): any {
+    return assertEqual(decompile('({x, y} = obj);'), [
+      Symbol.for('set!-fields'),
+      [Symbol.for('x'), Symbol.for('y')],
+      Symbol.for('obj'),
+    ]);
+  });
+  it('(decompile "let {x: y, z} = obj;")', function (): any {
+    return assertEqual(decompile('let {x: y, z} = obj;'), [
+      Symbol.for('define-fields'),
+      [[Symbol.for('x'), Symbol.for('y')], Symbol.for('z')],
+      Symbol.for('obj'),
+    ]);
+  });
+  it('(decompile "x.y;")', function (): any {
+    return assertEqual(decompile('x.y;'), [
+      Symbol.for('get-field'),
+      Symbol.for('y'),
+      Symbol.for('x'),
+    ]);
+  });
+  it('(decompile "x?.y;")', function (): any {
+    return assertEqual(decompile('x?.y;'), [
+      Symbol.for('and'),
+      [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('x')],
+      [Symbol.for('get-field'), Symbol.for('y'), Symbol.for('x')],
+    ]);
+  });
+  it('(decompile "foo()?.y;")', function (): any {
+    return assertEqual(decompile('foo()?.y;'), [
+      Symbol.for('~>'),
+      [Symbol.for('foo')],
+      [
+        Symbol.for('and'),
+        [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('_')],
+        [Symbol.for('get-field'), Symbol.for('y'), Symbol.for('_')],
+      ],
+    ]);
+  });
+  it('(decompile "x.y = z;")', function (): any {
+    return assertEqual(decompile('x.y = z;'), [
+      Symbol.for('set-field!'),
+      Symbol.for('y'),
+      Symbol.for('x'),
+      Symbol.for('z'),
+    ]);
+  });
+  it('(decompile "x.y();")', function (): any {
+    return assertEqual(decompile('x.y();'), [
+      Symbol.for('send'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x?.y();")', function (): any {
+    return assertEqual(decompile('x?.y();'), [
+      Symbol.for('and'),
+      [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('x')],
+      [Symbol.for('send'), Symbol.for('x'), Symbol.for('y')],
+    ]);
+  });
+  it('(decompile "foo()?.y();")', function (): any {
+    return assertEqual(decompile('foo()?.y();'), [
+      Symbol.for('~>'),
+      [Symbol.for('foo')],
+      [
+        Symbol.for('and'),
+        [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('_')],
+        [Symbol.for('send'), Symbol.for('_'), Symbol.for('y')],
+      ],
+    ]);
+  });
+  it('(decompile "x.y(z);")', function (): any {
+    return assertEqual(decompile('x.y(z);'), [
+      Symbol.for('send'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+      Symbol.for('z'),
+    ]);
+  });
+  it('(decompile "x.y(...z);")', function (): any {
+    return assertEqual(decompile('x.y(...z);'), [
+      Symbol.for('send/apply'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+      Symbol.for('z'),
+    ]);
+  });
+  it('(decompile "function I(x) {\n' + '  return x;}")', function (): any {
+    return assertEqual(decompile('function I(x) {\n' + '  return x;}'), [
+      Symbol.for('define'),
+      [Symbol.for('I'), Symbol.for('x')],
+      Symbol.for('x'),
+    ]);
+  });
+  it(
+    '(decompile "function I(x) {\n' + '  foo();\n' + '  return x;\n' + '}")',
+    function (): any {
       return assertEqual(
-        decompile('function I(x) {\n' + '  return x;\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define'),
-          [Symbol.for('I'), Symbol.for('x')],
-          Symbol.for('x'),
-        ]
-      );
-    });
-    it('function I(x) { foo(); return x; }', function (): any {
-      return assertEqual(
-        decompile('function I(x) {\n' + '  foo();\n' + '  return x;\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('function I(x) {\n' + '  foo();\n' + '  return x;\n' + '}'),
         [
           Symbol.for('define'),
           [Symbol.for('I'), Symbol.for('x')],
@@ -1057,13 +610,13 @@ describe('decompile', function (): any {
           Symbol.for('x'),
         ]
       );
-    });
-    it('function I(x: any, y?: any) { return x; }', function (): any {
+    }
+  );
+  it(
+    '(decompile "function I(x: any, y?: any) {\n' + '  return x;\n' + '}")',
+    function (): any {
       return assertEqual(
-        decompile('function I(x: any, y?: any) {\n' + '  return x;\n' + '}', {
-          language: 'TypeScript',
-          sexp: true,
-        }),
+        decompile('function I(x: any, y?: any) {\n' + '  return x;\n' + '}'),
         [
           Symbol.for('define'),
           [
@@ -1074,15 +627,16 @@ describe('decompile', function (): any {
           Symbol.for('x'),
         ]
       );
-    });
-    it('function I(x: any, y: any = true) { return x; }', function (): any {
+    }
+  );
+  it(
+    '(decompile "function I(x: any, y: any = true) {\n' +
+      '  return x;\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
-          'function I(x: any, y: any = true) {\n' + '  return x;\n' + '}',
-          {
-            language: 'TypeScript',
-            sexp: true,
-          }
+          'function I(x: any, y: any = true) {\n' + '  return x;\n' + '}'
         ),
         [
           Symbol.for('define'),
@@ -1094,15 +648,16 @@ describe('decompile', function (): any {
           Symbol.for('x'),
         ]
       );
-    });
-    it('function I(x: number, y: number = 1) { return x; }', function (): any {
+    }
+  );
+  it(
+    '(decompile "function I(x: number, y: number = 1) {\n' +
+      '  return x;\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
-          'function I(x: number, y: number = 1) {\n' + '  return x;\n' + '}',
-          {
-            language: 'TypeScript',
-            sexp: true,
-          }
+          'function I(x: number, y: number = 1) {\n' + '  return x;\n' + '}'
         ),
         [
           Symbol.for('define'),
@@ -1114,34 +669,43 @@ describe('decompile', function (): any {
           Symbol.for('x'),
         ]
       );
-    });
-    it('function foo(x = 1) { x; }', function (): any {
+    }
+  );
+  it(
+    '(decompile "function foo(x = 1) {\n' + '  return x;\n' + '}")',
+    function (): any {
       return assertEqual(
-        decompile('function foo(x = 1) {\n' + '  return x;\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('function foo(x = 1) {\n' + '  return x;\n' + '}'),
         [
           Symbol.for('define'),
           [Symbol.for('foo'), [Symbol.for('x'), 1]],
           Symbol.for('x'),
         ]
       );
-    });
-    it('function foo(...args) { return args; }', function (): any {
+    }
+  );
+  it(
+    '(decompile "function foo(...args) {\n' + '  return args;\n' + '}")',
+    function (): any {
       return assertEqual(
-        decompile('function foo(...args) {\n' + '  return args;\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('function foo(...args) {\n' + '  return args;\n' + '}'),
         [
           Symbol.for('define'),
           [Symbol.for('foo'), Symbol.for('.'), Symbol.for('args')],
           Symbol.for('args'),
         ]
       );
-    });
-    it('function I(x) { if (x) { return x; } else { return false; } }', function (): any {
+    }
+  );
+  it(
+    '(decompile "function I(x) {\n' +
+      '  if (x) {\n' +
+      '    return x;\n' +
+      '  } else {\n' +
+      '    return false;\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'function I(x) {\n' +
@@ -1150,11 +714,7 @@ describe('decompile', function (): any {
             '  } else {\n' +
             '    return false;\n' +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('define'),
@@ -1162,8 +722,19 @@ describe('decompile', function (): any {
           [Symbol.for('if'), Symbol.for('x'), Symbol.for('x'), false],
         ]
       );
-    });
-    return it('function I(x) { if (x) { return x; } else if (false) { return false; } else { return false; } }', function (): any {
+    }
+  );
+  it(
+    '(decompile "function I(x) {\n' +
+      '  if (x) {\n' +
+      '    return x;\n' +
+      '  } else if (false) {\n' +
+      '    return false;\n' +
+      '  } else {\n' +
+      '    return false;\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'function I(x) {\n' +
@@ -1174,11 +745,7 @@ describe('decompile', function (): any {
             '  } else {\n' +
             '    return false;\n' +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('define'),
@@ -1191,30 +758,29 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-  });
-  describe('function expressions', function (): any {
-    it('let I = function (x) { return x; };', function (): any {
+    }
+  );
+  it(
+    '(decompile "let I = function (x) {\n' + '  return x;\n' + '};")',
+    function (): any {
       return assertEqual(
-        decompile('let I = function (x) {\n' + '  return x;\n' + '};', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('let I = function (x) {\n' + '  return x;\n' + '};'),
         [
           Symbol.for('define'),
           Symbol.for('I'),
           [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
         ]
       );
-    });
-    return it('function foo(...args) { return args; }', function (): any {
+    }
+  );
+  it(
+    '(decompile "let foo = function (...args) {\n' +
+      '  return args;\n' +
+      '};")',
+    function (): any {
       return assertEqual(
         decompile(
-          'let foo = function (...args) {\n' + '  return args;\n' + '};',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+          'let foo = function (...args) {\n' + '  return args;\n' + '};'
         ),
         [
           Symbol.for('define'),
@@ -1222,28 +788,26 @@ describe('decompile', function (): any {
           [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('args')],
         ]
       );
-    });
-  });
-  describe('arrow functions', function (): any {
-    it('let I = function (x) { return x; };', function (): any {
+    }
+  );
+  it(
+    '(decompile "let I = (x) => {\n' + '  return x;\n' + '};")',
+    function (): any {
       return assertEqual(
-        decompile('let I = (x) => {\n' + '  return x;\n' + '};', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('let I = (x) => {\n' + '  return x;\n' + '};'),
         [
           Symbol.for('define'),
           Symbol.for('I'),
           [Symbol.for('js/arrow'), [Symbol.for('x')], Symbol.for('x')],
         ]
       );
-    });
-    return it('let I = function (x: any) { return x; };', function (): any {
+    }
+  );
+  it(
+    '(decompile "let I = (x: any) => {\n' + '  return x;\n' + '};")',
+    function (): any {
       return assertEqual(
-        decompile('let I = (x: any) => {\n' + '  return x;\n' + '};', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('let I = (x: any) => {\n' + '  return x;\n' + '};'),
         [
           Symbol.for('define'),
           Symbol.for('I'),
@@ -1254,39 +818,36 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
+    }
+  );
+  it('(decompile "if (true) {\n' + "  foo('bar');\n" + '}")', function (): any {
+    return assertEqual(decompile('if (true) {\n' + "  foo('bar');\n" + '}'), [
+      Symbol.for('when'),
+      true,
+      [Symbol.for('foo'), 'bar'],
+    ]);
   });
-  describe('if', function (): any {
-    it("if (true) { foo('bar'); }", function (): any {
-      return assertEqual(
-        decompile('if (true) {\n' + "  foo('bar');\n" + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('when'), true, [Symbol.for('foo'), 'bar']]
-      );
-    });
-    it("if (!foo) { bar('baz'); }", function (): any {
-      return assertEqual(
-        decompile('if (!foo) {\n' + "  bar('baz');\n" + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('unless'), Symbol.for('foo'), [Symbol.for('bar'), 'baz']]
-      );
-    });
-    it("if (true) { foo('bar'); } else { bar('baz'); }", function (): any {
+  it('(decompile "if (!foo) {\n' + "  bar('baz');\n" + '}")', function (): any {
+    return assertEqual(decompile('if (!foo) {\n' + "  bar('baz');\n" + '}'), [
+      Symbol.for('unless'),
+      Symbol.for('foo'),
+      [Symbol.for('bar'), 'baz'],
+    ]);
+  });
+  it(
+    '(decompile "if (true) {\n' +
+      "  foo('bar');\n" +
+      '} else {\n' +
+      "  bar('baz');\n" +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (true) {\n' +
             "  foo('bar');\n" +
             '} else {\n' +
             "  bar('baz');\n" +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('if'),
@@ -1295,8 +856,17 @@ describe('decompile', function (): any {
           [Symbol.for('bar'), 'baz'],
         ]
       );
-    });
-    it("if (x) { if (y) { foo('bar'); } } else { bar('baz'); }", function (): any {
+    }
+  );
+  it(
+    '(decompile "if (x) {\n' +
+      '  if (y) {\n' +
+      "    foo('bar');\n" +
+      '  }\n' +
+      '} else {\n' +
+      "  bar('baz');\n" +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (x) {\n' +
@@ -1305,11 +875,7 @@ describe('decompile', function (): any {
             '  }\n' +
             '} else {\n' +
             "  bar('baz');\n" +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('if'),
@@ -1318,8 +884,19 @@ describe('decompile', function (): any {
           [Symbol.for('bar'), 'baz'],
         ]
       );
-    });
-    it("if (x) { if (y) { foo('bar'); } } else { if (z) { bar('baz'); } }", function (): any {
+    }
+  );
+  it(
+    '(decompile "if (x) {\n' +
+      '  if (y) {\n' +
+      "    foo('bar');\n" +
+      '  }\n' +
+      '} else {\n' +
+      '  if (z) {\n' +
+      "    bar('baz');\n" +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (x) {\n' +
@@ -1330,11 +907,7 @@ describe('decompile', function (): any {
             '  if (z) {\n' +
             "    bar('baz');\n" +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('cond'),
@@ -1345,8 +918,17 @@ describe('decompile', function (): any {
           [Symbol.for('z'), [Symbol.for('bar'), 'baz']],
         ]
       );
-    });
-    it("if (x) { if (y) { foo('bar'); } } else { if (z) { bar('baz'); } }", function (): any {
+    }
+  );
+  it(
+    '(decompile "if (x) {\n' +
+      '  foo();\n' +
+      '  bar();\n' +
+      '} else if (y) {\n' +
+      '  baz();\n' +
+      '  quux();\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (x) {\n' +
@@ -1355,11 +937,7 @@ describe('decompile', function (): any {
             '} else if (y) {\n' +
             '  baz();\n' +
             '  quux();\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('cond'),
@@ -1367,8 +945,21 @@ describe('decompile', function (): any {
           [Symbol.for('y'), [Symbol.for('baz')], [Symbol.for('quux')]],
         ]
       );
-    });
-    it("if (x) { if (y) { foo('bar'); } } else { if (z) { bar('baz'); } else { baz('quux'); } }", function (): any {
+    }
+  );
+  it(
+    '(decompile "if (x) {\n' +
+      '  if (y) {\n' +
+      "    foo('bar');\n" +
+      '  }\n' +
+      '} else {\n' +
+      '  if (z) {\n' +
+      "    bar('baz');\n" +
+      '  } else {\n' +
+      "    baz('quux');\n" +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (x) {\n' +
@@ -1381,11 +972,7 @@ describe('decompile', function (): any {
             '  } else {\n' +
             "    baz('quux');\n" +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('cond'),
@@ -1397,8 +984,21 @@ describe('decompile', function (): any {
           [Symbol.for('else'), [Symbol.for('baz'), 'quux']],
         ]
       );
-    });
-    it("if (x) { if (y) { foo('bar'); } } else { if (z) { bar('baz'); } else { baz('quux'); } }", function (): any {
+    }
+  );
+  it(
+    '(decompile "if (x) {\n' +
+      '  if (y) {\n' +
+      "    foo('bar');\n" +
+      '  }\n' +
+      '} else {\n' +
+      '  if (!z) {\n' +
+      "    bar('baz');\n" +
+      '  } else {\n' +
+      "    baz('quux');\n" +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (x) {\n' +
@@ -1411,11 +1011,7 @@ describe('decompile', function (): any {
             '  } else {\n' +
             "    baz('quux');\n" +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('cond'),
@@ -1430,8 +1026,17 @@ describe('decompile', function (): any {
           [Symbol.for('else'), [Symbol.for('baz'), 'quux']],
         ]
       );
-    });
-    it("if (x) { foo('bar'); } else if (y) { bar('baz'); } else { baz('quux'); }", function (): any {
+    }
+  );
+  it(
+    '(decompile "if (x) {\n' +
+      "  foo('bar');\n" +
+      '} else if (y) {\n' +
+      "  bar('baz');\n" +
+      '} else {\n' +
+      "  baz('quux');\n" +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (x) {\n' +
@@ -1440,11 +1045,7 @@ describe('decompile', function (): any {
             "  bar('baz');\n" +
             '} else {\n' +
             "  baz('quux');\n" +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('cond'),
@@ -1453,8 +1054,16 @@ describe('decompile', function (): any {
           [Symbol.for('else'), [Symbol.for('baz'), 'quux']],
         ]
       );
-    });
-    return it('if (x) { foo(); } else { bar(); baz(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "if (x) {\n' +
+      '  foo();\n' +
+      '} else {\n' +
+      '  bar();\n' +
+      '  baz();\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'if (x) {\n' +
@@ -1462,11 +1071,7 @@ describe('decompile', function (): any {
             '} else {\n' +
             '  bar();\n' +
             '  baz();\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('cond'),
@@ -1474,80 +1079,53 @@ describe('decompile', function (): any {
           [Symbol.for('else'), [Symbol.for('bar')], [Symbol.for('baz')]],
         ]
       );
-    });
+    }
+  );
+  it('(decompile "let x = true ? foo : bar;")', function (): any {
+    return assertEqual(decompile('let x = true ? foo : bar;'), [
+      Symbol.for('define'),
+      Symbol.for('x'),
+      [Symbol.for('if'), true, Symbol.for('foo'), Symbol.for('bar')],
+    ]);
   });
-  describe('?', function (): any {
-    it('let x = true ? foo : bar;', function (): any {
-      return assertEqual(
-        decompile('let x = true ? foo : bar;', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define'),
-          Symbol.for('x'),
-          [Symbol.for('if'), true, Symbol.for('foo'), Symbol.for('bar')],
-        ]
-      );
-    });
-    return it('let x = 1 ? foo : 2 ? bar : baz', function (): any {
-      return assertEqual(
-        decompile('let x = 1 ? foo : 2 ? bar : baz', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define'),
-          Symbol.for('x'),
-          [
-            Symbol.for('cond'),
-            [1, Symbol.for('foo')],
-            [2, Symbol.for('bar')],
-            [Symbol.for('else'), Symbol.for('baz')],
-          ],
-        ]
-      );
-    });
+  it('(decompile "let x = 1 ? foo : 2 ? bar : baz")', function (): any {
+    return assertEqual(decompile('let x = 1 ? foo : 2 ? bar : baz'), [
+      Symbol.for('define'),
+      Symbol.for('x'),
+      [
+        Symbol.for('cond'),
+        [1, Symbol.for('foo')],
+        [2, Symbol.for('bar')],
+        [Symbol.for('else'), Symbol.for('baz')],
+      ],
+    ]);
   });
-  describe('while', function (): any {
-    return it('while (foo) { bar(); }', function (): any {
-      return assertEqual(
-        decompile('while (foo) {\n' + '  bar();\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('do'),
-          [],
-          [[Symbol.for('not'), Symbol.for('foo')]],
-          [Symbol.for('bar')],
-        ]
-      );
-    });
+  it('(decompile "while (foo) {\n' + '  bar();}")', function (): any {
+    return assertEqual(decompile('while (foo) {\n' + '  bar();}'), [
+      Symbol.for('do'),
+      [],
+      [[Symbol.for('not'), Symbol.for('foo')]],
+      [Symbol.for('bar')],
+    ]);
   });
-  describe('do...while', function (): any {
-    return it('do { bar(); } while (foo)', function (): any {
+  it(
+    '(decompile "do {\n' + '  bar();\n' + '} while (foo);")',
+    function (): any {
       return assertEqual(
-        decompile('do {\n' + '  bar();\n' + '} while (foo);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('do {\n' + '  bar();\n' + '} while (foo);'),
         [Symbol.for('js/do-while'), [Symbol.for('bar')], Symbol.for('foo')]
       );
-    });
-  });
-  describe('for', function (): any {
-    it('for (let i = 0; i < 10; i++) { foo(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (let i = 0; i < 10; i++) {\n' +
+      '  foo();\n' +
+      '  break;\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
-          'for (let i = 0; i < 10; i++) {\n' +
-            '  foo();\n' +
-            '  break;\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+          'for (let i = 0; i < 10; i++) {\n' + '  foo();\n' + '  break;\n' + '}'
         ),
         [
           Symbol.for('for'),
@@ -1556,13 +1134,13 @@ describe('decompile', function (): any {
           [Symbol.for('break')],
         ]
       );
-    });
-    it('for (i = 0; i < arr.length; i++) { foo(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (i = 0; i < arr.length; i++) {\n' + '  foo();\n' + '}")',
+    function (): any {
       return assertEqual(
-        decompile('for (i = 0; i < arr.length; i++) {\n' + '  foo();\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('for (i = 0; i < arr.length; i++) {\n' + '  foo();\n' + '}'),
         [
           Symbol.for('for'),
           [
@@ -1582,31 +1160,33 @@ describe('decompile', function (): any {
           [Symbol.for('foo')],
         ]
       );
-    });
-    it('for (let i = 10; i > 0; i--) { foo(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (let i = 10; i > 0; i--) {\n' + '  foo();\n' + '}")',
+    function (): any {
       return assertEqual(
-        decompile('for (let i = 10; i > 0; i--) {\n' + '  foo();\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('for (let i = 10; i > 0; i--) {\n' + '  foo();\n' + '}'),
         [
           Symbol.for('for'),
           [[Symbol.for('i'), [Symbol.for('range'), 10, 0, -1]]],
           [Symbol.for('foo')],
         ]
       );
-    });
-    return it('for (let i = 0, j = 0; i < 10; i++, j++) { foo(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (let i = 0, j = 0; i < 10; i++, j++) {\n' +
+      '  foo();\n' +
+      '  break bar;\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'for (let i = 0, j = 0; i < 10; i++, j++) {\n' +
             '  foo();\n' +
             '  break bar;\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('do'),
@@ -1619,17 +1199,17 @@ describe('decompile', function (): any {
           [Symbol.for('break'), Symbol.for('bar')],
         ]
       );
-    });
-  });
-  describe('for...of', function (): any {
-    it('for (let x of foo) { bar(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (let x of foo) {\n' +
+      '  bar();\n' +
+      '  continue;\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
-          'for (let x of foo) {\n' + '  bar();\n' + '  continue;\n' + '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+          'for (let x of foo) {\n' + '  bar();\n' + '  continue;\n' + '}'
         ),
         [
           Symbol.for('for'),
@@ -1638,17 +1218,18 @@ describe('decompile', function (): any {
           [Symbol.for('continue')],
         ]
       );
-    });
-    it('for (const [name, value] of entries) { ... }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (const [name, value] of entries) {\n' +
+      '  result.insert(value, [name]);\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'for (const [name, value] of entries) {\n' +
             '  result.insert(value, [name]);\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('for'),
@@ -1667,17 +1248,18 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-    return it('for (const [name, value] of x) { ... }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (const [name, value] of x) {\n' +
+      '  result.insert(value, [name]);\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'for (const [name, value] of x) {\n' +
             '  result.insert(value, [name]);\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('for'),
@@ -1696,115 +1278,76 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-  });
-  describe('for...in', function (): any {
-    return it('for (let x in foo) { bar(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "for (let x in foo) {\n' + '  bar();\n' + '}")',
+    function (): any {
       return assertEqual(
-        decompile('for (let x in foo) {\n' + '  bar();\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('for (let x in foo) {\n' + '  bar();\n' + '}'),
         [
           Symbol.for('for'),
           [[Symbol.for('x'), [Symbol.for('js-keys'), Symbol.for('foo')]]],
           [Symbol.for('bar')],
         ]
       );
-    });
+    }
+  );
+  it('(decompile "new Foo();")', function (): any {
+    return assertEqual(decompile('new Foo();'), [
+      Symbol.for('new'),
+      Symbol.for('Foo'),
+    ]);
   });
-  describe('new', function (): any {
-    it('new Foo()', function (): any {
-      return assertEqual(
-        decompile('new Foo();', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('new'), Symbol.for('Foo')]
-      );
-    });
-    it("new Foo('bar')", function (): any {
-      return assertEqual(
-        decompile("new Foo('bar');", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('new'), Symbol.for('Foo'), 'bar']
-      );
-    });
-    it('new Foo(...args);', function (): any {
-      return assertEqual(
-        decompile('new Foo(...args);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('apply'),
-          Symbol.for('new'),
-          Symbol.for('Foo'),
-          Symbol.for('args'),
-        ]
-      );
-    });
-    return it('new Foo(x, ...args);', function (): any {
-      return assertEqual(
-        decompile('new Foo(x, ...args);', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('apply'),
-          Symbol.for('new'),
-          Symbol.for('Foo'),
-          Symbol.for('x'),
-          Symbol.for('args'),
-        ]
-      );
-    });
+  it('(decompile "new Foo(\'bar\');")', function (): any {
+    return assertEqual(decompile("new Foo('bar');"), [
+      Symbol.for('new'),
+      Symbol.for('Foo'),
+      'bar',
+    ]);
   });
-  describe('delete', function (): any {
-    return it('delete x', function (): any {
-      return assertEqual(
-        decompile('delete x', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('js/delete'), Symbol.for('x')]
-      );
-    });
+  it('(decompile "new Foo(...args);")', function (): any {
+    return assertEqual(decompile('new Foo(...args);'), [
+      Symbol.for('apply'),
+      Symbol.for('new'),
+      Symbol.for('Foo'),
+      Symbol.for('args'),
+    ]);
   });
-  describe('throw', function (): any {
-    return it("throw new Error('An error')", function (): any {
-      return assertEqual(
-        decompile("throw new Error('An error')", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('throw'),
-          [Symbol.for('new'), Symbol.for('Error'), 'An error'],
-        ]
-      );
-    });
+  it('(decompile "new Foo(x, ...args);")', function (): any {
+    return assertEqual(decompile('new Foo(x, ...args);'), [
+      Symbol.for('apply'),
+      Symbol.for('new'),
+      Symbol.for('Foo'),
+      Symbol.for('x'),
+      Symbol.for('args'),
+    ]);
   });
-  describe('try', function (): any {
-    xit('try {}', function (): any {
-      return assertEqual(
-        decompile('try {\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('try')]
-      );
-    });
-    it('try { x = 2 / 1; } finally { foo(); }', function (): any {
+  it('(decompile "delete x")', function (): any {
+    return assertEqual(decompile('delete x'), [
+      Symbol.for('js/delete'),
+      Symbol.for('x'),
+    ]);
+  });
+  it('(decompile "throw new Error(\'An error\')")', function (): any {
+    return assertEqual(decompile("throw new Error('An error')"), [
+      Symbol.for('throw'),
+      [Symbol.for('new'), Symbol.for('Error'), 'An error'],
+    ]);
+  });
+  xit('(decompile "try {\n' + '}")', function (): any {
+    return assertEqual(decompile('try {\n' + '}'), [Symbol.for('try')]);
+  });
+  it(
+    '(decompile "try {\n' +
+      '  x = 2 / 1;\n' +
+      '} finally {\n' +
+      '  foo();\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
-          'try {\n' + '  x = 2 / 1;\n' + '} finally {\n' + '  foo();\n' + '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+          'try {\n' + '  x = 2 / 1;\n' + '} finally {\n' + '  foo();\n' + '}'
         ),
         [
           Symbol.for('try'),
@@ -1812,15 +1355,18 @@ describe('decompile', function (): any {
           [Symbol.for('finally'), [Symbol.for('foo')]],
         ]
       );
-    });
-    it('try { x = 2 / 1; } catch { foo(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "try {\n' +
+      '  x = 2 / 1;\n' +
+      '} catch {\n' +
+      '  foo();\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
-          'try {\n' + '  x = 2 / 1;\n' + '} catch {\n' + '  foo();\n' + '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+          'try {\n' + '  x = 2 / 1;\n' + '} catch {\n' + '  foo();\n' + '}'
         ),
         [
           Symbol.for('try'),
@@ -1833,8 +1379,17 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-    return it('try { x = 2 / 1; } catch (e) { foo(); } finally { bar(); }', function (): any {
+    }
+  );
+  it(
+    '(decompile "try {\n' +
+      '  x = 2 / 1;\n' +
+      '} catch (e) {\n' +
+      '  foo();\n' +
+      '} finally {\n' +
+      '  bar();\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'try {\n' +
@@ -1843,11 +1398,7 @@ describe('decompile', function (): any {
             '  foo();\n' +
             '} finally {\n' +
             '  bar();\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('try'),
@@ -1861,15 +1412,13 @@ describe('decompile', function (): any {
           [Symbol.for('finally'), [Symbol.for('bar')]],
         ]
       );
-    });
-  });
-  describe('async', function (): any {
-    it('const I = async function (x) { return x; };', function (): any {
+    }
+  );
+  it(
+    '(decompile "const I = async function (x) {\n' + '  return x;\n' + '};")',
+    function (): any {
       return assertEqual(
-        decompile('const I = async function (x) {\n' + '  return x;\n' + '};', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
+        decompile('const I = async function (x) {\n' + '  return x;\n' + '};'),
         [
           Symbol.for('define'),
           Symbol.for('I'),
@@ -1879,14 +1428,17 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-    return it('async function I(x) { return x; }', function (): any {
+    }
+  );
+  it(
+    '(decompile "async function I(x) {\n' + '  return x;\n' + '}" :module #t)',
+    function (): any {
       return assertEqual(
-        decompile('async function I(x) {\n' + '  return x;\n' + '}', {
-          language: 'JavaScript',
-          module: true,
-          sexp: true,
-        }),
+        decompile(
+          'async function I(x) {\n' + '  return x;\n' + '}',
+          Symbol.for(':module'),
+          true
+        ),
         [
           Symbol.for('module'),
           Symbol.for('m'),
@@ -1901,173 +1453,107 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
+    }
+  );
+  it('(decompile "import \'foo\';")', function (): any {
+    return assertEqual(decompile("import 'foo';"), [
+      Symbol.for('require'),
+      'foo',
+    ]);
   });
-  describe('import', function (): any {
-    it("import 'foo';", function (): any {
-      return assertEqual(
-        decompile("import 'foo';", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('require'), 'foo']
-      );
-    });
-    it("import * as foo from 'bar';", function (): any {
-      return assertEqual(
-        decompile("import * as foo from 'bar';", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('require'), Symbol.for('foo'), 'bar']
-      );
-    });
-    it("import { foo } from 'bar';", function (): any {
-      return assertEqual(
-        decompile("import { foo } from 'bar';", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('require'),
-          [Symbol.for('only-in'), 'bar', Symbol.for('foo')],
-        ]
-      );
-    });
-    return it("import { foo as bar } from 'baz';", function (): any {
-      return assertEqual(
-        decompile("import { foo as bar } from 'baz';", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('require'),
-          [
-            Symbol.for('only-in'),
-            'baz',
-            [Symbol.for('foo'), Symbol.for('bar')],
-          ],
-        ]
-      );
-    });
+  it('(decompile "import * as foo from \'bar\';")', function (): any {
+    return assertEqual(decompile("import * as foo from 'bar';"), [
+      Symbol.for('require'),
+      Symbol.for('foo'),
+      'bar',
+    ]);
   });
-  describe('export', function (): any {
-    it('export {};', function (): any {
-      return assertEqual(
-        decompile('export {};', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('provide')]
-      );
-    });
-    it('export { foo };', function (): any {
-      return assertEqual(
-        decompile('export {\n' + '  foo\n' + '};', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('provide'), Symbol.for('foo')]
-      );
-    });
-    it('export { foo as bar };', function (): any {
-      return assertEqual(
-        decompile('export {\n' + '  foo as bar\n' + '};', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('provide'),
-          [Symbol.for('rename-out'), [Symbol.for('foo'), Symbol.for('bar')]],
-        ]
-      );
-    });
-    return it("export * from 'foo';", function (): any {
-      return assertEqual(
-        decompile("export * from 'foo';", {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo']]
-      );
-    });
+  it('(decompile "import { foo } from \'bar\';")', function (): any {
+    return assertEqual(decompile("import { foo } from 'bar';"), [
+      Symbol.for('require'),
+      [Symbol.for('only-in'), 'bar', Symbol.for('foo')],
+    ]);
   });
-  describe('objects', function (): any {
-    it('{}', function (): any {
-      const actual: any = decompile('const foo = {};', {
-        language: 'JavaScript',
-        sexp: true,
-      });
-      return assertEqual(actual, [
-        Symbol.for('define'),
-        Symbol.for('foo'),
-        [Symbol.for('js-obj')],
-      ]);
-    });
-    it("{ bar: 'baz' }", function (): any {
-      const actual: any = decompile('const foo = { bar: true };', {
-        language: 'JavaScript',
-        sexp: true,
-      });
-      return assertEqual(actual, [
-        Symbol.for('define'),
-        Symbol.for('foo'),
-        [Symbol.for('js-obj'), 'bar', true],
-      ]);
-    });
-    return it('{ ...{ bar: true } }', function (): any {
-      const actual: any = decompile('const foo = { ...{ bar: true } };', {
-        language: 'JavaScript',
-        sexp: true,
-      });
-      return assertEqual(actual, [
-        Symbol.for('define'),
-        Symbol.for('foo'),
-        [Symbol.for('js-obj-append'), [Symbol.for('js-obj'), 'bar', true]],
-      ]);
-    });
+  it('(decompile "import { foo as bar } from \'baz\';")', function (): any {
+    return assertEqual(decompile("import { foo as bar } from 'baz';"), [
+      Symbol.for('require'),
+      [Symbol.for('only-in'), 'baz', [Symbol.for('foo'), Symbol.for('bar')]],
+    ]);
   });
-  describe('classes', function (): any {
-    it('class Foo {}', function (): any {
-      return assertEqual(
-        decompile('class Foo {\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define-class'), Symbol.for('Foo'), []]
-      );
-    });
-    it('class Foo extends Bar {}', function (): any {
-      return assertEqual(
-        decompile('class Foo extends Bar {\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Bar')]]
-      );
-    });
-    it('class Foo { bar = 1; }', function (): any {
-      return assertEqual(
-        decompile('class Foo {\n' + '  bar = 1;\n' + '}', {
-          language: 'JavaScript',
-          sexp: true,
-        }),
-        [
-          Symbol.for('define-class'),
-          Symbol.for('Foo'),
-          [],
-          [Symbol.for('define/public'), Symbol.for('bar'), 1],
-        ]
-      );
-    });
-    it('class Foo { bar() { return 1; } }', function (): any {
+  it('(decompile "export {};")', function (): any {
+    return assertEqual(decompile('export {};'), [Symbol.for('provide')]);
+  });
+  it('(decompile "export {\n' + '  foo\n' + '};")', function (): any {
+    return assertEqual(decompile('export {\n' + '  foo\n' + '};'), [
+      Symbol.for('provide'),
+      Symbol.for('foo'),
+    ]);
+  });
+  it('(decompile "export {\n' + '  foo as bar\n' + '};")', function (): any {
+    return assertEqual(decompile('export {\n' + '  foo as bar\n' + '};'), [
+      Symbol.for('provide'),
+      [Symbol.for('rename-out'), [Symbol.for('foo'), Symbol.for('bar')]],
+    ]);
+  });
+  it('(decompile "export * from \'foo\';")', function (): any {
+    return assertEqual(decompile("export * from 'foo';"), [
+      Symbol.for('provide'),
+      [Symbol.for('all-from-out'), 'foo'],
+    ]);
+  });
+  it('(decompile "const foo = {};")', function (): any {
+    return assertEqual(decompile('const foo = {};'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      [Symbol.for('js-obj')],
+    ]);
+  });
+  it('(decompile "const foo = { bar: true };")', function (): any {
+    return assertEqual(decompile('const foo = { bar: true };'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      [Symbol.for('js-obj'), 'bar', true],
+    ]);
+  });
+  it('(decompile "const foo = { ...{ bar: true } };")', function (): any {
+    return assertEqual(decompile('const foo = { ...{ bar: true } };'), [
+      Symbol.for('define'),
+      Symbol.for('foo'),
+      [Symbol.for('js-obj-append'), [Symbol.for('js-obj'), 'bar', true]],
+    ]);
+  });
+  it('(decompile "class Foo {\n' + '}")', function (): any {
+    return assertEqual(decompile('class Foo {\n' + '}'), [
+      Symbol.for('define-class'),
+      Symbol.for('Foo'),
+      [],
+    ]);
+  });
+  it('(decompile "class Foo extends Bar {\n' + '}")', function (): any {
+    return assertEqual(decompile('class Foo extends Bar {\n' + '}'), [
+      Symbol.for('define-class'),
+      Symbol.for('Foo'),
+      [Symbol.for('Bar')],
+    ]);
+  });
+  it('(decompile "class Foo {\n' + '  bar = 1;\n' + '}")', function (): any {
+    return assertEqual(decompile('class Foo {\n' + '  bar = 1;\n' + '}'), [
+      Symbol.for('define-class'),
+      Symbol.for('Foo'),
+      [],
+      [Symbol.for('define/public'), Symbol.for('bar'), 1],
+    ]);
+  });
+  it(
+    '(decompile "class Foo {\n' +
+      '  bar() {\n' +
+      '    return 1;\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
-          'class Foo {\n' + '  bar() {\n' + '    return 1;\n' + '  }\n' + '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+          'class Foo {\n' + '  bar() {\n' + '    return 1;\n' + '  }\n' + '}'
         ),
         [
           Symbol.for('define-class'),
@@ -2076,8 +1562,17 @@ describe('decompile', function (): any {
           [Symbol.for('define/public'), [Symbol.for('bar')], 1],
         ]
       );
-    });
-    it('class Foo { bar; constructor() { this.bar = 1; } }', function (): any {
+    }
+  );
+  it(
+    '(decompile "class Foo {\n' +
+      '  bar;\n' +
+      '\n' +
+      '  constructor() {\n' +
+      '    this.bar = 1;\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'class Foo {\n' +
@@ -2086,11 +1581,7 @@ describe('decompile', function (): any {
             '  constructor() {\n' +
             '    this.bar = 1;\n' +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('define-class'),
@@ -2109,19 +1600,22 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-    it('class Foo extends Bar { constructor() { super(); } }', function (): any {
+    }
+  );
+  it(
+    '(decompile "class Foo extends Bar {\n' +
+      '  constructor() {\n' +
+      '    super();\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'class Foo extends Bar {\n' +
             '  constructor() {\n' +
             '    super();\n' +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('define-class'),
@@ -2134,19 +1628,22 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-    it('class Foo extends Bar { constructor(x) { super(x); } }', function (): any {
+    }
+  );
+  it(
+    '(decompile "class Foo extends Bar {\n' +
+      '  constructor(x) {\n' +
+      '    super(x);\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'class Foo extends Bar {\n' +
             '  constructor(x) {\n' +
             '    super(x);\n' +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('define-class'),
@@ -2159,8 +1656,23 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-    it('class Foo { *generator() { ... } }', function (): any {
+    }
+  );
+  it(
+    '(decompile "class Foo {\n' +
+      '  arr;\n' +
+      '\n' +
+      '  constructor(arr) {\n' +
+      '    this.arr = arr;\n' +
+      '  }\n' +
+      '\n' +
+      '  *generator() {\n' +
+      '    for (let x of this.arr) {\n' +
+      '      yield x;\n' +
+      '    }\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'class Foo {\n' +
@@ -2175,11 +1687,7 @@ describe('decompile', function (): any {
             '      yield x;\n' +
             '    }\n' +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('define-class'),
@@ -2216,8 +1724,23 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
-    return it('class Foo { *[Symbol.iterator]() { ... } }', function (): any {
+    }
+  );
+  it(
+    '(decompile "class Foo {\n' +
+      '  arr;\n' +
+      '\n' +
+      '  constructor(arr) {\n' +
+      '    this.arr = arr;\n' +
+      '  }\n' +
+      '\n' +
+      '  *[Symbol.iterator]() {\n' +
+      '    for (let x of this.arr) {\n' +
+      '      yield x;\n' +
+      '    }\n' +
+      '  }\n' +
+      '}")',
+    function (): any {
       return assertEqual(
         decompile(
           'class Foo {\n' +
@@ -2232,11 +1755,7 @@ describe('decompile', function (): any {
             '      yield x;\n' +
             '    }\n' +
             '  }\n' +
-            '}',
-          {
-            language: 'JavaScript',
-            sexp: true,
-          }
+            '}'
         ),
         [
           Symbol.for('define-class'),
@@ -2279,157 +1798,144 @@ describe('decompile', function (): any {
           ],
         ]
       );
-    });
+    }
+  );
+  it('(decompile "foo as any" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile('foo as any', Symbol.for(':from'), Symbol.for('typescript')),
+      [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Any')]
+    );
   });
-  return describe('TypeScript', function (): any {
-    describe('as', function (): any {
-      it('foo as any', function (): any {
-        return assertEqual(
-          decompile('foo as any', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Any')]
-        );
-      });
-      it('foo as number', function (): any {
-        return assertEqual(
-          decompile('foo as number', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Number')]
-        );
-      });
-      it('foo as boolean', function (): any {
-        return assertEqual(
-          decompile('foo as boolean', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Boolean')]
-        );
-      });
-      it('foo as false', function (): any {
-        return assertEqual(
-          decompile('foo as true', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('True')]
-        );
-      });
-      it('foo as MyClass', function (): any {
-        return assertEqual(
-          decompile('foo as MyClass', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('MyClass')]
-        );
-      });
-      it('foo as MyClass<Any>', function (): any {
-        return assertEqual(
-          decompile('foo as MyClass<Any>', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [
-            Symbol.for('ann'),
-            Symbol.for('foo'),
-            [Symbol.for('MyClass'), Symbol.for('Any')],
-          ]
-        );
-      });
-      it('foo as any[]', function (): any {
-        return assertEqual(
-          decompile('foo as any[]', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [
-            Symbol.for('ann'),
-            Symbol.for('foo'),
-            [Symbol.for('Listof'), Symbol.for('Any')],
-          ]
-        );
-      });
-      it('foo as [any]', function (): any {
-        return assertEqual(
-          decompile('foo as [any]', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [
-            Symbol.for('ann'),
-            Symbol.for('foo'),
-            [Symbol.for('List'), Symbol.for('Any')],
-          ]
-        );
-      });
-      it('foo as [number, any]', function (): any {
-        return assertEqual(
-          decompile('foo as [number, any]', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [
-            Symbol.for('ann'),
-            Symbol.for('foo'),
-            [Symbol.for('List'), Symbol.for('Number'), Symbol.for('Any')],
-          ]
-        );
-      });
-      it('foo as number | string', function (): any {
-        return assertEqual(
-          decompile('foo as number | string', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [
-            Symbol.for('ann'),
-            Symbol.for('foo'),
-            [Symbol.for('U'), Symbol.for('Number'), Symbol.for('String')],
-          ]
-        );
-      });
-      it('foo as string | undefined', function (): any {
-        return assertEqual(
-          decompile('foo as string | undefined', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [
-            Symbol.for('ann'),
-            Symbol.for('foo'),
-            [Symbol.for('U'), Symbol.for('String'), Symbol.for('Undefined')],
-          ]
-        );
-      });
-      return it('foo as (a: any) => void', function (): any {
-        return assertEqual(
-          decompile('foo as (a: any) => void', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [
-            Symbol.for('ann'),
-            Symbol.for('foo'),
-            [Symbol.for('->'), Symbol.for('Any'), Symbol.for('Void')],
-          ]
-        );
-      });
-    });
-    return describe('type', function (): any {
-      return it('type NN = number', function (): any {
-        return assertEqual(
-          decompile('type NN = number;', {
-            language: 'TypeScript',
-            sexp: true,
-          }),
-          [Symbol.for('define-type'), Symbol.for('NN'), Symbol.for('Number')]
-        );
-      });
-    });
+  it('(decompile "foo as number" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile('foo as number', Symbol.for(':from'), Symbol.for('typescript')),
+      [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Number')]
+    );
+  });
+  it('(decompile "foo as boolean" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile(
+        'foo as boolean',
+        Symbol.for(':from'),
+        Symbol.for('typescript')
+      ),
+      [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Boolean')]
+    );
+  });
+  it('(decompile "foo as true" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile('foo as true', Symbol.for(':from'), Symbol.for('typescript')),
+      [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('True')]
+    );
+  });
+  it('(decompile "foo as MyClass" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile(
+        'foo as MyClass',
+        Symbol.for(':from'),
+        Symbol.for('typescript')
+      ),
+      [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('MyClass')]
+    );
+  });
+  it('(decompile "foo as MyClass<Any>" :from \'typescript\')', function (): any {
+    return assertEqual(
+      decompile(
+        'foo as MyClass<Any>',
+        Symbol.for(':from'),
+        Symbol.for("typescript'")
+      ),
+      [
+        Symbol.for('ann'),
+        Symbol.for('foo'),
+        [Symbol.for('MyClass'), Symbol.for('Any')],
+      ]
+    );
+  });
+  it('(decompile "foo as any[]" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile('foo as any[]', Symbol.for(':from'), Symbol.for('typescript')),
+      [
+        Symbol.for('ann'),
+        Symbol.for('foo'),
+        [Symbol.for('Listof'), Symbol.for('Any')],
+      ]
+    );
+  });
+  it('(decompile "foo as [any]" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile('foo as [any]', Symbol.for(':from'), Symbol.for('typescript')),
+      [
+        Symbol.for('ann'),
+        Symbol.for('foo'),
+        [Symbol.for('List'), Symbol.for('Any')],
+      ]
+    );
+  });
+  it('(decompile "foo as [number, any]" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile(
+        'foo as [number, any]',
+        Symbol.for(':from'),
+        Symbol.for('typescript')
+      ),
+      [
+        Symbol.for('ann'),
+        Symbol.for('foo'),
+        [Symbol.for('List'), Symbol.for('Number'), Symbol.for('Any')],
+      ]
+    );
+  });
+  it('(decompile "foo as number | string" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile(
+        'foo as number | string',
+        Symbol.for(':from'),
+        Symbol.for('typescript')
+      ),
+      [
+        Symbol.for('ann'),
+        Symbol.for('foo'),
+        [Symbol.for('U'), Symbol.for('Number'), Symbol.for('String')],
+      ]
+    );
+  });
+  it('(decompile "foo as string | undefined" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile(
+        'foo as string | undefined',
+        Symbol.for(':from'),
+        Symbol.for('typescript')
+      ),
+      [
+        Symbol.for('ann'),
+        Symbol.for('foo'),
+        [Symbol.for('U'), Symbol.for('String'), Symbol.for('Undefined')],
+      ]
+    );
+  });
+  it('(decompile "foo as (a: any) => void" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile(
+        'foo as (a: any) => void',
+        Symbol.for(':from'),
+        Symbol.for('typescript')
+      ),
+      [
+        Symbol.for('ann'),
+        Symbol.for('foo'),
+        [Symbol.for('->'), Symbol.for('Any'), Symbol.for('Void')],
+      ]
+    );
+  });
+  return it('(decompile "type NN = number;" :from \'typescript)', function (): any {
+    return assertEqual(
+      decompile(
+        'type NN = number;',
+        Symbol.for(':from'),
+        Symbol.for('typescript')
+      ),
+      [Symbol.for('define-type'), Symbol.for('NN'), Symbol.for('Number')]
+    );
   });
 });

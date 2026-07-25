@@ -470,7 +470,14 @@ let z = 3;")
  > (decompile "do {
   bar();
 } while (foo);")
- '(js/do-while (bar)
+ '(js/do-while ((bar))
+               foo)
+ > (decompile "do {
+  bar();
+  baz();
+} while (foo);")
+ '(js/do-while ((bar)
+                (baz))
                foo)
  > (decompile "for (let i = 0; i < 10; i++) {
   foo();

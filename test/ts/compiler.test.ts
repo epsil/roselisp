@@ -17,199 +17,6 @@ import { sexp } from '../../src/ts/sexp';
 
 import { assertEqual, testMacro } from './test-util';
 
-describe('Macros', function (): any {
-  xit("(compile '(module m scheme (defmacro foo () '(begin)) (foo)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('module'),
-        Symbol.for('m'),
-        Symbol.for('scheme'),
-        [
-          Symbol.for('defmacro'),
-          Symbol.for('foo'),
-          [],
-          [Symbol.for('quote'), [Symbol.for('begin')]],
-        ],
-        [Symbol.for('foo')],
-      ]),
-      'function foo(exp, env) {\n' +
-        "  return [Symbol.for('begin')];\n" +
-        '}\n' +
-        '\n' +
-        "foo.ftype = 'macro';"
-    );
-  });
-  it("(compile '(module m scheme (defmacro foo (x) x) (define (bar x) (foo x))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('module'),
-        Symbol.for('m'),
-        Symbol.for('scheme'),
-        [
-          Symbol.for('defmacro'),
-          Symbol.for('foo'),
-          [Symbol.for('x')],
-          Symbol.for('x'),
-        ],
-        [
-          Symbol.for('define'),
-          [Symbol.for('bar'), Symbol.for('x')],
-          [Symbol.for('foo'), Symbol.for('x')],
-        ],
-      ]),
-      'function foo(exp, env) {\n' +
-        '  let [x] = exp.slice(1);\n' +
-        '  return x;\n' +
-        '}\n' +
-        '\n' +
-        "foo.ftype = 'macro';\n" +
-        '\n' +
-        'function bar(x) {\n' +
-        '  return x;\n' +
-        '}'
-    );
-  });
-  it("(compile '(module m scheme (defmacro foo (x) `(begin ,x)) (define (bar x) (foo x))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('module'),
-        Symbol.for('m'),
-        Symbol.for('scheme'),
-        [
-          Symbol.for('defmacro'),
-          Symbol.for('foo'),
-          [Symbol.for('x')],
-          [
-            Symbol.for('quasiquote'),
-            [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
-          ],
-        ],
-        [
-          Symbol.for('define'),
-          [Symbol.for('bar'), Symbol.for('x')],
-          [Symbol.for('foo'), Symbol.for('x')],
-        ],
-      ]),
-      'function foo(exp, env) {\n' +
-        '  let [x] = exp.slice(1);\n' +
-        "  return [Symbol.for('begin'), x];\n" +
-        '}\n' +
-        '\n' +
-        "foo.ftype = 'macro';\n" +
-        '\n' +
-        'function bar(x) {\n' +
-        '  return x;\n' +
-        '}'
-    );
-  });
-  it("(compile '(module m scheme (defmacro foo (x . args) x) (define (bar x) (foo x))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('module'),
-        Symbol.for('m'),
-        Symbol.for('scheme'),
-        [
-          Symbol.for('defmacro'),
-          Symbol.for('foo'),
-          [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
-          Symbol.for('x'),
-        ],
-        [
-          Symbol.for('define'),
-          [Symbol.for('bar'), Symbol.for('x')],
-          [Symbol.for('foo'), Symbol.for('x')],
-        ],
-      ]),
-      'function foo(exp, env) {\n' +
-        '  let [x, ...args] = exp.slice(1);\n' +
-        '  return x;\n' +
-        '}\n' +
-        '\n' +
-        "foo.ftype = 'macro';\n" +
-        '\n' +
-        'function bar(x) {\n' +
-        '  return x;\n' +
-        '}'
-    );
-  });
-  it("(compile '(module m scheme (defmacro foo (x . args) x) (define bar (foo 1 2 3))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('module'),
-        Symbol.for('m'),
-        Symbol.for('scheme'),
-        [
-          Symbol.for('defmacro'),
-          Symbol.for('foo'),
-          [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
-          Symbol.for('x'),
-        ],
-        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1, 2, 3]],
-      ]),
-      'function foo(exp, env) {\n' +
-        '  let [x, ...args] = exp.slice(1);\n' +
-        '  return x;\n' +
-        '}\n' +
-        '\n' +
-        "foo.ftype = 'macro';\n" +
-        '\n' +
-        'let bar = 1;'
-    );
-  });
-  return xit("(compile '(begin (defmacro foo (x . args) x) (define bar (foo 1 2 3))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('begin'),
-        [
-          Symbol.for('defmacro'),
-          Symbol.for('foo'),
-          [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
-          Symbol.for('x'),
-        ],
-        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1, 2, 3]],
-      ]),
-      'function foo(exp, env) {\n' +
-        '  let [x, ...args] = exp.slice(1);\n' +
-        '  return x;\n' +
-        '}\n' +
-        '\n' +
-        "foo.ftype = 'macro';\n" +
-        '\n' +
-        'let bar = 1;'
-    );
-  });
-});
-
-describe('Fexprs', function (): any {
-  return it("(compile '(begin (define-fexpr (foo x) x) (define x 1) (define bar (foo x))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('begin'),
-        [
-          Symbol.for('define-fexpr'),
-          [Symbol.for('foo'), Symbol.for('x')],
-          Symbol.for('x'),
-        ],
-        [Symbol.for('define'), Symbol.for('x'), 1],
-        [
-          Symbol.for('define'),
-          Symbol.for('bar'),
-          [Symbol.for('foo'), Symbol.for('x')],
-        ],
-      ]),
-      'function foo(x) {\n' +
-        '  return x;\n' +
-        '}\n' +
-        '\n' +
-        "foo.ftype = 'fexpr';\n" +
-        '\n' +
-        'let x = 1;\n' +
-        '\n' +
-        "let bar = foo(Symbol.for('x'));"
-    );
-  });
-});
-
 describe('Symbols', function (): any {
   it('(compile #t)', function (): any {
     return assertEqual(compile(true), 'true;');
@@ -370,612 +177,6 @@ describe('gensym', function (): any {
   });
 });
 
-describe('Global environment', function (): any {
-  it("(compile '(module m scheme (define lst `(,symbol? ,boolean?))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [
-            Symbol.for('define'),
-            Symbol.for('lst'),
-            [
-              Symbol.for('quasiquote'),
-              [
-                [Symbol.for('unquote'), Symbol.for('symbol?')],
-                [Symbol.for('unquote'), Symbol.for('boolean?')],
-              ],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [symbolp, booleanp] = (() => {\n' +
-        '  function symbolp_(obj) {\n' +
-        "    return typeof obj === 'symbol';\n" +
-        '  }\n' +
-        '  function booleanp_(obj) {\n' +
-        "    return typeof obj === 'boolean';\n" +
-        '  }\n' +
-        '  return [symbolp_, booleanp_];\n' +
-        '})();\n' +
-        '\n' +
-        'let lst = [symbolp, booleanp];'
-    );
-  });
-  xit('(compile \'(define-values (_ regexp) (rl/sandbox ((js/arrow () (define __ (js-obj "@@functional/placeholder" #t)) (define (js-regexp_ input (flags #u)) (if (eq? (type-of input) "string") (new RegExp input flags) input)) (values __ js-regexp_))))) :inline-functions #t)', function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('define-values'),
-          [Symbol.for('_'), Symbol.for('regexp')],
-          [
-            Symbol.for('rl/sandbox'),
-            [
-              [
-                Symbol.for('js/arrow'),
-                [],
-                [
-                  Symbol.for('define'),
-                  Symbol.for('__'),
-                  [Symbol.for('js-obj'), '@@functional/placeholder', true],
-                ],
-                [
-                  Symbol.for('define'),
-                  [
-                    Symbol.for('js-regexp_'),
-                    Symbol.for('input'),
-                    [Symbol.for('flags'), undefined],
-                  ],
-                  [
-                    Symbol.for('if'),
-                    [
-                      Symbol.for('eq?'),
-                      [Symbol.for('type-of'), Symbol.for('input')],
-                      'string',
-                    ],
-                    [
-                      Symbol.for('new'),
-                      Symbol.for('RegExp'),
-                      Symbol.for('input'),
-                      Symbol.for('flags'),
-                    ],
-                    Symbol.for('input'),
-                  ],
-                ],
-                [
-                  Symbol.for('values'),
-                  Symbol.for('__'),
-                  Symbol.for('js-regexp_'),
-                ],
-              ],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [, regexp] = (() => {\n' +
-        '  let __ = {\n' +
-        "    '@@functional/placeholder': true\n" +
-        '  };\n' +
-        '  function jsRegexp_(input, flags = undefined) {\n' +
-        "    if (typeof input === 'string') {\n" +
-        '      return new RegExp(input, flags);\n' +
-        '    } else {\n' +
-        '      return input;\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return [__, jsRegexp_];\n' +
-        '})();'
-    );
-  });
-  it("(compile '(module m scheme (define one-plus-one (apply + '(1 1)))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [
-            Symbol.for('define'),
-            Symbol.for('one-plus-one'),
-            [
-              Symbol.for('apply'),
-              Symbol.for('+'),
-              [Symbol.for('quote'), [1, 1]],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [_add] = (() => {\n' +
-        '  function add_(...args) {\n' +
-        '    let result = 0;\n' +
-        '    for (let arg of args) {\n' +
-        '      result = result + arg;\n' +
-        '    }\n' +
-        '    return result;\n' +
-        '  }\n' +
-        '  return [add_];\n' +
-        '})();\n' +
-        '\n' +
-        'let onePlusOne = _add(1, 1);'
-    );
-  });
-  it("(compile '(module m scheme (define one-minus-one (apply - '(1 1)))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [
-            Symbol.for('define'),
-            Symbol.for('one-minus-one'),
-            [
-              Symbol.for('apply'),
-              Symbol.for('-'),
-              [Symbol.for('quote'), [1, 1]],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [_sub] = (() => {\n' +
-        '  function sub_(...args) {\n' +
-        '    let len = args.length;\n' +
-        '    if (len === 0) {\n' +
-        '      return 0;\n' +
-        '    } else if (len === 1) {\n' +
-        '      return -args[0];\n' +
-        '    } else {\n' +
-        '      let result = args[0];\n' +
-        '      for (let i = 1; i < len; i++) {\n' +
-        '        result = result - args[i];\n' +
-        '      }\n' +
-        '      return result;\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return [sub_];\n' +
-        '})();\n' +
-        '\n' +
-        'let oneMinusOne = _sub(1, 1);'
-    );
-  });
-  it("(compile '(module m scheme (define one-minus-one (apply - '(1 1)))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('module'),
-        Symbol.for('m'),
-        Symbol.for('scheme'),
-        [
-          Symbol.for('define'),
-          Symbol.for('one-minus-one'),
-          [Symbol.for('apply'), Symbol.for('-'), [Symbol.for('quote'), [1, 1]]],
-        ],
-      ]),
-      'import {\n' +
-        '  _sub\n' +
-        "} from 'roselisp';\n" +
-        '\n' +
-        'let oneMinusOne = _sub(1, 1);'
-    );
-  });
-  it("(compile '(module m scheme (define one-times-one (apply * '(1 1)))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [
-            Symbol.for('define'),
-            Symbol.for('one-times-one'),
-            [
-              Symbol.for('apply'),
-              Symbol.for('*'),
-              [Symbol.for('quote'), [1, 1]],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [_mul] = (() => {\n' +
-        '  function mul_(...args) {\n' +
-        '    let result = 1;\n' +
-        '    for (let arg of args) {\n' +
-        '      result = result * arg;\n' +
-        '    }\n' +
-        '    return result;\n' +
-        '  }\n' +
-        '  return [mul_];\n' +
-        '})();\n' +
-        '\n' +
-        'let oneTimesOne = _mul(1, 1);'
-    );
-  });
-  it("(compile '(module m scheme (define one-divided-by-one (apply / '(1 1)))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [
-            Symbol.for('define'),
-            Symbol.for('one-divided-by-one'),
-            [
-              Symbol.for('apply'),
-              Symbol.for('/'),
-              [Symbol.for('quote'), [1, 1]],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [_div] = (() => {\n' +
-        '  function div_(...args) {\n' +
-        '    if (args.length === 1) {\n' +
-        '      return 1 / args[0];\n' +
-        '    } else {\n' +
-        '      let result = args[0];\n' +
-        '      let _end = args.length;\n' +
-        '      for (let i = 1; i < _end; i++) {\n' +
-        '        result = result / args[i];\n' +
-        '      }\n' +
-        '      return result;\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return [div_];\n' +
-        '})();\n' +
-        '\n' +
-        'let oneDividedByOne = _div(1, 1);'
-    );
-  });
-  it('(compile \'(module m scheme (define foo-bar (apply string-append \'("foo" "bar")))) :inline-functions #t)', function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('scheme'),
-          [
-            Symbol.for('define'),
-            Symbol.for('foo-bar'),
-            [
-              Symbol.for('apply'),
-              Symbol.for('string-append'),
-              [Symbol.for('quote'), ['foo', 'bar']],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [stringAppend] = (() => {\n' +
-        '  function stringAppend_(...args) {\n' +
-        '    return args.reduce(function (acc, x) {\n' +
-        '      return acc + x;\n' +
-        "    }, '');\n" +
-        '  }\n' +
-        '  return [stringAppend_];\n' +
-        '})();\n' +
-        '\n' +
-        "let fooBar = stringAppend('foo', 'bar');"
-    );
-  });
-  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l)) (define bar (my-foldl + 0 '(1 2 3 4)))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [
-              Symbol.for('my-foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-            [
-              Symbol.for('foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-          ],
-          [
-            Symbol.for('define'),
-            Symbol.for('bar'),
-            [
-              Symbol.for('my-foldl'),
-              Symbol.for('+'),
-              0,
-              [Symbol.for('quote'), [1, 2, 3, 4]],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [add] = (function () {\n' +
-        '  function add(...args) {\n' +
-        '    return args.reduce(function (y, x) {\n' +
-        '      return y + x;\n' +
-        '    }, 0);\n' +
-        '  }\n' +
-        '  return [add];\n' +
-        '})();\n' +
-        '\n' +
-        'function myFoldl(f, v, l) {\n' +
-        '  return l.reduce(function (acc, x) {\n' +
-        '    return f(x, acc);\n' +
-        '  }, v);\n' +
-        '}\n' +
-        '\n' +
-        'let bar = myFoldl(add, 0, [1, 2, 3, 4]);'
-    );
-  });
-  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [
-              Symbol.for('my-foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-            [
-              Symbol.for('foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [foldl] = (function () {\n' +
-        '  function foldl(f, v, lst) {\n' +
-        '    return lst.reduce(function (acc, x) {\n' +
-        '      return f(x, acc);\n' +
-        '    }, v);\n' +
-        '  }\n' +
-        '  return [foldl];\n' +
-        '})();\n' +
-        '\n' +
-        'function myFoldl(f, v, l) {\n' +
-        '  return foldl(f, v, l);\n' +
-        '}'
-    );
-  });
-  it("(compile '(module m lisp (define (my-map f x) (map f x)) (define bar (my-map first '((1) (2) (3))))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [Symbol.for('my-map'), Symbol.for('f'), Symbol.for('x')],
-            [Symbol.for('map'), Symbol.for('f'), Symbol.for('x')],
-          ],
-          [
-            Symbol.for('define'),
-            Symbol.for('bar'),
-            [
-              Symbol.for('my-map'),
-              Symbol.for('first'),
-              [Symbol.for('quote'), [[1], [2], [3]]],
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [first] = (() => {\n' +
-        '  function first_(lst) {\n' +
-        '    return lst[0];\n' +
-        '  }\n' +
-        '  return [first_];\n' +
-        '})();\n' +
-        '\n' +
-        'function myMap(f, x) {\n' +
-        '  return x.map(function (x) {\n' +
-        '    return f(x);\n' +
-        '  });\n' +
-        '}\n' +
-        '\n' +
-        'let bar = myMap(first, [[1], [2], [3]]);'
-    );
-  });
-  xit("(compile '(module m lisp (define (foo f x y) (f x y)) (define (my-push-4 lst x) (foo push! lst x))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [
-              Symbol.for('foo'),
-              Symbol.for('f'),
-              Symbol.for('x'),
-              Symbol.for('y'),
-            ],
-            [Symbol.for('f'), Symbol.for('x'), Symbol.for('y')],
-          ],
-          [
-            Symbol.for('define'),
-            [Symbol.for('my-push-4'), Symbol.for('lst'), Symbol.for('x')],
-            [
-              Symbol.for('foo'),
-              Symbol.for('push!'),
-              Symbol.for('lst'),
-              Symbol.for('x'),
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [pushX] = (function () {\n' +
-        '  function pushX(lst, x) {\n' +
-        '    lst.unshift(x);\n' +
-        '    return lst;\n' +
-        '  }\n' +
-        '  return [pushX];\n' +
-        '})();\n' +
-        '\n' +
-        'function foo(f, x, y) {\n' +
-        '  return f(x, y);\n' +
-        '}\n' +
-        '\n' +
-        'function myPush4(lst, x) {\n' +
-        '  return foo(pushX, lst, x);\n' +
-        '}'
-    );
-  });
-  xit("(compile '(module m lisp (define (get-push-function) push!) (define (my-push-4 lst x) ((get-push-function) lst x))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [Symbol.for('get-push-function')],
-            Symbol.for('push!'),
-          ],
-          [
-            Symbol.for('define'),
-            [Symbol.for('my-push-4'), Symbol.for('lst'), Symbol.for('x')],
-            [
-              [Symbol.for('get-push-function')],
-              Symbol.for('lst'),
-              Symbol.for('x'),
-            ],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [pushX] = (function () {\n' +
-        '  function pushX(lst, x) {\n' +
-        '    lst.unshift(x);\n' +
-        '    return lst;\n' +
-        '  }\n' +
-        '  return [pushX];\n' +
-        '})();\n' +
-        '\n' +
-        'function getPushFunction() {\n' +
-        '  return pushX;\n' +
-        '}\n' +
-        '\n' +
-        'function myPush4(lst, x) {\n' +
-        '  return getPushFunction()(lst, x);\n' +
-        '}'
-    );
-  });
-  it("(compile '(module m lisp (define (my-cdr x) (cdr x))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [Symbol.for('my-cdr'), Symbol.for('x')],
-            [Symbol.for('cdr'), Symbol.for('x')],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [cdr] = (() => {\n' +
-        '  function cdr_(lst) {\n' +
-        "    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {\n" +
-        '      return lst[2];\n' +
-        '    } else {\n' +
-        '      return lst.slice(1);\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return [cdr_];\n' +
-        '})();\n' +
-        '\n' +
-        'function myCdr(x) {\n' +
-        '  return cdr(x);\n' +
-        '}'
-    );
-  });
-  return it("(compile '(module m lisp (define (my-intersection x y) (intersection x y))) :inline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [Symbol.for('my-intersection'), Symbol.for('x'), Symbol.for('y')],
-            [Symbol.for('intersection'), Symbol.for('x'), Symbol.for('y')],
-          ],
-        ],
-        Symbol.for(':inline-functions'),
-        true
-      ),
-      'let [intersection] = (() => {\n' +
-        '  function intersection_(...args) {\n' +
-        '    function intersection2(arr1, arr2) {\n' +
-        '      let result = [];\n' +
-        '      for (let element of arr1) {\n' +
-        '        if (arr2.includes(element) && !result.includes(element)) {\n' +
-        '          result.push(element);\n' +
-        '        }\n' +
-        '      }\n' +
-        '      return result;\n' +
-        '    }\n' +
-        '    if (args.length === 0) {\n' +
-        '      return [];\n' +
-        '    } else if (args.length === 1) {\n' +
-        '      return args[0];\n' +
-        '    } else {\n' +
-        '      return args.slice(1).reduce(function (acc, x) {\n' +
-        '        return intersection2(acc, x);\n' +
-        '      }, args[0]);\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return [intersection_];\n' +
-        '})();\n' +
-        '\n' +
-        'function myIntersection(x, y) {\n' +
-        '  return intersection(x, y);\n' +
-        '}'
-    );
-  });
-});
-
 describe('Strings', function (): any {
   it('(compile "")', function (): any {
     return assertEqual(compile(''), "'';");
@@ -1015,6 +216,27 @@ describe('Strings', function (): any {
   });
 });
 
+describe('string-append', function (): any {
+  it('(compile \'(string-append "a"))', function (): any {
+    return assertEqual(compile([Symbol.for('string-append'), 'a']), "'a';");
+  });
+  return it('(compile \'(string-append "a" "b"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('string-append'), 'a', 'b']),
+      "'a' + 'b';"
+    );
+  });
+});
+
+describe('js/tag', function (): any {
+  return it('(compile \'(js/tag foo "bar"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('js/tag'), Symbol.for('foo'), 'bar']),
+      'foo`bar`;'
+    );
+  });
+});
+
 describe('()', function (): any {
   return it("(compile '())", function (): any {
     return assertEqual(compile([]), '[];');
@@ -1032,54 +254,6 @@ describe('list', function (): any {
     return assertEqual(
       compile([Symbol.for('list'), [Symbol.for('list'), 1]]),
       '[[1]];'
-    );
-  });
-});
-
-describe('member?', function (): any {
-  it("(compile '(member? 2 (list 1 2 3 4) f))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('member?'),
-        2,
-        [Symbol.for('list'), 1, 2, 3, 4],
-        Symbol.for('f'),
-      ]),
-      '[1, 2, 3, 4].findIndex(function (x) {\n' +
-        '  return f(2, x);\n' +
-        '}) >= 0;'
-    );
-  });
-  return it("(compile '(member? (+ 1 1) (list 1 2 3 4) f))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('member?'),
-        [Symbol.for('+'), 1, 1],
-        [Symbol.for('list'), 1, 2, 3, 4],
-        Symbol.for('f'),
-      ]),
-      '[1, 2, 3, 4].findIndex(function (x) {\n' +
-        '  return f(1 + 1, x);\n' +
-        '}) >= 0;'
-    );
-  });
-});
-
-describe('memq?', function (): any {
-  it("(compile '(memq? 2 (list 1 2 3 4)))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('memq?'), 2, [Symbol.for('list'), 1, 2, 3, 4]]),
-      '[1, 2, 3, 4].includes(2);'
-    );
-  });
-  return it("(compile '(memq? (+ 1 1) (list 1 2 3 4)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('memq?'),
-        [Symbol.for('+'), 1, 1],
-        [Symbol.for('list'), 1, 2, 3, 4],
-      ]),
-      '[1, 2, 3, 4].includes(1 + 1);'
     );
   });
 });
@@ -1373,6 +547,1255 @@ describe('quasiquote', function (): any {
         ],
       ]),
       "letExp = [Symbol.for('let'), [[argList, [Symbol.for('quote'), args]]], ...body];"
+    );
+  });
+});
+
+describe('begin', function (): any {
+  it("(compile '(begin x y z))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        Symbol.for('z'),
+      ]),
+      'x;\n' + '\n' + 'y;\n' + '\n' + 'z;'
+    );
+  });
+  it("(compile '(begin x (begin y z)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        Symbol.for('x'),
+        [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')],
+      ]),
+      'x;\n' + '\n' + 'y;\n' + '\n' + 'z;'
+    );
+  });
+  it("(compile '(begin x y z) :as 'expression)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('begin'),
+          Symbol.for('x'),
+          Symbol.for('y'),
+          Symbol.for('z'),
+        ],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      '(() => {\n' + '  x;\n' + '  y;\n' + '  return z;\n' + '})()'
+    );
+  });
+  return it("(compile '(begin (define (and x y) (or x y)) (define (or x y) x) (and x (or y z))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define'),
+          [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')],
+          [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')],
+        ],
+        [
+          Symbol.for('define'),
+          [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('and'),
+          Symbol.for('x'),
+          [Symbol.for('or'), Symbol.for('y'), Symbol.for('z')],
+        ],
+      ]),
+      'function and(x, y) {\n' +
+        '  return or(x, y);\n' +
+        '}\n' +
+        '\n' +
+        'function or(x, y) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        'and(x, or(y, z));'
+    );
+  });
+});
+
+describe('+', function (): any {
+  it("(compile '(+ x 1))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('+'), Symbol.for('x'), 1]),
+      'x + 1;'
+    );
+  });
+  return it("(compile '(+ x 1 2))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('+'), Symbol.for('x'), 1, 2]),
+      'x + 1 + 2;'
+    );
+  });
+});
+
+describe('-', function (): any {
+  it("(compile '(- x))", function (): any {
+    return assertEqual(compile([Symbol.for('-'), Symbol.for('x')]), '-x;');
+  });
+  xit("(compile '(- (- x)))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('-'), [Symbol.for('-'), Symbol.for('x')]]),
+      'x;'
+    );
+  });
+  it("(compile '(- x 1))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('-'), Symbol.for('x'), 1]),
+      'x - 1;'
+    );
+  });
+  return it("(compile '(- x 1 2))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('-'), Symbol.for('x'), 1, 2]),
+      'x - 1 - 2;'
+    );
+  });
+});
+
+describe('mod', function (): any {
+  return it("(compile '(mod x y))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('mod'), Symbol.for('x'), Symbol.for('y')]),
+      'x % y;'
+    );
+  });
+});
+
+describe('=', function (): any {
+  it("(compile '(= 1 1))", function (): any {
+    return assertEqual(compile([Symbol.for('='), 1, 1]), '1 === 1;');
+  });
+  return it("(compile '(= x y))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('='), Symbol.for('x'), Symbol.for('y')]),
+      'x === y;'
+    );
+  });
+});
+
+describe('<', function (): any {
+  it("(compile '(< 1))", function (): any {
+    return assertEqual(compile([Symbol.for('<'), 1]), 'true;');
+  });
+  it("(compile '(< 1 2))", function (): any {
+    return assertEqual(compile([Symbol.for('<'), 1, 2]), '1 < 2;');
+  });
+  return it("(compile '(< 1 2 3))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('<'), 1, 2, 3]),
+      '(1 < 2) && (2 < 3);'
+    );
+  });
+});
+
+describe('>', function (): any {
+  it("(compile '(> 1))", function (): any {
+    return assertEqual(compile([Symbol.for('>'), 1]), 'true;');
+  });
+  it("(compile '(> 2 1))", function (): any {
+    return assertEqual(compile([Symbol.for('>'), 2, 1]), '2 > 1;');
+  });
+  return it("(compile '(> 3 2 1))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('>'), 3, 2, 1]),
+      '(3 > 2) && (2 > 1);'
+    );
+  });
+});
+
+describe('not', function (): any {
+  it("(compile '(not (and x y)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('not'),
+        [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')],
+      ]),
+      '!(x && y);'
+    );
+  });
+  it("(compile '(not (= 1 2)))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('not'), [Symbol.for('='), 1, 2]]),
+      '1 !== 2;'
+    );
+  });
+  it("(compile '(not (> 1 2)))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('not'), [Symbol.for('>'), 1, 2]]),
+      '!(1 > 2);'
+    );
+  });
+  it("(compile '(not (f x)))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('not'), [Symbol.for('f'), Symbol.for('x')]]),
+      '!f(x);'
+    );
+  });
+  return xit("(compile '(and (not (f x)) (not (g y))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('and'),
+        [Symbol.for('not'), [Symbol.for('f'), Symbol.for('x')]],
+        [Symbol.for('not'), [Symbol.for('g'), Symbol.for('y')]],
+      ]),
+      '!f(x) && !g(y);'
+    );
+  });
+});
+
+describe('and', function (): any {
+  it("(compile '(and))", function (): any {
+    return assertEqual(compile([Symbol.for('and')]), 'true;');
+  });
+  it("(compile '(and x))", function (): any {
+    return assertEqual(compile([Symbol.for('and'), Symbol.for('x')]), 'x;');
+  });
+  it("(compile '(and x y))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('and'), Symbol.for('x'), Symbol.for('y')]),
+      'x && y;'
+    );
+  });
+  xit("(compile '(and x y z))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('and'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        Symbol.for('z'),
+      ]),
+      'x && y && z;'
+    );
+  });
+  xit("(compile '(and x y (w z)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('and'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        [Symbol.for('w'), Symbol.for('z')],
+      ]),
+      'x && y && w(z);'
+    );
+  });
+  return xit("(compile '(and x y (or w z)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('and'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        [Symbol.for('or'), Symbol.for('w'), Symbol.for('z')],
+      ]),
+      'x && y && (w || z);'
+    );
+  });
+});
+
+describe('or', function (): any {
+  it("(compile '(or))", function (): any {
+    return assertEqual(compile([Symbol.for('or')]), 'false;');
+  });
+  it("(compile '(or x))", function (): any {
+    return assertEqual(compile([Symbol.for('or'), Symbol.for('x')]), 'x;');
+  });
+  it("(compile '(or x y))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('or'), Symbol.for('x'), Symbol.for('y')]),
+      'x || y;'
+    );
+  });
+  return xit("(compile '(or x y z))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('or'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        Symbol.for('z'),
+      ]),
+      'x || y || z;'
+    );
+  });
+});
+
+describe('if', function (): any {
+  it("(compile '(if x y z))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('if'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        Symbol.for('z'),
+      ]),
+      'if (x) {\n' + '  y;\n' + '} else {\n' + '  z;\n' + '}'
+    );
+  });
+  it("(compile '(if x y) :as 'expression)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('if'), Symbol.for('x'), Symbol.for('y')],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      'x ? y : undefined'
+    );
+  });
+  it("(compile '(if x y z) :as 'expression)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      'x ? y : z'
+    );
+  });
+  it("(compile '(if x y z) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'if (x) {\n' + '  return y;\n' + '} else {\n' + '  return z;\n' + '}'
+    );
+  });
+  it('(compile \'(if "foo" "bar" "baz") :as \'expression)', function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('if'), 'foo', 'bar', 'baz'],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      "'foo' ? 'bar' : 'baz'"
+    );
+  });
+  it("(compile '(if x (begin y z) w) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('if'),
+          Symbol.for('x'),
+          [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')],
+          Symbol.for('w'),
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'if (x) {\n' +
+        '  y;\n' +
+        '  return z;\n' +
+        '} else {\n' +
+        '  return w;\n' +
+        '}'
+    );
+  });
+  return xit("(compile '(if (set! x y) z w) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('if'),
+          [Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')],
+          Symbol.for('z'),
+          Symbol.for('w'),
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'if ((x = y)) {\n' +
+        '  return z;\n' +
+        '} else {\n' +
+        '  return w;\n' +
+        '}'
+    );
+  });
+});
+
+describe('when', function (): any {
+  it("(compile '(when x y z))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('when'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        Symbol.for('z'),
+      ]),
+      'if (x) {\n' + '  y;\n' + '  z;\n' + '}'
+    );
+  });
+  return it("(compile '(when (> (array-list-length args) 0) (set! args (.concat (.slice args 0 (- (array-list-length args) 1)) (aref args (- (array-list-length args) 1))))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('when'),
+        [
+          Symbol.for('>'),
+          [Symbol.for('array-list-length'), Symbol.for('args')],
+          0,
+        ],
+        [
+          Symbol.for('set!'),
+          Symbol.for('args'),
+          [
+            Symbol.for('.concat'),
+            [
+              Symbol.for('.slice'),
+              Symbol.for('args'),
+              0,
+              [
+                Symbol.for('-'),
+                [Symbol.for('array-list-length'), Symbol.for('args')],
+                1,
+              ],
+            ],
+            [
+              Symbol.for('aref'),
+              Symbol.for('args'),
+              [
+                Symbol.for('-'),
+                [Symbol.for('array-list-length'), Symbol.for('args')],
+                1,
+              ],
+            ],
+          ],
+        ],
+      ]),
+      'if (args.length > 0) {\n' +
+        '  args = args.slice(0, args.length - 1).concat(args[args.length - 1]);\n' +
+        '}'
+    );
+  });
+});
+
+describe('unless', function (): any {
+  return it("(compile '(unless x y z))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('unless'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+        Symbol.for('z'),
+      ]),
+      'if (!x) {\n' + '  y;\n' + '  z;\n' + '}'
+    );
+  });
+});
+
+describe('cond', function (): any {
+  it("(compile '(cond (x y)) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'if (x) {\n' + '  return y;\n' + '}'
+    );
+  });
+  it("(compile '(cond (x y)) :as 'expression)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      'x ? y : undefined'
+    );
+  });
+  it("(compile '(cond (x y) (else z)) :as 'expression)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('cond'),
+          [Symbol.for('x'), Symbol.for('y')],
+          [Symbol.for('else'), Symbol.for('z')],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      'x ? y : z'
+    );
+  });
+  it("(compile '(cond (x y) (else w z)) :as 'expression)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('cond'),
+          [Symbol.for('x'), Symbol.for('y')],
+          [Symbol.for('else'), Symbol.for('w'), Symbol.for('z')],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      'x ? y : (() => {\n' + '  w;\n' + '  return z;\n' + '})()'
+    );
+  });
+  it("(compile '(cond (x y) (else z)) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('cond'),
+          [Symbol.for('x'), Symbol.for('y')],
+          [Symbol.for('else'), Symbol.for('z')],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'if (x) {\n' + '  return y;\n' + '} else {\n' + '  return z;\n' + '}'
+    );
+  });
+  return xit("(compile '(cond ((set! x y) z) (else w)) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('cond'),
+          [
+            [Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')],
+            Symbol.for('z'),
+          ],
+          [Symbol.for('else'), Symbol.for('w')],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'if ((x = y)) {\n' +
+        '  return z;\n' +
+        '} else {\n' +
+        '  return w;\n' +
+        '}'
+    );
+  });
+});
+
+describe('let', function (): any {
+  it("(compile '(let (x)))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('let'), [Symbol.for('x')]]),
+      'let x;'
+    );
+  });
+  it("(compile '(let (x) x) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'let x;\n' + '\n' + 'return x;'
+    );
+  });
+  it("(compile '(let (x) x) :as 'expression)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      '(() => {\n' + '  let x;\n' + '  return x;\n' + '})()'
+    );
+  });
+  it("(compile '(let (x) x) :as 'return :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')],
+        Symbol.for(':as'),
+        Symbol.for('return'),
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'let x: any;\n' + '\n' + 'return x;'
+    );
+  });
+  it("(compile '(let ((x 1)) x) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'let x = 1;\n' + '\n' + 'return x;'
+    );
+  });
+  it("(compile '(let ((x 1)) x) :as 'return :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
+        Symbol.for(':as'),
+        Symbol.for('return'),
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'let x: any = 1;\n' + '\n' + 'return x;'
+    );
+  });
+  xit("(compile '(let ((a 1)) (+ (let ((a 2)) a) a)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('let'),
+        [[Symbol.for('a'), 1]],
+        [
+          Symbol.for('+'),
+          [Symbol.for('let'), [[Symbol.for('a'), 2]], Symbol.for('a')],
+          Symbol.for('a'),
+        ],
+      ]),
+      'let a = 1;\n' +
+        '\n' +
+        '(() => {\n' +
+        '  let a = 2;\n' +
+        '  return a;\n' +
+        '})() + a;'
+    );
+  });
+  it("(compile '(let ((compose (lambda (f g) (lambda (x) (f (g x))))) (square (lambda (x) (* x x))) (add1 (lambda (x) (+ x 1)))) (display ((compose square add1) (add1 4)))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('let'),
+        [
+          [
+            Symbol.for('compose'),
+            [
+              Symbol.for('lambda'),
+              [Symbol.for('f'), Symbol.for('g')],
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('x')],
+                [Symbol.for('f'), [Symbol.for('g'), Symbol.for('x')]],
+              ],
+            ],
+          ],
+          [
+            Symbol.for('square'),
+            [
+              Symbol.for('lambda'),
+              [Symbol.for('x')],
+              [Symbol.for('*'), Symbol.for('x'), Symbol.for('x')],
+            ],
+          ],
+          [
+            Symbol.for('add1'),
+            [
+              Symbol.for('lambda'),
+              [Symbol.for('x')],
+              [Symbol.for('+'), Symbol.for('x'), 1],
+            ],
+          ],
+        ],
+        [
+          Symbol.for('display'),
+          [
+            [Symbol.for('compose'), Symbol.for('square'), Symbol.for('add1')],
+            [Symbol.for('add1'), 4],
+          ],
+        ],
+      ]),
+      'let compose = function (f, g) {\n' +
+        '  return function (x) {\n' +
+        '    return f(g(x));\n' +
+        '  };\n' +
+        '};\n' +
+        '\n' +
+        'let square = function (x) {\n' +
+        '  return x * x;\n' +
+        '};\n' +
+        '\n' +
+        'let add1 = function (x) {\n' +
+        '  return x + 1;\n' +
+        '};\n' +
+        '\n' +
+        'console.log(compose(square, add1)(add1(4)));'
+    );
+  });
+  it("(compile '(let ((and (lambda (x y) (if x (if y #t #f) #f)))) (and x y)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('let'),
+        [
+          [
+            Symbol.for('and'),
+            [
+              Symbol.for('lambda'),
+              [Symbol.for('x'), Symbol.for('y')],
+              [
+                Symbol.for('if'),
+                Symbol.for('x'),
+                [Symbol.for('if'), Symbol.for('y'), true, false],
+                false,
+              ],
+            ],
+          ],
+        ],
+        [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')],
+      ]),
+      'let and = function (x, y) {\n' +
+        '  if (x) {\n' +
+        '    if (y) {\n' +
+        '      return true;\n' +
+        '    } else {\n' +
+        '      return false;\n' +
+        '    }\n' +
+        '  } else {\n' +
+        '    return false;\n' +
+        '  }\n' +
+        '};\n' +
+        '\n' +
+        'and(x, y);'
+    );
+  });
+  xit("(compile '(begin x (let ((x 1)) x)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        Symbol.for('x'),
+        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
+      ]),
+      'x;\n' + '\n' + 'let x: any = 1;\n' + '\n' + 'return x;'
+    );
+  });
+  xit("(compile '(begin x (let ((x 1)) x)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        Symbol.for('x'),
+        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
+      ]),
+      'x;\n' + '\n' + '{\n' + '  let x: any = 1;\n' + '  x;\n' + '}'
+    );
+  });
+  it("(compile '(begin (let ((x 1)) (display x)) (let ((x 1)) (display x))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('let'),
+          [[Symbol.for('x'), 1]],
+          [Symbol.for('display'), Symbol.for('x')],
+        ],
+        [
+          Symbol.for('let'),
+          [[Symbol.for('x'), 1]],
+          [Symbol.for('display'), Symbol.for('x')],
+        ],
+      ]),
+      'let x = 1;\n' +
+        '\n' +
+        'console.log(x);\n' +
+        '\n' +
+        '{\n' +
+        '  let x = 1;\n' +
+        '  console.log(x);\n' +
+        '}'
+    );
+  });
+  it("(compile '(cond (foo bar) (else x (let ((x 1)) x))) :as 'return :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('cond'),
+          [Symbol.for('foo'), Symbol.for('bar')],
+          [
+            Symbol.for('else'),
+            Symbol.for('x'),
+            [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
+          ],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return'),
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'if (foo) {\n' +
+        '  return bar;\n' +
+        '} else {\n' +
+        '  x;\n' +
+        '  let x: any = 1;\n' +
+        '  return x;\n' +
+        '}'
+    );
+  });
+  it('(compile \'(define make-compilation-evaluator (memoize (lambda (env (options (js-obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))) :to \'typescript)', function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('define'),
+          Symbol.for('make-compilation-evaluator'),
+          [
+            Symbol.for('memoize'),
+            [
+              Symbol.for('lambda'),
+              [
+                Symbol.for('env'),
+                [Symbol.for('options'), [Symbol.for('js-obj')]],
+              ],
+              [
+                Symbol.for('let'),
+                [
+                  [
+                    Symbol.for('language'),
+                    [Symbol.for('oget'), Symbol.for('options'), 'language'],
+                  ],
+                ],
+                [
+                  Symbol.for('set!'),
+                  Symbol.for('language'),
+                  [
+                    Symbol.for('or'),
+                    Symbol.for('language'),
+                    Symbol.for('default-language'),
+                  ],
+                ],
+                [
+                  Symbol.for('let'),
+                  [
+                    [
+                      Symbol.for('compilation-env'),
+                      [
+                        Symbol.for('or'),
+                        [
+                          Symbol.for('.get'),
+                          Symbol.for('compilation-map'),
+                          Symbol.for('language'),
+                        ],
+                        Symbol.for('javascript-env'),
+                      ],
+                    ],
+                  ],
+                  [
+                    Symbol.for('new'),
+                    Symbol.for('CompilationEvaluator'),
+                    Symbol.for('env'),
+                    Symbol.for('compilation-env'),
+                    Symbol.for('options'),
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {\n' +
+        "  let language: any = options['language'];\n" +
+        '  language = language || defaultLanguage;\n' +
+        '  let compilationEnv: any = compilationMap.get(language) || javascriptEnv;\n' +
+        '  return new CompilationEvaluator(env, compilationEnv, options);\n' +
+        '});'
+    );
+  });
+  return it("(compile '(cond (foo (let ((x #t)) x)) (else #f)) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('cond'),
+          [
+            Symbol.for('foo'),
+            [Symbol.for('let'), [[Symbol.for('x'), true]], Symbol.for('x')],
+          ],
+          [Symbol.for('else'), false],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'if (foo) {\n' +
+        '  let x = true;\n' +
+        '  return x;\n' +
+        '} else {\n' +
+        '  return false;\n' +
+        '}'
+    );
+  });
+});
+
+describe('let-values', function (): any {
+  it("(compile '(let-values ((value (foo bar baz))) value) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('let-values'),
+          [
+            [
+              Symbol.for('value'),
+              [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
+            ],
+          ],
+          Symbol.for('value'),
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'let value = foo(bar, baz);\n' + '\n' + 'return value;'
+    );
+  });
+  it("(compile '(let-values (((value) (foo bar baz))) value) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('let-values'),
+          [
+            [
+              [Symbol.for('value')],
+              [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
+            ],
+          ],
+          Symbol.for('value'),
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'let [value] = foo(bar, baz);\n' + '\n' + 'return value;'
+    );
+  });
+  it("(compile '(let-values (((value) (foo bar baz))) value) :as 'return :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('let-values'),
+          [
+            [
+              [Symbol.for('value')],
+              [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
+            ],
+          ],
+          Symbol.for('value'),
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return'),
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'let [value]: any[] = foo(bar, baz);\n' + '\n' + 'return value;'
+    );
+  });
+  it("(compile '(let-values (((x . fs) args)) (.reduce fs (lambda (acc f) (f acc)) x)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('let-values'),
+        [
+          [
+            [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')],
+            Symbol.for('args'),
+          ],
+        ],
+        [
+          Symbol.for('.reduce'),
+          Symbol.for('fs'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('acc'), Symbol.for('f')],
+            [Symbol.for('f'), Symbol.for('acc')],
+          ],
+          Symbol.for('x'),
+        ],
+      ]),
+      'let [x, ...fs] = args;\n' +
+        '\n' +
+        'fs.reduce(function (acc, f) {\n' +
+        '  return f(acc);\n' +
+        '}, x);'
+    );
+  });
+  it("(compile '(let-values (((x . fs) args)) (.reduce fs (lambda (acc f) (f acc)) x)) :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('let-values'),
+          [
+            [
+              [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')],
+              Symbol.for('args'),
+            ],
+          ],
+          [
+            Symbol.for('.reduce'),
+            Symbol.for('fs'),
+            [
+              Symbol.for('lambda'),
+              [Symbol.for('acc'), Symbol.for('f')],
+              [Symbol.for('f'), Symbol.for('acc')],
+            ],
+            Symbol.for('x'),
+          ],
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'let [x, ...fs]: any[] = args;\n' +
+        '\n' +
+        'fs.reduce(function (acc: any, f: any): any {\n' +
+        '  return f(acc);\n' +
+        '}, x);'
+    );
+  });
+  it("(compile '(let-values (((value1) (foo bar)) ((value2) (bar baz))) (list value1 value2)) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('let-values'),
+          [
+            [[Symbol.for('value1')], [Symbol.for('foo'), Symbol.for('bar')]],
+            [[Symbol.for('value2')], [Symbol.for('bar'), Symbol.for('baz')]],
+          ],
+          [Symbol.for('list'), Symbol.for('value1'), Symbol.for('value2')],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'let [value1] = foo(bar);\n' +
+        '\n' +
+        'let [value2] = bar(baz);\n' +
+        '\n' +
+        'return [value1, value2];'
+    );
+  });
+  return it("(compile '(begin value (let-values ((value (foo bar baz))) value)) :as 'return)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('begin'),
+          Symbol.for('value'),
+          [
+            Symbol.for('let-values'),
+            [
+              [
+                Symbol.for('value'),
+                [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
+              ],
+            ],
+            Symbol.for('value'),
+          ],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'value;\n' +
+        '\n' +
+        'let value = foo(bar, baz);\n' +
+        '\n' +
+        'return value;'
+    );
+  });
+});
+
+describe('let-fields', function (): any {
+  return it("(compile '(let-fields (((prop) obj)) prop))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('let-fields'),
+        [[[Symbol.for('prop')], Symbol.for('obj')]],
+        Symbol.for('prop'),
+      ]),
+      'let {prop} = obj;\n' + '\n' + 'prop;'
+    );
+  });
+});
+
+describe('lambda', function (): any {
+  it("(compile '(lambda (x) x))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]),
+      'function (x) {\n' + '  return x;\n' + '};'
+    );
+  });
+  it("(compile '(lambda (x) x) :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'function (x: any): any {\n' + '  return x;\n' + '};'
+    );
+  });
+  it("(compile '(lambda args args))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('lambda'), Symbol.for('args'), Symbol.for('args')]),
+      'function (...args) {\n' + '  return args;\n' + '};'
+    );
+  });
+  it("(compile '(lambda (x . args) args))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('lambda'),
+        [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
+        Symbol.for('args'),
+      ]),
+      'function (x, ...args) {\n' + '  return args;\n' + '};'
+    );
+  });
+  it("(compile '(lambda (x y . args) args))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('lambda'),
+        [Symbol.for('x'), Symbol.for('y'), Symbol.for('.'), Symbol.for('args')],
+        Symbol.for('args'),
+      ]),
+      'function (x, y, ...args) {\n' + '  return args;\n' + '};'
+    );
+  });
+  it("(compile '(lambda (x) (let ((x 1)) x)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('lambda'),
+        [Symbol.for('x')],
+        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
+      ]),
+      'function (x) {\n' +
+        '  {\n' +
+        '    let x = 1;\n' +
+        '    return x;\n' +
+        '  }\n' +
+        '};'
+    );
+  });
+  it("(compile '(lambda (x) (let ((y 1)) y)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('lambda'),
+        [Symbol.for('x')],
+        [Symbol.for('let'), [[Symbol.for('y'), 1]], Symbol.for('y')],
+      ]),
+      'function (x) {\n' + '  let y = 1;\n' + '  return y;\n' + '};'
+    );
+  });
+  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('lambda'),
+        [Symbol.for('given'), [Symbol.for('surname'), 'Smith']],
+        [
+          Symbol.for('string-append'),
+          'Hello, ',
+          Symbol.for('given'),
+          ' ',
+          Symbol.for('surname'),
+        ],
+      ]),
+      "function (given, surname = 'Smith') {\n" +
+        "  return 'Hello, ' + given + ' ' + surname;\n" +
+        '};'
+    );
+  });
+  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)) :to \'typescript)', function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('given'), [Symbol.for('surname'), 'Smith']],
+          [
+            Symbol.for('string-append'),
+            'Hello, ',
+            Symbol.for('given'),
+            ' ',
+            Symbol.for('surname'),
+          ],
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      "function (given: any, surname: any = 'Smith'): any {\n" +
+        "  return 'Hello, ' + given + ' ' + surname;\n" +
+        '};'
+    );
+  });
+  it("(compile '(lambda (arg (options (js-obj))) arg) :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('arg'), [Symbol.for('options'), [Symbol.for('js-obj')]]],
+          Symbol.for('arg'),
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'function (arg: any, options: any = {}): any {\n' +
+        '  return arg;\n' +
+        '};'
+    );
+  });
+  xit("(compile '(lambda (this arg) arg) :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('this'), Symbol.for('arg')],
+          Symbol.for('arg'),
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'function (arg: any): any {\n' + '  return arg;\n' + '};'
+    );
+  });
+  xit("(compile '(lambda (this . args) args) :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')],
+          Symbol.for('args'),
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'function (...args: any[]): any {\n' + '  return args;\n' + '};'
+    );
+  });
+  xit("(compile '(lambda (this arg) arg) :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('this'), Symbol.for('arg')],
+          Symbol.for('arg'),
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'function (this: any, arg: any): any {\n' + '  return arg;\n' + '};'
+    );
+  });
+  return xit("(compile '(lambda (this . args) args) :to 'typescript)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('lambda'),
+          [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')],
+          Symbol.for('args'),
+        ],
+        Symbol.for(':to'),
+        Symbol.for('typescript')
+      ),
+      'function (this: any, ...args: any[]): any {\n' +
+        '  return args;\n' +
+        '};'
+    );
+  });
+});
+
+describe('funcall', function (): any {
+  it("(compile '(funcall f x))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('funcall'), Symbol.for('f'), Symbol.for('x')]),
+      'f(x);'
+    );
+  });
+  return it("(compile '(funcall f x y))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('funcall'),
+        Symbol.for('f'),
+        Symbol.for('x'),
+        Symbol.for('y'),
+      ]),
+      'f(x, y);'
     );
   });
 });
@@ -1995,720 +2418,6 @@ describe('define', function (): any {
   });
 });
 
-describe('funcall', function (): any {
-  it("(compile '(funcall f x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('funcall'), Symbol.for('f'), Symbol.for('x')]),
-      'f(x);'
-    );
-  });
-  return it("(compile '(funcall f x y))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('funcall'),
-        Symbol.for('f'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-      ]),
-      'f(x, y);'
-    );
-  });
-});
-
-describe('lambda', function (): any {
-  it("(compile '(lambda (x) x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]),
-      'function (x) {\n' + '  return x;\n' + '};'
-    );
-  });
-  it("(compile '(lambda (x) x) :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'function (x: any): any {\n' + '  return x;\n' + '};'
-    );
-  });
-  it("(compile '(lambda args args))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('lambda'), Symbol.for('args'), Symbol.for('args')]),
-      'function (...args) {\n' + '  return args;\n' + '};'
-    );
-  });
-  it("(compile '(lambda (x . args) args))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('lambda'),
-        [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
-        Symbol.for('args'),
-      ]),
-      'function (x, ...args) {\n' + '  return args;\n' + '};'
-    );
-  });
-  it("(compile '(lambda (x y . args) args))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('lambda'),
-        [Symbol.for('x'), Symbol.for('y'), Symbol.for('.'), Symbol.for('args')],
-        Symbol.for('args'),
-      ]),
-      'function (x, y, ...args) {\n' + '  return args;\n' + '};'
-    );
-  });
-  it("(compile '(lambda (x) (let ((x 1)) x)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('lambda'),
-        [Symbol.for('x')],
-        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
-      ]),
-      'function (x) {\n' +
-        '  {\n' +
-        '    let x = 1;\n' +
-        '    return x;\n' +
-        '  }\n' +
-        '};'
-    );
-  });
-  it("(compile '(lambda (x) (let ((y 1)) y)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('lambda'),
-        [Symbol.for('x')],
-        [Symbol.for('let'), [[Symbol.for('y'), 1]], Symbol.for('y')],
-      ]),
-      'function (x) {\n' + '  let y = 1;\n' + '  return y;\n' + '};'
-    );
-  });
-  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('lambda'),
-        [Symbol.for('given'), [Symbol.for('surname'), 'Smith']],
-        [
-          Symbol.for('string-append'),
-          'Hello, ',
-          Symbol.for('given'),
-          ' ',
-          Symbol.for('surname'),
-        ],
-      ]),
-      "function (given, surname = 'Smith') {\n" +
-        "  return 'Hello, ' + given + ' ' + surname;\n" +
-        '};'
-    );
-  });
-  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)) :to \'typescript)', function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('lambda'),
-          [Symbol.for('given'), [Symbol.for('surname'), 'Smith']],
-          [
-            Symbol.for('string-append'),
-            'Hello, ',
-            Symbol.for('given'),
-            ' ',
-            Symbol.for('surname'),
-          ],
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      "function (given: any, surname: any = 'Smith'): any {\n" +
-        "  return 'Hello, ' + given + ' ' + surname;\n" +
-        '};'
-    );
-  });
-  it("(compile '(lambda (arg (options (js-obj))) arg) :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('lambda'),
-          [Symbol.for('arg'), [Symbol.for('options'), [Symbol.for('js-obj')]]],
-          Symbol.for('arg'),
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'function (arg: any, options: any = {}): any {\n' +
-        '  return arg;\n' +
-        '};'
-    );
-  });
-  xit("(compile '(lambda (this arg) arg) :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('lambda'),
-          [Symbol.for('this'), Symbol.for('arg')],
-          Symbol.for('arg'),
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'function (arg: any): any {\n' + '  return arg;\n' + '};'
-    );
-  });
-  xit("(compile '(lambda (this . args) args) :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('lambda'),
-          [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')],
-          Symbol.for('args'),
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'function (...args: any[]): any {\n' + '  return args;\n' + '};'
-    );
-  });
-  xit("(compile '(lambda (this arg) arg) :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('lambda'),
-          [Symbol.for('this'), Symbol.for('arg')],
-          Symbol.for('arg'),
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'function (this: any, arg: any): any {\n' + '  return arg;\n' + '};'
-    );
-  });
-  return xit("(compile '(lambda (this . args) args) :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('lambda'),
-          [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')],
-          Symbol.for('args'),
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'function (this: any, ...args: any[]): any {\n' +
-        '  return args;\n' +
-        '};'
-    );
-  });
-});
-
-describe('let', function (): any {
-  it("(compile '(let (x)))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('let'), [Symbol.for('x')]]),
-      'let x;'
-    );
-  });
-  it("(compile '(let (x) x) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'let x;\n' + '\n' + 'return x;'
-    );
-  });
-  it("(compile '(let (x) x) :as 'expression)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      '(() => {\n' + '  let x;\n' + '  return x;\n' + '})()'
-    );
-  });
-  it("(compile '(let (x) x) :as 'return :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')],
-        Symbol.for(':as'),
-        Symbol.for('return'),
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'let x: any;\n' + '\n' + 'return x;'
-    );
-  });
-  it("(compile '(let ((x 1)) x) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'let x = 1;\n' + '\n' + 'return x;'
-    );
-  });
-  it("(compile '(let ((x 1)) x) :as 'return :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
-        Symbol.for(':as'),
-        Symbol.for('return'),
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'let x: any = 1;\n' + '\n' + 'return x;'
-    );
-  });
-  xit("(compile '(let ((a 1)) (+ (let ((a 2)) a) a)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('let'),
-        [[Symbol.for('a'), 1]],
-        [
-          Symbol.for('+'),
-          [Symbol.for('let'), [[Symbol.for('a'), 2]], Symbol.for('a')],
-          Symbol.for('a'),
-        ],
-      ]),
-      'let a = 1;\n' +
-        '\n' +
-        '(() => {\n' +
-        '  let a = 2;\n' +
-        '  return a;\n' +
-        '})() + a;'
-    );
-  });
-  it("(compile '(let ((compose (lambda (f g) (lambda (x) (f (g x))))) (square (lambda (x) (* x x))) (add1 (lambda (x) (+ x 1)))) (display ((compose square add1) (add1 4)))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('let'),
-        [
-          [
-            Symbol.for('compose'),
-            [
-              Symbol.for('lambda'),
-              [Symbol.for('f'), Symbol.for('g')],
-              [
-                Symbol.for('lambda'),
-                [Symbol.for('x')],
-                [Symbol.for('f'), [Symbol.for('g'), Symbol.for('x')]],
-              ],
-            ],
-          ],
-          [
-            Symbol.for('square'),
-            [
-              Symbol.for('lambda'),
-              [Symbol.for('x')],
-              [Symbol.for('*'), Symbol.for('x'), Symbol.for('x')],
-            ],
-          ],
-          [
-            Symbol.for('add1'),
-            [
-              Symbol.for('lambda'),
-              [Symbol.for('x')],
-              [Symbol.for('+'), Symbol.for('x'), 1],
-            ],
-          ],
-        ],
-        [
-          Symbol.for('display'),
-          [
-            [Symbol.for('compose'), Symbol.for('square'), Symbol.for('add1')],
-            [Symbol.for('add1'), 4],
-          ],
-        ],
-      ]),
-      'let compose = function (f, g) {\n' +
-        '  return function (x) {\n' +
-        '    return f(g(x));\n' +
-        '  };\n' +
-        '};\n' +
-        '\n' +
-        'let square = function (x) {\n' +
-        '  return x * x;\n' +
-        '};\n' +
-        '\n' +
-        'let add1 = function (x) {\n' +
-        '  return x + 1;\n' +
-        '};\n' +
-        '\n' +
-        'console.log(compose(square, add1)(add1(4)));'
-    );
-  });
-  it("(compile '(let ((and (lambda (x y) (if x (if y #t #f) #f)))) (and x y)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('let'),
-        [
-          [
-            Symbol.for('and'),
-            [
-              Symbol.for('lambda'),
-              [Symbol.for('x'), Symbol.for('y')],
-              [
-                Symbol.for('if'),
-                Symbol.for('x'),
-                [Symbol.for('if'), Symbol.for('y'), true, false],
-                false,
-              ],
-            ],
-          ],
-        ],
-        [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')],
-      ]),
-      'let and = function (x, y) {\n' +
-        '  if (x) {\n' +
-        '    if (y) {\n' +
-        '      return true;\n' +
-        '    } else {\n' +
-        '      return false;\n' +
-        '    }\n' +
-        '  } else {\n' +
-        '    return false;\n' +
-        '  }\n' +
-        '};\n' +
-        '\n' +
-        'and(x, y);'
-    );
-  });
-  xit("(compile '(begin x (let ((x 1)) x)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('begin'),
-        Symbol.for('x'),
-        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
-      ]),
-      'x;\n' + '\n' + 'let x: any = 1;\n' + '\n' + 'return x;'
-    );
-  });
-  xit("(compile '(begin x (let ((x 1)) x)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('begin'),
-        Symbol.for('x'),
-        [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
-      ]),
-      'x;\n' + '\n' + '{\n' + '  let x: any = 1;\n' + '  x;\n' + '}'
-    );
-  });
-  it("(compile '(begin (let ((x 1)) (display x)) (let ((x 1)) (display x))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('begin'),
-        [
-          Symbol.for('let'),
-          [[Symbol.for('x'), 1]],
-          [Symbol.for('display'), Symbol.for('x')],
-        ],
-        [
-          Symbol.for('let'),
-          [[Symbol.for('x'), 1]],
-          [Symbol.for('display'), Symbol.for('x')],
-        ],
-      ]),
-      'let x = 1;\n' +
-        '\n' +
-        'console.log(x);\n' +
-        '\n' +
-        '{\n' +
-        '  let x = 1;\n' +
-        '  console.log(x);\n' +
-        '}'
-    );
-  });
-  it("(compile '(cond (foo bar) (else x (let ((x 1)) x))) :as 'return :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('cond'),
-          [Symbol.for('foo'), Symbol.for('bar')],
-          [
-            Symbol.for('else'),
-            Symbol.for('x'),
-            [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
-          ],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return'),
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'if (foo) {\n' +
-        '  return bar;\n' +
-        '} else {\n' +
-        '  x;\n' +
-        '  let x: any = 1;\n' +
-        '  return x;\n' +
-        '}'
-    );
-  });
-  it('(compile \'(define make-compilation-evaluator (memoize (lambda (env (options (js-obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))) :to \'typescript)', function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('define'),
-          Symbol.for('make-compilation-evaluator'),
-          [
-            Symbol.for('memoize'),
-            [
-              Symbol.for('lambda'),
-              [
-                Symbol.for('env'),
-                [Symbol.for('options'), [Symbol.for('js-obj')]],
-              ],
-              [
-                Symbol.for('let'),
-                [
-                  [
-                    Symbol.for('language'),
-                    [Symbol.for('oget'), Symbol.for('options'), 'language'],
-                  ],
-                ],
-                [
-                  Symbol.for('set!'),
-                  Symbol.for('language'),
-                  [
-                    Symbol.for('or'),
-                    Symbol.for('language'),
-                    Symbol.for('default-language'),
-                  ],
-                ],
-                [
-                  Symbol.for('let'),
-                  [
-                    [
-                      Symbol.for('compilation-env'),
-                      [
-                        Symbol.for('or'),
-                        [
-                          Symbol.for('.get'),
-                          Symbol.for('compilation-map'),
-                          Symbol.for('language'),
-                        ],
-                        Symbol.for('javascript-env'),
-                      ],
-                    ],
-                  ],
-                  [
-                    Symbol.for('new'),
-                    Symbol.for('CompilationEvaluator'),
-                    Symbol.for('env'),
-                    Symbol.for('compilation-env'),
-                    Symbol.for('options'),
-                  ],
-                ],
-              ],
-            ],
-          ],
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {\n' +
-        "  let language: any = options['language'];\n" +
-        '  language = language || defaultLanguage;\n' +
-        '  let compilationEnv: any = compilationMap.get(language) || javascriptEnv;\n' +
-        '  return new CompilationEvaluator(env, compilationEnv, options);\n' +
-        '});'
-    );
-  });
-  return it("(compile '(cond (foo (let ((x #t)) x)) (else #f)) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('cond'),
-          [
-            Symbol.for('foo'),
-            [Symbol.for('let'), [[Symbol.for('x'), true]], Symbol.for('x')],
-          ],
-          [Symbol.for('else'), false],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'if (foo) {\n' +
-        '  let x = true;\n' +
-        '  return x;\n' +
-        '} else {\n' +
-        '  return false;\n' +
-        '}'
-    );
-  });
-});
-
-describe('let-values', function (): any {
-  it("(compile '(let-values ((value (foo bar baz))) value) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('let-values'),
-          [
-            [
-              Symbol.for('value'),
-              [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
-            ],
-          ],
-          Symbol.for('value'),
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'let value = foo(bar, baz);\n' + '\n' + 'return value;'
-    );
-  });
-  it("(compile '(let-values (((value) (foo bar baz))) value) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('let-values'),
-          [
-            [
-              [Symbol.for('value')],
-              [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
-            ],
-          ],
-          Symbol.for('value'),
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'let [value] = foo(bar, baz);\n' + '\n' + 'return value;'
-    );
-  });
-  it("(compile '(let-values (((value) (foo bar baz))) value) :as 'return :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('let-values'),
-          [
-            [
-              [Symbol.for('value')],
-              [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
-            ],
-          ],
-          Symbol.for('value'),
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return'),
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'let [value]: any[] = foo(bar, baz);\n' + '\n' + 'return value;'
-    );
-  });
-  it("(compile '(let-values (((x . fs) args)) (.reduce fs (lambda (acc f) (f acc)) x)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('let-values'),
-        [
-          [
-            [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')],
-            Symbol.for('args'),
-          ],
-        ],
-        [
-          Symbol.for('.reduce'),
-          Symbol.for('fs'),
-          [
-            Symbol.for('lambda'),
-            [Symbol.for('acc'), Symbol.for('f')],
-            [Symbol.for('f'), Symbol.for('acc')],
-          ],
-          Symbol.for('x'),
-        ],
-      ]),
-      'let [x, ...fs] = args;\n' +
-        '\n' +
-        'fs.reduce(function (acc, f) {\n' +
-        '  return f(acc);\n' +
-        '}, x);'
-    );
-  });
-  it("(compile '(let-values (((x . fs) args)) (.reduce fs (lambda (acc f) (f acc)) x)) :to 'typescript)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('let-values'),
-          [
-            [
-              [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')],
-              Symbol.for('args'),
-            ],
-          ],
-          [
-            Symbol.for('.reduce'),
-            Symbol.for('fs'),
-            [
-              Symbol.for('lambda'),
-              [Symbol.for('acc'), Symbol.for('f')],
-              [Symbol.for('f'), Symbol.for('acc')],
-            ],
-            Symbol.for('x'),
-          ],
-        ],
-        Symbol.for(':to'),
-        Symbol.for('typescript')
-      ),
-      'let [x, ...fs]: any[] = args;\n' +
-        '\n' +
-        'fs.reduce(function (acc: any, f: any): any {\n' +
-        '  return f(acc);\n' +
-        '}, x);'
-    );
-  });
-  it("(compile '(let-values (((value1) (foo bar)) ((value2) (bar baz))) (list value1 value2)) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('let-values'),
-          [
-            [[Symbol.for('value1')], [Symbol.for('foo'), Symbol.for('bar')]],
-            [[Symbol.for('value2')], [Symbol.for('bar'), Symbol.for('baz')]],
-          ],
-          [Symbol.for('list'), Symbol.for('value1'), Symbol.for('value2')],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'let [value1] = foo(bar);\n' +
-        '\n' +
-        'let [value2] = bar(baz);\n' +
-        '\n' +
-        'return [value1, value2];'
-    );
-  });
-  return it("(compile '(begin value (let-values ((value (foo bar baz))) value)) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('begin'),
-          Symbol.for('value'),
-          [
-            Symbol.for('let-values'),
-            [
-              [
-                Symbol.for('value'),
-                [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
-              ],
-            ],
-            Symbol.for('value'),
-          ],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'value;\n' +
-        '\n' +
-        'let value = foo(bar, baz);\n' +
-        '\n' +
-        'return value;'
-    );
-  });
-});
-
 describe('define-values', function (): any {
   it("(compile '(define-values value (foo bar baz)))", function (): any {
     return assertEqual(
@@ -2809,54 +2518,6 @@ describe('define-values', function (): any {
         '  let [x, ...rest]: any[] = xs;\n' +
         '  return [...rest, 5];\n' +
         '}'
-    );
-  });
-});
-
-describe('set!-values', function (): any {
-  it("(compile '(set!-values (value) (foo bar baz)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('set!-values'),
-        [Symbol.for('value')],
-        [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
-      ]),
-      '[value] = foo(bar, baz);'
-    );
-  });
-  return it("(compile '(set!-values (_ value) (foo bar baz)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('set!-values'),
-        [Symbol.for('_'), Symbol.for('value')],
-        [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
-      ]),
-      '[, value] = foo(bar, baz);'
-    );
-  });
-});
-
-describe('let-fields', function (): any {
-  it("(compile '(let-fields (((prop) obj)) prop))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('let-fields'),
-        [[[Symbol.for('prop')], Symbol.for('obj')]],
-        Symbol.for('prop'),
-      ]),
-      'let {prop} = obj;\n' + '\n' + 'prop;'
-    );
-  });
-  return it("(compile '(set!-values (_ __ value) :hole-marker __ (foo bar baz)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('set!-values'),
-        [Symbol.for('_'), Symbol.for('__'), Symbol.for('value')],
-        Symbol.for(':hole-marker'),
-        Symbol.for('__'),
-        [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
-      ]),
-      '[_, , value] = foo(bar, baz);'
     );
   });
 });
@@ -3063,602 +2724,37 @@ describe('setq', function (): any {
   });
 });
 
-describe('+', function (): any {
-  it("(compile '(+ x 1))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('+'), Symbol.for('x'), 1]),
-      'x + 1;'
-    );
-  });
-  return it("(compile '(+ x 1 2))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('+'), Symbol.for('x'), 1, 2]),
-      'x + 1 + 2;'
-    );
-  });
-});
-
-describe('-', function (): any {
-  it("(compile '(- x))", function (): any {
-    return assertEqual(compile([Symbol.for('-'), Symbol.for('x')]), '-x;');
-  });
-  xit("(compile '(- (- x)))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('-'), [Symbol.for('-'), Symbol.for('x')]]),
-      'x;'
-    );
-  });
-  it("(compile '(- x 1))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('-'), Symbol.for('x'), 1]),
-      'x - 1;'
-    );
-  });
-  return it("(compile '(- x 1 2))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('-'), Symbol.for('x'), 1, 2]),
-      'x - 1 - 2;'
-    );
-  });
-});
-
-describe('mod', function (): any {
-  return it("(compile '(mod x y))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('mod'), Symbol.for('x'), Symbol.for('y')]),
-      'x % y;'
-    );
-  });
-});
-
-describe('begin', function (): any {
-  it("(compile '(begin x y z))", function (): any {
+describe('set!-values', function (): any {
+  it("(compile '(set!-values (value) (foo bar baz)))", function (): any {
     return assertEqual(
       compile([
-        Symbol.for('begin'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        Symbol.for('z'),
+        Symbol.for('set!-values'),
+        [Symbol.for('value')],
+        [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
       ]),
-      'x;\n' + '\n' + 'y;\n' + '\n' + 'z;'
+      '[value] = foo(bar, baz);'
     );
   });
-  it("(compile '(begin x (begin y z)))", function (): any {
+  it("(compile '(set!-values (_ value) (foo bar baz)))", function (): any {
     return assertEqual(
       compile([
-        Symbol.for('begin'),
-        Symbol.for('x'),
-        [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')],
+        Symbol.for('set!-values'),
+        [Symbol.for('_'), Symbol.for('value')],
+        [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
       ]),
-      'x;\n' + '\n' + 'y;\n' + '\n' + 'z;'
+      '[, value] = foo(bar, baz);'
     );
   });
-  it("(compile '(begin x y z) :as 'expression)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('begin'),
-          Symbol.for('x'),
-          Symbol.for('y'),
-          Symbol.for('z'),
-        ],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      '(() => {\n' + '  x;\n' + '  y;\n' + '  return z;\n' + '})()'
-    );
-  });
-  return it("(compile '(begin (define (and x y) (or x y)) (define (or x y) x) (and x (or y z))))", function (): any {
+  return it("(compile '(set!-values (_ __ value) :hole-marker __ (foo bar baz)))", function (): any {
     return assertEqual(
       compile([
-        Symbol.for('begin'),
-        [
-          Symbol.for('define'),
-          [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')],
-          [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')],
-        ],
-        [
-          Symbol.for('define'),
-          [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')],
-          Symbol.for('x'),
-        ],
-        [
-          Symbol.for('and'),
-          Symbol.for('x'),
-          [Symbol.for('or'), Symbol.for('y'), Symbol.for('z')],
-        ],
+        Symbol.for('set!-values'),
+        [Symbol.for('_'), Symbol.for('__'), Symbol.for('value')],
+        Symbol.for(':hole-marker'),
+        Symbol.for('__'),
+        [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')],
       ]),
-      'function and(x, y) {\n' +
-        '  return or(x, y);\n' +
-        '}\n' +
-        '\n' +
-        'function or(x, y) {\n' +
-        '  return x;\n' +
-        '}\n' +
-        '\n' +
-        'and(x, or(y, z));'
-    );
-  });
-});
-
-describe('provide', function (): any {
-  it("(compile '(provide))", function (): any {
-    return assertEqual(compile([Symbol.for('provide')]), '');
-  });
-  it("(compile '(provide x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('provide'), Symbol.for('x')]),
-      'export {\n' + '  x\n' + '};'
-    );
-  });
-  it("(compile '(provide x y))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')]),
-      'export {\n' + '  x,\n' + '  y\n' + '};'
-    );
-  });
-  it("(compile '(provide (rename-out (x y))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('provide'),
-        [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]],
-      ]),
-      'export {\n' + '  x as y\n' + '};'
-    );
-  });
-  it("(compile '(provide (rename-out (x y) (w z))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('provide'),
-        [
-          Symbol.for('rename-out'),
-          [Symbol.for('x'), Symbol.for('y')],
-          [Symbol.for('w'), Symbol.for('z')],
-        ],
-      ]),
-      'export {\n' + '  x as y,\n' + '  w as z\n' + '};'
-    );
-  });
-  it("(compile '(provide x (rename-out (y z))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('provide'),
-        Symbol.for('x'),
-        [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('z')]],
-      ]),
-      'export {\n' + '  x,\n' + '  y as z\n' + '};'
-    );
-  });
-  it("(compile '(provide x x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('provide'), Symbol.for('x'), Symbol.for('x')]),
-      'export {\n' + '  x\n' + '};'
-    );
-  });
-  it("(compile '(provide x (rename-out (y x))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('provide'),
-        Symbol.for('x'),
-        [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('x')]],
-      ]),
-      'export {\n' + '  x\n' + '};'
-    );
-  });
-  it("(compile '(provide (rename-out (x js/undefined))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('provide'),
-        [
-          Symbol.for('rename-out'),
-          [Symbol.for('x'), Symbol.for('js/undefined')],
-        ],
-      ]),
-      'export {\n' + '  x as jsUndefined\n' + '};'
-    );
-  });
-  it('(compile \'(provide (all-from-out "foo")))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo']]),
-      "export * from 'foo';"
-    );
-  });
-  return it('(compile \'(provide (all-from-out "foo") bar))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('provide'),
-        [Symbol.for('all-from-out'), 'foo'],
-        Symbol.for('bar'),
-      ]),
-      "export * from 'foo';\n" + '\n' + 'export {\n' + '  bar\n' + '};'
-    );
-  });
-});
-
-describe('require', function (): any {
-  it('(compile \'(require "foo"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('require'), 'foo']),
-      "import * as foo from 'foo';"
-    );
-  });
-  it('(compile \'(require "foo") :es-module-interop #t)', function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('require'), 'foo'],
-        Symbol.for(':es-module-interop'),
-        true
-      ),
-      "import foo from 'foo';"
-    );
-  });
-  it('(compile \'(require foo "bar"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('require'), Symbol.for('foo'), 'bar']),
-      "import * as foo from 'bar';"
-    );
-  });
-  it('(compile \'(require foo "bar") :es-module-interop #t)', function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('require'), Symbol.for('foo'), 'bar'],
-        Symbol.for(':es-module-interop'),
-        true
-      ),
-      "import foo from 'bar';"
-    );
-  });
-  it('(compile \'(require "foo" "bar") :es-module-interop #t)', function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('require'), 'foo', 'bar'],
-        Symbol.for(':es-module-interop'),
-        true
-      ),
-      "import foo from 'bar';"
-    );
-  });
-  it("(compile '(require (only-in foo bar)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar')],
-      ]),
-      'import {\n' + '  bar\n' + "} from 'foo';"
-    );
-  });
-  it("(compile '(require (only-in foo (bar baz))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        [
-          Symbol.for('only-in'),
-          Symbol.for('foo'),
-          [Symbol.for('bar'), Symbol.for('baz')],
-        ],
-      ]),
-      'import {\n' + '  bar as baz\n' + "} from 'foo';"
-    );
-  });
-  it('(compile \'(require (only-in "foo" (bar baz))))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        [Symbol.for('only-in'), 'foo', [Symbol.for('bar'), Symbol.for('baz')]],
-      ]),
-      'import {\n' + '  bar as baz\n' + "} from 'foo';"
-    );
-  });
-  it("(compile '(require (only-in foo bar bar)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        [
-          Symbol.for('only-in'),
-          Symbol.for('foo'),
-          Symbol.for('bar'),
-          Symbol.for('bar'),
-        ],
-      ]),
-      'import {\n' + '  bar\n' + "} from 'foo';"
-    );
-  });
-  it("(compile '(require (only-in foo bar (baz bar))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        [
-          Symbol.for('only-in'),
-          Symbol.for('foo'),
-          Symbol.for('bar'),
-          [Symbol.for('baz'), Symbol.for('bar')],
-        ],
-      ]),
-      'import {\n' + '  bar\n' + "} from 'foo';"
-    );
-  });
-  xit('(compile \'(require \'foo "bar"))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        [Symbol.for('quote'), Symbol.for('foo')],
-        'bar',
-      ]),
-      "import foo from 'bar';"
-    );
-  });
-  xit("(compile '(require foo :as bar))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        Symbol.for('foo'),
-        Symbol.for(':as'),
-        Symbol.for('bar'),
-      ]),
-      "import bar from 'foo';"
-    );
-  });
-  xit("(compile '(require (foo :as bar)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('require'),
-        [Symbol.for('foo'), Symbol.for(':as'), Symbol.for('bar')],
-      ]),
-      "import bar from 'foo';"
-    );
-  });
-  return xit('(compile \'(require ("foo" :as "bar")))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('require'), ['foo', Symbol.for(':as'), 'bar']]),
-      "import bar from 'foo';"
-    );
-  });
-});
-
-describe('cond', function (): any {
-  it("(compile '(cond (x y)) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'if (x) {\n' + '  return y;\n' + '}'
-    );
-  });
-  it("(compile '(cond (x y)) :as 'expression)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      'x ? y : undefined'
-    );
-  });
-  it("(compile '(cond (x y) (else z)) :as 'expression)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('cond'),
-          [Symbol.for('x'), Symbol.for('y')],
-          [Symbol.for('else'), Symbol.for('z')],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      'x ? y : z'
-    );
-  });
-  it("(compile '(cond (x y) (else w z)) :as 'expression)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('cond'),
-          [Symbol.for('x'), Symbol.for('y')],
-          [Symbol.for('else'), Symbol.for('w'), Symbol.for('z')],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      'x ? y : (() => {\n' + '  w;\n' + '  return z;\n' + '})()'
-    );
-  });
-  it("(compile '(cond (x y) (else z)) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('cond'),
-          [Symbol.for('x'), Symbol.for('y')],
-          [Symbol.for('else'), Symbol.for('z')],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'if (x) {\n' + '  return y;\n' + '} else {\n' + '  return z;\n' + '}'
-    );
-  });
-  return xit("(compile '(cond ((set! x y) z) (else w)) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('cond'),
-          [
-            [Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')],
-            Symbol.for('z'),
-          ],
-          [Symbol.for('else'), Symbol.for('w')],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'if ((x = y)) {\n' +
-        '  return z;\n' +
-        '} else {\n' +
-        '  return w;\n' +
-        '}'
-    );
-  });
-});
-
-describe('if', function (): any {
-  it("(compile '(if x y z))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('if'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        Symbol.for('z'),
-      ]),
-      'if (x) {\n' + '  y;\n' + '} else {\n' + '  z;\n' + '}'
-    );
-  });
-  it("(compile '(if x y) :as 'expression)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('if'), Symbol.for('x'), Symbol.for('y')],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      'x ? y : undefined'
-    );
-  });
-  it("(compile '(if x y z) :as 'expression)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      'x ? y : z'
-    );
-  });
-  it("(compile '(if x y z) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'if (x) {\n' + '  return y;\n' + '} else {\n' + '  return z;\n' + '}'
-    );
-  });
-  it('(compile \'(if "foo" "bar" "baz") :as \'expression)', function (): any {
-    return assertEqual(
-      compile(
-        [Symbol.for('if'), 'foo', 'bar', 'baz'],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      "'foo' ? 'bar' : 'baz'"
-    );
-  });
-  it("(compile '(if x (begin y z) w) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('if'),
-          Symbol.for('x'),
-          [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')],
-          Symbol.for('w'),
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'if (x) {\n' +
-        '  y;\n' +
-        '  return z;\n' +
-        '} else {\n' +
-        '  return w;\n' +
-        '}'
-    );
-  });
-  return xit("(compile '(if (set! x y) z w) :as 'return)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('if'),
-          [Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')],
-          Symbol.for('z'),
-          Symbol.for('w'),
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'if ((x = y)) {\n' +
-        '  return z;\n' +
-        '} else {\n' +
-        '  return w;\n' +
-        '}'
-    );
-  });
-});
-
-describe('when', function (): any {
-  it("(compile '(when x y z))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('when'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        Symbol.for('z'),
-      ]),
-      'if (x) {\n' + '  y;\n' + '  z;\n' + '}'
-    );
-  });
-  return it("(compile '(when (> (array-list-length args) 0) (set! args (.concat (.slice args 0 (- (array-list-length args) 1)) (aref args (- (array-list-length args) 1))))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('when'),
-        [
-          Symbol.for('>'),
-          [Symbol.for('array-list-length'), Symbol.for('args')],
-          0,
-        ],
-        [
-          Symbol.for('set!'),
-          Symbol.for('args'),
-          [
-            Symbol.for('.concat'),
-            [
-              Symbol.for('.slice'),
-              Symbol.for('args'),
-              0,
-              [
-                Symbol.for('-'),
-                [Symbol.for('array-list-length'), Symbol.for('args')],
-                1,
-              ],
-            ],
-            [
-              Symbol.for('aref'),
-              Symbol.for('args'),
-              [
-                Symbol.for('-'),
-                [Symbol.for('array-list-length'), Symbol.for('args')],
-                1,
-              ],
-            ],
-          ],
-        ],
-      ]),
-      'if (args.length > 0) {\n' +
-        '  args = args.slice(0, args.length - 1).concat(args[args.length - 1]);\n' +
-        '}'
-    );
-  });
-});
-
-describe('unless', function (): any {
-  return it("(compile '(unless x y z))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('unless'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        Symbol.for('z'),
-      ]),
-      'if (!x) {\n' + '  y;\n' + '  z;\n' + '}'
+      '[_, , value] = foo(bar, baz);'
     );
   });
 });
@@ -3715,218 +2811,71 @@ describe('set!...aref!', function (): any {
   });
 });
 
-describe('=', function (): any {
-  it("(compile '(= 1 1))", function (): any {
-    return assertEqual(compile([Symbol.for('='), 1, 1]), '1 === 1;');
-  });
-  return it("(compile '(= x y))", function (): any {
+describe('first', function (): any {
+  return it("(compile '(first x))", function (): any {
     return assertEqual(
-      compile([Symbol.for('='), Symbol.for('x'), Symbol.for('y')]),
-      'x === y;'
+      compile([Symbol.for('first'), Symbol.for('x')]),
+      'x[0];'
     );
   });
 });
 
-describe('<', function (): any {
-  it("(compile '(< 1))", function (): any {
-    return assertEqual(compile([Symbol.for('<'), 1]), 'true;');
-  });
-  it("(compile '(< 1 2))", function (): any {
-    return assertEqual(compile([Symbol.for('<'), 1, 2]), '1 < 2;');
-  });
-  return it("(compile '(< 1 2 3))", function (): any {
+describe('last', function (): any {
+  return xit("(compile '(last x))", function (): any {
     return assertEqual(
-      compile([Symbol.for('<'), 1, 2, 3]),
-      '(1 < 2) && (2 < 3);'
+      compile([Symbol.for('last'), Symbol.for('x')]),
+      'x[x.length - 1];'
     );
   });
 });
 
-describe('>', function (): any {
-  it("(compile '(> 1))", function (): any {
-    return assertEqual(compile([Symbol.for('>'), 1]), 'true;');
-  });
-  it("(compile '(> 2 1))", function (): any {
-    return assertEqual(compile([Symbol.for('>'), 2, 1]), '2 > 1;');
-  });
-  return it("(compile '(> 3 2 1))", function (): any {
+describe('nth', function (): any {
+  xit("(compile '(nth 1 x))", function (): any {
     return assertEqual(
-      compile([Symbol.for('>'), 3, 2, 1]),
-      '(3 > 2) && (2 > 1);'
+      compile([Symbol.for('nth'), 1, Symbol.for('x')]),
+      'x[1];'
+    );
+  });
+  return xit("(compile '(nth 2 (nth 1 x)))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('nth'), 2, [Symbol.for('nth'), 1, Symbol.for('x')]]),
+      'x[1][2];'
     );
   });
 });
 
-describe('not', function (): any {
-  it("(compile '(not (and x y)))", function (): any {
+describe('nthcdr', function (): any {
+  return xit("(compile '(nthcdr 1 x))", function (): any {
     return assertEqual(
-      compile([
-        Symbol.for('not'),
-        [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')],
-      ]),
-      '!(x && y);'
-    );
-  });
-  it("(compile '(not (= 1 2)))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('not'), [Symbol.for('='), 1, 2]]),
-      '1 !== 2;'
-    );
-  });
-  it("(compile '(not (> 1 2)))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('not'), [Symbol.for('>'), 1, 2]]),
-      '!(1 > 2);'
-    );
-  });
-  it("(compile '(not (f x)))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('not'), [Symbol.for('f'), Symbol.for('x')]]),
-      '!f(x);'
-    );
-  });
-  return xit("(compile '(and (not (f x)) (not (g y))))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('and'),
-        [Symbol.for('not'), [Symbol.for('f'), Symbol.for('x')]],
-        [Symbol.for('not'), [Symbol.for('g'), Symbol.for('y')]],
-      ]),
-      '!f(x) && !g(y);'
+      compile([Symbol.for('nthcdr'), 1, Symbol.for('x')]),
+      'x.slice(1);'
     );
   });
 });
 
-describe('and', function (): any {
-  it("(compile '(and))", function (): any {
-    return assertEqual(compile([Symbol.for('and')]), 'true;');
-  });
-  it("(compile '(and x))", function (): any {
-    return assertEqual(compile([Symbol.for('and'), Symbol.for('x')]), 'x;');
-  });
-  it("(compile '(and x y))", function (): any {
+describe('drop', function (): any {
+  return it("(compile '(drop x 1))", function (): any {
     return assertEqual(
-      compile([Symbol.for('and'), Symbol.for('x'), Symbol.for('y')]),
-      'x && y;'
-    );
-  });
-  xit("(compile '(and x y z))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('and'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        Symbol.for('z'),
-      ]),
-      'x && y && z;'
-    );
-  });
-  xit("(compile '(and x y (w z)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('and'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        [Symbol.for('w'), Symbol.for('z')],
-      ]),
-      'x && y && w(z);'
-    );
-  });
-  return xit("(compile '(and x y (or w z)))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('and'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        [Symbol.for('or'), Symbol.for('w'), Symbol.for('z')],
-      ]),
-      'x && y && (w || z);'
+      compile([Symbol.for('drop'), Symbol.for('x'), 1]),
+      'x.slice(1);'
     );
   });
 });
 
-describe('or', function (): any {
-  it("(compile '(or))", function (): any {
-    return assertEqual(compile([Symbol.for('or')]), 'false;');
-  });
-  it("(compile '(or x))", function (): any {
-    return assertEqual(compile([Symbol.for('or'), Symbol.for('x')]), 'x;');
-  });
-  it("(compile '(or x y))", function (): any {
+describe('drop-right', function (): any {
+  return it("(compile '(drop-right x 1))", function (): any {
     return assertEqual(
-      compile([Symbol.for('or'), Symbol.for('x'), Symbol.for('y')]),
-      'x || y;'
-    );
-  });
-  return xit("(compile '(or x y z))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('or'),
-        Symbol.for('x'),
-        Symbol.for('y'),
-        Symbol.for('z'),
-      ]),
-      'x || y || z;'
+      compile([Symbol.for('drop-right'), Symbol.for('x'), 1]),
+      'x.slice(0, -1);'
     );
   });
 });
 
-describe('.', function (): any {
-  it('(compile \'(. map get "foo"))', function (): any {
+describe('length', function (): any {
+  return it("(compile '(array-list-length x))", function (): any {
     return assertEqual(
-      compile([Symbol.for('.'), Symbol.for('map'), Symbol.for('get'), 'foo']),
-      "map.get('foo');"
-    );
-  });
-  it('(compile \'(.get map "foo"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('.get'), Symbol.for('map'), 'foo']),
-      "map.get('foo');"
-    );
-  });
-  return it("(compile '(.-length arr))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('.-length'), Symbol.for('arr')]),
-      'arr.length;'
-    );
-  });
-});
-
-describe('send', function (): any {
-  return it('(compile \'(send map get "foo"))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('send'),
-        Symbol.for('map'),
-        Symbol.for('get'),
-        'foo',
-      ]),
-      "map.get('foo');"
-    );
-  });
-});
-
-describe('send/apply', function (): any {
-  it("(compile '(send/apply map get foo))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('send/apply'),
-        Symbol.for('map'),
-        Symbol.for('get'),
-        Symbol.for('foo'),
-      ]),
-      'map.get(...foo);'
-    );
-  });
-  return it('(compile \'(send/apply map get \'("foo")))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('send/apply'),
-        Symbol.for('map'),
-        Symbol.for('get'),
-        [Symbol.for('quote'), ['foo']],
-      ]),
-      "map.get('foo');"
+      compile([Symbol.for('array-list-length'), Symbol.for('x')]),
+      'x.length;'
     );
   });
 });
@@ -4009,11 +2958,143 @@ describe('set-field!', function (): any {
   });
 });
 
-describe('length', function (): any {
-  return it("(compile '(array-list-length x))", function (): any {
+describe('send', function (): any {
+  return it('(compile \'(send map get "foo"))', function (): any {
     return assertEqual(
-      compile([Symbol.for('array-list-length'), Symbol.for('x')]),
-      'x.length;'
+      compile([
+        Symbol.for('send'),
+        Symbol.for('map'),
+        Symbol.for('get'),
+        'foo',
+      ]),
+      "map.get('foo');"
+    );
+  });
+});
+
+describe('send/apply', function (): any {
+  it("(compile '(send/apply map get foo))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('send/apply'),
+        Symbol.for('map'),
+        Symbol.for('get'),
+        Symbol.for('foo'),
+      ]),
+      'map.get(...foo);'
+    );
+  });
+  return it('(compile \'(send/apply map get \'("foo")))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('send/apply'),
+        Symbol.for('map'),
+        Symbol.for('get'),
+        [Symbol.for('quote'), ['foo']],
+      ]),
+      "map.get('foo');"
+    );
+  });
+});
+
+describe('.', function (): any {
+  it('(compile \'(. map get "foo"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('.'), Symbol.for('map'), Symbol.for('get'), 'foo']),
+      "map.get('foo');"
+    );
+  });
+  it('(compile \'(.get map "foo"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('.get'), Symbol.for('map'), 'foo']),
+      "map.get('foo');"
+    );
+  });
+  return it("(compile '(.-length arr))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('.-length'), Symbol.for('arr')]),
+      'arr.length;'
+    );
+  });
+});
+
+describe('memq?', function (): any {
+  it("(compile '(memq? 2 (list 1 2 3 4)))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('memq?'), 2, [Symbol.for('list'), 1, 2, 3, 4]]),
+      '[1, 2, 3, 4].includes(2);'
+    );
+  });
+  return it("(compile '(memq? (+ 1 1) (list 1 2 3 4)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('memq?'),
+        [Symbol.for('+'), 1, 1],
+        [Symbol.for('list'), 1, 2, 3, 4],
+      ]),
+      '[1, 2, 3, 4].includes(1 + 1);'
+    );
+  });
+});
+
+describe('member?', function (): any {
+  it("(compile '(member? 2 (list 1 2 3 4) f))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('member?'),
+        2,
+        [Symbol.for('list'), 1, 2, 3, 4],
+        Symbol.for('f'),
+      ]),
+      '[1, 2, 3, 4].findIndex(function (x) {\n' +
+        '  return f(2, x);\n' +
+        '}) >= 0;'
+    );
+  });
+  return it("(compile '(member? (+ 1 1) (list 1 2 3 4) f))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('member?'),
+        [Symbol.for('+'), 1, 1],
+        [Symbol.for('list'), 1, 2, 3, 4],
+        Symbol.for('f'),
+      ]),
+      '[1, 2, 3, 4].findIndex(function (x) {\n' +
+        '  return f(1 + 1, x);\n' +
+        '}) >= 0;'
+    );
+  });
+});
+
+describe('map', function (): any {
+  it("(compile '(map f x))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('map'), Symbol.for('f'), Symbol.for('x')]),
+      'x.map(function (x) {\n' + '  return f(x);\n' + '});'
+    );
+  });
+  it("(compile '(map (lambda (x) x) x))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('map'),
+        [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+        Symbol.for('x'),
+      ]),
+      'x.map(function (x) {\n' + '  return x;\n' + '});'
+    );
+  });
+  return it("(compile '(map (g y) x))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('map'),
+        [Symbol.for('g'), Symbol.for('y')],
+        Symbol.for('x'),
+      ]),
+      'x.map((function (f) {\n' +
+        '  return function (x) {\n' +
+        '    return f(x);\n' +
+        '  };\n' +
+        '})(g(y)));'
     );
   });
 });
@@ -4104,48 +3185,6 @@ describe('foldr', function (): any {
         '    return f(y, x);\n' +
         '  };\n' +
         '})(cons), []);'
-    );
-  });
-});
-
-describe('nth', function (): any {
-  xit("(compile '(nth 1 x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('nth'), 1, Symbol.for('x')]),
-      'x[1];'
-    );
-  });
-  return xit("(compile '(nth 2 (nth 1 x)))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('nth'), 2, [Symbol.for('nth'), 1, Symbol.for('x')]]),
-      'x[1][2];'
-    );
-  });
-});
-
-describe('nthcdr', function (): any {
-  return xit("(compile '(nthcdr 1 x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('nthcdr'), 1, Symbol.for('x')]),
-      'x.slice(1);'
-    );
-  });
-});
-
-describe('drop', function (): any {
-  return it("(compile '(drop x 1))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('drop'), Symbol.for('x'), 1]),
-      'x.slice(1);'
-    );
-  });
-});
-
-describe('drop-right', function (): any {
-  return it("(compile '(drop-right x 1))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('drop-right'), Symbol.for('x'), 1]),
-      'x.slice(0, -1);'
     );
   });
 });
@@ -4590,11 +3629,11 @@ describe('js/while', function (): any {
 });
 
 describe('js/do-while', function (): any {
-  it("(compile '(js/do-while (display result) (< (array-list-length result) 3)))", function (): any {
+  it("(compile '(js/do-while ((display result)) (< (array-list-length result) 3)))", function (): any {
     return assertEqual(
       compile([
         Symbol.for('js/do-while'),
-        [Symbol.for('display'), Symbol.for('result')],
+        [[Symbol.for('display'), Symbol.for('result')]],
         [
           Symbol.for('<'),
           [Symbol.for('array-list-length'), Symbol.for('result')],
@@ -4604,15 +3643,11 @@ describe('js/do-while', function (): any {
       'do {\n' + '  console.log(result);\n' + '} while (result.length < 3);'
     );
   });
-  it("(compile '(js/do-while (begin (foo) (display result)) (< (array-list-length result) 3)))", function (): any {
+  it("(compile '(js/do-while ((foo) (display result)) (< (array-list-length result) 3)))", function (): any {
     return assertEqual(
       compile([
         Symbol.for('js/do-while'),
-        [
-          Symbol.for('begin'),
-          [Symbol.for('foo')],
-          [Symbol.for('display'), Symbol.for('result')],
-        ],
+        [[Symbol.for('foo')], [Symbol.for('display'), Symbol.for('result')]],
         [
           Symbol.for('<'),
           [Symbol.for('array-list-length'), Symbol.for('result')],
@@ -4641,20 +3676,117 @@ describe('js/do-while', function (): any {
   });
 });
 
-describe('first', function (): any {
-  return it("(compile '(first x))", function (): any {
+describe('js-obj', function (): any {
+  it("(compile '(js-obj))", function (): any {
+    return assertEqual(compile([Symbol.for('js-obj')]), '({});');
+  });
+  it('(compile \'(js-obj foo "bar"))', function (): any {
     return assertEqual(
-      compile([Symbol.for('first'), Symbol.for('x')]),
-      'x[0];'
+      compile([Symbol.for('js-obj'), Symbol.for('foo'), 'bar']),
+      '({\n' + "  [foo]: 'bar'\n" + '});'
+    );
+  });
+  it('(compile \'(js-obj "foo" "bar"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('js-obj'), 'foo', 'bar']),
+      '({\n' + "  foo: 'bar'\n" + '});'
+    );
+  });
+  it('(compile \'(js-obj "foo bar" "foo bar"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('js-obj'), 'foo bar', 'foo bar']),
+      '({\n' + "  'foo bar': 'foo bar'\n" + '});'
+    );
+  });
+  it('(compile \'(js-obj "foo" (js-obj "bar" "baz")))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('js-obj'),
+        'foo',
+        [Symbol.for('js-obj'), 'bar', 'baz'],
+      ]),
+      '({\n' + '  foo: {\n' + "    bar: 'baz'\n" + '  }\n' + '});'
+    );
+  });
+  it('(compile \'(js-obj "foo" (js-obj "foo" "foo") "bar" (js-obj "bar" "bar")))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('js-obj'),
+        'foo',
+        [Symbol.for('js-obj'), 'foo', 'foo'],
+        'bar',
+        [Symbol.for('js-obj'), 'bar', 'bar'],
+      ]),
+      '({\n' +
+        '  foo: {\n' +
+        "    foo: 'foo'\n" +
+        '  },\n' +
+        '  bar: {\n' +
+        "    bar: 'bar'\n" +
+        '  }\n' +
+        '});'
+    );
+  });
+  return it('(compile \'(js-obj "foo" (js-obj) "bar" (js-obj "bar" "bar") "baz" (js-obj "baz" "baz")))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('js-obj'),
+        'foo',
+        [Symbol.for('js-obj')],
+        'bar',
+        [Symbol.for('js-obj'), 'bar', 'bar'],
+        'baz',
+        [Symbol.for('js-obj'), 'baz', 'baz'],
+      ]),
+      '({\n' +
+        '  foo: {},\n' +
+        '  bar: {\n' +
+        "    bar: 'bar'\n" +
+        '  },\n' +
+        '  baz: {\n' +
+        "    baz: 'baz'\n" +
+        '  }\n' +
+        '});'
     );
   });
 });
 
-describe('last', function (): any {
-  return xit("(compile '(last x))", function (): any {
+describe('js-obj?', function (): any {
+  return it("(compile '(js-obj? x))", function (): any {
     return assertEqual(
-      compile([Symbol.for('last'), Symbol.for('x')]),
-      'x[x.length - 1];'
+      compile([Symbol.for('js-obj?'), Symbol.for('x')]),
+      "(x !== null) && (typeof x === 'object');"
+    );
+  });
+});
+
+describe('js-obj-append', function (): any {
+  return it('(compile \'(js-obj-append obj (js-obj "foo" "bar")))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('js-obj-append'),
+        Symbol.for('obj'),
+        [Symbol.for('js-obj'), 'foo', 'bar'],
+      ]),
+      '({\n' + '  ...obj,\n' + "  foo: 'bar'\n" + '});'
+    );
+  });
+});
+
+describe('js-keys', function (): any {
+  return it("(compile '(js-keys x))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('js-keys'), Symbol.for('x')]),
+      'Object.keys(x);'
+    );
+  });
+});
+
+describe('js/delete', function (): any {
+  return it("(compile '(js/delete x))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('js/delete'), Symbol.for('x')]),
+      'delete x;'
     );
   });
 });
@@ -5341,121 +4473,6 @@ describe('make-hash', function (): any {
   });
 });
 
-describe('js-obj', function (): any {
-  it("(compile '(js-obj))", function (): any {
-    return assertEqual(compile([Symbol.for('js-obj')]), '({});');
-  });
-  it('(compile \'(js-obj foo "bar"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('js-obj'), Symbol.for('foo'), 'bar']),
-      '({\n' + "  [foo]: 'bar'\n" + '});'
-    );
-  });
-  it('(compile \'(js-obj "foo" "bar"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('js-obj'), 'foo', 'bar']),
-      '({\n' + "  foo: 'bar'\n" + '});'
-    );
-  });
-  it('(compile \'(js-obj "foo bar" "foo bar"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('js-obj'), 'foo bar', 'foo bar']),
-      '({\n' + "  'foo bar': 'foo bar'\n" + '});'
-    );
-  });
-  it('(compile \'(js-obj "foo" (js-obj "bar" "baz")))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('js-obj'),
-        'foo',
-        [Symbol.for('js-obj'), 'bar', 'baz'],
-      ]),
-      '({\n' + '  foo: {\n' + "    bar: 'baz'\n" + '  }\n' + '});'
-    );
-  });
-  it('(compile \'(js-obj "foo" (js-obj "foo" "foo") "bar" (js-obj "bar" "bar")))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('js-obj'),
-        'foo',
-        [Symbol.for('js-obj'), 'foo', 'foo'],
-        'bar',
-        [Symbol.for('js-obj'), 'bar', 'bar'],
-      ]),
-      '({\n' +
-        '  foo: {\n' +
-        "    foo: 'foo'\n" +
-        '  },\n' +
-        '  bar: {\n' +
-        "    bar: 'bar'\n" +
-        '  }\n' +
-        '});'
-    );
-  });
-  return it('(compile \'(js-obj "foo" (js-obj) "bar" (js-obj "bar" "bar") "baz" (js-obj "baz" "baz")))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('js-obj'),
-        'foo',
-        [Symbol.for('js-obj')],
-        'bar',
-        [Symbol.for('js-obj'), 'bar', 'bar'],
-        'baz',
-        [Symbol.for('js-obj'), 'baz', 'baz'],
-      ]),
-      '({\n' +
-        '  foo: {},\n' +
-        '  bar: {\n' +
-        "    bar: 'bar'\n" +
-        '  },\n' +
-        '  baz: {\n' +
-        "    baz: 'baz'\n" +
-        '  }\n' +
-        '});'
-    );
-  });
-});
-
-describe('js-obj?', function (): any {
-  return it("(compile '(js-obj? x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('js-obj?'), Symbol.for('x')]),
-      "(x !== null) && (typeof x === 'object');"
-    );
-  });
-});
-
-describe('js-obj-append', function (): any {
-  return it('(compile \'(js-obj-append obj (js-obj "foo" "bar")))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('js-obj-append'),
-        Symbol.for('obj'),
-        [Symbol.for('js-obj'), 'foo', 'bar'],
-      ]),
-      '({\n' + '  ...obj,\n' + "  foo: 'bar'\n" + '});'
-    );
-  });
-});
-
-describe('js-keys', function (): any {
-  return it("(compile '(js-keys x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('js-keys'), Symbol.for('x')]),
-      'Object.keys(x);'
-    );
-  });
-});
-
-describe('js/tag', function (): any {
-  return it('(compile \'(js/tag foo "bar"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('js/tag'), Symbol.for('foo'), 'bar']),
-      'foo`bar`;'
-    );
-  });
-});
-
 describe('->', function (): any {
   it('(compile \'(-> x (.foo "bar") (.baz)))', function (): any {
     return assertEqual(
@@ -5491,6 +4508,91 @@ describe('->', function (): any {
       'regularArgs.map(function (arg) {\n' +
         '  return compileExpression(arg, env, inheritedOptions);\n' +
         "}).join(', ');"
+    );
+  });
+});
+
+describe('js/switch', function (): any {
+  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('js/switch'),
+        Symbol.for('x'),
+        [
+          Symbol.for('case'),
+          'foo',
+          [Symbol.for('display'), 'foo'],
+          [Symbol.for('break')],
+        ],
+        [Symbol.for('default'), [Symbol.for('display'), 'bar']],
+      ]),
+      'switch (x) {\n' +
+        "  case 'foo': {\n" +
+        "    console.log('foo');\n" +
+        '    break;\n' +
+        '  }\n' +
+        '  default: {\n' +
+        "    console.log('bar');\n" +
+        '  }\n' +
+        '}'
+    );
+  });
+  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'return)', function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('js/switch'),
+          Symbol.for('x'),
+          [
+            Symbol.for('case'),
+            'foo',
+            [Symbol.for('display'), 'foo'],
+            [Symbol.for('break')],
+          ],
+          [Symbol.for('default'), [Symbol.for('display'), 'bar']],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('return')
+      ),
+      'switch (x) {\n' +
+        "  case 'foo': {\n" +
+        "    return console.log('foo');\n" +
+        '    break;\n' +
+        '  }\n' +
+        '  default: {\n' +
+        "    return console.log('bar');\n" +
+        '  }\n' +
+        '}'
+    );
+  });
+  return it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'expression)', function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('js/switch'),
+          Symbol.for('x'),
+          [
+            Symbol.for('case'),
+            'foo',
+            [Symbol.for('display'), 'foo'],
+            [Symbol.for('break')],
+          ],
+          [Symbol.for('default'), [Symbol.for('display'), 'bar']],
+        ],
+        Symbol.for(':as'),
+        Symbol.for('expression')
+      ),
+      '(() => {\n' +
+        '  switch (x) {\n' +
+        "    case 'foo': {\n" +
+        "      return console.log('foo');\n" +
+        '      break;\n' +
+        '    }\n' +
+        '    default: {\n' +
+        "      return console.log('bar');\n" +
+        '    }\n' +
+        '  }\n' +
+        '})()'
     );
   });
 });
@@ -5690,39 +4792,6 @@ describe('clj/try', function (): any {
   });
 });
 
-describe('map', function (): any {
-  it("(compile '(map f x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('map'), Symbol.for('f'), Symbol.for('x')]),
-      'x.map(function (x) {\n' + '  return f(x);\n' + '});'
-    );
-  });
-  it("(compile '(map (lambda (x) x) x))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('map'),
-        [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
-        Symbol.for('x'),
-      ]),
-      'x.map(function (x) {\n' + '  return x;\n' + '});'
-    );
-  });
-  return it("(compile '(map (g y) x))", function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('map'),
-        [Symbol.for('g'), Symbol.for('y')],
-        Symbol.for('x'),
-      ]),
-      'x.map((function (f) {\n' +
-        '  return function (x) {\n' +
-        '    return f(x);\n' +
-        '  };\n' +
-        '})(g(y)));'
-    );
-  });
-});
-
 describe('throw', function (): any {
   return it('(compile \'(throw (new Error "An error")))', function (): any {
     return assertEqual(
@@ -5731,15 +4800,6 @@ describe('throw', function (): any {
         [Symbol.for('new'), Symbol.for('Error'), 'An error'],
       ]),
       "throw new Error('An error');"
-    );
-  });
-});
-
-describe('js/delete', function (): any {
-  return it("(compile '(js/delete x))", function (): any {
-    return assertEqual(
-      compile([Symbol.for('js/delete'), Symbol.for('x')]),
-      'delete x;'
     );
   });
 });
@@ -5819,6 +4879,240 @@ describe('async', function (): any {
         Symbol.for('x'),
       ]),
       'async function foo(x) {\n' + '  return x;\n' + '}'
+    );
+  });
+});
+
+describe('require', function (): any {
+  it('(compile \'(require "foo"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('require'), 'foo']),
+      "import * as foo from 'foo';"
+    );
+  });
+  it('(compile \'(require "foo") :es-module-interop #t)', function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('require'), 'foo'],
+        Symbol.for(':es-module-interop'),
+        true
+      ),
+      "import foo from 'foo';"
+    );
+  });
+  it('(compile \'(require foo "bar"))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('require'), Symbol.for('foo'), 'bar']),
+      "import * as foo from 'bar';"
+    );
+  });
+  it('(compile \'(require foo "bar") :es-module-interop #t)', function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('require'), Symbol.for('foo'), 'bar'],
+        Symbol.for(':es-module-interop'),
+        true
+      ),
+      "import foo from 'bar';"
+    );
+  });
+  it('(compile \'(require "foo" "bar") :es-module-interop #t)', function (): any {
+    return assertEqual(
+      compile(
+        [Symbol.for('require'), 'foo', 'bar'],
+        Symbol.for(':es-module-interop'),
+        true
+      ),
+      "import foo from 'bar';"
+    );
+  });
+  it("(compile '(require (only-in foo bar)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar')],
+      ]),
+      'import {\n' + '  bar\n' + "} from 'foo';"
+    );
+  });
+  it("(compile '(require (only-in foo (bar baz))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        [
+          Symbol.for('only-in'),
+          Symbol.for('foo'),
+          [Symbol.for('bar'), Symbol.for('baz')],
+        ],
+      ]),
+      'import {\n' + '  bar as baz\n' + "} from 'foo';"
+    );
+  });
+  it('(compile \'(require (only-in "foo" (bar baz))))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        [Symbol.for('only-in'), 'foo', [Symbol.for('bar'), Symbol.for('baz')]],
+      ]),
+      'import {\n' + '  bar as baz\n' + "} from 'foo';"
+    );
+  });
+  it("(compile '(require (only-in foo bar bar)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        [
+          Symbol.for('only-in'),
+          Symbol.for('foo'),
+          Symbol.for('bar'),
+          Symbol.for('bar'),
+        ],
+      ]),
+      'import {\n' + '  bar\n' + "} from 'foo';"
+    );
+  });
+  it("(compile '(require (only-in foo bar (baz bar))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        [
+          Symbol.for('only-in'),
+          Symbol.for('foo'),
+          Symbol.for('bar'),
+          [Symbol.for('baz'), Symbol.for('bar')],
+        ],
+      ]),
+      'import {\n' + '  bar\n' + "} from 'foo';"
+    );
+  });
+  xit('(compile \'(require \'foo "bar"))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        [Symbol.for('quote'), Symbol.for('foo')],
+        'bar',
+      ]),
+      "import foo from 'bar';"
+    );
+  });
+  xit("(compile '(require foo :as bar))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        Symbol.for('foo'),
+        Symbol.for(':as'),
+        Symbol.for('bar'),
+      ]),
+      "import bar from 'foo';"
+    );
+  });
+  xit("(compile '(require (foo :as bar)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('require'),
+        [Symbol.for('foo'), Symbol.for(':as'), Symbol.for('bar')],
+      ]),
+      "import bar from 'foo';"
+    );
+  });
+  return xit('(compile \'(require ("foo" :as "bar")))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('require'), ['foo', Symbol.for(':as'), 'bar']]),
+      "import bar from 'foo';"
+    );
+  });
+});
+
+describe('provide', function (): any {
+  it("(compile '(provide))", function (): any {
+    return assertEqual(compile([Symbol.for('provide')]), '');
+  });
+  it("(compile '(provide x))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('provide'), Symbol.for('x')]),
+      'export {\n' + '  x\n' + '};'
+    );
+  });
+  it("(compile '(provide x y))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')]),
+      'export {\n' + '  x,\n' + '  y\n' + '};'
+    );
+  });
+  it("(compile '(provide (rename-out (x y))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('provide'),
+        [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]],
+      ]),
+      'export {\n' + '  x as y\n' + '};'
+    );
+  });
+  it("(compile '(provide (rename-out (x y) (w z))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('provide'),
+        [
+          Symbol.for('rename-out'),
+          [Symbol.for('x'), Symbol.for('y')],
+          [Symbol.for('w'), Symbol.for('z')],
+        ],
+      ]),
+      'export {\n' + '  x as y,\n' + '  w as z\n' + '};'
+    );
+  });
+  it("(compile '(provide x (rename-out (y z))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('provide'),
+        Symbol.for('x'),
+        [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('z')]],
+      ]),
+      'export {\n' + '  x,\n' + '  y as z\n' + '};'
+    );
+  });
+  it("(compile '(provide x x))", function (): any {
+    return assertEqual(
+      compile([Symbol.for('provide'), Symbol.for('x'), Symbol.for('x')]),
+      'export {\n' + '  x\n' + '};'
+    );
+  });
+  it("(compile '(provide x (rename-out (y x))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('provide'),
+        Symbol.for('x'),
+        [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('x')]],
+      ]),
+      'export {\n' + '  x\n' + '};'
+    );
+  });
+  it("(compile '(provide (rename-out (x js/undefined))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('provide'),
+        [
+          Symbol.for('rename-out'),
+          [Symbol.for('x'), Symbol.for('js/undefined')],
+        ],
+      ]),
+      'export {\n' + '  x as jsUndefined\n' + '};'
+    );
+  });
+  it('(compile \'(provide (all-from-out "foo")))', function (): any {
+    return assertEqual(
+      compile([Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo']]),
+      "export * from 'foo';"
+    );
+  });
+  return it('(compile \'(provide (all-from-out "foo") bar))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('provide'),
+        [Symbol.for('all-from-out'), 'foo'],
+        Symbol.for('bar'),
+      ]),
+      "export * from 'foo';\n" + '\n' + 'export {\n' + '  bar\n' + '};'
     );
   });
 });
@@ -6359,18 +5653,6 @@ describe('module', function (): any {
         '  lst.push(x);\n' +
         '  return lst;\n' +
         '}'
-    );
-  });
-});
-
-describe('string-append', function (): any {
-  it('(compile \'(string-append "a"))', function (): any {
-    return assertEqual(compile([Symbol.for('string-append'), 'a']), "'a';");
-  });
-  return it('(compile \'(string-append "a" "b"))', function (): any {
-    return assertEqual(
-      compile([Symbol.for('string-append'), 'a', 'b']),
-      "'a' + 'b';"
     );
   });
 });
@@ -7485,91 +6767,6 @@ describe('js/?.', function (): any {
   });
 });
 
-describe('js/switch', function (): any {
-  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))))', function (): any {
-    return assertEqual(
-      compile([
-        Symbol.for('js/switch'),
-        Symbol.for('x'),
-        [
-          Symbol.for('case'),
-          'foo',
-          [Symbol.for('display'), 'foo'],
-          [Symbol.for('break')],
-        ],
-        [Symbol.for('default'), [Symbol.for('display'), 'bar']],
-      ]),
-      'switch (x) {\n' +
-        "  case 'foo': {\n" +
-        "    console.log('foo');\n" +
-        '    break;\n' +
-        '  }\n' +
-        '  default: {\n' +
-        "    console.log('bar');\n" +
-        '  }\n' +
-        '}'
-    );
-  });
-  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'return)', function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('js/switch'),
-          Symbol.for('x'),
-          [
-            Symbol.for('case'),
-            'foo',
-            [Symbol.for('display'), 'foo'],
-            [Symbol.for('break')],
-          ],
-          [Symbol.for('default'), [Symbol.for('display'), 'bar']],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('return')
-      ),
-      'switch (x) {\n' +
-        "  case 'foo': {\n" +
-        "    return console.log('foo');\n" +
-        '    break;\n' +
-        '  }\n' +
-        '  default: {\n' +
-        "    return console.log('bar');\n" +
-        '  }\n' +
-        '}'
-    );
-  });
-  return it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'expression)', function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('js/switch'),
-          Symbol.for('x'),
-          [
-            Symbol.for('case'),
-            'foo',
-            [Symbol.for('display'), 'foo'],
-            [Symbol.for('break')],
-          ],
-          [Symbol.for('default'), [Symbol.for('display'), 'bar']],
-        ],
-        Symbol.for(':as'),
-        Symbol.for('expression')
-      ),
-      '(() => {\n' +
-        '  switch (x) {\n' +
-        "    case 'foo': {\n" +
-        "      return console.log('foo');\n" +
-        '      break;\n' +
-        '    }\n' +
-        '    default: {\n' +
-        "      return console.log('bar');\n" +
-        '    }\n' +
-        '  }\n' +
-        '})()'
-    );
-  });
-});
-
 describe('assert', function (): any {
   it("(compile '(assert #t))", function (): any {
     return assertEqual(
@@ -7596,6 +6793,805 @@ describe('display', function (): any {
     return assertEqual(
       compile([Symbol.for('display'), true, 'test']),
       "console.log(true, 'test');"
+    );
+  });
+});
+
+describe('Macros', function (): any {
+  xit("(compile '(module m scheme (defmacro foo () '(begin)) (foo)))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('module'),
+        Symbol.for('m'),
+        Symbol.for('scheme'),
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('foo'),
+          [],
+          [Symbol.for('quote'), [Symbol.for('begin')]],
+        ],
+        [Symbol.for('foo')],
+      ]),
+      'function foo(exp, env) {\n' +
+        "  return [Symbol.for('begin')];\n" +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'macro';"
+    );
+  });
+  it("(compile '(module m scheme (defmacro foo (x) x) (define (bar x) (foo x))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('module'),
+        Symbol.for('m'),
+        Symbol.for('scheme'),
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('foo'),
+          [Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('define'),
+          [Symbol.for('bar'), Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+      ]),
+      'function foo(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'macro';\n" +
+        '\n' +
+        'function bar(x) {\n' +
+        '  return x;\n' +
+        '}'
+    );
+  });
+  it("(compile '(module m scheme (defmacro foo (x) `(begin ,x)) (define (bar x) (foo x))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('module'),
+        Symbol.for('m'),
+        Symbol.for('scheme'),
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('foo'),
+          [Symbol.for('x')],
+          [
+            Symbol.for('quasiquote'),
+            [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('x')]],
+          ],
+        ],
+        [
+          Symbol.for('define'),
+          [Symbol.for('bar'), Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+      ]),
+      'function foo(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        "  return [Symbol.for('begin'), x];\n" +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'macro';\n" +
+        '\n' +
+        'function bar(x) {\n' +
+        '  return x;\n' +
+        '}'
+    );
+  });
+  it("(compile '(module m scheme (defmacro foo (x . args) x) (define (bar x) (foo x))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('module'),
+        Symbol.for('m'),
+        Symbol.for('scheme'),
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('foo'),
+          [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('define'),
+          [Symbol.for('bar'), Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+      ]),
+      'function foo(exp, env) {\n' +
+        '  let [x, ...args] = exp.slice(1);\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'macro';\n" +
+        '\n' +
+        'function bar(x) {\n' +
+        '  return x;\n' +
+        '}'
+    );
+  });
+  it("(compile '(module m scheme (defmacro foo (x . args) x) (define bar (foo 1 2 3))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('module'),
+        Symbol.for('m'),
+        Symbol.for('scheme'),
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('foo'),
+          [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
+          Symbol.for('x'),
+        ],
+        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1, 2, 3]],
+      ]),
+      'function foo(exp, env) {\n' +
+        '  let [x, ...args] = exp.slice(1);\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'macro';\n" +
+        '\n' +
+        'let bar = 1;'
+    );
+  });
+  return xit("(compile '(begin (defmacro foo (x . args) x) (define bar (foo 1 2 3))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('foo'),
+          [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
+          Symbol.for('x'),
+        ],
+        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1, 2, 3]],
+      ]),
+      'function foo(exp, env) {\n' +
+        '  let [x, ...args] = exp.slice(1);\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'macro';\n" +
+        '\n' +
+        'let bar = 1;'
+    );
+  });
+});
+
+describe('Fexprs', function (): any {
+  return it("(compile '(begin (define-fexpr (foo x) x) (define x 1) (define bar (foo x))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define-fexpr'),
+          [Symbol.for('foo'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        [Symbol.for('define'), Symbol.for('x'), 1],
+        [
+          Symbol.for('define'),
+          Symbol.for('bar'),
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+      ]),
+      'function foo(x) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'fexpr';\n" +
+        '\n' +
+        'let x = 1;\n' +
+        '\n' +
+        "let bar = foo(Symbol.for('x'));"
+    );
+  });
+});
+
+describe('Global environment', function (): any {
+  it("(compile '(module m scheme (define lst `(,symbol? ,boolean?))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            Symbol.for('lst'),
+            [
+              Symbol.for('quasiquote'),
+              [
+                [Symbol.for('unquote'), Symbol.for('symbol?')],
+                [Symbol.for('unquote'), Symbol.for('boolean?')],
+              ],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [symbolp, booleanp] = (() => {\n' +
+        '  function symbolp_(obj) {\n' +
+        "    return typeof obj === 'symbol';\n" +
+        '  }\n' +
+        '  function booleanp_(obj) {\n' +
+        "    return typeof obj === 'boolean';\n" +
+        '  }\n' +
+        '  return [symbolp_, booleanp_];\n' +
+        '})();\n' +
+        '\n' +
+        'let lst = [symbolp, booleanp];'
+    );
+  });
+  xit('(compile \'(define-values (_ regexp) (rl/sandbox ((js/arrow () (define __ (js-obj "@@functional/placeholder" #t)) (define (js-regexp_ input (flags #u)) (if (eq? (type-of input) "string") (new RegExp input flags) input)) (values __ js-regexp_))))) :inline-functions #t)', function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('define-values'),
+          [Symbol.for('_'), Symbol.for('regexp')],
+          [
+            Symbol.for('rl/sandbox'),
+            [
+              [
+                Symbol.for('js/arrow'),
+                [],
+                [
+                  Symbol.for('define'),
+                  Symbol.for('__'),
+                  [Symbol.for('js-obj'), '@@functional/placeholder', true],
+                ],
+                [
+                  Symbol.for('define'),
+                  [
+                    Symbol.for('js-regexp_'),
+                    Symbol.for('input'),
+                    [Symbol.for('flags'), undefined],
+                  ],
+                  [
+                    Symbol.for('if'),
+                    [
+                      Symbol.for('eq?'),
+                      [Symbol.for('type-of'), Symbol.for('input')],
+                      'string',
+                    ],
+                    [
+                      Symbol.for('new'),
+                      Symbol.for('RegExp'),
+                      Symbol.for('input'),
+                      Symbol.for('flags'),
+                    ],
+                    Symbol.for('input'),
+                  ],
+                ],
+                [
+                  Symbol.for('values'),
+                  Symbol.for('__'),
+                  Symbol.for('js-regexp_'),
+                ],
+              ],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [, regexp] = (() => {\n' +
+        '  let __ = {\n' +
+        "    '@@functional/placeholder': true\n" +
+        '  };\n' +
+        '  function jsRegexp_(input, flags = undefined) {\n' +
+        "    if (typeof input === 'string') {\n" +
+        '      return new RegExp(input, flags);\n' +
+        '    } else {\n' +
+        '      return input;\n' +
+        '    }\n' +
+        '  }\n' +
+        '  return [__, jsRegexp_];\n' +
+        '})();'
+    );
+  });
+  it("(compile '(module m scheme (define one-plus-one (apply + '(1 1)))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            Symbol.for('one-plus-one'),
+            [
+              Symbol.for('apply'),
+              Symbol.for('+'),
+              [Symbol.for('quote'), [1, 1]],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [_add] = (() => {\n' +
+        '  function add_(...args) {\n' +
+        '    let result = 0;\n' +
+        '    for (let arg of args) {\n' +
+        '      result = result + arg;\n' +
+        '    }\n' +
+        '    return result;\n' +
+        '  }\n' +
+        '  return [add_];\n' +
+        '})();\n' +
+        '\n' +
+        'let onePlusOne = _add(1, 1);'
+    );
+  });
+  it("(compile '(module m scheme (define one-minus-one (apply - '(1 1)))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            Symbol.for('one-minus-one'),
+            [
+              Symbol.for('apply'),
+              Symbol.for('-'),
+              [Symbol.for('quote'), [1, 1]],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [_sub] = (() => {\n' +
+        '  function sub_(...args) {\n' +
+        '    let len = args.length;\n' +
+        '    if (len === 0) {\n' +
+        '      return 0;\n' +
+        '    } else if (len === 1) {\n' +
+        '      return -args[0];\n' +
+        '    } else {\n' +
+        '      let result = args[0];\n' +
+        '      for (let i = 1; i < len; i++) {\n' +
+        '        result = result - args[i];\n' +
+        '      }\n' +
+        '      return result;\n' +
+        '    }\n' +
+        '  }\n' +
+        '  return [sub_];\n' +
+        '})();\n' +
+        '\n' +
+        'let oneMinusOne = _sub(1, 1);'
+    );
+  });
+  it("(compile '(module m scheme (define one-minus-one (apply - '(1 1)))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('module'),
+        Symbol.for('m'),
+        Symbol.for('scheme'),
+        [
+          Symbol.for('define'),
+          Symbol.for('one-minus-one'),
+          [Symbol.for('apply'), Symbol.for('-'), [Symbol.for('quote'), [1, 1]]],
+        ],
+      ]),
+      'import {\n' +
+        '  _sub\n' +
+        "} from 'roselisp';\n" +
+        '\n' +
+        'let oneMinusOne = _sub(1, 1);'
+    );
+  });
+  it("(compile '(module m scheme (define one-times-one (apply * '(1 1)))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            Symbol.for('one-times-one'),
+            [
+              Symbol.for('apply'),
+              Symbol.for('*'),
+              [Symbol.for('quote'), [1, 1]],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [_mul] = (() => {\n' +
+        '  function mul_(...args) {\n' +
+        '    let result = 1;\n' +
+        '    for (let arg of args) {\n' +
+        '      result = result * arg;\n' +
+        '    }\n' +
+        '    return result;\n' +
+        '  }\n' +
+        '  return [mul_];\n' +
+        '})();\n' +
+        '\n' +
+        'let oneTimesOne = _mul(1, 1);'
+    );
+  });
+  it("(compile '(module m scheme (define one-divided-by-one (apply / '(1 1)))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            Symbol.for('one-divided-by-one'),
+            [
+              Symbol.for('apply'),
+              Symbol.for('/'),
+              [Symbol.for('quote'), [1, 1]],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [_div] = (() => {\n' +
+        '  function div_(...args) {\n' +
+        '    if (args.length === 1) {\n' +
+        '      return 1 / args[0];\n' +
+        '    } else {\n' +
+        '      let result = args[0];\n' +
+        '      let _end = args.length;\n' +
+        '      for (let i = 1; i < _end; i++) {\n' +
+        '        result = result / args[i];\n' +
+        '      }\n' +
+        '      return result;\n' +
+        '    }\n' +
+        '  }\n' +
+        '  return [div_];\n' +
+        '})();\n' +
+        '\n' +
+        'let oneDividedByOne = _div(1, 1);'
+    );
+  });
+  it('(compile \'(module m scheme (define foo-bar (apply string-append \'("foo" "bar")))) :inline-functions #t)', function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            Symbol.for('foo-bar'),
+            [
+              Symbol.for('apply'),
+              Symbol.for('string-append'),
+              [Symbol.for('quote'), ['foo', 'bar']],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [stringAppend] = (() => {\n' +
+        '  function stringAppend_(...args) {\n' +
+        '    return args.reduce(function (acc, x) {\n' +
+        '      return acc + x;\n' +
+        "    }, '');\n" +
+        '  }\n' +
+        '  return [stringAppend_];\n' +
+        '})();\n' +
+        '\n' +
+        "let fooBar = stringAppend('foo', 'bar');"
+    );
+  });
+  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l)) (define bar (my-foldl + 0 '(1 2 3 4)))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('lisp'),
+          [
+            Symbol.for('define'),
+            [
+              Symbol.for('my-foldl'),
+              Symbol.for('f'),
+              Symbol.for('v'),
+              Symbol.for('l'),
+            ],
+            [
+              Symbol.for('foldl'),
+              Symbol.for('f'),
+              Symbol.for('v'),
+              Symbol.for('l'),
+            ],
+          ],
+          [
+            Symbol.for('define'),
+            Symbol.for('bar'),
+            [
+              Symbol.for('my-foldl'),
+              Symbol.for('+'),
+              0,
+              [Symbol.for('quote'), [1, 2, 3, 4]],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [add] = (function () {\n' +
+        '  function add(...args) {\n' +
+        '    return args.reduce(function (y, x) {\n' +
+        '      return y + x;\n' +
+        '    }, 0);\n' +
+        '  }\n' +
+        '  return [add];\n' +
+        '})();\n' +
+        '\n' +
+        'function myFoldl(f, v, l) {\n' +
+        '  return l.reduce(function (acc, x) {\n' +
+        '    return f(x, acc);\n' +
+        '  }, v);\n' +
+        '}\n' +
+        '\n' +
+        'let bar = myFoldl(add, 0, [1, 2, 3, 4]);'
+    );
+  });
+  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('lisp'),
+          [
+            Symbol.for('define'),
+            [
+              Symbol.for('my-foldl'),
+              Symbol.for('f'),
+              Symbol.for('v'),
+              Symbol.for('l'),
+            ],
+            [
+              Symbol.for('foldl'),
+              Symbol.for('f'),
+              Symbol.for('v'),
+              Symbol.for('l'),
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [foldl] = (function () {\n' +
+        '  function foldl(f, v, lst) {\n' +
+        '    return lst.reduce(function (acc, x) {\n' +
+        '      return f(x, acc);\n' +
+        '    }, v);\n' +
+        '  }\n' +
+        '  return [foldl];\n' +
+        '})();\n' +
+        '\n' +
+        'function myFoldl(f, v, l) {\n' +
+        '  return foldl(f, v, l);\n' +
+        '}'
+    );
+  });
+  it("(compile '(module m lisp (define (my-map f x) (map f x)) (define bar (my-map first '((1) (2) (3))))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('lisp'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('my-map'), Symbol.for('f'), Symbol.for('x')],
+            [Symbol.for('map'), Symbol.for('f'), Symbol.for('x')],
+          ],
+          [
+            Symbol.for('define'),
+            Symbol.for('bar'),
+            [
+              Symbol.for('my-map'),
+              Symbol.for('first'),
+              [Symbol.for('quote'), [[1], [2], [3]]],
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [first] = (() => {\n' +
+        '  function first_(lst) {\n' +
+        '    return lst[0];\n' +
+        '  }\n' +
+        '  return [first_];\n' +
+        '})();\n' +
+        '\n' +
+        'function myMap(f, x) {\n' +
+        '  return x.map(function (x) {\n' +
+        '    return f(x);\n' +
+        '  });\n' +
+        '}\n' +
+        '\n' +
+        'let bar = myMap(first, [[1], [2], [3]]);'
+    );
+  });
+  xit("(compile '(module m lisp (define (foo f x y) (f x y)) (define (my-push-4 lst x) (foo push! lst x))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('lisp'),
+          [
+            Symbol.for('define'),
+            [
+              Symbol.for('foo'),
+              Symbol.for('f'),
+              Symbol.for('x'),
+              Symbol.for('y'),
+            ],
+            [Symbol.for('f'), Symbol.for('x'), Symbol.for('y')],
+          ],
+          [
+            Symbol.for('define'),
+            [Symbol.for('my-push-4'), Symbol.for('lst'), Symbol.for('x')],
+            [
+              Symbol.for('foo'),
+              Symbol.for('push!'),
+              Symbol.for('lst'),
+              Symbol.for('x'),
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [pushX] = (function () {\n' +
+        '  function pushX(lst, x) {\n' +
+        '    lst.unshift(x);\n' +
+        '    return lst;\n' +
+        '  }\n' +
+        '  return [pushX];\n' +
+        '})();\n' +
+        '\n' +
+        'function foo(f, x, y) {\n' +
+        '  return f(x, y);\n' +
+        '}\n' +
+        '\n' +
+        'function myPush4(lst, x) {\n' +
+        '  return foo(pushX, lst, x);\n' +
+        '}'
+    );
+  });
+  xit("(compile '(module m lisp (define (get-push-function) push!) (define (my-push-4 lst x) ((get-push-function) lst x))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('lisp'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('get-push-function')],
+            Symbol.for('push!'),
+          ],
+          [
+            Symbol.for('define'),
+            [Symbol.for('my-push-4'), Symbol.for('lst'), Symbol.for('x')],
+            [
+              [Symbol.for('get-push-function')],
+              Symbol.for('lst'),
+              Symbol.for('x'),
+            ],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [pushX] = (function () {\n' +
+        '  function pushX(lst, x) {\n' +
+        '    lst.unshift(x);\n' +
+        '    return lst;\n' +
+        '  }\n' +
+        '  return [pushX];\n' +
+        '})();\n' +
+        '\n' +
+        'function getPushFunction() {\n' +
+        '  return pushX;\n' +
+        '}\n' +
+        '\n' +
+        'function myPush4(lst, x) {\n' +
+        '  return getPushFunction()(lst, x);\n' +
+        '}'
+    );
+  });
+  it("(compile '(module m lisp (define (my-cdr x) (cdr x))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('lisp'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('my-cdr'), Symbol.for('x')],
+            [Symbol.for('cdr'), Symbol.for('x')],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [cdr] = (() => {\n' +
+        '  function cdr_(lst) {\n' +
+        "    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {\n" +
+        '      return lst[2];\n' +
+        '    } else {\n' +
+        '      return lst.slice(1);\n' +
+        '    }\n' +
+        '  }\n' +
+        '  return [cdr_];\n' +
+        '})();\n' +
+        '\n' +
+        'function myCdr(x) {\n' +
+        '  return cdr(x);\n' +
+        '}'
+    );
+  });
+  return it("(compile '(module m lisp (define (my-intersection x y) (intersection x y))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('lisp'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('my-intersection'), Symbol.for('x'), Symbol.for('y')],
+            [Symbol.for('intersection'), Symbol.for('x'), Symbol.for('y')],
+          ],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [intersection] = (() => {\n' +
+        '  function intersection_(...args) {\n' +
+        '    function intersection2(arr1, arr2) {\n' +
+        '      let result = [];\n' +
+        '      for (let element of arr1) {\n' +
+        '        if (arr2.includes(element) && !result.includes(element)) {\n' +
+        '          result.push(element);\n' +
+        '        }\n' +
+        '      }\n' +
+        '      return result;\n' +
+        '    }\n' +
+        '    if (args.length === 0) {\n' +
+        '      return [];\n' +
+        '    } else if (args.length === 1) {\n' +
+        '      return args[0];\n' +
+        '    } else {\n' +
+        '      return args.slice(1).reduce(function (acc, x) {\n' +
+        '        return intersection2(acc, x);\n' +
+        '      }, args[0]);\n' +
+        '    }\n' +
+        '  }\n' +
+        '  return [intersection_];\n' +
+        '})();\n' +
+        '\n' +
+        'function myIntersection(x, y) {\n' +
+        '  return intersection(x, y);\n' +
+        '}'
     );
   });
 });

@@ -352,12 +352,6 @@
  xit> ((ann #u Any))
  #u
 
- ;; `interpret`
- > (describe "interpret")
- _
- > (interpret 't)
- #t
-
  ;; `current-environment`
  > (describe "current-environment")
  _
@@ -374,7 +368,13 @@
  > (interpret '(js/eval "1") #u (js-obj "eval" #t))
  1
  xit> (interpret 'js/eval #u (js-obj "eval" #f))
- #u)
+ #u
+
+ ;; `interpret`
+ > (describe "interpret")
+ _
+ > (interpret 't)
+ #t)
 
 (test-macro
  ;; `interpret`
@@ -396,12 +396,6 @@
  xit> (((interpret __ __)
         't)
        (new LispEnvironment))
- #t
-
- ;; `interpret`
- > (describe "interpret")
- _
- > (interpret 't)
  #t
 
  ;; `lisp`

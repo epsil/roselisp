@@ -1152,17 +1152,6 @@ describe('ann', function (): any {
   });
 });
 
-describe('interpret', function (): any {
-  return it("(interpret 't)", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [Symbol.for('interpret'), [Symbol.for('quote'), Symbol.for('t')]],
-      true,
-    ]);
-  });
-});
-
 describe('current-environment', function (): any {
   return it("((lambda (x) (send (current-environment) get 'x)) 1)", function (): any {
     return testRepl([
@@ -1224,6 +1213,17 @@ describe('js/eval', function (): any {
 });
 
 describe('interpret', function (): any {
+  return it("(interpret 't)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('interpret'), [Symbol.for('quote'), Symbol.for('t')]],
+      true,
+    ]);
+  });
+});
+
+describe('interpret', function (): any {
   it("(interpret 't)", function (): any {
     return assertEqual(interpret(Symbol.for('t')), true);
   });
@@ -1247,12 +1247,6 @@ describe('interpret', function (): any {
       interpret(__, __)(Symbol.for('t'))(new LispEnvironment()),
       true
     );
-  });
-});
-
-describe('interpret', function (): any {
-  return it("(interpret 't)", function (): any {
-    return assertEqual(interpret(Symbol.for('t')), true);
   });
 });
 

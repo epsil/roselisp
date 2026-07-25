@@ -1142,7 +1142,20 @@ describe('decompile', function (): any {
     function (): any {
       return assertEqual(
         decompile('do {\n' + '  bar();\n' + '} while (foo);'),
-        [Symbol.for('js/do-while'), [Symbol.for('bar')], Symbol.for('foo')]
+        [Symbol.for('js/do-while'), [[Symbol.for('bar')]], Symbol.for('foo')]
+      );
+    }
+  );
+  it(
+    '(decompile "do {\n' + '  bar();\n' + '  baz();\n' + '} while (foo);")',
+    function (): any {
+      return assertEqual(
+        decompile('do {\n' + '  bar();\n' + '  baz();\n' + '} while (foo);'),
+        [
+          Symbol.for('js/do-while'),
+          [[Symbol.for('bar')], [Symbol.for('baz')]],
+          Symbol.for('foo'),
+        ]
       );
     }
   );

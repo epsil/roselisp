@@ -20,116 +20,6 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; Macros
- > (describe "Macros")
- _
- xit> (compile
-       '(module m scheme
-          (defmacro foo ()
-            '(begin))
-          (foo)))
- "function foo(exp, env) {
-  return [Symbol.for('begin')];
-}
-
-foo.ftype = 'macro';"
- > (compile
-    '(module m scheme
-       (defmacro foo (x)
-         x)
-       (define (bar x)
-         (foo x))))
- "function foo(exp, env) {
-  let [x] = exp.slice(1);
-  return x;
-}
-
-foo.ftype = 'macro';
-
-function bar(x) {
-  return x;
-}"
- > (compile
-    '(module m scheme
-       (defmacro foo (x)
-         `(begin ,x))
-       (define (bar x)
-         (foo x))))
- "function foo(exp, env) {
-  let [x] = exp.slice(1);
-  return [Symbol.for('begin'), x];
-}
-
-foo.ftype = 'macro';
-
-function bar(x) {
-  return x;
-}"
- > (compile
-    '(module m scheme
-       (defmacro foo (x . args)
-         x)
-       (define (bar x)
-         (foo x))))
- "function foo(exp, env) {
-  let [x, ...args] = exp.slice(1);
-  return x;
-}
-
-foo.ftype = 'macro';
-
-function bar(x) {
-  return x;
-}"
- > (compile
-    '(module m scheme
-       (defmacro foo (x . args)
-         x)
-       (define bar
-         (foo 1 2 3))))
- "function foo(exp, env) {
-  let [x, ...args] = exp.slice(1);
-  return x;
-}
-
-foo.ftype = 'macro';
-
-let bar = 1;"
- xit> (compile
-       '(begin
-          (defmacro foo (x . args)
-            x)
-          (define bar
-            (foo 1 2 3))))
- "function foo(exp, env) {
-  let [x, ...args] = exp.slice(1);
-  return x;
-}
-
-foo.ftype = 'macro';
-
-let bar = 1;"
-
- ;; Fexprs
- > (describe "Fexprs")
- _
- > (compile
-    '(begin
-       (define-fexpr (foo x)
-         x)
-       (define x 1)
-       (define bar
-         (foo x))))
- "function foo(x) {
-  return x;
-}
-
-foo.ftype = 'fexpr';
-
-let x = 1;
-
-let bar = foo(Symbol.for('x'));"
-
  ;; Symbols
  > (describe "Symbols")
  _
@@ -219,298 +109,6 @@ let x2 = 1;
 
 let bar = test1;"
 
- ;; Global environment
- > (describe "Global environment")
- _
- > (compile '(module m scheme
-               (define lst
-                 `(,symbol? ,boolean?)))
-            :inline-functions #t)
- "let [symbolp, booleanp] = (() => {
-  function symbolp_(obj) {
-    return typeof obj === 'symbol';
-  }
-  function booleanp_(obj) {
-    return typeof obj === 'boolean';
-  }
-  return [symbolp_, booleanp_];
-})();
-
-let lst = [symbolp, booleanp];"
- xit> (compile
-       '(define-values (_ regexp)
-          (rl/sandbox
-           ((js/arrow ()
-              (define __
-                (js-obj "@@functional/placeholder" #t))
-              (define (js-regexp_ input (flags #u))
-                (if (eq? (type-of input) "string")
-                    (new RegExp input flags)
-                    input))
-              (values __ js-regexp_)))))
-       :inline-functions #t)
- "let [, regexp] = (() => {
-  let __ = {
-    '@@functional/placeholder': true
-  };
-  function jsRegexp_(input, flags = undefined) {
-    if (typeof input === 'string') {
-      return new RegExp(input, flags);
-    } else {
-      return input;
-    }
-  }
-  return [__, jsRegexp_];
-})();"
- > (compile '(module m scheme
-               (define one-plus-one
-                 (apply + '(1 1))))
-            :inline-functions #t)
- "let [_add] = (() => {
-  function add_(...args) {
-    let result = 0;
-    for (let arg of args) {
-      result = result + arg;
-    }
-    return result;
-  }
-  return [add_];
-})();
-
-let onePlusOne = _add(1, 1);"
- > (compile '(module m scheme
-               (define one-minus-one
-                 (apply - '(1 1))))
-            :inline-functions #t)
- "let [_sub] = (() => {
-  function sub_(...args) {
-    let len = args.length;
-    if (len === 0) {
-      return 0;
-    } else if (len === 1) {
-      return -args[0];
-    } else {
-      let result = args[0];
-      for (let i = 1; i < len; i++) {
-        result = result - args[i];
-      }
-      return result;
-    }
-  }
-  return [sub_];
-})();
-
-let oneMinusOne = _sub(1, 1);"
- > (compile '(module m scheme
-               (define one-minus-one
-                 (apply - '(1 1)))))
- "import {
-  _sub
-} from 'roselisp';
-
-let oneMinusOne = _sub(1, 1);"
- > (compile '(module m scheme
-               (define one-times-one
-                 (apply * '(1 1))))
-            :inline-functions #t)
- "let [_mul] = (() => {
-  function mul_(...args) {
-    let result = 1;
-    for (let arg of args) {
-      result = result * arg;
-    }
-    return result;
-  }
-  return [mul_];
-})();
-
-let oneTimesOne = _mul(1, 1);"
- > (compile '(module m scheme
-               (define one-divided-by-one
-                 (apply / '(1 1))))
-            :inline-functions #t)
- "let [_div] = (() => {
-  function div_(...args) {
-    if (args.length === 1) {
-      return 1 / args[0];
-    } else {
-      let result = args[0];
-      let _end = args.length;
-      for (let i = 1; i < _end; i++) {
-        result = result / args[i];
-      }
-      return result;
-    }
-  }
-  return [div_];
-})();
-
-let oneDividedByOne = _div(1, 1);"
- > (compile
-    '(module m scheme
-       (define foo-bar
-         (apply string-append '("foo" "bar"))))
-    :inline-functions #t)
- "let [stringAppend] = (() => {
-  function stringAppend_(...args) {
-    return args.reduce(function (acc, x) {
-      return acc + x;
-    }, '');
-  }
-  return [stringAppend_];
-})();
-
-let fooBar = stringAppend('foo', 'bar');"
- xit> (compile '(module m lisp
-                  (define (my-foldl f v l)
-                    (foldl f v l))
-                  (define bar
-                    (my-foldl + 0 '(1 2 3 4))))
-               :inline-functions #t)
- "let [add] = (function () {
-  function add(...args) {
-    return args.reduce(function (y, x) {
-      return y + x;
-    }, 0);
-  }
-  return [add];
-})();
-
-function myFoldl(f, v, l) {
-  return l.reduce(function (acc, x) {
-    return f(x, acc);
-  }, v);
-}
-
-let bar = myFoldl(add, 0, [1, 2, 3, 4]);"
- xit> (compile '(module m lisp
-                  (define (my-foldl f v l)
-                    (foldl f v l)))
-               :inline-functions #t)
- "let [foldl] = (function () {
-  function foldl(f, v, lst) {
-    return lst.reduce(function (acc, x) {
-      return f(x, acc);
-    }, v);
-  }
-  return [foldl];
-})();
-
-function myFoldl(f, v, l) {
-  return foldl(f, v, l);
-}"
- > (compile '(module m lisp
-               (define (my-map f x)
-                 (map f x))
-               (define bar
-                 (my-map first '((1) (2) (3)))))
-            :inline-functions #t)
- "let [first] = (() => {
-  function first_(lst) {
-    return lst[0];
-  }
-  return [first_];
-})();
-
-function myMap(f, x) {
-  return x.map(function (x) {
-    return f(x);
-  });
-}
-
-let bar = myMap(first, [[1], [2], [3]]);"
- xit> (compile '(module m lisp
-                  (define (foo f x y)
-                    (f x y))
-                  (define (my-push-4 lst x)
-                    (foo push! lst x)))
-               :inline-functions #t)
- "let [pushX] = (function () {
-  function pushX(lst, x) {
-    lst.unshift(x);
-    return lst;
-  }
-  return [pushX];
-})();
-
-function foo(f, x, y) {
-  return f(x, y);
-}
-
-function myPush4(lst, x) {
-  return foo(pushX, lst, x);
-}"
- xit> (compile '(module m lisp
-                  (define (get-push-function)
-                    push!)
-                  (define (my-push-4 lst x)
-                    ((get-push-function) lst x)))
-               :inline-functions #t)
- "let [pushX] = (function () {
-  function pushX(lst, x) {
-    lst.unshift(x);
-    return lst;
-  }
-  return [pushX];
-})();
-
-function getPushFunction() {
-  return pushX;
-}
-
-function myPush4(lst, x) {
-  return getPushFunction()(lst, x);
-}"
- > (compile '(module m lisp
-               (define (my-cdr x)
-                 (cdr x)))
-            :inline-functions #t)
- "let [cdr] = (() => {
-  function cdr_(lst) {
-    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
-      return lst[2];
-    } else {
-      return lst.slice(1);
-    }
-  }
-  return [cdr_];
-})();
-
-function myCdr(x) {
-  return cdr(x);
-}"
- > (compile '(module m lisp
-               (define (my-intersection x y)
-                 (intersection x y)))
-            :inline-functions #t)
- "let [intersection] = (() => {
-  function intersection_(...args) {
-    function intersection2(arr1, arr2) {
-      let result = [];
-      for (let element of arr1) {
-        if (arr2.includes(element) && !result.includes(element)) {
-          result.push(element);
-        }
-      }
-      return result;
-    }
-    if (args.length === 0) {
-      return [];
-    } else if (args.length === 1) {
-      return args[0];
-    } else {
-      return args.slice(1).reduce(function (acc, x) {
-        return intersection2(acc, x);
-      }, args[0]);
-    }
-  }
-  return [intersection_];
-})();
-
-function myIntersection(x, y) {
-  return intersection(x, y);
-}"
-
  ;; Strings
  > (describe "Strings")
  _
@@ -540,6 +138,20 @@ three")
  xit> (compile (js/tag sexp "\"\\\\s\""))
  "'\\\\s';"
 
+ ;; `string-append`
+ > (describe "string-append")
+ _
+ > (compile '(string-append "a"))
+ "'a';"
+ > (compile '(string-append "a" "b"))
+ "'a' + 'b';"
+
+ ;; `js/tag`
+ > (describe "js/tag")
+ _
+ > (compile '(js/tag foo "bar"))
+ "foo`bar`;"
+
  ;; `()`
  > (describe "()")
  _
@@ -555,28 +167,6 @@ three")
  "[1];"
  > (compile '(list (list 1)))
  "[[1]];"
-
- ;; `member?`
- > (describe "member?")
- _
- > (compile '(member? 2 (list 1 2 3 4) f))
- "[1, 2, 3, 4].findIndex(function (x) {
-  return f(2, x);
-}) >= 0;"
- ;; TODO: Better compilation of this case:
- ;; `v` should be stored in a local variable.
- > (compile '(member? (+ 1 1) (list 1 2 3 4) f))
- "[1, 2, 3, 4].findIndex(function (x) {
-  return f(1 + 1, x);
-}) >= 0;"
-
- ;; `memq?`
- > (describe "memq?")
- _
- > (compile '(memq? 2 (list 1 2 3 4)))
- "[1, 2, 3, 4].includes(2);"
- > (compile '(memq? (+ 1 1) (list 1 2 3 4)))
- "[1, 2, 3, 4].includes(1 + 1);"
 
  ;; `append`
  > (describe "append")
@@ -661,6 +251,618 @@ three")
                            (quote (unquote args))))
                       (unquote-splicing body)))))
  "letExp = [Symbol.for('let'), [[argList, [Symbol.for('quote'), args]]], ...body];"
+
+ ;; `begin`
+ > (describe "begin")
+ _
+ > (compile '(begin x y z))
+ "x;
+
+y;
+
+z;"
+ > (compile '(begin x (begin y z)))
+ "x;
+
+y;
+
+z;"
+ > (compile '(begin x y z)
+            :as 'expression)
+ "(() => {
+  x;
+  y;
+  return z;
+})()"
+ > (compile
+    '(begin
+       ;; Redefine core functions (nonsensically).
+       (define (and x y)
+         (or x y))
+       (define (or x y) x)
+       (and x (or y z))))
+ "function and(x, y) {
+  return or(x, y);
+}
+
+function or(x, y) {
+  return x;
+}
+
+and(x, or(y, z));"
+
+ ;; `+`
+ > (describe "+")
+ _
+ > (compile '(+ x 1))
+ "x + 1;"
+ > (compile '(+ x 1 2))
+ "x + 1 + 2;"
+
+ ;; `-`
+ > (describe "-")
+ _
+ > (compile '(- x))
+ "-x;"
+ xit> (compile '(- (- x)))
+ "x;"
+ > (compile '(- x 1))
+ "x - 1;"
+ > (compile '(- x 1 2))
+ "x - 1 - 2;"
+
+ ;; `mod`
+ > (describe "mod")
+ _
+ > (compile '(mod x y))
+ "x % y;"
+
+ ;; `=`
+ > (describe "=")
+ _
+ > (compile '(= 1 1))
+ "1 === 1;"
+ > (compile '(= x y))
+ "x === y;"
+
+ ;; `<`
+ > (describe "<")
+ _
+ > (compile '(< 1))
+ "true;"
+ > (compile '(< 1 2))
+ "1 < 2;"
+ > (compile '(< 1 2 3))
+ "(1 < 2) && (2 < 3);"
+
+ ;; `>`
+ > (describe ">")
+ _
+ > (compile '(> 1))
+ "true;"
+ > (compile '(> 2 1))
+ "2 > 1;"
+ > (compile '(> 3 2 1))
+ "(3 > 2) && (2 > 1);"
+
+ ;; `not`
+ > (describe "not")
+ _
+ > (compile '(not (and x y)))
+ "!(x && y);"
+ > (compile '(not (= 1 2)))
+ "1 !== 2;"
+ > (compile '(not (> 1 2)))
+ "!(1 > 2);"
+ > (compile '(not (f x)))
+ "!f(x);"
+ xit> (compile '(and (not (f x)) (not (g y))))
+ "!f(x) && !g(y);"
+
+ ;; `and`
+ > (describe "and")
+ _
+ > (compile '(and))
+ "true;"
+ > (compile '(and x))
+ "x;"
+ > (compile '(and x y))
+ "x && y;"
+ xit> (compile '(and x y z))
+ "x && y && z;"
+ xit> (compile '(and x y (w z)))
+ "x && y && w(z);"
+ xit> (compile '(and x y (or w z)))
+ "x && y && (w || z);"
+
+ ;; `or`
+ > (describe "or")
+ _
+ > (compile '(or))
+ "false;"
+ > (compile '(or x))
+ "x;"
+ > (compile '(or x y))
+ "x || y;"
+ xit> (compile '(or x y z))
+ "x || y || z;"
+
+ ;; `if`
+ > (describe "if")
+ _
+ > (compile '(if x
+                 y
+                 z))
+ "if (x) {
+  y;
+} else {
+  z;
+}"
+ > (compile '(if x
+                 y)
+            :as 'expression)
+ "x ? y : undefined"
+ > (compile '(if x y z)
+            :as 'expression)
+ "x ? y : z"
+ > (compile '(if x
+                 y
+                 z)
+            :as 'return)
+ "if (x) {
+  return y;
+} else {
+  return z;
+}"
+ > (compile '(if "foo"
+                 "bar"
+                 "baz")
+            :as 'expression)
+ "'foo' ? 'bar' : 'baz'"
+ > (compile '(if x
+                 (begin
+                   y
+                   z)
+                 w)
+            :as 'return)
+ "if (x) {
+  y;
+  return z;
+} else {
+  return w;
+}"
+ xit> (compile '(if (set! x y)
+                    z
+                    w)
+               :as 'return)
+ "if ((x = y)) {
+  return z;
+} else {
+  return w;
+}"
+
+ ;; `when`
+ > (describe "when")
+ _
+ > (compile '(when x
+               y
+               z))
+ "if (x) {
+  y;
+  z;
+}"
+ > (compile
+    '(when (> (array-list-length args) 0)
+       (set! args (.concat (.slice args 0 (- (array-list-length args) 1))
+                           (aref args (- (array-list-length args) 1))))))
+ "if (args.length > 0) {
+  args = args.slice(0, args.length - 1).concat(args[args.length - 1]);
+}"
+
+ ;; `unless`
+ > (describe "unless")
+ _
+ > (compile '(unless x
+               y z))
+ "if (!x) {
+  y;
+  z;
+}"
+
+ ;; `cond`
+ > (describe "cond")
+ _
+ > (compile '(cond
+              (x
+               y))
+            :as 'return)
+ "if (x) {
+  return y;
+}"
+ > (compile '(cond
+              (x
+               y))
+            :as 'expression)
+ "x ? y : undefined"
+ > (compile '(cond
+              (x
+               y)
+              (else
+               z))
+            :as 'expression)
+ "x ? y : z"
+ > (compile '(cond
+              (x
+               y)
+              (else
+               w
+               z))
+            :as 'expression)
+ "x ? y : (() => {
+  w;
+  return z;
+})()"
+ > (compile '(cond
+              (x
+               y)
+              (else
+               z))
+            :as 'return)
+ "if (x) {
+  return y;
+} else {
+  return z;
+}"
+ xit> (compile '(cond
+                 ((set! x y)
+                  z)
+                 (else
+                  w))
+               :as 'return)
+ "if ((x = y)) {
+  return z;
+} else {
+  return w;
+}"
+
+ ;; `let`
+ > (describe "let")
+ _
+ > (compile '(let (x)))
+ "let x;"
+ > (compile '(let (x)
+               x)
+            :as 'return)
+ "let x;
+
+return x;"
+ > (compile '(let (x)
+               x)
+            :as 'expression)
+ "(() => {
+  let x;
+  return x;
+})()"
+ > (compile '(let (x)
+               x)
+            :as 'return
+            :to 'typescript)
+ "let x: any;
+
+return x;"
+ > (compile '(let ((x 1))
+               x)
+            :as 'return)
+ "let x = 1;
+
+return x;"
+ > (compile '(let ((x 1))
+               x)
+            :as 'return
+            :to 'typescript)
+ "let x: any = 1;
+
+return x;"
+ xit> (compile '(let ((a 1))
+                  (+ (let ((a 2)) a) a)))
+ "let a = 1;
+
+(() => {
+  let a = 2;
+  return a;
+})() + a;"
+ > (compile
+    '(let ((compose (lambda (f g)
+                      (lambda (x)
+                        (f (g x)))))
+           (square (lambda (x) (* x x)))
+           (add1 (lambda (x) (+ x 1))))
+       (display ((compose square add1) (add1 4)))))
+ "let compose = function (f, g) {
+  return function (x) {
+    return f(g(x));
+  };
+};
+
+let square = function (x) {
+  return x * x;
+};
+
+let add1 = function (x) {
+  return x + 1;
+};
+
+console.log(compose(square, add1)(add1(4)));"
+ > (compile
+    '(let ((and (lambda (x y)
+                  (if x (if y #t #f) #f))))
+       (and x y)))
+ "let and = function (x, y) {
+  if (x) {
+    if (y) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};
+
+and(x, y);"
+ ;; FIXME: This test is incorrect.
+ ;; See the one below.
+ xit> (compile '(begin
+                  x
+                  (let ((x 1))
+                    x)))
+ "x;
+
+let x: any = 1;
+
+return x;"
+ ;; FIXME: Make this test pass.
+ xit> (compile '(begin
+                  x
+                  (let ((x 1))
+                    x)))
+ "x;
+
+{
+  let x: any = 1;
+  x;
+}"
+ > (compile '(begin
+               (let ((x 1))
+                 (display x))
+               (let ((x 1))
+                 (display x))))
+ "let x = 1;
+
+console.log(x);
+
+{
+  let x = 1;
+  console.log(x);
+}"
+ > (compile '(cond
+              (foo
+               bar)
+              (else
+               x
+               (let ((x 1))
+                 x)))
+            :as 'return
+            :to 'typescript)
+ "if (foo) {
+  return bar;
+} else {
+  x;
+  let x: any = 1;
+  return x;
+}"
+ > (compile
+    '(define make-compilation-evaluator
+       (memoize
+        (lambda (env (options (js-obj)))
+          (let ((language (oget options "language")))
+            (set! language (or language default-language))
+            (let ((compilation-env (or (.get compilation-map
+                                             language)
+                                       javascript-env)))
+              (new CompilationEvaluator
+                   env
+                   compilation-env
+                   options))))))
+    :to 'typescript)
+ "let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {
+  let language: any = options['language'];
+  language = language || defaultLanguage;
+  let compilationEnv: any = compilationMap.get(language) || javascriptEnv;
+  return new CompilationEvaluator(env, compilationEnv, options);
+});"
+ > (compile '(cond
+              (foo
+               (let ((x #t))
+                 x))
+              (else
+               #f))
+            :as 'return)
+ "if (foo) {
+  let x = true;
+  return x;
+} else {
+  return false;
+}"
+
+ ;; `let-values`
+ > (describe "let-values")
+ _
+ > (compile '(let-values ((value (foo bar baz)))
+               value)
+            :as 'return)
+ "let value = foo(bar, baz);
+
+return value;"
+ > (compile '(let-values (((value) (foo bar baz)))
+               value)
+            :as 'return)
+ "let [value] = foo(bar, baz);
+
+return value;"
+ > (compile '(let-values (((value) (foo bar baz)))
+               value)
+            :as 'return
+            :to 'typescript)
+ "let [value]: any[] = foo(bar, baz);
+
+return value;"
+ > (compile '(let-values (((x . fs) args))
+               (.reduce fs (lambda (acc f) (f acc)) x)))
+ "let [x, ...fs] = args;
+
+fs.reduce(function (acc, f) {
+  return f(acc);
+}, x);"
+ > (compile '(let-values (((x . fs) args))
+               (.reduce fs (lambda (acc f) (f acc)) x))
+            :to 'typescript)
+ "let [x, ...fs]: any[] = args;
+
+fs.reduce(function (acc: any, f: any): any {
+  return f(acc);
+}, x);"
+ > (compile '(let-values (((value1) (foo bar))
+                          ((value2) (bar baz)))
+               (list value1 value2))
+            :as 'return)
+ "let [value1] = foo(bar);
+
+let [value2] = bar(baz);
+
+return [value1, value2];"
+ > (compile '(begin
+               value
+               (let-values ((value (foo bar baz)))
+                 value))
+            :as 'return)
+ "value;
+
+let value = foo(bar, baz);
+
+return value;"
+
+ ;; `let-fields`
+ > (describe "let-fields")
+ _
+ > (compile '(let-fields (((prop) obj))
+                         prop))
+ "let {prop} = obj;
+
+prop;"
+
+ ;; `lambda`
+ > (describe "lambda")
+ _
+ > (compile '(lambda (x)
+               x))
+ "function (x) {
+  return x;
+};"
+ > (compile '(lambda (x)
+               x)
+            :to 'typescript)
+ "function (x: any): any {
+  return x;
+};"
+ > (compile '(lambda args
+               args))
+ "function (...args) {
+  return args;
+};"
+ > (compile '(lambda (x . args)
+               args))
+ "function (x, ...args) {
+  return args;
+};"
+ > (compile '(lambda (x y . args)
+               args))
+ "function (x, y, ...args) {
+  return args;
+};"
+ > (compile '(lambda (x)
+               (let ((x 1))
+                 x)))
+ "function (x) {
+  {
+    let x = 1;
+    return x;
+  }
+};"
+ > (compile '(lambda (x)
+               (let ((y 1))
+                 y)))
+ "function (x) {
+  let y = 1;
+  return y;
+};"
+ > (compile '(lambda (given (surname "Smith"))
+               (string-append
+                "Hello, "
+                given
+                " "
+                surname)))
+ "function (given, surname = 'Smith') {
+  return 'Hello, ' + given + ' ' + surname;
+};"
+ > (compile '(lambda (given (surname "Smith"))
+               (string-append
+                "Hello, "
+                given
+                " "
+                surname))
+            :to 'typescript)
+ "function (given: any, surname: any = 'Smith'): any {
+  return 'Hello, ' + given + ' ' + surname;
+};"
+ > (compile '(lambda (arg (options (js-obj)))
+               arg)
+            :to 'typescript)
+ "function (arg: any, options: any = {}): any {
+  return arg;
+};"
+ xit> (compile '(lambda (this arg)
+                  arg)
+               :to 'typescript)
+ "function (arg: any): any {
+  return arg;
+};"
+ xit> (compile '(lambda (this . args)
+                  args)
+               :to 'typescript)
+ "function (...args: any[]): any {
+  return args;
+};"
+ xit> (compile '(lambda (this arg)
+                  arg)
+               :to 'typescript)
+ "function (this: any, arg: any): any {
+  return arg;
+};"
+ xit> (compile '(lambda (this . args)
+                  args)
+               :to 'typescript)
+ "function (this: any, ...args: any[]): any {
+  return args;
+};"
+
+ ;; `funcall`
+ > (describe "funcall")
+ _
+ > (compile '(funcall f x))
+ "f(x);"
+ > (compile '(funcall f x y))
+ "f(x, y);"
 
  ;; `apply`
  > (describe "apply")
@@ -894,336 +1096,6 @@ three")
   return matrix;
 }"
 
- ;; `funcall`
- > (describe "funcall")
- _
- > (compile '(funcall f x))
- "f(x);"
- > (compile '(funcall f x y))
- "f(x, y);"
-
- ;; `lambda`
- > (describe "lambda")
- _
- > (compile '(lambda (x)
-               x))
- "function (x) {
-  return x;
-};"
- > (compile '(lambda (x)
-               x)
-            :to 'typescript)
- "function (x: any): any {
-  return x;
-};"
- > (compile '(lambda args
-               args))
- "function (...args) {
-  return args;
-};"
- > (compile '(lambda (x . args)
-               args))
- "function (x, ...args) {
-  return args;
-};"
- > (compile '(lambda (x y . args)
-               args))
- "function (x, y, ...args) {
-  return args;
-};"
- > (compile '(lambda (x)
-               (let ((x 1))
-                 x)))
- "function (x) {
-  {
-    let x = 1;
-    return x;
-  }
-};"
- > (compile '(lambda (x)
-               (let ((y 1))
-                 y)))
- "function (x) {
-  let y = 1;
-  return y;
-};"
- > (compile '(lambda (given (surname "Smith"))
-               (string-append
-                "Hello, "
-                given
-                " "
-                surname)))
- "function (given, surname = 'Smith') {
-  return 'Hello, ' + given + ' ' + surname;
-};"
- > (compile '(lambda (given (surname "Smith"))
-               (string-append
-                "Hello, "
-                given
-                " "
-                surname))
-            :to 'typescript)
- "function (given: any, surname: any = 'Smith'): any {
-  return 'Hello, ' + given + ' ' + surname;
-};"
- > (compile '(lambda (arg (options (js-obj)))
-               arg)
-            :to 'typescript)
- "function (arg: any, options: any = {}): any {
-  return arg;
-};"
- xit> (compile '(lambda (this arg)
-                  arg)
-               :to 'typescript)
- "function (arg: any): any {
-  return arg;
-};"
- xit> (compile '(lambda (this . args)
-                  args)
-               :to 'typescript)
- "function (...args: any[]): any {
-  return args;
-};"
- xit> (compile '(lambda (this arg)
-                  arg)
-               :to 'typescript)
- "function (this: any, arg: any): any {
-  return arg;
-};"
- xit> (compile '(lambda (this . args)
-                  args)
-               :to 'typescript)
- "function (this: any, ...args: any[]): any {
-  return args;
-};"
-
- ;; `let`
- > (describe "let")
- _
- > (compile '(let (x)))
- "let x;"
- > (compile '(let (x)
-               x)
-            :as 'return)
- "let x;
-
-return x;"
- > (compile '(let (x)
-               x)
-            :as 'expression)
- "(() => {
-  let x;
-  return x;
-})()"
- > (compile '(let (x)
-               x)
-            :as 'return
-            :to 'typescript)
- "let x: any;
-
-return x;"
- > (compile '(let ((x 1))
-               x)
-            :as 'return)
- "let x = 1;
-
-return x;"
- > (compile '(let ((x 1))
-               x)
-            :as 'return
-            :to 'typescript)
- "let x: any = 1;
-
-return x;"
- xit> (compile '(let ((a 1))
-                  (+ (let ((a 2)) a) a)))
- "let a = 1;
-
-(() => {
-  let a = 2;
-  return a;
-})() + a;"
- > (compile
-    '(let ((compose (lambda (f g)
-                      (lambda (x)
-                        (f (g x)))))
-           (square (lambda (x) (* x x)))
-           (add1 (lambda (x) (+ x 1))))
-       (display ((compose square add1) (add1 4)))))
- "let compose = function (f, g) {
-  return function (x) {
-    return f(g(x));
-  };
-};
-
-let square = function (x) {
-  return x * x;
-};
-
-let add1 = function (x) {
-  return x + 1;
-};
-
-console.log(compose(square, add1)(add1(4)));"
- > (compile
-    '(let ((and (lambda (x y)
-                  (if x (if y #t #f) #f))))
-       (and x y)))
- "let and = function (x, y) {
-  if (x) {
-    if (y) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
-};
-
-and(x, y);"
- ;; FIXME: This test is incorrect.
- ;; See the one below.
- xit> (compile '(begin
-                  x
-                  (let ((x 1))
-                    x)))
- "x;
-
-let x: any = 1;
-
-return x;"
- ;; FIXME: Make this test pass.
- xit> (compile '(begin
-                  x
-                  (let ((x 1))
-                    x)))
- "x;
-
-{
-  let x: any = 1;
-  x;
-}"
- > (compile '(begin
-               (let ((x 1))
-                 (display x))
-               (let ((x 1))
-                 (display x))))
- "let x = 1;
-
-console.log(x);
-
-{
-  let x = 1;
-  console.log(x);
-}"
- > (compile '(cond
-              (foo
-               bar)
-              (else
-               x
-               (let ((x 1))
-                 x)))
-            :as 'return
-            :to 'typescript)
- "if (foo) {
-  return bar;
-} else {
-  x;
-  let x: any = 1;
-  return x;
-}"
- > (compile
-    '(define make-compilation-evaluator
-       (memoize
-        (lambda (env (options (js-obj)))
-          (let ((language (oget options "language")))
-            (set! language (or language default-language))
-            (let ((compilation-env (or (.get compilation-map
-                                             language)
-                                       javascript-env)))
-              (new CompilationEvaluator
-                   env
-                   compilation-env
-                   options))))))
-    :to 'typescript)
- "let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {
-  let language: any = options['language'];
-  language = language || defaultLanguage;
-  let compilationEnv: any = compilationMap.get(language) || javascriptEnv;
-  return new CompilationEvaluator(env, compilationEnv, options);
-});"
- > (compile '(cond
-              (foo
-               (let ((x #t))
-                 x))
-              (else
-               #f))
-            :as 'return)
- "if (foo) {
-  let x = true;
-  return x;
-} else {
-  return false;
-}"
-
- ;; `let-values`
- > (describe "let-values")
- _
- > (compile '(let-values ((value (foo bar baz)))
-               value)
-            :as 'return)
- "let value = foo(bar, baz);
-
-return value;"
- > (compile '(let-values (((value) (foo bar baz)))
-               value)
-            :as 'return)
- "let [value] = foo(bar, baz);
-
-return value;"
- > (compile '(let-values (((value) (foo bar baz)))
-               value)
-            :as 'return
-            :to 'typescript)
- "let [value]: any[] = foo(bar, baz);
-
-return value;"
- > (compile '(let-values (((x . fs) args))
-               (.reduce fs (lambda (acc f) (f acc)) x)))
- "let [x, ...fs] = args;
-
-fs.reduce(function (acc, f) {
-  return f(acc);
-}, x);"
- > (compile '(let-values (((x . fs) args))
-               (.reduce fs (lambda (acc f) (f acc)) x))
-            :to 'typescript)
- "let [x, ...fs]: any[] = args;
-
-fs.reduce(function (acc: any, f: any): any {
-  return f(acc);
-}, x);"
- > (compile '(let-values (((value1) (foo bar))
-                          ((value2) (bar baz)))
-               (list value1 value2))
-            :as 'return)
- "let [value1] = foo(bar);
-
-let [value2] = bar(baz);
-
-return [value1, value2];"
- > (compile '(begin
-               value
-               (let-values ((value (foo bar baz)))
-                 value))
-            :as 'return)
- "value;
-
-let value = foo(bar, baz);
-
-return value;"
-
  ;; `define-values`
  > (describe "define-values")
  _
@@ -1265,30 +1137,6 @@ return value;"
   let [x, ...rest]: any[] = xs;
   return [...rest, 5];
 }"
-
- ;; `set!-values`
- > (describe "set!-values")
- _
- > (compile
-    '(set!-values (value) (foo bar baz)))
- "[value] = foo(bar, baz);"
- > (compile
-    '(set!-values (_ value) (foo bar baz)))
- "[, value] = foo(bar, baz);"
-
- ;; `let-fields`
- > (describe "let-fields")
- _
- > (compile '(let-fields (((prop) obj))
-                         prop))
- "let {prop} = obj;
-
-prop;"
- > (compile
-    '(set!-values (_ __ value)
-                  :hole-marker __
-                  (foo bar baz)))
- "[_, , value] = foo(bar, baz);"
 
  ;; `define-fields`
  > (describe "define-fields")
@@ -1362,309 +1210,20 @@ prop;"
  > (compile '(setq x 1))
  "x = 1;"
 
- ;; `+`
- > (describe "+")
+ ;; `set!-values`
+ > (describe "set!-values")
  _
- > (compile '(+ x 1))
- "x + 1;"
- > (compile '(+ x 1 2))
- "x + 1 + 2;"
-
- ;; `-`
- > (describe "-")
- _
- > (compile '(- x))
- "-x;"
- xit> (compile '(- (- x)))
- "x;"
- > (compile '(- x 1))
- "x - 1;"
- > (compile '(- x 1 2))
- "x - 1 - 2;"
-
- ;; `mod`
- > (describe "mod")
- _
- > (compile '(mod x y))
- "x % y;"
-
- ;; `begin`
- > (describe "begin")
- _
- > (compile '(begin x y z))
- "x;
-
-y;
-
-z;"
- > (compile '(begin x (begin y z)))
- "x;
-
-y;
-
-z;"
- > (compile '(begin x y z)
-            :as 'expression)
- "(() => {
-  x;
-  y;
-  return z;
-})()"
  > (compile
-    '(begin
-       ;; Redefine core functions (nonsensically).
-       (define (and x y)
-         (or x y))
-       (define (or x y) x)
-       (and x (or y z))))
- "function and(x, y) {
-  return or(x, y);
-}
-
-function or(x, y) {
-  return x;
-}
-
-and(x, or(y, z));"
-
- ;; `provide`
- > (describe "provide")
- _
- > (compile '(provide))
- ""
- > (compile '(provide x))
- "export {
-  x
-};"
- > (compile '(provide x y))
- "export {
-  x,
-  y
-};"
- > (compile '(provide (rename-out (x y))))
- "export {
-  x as y
-};"
- > (compile '(provide (rename-out (x y) (w z))))
- "export {
-  x as y,
-  w as z
-};"
- > (compile '(provide x (rename-out (y z))))
- "export {
-  x,
-  y as z
-};"
- > (compile '(provide x x))
- "export {
-  x
-};"
- > (compile '(provide x (rename-out (y x))))
- "export {
-  x
-};"
- > (compile '(provide (rename-out (x js/undefined))))
- "export {
-  x as jsUndefined
-};"
- > (compile '(provide (all-from-out "foo")))
- "export * from 'foo';"
- > (compile '(provide
-               (all-from-out "foo")
-               bar))
- "export * from 'foo';
-
-export {
-  bar
-};"
-
- ;; `require`
- > (describe "require")
- _
- > (compile '(require "foo"))
- "import * as foo from 'foo';"
- it> (compile '(require "foo")
-              :es-module-interop #t)
- "import foo from 'foo';"
- > (compile '(require foo "bar"))
- "import * as foo from 'bar';"
- > (compile '(require foo "bar")
-            :es-module-interop #t)
- "import foo from 'bar';"
- > (compile '(require "foo" "bar")
-            :es-module-interop #t)
- "import foo from 'bar';"
- > (compile '(require (only-in foo
-                               bar)))
- "import {
-  bar
-} from 'foo';"
- > (compile '(require (only-in foo
-                               (bar baz))))
- "import {
-  bar as baz
-} from 'foo';"
- > (compile '(require (only-in "foo"
-                               (bar baz))))
- "import {
-  bar as baz
-} from 'foo';"
- > (compile '(require (only-in foo bar bar)))
- "import {
-  bar
-} from 'foo';"
- > (compile '(require (only-in foo
-                               bar
-                               (baz bar))))
- "import {
-  bar
-} from 'foo';"
- xit> (compile '(require 'foo "bar"))
- "import foo from 'bar';"
- xit> (compile '(require foo :as bar))
- "import bar from 'foo';"
- xit> (compile '(require (foo :as bar)))
- "import bar from 'foo';"
- xit> (compile '(require ("foo" :as "bar")))
- "import bar from 'foo';"
-
- ;; `cond`
- > (describe "cond")
- _
- > (compile '(cond
-              (x
-               y))
-            :as 'return)
- "if (x) {
-  return y;
-}"
- > (compile '(cond
-              (x
-               y))
-            :as 'expression)
- "x ? y : undefined"
- > (compile '(cond
-              (x
-               y)
-              (else
-               z))
-            :as 'expression)
- "x ? y : z"
- > (compile '(cond
-              (x
-               y)
-              (else
-               w
-               z))
-            :as 'expression)
- "x ? y : (() => {
-  w;
-  return z;
-})()"
- > (compile '(cond
-              (x
-               y)
-              (else
-               z))
-            :as 'return)
- "if (x) {
-  return y;
-} else {
-  return z;
-}"
- xit> (compile '(cond
-                 ((set! x y)
-                  z)
-                 (else
-                  w))
-               :as 'return)
- "if ((x = y)) {
-  return z;
-} else {
-  return w;
-}"
-
- ;; `if`
- > (describe "if")
- _
- > (compile '(if x
-                 y
-                 z))
- "if (x) {
-  y;
-} else {
-  z;
-}"
- > (compile '(if x
-                 y)
-            :as 'expression)
- "x ? y : undefined"
- > (compile '(if x y z)
-            :as 'expression)
- "x ? y : z"
- > (compile '(if x
-                 y
-                 z)
-            :as 'return)
- "if (x) {
-  return y;
-} else {
-  return z;
-}"
- > (compile '(if "foo"
-                 "bar"
-                 "baz")
-            :as 'expression)
- "'foo' ? 'bar' : 'baz'"
- > (compile '(if x
-                 (begin
-                   y
-                   z)
-                 w)
-            :as 'return)
- "if (x) {
-  y;
-  return z;
-} else {
-  return w;
-}"
- xit> (compile '(if (set! x y)
-                    z
-                    w)
-               :as 'return)
- "if ((x = y)) {
-  return z;
-} else {
-  return w;
-}"
-
- ;; `when`
- > (describe "when")
- _
- > (compile '(when x
-               y
-               z))
- "if (x) {
-  y;
-  z;
-}"
+    '(set!-values (value) (foo bar baz)))
+ "[value] = foo(bar, baz);"
  > (compile
-    '(when (> (array-list-length args) 0)
-       (set! args (.concat (.slice args 0 (- (array-list-length args) 1))
-                           (aref args (- (array-list-length args) 1))))))
- "if (args.length > 0) {
-  args = args.slice(0, args.length - 1).concat(args[args.length - 1]);
-}"
-
- ;; `unless`
- > (describe "unless")
- _
- > (compile '(unless x
-               y z))
- "if (!x) {
-  y;
-  z;
-}"
+    '(set!-values (_ value) (foo bar baz)))
+ "[, value] = foo(bar, baz);"
+ > (compile
+    '(set!-values (_ __ value)
+                  :hole-marker __
+                  (foo bar baz)))
+ "[_, , value] = foo(bar, baz);"
 
  ;; `aget`
  > (describe "aget")
@@ -1694,99 +1253,49 @@ export {
  > (compile '(set! (aref args 0) 1))
  "args[0] = 1;"
 
- ;; `=`
- > (describe "=")
+ ;; `first`
+ > (describe "first")
  _
- > (compile '(= 1 1))
- "1 === 1;"
- > (compile '(= x y))
- "x === y;"
+ > (compile '(first x))
+ "x[0];"
 
- ;; `<`
- > (describe "<")
+ ;; `last`
+ > (describe "last")
  _
- > (compile '(< 1))
- "true;"
- > (compile '(< 1 2))
- "1 < 2;"
- > (compile '(< 1 2 3))
- "(1 < 2) && (2 < 3);"
+ xit> (compile '(last x))
+ "x[x.length - 1];"
 
- ;; `>`
- > (describe ">")
+ ;; `nth`
+ > (describe "nth")
  _
- > (compile '(> 1))
- "true;"
- > (compile '(> 2 1))
- "2 > 1;"
- > (compile '(> 3 2 1))
- "(3 > 2) && (2 > 1);"
+ xit> (compile '(nth 1 x))
+ "x[1];"
+ xit> (compile '(nth 2 (nth 1 x)))
+ "x[1][2];"
 
- ;; `not`
- > (describe "not")
+ ;; `nthcdr`
+ > (describe "nthcdr")
  _
- > (compile '(not (and x y)))
- "!(x && y);"
- > (compile '(not (= 1 2)))
- "1 !== 2;"
- > (compile '(not (> 1 2)))
- "!(1 > 2);"
- > (compile '(not (f x)))
- "!f(x);"
- xit> (compile '(and (not (f x)) (not (g y))))
- "!f(x) && !g(y);"
+ xit> (compile '(nthcdr 1 x))
+ "x.slice(1);"
 
- ;; `and`
- > (describe "and")
+ ;; `drop`
+ > (describe "drop")
  _
- > (compile '(and))
- "true;"
- > (compile '(and x))
- "x;"
- > (compile '(and x y))
- "x && y;"
- xit> (compile '(and x y z))
- "x && y && z;"
- xit> (compile '(and x y (w z)))
- "x && y && w(z);"
- xit> (compile '(and x y (or w z)))
- "x && y && (w || z);"
+ > (compile '(drop x 1))
+ "x.slice(1);"
 
- ;; `or`
- > (describe "or")
+ ;; `drop-right`
+ > (describe "drop-right")
  _
- > (compile '(or))
- "false;"
- > (compile '(or x))
- "x;"
- > (compile '(or x y))
- "x || y;"
- xit> (compile '(or x y z))
- "x || y || z;"
+ > (compile '(drop-right x 1))
+ "x.slice(0, -1);"
 
- ;; `.`
- > (describe ".")
+ ;; `length`
+ > (describe "length")
  _
- > (compile '(. map get "foo"))
- "map.get('foo');"
- > (compile '(.get map "foo"))
- "map.get('foo');"
- > (compile '(.-length arr))
- "arr.length;"
-
- ;; `send`
- > (describe "send")
- _
- > (compile '(send map get "foo"))
- "map.get('foo');"
-
- ;; `send/apply`
- > (describe "send/apply")
- _
- > (compile '(send/apply map get foo))
- "map.get(...foo);"
- > (compile '(send/apply map get '("foo")))
- "map.get('foo');"
+ > (compile '(array-list-length x))
+ "x.length;"
 
  ;; `get-field`
  > (describe "get-field")
@@ -1814,11 +1323,73 @@ export {
   return genericFunction;
 };"
 
- ;; `length`
- > (describe "length")
+ ;; `send`
+ > (describe "send")
  _
- > (compile '(array-list-length x))
- "x.length;"
+ > (compile '(send map get "foo"))
+ "map.get('foo');"
+
+ ;; `send/apply`
+ > (describe "send/apply")
+ _
+ > (compile '(send/apply map get foo))
+ "map.get(...foo);"
+ > (compile '(send/apply map get '("foo")))
+ "map.get('foo');"
+
+ ;; `.`
+ > (describe ".")
+ _
+ > (compile '(. map get "foo"))
+ "map.get('foo');"
+ > (compile '(.get map "foo"))
+ "map.get('foo');"
+ > (compile '(.-length arr))
+ "arr.length;"
+
+ ;; `memq?`
+ > (describe "memq?")
+ _
+ > (compile '(memq? 2 (list 1 2 3 4)))
+ "[1, 2, 3, 4].includes(2);"
+ > (compile '(memq? (+ 1 1) (list 1 2 3 4)))
+ "[1, 2, 3, 4].includes(1 + 1);"
+
+ ;; `member?`
+ > (describe "member?")
+ _
+ > (compile '(member? 2 (list 1 2 3 4) f))
+ "[1, 2, 3, 4].findIndex(function (x) {
+  return f(2, x);
+}) >= 0;"
+ ;; TODO: Better compilation of this case:
+ ;; `v` should be stored in a local variable.
+ > (compile '(member? (+ 1 1) (list 1 2 3 4) f))
+ "[1, 2, 3, 4].findIndex(function (x) {
+  return f(1 + 1, x);
+}) >= 0;"
+
+ ;; `map`
+ > (describe "map")
+ _
+ > (compile '(map f x))
+ "x.map(function (x) {
+  return f(x);
+});"
+ > (compile '(map (lambda (x) x) x))
+ "x.map(function (x) {
+  return x;
+});"
+ ;; We can't compile this to `x.map(g(y))` because
+ ;; we need to ensure that the function is only
+ ;; called with a single argument, and JavaScript's
+ ;; `.map()` method passes multiple arguments.
+ > (compile '(map (g y) x))
+ "x.map((function (f) {
+  return function (x) {
+    return f(x);
+  };
+})(g(y)));"
 
  ;; `foldl`
  > (describe "foldl")
@@ -1860,32 +1431,6 @@ export {
     return f(y, x);
   };
 })(cons), []);"
-
- ;; `nth`
- > (describe "nth")
- _
- xit> (compile '(nth 1 x))
- "x[1];"
- xit> (compile '(nth 2 (nth 1 x)))
- "x[1][2];"
-
- ;; `nthcdr`
- > (describe "nthcdr")
- _
- xit> (compile '(nthcdr 1 x))
- "x.slice(1);"
-
- ;; `drop`
- > (describe "drop")
- _
- > (compile '(drop x 1))
- "x.slice(1);"
-
- ;; `drop-right`
- > (describe "drop-right")
- _
- > (compile '(drop-right x 1))
- "x.slice(0, -1);"
 
  ;; `for`
  > (describe "for")
@@ -2075,14 +1620,13 @@ for (let i: any = _start; i < _end; i++) {
  ;; `js/do-while`
  > (describe "js/do-while")
  _
- > (compile '(js/do-while (display result)
+ > (compile '(js/do-while ((display result))
                           (< (array-list-length result) 3)))
  "do {
   console.log(result);
 } while (result.length < 3);"
- > (compile '(js/do-while (begin
-                            (foo)
-                            (display result))
+ > (compile '(js/do-while ((foo)
+                           (display result))
                           (< (array-list-length result) 3)))
  "do {
   foo();
@@ -2094,17 +1638,80 @@ for (let i: any = _start; i < _end; i++) {
   console.log(result);
 }"
 
- ;; `first`
- > (describe "first")
+ ;; `js-obj`
+ > (describe "js-obj")
  _
- > (compile '(first x))
- "x[0];"
+ > (compile '(js-obj))
+ "({});"
+ > (compile '(js-obj foo "bar"))
+ "({
+  [foo]: 'bar'
+});"
+ > (compile '(js-obj "foo" "bar"))
+ "({
+  foo: 'bar'
+});"
+ > (compile '(js-obj "foo bar" "foo bar"))
+ "({
+  'foo bar': 'foo bar'
+});"
+ > (compile '(js-obj "foo" (js-obj "bar" "baz")))
+ "({
+  foo: {
+    bar: 'baz'
+  }
+});"
+ > (compile '(js-obj "foo" (js-obj "foo" "foo")
+                     "bar" (js-obj "bar" "bar")))
+ "({
+  foo: {
+    foo: 'foo'
+  },
+  bar: {
+    bar: 'bar'
+  }
+});"
+ > (compile '(js-obj "foo" (js-obj)
+                     "bar" (js-obj "bar" "bar")
+                     "baz" (js-obj "baz" "baz")))
+ "({
+  foo: {},
+  bar: {
+    bar: 'bar'
+  },
+  baz: {
+    baz: 'baz'
+  }
+});"
 
- ;; `last`
- > (describe "last")
+ ;; `js-obj?`
+ > (describe "js-obj?")
  _
- xit> (compile '(last x))
- "x[x.length - 1];"
+ > (compile '(js-obj? x))
+ "(x !== null) && (typeof x === 'object');"
+
+ ;; `js-obj-append`
+ > (describe "js-obj-append")
+ _
+ > (compile '(js-obj-append
+              obj
+              (js-obj "foo" "bar")))
+ "({
+  ...obj,
+  foo: 'bar'
+});"
+
+ ;; `js-keys`
+ > (describe "js-keys")
+ _
+ > (compile '(js-keys x))
+ "Object.keys(x);"
+
+ ;; `js/delete`
+ > (describe "js/delete")
+ _
+ > (compile '(js/delete x))
+ "delete x;"
 
  ;; `class`
  > (describe "class")
@@ -2433,81 +2040,6 @@ for (let i: any = _start; i < _end; i++) {
                 ("baz" "quux"))))
  "new Map([['foo', ['bar']], ['baz', ['quux']]]);"
 
- ;; `js-obj`
- > (describe "js-obj")
- _
- > (compile '(js-obj))
- "({});"
- > (compile '(js-obj foo "bar"))
- "({
-  [foo]: 'bar'
-});"
- > (compile '(js-obj "foo" "bar"))
- "({
-  foo: 'bar'
-});"
- > (compile '(js-obj "foo bar" "foo bar"))
- "({
-  'foo bar': 'foo bar'
-});"
- > (compile '(js-obj "foo" (js-obj "bar" "baz")))
- "({
-  foo: {
-    bar: 'baz'
-  }
-});"
- > (compile '(js-obj "foo" (js-obj "foo" "foo")
-                     "bar" (js-obj "bar" "bar")))
- "({
-  foo: {
-    foo: 'foo'
-  },
-  bar: {
-    bar: 'bar'
-  }
-});"
- > (compile '(js-obj "foo" (js-obj)
-                     "bar" (js-obj "bar" "bar")
-                     "baz" (js-obj "baz" "baz")))
- "({
-  foo: {},
-  bar: {
-    bar: 'bar'
-  },
-  baz: {
-    baz: 'baz'
-  }
-});"
-
- ;; `js-obj?`
- > (describe "js-obj?")
- _
- > (compile '(js-obj? x))
- "(x !== null) && (typeof x === 'object');"
-
- ;; `js-obj-append`
- > (describe "js-obj-append")
- _
- > (compile '(js-obj-append
-              obj
-              (js-obj "foo" "bar")))
- "({
-  ...obj,
-  foo: 'bar'
-});"
-
- ;; `js-keys`
- > (describe "js-keys")
- _
- > (compile '(js-keys x))
- "Object.keys(x);"
-
- ;; `js/tag`
- > (describe "js/tag")
- _
- > (compile '(js/tag foo "bar"))
- "foo`bar`;"
-
  ;; `->`
  > (describe "->")
  _
@@ -2523,6 +2055,63 @@ for (let i: any = _start; i < _end; i++) {
  "regularArgs.map(function (arg) {
   return compileExpression(arg, env, inheritedOptions);
 }).join(', ');"
+
+ ;; `js/switch`
+ > (describe "js/switch")
+ _
+ > (compile
+    '(js/switch x
+                (case "foo"
+                  (display "foo")
+                  (break))
+                (default
+                  (display "bar"))))
+ "switch (x) {
+  case 'foo': {
+    console.log('foo');
+    break;
+  }
+  default: {
+    console.log('bar');
+  }
+}"
+ > (compile
+    '(js/switch x
+                (case "foo"
+                  (display "foo")
+                  (break))
+                (default
+                  (display "bar")))
+    :as 'return)
+ "switch (x) {
+  case 'foo': {
+    return console.log('foo');
+    break;
+  }
+  default: {
+    return console.log('bar');
+  }
+}"
+
+ > (compile
+    '(js/switch x
+                (case "foo"
+                  (display "foo")
+                  (break))
+                (default
+                  (display "bar")))
+    :as 'expression)
+ "(() => {
+  switch (x) {
+    case 'foo': {
+      return console.log('foo');
+      break;
+    }
+    default: {
+      return console.log('bar');
+    }
+  }
+})()"
 
  ;; `js/try`
  > (describe "js/try")
@@ -2653,35 +2242,11 @@ for (let i: any = _start; i < _end; i++) {
   console.log('cleanup');
 }"
 
- ;; `map`
- > (describe "map")
- _
- > (compile '(map f x))
- "x.map(function (x) {
-  return f(x);
-});"
- > (compile '(map (lambda (x) x) x))
- "x.map(function (x) {
-  return x;
-});"
- > (compile '(map (g y) x))
- "x.map((function (f) {
-  return function (x) {
-    return f(x);
-  };
-})(g(y)));"
-
  ;; `throw`
  > (describe "throw")
  _
  > (compile '(throw (new Error "An error")))
  "throw new Error('An error');"
-
- ;; `js/delete`
- > (describe "js/delete")
- _
- > (compile '(js/delete x))
- "delete x;"
 
  ;; `return`
  > (describe "return")
@@ -2728,6 +2293,107 @@ for (let i: any = _start; i < _end; i++) {
  "async function foo(x) {
   return x;
 }"
+
+ ;; `require`
+ > (describe "require")
+ _
+ > (compile '(require "foo"))
+ "import * as foo from 'foo';"
+ it> (compile '(require "foo")
+              :es-module-interop #t)
+ "import foo from 'foo';"
+ > (compile '(require foo "bar"))
+ "import * as foo from 'bar';"
+ > (compile '(require foo "bar")
+            :es-module-interop #t)
+ "import foo from 'bar';"
+ > (compile '(require "foo" "bar")
+            :es-module-interop #t)
+ "import foo from 'bar';"
+ > (compile '(require (only-in foo
+                               bar)))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require (only-in foo
+                               (bar baz))))
+ "import {
+  bar as baz
+} from 'foo';"
+ > (compile '(require (only-in "foo"
+                               (bar baz))))
+ "import {
+  bar as baz
+} from 'foo';"
+ > (compile '(require (only-in foo bar bar)))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require (only-in foo
+                               bar
+                               (baz bar))))
+ "import {
+  bar
+} from 'foo';"
+ xit> (compile '(require 'foo "bar"))
+ "import foo from 'bar';"
+ xit> (compile '(require foo :as bar))
+ "import bar from 'foo';"
+ xit> (compile '(require (foo :as bar)))
+ "import bar from 'foo';"
+ xit> (compile '(require ("foo" :as "bar")))
+ "import bar from 'foo';"
+
+ ;; `provide`
+ > (describe "provide")
+ _
+ > (compile '(provide))
+ ""
+ > (compile '(provide x))
+ "export {
+  x
+};"
+ > (compile '(provide x y))
+ "export {
+  x,
+  y
+};"
+ > (compile '(provide (rename-out (x y))))
+ "export {
+  x as y
+};"
+ > (compile '(provide (rename-out (x y) (w z))))
+ "export {
+  x as y,
+  w as z
+};"
+ > (compile '(provide x (rename-out (y z))))
+ "export {
+  x,
+  y as z
+};"
+ > (compile '(provide x x))
+ "export {
+  x
+};"
+ > (compile '(provide x (rename-out (y x))))
+ "export {
+  x
+};"
+ > (compile '(provide (rename-out (x js/undefined))))
+ "export {
+  x as jsUndefined
+};"
+ > (compile '(provide (all-from-out "foo")))
+ "export * from 'foo';"
+ > (compile '(provide
+               (all-from-out "foo")
+               bar))
+ "export * from 'foo';
+
+export {
+  bar
+};"
 
  ;; `module`
  > (describe "module")
@@ -2945,14 +2611,6 @@ let x: any = 1;"
   lst.push(x);
   return lst;
 }"
-
- ;; `string-append`
- > (describe "string-append")
- _
- > (compile '(string-append "a"))
- "'a';"
- > (compile '(string-append "a" "b"))
- "'a' + 'b';"
 
  ;; `ann`
  > (describe "ann")
@@ -3327,63 +2985,6 @@ let bar = foo && ('bazBaz' in foo);"
                (js/?. foo (bar))))
  "let x = foo?.(bar);"
 
- ;; `js/switch`
- > (describe "js/switch")
- _
- > (compile
-    '(js/switch x
-                (case "foo"
-                  (display "foo")
-                  (break))
-                (default
-                  (display "bar"))))
- "switch (x) {
-  case 'foo': {
-    console.log('foo');
-    break;
-  }
-  default: {
-    console.log('bar');
-  }
-}"
- > (compile
-    '(js/switch x
-                (case "foo"
-                  (display "foo")
-                  (break))
-                (default
-                  (display "bar")))
-    :as 'return)
- "switch (x) {
-  case 'foo': {
-    return console.log('foo');
-    break;
-  }
-  default: {
-    return console.log('bar');
-  }
-}"
-
- > (compile
-    '(js/switch x
-                (case "foo"
-                  (display "foo")
-                  (break))
-                (default
-                  (display "bar")))
-    :as 'expression)
- "(() => {
-  switch (x) {
-    case 'foo': {
-      return console.log('foo');
-      break;
-    }
-    default: {
-      return console.log('bar');
-    }
-  }
-})()"
-
  ;; `assert`
  > (describe "assert")
  _
@@ -3399,6 +3000,408 @@ let bar = foo && ('bazBaz' in foo);"
  "console.log(true);"
  > (compile '(display #t "test"))
  "console.log(true, 'test');"
+
+ ;; Macros
+ > (describe "Macros")
+ _
+ xit> (compile
+       '(module m scheme
+          (defmacro foo ()
+            '(begin))
+          (foo)))
+ "function foo(exp, env) {
+  return [Symbol.for('begin')];
+}
+
+foo.ftype = 'macro';"
+ > (compile
+    '(module m scheme
+       (defmacro foo (x)
+         x)
+       (define (bar x)
+         (foo x))))
+ "function foo(exp, env) {
+  let [x] = exp.slice(1);
+  return x;
+}
+
+foo.ftype = 'macro';
+
+function bar(x) {
+  return x;
+}"
+ > (compile
+    '(module m scheme
+       (defmacro foo (x)
+         `(begin ,x))
+       (define (bar x)
+         (foo x))))
+ "function foo(exp, env) {
+  let [x] = exp.slice(1);
+  return [Symbol.for('begin'), x];
+}
+
+foo.ftype = 'macro';
+
+function bar(x) {
+  return x;
+}"
+ > (compile
+    '(module m scheme
+       (defmacro foo (x . args)
+         x)
+       (define (bar x)
+         (foo x))))
+ "function foo(exp, env) {
+  let [x, ...args] = exp.slice(1);
+  return x;
+}
+
+foo.ftype = 'macro';
+
+function bar(x) {
+  return x;
+}"
+ > (compile
+    '(module m scheme
+       (defmacro foo (x . args)
+         x)
+       (define bar
+         (foo 1 2 3))))
+ "function foo(exp, env) {
+  let [x, ...args] = exp.slice(1);
+  return x;
+}
+
+foo.ftype = 'macro';
+
+let bar = 1;"
+ xit> (compile
+       '(begin
+          (defmacro foo (x . args)
+            x)
+          (define bar
+            (foo 1 2 3))))
+ "function foo(exp, env) {
+  let [x, ...args] = exp.slice(1);
+  return x;
+}
+
+foo.ftype = 'macro';
+
+let bar = 1;"
+
+ ;; Fexprs
+ > (describe "Fexprs")
+ _
+ > (compile
+    '(begin
+       (define-fexpr (foo x)
+         x)
+       (define x 1)
+       (define bar
+         (foo x))))
+ "function foo(x) {
+  return x;
+}
+
+foo.ftype = 'fexpr';
+
+let x = 1;
+
+let bar = foo(Symbol.for('x'));"
+
+ ;; Global environment
+ > (describe "Global environment")
+ _
+ > (compile '(module m scheme
+               (define lst
+                 `(,symbol? ,boolean?)))
+            :inline-functions #t)
+ "let [symbolp, booleanp] = (() => {
+  function symbolp_(obj) {
+    return typeof obj === 'symbol';
+  }
+  function booleanp_(obj) {
+    return typeof obj === 'boolean';
+  }
+  return [symbolp_, booleanp_];
+})();
+
+let lst = [symbolp, booleanp];"
+ xit> (compile
+       '(define-values (_ regexp)
+          (rl/sandbox
+           ((js/arrow ()
+              (define __
+                (js-obj "@@functional/placeholder" #t))
+              (define (js-regexp_ input (flags #u))
+                (if (eq? (type-of input) "string")
+                    (new RegExp input flags)
+                    input))
+              (values __ js-regexp_)))))
+       :inline-functions #t)
+ "let [, regexp] = (() => {
+  let __ = {
+    '@@functional/placeholder': true
+  };
+  function jsRegexp_(input, flags = undefined) {
+    if (typeof input === 'string') {
+      return new RegExp(input, flags);
+    } else {
+      return input;
+    }
+  }
+  return [__, jsRegexp_];
+})();"
+ > (compile '(module m scheme
+               (define one-plus-one
+                 (apply + '(1 1))))
+            :inline-functions #t)
+ "let [_add] = (() => {
+  function add_(...args) {
+    let result = 0;
+    for (let arg of args) {
+      result = result + arg;
+    }
+    return result;
+  }
+  return [add_];
+})();
+
+let onePlusOne = _add(1, 1);"
+ > (compile '(module m scheme
+               (define one-minus-one
+                 (apply - '(1 1))))
+            :inline-functions #t)
+ "let [_sub] = (() => {
+  function sub_(...args) {
+    let len = args.length;
+    if (len === 0) {
+      return 0;
+    } else if (len === 1) {
+      return -args[0];
+    } else {
+      let result = args[0];
+      for (let i = 1; i < len; i++) {
+        result = result - args[i];
+      }
+      return result;
+    }
+  }
+  return [sub_];
+})();
+
+let oneMinusOne = _sub(1, 1);"
+ > (compile '(module m scheme
+               (define one-minus-one
+                 (apply - '(1 1)))))
+ "import {
+  _sub
+} from 'roselisp';
+
+let oneMinusOne = _sub(1, 1);"
+ > (compile '(module m scheme
+               (define one-times-one
+                 (apply * '(1 1))))
+            :inline-functions #t)
+ "let [_mul] = (() => {
+  function mul_(...args) {
+    let result = 1;
+    for (let arg of args) {
+      result = result * arg;
+    }
+    return result;
+  }
+  return [mul_];
+})();
+
+let oneTimesOne = _mul(1, 1);"
+ > (compile '(module m scheme
+               (define one-divided-by-one
+                 (apply / '(1 1))))
+            :inline-functions #t)
+ "let [_div] = (() => {
+  function div_(...args) {
+    if (args.length === 1) {
+      return 1 / args[0];
+    } else {
+      let result = args[0];
+      let _end = args.length;
+      for (let i = 1; i < _end; i++) {
+        result = result / args[i];
+      }
+      return result;
+    }
+  }
+  return [div_];
+})();
+
+let oneDividedByOne = _div(1, 1);"
+ > (compile
+    '(module m scheme
+       (define foo-bar
+         (apply string-append '("foo" "bar"))))
+    :inline-functions #t)
+ "let [stringAppend] = (() => {
+  function stringAppend_(...args) {
+    return args.reduce(function (acc, x) {
+      return acc + x;
+    }, '');
+  }
+  return [stringAppend_];
+})();
+
+let fooBar = stringAppend('foo', 'bar');"
+ xit> (compile '(module m lisp
+                  (define (my-foldl f v l)
+                    (foldl f v l))
+                  (define bar
+                    (my-foldl + 0 '(1 2 3 4))))
+               :inline-functions #t)
+ "let [add] = (function () {
+  function add(...args) {
+    return args.reduce(function (y, x) {
+      return y + x;
+    }, 0);
+  }
+  return [add];
+})();
+
+function myFoldl(f, v, l) {
+  return l.reduce(function (acc, x) {
+    return f(x, acc);
+  }, v);
+}
+
+let bar = myFoldl(add, 0, [1, 2, 3, 4]);"
+ xit> (compile '(module m lisp
+                  (define (my-foldl f v l)
+                    (foldl f v l)))
+               :inline-functions #t)
+ "let [foldl] = (function () {
+  function foldl(f, v, lst) {
+    return lst.reduce(function (acc, x) {
+      return f(x, acc);
+    }, v);
+  }
+  return [foldl];
+})();
+
+function myFoldl(f, v, l) {
+  return foldl(f, v, l);
+}"
+ > (compile '(module m lisp
+               (define (my-map f x)
+                 (map f x))
+               (define bar
+                 (my-map first '((1) (2) (3)))))
+            :inline-functions #t)
+ "let [first] = (() => {
+  function first_(lst) {
+    return lst[0];
+  }
+  return [first_];
+})();
+
+function myMap(f, x) {
+  return x.map(function (x) {
+    return f(x);
+  });
+}
+
+let bar = myMap(first, [[1], [2], [3]]);"
+ xit> (compile '(module m lisp
+                  (define (foo f x y)
+                    (f x y))
+                  (define (my-push-4 lst x)
+                    (foo push! lst x)))
+               :inline-functions #t)
+ "let [pushX] = (function () {
+  function pushX(lst, x) {
+    lst.unshift(x);
+    return lst;
+  }
+  return [pushX];
+})();
+
+function foo(f, x, y) {
+  return f(x, y);
+}
+
+function myPush4(lst, x) {
+  return foo(pushX, lst, x);
+}"
+ xit> (compile '(module m lisp
+                  (define (get-push-function)
+                    push!)
+                  (define (my-push-4 lst x)
+                    ((get-push-function) lst x)))
+               :inline-functions #t)
+ "let [pushX] = (function () {
+  function pushX(lst, x) {
+    lst.unshift(x);
+    return lst;
+  }
+  return [pushX];
+})();
+
+function getPushFunction() {
+  return pushX;
+}
+
+function myPush4(lst, x) {
+  return getPushFunction()(lst, x);
+}"
+ > (compile '(module m lisp
+               (define (my-cdr x)
+                 (cdr x)))
+            :inline-functions #t)
+ "let [cdr] = (() => {
+  function cdr_(lst) {
+    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
+      return lst[2];
+    } else {
+      return lst.slice(1);
+    }
+  }
+  return [cdr_];
+})();
+
+function myCdr(x) {
+  return cdr(x);
+}"
+ > (compile '(module m lisp
+               (define (my-intersection x y)
+                 (intersection x y)))
+            :inline-functions #t)
+ "let [intersection] = (() => {
+  function intersection_(...args) {
+    function intersection2(arr1, arr2) {
+      let result = [];
+      for (let element of arr1) {
+        if (arr2.includes(element) && !result.includes(element)) {
+          result.push(element);
+        }
+      }
+      return result;
+    }
+    if (args.length === 0) {
+      return [];
+    } else if (args.length === 1) {
+      return args[0];
+    } else {
+      return args.slice(1).reduce(function (acc, x) {
+        return intersection2(acc, x);
+      }, args[0]);
+    }
+  }
+  return [intersection_];
+})();
+
+function myIntersection(x, y) {
+  return intersection(x, y);
+}"
 
  ;; `compile-modules`
  > (describe "compile-modules")

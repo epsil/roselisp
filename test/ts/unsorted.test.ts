@@ -6,51 +6,40 @@
 
 import { assertEqual, testRepl, testMacro } from './test-util';
 
-const [callCc]: any[] = ((): any => {
-  function callWithCurrentContinuation_(
-    proc: any,
-    promptTag: any = undefined
-  ): any {
-    class CallCCWrapper {
-      value: any;
-
-      constructor(value: any) {
-        this.value = value;
-      }
-    }
-    try {
-      return proc((value: any): any => {
-        throw new CallCCWrapper(value);
-      });
-    } catch (e) {
-      if (e instanceof CallCCWrapper) {
-        return e.value;
-      } else {
-        throw e;
-      }
-    }
-  }
-  return [callWithCurrentContinuation_];
-})();
-
 /**
  * Test inbox
  */
 describe('call/cc', function (): any {
   return it('(try ... (+ 5 (call/cc (lambda (x) (error ...)))) ...)', function (): any {
-    return assertEqual(
-      ((): any => {
-        let result: any = 0;
-        try {
-          result =
-            5 +
-            callCc(function (x: any): any {
-              throw new Error('error');
-            });
-        } catch (e) {}
-        return result;
-      })(),
-      0
-    );
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('result'), 0]],
+        [
+          Symbol.for('try'),
+          [
+            Symbol.for('set!'),
+            Symbol.for('result'),
+            [
+              Symbol.for('+'),
+              5,
+              [
+                Symbol.for('call/cc'),
+                [
+                  Symbol.for('lambda'),
+                  [Symbol.for('x')],
+                  [Symbol.for('error'), 'error'],
+                ],
+              ],
+            ],
+          ],
+          [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('e')],
+        ],
+        Symbol.for('result'),
+      ],
+      0,
+    ]);
   });
 });

@@ -11,6 +11,8 @@
 
 ;;; Test inbox
 (test-macro
+ :repl #t
+
  ;; `call/cc`
  > (describe "call/cc")
  _

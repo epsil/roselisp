@@ -565,7 +565,7 @@ function decompileRestElement(node: any, options: any = {}): any {
  * [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
  */
 function decompileBlockStatement(node: any, options: any = {}): any {
-  return sexpToRose([Symbol.for('begin'), ...node.body.map(function (x: any): any {
+  return sexpToRose([Symbol.for('js/block'), ...node.body.map(function (x: any): any {
     return decompileEstree(x, options);
   })]);
 }
@@ -607,33 +607,33 @@ function decompileIfStatement(node: any, options: any = {}): any {
   let consequentExp: any = roseToSexp(consequent);
   let alternate: any = node.alternate ? decompileEstree(node.alternate, options) : false;
   let alternateExp: any = alternate && roseToSexp(alternate);
-  if (taggedListP(consequentExp, Symbol.for('begin')) && (consequentExp.length === 2)) {
+  if (taggedListP(consequentExp, Symbol.for('js/block')) && (consequentExp.length === 2)) {
     consequent = consequent.get(1);
     consequentExp = roseToSexp(consequent);
   }
-  if (taggedListP(alternateExp, Symbol.for('begin')) && (alternateExp.length === 2)) {
+  if (taggedListP(alternateExp, Symbol.for('js/block')) && (alternateExp.length === 2)) {
     alternate = alternate.get(1);
     alternateExp = roseToSexp(alternate);
   }
   if (taggedListP(alternateExp, Symbol.for('when'))) {
-    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [...alternate.drop(1)]]);
+    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [...alternate.drop(1)]]);
   } else if (taggedListP(alternateExp, Symbol.for('unless'))) {
-    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [[Symbol.for('not'), alternate.get(1)], ...alternate.drop(2)]]);
+    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [[Symbol.for('not'), alternate.get(1)], ...alternate.drop(2)]]);
   } else if (taggedListP(alternateExp, Symbol.for('if'))) {
     const alternateTest: any = alternate.get(1);
     const alternateConsequent: any = alternate.get(2);
     const alternateConsequentExp: any = roseToSexp(alternateConsequent);
-    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [alternateTest, ...(taggedListP(alternateConsequentExp, Symbol.for('begin')) ? alternateConsequent.drop(1) : [alternateConsequent])], ...((alternateExp.length > 3) ? [[Symbol.for('else'), ...alternate.drop(3)]] : [])]);
+    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [alternateTest, ...(taggedListP(alternateConsequentExp, Symbol.for('js/block')) ? alternateConsequent.drop(1) : [alternateConsequent])], ...((alternateExp.length > 3) ? [[Symbol.for('else'), ...alternate.drop(3)]] : [])]);
   } else if (taggedListP(alternateExp, Symbol.for('cond'))) {
-    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], ...alternate.drop(1)]);
+    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], ...alternate.drop(1)]);
   } else if (!alternate) {
     if (taggedListP(testExp, Symbol.for('not'))) {
-      return sexpToRose([Symbol.for('unless'), test.get(1), ...(taggedListP(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])]);
+      return sexpToRose([Symbol.for('unless'), test.get(1), ...(taggedListP(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])]);
     } else {
-      return sexpToRose([Symbol.for('when'), test, ...(taggedListP(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])]);
+      return sexpToRose([Symbol.for('when'), test, ...(taggedListP(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])]);
     }
-  } else if (taggedListP(consequentExp, Symbol.for('begin')) || taggedListP(alternateExp, Symbol.for('begin'))) {
-    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [Symbol.for('else'), ...(taggedListP(alternateExp, Symbol.for('begin')) ? alternate.drop(1) : [alternate])]]);
+  } else if (taggedListP(consequentExp, Symbol.for('js/block')) || taggedListP(alternateExp, Symbol.for('js/block'))) {
+    return sexpToRose([Symbol.for('cond'), [test, ...(taggedListP(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [Symbol.for('else'), ...(taggedListP(alternateExp, Symbol.for('js/block')) ? alternate.drop(1) : [alternate])]]);
   } else {
     return sexpToRose([Symbol.for('if'), test, consequent, alternate]);
   }
@@ -646,9 +646,9 @@ function decompileIfStatement(node: any, options: any = {}): any {
  */
 function decompileWhileStatement(node: any, options: any = {}): any {
   const test: any = decompileEstree(node.test, options);
-  let body: any = decompileEstree(node.body, options);
+  const body: any = decompileEstree(node.body, options);
   const bodyExp: any = roseToSexp(body);
-  let result: any = sexpToRose([Symbol.for('do'), [], [[Symbol.for('not'), test]], ...(taggedListP(bodyExp, Symbol.for('begin')) ? body.drop(1) : [body])]);
+  let result: any = sexpToRose([Symbol.for('do'), [], [[Symbol.for('not'), test]], ...(taggedListP(bodyExp, Symbol.for('js/block')) ? body.drop(1) : [body])]);
   return result;
 }
 
@@ -659,12 +659,8 @@ function decompileWhileStatement(node: any, options: any = {}): any {
  */
 function decompileDoWhileStatement(node: any, options: any = {}): any {
   const test: any = decompileEstree(node.test, options);
-  let body: any = decompileEstree(node.body, options);
-  const bodyExp: any = roseToSexp(body);
-  if (taggedListP(bodyExp, Symbol.for('begin')) && (bodyExp.length === 2)) {
-    body = body.get(1);
-  }
-  let result: any = sexpToRose([Symbol.for('js/do-while'), body, test]);
+  const body: any = decompileEstree(node.body, options);
+  let result: any = sexpToRose([Symbol.for('js/do-while'), body.drop(1), test]);
   return result;
 }
 
@@ -700,7 +696,7 @@ function decompileForStatement(node: any, options: any = {}): any {
     }
     bindings.push([...currentInit.drop(0), currentUpdate]);
   }
-  let body: any = decompileEstree(node.body, options);
+  const body: any = decompileEstree(node.body, options);
   if ((bindings.length === 1) && (taggedListP(test, Symbol.for('<')) || taggedListP(test, Symbol.for('>')))) {
     const binding: any = bindings[0];
     let i: any = binding[0];
@@ -767,7 +763,7 @@ function decompileForOfStatement(node: any, options: any = {}): any {
   }
   const right: any = decompileEstree(node.right, options);
   const rightExp: any = roseToSexp(right);
-  let body: any = decompileEstree(node.body, options);
+  const body: any = decompileEstree(node.body, options);
   const bodyNodes: any = body.drop(1);
   if (taggedListP(leftExp, Symbol.for('define-values'))) {
     const sym: any = makeUniqueSymbol(cons(rightExp, (Array.isArray(leftExp) && (leftExp.length >= 3) && (leftExp[leftExp.length - 2] === Symbol.for('.')) && ((): any => {
@@ -808,7 +804,7 @@ function decompileForInStatement(node: any, options: any = {}): any {
     leftExp = roseToSexp(left);
   }
   const right: any = decompileEstree(node.right, options);
-  let body: any = decompileEstree(node.body, options);
+  const body: any = decompileEstree(node.body, options);
   return sexpToRose([Symbol.for('for'), [[left, [Symbol.for('js-keys'), right]]], ...body.drop(1)]);
 }
 
@@ -1099,7 +1095,7 @@ function decompileClassDeclaration(node: any, options: any = {}): any {
   const superClassDecompiled: any = superClass ? decompileEstree(superClass, options) : Symbol.for('object%');
   const superClassDecompiledExp: any = [Symbol.for('object%'), Symbol.for('object'), Symbol.for('Object')].includes(superClassDecompiled) ? [] : [superClassDecompiled];
   const bodyDecompiled: any = [];
-  let body: any = node.body;
+  const body: any = node.body;
   for (let x of body.body) {
     bodyDecompiled.push(decompileEstree(x, options));
   }
@@ -1314,9 +1310,9 @@ function decompileFunction(node: any, options: any = {}): any {
       params = listStar(...params);
     }
   }
-  let body: any = removeReturnTailCall(decompileEstree(node.body, options));
+  const body: any = removeReturnTailCall(decompileEstree(node.body, options));
   const bodyExp: any = roseToSexp(body);
-  const bodyForms: any = taggedListP(bodyExp, Symbol.for('begin')) ? body.drop(1) : [body];
+  const bodyForms: any = taggedListP(bodyExp, Symbol.for('js/block')) ? body.drop(1) : [body];
   const asyncField: any = node.async;
   if (id) {
     if (asyncField) {
@@ -1362,7 +1358,7 @@ function removeReturnTailCall(node: any): any {
   const exp: any = roseToSexp(node);
   if (taggedListP(exp, Symbol.for('return')) && (exp.length === 2)) {
     return node.get(1);
-  } else if (taggedListP(exp, Symbol.for('begin'))) {
+  } else if (taggedListP(exp, Symbol.for('js/block'))) {
     return sexpToRose([...node.dropRight(1), removeReturnTailCall(node.get(exp.length - 1))], node);
   } else if (taggedListP(exp, Symbol.for('if'))) {
     return sexpToRose([node.get(0), node.get(1), ...node.drop(2).map(function (x: any): any {

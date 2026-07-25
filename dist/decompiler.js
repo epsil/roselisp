@@ -539,7 +539,7 @@ function decompileRestElement(node, options = {}) {
  * [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
  */
 function decompileBlockStatement(node, options = {}) {
-    return (0, rose_1.sexpToRose)([Symbol.for('begin'), ...node.body.map(function (x) {
+    return (0, rose_1.sexpToRose)([Symbol.for('js/block'), ...node.body.map(function (x) {
             return decompileEstree(x, options);
         })]);
 }
@@ -579,39 +579,39 @@ function decompileIfStatement(node, options = {}) {
     let consequentExp = (0, rose_1.roseToSexp)(consequent);
     let alternate = node.alternate ? decompileEstree(node.alternate, options) : false;
     let alternateExp = alternate && (0, rose_1.roseToSexp)(alternate);
-    if ((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) && (consequentExp.length === 2)) {
+    if ((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) && (consequentExp.length === 2)) {
         consequent = consequent.get(1);
         consequentExp = (0, rose_1.roseToSexp)(consequent);
     }
-    if ((0, util_1.taggedListP)(alternateExp, Symbol.for('begin')) && (alternateExp.length === 2)) {
+    if ((0, util_1.taggedListP)(alternateExp, Symbol.for('js/block')) && (alternateExp.length === 2)) {
         alternate = alternate.get(1);
         alternateExp = (0, rose_1.roseToSexp)(alternate);
     }
     if ((0, util_1.taggedListP)(alternateExp, Symbol.for('when'))) {
-        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [...alternate.drop(1)]]);
+        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [...alternate.drop(1)]]);
     }
     else if ((0, util_1.taggedListP)(alternateExp, Symbol.for('unless'))) {
-        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [[Symbol.for('not'), alternate.get(1)], ...alternate.drop(2)]]);
+        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [[Symbol.for('not'), alternate.get(1)], ...alternate.drop(2)]]);
     }
     else if ((0, util_1.taggedListP)(alternateExp, Symbol.for('if'))) {
         const alternateTest = alternate.get(1);
         const alternateConsequent = alternate.get(2);
         const alternateConsequentExp = (0, rose_1.roseToSexp)(alternateConsequent);
-        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [alternateTest, ...((0, util_1.taggedListP)(alternateConsequentExp, Symbol.for('begin')) ? alternateConsequent.drop(1) : [alternateConsequent])], ...((alternateExp.length > 3) ? [[Symbol.for('else'), ...alternate.drop(3)]] : [])]);
+        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [alternateTest, ...((0, util_1.taggedListP)(alternateConsequentExp, Symbol.for('js/block')) ? alternateConsequent.drop(1) : [alternateConsequent])], ...((alternateExp.length > 3) ? [[Symbol.for('else'), ...alternate.drop(3)]] : [])]);
     }
     else if ((0, util_1.taggedListP)(alternateExp, Symbol.for('cond'))) {
-        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], ...alternate.drop(1)]);
+        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], ...alternate.drop(1)]);
     }
     else if (!alternate) {
         if ((0, util_1.taggedListP)(testExp, Symbol.for('not'))) {
-            return (0, rose_1.sexpToRose)([Symbol.for('unless'), test.get(1), ...((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])]);
+            return (0, rose_1.sexpToRose)([Symbol.for('unless'), test.get(1), ...((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])]);
         }
         else {
-            return (0, rose_1.sexpToRose)([Symbol.for('when'), test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])]);
+            return (0, rose_1.sexpToRose)([Symbol.for('when'), test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])]);
         }
     }
-    else if ((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) || (0, util_1.taggedListP)(alternateExp, Symbol.for('begin'))) {
-        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('begin')) ? consequent.drop(1) : [consequent])], [Symbol.for('else'), ...((0, util_1.taggedListP)(alternateExp, Symbol.for('begin')) ? alternate.drop(1) : [alternate])]]);
+    else if ((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) || (0, util_1.taggedListP)(alternateExp, Symbol.for('js/block'))) {
+        return (0, rose_1.sexpToRose)([Symbol.for('cond'), [test, ...((0, util_1.taggedListP)(consequentExp, Symbol.for('js/block')) ? consequent.drop(1) : [consequent])], [Symbol.for('else'), ...((0, util_1.taggedListP)(alternateExp, Symbol.for('js/block')) ? alternate.drop(1) : [alternate])]]);
     }
     else {
         return (0, rose_1.sexpToRose)([Symbol.for('if'), test, consequent, alternate]);
@@ -624,9 +624,9 @@ function decompileIfStatement(node, options = {}) {
  */
 function decompileWhileStatement(node, options = {}) {
     const test = decompileEstree(node.test, options);
-    let body = decompileEstree(node.body, options);
+    const body = decompileEstree(node.body, options);
     const bodyExp = (0, rose_1.roseToSexp)(body);
-    let result = (0, rose_1.sexpToRose)([Symbol.for('do'), [], [[Symbol.for('not'), test]], ...((0, util_1.taggedListP)(bodyExp, Symbol.for('begin')) ? body.drop(1) : [body])]);
+    let result = (0, rose_1.sexpToRose)([Symbol.for('do'), [], [[Symbol.for('not'), test]], ...((0, util_1.taggedListP)(bodyExp, Symbol.for('js/block')) ? body.drop(1) : [body])]);
     return result;
 }
 /**
@@ -636,12 +636,8 @@ function decompileWhileStatement(node, options = {}) {
  */
 function decompileDoWhileStatement(node, options = {}) {
     const test = decompileEstree(node.test, options);
-    let body = decompileEstree(node.body, options);
-    const bodyExp = (0, rose_1.roseToSexp)(body);
-    if ((0, util_1.taggedListP)(bodyExp, Symbol.for('begin')) && (bodyExp.length === 2)) {
-        body = body.get(1);
-    }
-    let result = (0, rose_1.sexpToRose)([Symbol.for('js/do-while'), body, test]);
+    const body = decompileEstree(node.body, options);
+    let result = (0, rose_1.sexpToRose)([Symbol.for('js/do-while'), body.drop(1), test]);
     return result;
 }
 /**
@@ -676,7 +672,7 @@ function decompileForStatement(node, options = {}) {
         }
         bindings.push([...currentInit.drop(0), currentUpdate]);
     }
-    let body = decompileEstree(node.body, options);
+    const body = decompileEstree(node.body, options);
     if ((bindings.length === 1) && ((0, util_1.taggedListP)(test, Symbol.for('<')) || (0, util_1.taggedListP)(test, Symbol.for('>')))) {
         const binding = bindings[0];
         let i = binding[0];
@@ -745,7 +741,7 @@ function decompileForOfStatement(node, options = {}) {
     }
     const right = decompileEstree(node.right, options);
     const rightExp = (0, rose_1.roseToSexp)(right);
-    let body = decompileEstree(node.body, options);
+    const body = decompileEstree(node.body, options);
     const bodyNodes = body.drop(1);
     if ((0, util_1.taggedListP)(leftExp, Symbol.for('define-values'))) {
         const sym = (0, util_1.makeUniqueSymbol)(cons(rightExp, (Array.isArray(leftExp) && (leftExp.length >= 3) && (leftExp[leftExp.length - 2] === Symbol.for('.')) && (() => {
@@ -786,7 +782,7 @@ function decompileForInStatement(node, options = {}) {
         leftExp = (0, rose_1.roseToSexp)(left);
     }
     const right = decompileEstree(node.right, options);
-    let body = decompileEstree(node.body, options);
+    const body = decompileEstree(node.body, options);
     return (0, rose_1.sexpToRose)([Symbol.for('for'), [[left, [Symbol.for('js-keys'), right]]], ...body.drop(1)]);
 }
 /**
@@ -1068,7 +1064,7 @@ function decompileClassDeclaration(node, options = {}) {
     const superClassDecompiled = superClass ? decompileEstree(superClass, options) : Symbol.for('object%');
     const superClassDecompiledExp = [Symbol.for('object%'), Symbol.for('object'), Symbol.for('Object')].includes(superClassDecompiled) ? [] : [superClassDecompiled];
     const bodyDecompiled = [];
-    let body = node.body;
+    const body = node.body;
     for (let x of body.body) {
         bodyDecompiled.push(decompileEstree(x, options));
     }
@@ -1265,9 +1261,9 @@ function decompileFunction(node, options = {}) {
             params = listStar(...params);
         }
     }
-    let body = removeReturnTailCall(decompileEstree(node.body, options));
+    const body = removeReturnTailCall(decompileEstree(node.body, options));
     const bodyExp = (0, rose_1.roseToSexp)(body);
-    const bodyForms = (0, util_1.taggedListP)(bodyExp, Symbol.for('begin')) ? body.drop(1) : [body];
+    const bodyForms = (0, util_1.taggedListP)(bodyExp, Symbol.for('js/block')) ? body.drop(1) : [body];
     const asyncField = node.async;
     if (id) {
         if (asyncField) {
@@ -1318,7 +1314,7 @@ function removeReturnTailCall(node) {
     if ((0, util_1.taggedListP)(exp, Symbol.for('return')) && (exp.length === 2)) {
         return node.get(1);
     }
-    else if ((0, util_1.taggedListP)(exp, Symbol.for('begin'))) {
+    else if ((0, util_1.taggedListP)(exp, Symbol.for('js/block'))) {
         return (0, rose_1.sexpToRose)([...node.dropRight(1), removeReturnTailCall(node.get(exp.length - 1))], node);
     }
     else if ((0, util_1.taggedListP)(exp, Symbol.for('if'))) {

@@ -640,7 +640,7 @@
 ;;; [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
 (define (decompile-block-statement node (options (js-obj)))
   (sexp->rose
-   `(begin
+   `(js/block
       ,@(map (lambda (x)
                (decompile-estree x options))
              (get-field body node)))))
@@ -687,11 +687,11 @@
         #f))
   (define alternate-exp
     (and alternate (rose->sexp alternate)))
-  (when (and (tagged-list? consequent-exp 'begin)
+  (when (and (tagged-list? consequent-exp 'js/block)
              (= (js/length consequent-exp) 2))
     (set! consequent (send consequent get 1))
     (set! consequent-exp (rose->sexp consequent)))
-  (when (and (tagged-list? alternate-exp 'begin)
+  (when (and (tagged-list? alternate-exp 'js/block)
              (= (js/length alternate-exp) 2))
     (set! alternate (send alternate get 1))
     (set! alternate-exp (rose->sexp alternate)))
@@ -700,7 +700,7 @@
     (sexp->rose
      `(cond
        (,test
-        ,@(if (tagged-list? consequent-exp 'begin)
+        ,@(if (tagged-list? consequent-exp 'js/block)
               (send consequent drop 1)
               (list consequent)))
        (,@(send alternate drop 1)))))
@@ -708,7 +708,7 @@
     (sexp->rose
      `(cond
        (,test
-        ,@(if (tagged-list? consequent-exp 'begin)
+        ,@(if (tagged-list? consequent-exp 'js/block)
               (send consequent drop 1)
               (list consequent)))
        ((not ,(send alternate get 1))
@@ -723,11 +723,11 @@
     (sexp->rose
      `(cond
        (,test
-        ,@(if (tagged-list? consequent-exp 'begin)
+        ,@(if (tagged-list? consequent-exp 'js/block)
               (send consequent drop 1)
               (list consequent)))
        (,alternate-test
-        ,@(if (tagged-list? alternate-consequent-exp 'begin)
+        ,@(if (tagged-list? alternate-consequent-exp 'js/block)
               (send alternate-consequent drop 1)
               (list alternate-consequent)))
        ,@(if (> (js/length alternate-exp) 3)
@@ -737,7 +737,7 @@
     (sexp->rose
      `(cond
        (,test
-        ,@(if (tagged-list? consequent-exp 'begin)
+        ,@(if (tagged-list? consequent-exp 'js/block)
               (send consequent drop 1)
               (list consequent)))
        ,@(send alternate drop 1))))
@@ -746,25 +746,25 @@
      ((tagged-list? test-exp 'not)
       (sexp->rose
        `(unless ,(send test get 1)
-          ,@(if (tagged-list? consequent-exp 'begin)
+          ,@(if (tagged-list? consequent-exp 'js/block)
                 (send consequent drop 1)
                 (list consequent)))))
      (else
       (sexp->rose
        `(when ,test
-          ,@(if (tagged-list? consequent-exp 'begin)
+          ,@(if (tagged-list? consequent-exp 'js/block)
                 (send consequent drop 1)
                 (list consequent)))))))
-   ((or (tagged-list? consequent-exp 'begin)
-        (tagged-list? alternate-exp 'begin))
+   ((or (tagged-list? consequent-exp 'js/block)
+        (tagged-list? alternate-exp 'js/block))
     (sexp->rose
      `(cond
        (,test
-        ,@(if (tagged-list? consequent-exp 'begin)
+        ,@(if (tagged-list? consequent-exp 'js/block)
               (send consequent drop 1)
               (list consequent)))
        (else
-        ,@(if (tagged-list? alternate-exp 'begin)
+        ,@(if (tagged-list? alternate-exp 'js/block)
               (send alternate drop 1)
               (list alternate))))))
    (else
@@ -787,7 +787,7 @@
     (sexp->rose
      `(do ()
           ((not ,test))
-        ,@(if (tagged-list? body-exp 'begin)
+        ,@(if (tagged-list? body-exp 'js/block)
               (send body drop 1)
               (list body)))))
   result)
@@ -800,15 +800,10 @@
     (decompile-estree (get-field test node) options))
   (define body
     (decompile-estree (get-field body node) options))
-  (define body-exp
-    (rose->sexp body))
-  (when (and (tagged-list? body-exp 'begin)
-             (= (js/length body-exp) 2))
-    (set! body (send body get 1)))
   (define result
     (sexp->rose
      `(js/do-while
-       ,body
+       ,(send body drop 1)
        ,test)))
   result)
 
@@ -1545,7 +1540,7 @@
      (decompile-estree (get-field body node) options)))
   (define body-exp (rose->sexp body))
   (define body-forms
-    (if (tagged-list? body-exp 'begin)
+    (if (tagged-list? body-exp 'js/block)
         (send body drop 1)
         (list body)))
   (define async-field
@@ -1610,7 +1605,7 @@
    ((and (tagged-list? exp 'return)
          (= (js/length exp) 2))
     (send node get 1))
-   ((tagged-list? exp 'begin)
+   ((tagged-list? exp 'js/block)
     (sexp->rose
      `(,@(send node drop-right 1)
        ,(remove-return-tail-call

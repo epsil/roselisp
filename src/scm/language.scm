@@ -5167,14 +5167,17 @@
 (define (compile-js-do-while node env (options (js-obj)))
   (define body
     (send node get 1))
+  (define body-exp
+    (sexp->rose
+     `(js/block ,@(send body drop 0))
+     node))
   (define test
     (send node get 2))
   (new DoWhileStatement
        (compile-expression
         test env options)
-       (wrap-in-block-statement-smart
-        (compile-statement-or-return-statement
-         body env options))))
+       (compile-statement-or-return-statement
+        body-exp env options)))
 
 ;;; Compile a `(js/while ...)` expression.
 (define (compile-js-while node env (options (js-obj)))

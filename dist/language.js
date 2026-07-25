@@ -5117,10 +5117,11 @@ compileJsNew.fsource = [Symbol.for('define'), [Symbol.for('compile-js-new'), Sym
  */
 function compileJsDoWhile(node, env, options = {}) {
     const body = node.get(1);
+    let bodyExp = (0, rose_1.sexpToRose)([Symbol.for('js/block'), ...body.drop(0)], node);
     let test = node.get(2);
-    return new estree_1.DoWhileStatement(compileExpression(test, env, options), wrapInBlockStatementSmart(compileStatementOrReturnStatement(body, env, options)));
+    return new estree_1.DoWhileStatement(compileExpression(test, env, options), compileStatementOrReturnStatement(bodyExp, env, options));
 }
-compileJsDoWhile.fsource = [Symbol.for('define'), [Symbol.for('compile-js-do-while'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('new'), Symbol.for('DoWhileStatement'), [Symbol.for('compile-expression'), Symbol.for('test'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('wrap-in-block-statement-smart'), [Symbol.for('compile-statement-or-return-statement'), Symbol.for('body'), Symbol.for('env'), Symbol.for('options')]]]];
+compileJsDoWhile.fsource = [Symbol.for('define'), [Symbol.for('compile-js-do-while'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('body-exp'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('js/block'), [Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('body'), Symbol.for('drop'), 0]]]], Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('new'), Symbol.for('DoWhileStatement'), [Symbol.for('compile-expression'), Symbol.for('test'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-statement-or-return-statement'), Symbol.for('body-exp'), Symbol.for('env'), Symbol.for('options')]]];
 /**
  * Compile a `(js/while ...)` expression.
  */

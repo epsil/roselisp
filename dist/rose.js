@@ -44,7 +44,7 @@
  * [w:Rose tree]: https://en.wikipedia.org/wiki/Rose_tree
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapSexpInRose = exports.transferComments = exports.sliceRose = exports.rosep = exports.roseToSexp = exports.makeSimpleRoseMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeRoseMap = exports.makeRose = exports.makeListRose = exports.insertSexpIntoRose = exports.forestp = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.sexpToRose = void 0;
+exports.wrapSexpInRose = exports.transferComments = exports.sliceRose = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSimpleRoseMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.insertSexpIntoRose = exports.forestp = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.makeRose = exports.makeRoseMap = void 0;
 const visitor_1 = require("./visitor");
 /**
  * Rose tree node class.
@@ -765,66 +765,63 @@ exports.beginWrapRoseSmart1 = beginWrapRoseSmart1;
  * Converts a list or nested list of rose tree nodes
  * and other values to a rose tree.
  */
-function makeRose(exp, node = undefined) {
-    const cache = makeRoseMap(node);
+function sexpToRose(exp, node = undefined) {
+    const cache = roseToMap(node);
     const indices = new Map();
-    return makeRoseHelper(exp, node, cache, indices);
-}
-exports.sexpToRose = makeRose;
-exports.makeRose = makeRose;
-/**
- * Helper function for `make-rose`.
- */
-function makeRoseHelper(exp, node, cache, indices) {
-    if (cache.has(exp)) {
-        let idx = indices.get(exp) || 0;
-        const entry = cache.get(exp);
-        const val = entry[idx];
-        if (!(idx >= (entry.length - 1))) {
-            idx++;
-        }
-        indices.set(exp, idx);
-        return val;
-    }
-    else if (exp instanceof Rose) {
-        return exp;
-    }
-    else if (Array.isArray(exp)) {
-        // We need to create a new list since
-        // `exp` may be a list of rose tree nodes
-        // and S-expressions.
-        const lst = [];
-        let result = new Rose(lst);
-        let isModified = false;
-        let elNode;
-        for (let el of exp) {
-            elNode = makeRoseHelper(el, undefined, cache, indices);
-            if (elNode.getValue() !== el) {
-                isModified = true;
+    function sexpToRoseHelper(exp, node, cache, indices) {
+        if (cache.has(exp)) {
+            let idx = indices.get(exp) || 0;
+            const entry = cache.get(exp);
+            const val = entry[idx];
+            if (!(idx >= (entry.length - 1))) {
+                idx++;
             }
-            lst.push(elNode.getValue());
-            result.insert(elNode);
+            indices.set(exp, idx);
+            return val;
         }
-        // If all of the sub-expressions are unchanged,
-        // use the original list.
-        if (!isModified) {
-            result.setValue(exp);
+        else if (exp instanceof Rose) {
+            return exp;
         }
-        if (node instanceof Rose) {
-            result = transferComments(node, result);
+        else if (Array.isArray(exp)) {
+            // We need to create a new list since
+            // `exp` may be a list of rose tree nodes
+            // and S-expressions.
+            const lst = [];
+            let result = new Rose(lst);
+            let isModified = false;
+            let elNode;
+            for (let el of exp) {
+                elNode = sexpToRoseHelper(el, undefined, cache, indices);
+                if (elNode.getValue() !== el) {
+                    isModified = true;
+                }
+                lst.push(elNode.getValue());
+                result.insert(elNode);
+            }
+            // If all of the sub-expressions are unchanged,
+            // use the original list.
+            if (!isModified) {
+                result.setValue(exp);
+            }
+            if (node instanceof Rose) {
+                result = transferComments(node, result);
+            }
+            roseMapSetX(cache, exp, result);
+            return result;
         }
-        roseMapSetX(cache, exp, result);
-        return result;
+        else {
+            let result = new Rose(exp);
+            if (node instanceof Rose) {
+                result = transferComments(node, result);
+            }
+            roseMapSetX(cache, exp, result);
+            return result;
+        }
     }
-    else {
-        let result = new Rose(exp);
-        if (node instanceof Rose) {
-            result = transferComments(node, result);
-        }
-        roseMapSetX(cache, exp, result);
-        return result;
-    }
+    return sexpToRoseHelper(exp, node, cache, indices);
 }
+exports.makeRose = sexpToRose;
+exports.sexpToRose = sexpToRose;
 /**
  * Insert an S-expression into a rose tree node.
  */
@@ -863,7 +860,7 @@ exports.makeSimpleRoseMap = makeSimpleRoseMap;
  * Returns a map mapping a value to a list of rose tree nodes
  * containing that value.
  */
-function makeRoseMap(node = undefined) {
+function roseToMap(node = undefined) {
     const map = new Map();
     if (node) {
         node.forEachNode(function (x) {
@@ -873,7 +870,8 @@ function makeRoseMap(node = undefined) {
     }
     return map;
 }
-exports.makeRoseMap = makeRoseMap;
+exports.makeRoseMap = roseToMap;
+exports.roseToMap = roseToMap;
 /**
  * Set or update an entry in a rose tree map.
  */

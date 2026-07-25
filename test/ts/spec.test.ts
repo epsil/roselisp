@@ -764,7 +764,7 @@ describe('Lists', function (): any {
       '[1, 2];',
     ]);
   });
-  return it("(compile '(list 1 2))", function (): any {
+  it("(compile '(list 1 2))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -773,6 +773,31 @@ describe('Lists', function (): any {
         [Symbol.for('quote'), [Symbol.for('list'), 1, 2]],
       ],
       '[1, 2];',
+    ]);
+  });
+  it("(compile '(aget x 0))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('aget'), Symbol.for('x'), 0]],
+      ],
+      'x[0];',
+    ]);
+  });
+  return it("(compile '(aget (js/?. x) 0))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('aget'), [Symbol.for('js/?.'), Symbol.for('x')], 0],
+        ],
+      ],
+      'x?.[0];',
     ]);
   });
 });
@@ -2535,6 +2560,284 @@ describe('return', function (): any {
         ],
       ],
       'while (true) {\n' + '  return 0;\n' + '}',
+    ]);
+  });
+});
+
+describe('js/.', function (): any {
+  it('(let ((obj (js-obj "foo" "bar"))) (js/. obj foo))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for('foo')],
+      ],
+      'bar',
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" "bar"))) (js/. obj "foo"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [Symbol.for('js/.'), Symbol.for('obj'), 'foo'],
+      ],
+      'bar',
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" (js-obj "bar" "baz")))) (js/. obj foo bar))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [
+          [
+            Symbol.for('obj'),
+            [Symbol.for('js-obj'), 'foo', [Symbol.for('js-obj'), 'bar', 'baz']],
+          ],
+        ],
+        [
+          Symbol.for('js/.'),
+          Symbol.for('obj'),
+          Symbol.for('foo'),
+          Symbol.for('bar'),
+        ],
+      ],
+      'baz',
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" (js-obj "bar" "baz")))) (js/. (js/. obj foo) bar))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [
+          [
+            Symbol.for('obj'),
+            [Symbol.for('js-obj'), 'foo', [Symbol.for('js-obj'), 'bar', 'baz']],
+          ],
+        ],
+        [
+          Symbol.for('js/.'),
+          [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for('foo')],
+          Symbol.for('bar'),
+        ],
+      ],
+      'baz',
+    ]);
+  });
+  it("(compile '(js/. obj prop))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for('prop')],
+        ],
+      ],
+      'obj.prop;',
+    ]);
+  });
+  it("(compile '(js/. obj prop1 prop2))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/.'),
+            Symbol.for('obj'),
+            Symbol.for('prop1'),
+            Symbol.for('prop2'),
+          ],
+        ],
+      ],
+      'obj.prop1.prop2;',
+    ]);
+  });
+  return it("(compile '(js/. (js/. obj prop1) prop2))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/.'),
+            [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for('prop1')],
+            Symbol.for('prop2'),
+          ],
+        ],
+      ],
+      'obj.prop1.prop2;',
+    ]);
+  });
+});
+
+describe('js/?.', function (): any {
+  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj foo))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('foo')],
+      ],
+      'bar',
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj "foo"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [Symbol.for('js/?.'), Symbol.for('obj'), 'foo'],
+      ],
+      'bar',
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj quux))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('quux')],
+      ],
+      undefined,
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" "bar"))) ((js/?. obj quux)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('quux')]],
+      ],
+      undefined,
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj quux wobble))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [
+          Symbol.for('js/?.'),
+          Symbol.for('obj'),
+          Symbol.for('quux'),
+          Symbol.for('wobble'),
+        ],
+      ],
+      undefined,
+    ]);
+  });
+  it('(let ((obj (js-obj "foo" "bar"))) (js/?. (js/?. obj quux) wobble))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [
+          Symbol.for('js/?.'),
+          [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('quux')],
+          Symbol.for('wobble'),
+        ],
+      ],
+      undefined,
+    ]);
+  });
+  it("(compile '(js/?. obj prop))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('prop')],
+        ],
+      ],
+      'obj?.prop;',
+    ]);
+  });
+  it("(compile '(js/?. obj prop1 prop2))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/?.'),
+            Symbol.for('obj'),
+            Symbol.for('prop1'),
+            Symbol.for('prop2'),
+          ],
+        ],
+      ],
+      'obj?.prop1?.prop2;',
+    ]);
+  });
+  it("(compile '(js/?. (js/?. obj prop1) prop2))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/?.'),
+            [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('prop1')],
+            Symbol.for('prop2'),
+          ],
+        ],
+      ],
+      'obj?.prop1?.prop2;',
+    ]);
+  });
+  return it("(compile '(js/?. (js/?. (js/?. obj) prop1) prop2))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/?.'),
+            [
+              Symbol.for('js/?.'),
+              [Symbol.for('js/?.'), Symbol.for('obj')],
+              Symbol.for('prop1'),
+            ],
+            Symbol.for('prop2'),
+          ],
+        ],
+      ],
+      'obj?.prop1?.prop2;',
     ]);
   });
 });

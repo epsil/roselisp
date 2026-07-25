@@ -190,6 +190,7 @@
                   (js-new_ new_)
                   js-array?_
                   js-delete_
+                  js-dot_
                   js-eighth_
                   js-eval_
                   js-fifth_
@@ -209,6 +210,7 @@
                   js-new_
                   js-ninth_
                   js-null?_
+                  js-optional-chaining_
                   js-plus_
                   js-reduce-right_
                   js-reduce_
@@ -601,7 +603,6 @@
          (,dot_ ,compile-send (compiler-> Any * Any))
          (,for_ ,compile-for (compiler-> Any * Any))
          (,funcall_ ,compile-funcall (compiler-> Any * Any))
-         (,get-field_ ,compile-get-field (compiler-> Any * Any))
          (,gt_ ,compile-greater-than (compiler-> Any * Any))
          (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
          (,js-arrow_ ,compile-js-arrow (compiler-> Any * Any))
@@ -610,6 +611,7 @@
          (,js-block_ ,compile-js-block (compiler-> Any * Any))
          (,js-delete_ ,compile-js-delete (compiler-> Any * Any))
          (,js-do-while_ ,compile-js-do-while (compiler-> Any * Any))
+         (,js-dot_ ,compile-js-dot (compiler-> Any * Any))
          (,js-eval_ ,compile-js-eval (compiler-> Any * Any))
          (,js-function_ ,compile-js-function (compiler-> Any * Any))
          (,js-get_ ,compile-js-get (compiler-> Any * Any))
@@ -2388,9 +2390,12 @@
     (map (lambda (x)
            (compile-expression x env options))
          indices))
+  (define computed #t)
+  (define optional
+    (form? variable js-optional-chaining_ env))
   (define result
-    (foldl (lambda (x acc)
-             (new MemberExpression acc x #t))
+    (foldl (lambda (idx arr)
+             (new MemberExpression arr idx computed optional))
            variable-compiled
            indices-compiled))
   (make-expression-or-statement result options))
@@ -3954,9 +3959,9 @@
         (string->symbol field))
       (define obj
         (send node get 1))
-      (compile-get-field
+      (compile-js-dot
        (sexp->rose
-        `(get-field ,field-sym ,obj))
+        `(js/. ,obj ,field-sym))
        env
        options))
      (else
@@ -3966,15 +3971,15 @@
       (send node get 1))
     (cond
      ;; Member expression:
-     ;; `(.-foo bar)` = `(get-field foo bar)`.
+     ;; `(.-foo bar)` = `(js/. bar foo)`.
      ((set! match
             (regexp-match (regexp "^-(.*)$")
                           method))
       (define field
         (second match))
-      (compile-get-field
+      (compile-js-dot
        (sexp->rose
-        `(get-field ,(string->symbol field) ,obj)
+        `(js/. ,obj ,(string->symbol field))
         node)
        env options))
      ;; Method call:
@@ -3988,60 +3993,76 @@
         node)
        env options))))))
 
-;;; Compile a `(get-field ...)` expression.
-(define (compile-get-field node env (options (js-obj)))
-  (define field
-    (send node get 1))
-  (define obj
-    (send node get 2))
-  (define computed
-    (not (symbol? (rose->sexp field))))
-  (make-expression-or-statement
-   (new MemberExpression
-        (if (symbol? (rose->sexp obj))
-            (compile-symbol
-             obj env
-             (make-expression-options
-              options))
-            (compile-expression
-             obj env options))
-        (if computed
-            (compile-expression
-             field env options)
-            (compile-symbol
-             field env options))
-        computed)
-   options))
-
-;;; Compile a `(js/optional-chaining ...)` expression.
-(define (compile-js-optional-chaining node env (options (js-obj)))
-  (define obj
-    (send node get 1))
-  (define field
-    (send node get 2))
-  (define field-exp
-    (rose->sexp field))
+;;; Compile a `(js/. ...)` expression.
+(define (compile-js-dot node env (options (js-obj)))
   (cond
-   ((array? field-exp)
-    (define result
-      (compile-rose
-       (sexp->rose
-        `(,obj ,@(send field drop 0))
-        node)
-       env
-       options))
-    (set-field! optional result #t)
-    result)
+   ((> (send node size) 3)
+    (compile-js-dot
+     (sexp->rose
+      (foldl (lambda (prop obj)
+               `(js/. ,obj ,prop))
+             (send node get 1)
+             (send node drop 2))
+      node)
+     env options))
    (else
+    (define obj
+      (send node get 1))
+    (define prop
+      (send node get 2))
+    (define computed
+      (not (symbol? (rose->sexp prop))))
+    (make-expression-or-statement
+     (new MemberExpression
+          (if (symbol? (rose->sexp obj))
+              (compile-symbol
+               obj env
+               (make-expression-options
+                options))
+              (compile-expression
+               obj env options))
+          (if computed
+              (compile-expression
+               prop env options)
+              (compile-symbol
+               prop env options))
+          computed)
+     options))))
+
+;;; Compile a `(js/?. ...)` expression.
+(define (compile-js-optional-chaining node env (options (js-obj)))
+  (cond
+   ((> (send node size) 3)
+    (compile-js-optional-chaining
+     (sexp->rose
+      (foldl (lambda (prop obj)
+               `(js/?. ,obj ,prop))
+             (send node get 1)
+             (send node drop 2))
+      node)
+     env options))
+   ((= (send node size) 2)
+    (compile-rose (send node get 1) env options))
+   (else
+    (define obj
+      (send node get 1))
+    (define field
+      (send node get 2))
     (define result
-      (compile-rose
-       (sexp->rose
-        `(get-field ,field ,obj)
-        node)
-       env
-       options))
+      (if (array? (rose->sexp field))
+          (compile-expression
+           (sexp->rose
+            `(,obj ,@(send field drop 0))
+            node)
+           env options)
+          (compile-expression
+           (sexp->rose
+            `(js/. ,obj ,field)
+            node)
+           env options)))
     (set-field! optional result #t)
-    result)))
+    (make-expression-or-statement
+     result options))))
 
 ;;; Compile a `(set-field! ...)` expression.
 (define (compile-set-field node env (options (js-obj)))
@@ -6369,18 +6390,8 @@
    (current-compilation-options)))
 
 ;;; Expand a `(get-field ...)` expression.
-(defmacro get-field_ (&whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
-
-;;; Expand a `(js/optional-chaining ...)` expression.
-(defmacro js-optional-chaining_ (&whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
+(defmacro get-field_ (field obj)
+  `(js/. ,obj ,field))
 
 ;;; Expand a `(set-field! ...)` expression.
 (defmacro set-field_ (&whole exp &environment env)
@@ -7994,7 +8005,6 @@
          (intersection ,intersection_ (-> Any * Any))
          (is-a? ,is-a?_ (-> Any * Any))
          (js ,js_ (-> Any * Any))
-         (js/array? ,js-array?_ (-> Any * Any))
          (js-field ,array-ref_ (-> Any * Any))
          (js-keys ,js-keys_ (-> Any * Any))
          (js-obj ,js-obj_ (-> Any * Any))
@@ -8002,11 +8012,14 @@
          (js-obj-keys ,js-keys_ (-> Any * Any))
          (js-obj? ,js-obj-p_ (-> Any * Any))
          (js/+ ,js-plus_ (-> Any * Any))
+         (js/. ,js-dot_ (-> Any * Any))
          (js/== ,js-loosely-equal?_ (-> Any * Any))
          (js/=== ,js-strictly-equal?_ (-> Any * Any))
          (js/===? ,js-strictly-equal?_ (-> Any * Any))
          (js/==? ,js-loosely-equal?_ (-> Any * Any))
+         (js/?. ,js-optional-chaining_ (-> Any * Any))
          (js/append ,js-plus_ (-> Any * Any))
+         (js/array? ,js-array?_ (-> Any * Any))
          (js/console.log ,(get-field log console) (-> Any * Any))
          (js/delete ,js-delete_ (-> Any * Any))
          (js/eighth ,js-eighth_ (-> Any * Any))
@@ -8027,7 +8040,6 @@
          (js/instanceof? ,js-instance-of?_ (-> Any * Any))
          (js/is-loosely-equal? ,js-loosely-equal?_ (-> Any * Any))
          (js/is-strictly-equal? ,js-strictly-equal?_ (-> Any * Any))
-         (js/new ,js-new_ (-> Any * Any))
          (js/js-obj ,js-obj_ (-> Any * Any))
          (js/js-obj-append ,js-obj-append_ (-> Any * Any))
          (js/js-obj? ,js-obj-p_ (-> Any * Any))
@@ -8035,6 +8047,7 @@
          (js/last ,js-last_ (-> Any * Any))
          (js/length ,js-length_ (-> Any * Any))
          (js/nan? ,js-nan?_ (-> Any * Any))
+         (js/new ,js-new_ (-> Any * Any))
          (js/ninth ,js-ninth_ (-> Any * Any))
          (js/null? ,js-null?_ (-> Any * Any))
          (js/obj ,js-obj_ (-> Any * Any))
@@ -8300,7 +8313,6 @@
          (fset ,set_ (macro-> Any * Any))
          (get-field ,get-field_ (macro-> Any * Any))
          (if ,if_ (macro-> Any * Any))
-         (js/?. ,js-optional-chaining_ (macro-> Any * Any))
          (js/arrow ,js-arrow_ (macro-> Any * Any))
          (js/async ,js-async_ (macro-> Any * Any))
          (js/await ,js-await_ (macro-> Any * Any))

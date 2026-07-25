@@ -391,11 +391,17 @@ function evalEstreeMemberExpression(node, env, options = {}) {
     const object = node.object;
     const property = node.property;
     const computed = node.computed;
+    const optional = node.optional;
     const objectVal = evalEstree(object, env, options);
     const propertyVal = computed ? evalEstree(property, env, options) : property.name;
-    return objectVal[propertyVal];
+    if (optional && (objectVal === undefined)) {
+        return undefined;
+    }
+    else {
+        return objectVal[propertyVal];
+    }
 }
-evalEstreeMemberExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-member-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('object'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('property'), [Symbol.for('get-field'), Symbol.for('property'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-field'), Symbol.for('computed'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('object-val'), [Symbol.for('eval-estree'), Symbol.for('object'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('property-val'), [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('eval-estree'), Symbol.for('property'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('property')]]]], [Symbol.for('oget'), Symbol.for('object-val'), Symbol.for('property-val')]];
+evalEstreeMemberExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-member-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('object'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('property'), [Symbol.for('get-field'), Symbol.for('property'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-field'), Symbol.for('computed'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('get-field'), Symbol.for('optional'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('object-val'), [Symbol.for('eval-estree'), Symbol.for('object'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('property-val'), [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('eval-estree'), Symbol.for('property'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('property')]]]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('optional'), [Symbol.for('undefined?'), Symbol.for('object-val')]], undefined], [Symbol.for('else'), [Symbol.for('oget'), Symbol.for('object-val'), Symbol.for('property-val')]]]];
 /**
  * Evaluate an ESTree [`CallExpression`][estree:callexpression] node.
  *
@@ -407,19 +413,28 @@ function evalEstreeCallExpression(node, env, options = {}) {
     const args = node.arguments;
     const argsVals = evalEstreeArrayExpressionHelper(args, env, options);
     if ((0, estree_1.estreeTypeP)(callee, 'MemberExpression')) {
-        const obj = callee.object;
-        const objVal = evalEstree(obj, env, options);
         const methodVal = evalEstree(callee, env, options);
-        return methodVal.apply(objVal, argsVals);
+        if ((methodVal === undefined) && callee.optional) {
+            return undefined;
+        }
+        else {
+            const obj = callee.object;
+            const objVal = evalEstree(obj, env, options);
+            return methodVal.apply(objVal, argsVals);
+        }
     }
     else {
         const f = callee;
         const fVal = evalEstree(f, env, options);
-        let result = fVal(...argsVals);
-        return result;
+        if ((fVal === undefined) && node.optional) {
+            return undefined;
+        }
+        else {
+            return fVal(...argsVals);
+        }
     }
 }
-evalEstreeCallExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-call-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('callee'), [Symbol.for('get-field'), Symbol.for('callee'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('arguments'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args-vals'), [Symbol.for('eval-estree-array-expression-helper'), Symbol.for('args'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('callee'), 'MemberExpression'], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('callee')]], [Symbol.for('define'), Symbol.for('obj-val'), [Symbol.for('eval-estree'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('method-val'), [Symbol.for('eval-estree'), Symbol.for('callee'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('method-val'), Symbol.for('apply'), Symbol.for('obj-val'), Symbol.for('args-vals')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('f'), Symbol.for('callee')], [Symbol.for('define'), Symbol.for('f-val'), [Symbol.for('eval-estree'), Symbol.for('f'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('apply'), Symbol.for('f-val'), Symbol.for('args-vals')]], Symbol.for('result')]]];
+evalEstreeCallExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-call-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('callee'), [Symbol.for('get-field'), Symbol.for('callee'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('arguments'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args-vals'), [Symbol.for('eval-estree-array-expression-helper'), Symbol.for('args'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('callee'), 'MemberExpression'], [Symbol.for('define'), Symbol.for('method-val'), [Symbol.for('eval-estree'), Symbol.for('callee'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('undefined?'), Symbol.for('method-val')], [Symbol.for('get-field'), Symbol.for('optional'), Symbol.for('callee')]], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('get-field'), Symbol.for('object'), Symbol.for('callee')]], [Symbol.for('define'), Symbol.for('obj-val'), [Symbol.for('eval-estree'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('method-val'), Symbol.for('apply'), Symbol.for('obj-val'), Symbol.for('args-vals')]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('f'), Symbol.for('callee')], [Symbol.for('define'), Symbol.for('f-val'), [Symbol.for('eval-estree'), Symbol.for('f'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('undefined?'), Symbol.for('f-val')], [Symbol.for('get-field'), Symbol.for('optional'), Symbol.for('node')]], undefined], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f-val'), Symbol.for('args-vals')]]]]]];
 /**
  * Evaluate an ESTree [`BreakStatement`][estree:breakstatement] node.
  *

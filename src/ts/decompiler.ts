@@ -459,6 +459,8 @@ function decompileLiteral(node: any, options: any = {}): any {
     const flags: any = node.regex.flags;
     // TODO: We can emit `regexp` instead of `js/regexp`
     // provided it is not the name of a local variable.
+    // To do that, we need an environment in which to
+    // keep track of bindings.
     return sexpToRose([Symbol.for('js/regexp'), pattern, ...(flags ? [flags] : [])]);
   } else {
     return sexpToRose(value);
@@ -473,15 +475,23 @@ function decompileLiteral(node: any, options: any = {}): any {
 function decompileMemberExpression(node: any, options: any = {}): any {
   const property: any = decompileEstree(node.property, options);
   const propertyExp: any = roseToSexp(property);
-  const object: any = decompileEstree(node.object, options);
+  let object: any = decompileEstree(node.object, options);
   const objectExp: any = roseToSexp(object);
   const computed: any = node.computed;
+  const optional: any = node.optional;
   if (computed) {
+    if (optional) {
+      object = [Symbol.for('js/?.'), object];
+    }
     if (Number.isFinite(propertyExp)) {
       return sexpToRose([Symbol.for('aget'), ...(taggedListP(objectExp, Symbol.for('aget')) ? object.drop(1) : [object]), property]);
     } else {
       return sexpToRose([Symbol.for('oget'), object, property]);
     }
+  } else if (optional) {
+    return sexpToRose([Symbol.for('js/?.'), object, property]);
+  } else if (propertyExp === Symbol.for('length')) {
+    return sexpToRose([Symbol.for('js/length'), object]);
   } else {
     return sexpToRose([Symbol.for('get-field'), property, object]);
   }

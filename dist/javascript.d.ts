@@ -265,6 +265,21 @@ declare namespace jsGet_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
+ * Look up the property `prop` in the JavaScript object `obj`.
+ */
+declare function jsDot_(obj: any, prop: any): any;
+declare namespace jsDot_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Look up properties `args` in the JavaScript object `obj`,
+ * using optional chaining.
+ */
+declare function jsOptionalChaining_(obj: any, ...args: any[]): any;
+declare namespace jsOptionalChaining_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+}
+/**
  * Slice a JavaScript array.
  */
 declare function jsSlice_(arr: any, ...args: any[]): any;
@@ -369,4 +384,4 @@ declare function jsYield_(x?: any): any;
 declare namespace jsYield_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
-export { jsArrayP_, jsDelete_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceOfP_, jsLast_, jsLength_, jsLooselyEqualP_, jsNanP_, jsNew_, jsNinth_, jsNullP_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsYield_ };
+export { jsArrayP_, jsDelete_, jsDot_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceOfP_, jsLast_, jsLength_, jsLooselyEqualP_, jsNanP_, jsNew_, jsNinth_, jsNullP_, jsOptionalChaining_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsYield_ };

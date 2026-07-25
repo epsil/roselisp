@@ -637,63 +637,61 @@
 ;;;
 ;;; Converts a list or nested list of rose tree nodes
 ;;; and other values to a rose tree.
-(define (make-rose exp (node #u))
+(define (sexp->rose exp (node #u))
   (define cache
-    (make-rose-map node))
+    (rose->map node))
   (define indices
     (make-hash))
-  (make-rose-helper exp node cache indices))
-
-;;; Helper function for `make-rose`.
-(define (make-rose-helper exp node cache indices)
-  (cond
-   ((hash-has-key? cache exp)
-    (define idx
-      (or (hash-ref indices exp) 0))
-    (define entry
-      (hash-ref cache exp))
-    (define val
-      (aget entry idx))
-    (unless (>= idx (- (js/length entry) 1))
-      (set! idx (+ idx 1)))
-    (hash-set! indices exp idx)
-    val)
-   ((is-a? exp Rose)
-    exp)
-   ((array? exp)
-    ;; We need to create a new list since
-    ;; `exp` may be a list of rose tree nodes
-    ;; and S-expressions.
-    (define lst '())
-    (define result
-      (new Rose lst))
-    (define is-modified #f)
-    (define el-node)
-    (for ((el exp))
-      (set! el-node
-            (make-rose-helper el #u cache indices))
-      (unless (eq? (send el-node get-value) el)
-        (set! is-modified #t))
-      (push-right! lst
-                   (send el-node get-value))
-      (send result insert el-node))
-    ;; If all of the sub-expressions are unchanged,
-    ;; use the original list.
-    (unless is-modified
-      (send result set-value exp))
-    (when (is-a? node Rose)
-      (set! result
-            (transfer-comments node result)))
-    (rose-map-set! cache exp result)
-    result)
-   (else
-    (define result
-      (new Rose exp))
-    (when (is-a? node Rose)
-      (set! result
-            (transfer-comments node result)))
-    (rose-map-set! cache exp result)
-    result)))
+  (define (sexp->rose-helper exp node cache indices)
+    (cond
+     ((hash-has-key? cache exp)
+      (define idx
+        (or (hash-ref indices exp) 0))
+      (define entry
+        (hash-ref cache exp))
+      (define val
+        (aget entry idx))
+      (unless (>= idx (- (js/length entry) 1))
+        (set! idx (+ idx 1)))
+      (hash-set! indices exp idx)
+      val)
+     ((is-a? exp Rose)
+      exp)
+     ((array? exp)
+      ;; We need to create a new list since
+      ;; `exp` may be a list of rose tree nodes
+      ;; and S-expressions.
+      (define lst '())
+      (define result
+        (new Rose lst))
+      (define is-modified #f)
+      (define el-node)
+      (for ((el exp))
+        (set! el-node
+              (sexp->rose-helper el #u cache indices))
+        (unless (eq? (send el-node get-value) el)
+          (set! is-modified #t))
+        (push-right! lst
+                     (send el-node get-value))
+        (send result insert el-node))
+      ;; If all of the sub-expressions are unchanged,
+      ;; use the original list.
+      (unless is-modified
+        (send result set-value exp))
+      (when (is-a? node Rose)
+        (set! result
+              (transfer-comments node result)))
+      (rose-map-set! cache exp result)
+      result)
+     (else
+      (define result
+        (new Rose exp))
+      (when (is-a? node Rose)
+        (set! result
+              (transfer-comments node result)))
+      (rose-map-set! cache exp result)
+      result)))
+  (sexp->rose-helper exp node cache indices))
 
 ;;; Insert an S-expression into a rose tree node.
 (define (insert-sexp-into-rose exp node (cache (make-hash)))
@@ -732,7 +730,7 @@
 ;;;
 ;;; Returns a map mapping a value to a list of rose tree nodes
 ;;; containing that value.
-(define (make-rose-map (node #u))
+(define (rose->map (node #u))
   (define map
     (make-hash))
   (when node
@@ -845,7 +843,8 @@
   (send node get-value))
 
 (provide
-  (rename-out (make-rose sexp->rose))
+  (rename-out (rose->map make-rose-map))
+  (rename-out (sexp->rose make-rose))
   Forest
   Rose
   RoseSplice
@@ -855,13 +854,13 @@
   forest?
   insert-sexp-into-rose
   make-list-rose
-  make-rose
-  make-rose-map
   make-rose-nonrecursive
   make-sexp-rose
   make-simple-rose-map
+  rose->map
   rose->sexp
   rose?
+  sexp->rose
   slice-rose
   transfer-comments
   wrap-sexp-in-rose)

@@ -668,12 +668,14 @@
   (define/public object)
   (define/public property)
   (define/public computed)
+  (define/public optional)
 
-  (define/public (constructor object property (computed #f))
+  (define/public (constructor object property (computed #f) (optional #f))
     (super)
     (set-field! object this object)
     (set-field! property this property)
-    (set-field! computed this computed)))
+    (set-field! computed this computed)
+    (set-field! optional this optional)))
 
 ;;; ChainExpression
 ;;;

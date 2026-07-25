@@ -210,23 +210,25 @@ let z = 3;")
  > (decompile "x.y;")
  '(get-field y x)
  > (decompile "x?.y;")
- '(and (field-bound? y x)
-       (get-field y x))
+ '(js/?. x y)
+ > (decompile "x?.y();")
+ '((js/?. x y))
+ > (decompile "x?.y(z);")
+ '((js/?. x y) z)
  > (decompile "foo()?.y;")
- '(~> (foo)
-      (and (field-bound? y _)
-           (get-field y _)))
+ '(js/?. (foo) y)
+ > (decompile "x?.[0];")
+ '(aget (js/?. x) 0)
+ > (decompile "x?.[y];")
+ '(oget (js/?. x) y)
  > (decompile "x.y = z;")
  '(set-field! y x z)
  > (decompile "x.y();")
  '(send x y)
  > (decompile "x?.y();")
- '(and (field-bound? y x)
-       (send x y))
- > (decompile "foo()?.y();")
- '(~> (foo)
-      (and (field-bound? y _)
-           (send _ y)))
+ '((js/?. x y))
+ > (decompile "x()?.y();")
+ '((js/?. (x) y))
  > (decompile "x.y(z);")
  '(send x y z)
  > (decompile "x.y(...z);")
@@ -244,17 +246,20 @@ let z = 3;")
     x)
  > (decompile "function I(x: any, y?: any) {
   return x;
-}")
+}"
+              :from 'typescript)
  '(define (I (x : Any) (y undefined))
     x)
  > (decompile "function I(x: any, y: any = true) {
   return x;
-}")
+}"
+              :from 'typescript)
  '(define (I (x : Any) (y : Any #t))
     x)
  > (decompile "function I(x: number, y: number = 1) {
   return x;
-}")
+}"
+              :from 'typescript)
  '(define (I (x : Number) (y : Number 1))
     x)
  > (decompile "function foo(x = 1) {
@@ -316,7 +321,7 @@ let z = 3;")
  > (decompile "let I = (x: any) => {
   return x;
 };"
-              )
+              :from 'typescript)
  '(define I
     (js/arrow ((x : Any))
       x))
@@ -477,7 +482,7 @@ let z = 3;")
  > (decompile "for (i = 0; i < arr.length; i++) {
   foo();
 }")
- '(for ((i (range 0 (get-field length arr))))
+ '(for ((i (range 0 (js/length arr))))
     (foo))
  > (decompile "for (let i = 10; i > 0; i--) {
   foo();

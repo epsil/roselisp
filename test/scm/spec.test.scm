@@ -262,6 +262,10 @@
  "[1, 2];"
  > (compile '(list 1 2))
  "[1, 2];"
+ > (compile '(aget x 0))
+ "x[0];"
+ > (compile '(aget (js/?. x) 0))
+ "x?.[0];"
 
  ;; `quote`
  > (describe "quote")
@@ -831,6 +835,58 @@
  "while (true) {
   return 0;
 }"
+
+ ;; `js/.`
+ > (describe "js/.")
+ _
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/. obj foo))
+ "bar"
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/. obj "foo"))
+ "bar"
+ > (let ((obj (js-obj "foo" (js-obj "bar" "baz"))))
+     (js/. obj foo bar))
+ "baz"
+ > (let ((obj (js-obj "foo" (js-obj "bar" "baz"))))
+     (js/. (js/. obj foo) bar))
+ "baz"
+ > (compile '(js/. obj prop))
+ "obj.prop;"
+ > (compile '(js/. obj prop1 prop2))
+ "obj.prop1.prop2;"
+ > (compile '(js/. (js/. obj prop1) prop2))
+ "obj.prop1.prop2;"
+
+ ;; `js/?.`
+ > (describe "js/?.")
+ _
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/?. obj foo))
+ "bar"
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/?. obj "foo"))
+ "bar"
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/?. obj quux))
+ #u
+ > (let ((obj (js-obj "foo" "bar")))
+     ((js/?. obj quux)))
+ #u
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/?. obj quux wobble))
+ #u
+ > (let ((obj (js-obj "foo" "bar")))
+     (js/?. (js/?. obj quux) wobble))
+ #u
+ > (compile '(js/?. obj prop))
+ "obj?.prop;"
+ > (compile '(js/?. obj prop1 prop2))
+ "obj?.prop1?.prop2;"
+ > (compile '(js/?. (js/?. obj prop1) prop2))
+ "obj?.prop1?.prop2;"
+ > (compile '(js/?. (js/?. (js/?. obj) prop1) prop2))
+ "obj?.prop1?.prop2;"
 
  ;; `get-field`
  > (describe "get-field")

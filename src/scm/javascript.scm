@@ -185,9 +185,20 @@
   (js/get lst 9))
 
 ;;; Look up the property `key` in the JavaScript object `obj`.
-;;;
 (define (js-get_ obj key)
   (js/get obj key))
+
+;;; Look up the property `prop` in the JavaScript object `obj`.
+(define (js-dot_ obj prop)
+  (js/. obj prop))
+
+;;; Look up properties `args` in the JavaScript object `obj`,
+;;; using optional chaining.
+(define (js-optional-chaining_ obj . args)
+  (foldl (lambda (prop obj)
+           (js/?. obj prop))
+         obj
+         args))
 
 ;;; Slice a JavaScript array.
 (define (js-slice_ arr . args)
@@ -255,6 +266,7 @@
 (provide
   js-array?_
   js-delete_
+  js-dot_
   js-eighth_
   js-eval_
   js-fifth_
@@ -274,6 +286,7 @@
   js-new_
   js-ninth_
   js-null?_
+  js-optional-chaining_
   js-plus_
   js-reduce-right_
   js-reduce_

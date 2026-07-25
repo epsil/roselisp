@@ -716,12 +716,13 @@ exports.CallExpression = CallExpression;
  * [estree:memberexpression]: https://github.com/estree/estree/blob/master/es5.md#memberexpression
  */
 class MemberExpression extends Expression {
-    constructor(object, property, computed = false) {
+    constructor(object, property, computed = false, optional = false) {
         super();
         this.type = 'MemberExpression';
         this.object = object;
         this.property = property;
         this.computed = computed;
+        this.optional = optional;
     }
 }
 exports.MemberExpression = MemberExpression;

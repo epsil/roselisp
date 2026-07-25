@@ -564,7 +564,7 @@ declare namespace dot_ {
  */
 declare function getField_(exp: any, env: any): any;
 declare namespace getField_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
 }
 /**

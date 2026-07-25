@@ -585,7 +585,8 @@ declare class MemberExpression extends Expression {
     object: any;
     property: any;
     computed: any;
-    constructor(object: any, property: any, computed?: any);
+    optional: any;
+    constructor(object: any, property: any, computed?: any, optional?: any);
 }
 /**
  * ChainExpression

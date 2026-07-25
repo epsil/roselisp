@@ -901,11 +901,14 @@ class MemberExpression extends Expression {
 
   computed: any;
 
-  constructor(object: any, property: any, computed: any = false) {
+  optional: any;
+
+  constructor(object: any, property: any, computed: any = false, optional: any = false) {
     super();
     this.object = object;
     this.property = property;
     this.computed = computed;
+    this.optional = optional;
   }
 }
 

@@ -334,12 +334,32 @@ jsTenth_.fsource = [Symbol.for('define'), [Symbol.for('js-tenth_'), Symbol.for('
 /**
  * Look up the property `key` in the JavaScript object `obj`.
  */
-
 function jsGet_(obj: any, key: any): any {
   return (obj as any)[key];
 }
 
 jsGet_.fsource = [Symbol.for('define'), [Symbol.for('js-get_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
+
+/**
+ * Look up the property `prop` in the JavaScript object `obj`.
+ */
+function jsDot_(obj: any, prop: any): any {
+  return obj.prop;
+}
+
+jsDot_.fsource = [Symbol.for('define'), [Symbol.for('js-dot_'), Symbol.for('obj'), Symbol.for('prop')], [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for('prop')]];
+
+/**
+ * Look up properties `args` in the JavaScript object `obj`,
+ * using optional chaining.
+ */
+function jsOptionalChaining_(obj: any, ...args: any[]): any {
+  return args.reduce(function (obj: any, prop: any): any {
+    return obj?.prop;
+  }, obj);
+}
+
+jsOptionalChaining_.fsource = [Symbol.for('define'), [Symbol.for('js-optional-chaining_'), Symbol.for('obj'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('prop')]], Symbol.for('obj'), Symbol.for('args')]];
 
 /**
  * Slice a JavaScript array.
@@ -477,6 +497,7 @@ jsYield_.fsource = [Symbol.for('define'), [Symbol.for('js-yield_'), [Symbol.for(
 export {
   jsArrayP_,
   jsDelete_,
+  jsDot_,
   jsEighth_,
   jsEval_,
   jsFifth_,
@@ -496,6 +517,7 @@ export {
   jsNew_,
   jsNinth_,
   jsNullP_,
+  jsOptionalChaining_,
   jsPlus_,
   jsReduceRight_,
   jsReduce_,

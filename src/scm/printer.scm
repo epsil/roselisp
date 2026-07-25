@@ -1223,6 +1223,9 @@
              options)))
     (list
      object-printed
+     (if optional
+         "?."
+         "")
      "["
      property-printed
      "]"))

@@ -482,7 +482,7 @@ declare function beginWrapRoseSmart1(nodes: any): any;
  * Converts a list or nested list of rose tree nodes
  * and other values to a rose tree.
  */
-declare function makeRose(exp: any, node?: any): any;
+declare function sexpToRose(exp: any, node?: any): any;
 /**
  * Insert an S-expression into a rose tree node.
  */
@@ -498,7 +498,7 @@ declare function makeSimpleRoseMap(node: any): any;
  * Returns a map mapping a value to a list of rose tree nodes
  * containing that value.
  */
-declare function makeRoseMap(node?: any): any;
+declare function roseToMap(node?: any): any;
 declare function makeRoseNonrecursive(exp: any): any;
 /**
  * Make a rose tree-wrapped list expression.
@@ -528,4 +528,4 @@ declare function transferComments(from: any, to: any): any;
  * Convert a rose tree to an S-expression.
  */
 declare function roseToSexp(node: any): any;
-export { makeRose as sexpToRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, forestp, insertSexpIntoRose, makeListRose, makeRose, makeRoseMap, makeRoseNonrecursive, makeSexpRose, makeSimpleRoseMap, roseToSexp, rosep, sliceRose, transferComments, wrapSexpInRose };
+export { roseToMap as makeRoseMap, sexpToRose as makeRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, forestp, insertSexpIntoRose, makeListRose, makeRoseNonrecursive, makeSexpRose, makeSimpleRoseMap, roseToMap, roseToSexp, rosep, sexpToRose, sliceRose, transferComments, wrapSexpInRose };

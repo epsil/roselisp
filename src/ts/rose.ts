@@ -843,61 +843,57 @@ function beginWrapRoseSmart1(nodes: any): any {
  * Converts a list or nested list of rose tree nodes
  * and other values to a rose tree.
  */
-function makeRose(exp: any, node: any = undefined): any {
-  const cache: any = makeRoseMap(node);
+function sexpToRose(exp: any, node: any = undefined): any {
+  const cache: any = roseToMap(node);
   const indices: any = new Map();
-  return makeRoseHelper(exp, node, cache, indices);
-}
-
-/**
- * Helper function for `make-rose`.
- */
-function makeRoseHelper(exp: any, node: any, cache: any, indices: any): any {
-  if (cache.has(exp)) {
-    let idx: any = indices.get(exp) || 0;
-    const entry: any = cache.get(exp);
-    const val: any = (entry as any)[idx];
-    if (!(idx >= (entry.length - 1))) {
-      idx++;
-    }
-    indices.set(exp, idx);
-    return val;
-  } else if (exp instanceof Rose) {
-    return exp;
-  } else if (Array.isArray(exp)) {
-    // We need to create a new list since
-    // `exp` may be a list of rose tree nodes
-    // and S-expressions.
-    const lst: any = [];
-    let result: any = new Rose(lst);
-    let isModified: any = false;
-    let elNode: any;
-    for (let el of exp) {
-      elNode = makeRoseHelper(el, undefined, cache, indices);
-      if (elNode.getValue() !== el) {
-        isModified = true;
+  function sexpToRoseHelper(exp: any, node: any, cache: any, indices: any): any {
+    if (cache.has(exp)) {
+      let idx: any = indices.get(exp) || 0;
+      const entry: any = cache.get(exp);
+      const val: any = (entry as any)[idx];
+      if (!(idx >= (entry.length - 1))) {
+        idx++;
       }
-      lst.push(elNode.getValue());
-      result.insert(elNode);
+      indices.set(exp, idx);
+      return val;
+    } else if (exp instanceof Rose) {
+      return exp;
+    } else if (Array.isArray(exp)) {
+      // We need to create a new list since
+      // `exp` may be a list of rose tree nodes
+      // and S-expressions.
+      const lst: any = [];
+      let result: any = new Rose(lst);
+      let isModified: any = false;
+      let elNode: any;
+      for (let el of exp) {
+        elNode = sexpToRoseHelper(el, undefined, cache, indices);
+        if (elNode.getValue() !== el) {
+          isModified = true;
+        }
+        lst.push(elNode.getValue());
+        result.insert(elNode);
+      }
+      // If all of the sub-expressions are unchanged,
+      // use the original list.
+      if (!isModified) {
+        result.setValue(exp);
+      }
+      if (node instanceof Rose) {
+        result = transferComments(node, result);
+      }
+      roseMapSetX(cache, exp, result);
+      return result;
+    } else {
+      let result: any = new Rose(exp);
+      if (node instanceof Rose) {
+        result = transferComments(node, result);
+      }
+      roseMapSetX(cache, exp, result);
+      return result;
     }
-    // If all of the sub-expressions are unchanged,
-    // use the original list.
-    if (!isModified) {
-      result.setValue(exp);
-    }
-    if (node instanceof Rose) {
-      result = transferComments(node, result);
-    }
-    roseMapSetX(cache, exp, result);
-    return result;
-  } else {
-    let result: any = new Rose(exp);
-    if (node instanceof Rose) {
-      result = transferComments(node, result);
-    }
-    roseMapSetX(cache, exp, result);
-    return result;
   }
+  return sexpToRoseHelper(exp, node, cache, indices);
 }
 
 /**
@@ -937,7 +933,7 @@ function makeSimpleRoseMap(node: any): any {
  * Returns a map mapping a value to a list of rose tree nodes
  * containing that value.
  */
-function makeRoseMap(node: any = undefined): any {
+function roseToMap(node: any = undefined): any {
   const map: any = new Map();
   if (node) {
     node.forEachNode(function (x: any): any {
@@ -1065,7 +1061,8 @@ function roseToSexp(node: any): any {
 }
 
 export {
-  makeRose as sexpToRose,
+  roseToMap as makeRoseMap,
+  sexpToRose as makeRose,
   Forest,
   Rose,
   RoseSplice,
@@ -1075,13 +1072,13 @@ export {
   forestp,
   insertSexpIntoRose,
   makeListRose,
-  makeRose,
-  makeRoseMap,
   makeRoseNonrecursive,
   makeSexpRose,
   makeSimpleRoseMap,
+  roseToMap,
   roseToSexp,
   rosep,
+  sexpToRose,
   sliceRose,
   transferComments,
   wrapSexpInRose

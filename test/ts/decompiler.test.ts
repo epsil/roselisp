@@ -526,20 +526,41 @@ describe('decompile', function (): any {
   });
   it('(decompile "x?.y;")', function (): any {
     return assertEqual(decompile('x?.y;'), [
-      Symbol.for('and'),
-      [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('x')],
-      [Symbol.for('get-field'), Symbol.for('y'), Symbol.for('x')],
+      Symbol.for('js/?.'),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x?.y();")', function (): any {
+    return assertEqual(decompile('x?.y();'), [
+      [Symbol.for('js/?.'), Symbol.for('x'), Symbol.for('y')],
+    ]);
+  });
+  it('(decompile "x?.y(z);")', function (): any {
+    return assertEqual(decompile('x?.y(z);'), [
+      [Symbol.for('js/?.'), Symbol.for('x'), Symbol.for('y')],
+      Symbol.for('z'),
     ]);
   });
   it('(decompile "foo()?.y;")', function (): any {
     return assertEqual(decompile('foo()?.y;'), [
-      Symbol.for('~>'),
+      Symbol.for('js/?.'),
       [Symbol.for('foo')],
-      [
-        Symbol.for('and'),
-        [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('_')],
-        [Symbol.for('get-field'), Symbol.for('y'), Symbol.for('_')],
-      ],
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x?.[0];")', function (): any {
+    return assertEqual(decompile('x?.[0];'), [
+      Symbol.for('aget'),
+      [Symbol.for('js/?.'), Symbol.for('x')],
+      0,
+    ]);
+  });
+  it('(decompile "x?.[y];")', function (): any {
+    return assertEqual(decompile('x?.[y];'), [
+      Symbol.for('oget'),
+      [Symbol.for('js/?.'), Symbol.for('x')],
+      Symbol.for('y'),
     ]);
   });
   it('(decompile "x.y = z;")', function (): any {
@@ -559,20 +580,12 @@ describe('decompile', function (): any {
   });
   it('(decompile "x?.y();")', function (): any {
     return assertEqual(decompile('x?.y();'), [
-      Symbol.for('and'),
-      [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('x')],
-      [Symbol.for('send'), Symbol.for('x'), Symbol.for('y')],
+      [Symbol.for('js/?.'), Symbol.for('x'), Symbol.for('y')],
     ]);
   });
-  it('(decompile "foo()?.y();")', function (): any {
-    return assertEqual(decompile('foo()?.y();'), [
-      Symbol.for('~>'),
-      [Symbol.for('foo')],
-      [
-        Symbol.for('and'),
-        [Symbol.for('field-bound?'), Symbol.for('y'), Symbol.for('_')],
-        [Symbol.for('send'), Symbol.for('_'), Symbol.for('y')],
-      ],
+  it('(decompile "x()?.y();")', function (): any {
+    return assertEqual(decompile('x()?.y();'), [
+      [Symbol.for('js/?.'), [Symbol.for('x')], Symbol.for('y')],
     ]);
   });
   it('(decompile "x.y(z);")', function (): any {
@@ -613,10 +626,16 @@ describe('decompile', function (): any {
     }
   );
   it(
-    '(decompile "function I(x: any, y?: any) {\n' + '  return x;\n' + '}")',
+    '(decompile "function I(x: any, y?: any) {\n' +
+      '  return x;\n' +
+      '}" :from \'typescript)',
     function (): any {
       return assertEqual(
-        decompile('function I(x: any, y?: any) {\n' + '  return x;\n' + '}'),
+        decompile(
+          'function I(x: any, y?: any) {\n' + '  return x;\n' + '}',
+          Symbol.for(':from'),
+          Symbol.for('typescript')
+        ),
         [
           Symbol.for('define'),
           [
@@ -632,11 +651,13 @@ describe('decompile', function (): any {
   it(
     '(decompile "function I(x: any, y: any = true) {\n' +
       '  return x;\n' +
-      '}")',
+      '}" :from \'typescript)',
     function (): any {
       return assertEqual(
         decompile(
-          'function I(x: any, y: any = true) {\n' + '  return x;\n' + '}'
+          'function I(x: any, y: any = true) {\n' + '  return x;\n' + '}',
+          Symbol.for(':from'),
+          Symbol.for('typescript')
         ),
         [
           Symbol.for('define'),
@@ -653,11 +674,13 @@ describe('decompile', function (): any {
   it(
     '(decompile "function I(x: number, y: number = 1) {\n' +
       '  return x;\n' +
-      '}")',
+      '}" :from \'typescript)',
     function (): any {
       return assertEqual(
         decompile(
-          'function I(x: number, y: number = 1) {\n' + '  return x;\n' + '}'
+          'function I(x: number, y: number = 1) {\n' + '  return x;\n' + '}',
+          Symbol.for(':from'),
+          Symbol.for('typescript')
         ),
         [
           Symbol.for('define'),
@@ -804,10 +827,16 @@ describe('decompile', function (): any {
     }
   );
   it(
-    '(decompile "let I = (x: any) => {\n' + '  return x;\n' + '};")',
+    '(decompile "let I = (x: any) => {\n' +
+      '  return x;\n' +
+      '};" :from \'typescript)',
     function (): any {
       return assertEqual(
-        decompile('let I = (x: any) => {\n' + '  return x;\n' + '};'),
+        decompile(
+          'let I = (x: any) => {\n' + '  return x;\n' + '};',
+          Symbol.for(':from'),
+          Symbol.for('typescript')
+        ),
         [
           Symbol.for('define'),
           Symbol.for('I'),
@@ -1149,11 +1178,7 @@ describe('decompile', function (): any {
               [
                 Symbol.for('range'),
                 0,
-                [
-                  Symbol.for('get-field'),
-                  Symbol.for('length'),
-                  Symbol.for('arr'),
-                ],
+                [Symbol.for('js/length'), Symbol.for('arr')],
               ],
             ],
           ],

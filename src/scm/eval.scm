@@ -350,6 +350,8 @@
     (get-field property node))
   (define computed
     (get-field computed node))
+  (define optional
+    (get-field optional node))
   (define object-val
     (eval-estree object env options))
   (define property-val
@@ -358,7 +360,12 @@
       (eval-estree property env options))
      (else
       (get-field name property))))
-  (oget object-val property-val))
+  (cond
+   ((and optional
+         (undefined? object-val))
+    #u)
+   (else
+    (oget object-val property-val))))
 
 ;;; Evaluate an ESTree [`CallExpression`][estree:callexpression] node.
 ;;;
@@ -374,20 +381,28 @@
      args env options))
   (cond
    ((estree-type? callee "MemberExpression")
-    (define obj
-      (get-field object callee))
-    (define obj-val
-      (eval-estree obj env options))
     (define method-val
       (eval-estree callee env options))
-    (send method-val apply obj-val args-vals))
+    (cond
+     ((and (undefined? method-val)
+           (get-field optional callee))
+      #u)
+     (else
+      (define obj
+        (get-field object callee))
+      (define obj-val
+        (eval-estree obj env options))
+      (send method-val apply obj-val args-vals))))
    (else
     (define f callee)
     (define f-val
       (eval-estree f env options))
-    (define result
-      (apply f-val args-vals))
-    result)))
+    (cond
+     ((and (undefined? f-val)
+           (get-field optional node))
+      #u)
+     (else
+      (apply f-val args-vals))))))
 
 ;;; Evaluate an ESTree [`BreakStatement`][estree:breakstatement] node.
 ;;;

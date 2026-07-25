@@ -18,7 +18,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsYield_ = exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsReturn_ = exports.jsRest_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsNullP_ = exports.jsNinth_ = exports.jsNew_ = exports.jsNanP_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsLast_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDelete_ = exports.jsArrayP_ = void 0;
+exports.jsYield_ = exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsReturn_ = exports.jsRest_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOptionalChaining_ = exports.jsNullP_ = exports.jsNinth_ = exports.jsNew_ = exports.jsNanP_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsLast_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDot_ = exports.jsDelete_ = exports.jsArrayP_ = void 0;
 /**
  * JavaScript [strict equality][js:strict-equality],
  * i.e., the [`===`][js:strict-equality-operator] operator.
@@ -313,6 +313,25 @@ function jsGet_(obj, key) {
 }
 exports.jsGet_ = jsGet_;
 jsGet_.fsource = [Symbol.for('define'), [Symbol.for('js-get_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
+/**
+ * Look up the property `prop` in the JavaScript object `obj`.
+ */
+function jsDot_(obj, prop) {
+    return obj.prop;
+}
+exports.jsDot_ = jsDot_;
+jsDot_.fsource = [Symbol.for('define'), [Symbol.for('js-dot_'), Symbol.for('obj'), Symbol.for('prop')], [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for('prop')]];
+/**
+ * Look up properties `args` in the JavaScript object `obj`,
+ * using optional chaining.
+ */
+function jsOptionalChaining_(obj, ...args) {
+    return args.reduce(function (obj, prop) {
+        return obj === null || obj === void 0 ? void 0 : obj.prop;
+    }, obj);
+}
+exports.jsOptionalChaining_ = jsOptionalChaining_;
+jsOptionalChaining_.fsource = [Symbol.for('define'), [Symbol.for('js-optional-chaining_'), Symbol.for('obj'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('prop')]], Symbol.for('obj'), Symbol.for('args')]];
 /**
  * Slice a JavaScript array.
  */

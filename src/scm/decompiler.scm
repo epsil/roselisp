@@ -510,6 +510,8 @@
           (get-field flags _)))
     ;; TODO: We can emit `regexp` instead of `js/regexp`
     ;; provided it is not the name of a local variable.
+    ;; To do that, we need an environment in which to
+    ;; keep track of bindings.
     (sexp->rose
      `(js/regexp
        ,pattern
@@ -534,8 +536,12 @@
     (rose->sexp object))
   (define computed
     (get-field computed node))
+  (define optional
+    (get-field optional node))
   (cond
    (computed
+    (when optional
+      (set! object `(js/?. ,object)))
     (cond
      ((number? property-exp)
       (sexp->rose
@@ -547,6 +553,12 @@
      (else
       (sexp->rose
        `(oget ,object ,property)))))
+   (optional
+    (sexp->rose
+     `(js/?. ,object ,property)))
+   ((eq? property-exp 'length)
+    (sexp->rose
+     `(js/length ,object)))
    (else
     (sexp->rose
      `(get-field ,property ,object)))))

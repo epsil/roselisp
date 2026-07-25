@@ -163,6 +163,7 @@
                   WhileStatement
                   XRawJavaScript
                   YieldExpression
+                  estree-type
                   estree-type?
                   estree?))
 (require (only-in "./eval"
@@ -2380,16 +2381,31 @@
 
 ;;; Compile an `(array-ref ...)` expression.
 (define (compile-array-ref node env (options (js-obj)))
+  (define language
+    (oget options "language"))
   (define variable
     (send node get 1))
-  (define variable-compiled
-    (compile-expression variable env options))
   (define indices
     (send node drop 2))
   (define indices-compiled
     (map (lambda (x)
            (compile-expression x env options))
          indices))
+  ;; Kludge: prevent TypeScript errors with expressions
+  ;; like `x[y]`, where `y` is `any`-typed.
+  (when (and (eq? language "TypeScript")
+             (not (form? variable ann_ env))
+             (not (memq? (estree-type
+                          (js/first indices-compiled))
+                         '("Literal"
+                           "UnaryExpression"
+                           "BinaryExpression"))))
+    (set! variable
+          (sexp->rose
+           `(ann ,variable Any)
+           variable)))
+  (define variable-compiled
+    (compile-expression variable env options))
   (define computed #t)
   (define optional
     (form? variable js-optional-chaining_ env))
@@ -4006,26 +4022,45 @@
       node)
      env options))
    (else
+    (define language
+      (oget options "language"))
     (define obj
       (send node get 1))
     (define prop
       (send node get 2))
     (define computed
       (not (symbol? (rose->sexp prop))))
+    (define prop-compiled
+      (if computed
+          (compile-expression
+           prop env options)
+          (compile-symbol
+           prop env options)))
+    ;; Kludge: prevent TypeScript errors with expressions
+    ;; like `x[y]`, where `y` is `any`-typed.
+    (when (and computed
+               (eq? language "TypeScript")
+               (not (form? obj ann_ env))
+               (not (memq? (estree-type prop-compiled)
+                           '("Literal"
+                             "UnaryExpression"
+                             "BinaryExpression"))))
+      (set! obj
+            (sexp->rose
+             `(ann ,obj Any)
+             obj)))
+    (define obj-compiled
+      (if (symbol? (rose->sexp obj))
+          (compile-symbol
+           obj env
+           (make-expression-options
+            options))
+          (compile-expression
+           obj env options)))
     (make-expression-or-statement
      (new MemberExpression
-          (if (symbol? (rose->sexp obj))
-              (compile-symbol
-               obj env
-               (make-expression-options
-                options))
-              (compile-expression
-               obj env options))
-          (if computed
-              (compile-expression
-               prop env options)
-              (compile-symbol
-               prop env options))
+          obj-compiled
+          prop-compiled
           computed)
      options))))
 

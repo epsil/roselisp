@@ -181,6 +181,7 @@ import {
   WhileStatement,
   XRawJavaScript,
   YieldExpression,
+  estreeType,
   estreeTypeP,
   estreep
 } from './estree';
@@ -2385,12 +2386,18 @@ compileApply.fsource = [Symbol.for('define'), [Symbol.for('compile-apply'), Symb
  * Compile an `(array-ref ...)` expression.
  */
 function compileArrayRef(node: any, env: any, options: any = {}): any {
-  const variable: any = node.get(1);
-  const variableCompiled: any = compileExpression(variable, env, options);
+  const language: any = options['language'];
+  let variable: any = node.get(1);
   const indices: any = node.drop(2);
   const indicesCompiled: any = indices.map(function (x: any): any {
     return compileExpression(x, env, options);
   });
+  // Kludge: prevent TypeScript errors with expressions
+  // like `x[y]`, where `y` is `any`-typed.
+  if ((language === 'TypeScript') && !formp(variable, ann_, env) && !['Literal', 'UnaryExpression', 'BinaryExpression'].includes(estreeType(indicesCompiled[0]))) {
+    variable = sexpToRose([Symbol.for('ann'), variable, Symbol.for('Any')], variable);
+  }
+  const variableCompiled: any = compileExpression(variable, env, options);
   const computed: any = true;
   const optional: any = formp(variable, jsOptionalChaining_, env);
   let result: any = indicesCompiled.reduce(function (arr: any, idx: any): any {
@@ -2399,7 +2406,7 @@ function compileArrayRef(node: any, env: any, options: any = {}): any {
   return makeExpressionOrStatement(result, options);
 }
 
-compileArrayRef.fsource = [Symbol.for('define'), [Symbol.for('compile-array-ref'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('variable'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('variable-compiled'), [Symbol.for('compile-expression'), Symbol.for('variable'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('indices-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-expression'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('indices')]], [Symbol.for('define'), Symbol.for('computed'), true], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('form?'), Symbol.for('variable'), Symbol.for('js-optional-chaining_'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('idx'), Symbol.for('arr')], [Symbol.for('new'), Symbol.for('MemberExpression'), Symbol.for('arr'), Symbol.for('idx'), Symbol.for('computed'), Symbol.for('optional')]], Symbol.for('variable-compiled'), Symbol.for('indices-compiled')]], [Symbol.for('make-expression-or-statement'), Symbol.for('result'), Symbol.for('options')]];
+compileArrayRef.fsource = [Symbol.for('define'), [Symbol.for('compile-array-ref'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('variable'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('indices-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-expression'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('indices')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('not'), [Symbol.for('form?'), Symbol.for('variable'), Symbol.for('ann_'), Symbol.for('env')]], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), [Symbol.for('js/first'), Symbol.for('indices-compiled')]], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('variable'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('ann'), [Symbol.for('unquote'), Symbol.for('variable')], Symbol.for('Any')]], Symbol.for('variable')]]], [Symbol.for('define'), Symbol.for('variable-compiled'), [Symbol.for('compile-expression'), Symbol.for('variable'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('computed'), true], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('form?'), Symbol.for('variable'), Symbol.for('js-optional-chaining_'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('idx'), Symbol.for('arr')], [Symbol.for('new'), Symbol.for('MemberExpression'), Symbol.for('arr'), Symbol.for('idx'), Symbol.for('computed'), Symbol.for('optional')]], Symbol.for('variable-compiled'), Symbol.for('indices-compiled')]], [Symbol.for('make-expression-or-statement'), Symbol.for('result'), Symbol.for('options')]];
 
 /**
  * Compile an `(array-set! ...)` expression.
@@ -2830,7 +2837,7 @@ compileDiv.fsource = [Symbol.for('define'), [Symbol.for('compile-div'), Symbol.f
  * Compile a `(send ...)` expression.
  */
 function compileSend(node: any, env: any, options: any = {}): any {
-  const obj: any = node.get(1);
+  let obj: any = node.get(1);
   const method: any = node.get(2);
   const args: any = node.drop(3);
   return makeExpressionOrStatement(new CallExpression(new MemberExpression((typeof roseToSexp(obj) === 'symbol') ? compileSymbol(obj, env, makeExpressionOptions(options)) : compileExpression(obj, env, options), compileSymbol(method, env, options), false), args.map(function (x: any): any {
@@ -2844,7 +2851,7 @@ compileSend.fsource = [Symbol.for('define'), [Symbol.for('compile-send'), Symbol
  * Compile a `(send/apply ...)` expression.
  */
 function compileSendApply(node: any, env: any, options: any = {}): any {
-  const obj: any = node.get(1);
+  let obj: any = node.get(1);
   const method: any = node.get(2);
   const args: any = node.drop(3);
   return makeExpressionOrStatement(compileExpression(sexpToRose([Symbol.for('apply'), [Symbol.for('get-field'), method, obj], ...args], node), env, options), options);
@@ -3768,7 +3775,7 @@ function compileLetFields(node: any, env: any, options: any = {}): any {
     const defineNodes: any = letNodes.map(function (x: any): any {
       const fields: any = x.get(0);
       const fieldsExp: any = roseToSexp(fields);
-      const obj: any = x.get(1);
+      let obj: any = x.get(1);
       for (let f of fieldsExp) {
         const sym: any = Array.isArray(f) ? ((Array.isArray(f) && (f.length >= 3) && (f[f.length - 2] === Symbol.for('.')) && ((): any => {
           let x1: any = lastCdr(f);
@@ -3817,7 +3824,7 @@ function compileDefineFields(node: any, env: any, options: any = {}): any {
   langFilter.fsource = [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]];
   const fields: any = node.get(1);
   const fieldsExp: any = roseToSexp(fields);
-  const obj: any = node.get(2);
+  let obj: any = node.get(2);
   for (let f of fieldsExp) {
     const sym: any = Array.isArray(f) ? ((Array.isArray(f) && (f.length >= 3) && (f[f.length - 2] === Symbol.for('.')) && ((): any => {
       const x: any = lastCdr(f);
@@ -4180,13 +4187,13 @@ function compileDot(node: any, env: any, options: any = {}): any {
         return result;
       })() : match[1];
       const fieldSym: any = Symbol.for(field);
-      const obj: any = node.get(1);
+      let obj: any = node.get(1);
       return compileJsDot(sexpToRose([Symbol.for('js/.'), obj, fieldSym]), env, options);
     } else {
       return compileSend(node, env, options);
     }
   } else {
-    const obj: any = node.get(1);
+    let obj: any = node.get(1);
     if ((match = method.match(new RegExp('^-(.*)$')))) {
       // Member expression:
       // `(.-foo bar)` = `(js/. bar foo)`.
@@ -4229,14 +4236,22 @@ function compileJsDot(node: any, env: any, options: any = {}): any {
       return [Symbol.for('js/.'), obj, prop];
     }, node.get(1)), node), env, options);
   } else {
-    const obj: any = node.get(1);
+    const language: any = options['language'];
+    let obj: any = node.get(1);
     const prop: any = node.get(2);
     const computed: any = typeof roseToSexp(prop) !== 'symbol';
-    return makeExpressionOrStatement(new MemberExpression((typeof roseToSexp(obj) === 'symbol') ? compileSymbol(obj, env, makeExpressionOptions(options)) : compileExpression(obj, env, options), computed ? compileExpression(prop, env, options) : compileSymbol(prop, env, options), computed), options);
+    const propCompiled: any = computed ? compileExpression(prop, env, options) : compileSymbol(prop, env, options);
+    // Kludge: prevent TypeScript errors with expressions
+    // like `x[y]`, where `y` is `any`-typed.
+    if (computed && (language === 'TypeScript') && !formp(obj, ann_, env) && !['Literal', 'UnaryExpression', 'BinaryExpression'].includes(estreeType(propCompiled))) {
+      obj = sexpToRose([Symbol.for('ann'), obj, Symbol.for('Any')], obj);
+    }
+    const objCompiled: any = (typeof roseToSexp(obj) === 'symbol') ? compileSymbol(obj, env, makeExpressionOptions(options)) : compileExpression(obj, env, options);
+    return makeExpressionOrStatement(new MemberExpression(objCompiled, propCompiled, computed), options);
   }
 }
 
-compileJsDot.fsource = [Symbol.for('define'), [Symbol.for('compile-js-dot'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('size')], 3], [Symbol.for('compile-js-dot'), [Symbol.for('sexp->rose'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('js/.'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('unquote'), Symbol.for('prop')]]]], [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('not'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('prop')]]]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('MemberExpression'), [Symbol.for('if'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('obj')]], [Symbol.for('compile-symbol'), Symbol.for('obj'), Symbol.for('env'), [Symbol.for('make-expression-options'), Symbol.for('options')]], [Symbol.for('compile-expression'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('if'), Symbol.for('computed'), [Symbol.for('compile-expression'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-symbol'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('computed')], Symbol.for('options')]]]];
+compileJsDot.fsource = [Symbol.for('define'), [Symbol.for('compile-js-dot'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('size')], 3], [Symbol.for('compile-js-dot'), [Symbol.for('sexp->rose'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('js/.'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('unquote'), Symbol.for('prop')]]]], [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('not'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('prop')]]]], [Symbol.for('define'), Symbol.for('prop-compiled'), [Symbol.for('if'), Symbol.for('computed'), [Symbol.for('compile-expression'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-symbol'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('computed'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('not'), [Symbol.for('form?'), Symbol.for('obj'), Symbol.for('ann_'), Symbol.for('env')]], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), Symbol.for('prop-compiled')], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('obj'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('ann'), [Symbol.for('unquote'), Symbol.for('obj')], Symbol.for('Any')]], Symbol.for('obj')]]], [Symbol.for('define'), Symbol.for('obj-compiled'), [Symbol.for('if'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('obj')]], [Symbol.for('compile-symbol'), Symbol.for('obj'), Symbol.for('env'), [Symbol.for('make-expression-options'), Symbol.for('options')]], [Symbol.for('compile-expression'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('MemberExpression'), Symbol.for('obj-compiled'), Symbol.for('prop-compiled'), Symbol.for('computed')], Symbol.for('options')]]]];
 
 /**
  * Compile a `(js/?. ...)` expression.
@@ -4249,7 +4264,7 @@ function compileJsOptionalChaining(node: any, env: any, options: any = {}): any 
   } else if (node.size() === 2) {
     return compileRose(node.get(1), env, options);
   } else {
-    const obj: any = node.get(1);
+    let obj: any = node.get(1);
     const field: any = node.get(2);
     let result: any = Array.isArray(roseToSexp(field)) ? compileExpression(sexpToRose([obj, ...field.drop(0)], node), env, options) : compileExpression(sexpToRose([Symbol.for('js/.'), obj, field], node), env, options);
     result.optional = true;
@@ -4264,7 +4279,7 @@ compileJsOptionalChaining.fsource = [Symbol.for('define'), [Symbol.for('compile-
  */
 function compileSetField(node: any, env: any, options: any = {}): any {
   const field: any = node.get(1);
-  const obj: any = node.get(2);
+  let obj: any = node.get(2);
   let val: any = node.get(3);
   return compileRose(sexpToRose([Symbol.for('set!'), [Symbol.for('get-field'), field, obj], val], node), env, options);
 }
@@ -7178,7 +7193,7 @@ or_.ftype = 'macro';
  * Call a method on an object.
  */
 function sendMethod(...args: any[]): any {
-  const [obj, method, ...restArgs]: any[] = args;
+  let [obj, method, ...restArgs]: any[] = args;
   if (typeof method === 'symbol') {
     return sendMethod(obj, method.description as string, ...restArgs);
   } else if (typeof method === 'string') {
@@ -7239,7 +7254,7 @@ dot_.ftype = 'macro';
  * Expand a `(get-field ...)` expression.
  */
 function getField_(exp: any, env: any): any {
-  const [field, obj]: any[] = exp.slice(1);
+  let [field, obj]: any[] = exp.slice(1);
   return [Symbol.for('js/.'), obj, field];
 }
 
@@ -8970,7 +8985,7 @@ definitionp.fsource = [Symbol.for('define'), [Symbol.for('definition?'), Symbol.
  */
 function functionDefinitionP(exp: any): any {
   return definitionp(exp) && (((): any => {
-    const obj: any = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && ((): any => {
+    let obj: any = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && ((): any => {
       const x: any = lastCdr(exp);
       return Array.isArray(x) && (x.length === 0);
     })()) ? ((): any => {

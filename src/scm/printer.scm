@@ -1208,19 +1208,6 @@
           (doc-wrap object-printed options)))
   (cond
    (computed
-    ;; Kludge: prevent errors with expressions like
-    ;; `x[y]`, where `y` is `any`-typed.
-    ;; TODO: Move this code into the compiler.
-    (when (and (eq? language "TypeScript")
-               (not (memq? (estree-type property)
-                           '("Literal"
-                             "UnaryExpression"
-                             "BinaryExpression"))))
-      (set! object-printed
-            (doc-wrap
-             (list object-printed
-                   " as any")
-             options)))
     (list
      object-printed
      (if optional

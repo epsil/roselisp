@@ -6,6 +6,8 @@
 
 import { assertEqual, testRepl, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 /**
  * Test inbox
  */

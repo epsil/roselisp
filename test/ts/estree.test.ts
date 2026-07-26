@@ -4,6 +4,8 @@ import { BinaryExpression } from '../../src/ts/estree';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('ESTree', function (): any {
   xit("const hello: string = 'world';", function (): any {
     return assertEqual(

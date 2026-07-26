@@ -440,6 +440,12 @@
               '((foo "bar" Any))))
        (send env get-type 'quux))
  'Undefined
+ > (it "get-type, nonexistant binding, notFound option"
+       (define env
+         (new TypedEnvironment
+              '((foo "bar" Any))))
+       (send env get-type 'quux (js-obj "notFound" 'Any)))
+ 'Any
  > (it "get-type, filter option"
        (define env
          (new TypedEnvironment
@@ -687,6 +693,12 @@
               '((foo "bar" Any))))
        (send env get-type 'quux))
  'Undefined
+ > (it "get-type, nonexistant binding, notFound option"
+       (define env
+         (new LispEnvironment
+              '((foo "bar" Any))))
+       (send env get-type 'quux (js-obj "notFound" 'Any)))
+ 'Any
  > (it "get-type, filter option"
        (define env
          (new LispEnvironment
@@ -1306,6 +1318,59 @@
          (not (eq? x env)))
        (send env get 'foo (js-obj "filter" filter)))
  #u
+ > (it "has-thunk, true"
+       (define env
+         (new ThunkedEnvironment
+              `((foo
+                 ,(thunk (lambda () "foo"))
+                 Any))))
+       (send env has-thunk 'foo))
+ #t
+ > (it "has-thunk, parent environment, true"
+       (define env
+         (new ThunkedEnvironment
+              `((foo
+                 ,(thunk (lambda () "foo"))
+                 Any))
+              (new ThunkedEnvironment
+                   `((bar
+                      ,(thunk (lambda () "bar"))
+                      Any)))))
+       (send env has-thunk 'bar))
+ #t
+ > (it "has-thunk, false"
+       (define env
+         (new ThunkedEnvironment
+              `((foo
+                 ,(thunk (lambda () "foo"))
+                 Any)
+                (bar "bar" Any))))
+       (send env has-thunk 'bar))
+ #f
+ > (it "has-local-thunk, true"
+       (define env
+         (new ThunkedEnvironment
+              `((foo
+                 ,(thunk (lambda () "foo"))
+                 Any))
+              (new ThunkedEnvironment
+                   `((bar
+                      ,(thunk (lambda () "bar"))
+                      Any)))))
+       (send env has-local-thunk 'foo))
+ #t
+ > (it "has-local-thunk, false"
+       (define env
+         (new ThunkedEnvironment
+              `((foo
+                 ,(thunk (lambda () "foo"))
+                 Any))
+              (new ThunkedEnvironment
+                   `((bar
+                      ,(thunk (lambda () "bar"))
+                      Any)))))
+       (send env has-local-thunk 'bar))
+ #f
 
  ;; `JavaScriptEnvironment`
  > (describe "JavaScriptEnvironment")

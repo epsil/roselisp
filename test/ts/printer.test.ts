@@ -40,6 +40,8 @@ import { s, sexp } from '../../src/ts/sexp';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('print-estree', function (): any {
   it('foo', function (): any {
     return assertEqual(printEstree(new Identifier('foo')), 'foo');

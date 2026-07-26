@@ -249,7 +249,13 @@ declare class ThunkedEnvironment extends TypedEnvironment {
      * if any, as a tuple `(binding found)`.
      */
     getLocalTuple(key: any, options?: any): any;
+    /**
+     * Like `get-tuple`, but does not force any thunks.
+     */
     getUnforcedTuple(key: any, options?: any): any;
+    /**
+     * Like `get-local-tuple`, but does not force any thunks.
+     */
     getUnforcedLocalTuple(key: any, options?: any): any;
     /**
      * Get the type of `key`. If there is no binding,
@@ -261,7 +267,23 @@ declare class ThunkedEnvironment extends TypedEnvironment {
      * return `Undefined`.
      */
     getLocalType(key: any, options?: any): any;
+    /**
+     * Whether `key` is bound to a thunk.
+     */
+    hasThunk(key: any, options?: any): any;
+    /**
+     * Whether `key` is locally bound to a thunk.
+     */
+    hasLocalThunk(key: any, options?: any): any;
+    /**
+     * Set the type of `key` to `typ`.
+     * Does not force any thunks.
+     */
     setType(key: any, typ: any, options?: any): any;
+    /**
+     * Set the local type of `key` to `typ`.
+     * Does not force any thunks.
+     */
     setLocalType(key: any, typ: any, options?: any): any;
 }
 /**

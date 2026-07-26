@@ -12,6 +12,8 @@ import {
   testMacro,
 } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('test-repl', function (): any {
   it('(> ...)', function (): any {
     return testRepl([Symbol.for('>'), [Symbol.for('+'), 1, 1], 2]);

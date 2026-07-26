@@ -26,6 +26,11 @@
                   map-tree
                   tagged-list?))
 
+;;; Expand a `(defun ...)` expression.
+(defmacro defun_ (name args &rest body)
+  `(define (,name ,@args)
+     ,@body))
+
 ;;; Expand a `(define/private ...)` expression.
 (defmacro define-private_ (&rest body)
   `(define ,@body))
@@ -38,6 +43,88 @@
 (defmacro defclass_ (&rest body)
   `(define-class ,@body))
 
+;;; Expand a `(define-macro ...)` expression.
+;;;
+;;; Similar to [`define-macro` in Guile][guile:define-macro] and
+;;; [`defmacro` in Common Lisp][cl:defmacro].
+;;;
+;;; [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
+;;; [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
+(defmacro define-macro_ (name-and-args &rest body)
+  (define name
+    (car name-and-args))
+  (define macro-fn-form
+    (define-macro->lambda-form
+      `(define-macro ,name-and-args
+         ,@body)))
+  (define args
+    (js/second macro-fn-form))
+  (define macro-body
+    (drop macro-fn-form 2))
+  `(begin
+     (define (,name ,@args)
+       ,@macro-body)
+     (declare-macro ,name)))
+
+;;; Create a macro function on the basis of a
+;;; `(define-macro ...)` expression.
+(define (define-macro->function exp env)
+  (define macro-fn
+    (define-macro->lambda-form exp))
+  (eval_ macro-fn env))
+
+;;; Create a `(lambda ...)` form for a macro function
+;;; on the basis of a `(define-macro ...)` expression.
+(define (define-macro->lambda-form exp)
+  (define name-and-args
+    (second exp))
+  (define name
+    (car name-and-args))
+  (define args
+    (cdr name-and-args))
+  (define body
+    (drop exp 2))
+  (define exp-arg 'exp)
+  (define env-arg 'env)
+  (define macro-args '())
+  (define rest-arg #u)
+  (cond
+   ((list? args)
+    (define i 0)
+    (while (< i (js/length args))
+      (define arg
+        (aget args i))
+      (cond
+       ((eq? arg '&rest)
+        (set! rest-arg (aget args (+ i 1)))
+        (set! i (+ i 2)))
+       ((eq? arg '&whole)
+        (set! exp-arg (aget args (+ i 1)))
+        (set! i (+ i 2)))
+       ((eq? arg '&environment)
+        (set! env-arg (aget args (+ i 1)))
+        (set! i (+ i 2)))
+       (else
+        (push-right! macro-args arg)
+        (set! i (+ i 1))))))
+   (else
+    (set! macro-args args)))
+  (when rest-arg
+    (cond
+     ((null? macro-args)
+      (set! macro-args rest-arg))
+     (else
+      (set! macro-args
+            (apply list*
+                   (append macro-args
+                           (list rest-arg)))))))
+  `(lambda (,exp-arg ,env-arg)
+     ,@(if (null? macro-args)
+           '()
+           `((define-values ,macro-args
+               (rest ,exp-arg))))
+     ,@body))
+
 ;;; Expand a `(defmacro ...)` expression.
 (defmacro defmacro_ (name args &rest body)
   `(define-macro ,(cons name args)
@@ -48,12 +135,24 @@
   `(begin
      (define ,name-and-args
        ,@body)
-     (declare ,(car name-and-args) (ftype "fexpr"))))
+     (declare-fexpr ,(car name-and-args))))
 
-;;; Expand a `(defun ...)` expression.
-(defmacro defun_ (name args &rest body)
-  `(define (,name ,@args)
-     ,@body))
+;;; Expand a `(declare ...)` expression.
+(defmacro declare_ (name &rest specs)
+  `(begin
+     ,@(map (lambda (spec)
+              `(set-field! ,(js/first spec)
+                           ,name
+                           ,(js/second spec)))
+            specs)))
+
+;;; Expand a `(declare-macro ...)` expression.
+(defmacro declare-macro_ (name)
+  `(declare ,name (ftype "macro")))
+
+;;; Expand a `(declare-fexpr ...)` expression.
+(defmacro declare-fexpr_ (name)
+  `(declare ,name (ftype "fexpr")))
 
 ;;; Expand a `(begin0 ...)` or `(prog1 ...)` expression.
 (defmacro begin0_ (x &rest xs)
@@ -497,23 +596,19 @@
     ,@catch-clauses
     ,@finalizer-clauses))
 
-;;; Expand a `(declare ...)` expression.
-(defmacro declare_ (name &rest specs)
-  `(begin
-     ,@(map (lambda (spec)
-              `(set-field! ,(js/first spec)
-                           ,name
-                           ,(js/second spec)))
-            specs)))
-
 (provide
   begin0_
   case-eq_
   case_
   clj-try_
+  declare-fexpr_
+  declare-macro_
   declare_
   defclass_
   define-fexpr_
+  define-macro->function
+  define-macro->lambda-form
+  define-macro_
   define-private_
   define-public_
   defmacro_

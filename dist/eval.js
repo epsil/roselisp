@@ -29,7 +29,12 @@ const procedures_1 = require("./procedures");
 const rose_1 = require("./rose");
 const [keywordp, lastCdr, cons] = (() => {
     function keywordp_(obj) {
-        return (typeof obj === 'symbol') && obj.description.match(new RegExp('^:'));
+        if ((typeof obj === 'symbol') && obj.description.match(new RegExp('^:'))) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {

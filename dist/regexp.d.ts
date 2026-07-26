@@ -68,7 +68,7 @@ declare namespace regexpMatch_ {
  */
 declare function regexpMatchP_(pattern: any, input: any): any;
 declare namespace regexpMatchP_ {
-    var fsource: (symbol | (boolean | symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Match `pattern` against `input` and replace with `insert`.

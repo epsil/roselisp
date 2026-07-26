@@ -2,6 +2,8 @@ import { __, curried, variadic } from '../../src/ts/combinators';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('curried', function (): any {
   const { C, Y } = curried;
   function subtraction(x: any, y: any): any {

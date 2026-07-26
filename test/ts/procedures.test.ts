@@ -6,6 +6,8 @@ import { stringp } from '../../src/ts/string';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('stringp', function (): any {
   it('(stringp "foo")', function (): any {
     return assertEqual(stringp('foo'), true);

@@ -60,9 +60,7 @@
 ;;; Match `pattern` against `input` and return `#t`
 ;;; if it matches, otherwise `#f`.
 (define (regexp-match?_ pattern input)
-  (if (regexp-match pattern input)
-      #t
-      #f))
+  (true? (regexp-match pattern input)))
 
 ;;; Match `pattern` against `input` and replace with `insert`.
 ;;; `pattern` is a [regular expression][mdn:Regular Expressions]

@@ -2,6 +2,8 @@ import { equalp_ } from '../../src/ts/equal';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('equal?', function (): any {
   it('(equal?_ "" "")', function (): any {
     return assertEqual(equalp_('', ''), true);

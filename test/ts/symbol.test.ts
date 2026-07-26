@@ -4,6 +4,8 @@ import { symbolp_ } from '../../src/ts/symbol';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('s', function (): any {
   it('(s "foo")', function (): any {
     return assertEqual(s('foo'), Symbol.for('foo'));

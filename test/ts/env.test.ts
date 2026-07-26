@@ -704,6 +704,19 @@ describe('TypedEnvironment', function (): any {
       Symbol.for('Undefined')
     );
   });
+  it('get-type, nonexistant binding, notFound option', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new TypedEnvironment([
+          [Symbol.for('foo'), 'bar', Symbol.for('Any')],
+        ]);
+        return env.getType(Symbol.for('quux'), {
+          notFound: Symbol.for('Any'),
+        });
+      })(),
+      Symbol.for('Any')
+    );
+  });
   it('get-type, filter option', function (): any {
     return assertEqual(
       ((): any => {
@@ -1132,6 +1145,19 @@ describe('LispEnvironment', function (): any {
         return env.getType(Symbol.for('quux'));
       })(),
       Symbol.for('Undefined')
+    );
+  });
+  it('get-type, nonexistant binding, notFound option', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new LispEnvironment([
+          [Symbol.for('foo'), 'bar', Symbol.for('Any')],
+        ]);
+        return env.getType(Symbol.for('quux'), {
+          notFound: Symbol.for('Any'),
+        });
+      })(),
+      Symbol.for('Any')
     );
   });
   it('get-type, filter option', function (): any {
@@ -2067,7 +2093,7 @@ describe('ThunkedEnvironment', function (): any {
       undefined
     );
   });
-  return it('get, parent environment, filter option', function (): any {
+  it('get, parent environment, filter option', function (): any {
     return assertEqual(
       ((): any => {
         const env: any = new ThunkedEnvironment(
@@ -2098,6 +2124,125 @@ describe('ThunkedEnvironment', function (): any {
         });
       })(),
       undefined
+    );
+  });
+  it('has-thunk, true', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new ThunkedEnvironment([
+          [
+            Symbol.for('foo'),
+            thunk(function (): any {
+              return 'foo';
+            }),
+            Symbol.for('Any'),
+          ],
+        ]);
+        return env.hasThunk(Symbol.for('foo'));
+      })(),
+      true
+    );
+  });
+  it('has-thunk, parent environment, true', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new ThunkedEnvironment(
+          [
+            [
+              Symbol.for('foo'),
+              thunk(function (): any {
+                return 'foo';
+              }),
+              Symbol.for('Any'),
+            ],
+          ],
+          new ThunkedEnvironment([
+            [
+              Symbol.for('bar'),
+              thunk(function (): any {
+                return 'bar';
+              }),
+              Symbol.for('Any'),
+            ],
+          ])
+        );
+        return env.hasThunk(Symbol.for('bar'));
+      })(),
+      true
+    );
+  });
+  it('has-thunk, false', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new ThunkedEnvironment([
+          [
+            Symbol.for('foo'),
+            thunk(function (): any {
+              return 'foo';
+            }),
+            Symbol.for('Any'),
+          ],
+          [Symbol.for('bar'), 'bar', Symbol.for('Any')],
+        ]);
+        return env.hasThunk(Symbol.for('bar'));
+      })(),
+      false
+    );
+  });
+  it('has-local-thunk, true', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new ThunkedEnvironment(
+          [
+            [
+              Symbol.for('foo'),
+              thunk(function (): any {
+                return 'foo';
+              }),
+              Symbol.for('Any'),
+            ],
+          ],
+          new ThunkedEnvironment([
+            [
+              Symbol.for('bar'),
+              thunk(function (): any {
+                return 'bar';
+              }),
+              Symbol.for('Any'),
+            ],
+          ])
+        );
+        return env.hasLocalThunk(Symbol.for('foo'));
+      })(),
+      true
+    );
+  });
+  return it('has-local-thunk, false', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new ThunkedEnvironment(
+          [
+            [
+              Symbol.for('foo'),
+              thunk(function (): any {
+                return 'foo';
+              }),
+              Symbol.for('Any'),
+            ],
+          ],
+          new ThunkedEnvironment([
+            [
+              Symbol.for('bar'),
+              thunk(function (): any {
+                return 'bar';
+              }),
+              Symbol.for('Any'),
+            ],
+          ])
+        );
+        return env.hasLocalThunk(Symbol.for('bar'));
+      })(),
+      false
     );
   });
 });

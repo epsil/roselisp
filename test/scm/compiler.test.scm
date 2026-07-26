@@ -6,9 +6,10 @@
                   compile
                   compile-modules
                   compile-with-environment
-                  define-macro->lambda-form
                   definition->macro
                   split-comments))
+(require (only-in "../../src/ts/macros"
+                  define-macro->lambda-form))
 (require (only-in "../../src/ts/parser"
                   read-rose))
 (require (only-in "../../src/ts/sexp"
@@ -3067,7 +3068,7 @@ function bar(x) {
        (defmacro foo (x . args)
          x)
        (define bar
-         (foo 1 2 3))))
+         (foo 1))))
  "function foo(exp, env) {
   let [x, ...args] = exp.slice(1);
   return x;
@@ -3076,12 +3077,12 @@ function bar(x) {
 foo.ftype = 'macro';
 
 let bar = 1;"
- xit> (compile
-       '(begin
-          (defmacro foo (x . args)
-            x)
-          (define bar
-            (foo 1 2 3))))
+ > (compile
+    '(begin
+       (defmacro foo (x . args)
+         x)
+       (define bar
+         (foo 1))))
  "function foo(exp, env) {
   let [x, ...args] = exp.slice(1);
   return x;
@@ -3090,6 +3091,300 @@ let bar = 1;"
 foo.ftype = 'macro';
 
 let bar = 1;"
+ > (compile
+    '(begin
+       (define (foo x)
+         x)
+       (defmacro bar (x)
+         (foo x))
+       (define baz
+         (bar 1))))
+ "function foo(x) {
+  return x;
+}
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define (foo-bar x)
+         x)
+       (defmacro bar (x)
+         (foo-bar x))
+       (define baz
+         (bar 1))))
+ "function fooBar(x) {
+  return x;
+}
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return fooBar(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define (foo-bar x)
+         x)
+       (defmacro bar (x)
+         (foo-bar 'x))
+       (define baz
+         (bar 1))))
+ "function fooBar(x) {
+  return x;
+}
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return fooBar(Symbol.for('x'));
+}
+
+bar.ftype = 'macro';
+
+let baz = x;"
+ > (compile
+    '(begin
+       (define (foo-bar x)
+         'x)
+       (defmacro bar (x)
+         (foo-bar x))
+       (define baz
+         (bar 1))))
+ "function fooBar(x) {
+  return Symbol.for('x');
+}
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return fooBar(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = x;"
+ > (compile
+    '(module m scheme
+       (define (foo-bar x)
+         (keyword? x))
+       (defmacro bar (x)
+         (foo-bar x))
+       (define baz
+         (bar 1)))
+    :inline-functions #t)
+ "let [keywordp] = (() => {
+  function keywordp_(obj) {
+    if ((typeof obj === 'symbol') && obj.description.match(new RegExp('^:'))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return [keywordp_];
+})();
+
+function fooBar(x) {
+  return keywordp(x);
+}
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return fooBar(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = false;"
+ > (compile
+    '(begin
+       (define foo
+         (lambda (x)
+           x))
+       (defmacro bar (x)
+         (foo x))
+       (define baz
+         (bar 1))))
+ "let foo = function (x) {
+  return x;
+};
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define-values (foo)
+         (list
+          (lambda (x)
+            x)))
+       (defmacro bar (x)
+         (foo x))
+       (define baz
+         (bar 1))))
+ "let [foo] = [function (x) {
+  return x;
+}];
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define-fields (foo)
+         (js-obj "foo"
+                 (lambda (x)
+                   x)))
+       (defmacro bar (x)
+         (foo x))
+       (define baz
+         (bar 1))))
+ "let {foo} = {
+  foo: function (x) {
+    return x;
+  }
+};
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define-fields ((foo foo1))
+         (js-obj "foo"
+                 (lambda (x)
+                   x)))
+       (defmacro bar (x)
+         (foo1 x))
+       (define baz
+         (bar 1))))
+ "let {foo: foo1} = {
+  foo: function (x) {
+    return x;
+  }
+};
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo1(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define/async (foo x)
+         x)
+       (defmacro bar (x)
+         (foo x))
+       (define baz
+         (bar 1))))
+ "async function foo(x) {
+  return x;
+}
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define foo
+         (async
+          (lambda (x)
+            x)))
+       (defmacro bar (x)
+         (foo x))
+       (define baz
+         (bar 1))))
+ "async function foo(x) {
+  return x;
+}
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo(x);
+}
+
+bar.ftype = 'macro';
+
+let baz = 1;"
+ > (compile
+    '(begin
+       (define-fexpr (foo x)
+         x)
+       (defmacro bar (x)
+         (foo x))
+       (define baz
+         (bar 1))))
+ "function foo(x) {
+  return x;
+}
+
+foo.ftype = 'fexpr';
+
+function bar(exp, env) {
+  let [x] = exp.slice(1);
+  return foo(Symbol.for('x'));
+}
+
+bar.ftype = 'macro';
+
+let baz = x;"
+ > (compile
+    '(begin
+       (define-class Foo ()
+         (define/public (foo)
+           "foo"))
+       (define bar
+         (new Foo))
+       (defmacro baz (x)
+         (send bar foo))
+       (define quux
+         (baz 1))))
+ "class Foo {
+  foo() {
+    return 'foo';
+  }
+}
+
+let bar = new Foo();
+
+function baz(exp, env) {
+  let [x] = exp.slice(1);
+  return bar.foo();
+}
+
+baz.ftype = 'macro';
+
+let quux = 'foo';"
 
  ;; Fexprs
  > (describe "Fexprs")
@@ -3449,6 +3744,8 @@ export {
   foo
 } from './a';
 
+foo.ftype = 'macro';
+
 function bar(x) {
   return x;
 }")
@@ -3472,6 +3769,8 @@ function bar(x) {
   "import {
   bar
 } from './b';
+
+bar.ftype = 'macro';
 
 function foo(x) {
   return x;
@@ -3556,6 +3855,8 @@ export {
 };" "import {
   foo as foo1
 } from './a';
+
+foo1.ftype = 'macro';
 
 function bar(x) {
   return x;
@@ -4265,16 +4566,7 @@ const onePlusOne = _add(1, 1);"
         (js-obj "case" "camelcase"
                 "language" "JavaScript"
                 "optimize" #t)))
- "(() => {
-  function truep(x) {
-    if (x) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  return truep;
-})()(x)"
+ "x ? true : false"
  > (it "(falsep x)"
        (compile-with-environment
         '(falsep x)
@@ -4282,19 +4574,7 @@ const onePlusOne = _add(1, 1);"
         (js-obj "case" "camelcase"
                 "language" "JavaScript"
                 "optimize" #t)))
- "(() => {
-  function falsep(x) {
-    return !truep(x);
-  }
-  function truep(x) {
-    if (x) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  return falsep;
-})()(x)"
+ "x ? false : true"
  > (it "read-rose"
        (compile-with-environment
         (read-rose

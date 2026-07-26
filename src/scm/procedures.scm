@@ -330,12 +330,12 @@
   (zero? (modulo n 2)))
 
 ;;; Whether a value is truthy.
-(define (true? x)
+(define (true?_ x)
   (if x #t #f))
 
 ;;; Whether a value is falsy.
-(define (false? x)
-  (not (true? x)))
+(define (false?_ x)
+  (if x #f #t))
 
 ;;; The identity function.
 ;;;
@@ -379,9 +379,10 @@
 ;;; [rkt:keywordp]: https://docs.racket-lang.org/reference/keywords.html#%28def._%28%28quote._~23~25kernel%29._keyword~3f%29%29
 ;;; [cl:keywordp]: http://clhs.lisp.se/Body/f_kwdp.htm#keywordp
 (define (keyword?_ obj)
-  (and (symbol? obj)
-       (regexp-match (regexp "^:")
-                     (symbol->string obj))))
+  (true?
+   (and (symbol? obj)
+        (regexp-match (regexp "^:")
+                      (symbol->string obj)))))
 
 ;;; Whether something is a number.
 ;;;
@@ -722,7 +723,7 @@
   (rename-out (div_ _div))
   (rename-out (div_ div))
   (rename-out (error_ error))
-  (rename-out (false? false?_))
+  (rename-out (false?_ false?))
   (rename-out (fexpr-type?_ fexpr-type?))
   (rename-out (fexpr?_ fexpr?))
   (rename-out (fexpr?_ fexprp))
@@ -773,7 +774,7 @@
   (rename-out (sub_ sub))
   (rename-out (sub_ subtract))
   (rename-out (tagged-list?_ tagged-list?))
-  (rename-out (true? true?_))
+  (rename-out (true?_ true?))
   (rename-out (type-of_ type-of))
   (rename-out (undefined-type?_ undefined-type?))
   (rename-out (union_ union))
@@ -792,7 +793,7 @@
   div_
   error_
   even?_
-  false?
+  false?_
   fexpr-type?
   fexpr?_
   filter_
@@ -835,7 +836,7 @@
   sub1_
   sub_
   tagged-list?_
-  true?
+  true?_
   type-of_
   undefined-type?_
   undefined?_

@@ -79,7 +79,11 @@ const [equalp, keywordp]: any[] = ((): any => {
     }
   }
   function keywordp_(obj: any): any {
-    return (typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'));
+    if ((typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'))) {
+      return true;
+    } else {
+      return false;
+    }
   }
   function cdr_(lst: any): any {
     if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
@@ -607,7 +611,7 @@ evenp_.fsource = [Symbol.for('define'), [Symbol.for('even?_'), Symbol.for('n')],
 /**
  * Whether a value is truthy.
  */
-function truep(x: any): any {
+function truep_(x: any): any {
   if (x) {
     return true;
   } else {
@@ -615,16 +619,20 @@ function truep(x: any): any {
   }
 }
 
-truep.fsource = [Symbol.for('define'), [Symbol.for('true?'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), true, false]];
+truep_.fsource = [Symbol.for('define'), [Symbol.for('true?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), true, false]];
 
 /**
  * Whether a value is falsy.
  */
-function falsep(x: any): any {
-  return !truep(x);
+function falsep_(x: any): any {
+  if (x) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
-falsep.fsource = [Symbol.for('define'), [Symbol.for('false?'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('true?'), Symbol.for('x')]]];
+falsep_.fsource = [Symbol.for('define'), [Symbol.for('false?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), false, true]];
 
 /**
  * The identity function.
@@ -686,10 +694,14 @@ values_.fsource = [Symbol.for('define'), [Symbol.for('values_'), Symbol.for('.')
  * [cl:keywordp]: http://clhs.lisp.se/Body/f_kwdp.htm#keywordp
  */
 function keywordp_(obj: any): any {
-  return (typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'));
+  if ((typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'))) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]];
+keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('true?'), [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]]];
 
 /**
  * Whether something is a number.
@@ -1196,7 +1208,7 @@ export {
   div_ as _div,
   div_ as div,
   error_ as error,
-  falsep as falsep_,
+  falsep_ as falsep,
   fexprTypeP_ as fexprTypeP,
   fexprp_ as fexprp,
   findfIndex_ as findfIndex,
@@ -1243,7 +1255,7 @@ export {
   sub_ as sub,
   sub_ as subtract,
   taggedListP_ as taggedListP,
-  truep as truep_,
+  truep_ as truep,
   typeOf_ as typeOf,
   undefinedTypeP_ as undefinedTypeP,
   union_ as union,
@@ -1262,7 +1274,7 @@ export {
   div_,
   error_,
   evenp_,
-  falsep,
+  falsep_,
   fexprp_,
   filter_,
   findfIndex_,
@@ -1303,7 +1315,7 @@ export {
   sub1_,
   sub_,
   taggedListP_,
-  truep,
+  truep_,
   typeOf_,
   undefinedTypeP_,
   undefinedp_,

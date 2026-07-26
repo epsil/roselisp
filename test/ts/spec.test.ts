@@ -6,6 +6,8 @@
 
 import { testRepl, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('#t', function (): any {
   it('#t', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), true, true]);
@@ -404,6 +406,22 @@ describe('Keywords', function (): any {
       Symbol.for('>'),
       [Symbol.for('quote'), Symbol.for(':foo')],
       [Symbol.for('quote'), Symbol.for(':foo')],
+    ]);
+  });
+  it("(keyword? ':foo)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('keyword?'), [Symbol.for('quote'), Symbol.for(':foo')]],
+      true,
+    ]);
+  });
+  it("(keyword? 'foo)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('keyword?'), [Symbol.for('quote'), Symbol.for('foo')]],
+      false,
     ]);
   });
   return it("(compile ':foo)", function (): any {
@@ -1433,9 +1451,50 @@ describe('defun', function (): any {
   });
 });
 
-describe('define-macro', function (): any {});
+describe('define-macro', function (): any {
+  return it('((lambda () (define-macro (my-macro x) x) (my-macro 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        [
+          Symbol.for('lambda'),
+          [],
+          [
+            Symbol.for('define-macro'),
+            [Symbol.for('my-macro'), Symbol.for('x')],
+            Symbol.for('x'),
+          ],
+          [Symbol.for('my-macro'), 1],
+        ],
+      ],
+      1,
+    ]);
+  });
+});
 
-describe('defmacro', function (): any {});
+describe('defmacro', function (): any {
+  return it('((lambda () (defmacro my-macro (x) x) (my-macro 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        [
+          Symbol.for('lambda'),
+          [],
+          [
+            Symbol.for('defmacro'),
+            Symbol.for('my-macro'),
+            [Symbol.for('x')],
+            Symbol.for('x'),
+          ],
+          [Symbol.for('my-macro'), 1],
+        ],
+      ],
+      1,
+    ]);
+  });
+});
 
 describe('let', function (): any {
   it('(let ((x 0)) x)', function (): any {

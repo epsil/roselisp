@@ -158,6 +158,10 @@
  ':foo
  > ':foo
  ':foo
+ > (keyword? ':foo)
+ #t
+ > (keyword? 'foo)
+ #f
  > (compile ':foo)
  "Symbol.for(':foo');"
 
@@ -418,20 +422,20 @@
  ;; `define-macro`
  > (describe "define-macro")
  _
- ;; > ((lambda ()
- ;;      (define-macro (my-macro x)
- ;;        x)
- ;;      (my-macro 1)))
- ;; 1
+ > ((lambda ()
+      (define-macro (my-macro x)
+        x)
+      (my-macro 1)))
+ 1
 
  ;; `defmacro`
  > (describe "defmacro")
  _
- ;; > ((lambda ()
- ;;      (defmacro my-macro (x)
- ;;        x)
- ;;      (my-macro 1)))
- ;; 1
+ > ((lambda ()
+      (defmacro my-macro (x)
+        x)
+      (my-macro 1)))
+ 1
 
  ;; `let`
  > (describe "let")
@@ -1038,7 +1042,6 @@
   }
 }"
 
-
  ;; `define-class`
  > (describe "define-class")
  _
@@ -1115,13 +1118,16 @@
   foo: 1,
   bar: 2
 });"
- > (compile '(js-obj) :as 'expression)
+ > (compile '(js-obj)
+            :as 'expression)
  "{}"
- > (compile '(js-obj "foo" "bar") :as 'expression)
+ > (compile '(js-obj "foo" "bar")
+            :as 'expression)
  "{
   foo: 'bar'
 }"
- > (compile '(js-obj "foo" 1 "bar" 2) :as 'expression)
+ > (compile '(js-obj "foo" 1 "bar" 2)
+            :as 'expression)
  "{
   foo: 1,
   bar: 2

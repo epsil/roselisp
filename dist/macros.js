@@ -17,9 +17,51 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.jsFor_ = exports.jsForOf_ = exports.jsForIn_ = exports.if_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
+const eval_1 = require("./eval");
 const util_1 = require("./util");
-const [cons, take, lastCdr] = (() => {
+const [lastCdr, cdr, listStar, cons, take] = (() => {
+    function lastCdr_(lst) {
+        if (!Array.isArray(lst)) {
+            return undefined;
+        }
+        else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+            let result = lst;
+            while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
+                result = result[result.length - 1];
+            }
+            return result;
+        }
+        else {
+            return [];
+        }
+    }
+    function cdr_(lst) {
+        if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
+            return lst[2];
+        }
+        else {
+            return lst.slice(1);
+        }
+    }
+    function listStar_(...args) {
+        if (args.length === 0) {
+            return undefined;
+        }
+        else if (args.length === 1) {
+            return args[0];
+        }
+        else {
+            const tailLst = args[args.length - 1];
+            const headLst = args.slice(0, -1);
+            if (Array.isArray(tailLst)) {
+                return [...headLst, ...tailLst];
+            }
+            else {
+                return [...headLst, Symbol.for('.'), tailLst];
+            }
+        }
+    }
     function cons_(x, y) {
         if (Array.isArray(y)) {
             return [x, ...y];
@@ -37,23 +79,18 @@ const [cons, take, lastCdr] = (() => {
             return lst.slice(0, -n1);
         }
     }
-    function lastCdr_(lst) {
-        if (!Array.isArray(lst)) {
-            return undefined;
-        }
-        else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-            let result = lst;
-            while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-                result = result[result.length - 1];
-            }
-            return result;
-        }
-        else {
-            return [];
-        }
-    }
-    return [cons_, take_, lastCdr_];
+    return [lastCdr_, cdr_, listStar_, cons_, take_];
 })();
+/**
+ * Expand a `(defun ...)` expression.
+ */
+function defun_(exp, env) {
+    const [name, args, ...body] = exp.slice(1);
+    return [Symbol.for('define'), [name, ...args], ...body];
+}
+exports.defun_ = defun_;
+defun_.fsource = [Symbol.for('define'), [Symbol.for('defun_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote-splicing'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
+defun_.ftype = 'macro';
 /**
  * Expand a `(define/private ...)` expression.
  */
@@ -85,6 +122,108 @@ exports.defclass_ = defclass_;
 defclass_.fsource = [Symbol.for('define'), [Symbol.for('defclass_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define-class'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 defclass_.ftype = 'macro';
 /**
+ * Expand a `(define-macro ...)` expression.
+ *
+ * Similar to [`define-macro` in Guile][guile:define-macro] and
+ * [`defmacro` in Common Lisp][cl:defmacro].
+ *
+ * [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
+ * [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
+ */
+function defineMacro_(exp, env) {
+    const [nameAndArgs, ...body] = exp.slice(1);
+    const name = nameAndArgs[0];
+    const macroFnForm = defineMacroToLambdaForm([Symbol.for('define-macro'), nameAndArgs, ...body]);
+    const args = macroFnForm[1];
+    const macroBody = macroFnForm.slice(2);
+    return [Symbol.for('begin'), [Symbol.for('define'), [name, ...args], ...macroBody], [Symbol.for('declare-macro'), name]];
+}
+exports.defineMacro_ = defineMacro_;
+defineMacro_.fsource = [Symbol.for('define'), [Symbol.for('define-macro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('macro-fn-form'), [Symbol.for('define-macro->lambda-form'), [Symbol.for('quasiquote'), [Symbol.for('define-macro'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('js/second'), Symbol.for('macro-fn-form')]], [Symbol.for('define'), Symbol.for('macro-body'), [Symbol.for('drop'), Symbol.for('macro-fn-form'), 2]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote-splicing'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('macro-body')]], [Symbol.for('declare-macro'), [Symbol.for('unquote'), Symbol.for('name')]]]]];
+defineMacro_.ftype = 'macro';
+/**
+ * Create a macro function on the basis of a
+ * `(define-macro ...)` expression.
+ */
+function defineMacroToFunction(exp, env) {
+    const macroFn = defineMacroToLambdaForm(exp);
+    return (0, eval_1.eval_)(macroFn, env);
+}
+exports.defineMacroToFunction = defineMacroToFunction;
+defineMacroToFunction.fsource = [Symbol.for('define'), [Symbol.for('define-macro->function'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('macro-fn'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')]], [Symbol.for('eval_'), Symbol.for('macro-fn'), Symbol.for('env')]];
+/**
+ * Create a `(lambda ...)` form for a macro function
+ * on the basis of a `(define-macro ...)` expression.
+ */
+function defineMacroToLambdaForm(exp) {
+    const nameAndArgs = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
+        const x = lastCdr(exp);
+        return Array.isArray(x) && (x.length === 0);
+    })()) ? (() => {
+        let i = 1;
+        let result = exp;
+        while (i > 0) {
+            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
+                result = exp[exp.length - 1];
+            }
+            else {
+                result = exp.slice(1);
+            }
+            i--;
+        }
+        if (Array.isArray(result)) {
+            result = result[0];
+        }
+        return result;
+    })() : exp[1];
+    const name = nameAndArgs[0];
+    const args = cdr(nameAndArgs);
+    const body = exp.slice(2);
+    let expArg = Symbol.for('exp');
+    let envArg = Symbol.for('env');
+    let macroArgs = [];
+    let restArg = undefined;
+    if ((() => {
+        const x = lastCdr(args);
+        return Array.isArray(x) && (x.length === 0);
+    })()) {
+        let i = 0;
+        while (i < args.length) {
+            const arg = args[i];
+            if (arg === Symbol.for('&rest')) {
+                restArg = args[i + 1];
+                i = i + 2;
+            }
+            else if (arg === Symbol.for('&whole')) {
+                expArg = args[i + 1];
+                i = i + 2;
+            }
+            else if (arg === Symbol.for('&environment')) {
+                envArg = args[i + 1];
+                i = i + 2;
+            }
+            else {
+                macroArgs.push(arg);
+                i++;
+            }
+        }
+    }
+    else {
+        macroArgs = args;
+    }
+    if (restArg) {
+        if (Array.isArray(macroArgs) && (macroArgs.length === 0)) {
+            macroArgs = restArg;
+        }
+        else {
+            macroArgs = listStar(...[...macroArgs, restArg]);
+        }
+    }
+    return [Symbol.for('lambda'), [expArg, envArg], ...((Array.isArray(macroArgs) && (macroArgs.length === 0)) ? [] : [[Symbol.for('define-values'), macroArgs, [Symbol.for('rest'), expArg]]]), ...body];
+}
+exports.defineMacroToLambdaForm = defineMacroToLambdaForm;
+defineMacroToLambdaForm.fsource = [Symbol.for('define'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('name-and-args'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('cdr'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('exp-arg'), [Symbol.for('quote'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('env-arg'), [Symbol.for('quote'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('macro-args'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-arg'), undefined], [Symbol.for('cond'), [[Symbol.for('list?'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('i'), 0], [Symbol.for('while'), [Symbol.for('<'), Symbol.for('i'), [Symbol.for('js/length'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('arg'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&rest')]], [Symbol.for('set!'), Symbol.for('rest-arg'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [[Symbol.for('eq?'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&whole')]], [Symbol.for('set!'), Symbol.for('exp-arg'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [[Symbol.for('eq?'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&environment')]], [Symbol.for('set!'), Symbol.for('env-arg'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('macro-args'), Symbol.for('arg')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('args')]]], [Symbol.for('when'), Symbol.for('rest-arg'), [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('rest-arg')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), [Symbol.for('apply'), Symbol.for('list*'), [Symbol.for('append'), Symbol.for('macro-args'), [Symbol.for('list'), Symbol.for('rest-arg')]]]]]]], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [[Symbol.for('unquote'), Symbol.for('exp-arg')], [Symbol.for('unquote'), Symbol.for('env-arg')]], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('quote'), []], [Symbol.for('quasiquote'), [[Symbol.for('define-values'), [Symbol.for('unquote'), Symbol.for('macro-args')], [Symbol.for('rest'), [Symbol.for('unquote'), Symbol.for('exp-arg')]]]]]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
+/**
  * Expand a `(defmacro ...)` expression.
  */
 function defmacro_(exp, env) {
@@ -99,21 +238,43 @@ defmacro_.ftype = 'macro';
  */
 function defineFexpr_(exp, env) {
     const [nameAndArgs, ...body] = exp.slice(1);
-    return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('declare'), nameAndArgs[0], [Symbol.for('ftype'), 'fexpr']]];
+    return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('declare-fexpr'), nameAndArgs[0]]];
 }
 exports.defineFexpr_ = defineFexpr_;
-defineFexpr_.fsource = [Symbol.for('define'), [Symbol.for('define-fexpr_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare'), [Symbol.for('unquote'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('ftype'), 'fexpr']]]]];
+defineFexpr_.fsource = [Symbol.for('define'), [Symbol.for('define-fexpr_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare-fexpr'), [Symbol.for('unquote'), [Symbol.for('car'), Symbol.for('name-and-args')]]]]]];
 defineFexpr_.ftype = 'macro';
 /**
- * Expand a `(defun ...)` expression.
+ * Expand a `(declare ...)` expression.
  */
-function defun_(exp, env) {
-    const [name, args, ...body] = exp.slice(1);
-    return [Symbol.for('define'), [name, ...args], ...body];
+function declare_(exp, env) {
+    const [name, ...specs] = exp.slice(1);
+    return [Symbol.for('begin'), ...specs.map(function (spec) {
+            return [Symbol.for('set-field!'), spec[0], name, spec[1]];
+        })];
 }
-exports.defun_ = defun_;
-defun_.fsource = [Symbol.for('define'), [Symbol.for('defun_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote-splicing'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-defun_.ftype = 'macro';
+exports.declare_ = declare_;
+declare_.fsource = [Symbol.for('define'), [Symbol.for('declare_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('.'), Symbol.for('specs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('spec')], [Symbol.for('quasiquote'), [Symbol.for('set-field!'), [Symbol.for('unquote'), [Symbol.for('js/first'), Symbol.for('spec')]], [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('spec')]]]]], Symbol.for('specs')]]]]];
+declare_.ftype = 'macro';
+/**
+ * Expand a `(declare-macro ...)` expression.
+ */
+function declareMacro_(exp, env) {
+    const [name] = exp.slice(1);
+    return [Symbol.for('declare'), name, [Symbol.for('ftype'), 'macro']];
+}
+exports.declareMacro_ = declareMacro_;
+declareMacro_.fsource = [Symbol.for('define'), [Symbol.for('declare-macro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('declare'), [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('ftype'), 'macro']]]];
+declareMacro_.ftype = 'macro';
+/**
+ * Expand a `(declare-fexpr ...)` expression.
+ */
+function declareFexpr_(exp, env) {
+    const [name] = exp.slice(1);
+    return [Symbol.for('declare'), name, [Symbol.for('ftype'), 'fexpr']];
+}
+exports.declareFexpr_ = declareFexpr_;
+declareFexpr_.fsource = [Symbol.for('define'), [Symbol.for('declare-fexpr_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('declare'), [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('ftype'), 'fexpr']]]];
+declareFexpr_.ftype = 'macro';
 /**
  * Expand a `(begin0 ...)` or `(prog1 ...)` expression.
  */
@@ -694,15 +855,3 @@ function cljTry_(exp, env) {
 exports.cljTry_ = cljTry_;
 cljTry_.fsource = [Symbol.for('define'), [Symbol.for('clj-try_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body-exps'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('clj-catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('finalizer-clauses'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('body')]], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('catch')]], [Symbol.for('push-right!'), Symbol.for('clj-catch-clauses'), Symbol.for('x')]], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('finally')]], [Symbol.for('push-right!'), Symbol.for('finalizer-clauses'), Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('body-exps'), Symbol.for('x')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('clj-catch-clauses')], 0], [Symbol.for('define'), Symbol.for('exception'), [Symbol.for('second'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('third'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('clj-catch-clauses')], 1], [Symbol.for('memq?'), Symbol.for('exception'), [Symbol.for('quote'), [Symbol.for('_'), Symbol.for('js/Object'), Symbol.for('Object'), Symbol.for('object%')]]]], [Symbol.for('define'), Symbol.for('clj-catch-clause'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('clj-catch-clause'), 3]]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('cond-exp'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('is-a?'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('x'), 3]]]]], Symbol.for('clj-catch-clauses')]], [Symbol.for('else'), [Symbol.for('throw'), [Symbol.for('unquote'), Symbol.for('sym')]]]]]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('cond-exp')]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]]]], [Symbol.for('quasiquote'), [Symbol.for('js/try'), [Symbol.for('unquote-splicing'), Symbol.for('body-exps')], [Symbol.for('unquote-splicing'), Symbol.for('catch-clauses')], [Symbol.for('unquote-splicing'), Symbol.for('finalizer-clauses')]]]];
 cljTry_.ftype = 'macro';
-/**
- * Expand a `(declare ...)` expression.
- */
-function declare_(exp, env) {
-    const [name, ...specs] = exp.slice(1);
-    return [Symbol.for('begin'), ...specs.map(function (spec) {
-            return [Symbol.for('set-field!'), spec[0], name, spec[1]];
-        })];
-}
-exports.declare_ = declare_;
-declare_.fsource = [Symbol.for('define'), [Symbol.for('declare_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('.'), Symbol.for('specs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('spec')], [Symbol.for('quasiquote'), [Symbol.for('set-field!'), [Symbol.for('unquote'), [Symbol.for('js/first'), Symbol.for('spec')]], [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('spec')]]]]], Symbol.for('specs')]]]]];
-declare_.ftype = 'macro';

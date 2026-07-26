@@ -2,6 +2,8 @@ import { __, curry } from '../../src/ts/curry';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('curry', function (): any {
   it('(a 1)', function (): any {
     return assertEqual(

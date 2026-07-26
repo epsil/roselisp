@@ -2,6 +2,8 @@ import { Rose, Forest, wrapSexpInRose } from '../../src/ts/rose';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('Rose', function (): any {
   return it('insert', function (): any {
     const foo: any = new Rose('foo');

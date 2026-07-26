@@ -22,6 +22,8 @@ import { makeRose } from '../../src/ts/rose';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('optimize-sexp', function (): any {
   it("(optimize-sexp '() lisp-environment)", function (): any {
     return assertEqual(optimizeSexp([], lispEnvironment), []);

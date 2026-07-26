@@ -2,6 +2,8 @@ import { lispEnvironment, mapRose } from '../../src/ts/language';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('map-rose', function (): any {
   it('()', function (): any {
     return assertEqual(

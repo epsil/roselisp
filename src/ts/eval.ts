@@ -89,7 +89,11 @@ import {
 
 const [keywordp, lastCdr, cons]: any[] = ((): any => {
   function keywordp_(obj: any): any {
-    return (typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'));
+    if ((typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'))) {
+      return true;
+    } else {
+      return false;
+    }
   }
   function lastCdr_(lst: any): any {
     if (!Array.isArray(lst)) {

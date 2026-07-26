@@ -330,16 +330,16 @@ declare namespace evenp_ {
 /**
  * Whether a value is truthy.
  */
-declare function truep(x: any): any;
-declare namespace truep {
+declare function truep_(x: any): any;
+declare namespace truep_ {
     var fsource: (symbol | (boolean | symbol)[])[];
 }
 /**
  * Whether a value is falsy.
  */
-declare function falsep(x: any): any;
-declare namespace falsep {
-    var fsource: (symbol | (symbol | symbol[])[])[];
+declare function falsep_(x: any): any;
+declare namespace falsep_ {
+    var fsource: (symbol | (boolean | symbol)[])[];
 }
 /**
  * The identity function.
@@ -392,7 +392,7 @@ declare namespace values_ {
  */
 declare function keywordp_(obj: any): any;
 declare namespace keywordp_ {
-    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[];
 }
 /**
  * Whether something is a number.
@@ -710,4 +710,4 @@ declare function isAP_(obj: any, cls: any): any;
 declare namespace isAP_ {
     var fsource: (symbol | symbol[])[];
 }
-export { add1_ as add1, add_ as _add, add_ as add, add_ as plus, apply_ as apply, compilerTypeP_ as compilerTypeP, compose_ as compose, display_ as display, div_ as _div, div_ as div, error_ as error, falsep as falsep_, fexprTypeP_ as fexprTypeP, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, gt_ as gt, gte_ as gte, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordp_ as keywordp, lt_ as lt, lte_ as lte, macroTypeP_ as macroTypeP, macrop_ as macrop, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, memberp_, member_ as member, member_ as memq, memf_ as memf, mul_ as _mul, mul_ as mul, not_ as not, numberp_ as numberp, pipe_ as pipe, procedureTypeP_ as procedureTypeP, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, specialTypeP_ as specialTypeP, sub1_ as sub1, sub_ as _sub, sub_ as minus, sub_ as sub, sub_ as subtract, taggedListP_ as taggedListP, truep as truep_, typeOf_ as typeOf, undefinedTypeP_ as undefinedTypeP, union_ as union, values_ as values, variableTypeP_ as variableTypeP, zerop_ as zerop, add1_, add_, apply_, assert_, booleanp_, compilerTypeP_, compose_, const_, display_, div_, error_, evenp_, falsep, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, funcall_, gt_, gte_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordp_, lt_, lte_, macroTypeP_, macrop_, map_, member_, memfp_, memf_, memqp_, memq_, modulo_, mul_, not_, numberp_, oddp_, onep_, pipe_, procedureTypeP_, procedurep_, range_, selfEvaluatingP_, specialTypeP_, sub1_, sub_, taggedListP_, truep, typeOf_, undefinedTypeP_, undefinedp_, union_, values_, variableTypeP_, zerop_ };
+export { add1_ as add1, add_ as _add, add_ as add, add_ as plus, apply_ as apply, compilerTypeP_ as compilerTypeP, compose_ as compose, display_ as display, div_ as _div, div_ as div, error_ as error, falsep_ as falsep, fexprTypeP_ as fexprTypeP, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, gt_ as gt, gte_ as gte, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordp_ as keywordp, lt_ as lt, lte_ as lte, macroTypeP_ as macroTypeP, macrop_ as macrop, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, memberp_, member_ as member, member_ as memq, memf_ as memf, mul_ as _mul, mul_ as mul, not_ as not, numberp_ as numberp, pipe_ as pipe, procedureTypeP_ as procedureTypeP, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, specialTypeP_ as specialTypeP, sub1_ as sub1, sub_ as _sub, sub_ as minus, sub_ as sub, sub_ as subtract, taggedListP_ as taggedListP, truep_ as truep, typeOf_ as typeOf, undefinedTypeP_ as undefinedTypeP, union_ as union, values_ as values, variableTypeP_ as variableTypeP, zerop_ as zerop, add1_, add_, apply_, assert_, booleanp_, compilerTypeP_, compose_, const_, display_, div_, error_, evenp_, falsep_, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, funcall_, gt_, gte_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordp_, lt_, lte_, macroTypeP_, macrop_, map_, member_, memfp_, memf_, memqp_, memq_, modulo_, mul_, not_, numberp_, oddp_, onep_, pipe_, procedureTypeP_, procedurep_, range_, selfEvaluatingP_, specialTypeP_, sub1_, sub_, taggedListP_, truep_, typeOf_, undefinedTypeP_, undefinedp_, union_, values_, variableTypeP_, zerop_ };

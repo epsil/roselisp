@@ -60,6 +60,8 @@ import { sexp } from '../../src/ts/sexp';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('eval_', function (): any {
   it('(eval_ #t lisp-1-environment)', function (): any {
     return assertEqual(eval_(true, lisp1Environment), true);

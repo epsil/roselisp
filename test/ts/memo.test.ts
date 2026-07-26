@@ -4,6 +4,8 @@ import { eof, memoize } from '../../src/ts/memo';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('memoize', function (): any {
   it('cache', function (): any {
     return assertEqual(

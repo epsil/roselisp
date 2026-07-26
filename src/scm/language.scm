@@ -342,9 +342,12 @@
                   case-eq_
                   case_
                   clj-try_
+                  declare-fexpr_
+                  declare-macro_
                   declare_
                   defclass_
                   define-fexpr_
+                  define-macro_
                   define-private_
                   define-public_
                   defmacro_
@@ -503,6 +506,7 @@
                   symbol->string_
                   symbol?_))
 (require (only-in "./thunk"
+                  force
                   thunk
                   ThunkedMap))
 (require (only-in "./util"
@@ -589,14 +593,11 @@
          (,colon_ ,compile-colon (compiler-> Any * Any))
          (,cond_ ,compile-cond (compiler-> Any * Any))
          (,continue_ ,compile-continue (compiler-> Any * Any))
-         (,declare-fexpr_ ,compile-declare-fexpr (compiler-> Any * Any))
-         (,declare-macro_ ,compile-declare-macro (compiler-> Any * Any))
+         (,declare_ ,compile-declare (compiler-> Any * Any))
          (,define-async_ ,compile-define-async (compiler-> Any * Any))
          (,define-class_ ,compile-define-class (compiler-> Any * Any))
-         (,define-fexpr_ ,compile-define-fexpr (compiler-> Any * Any))
          (,define-fields_ ,compile-define-fields (compiler-> Any * Any))
          (,define-generator_ ,compile-define-generator (compiler-> Any * Any))
-         (,define-macro_ ,compile-define-macro (compiler-> Any * Any))
          (,define-type_ ,compile-define-type (compiler-> Any * Any))
          (,define-values_ ,compile-define-values (compiler-> Any * Any))
          (,define_ ,compile-define (compiler-> Any * Any))
@@ -754,6 +755,7 @@
    eqv?_
    error_
    even?_
+   false?_
    field-names_
    fifth_
    filter_
@@ -872,6 +874,7 @@
    symbol?_
    tenth_
    third_
+   true?_
    type-of_
    undefined?_
    zero?_))
@@ -1223,13 +1226,13 @@
       (push-right! module-names module-name))))
   (set! module-map
         (make-module-map module-expression-map
-                         compilation-environment))
+                         lang-environment))
   (for ((module-name module-names))
     (set! module
           (send module-map get module-name))
     (set! code
           (compile-with-environment module
-                                    compilation-environment
+                                    lang-environment
                                     compilation-options))
     (set! out-file
           (join out-dir-option
@@ -1372,7 +1375,8 @@
 
 ;;; Compile a S-expression.
 (define (compile-sexp exp env (options (js-obj)))
-  (~> (sexp->rose exp)
+  (~> exp
+      (sexp->rose _)
       (compile-rose _ env options)))
 
 ;;; Compile `node` as an expression.
@@ -1445,6 +1449,7 @@
     (js-obj-append
      options
      (js-obj
+      "case" "none"
       "expressionType" expression-type
       "estree" #t
       "shouldInline" #f)))
@@ -1978,65 +1983,6 @@
        (else
         `(begin ,@result))))))))
 
-;;; Create a `(lambda ...)` form for a macro function
-;;; on the basis of a `(define-macro ...)` expression.
-(define (define-macro->lambda-form exp)
-  (define name-and-args
-    (second exp))
-  (define name
-    (car name-and-args))
-  (define args
-    (cdr name-and-args))
-  (define body
-    (drop exp 2))
-  (define exp-arg 'exp)
-  (define env-arg 'env)
-  (define macro-args '())
-  (define rest-arg #u)
-  (cond
-   ((list? args)
-    (define i 0)
-    (while (< i (js/length args))
-      (define arg
-        (aget args i))
-      (cond
-       ((eq? arg '&rest)
-        (set! rest-arg (aget args (+ i 1)))
-        (set! i (+ i 2)))
-       ((eq? arg '&whole)
-        (set! exp-arg (aget args (+ i 1)))
-        (set! i (+ i 2)))
-       ((eq? arg '&environment)
-        (set! env-arg (aget args (+ i 1)))
-        (set! i (+ i 2)))
-       (else
-        (push-right! macro-args arg)
-        (set! i (+ i 1))))))
-   (else
-    (set! macro-args args)))
-  (when rest-arg
-    (cond
-     ((null? macro-args)
-      (set! macro-args rest-arg))
-     (else
-      (set! macro-args
-            (apply list*
-                   (append macro-args
-                           (list rest-arg)))))))
-  `(lambda (,exp-arg ,env-arg)
-     ,@(if (null? macro-args)
-           '()
-           `((define-values ,macro-args
-               (rest ,exp-arg))))
-     ,@body))
-
-;;; Create a macro function on the basis of a
-;;; `(define-macro ...)` expression.
-(define (define-macro->function exp env)
-  (define macro-fn
-    (define-macro->lambda-form exp))
-  (eval_ macro-fn env))
-
 ;;; Convert a `(define ... (class ...))` expression to
 ;;; a `(define-class ...)` expression.
 (define (define->define-class node)
@@ -2064,34 +2010,6 @@
         (sexp->rose _)
         (define->define-class _)
         (rose->sexp _)))))
-
-;;; Wrap `f-exp` in a unary function wrapper.
-(define (compile-map-macro-helper f-exp env)
-  (cond
-   ;; If `f-exp` is a symbolic expression, then wrap it in a
-   ;; `lambda` expression.
-   ((symbol? f-exp)
-    `(lambda (x)
-       (,f-exp x)))
-   ;; If `f-exp` is an anonymous unary function, then there is
-   ;; no need to wrap it.
-   ((and (or (form? f-exp lambda_ env)
-             (form? f-exp js-function_ env)
-             (form? f-exp js-arrow_ env))
-         (array? (second f-exp))
-         (= (js/length (second f-exp)) 1))
-    f-exp)
-   (else
-    ;; Curried function application, i.e., the **A** combinator
-    ;; defined as a curried function. Calling this function with
-    ;; a single argument produces a unary function wrapper that
-    ;; calls a function with a single argument and disregards any
-    ;; additional arguments.
-    (define A-exp
-      '(lambda (f)
-         (lambda (x)
-           (f x))))
-    `(,A-exp ,f-exp))))
 
 ;;; Compile an `(and ...)` expression.
 (define (compile-and node env (options (js-obj)))
@@ -2616,12 +2534,26 @@
                    (list '(Listof Any))))
                  (else
                   (make-list (js/length params) 'Any)))
-              ,return-type))
-      (make-type-binding env name-sym type_ lang-filter))
+              ,return-type)))
      (else
       (set! type_ declared-type)))
     (define compiled-type
       (compile-type-exp type_ env options))
+    (send env
+          set-local
+          name-sym
+          (thunk
+           (lambda ()
+             (define result #u)
+             (try
+               (set! result
+                     (interpret `(begin ,exp ,name-sym)
+                                env))
+               (catch Error e
+                 ;; Do nothing
+                 ))
+             result))
+          type_)
     (define result)
     (cond
      (should-curry
@@ -2679,7 +2611,7 @@
       result)))
    ;; Uninitialized variable.
    ((= (js/length exp) 2)
-    (make-type-binding env (second exp) 'Any lang-filter)
+    (send env set-local (js/second exp) #u 'Any)
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (compile-expression
@@ -2707,27 +2639,38 @@
    ;; Class definition.
    ((form? (third exp) class_ env)
     (compile-define-class
-     (sexp->rose
-      (define->define-class exp)
-      node)
+     (define->define-class node)
      env options))
    ;; Initialized variable.
    (else
     (define sym
-      (second exp))
+      (js/second exp))
+    (define val
+      (js/third exp))
     (define sym-compiled
       (compile-symbol
        (send node get 1)
        env
        options))
-    (cond
-     ((send env
-            has
-            sym
-            (js-obj "filter" lang-filter))
-      (set! type_ (send env get-type sym)))
-     (else
-      (make-type-binding env (second exp) type_ lang-filter)))
+    (set! type_
+          (send env
+                get-local-type
+                sym
+                (js-obj "notFound" 'Any)))
+    (send env
+          set-local
+          sym
+          (thunk
+           (lambda ()
+             (define result #u)
+             (try
+               (set! result
+                     (interpret val env))
+               (catch Error e
+                 ;; Do nothing
+                 ))
+             result))
+          type_)
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (~> sym-compiled
@@ -2923,6 +2866,7 @@
          (should-inline? op env options)
          ;; Do not inline the operator if a
          ;; compilation macro is defined for it.
+         (not (send env has-thunk op))
          (not (send compilation-mapping-environment
                     has
                     (send env get op)))))
@@ -3515,6 +3459,18 @@
     (set! expression
           (~> node
               (send _ get 4))))
+  (define expression-thunk
+    (thunk
+     (lambda ()
+       (define result '())
+       (try
+         (set! result
+               (interpret expression env))
+         (catch Error e
+           ;; Do nothing
+           ))
+       result)))
+  (define i 0)
   (cond
    ((symbol? variables)
     (set! declarator-id
@@ -3524,7 +3480,7 @@
                  (sexp->rose variables)
                  env inherited-options)
                 inherited-options)))
-    (make-type-binding env variables 'Any lang-filter))
+    (send env set-local variables expression-thunk 'Any))
    (else
     (cond
      ((dotted-list? variables)
@@ -3542,7 +3498,21 @@
                   ((eq? x hole-marker)
                    #n)
                   (else
-                   (make-type-binding env x 'Any lang-filter)
+                   (define idx i)
+                   (define var-thunk
+                     (thunk
+                      (lambda ()
+                        (define result '())
+                        (try
+                          (set! result
+                                (aget (force expression-thunk)
+                                      idx))
+                          (catch Error e
+                            ;; Do nothing
+                            ))
+                        result)))
+                   (set! i (+ i 1))
+                   (send env set-local x var-thunk 'Any)
                    (new Identifier
                         (print-estree
                          (compile-symbol
@@ -3551,7 +3521,20 @@
                          inherited-options)))))
                regular-vars))
     (when rest-var
-      (make-type-binding env rest-var 'Any lang-filter)
+      (define idx i)
+      (define rest-var-thunk
+        (thunk
+         (lambda ()
+           (define result '())
+           (try
+             (set! result
+                   (drop (force expression-thunk) idx))
+             (catch Error e
+               ;; Do nothing
+               ))
+           result)))
+      (set! i (+ i 1))
+      (send env set-local rest-var rest-var-thunk 'Any)
       (push-right! var-decls
                    (new RestElement
                         (new Identifier
@@ -3678,18 +3661,52 @@
     (oget options "languageEnvironment"))
   (define (lang-filter x)
     (not (eq? x language-env)))
+  (define exp
+    (rose->sexp node))
   (define fields
     (send node get 1))
   (define fields-exp
     (rose->sexp fields))
   (define obj
     (send node get 2))
+  (define obj-exp
+    (rose->sexp obj))
+  (define obj-thunk
+    (thunk
+     (lambda ()
+       (define result (js-obj))
+       (try
+         (set! result
+               (interpret obj-exp env))
+         (catch Error e
+           ;; Do nothing
+           ))
+       result)))
   (for ((f fields-exp))
-    (define sym
-      (if (array? f)
-          (second f)
+    (define is-array
+      (array? f))
+    (define prop
+      (if is-array
+          (js/first f)
           f))
-    (make-type-binding env sym 'Any lang-filter))
+    (define sym
+      (if is-array
+          (js/second f)
+          f))
+    (define prop-str
+      (symbol->string prop))
+    (define prop-thunk
+      (thunk
+       (lambda ()
+         (define result #u)
+         (try
+           (set! result
+                 (oget (force obj-thunk) prop-str))
+           (catch Error e
+             ;; Do nothing
+             ))
+         result)))
+    (send env set-local sym prop-thunk 'Any))
   (define expression-statement
     (compile-set-fields
      (sexp->rose
@@ -4257,6 +4274,10 @@
 (define (make-define-values-exp symbols env options)
   (define inline-functions-option
     (oget options "inlineFunctions"))
+  (define env1
+    (new LispEnvironment
+         '()
+         env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4274,8 +4295,8 @@
     (set! symbol (pop! referenced-symbols))
     (push-right! seen symbol)
     (when (and (not (memq? symbol external-symbols))
-               (send env has symbol))
-      (set! value (send env get symbol))
+               (send env1 has symbol))
+      (set! value (send env1 get symbol))
       (cond
        ((source? value)
         (set! exp (source value))
@@ -4285,12 +4306,12 @@
                     (js/first (js/second exp))
                     (js/second exp)))
           (define referenced-symbols-1 '())
-          (define env1
-            (send env clone))
+          (define env2
+            (send env1 clone))
           (define compiled-expression
             (compile-rose
              (sexp->rose exp)
-             env1
+             env2
              (js-obj-append
               options
               (js-obj "currentModule"
@@ -4366,36 +4387,42 @@
 (define (compile-global-environment exp env (options (js-obj)))
   (cond
    ((not exp)
-    (make-program-fragment))
-   ((tagged-list? exp 'define-values)
-    (define define-values-form
-      `(,(first exp) ,(second exp)
-        (list)))
-    (define body
-      (aget exp 2))
-    ;; Compile the body in a sandboxed environment.
-    (define body-compiled
-      (compile-sexp
-       body
-       env
-       (js-obj-append
-        options
-        (js-obj "continuationEnvironment" (new LispEnvironment)
-                "expressionType" "expression"))))
-    (define var-decl
-      (compile-sexp define-values-form env options))
-    (set-field! init
-                (first
-                 (get-field declarations var-decl))
-                body-compiled)
-    (define result
-      (make-program-fragment
-       (list var-decl)))
-    result)
+    (empty-program))
    (else
-    (make-program-fragment
-     (list
-      (compile-sexp exp env options))))))
+    ;; Compile in a sandboxed environment.
+    (define env1
+      (new LispEnvironment
+           '()
+           env))
+    (cond
+     ((tagged-list? exp 'define-values)
+      (define define-values-form
+        `(,(first exp) ,(second exp)
+          (list)))
+      (define body
+        (aget exp 2))
+      (define body-compiled
+        (compile-sexp
+         body
+         env1
+         (js-obj-append
+          options
+          (js-obj "continuationEnvironment" (new LispEnvironment)
+                  "expressionType" "expression"))))
+      (define var-decl
+        (compile-sexp define-values-form env1 options))
+      (set-field! init
+                  (first
+                   (get-field declarations var-decl))
+                  body-compiled)
+      (define result
+        (make-program-fragment
+         (list var-decl)))
+      result)
+     (else
+      (make-program-fragment
+       (list
+        (compile-sexp exp env1 options))))))))
 
 ;;; Make a `((lambda () ...))` expression that evaluates to a single
 ;;; value from the language environment. `symbol` is a symbol bound in
@@ -4842,12 +4869,7 @@
     (oget options "currentModule"))
   (define exp (rose->sexp node))
   (unless (or quoted-symbol
-              literal-symbol
-              (and (send env has exp)
-                   (variable-type?
-                    (send compilation-mapping-environment
-                          get-type
-                          (send env get exp)))))
+              literal-symbol)
     (when (should-inline? exp env options)
       (cond
        (current-module
@@ -5310,22 +5332,30 @@
      (js-obj "identity" ""
              "operator" "+")))))
 
-;;; Compile a `(define-class ...)` expression.
-(define (compile-define-class node env (options (js-obj)))
-  (compile-class node env options))
-
 ;;; Compile a `(class ...)` expression.
 (define (compile-class node env (options (js-obj)))
+  (compile-class-helper node env options))
+
+;;; Compile a `(define-class ...)` expression.
+(define (compile-define-class node env (options (js-obj)))
+  (compile-class-helper node env options))
+
+;;; Helper function for `compile-class` and `compile-define-class`.
+(define (compile-class-helper node env (options (js-obj)))
   (define inherited-options
     (js-obj-append options))
+  (define exp
+    (rose->sexp node))
   (define class-name-node
     (send node get 1))
   (define class-name
     (rose->sexp class-name-node))
+  (define has-name
+    (symbol? class-name))
   (define super-class
     #n)
   (define id
-    (if (symbol? class-name)
+    (if has-name
         (new Identifier
              (print-estree
               (compile-expression
@@ -5468,12 +5498,28 @@
   (define body
     (new ClassBody
          body-declarations))
-  (if (eq? id #n)
-      (new ClassExpression
-           body
-           super-class)
+  (when has-name
+    (send env
+          set-local
+          class-name
+          (thunk
+           (lambda ()
+             (define result #u)
+             (try
+               (set! result
+                     (interpret `(begin ,exp ,class-name)
+                                env))
+               (catch Error e
+                 ;; Do nothing
+                 ))
+             result))
+          'Any))
+  (if has-name
       (new ClassDeclaration
            id
+           body
+           super-class)
+      (new ClassExpression
            body
            super-class)))
 
@@ -5715,90 +5761,30 @@
     (compile-expression
      expression-exp env options))))
 
-;;; Compile a `(define-fexpr ...)` expression.
-(define (compile-define-fexpr node env (options (js-obj)))
-  (define language-env
-    (oget options "languageEnvironment"))
-  (define (lang-filter x)
-    (not (eq? x language-env)))
-  (define name-and-args
-    (send node get 1))
-  (define name
-    (~> name-and-args
-        (send _ get 0)
-        (rose->sexp _)))
-  (define body
-    (send node drop 1))
-  (define result
-    (compile-rose
-     (transfer-comments
-      node
-      (sexp->rose
-       `(begin
-          (define ,@body)
-          (declare ,name (ftype "fexpr")))
-       node))
-     env options))
-  (make-type-binding env name '(fexpr-> Any * Any) lang-filter)
-  result)
-
-;;; Compile a `(define-macro ...)` expression.
-(define (compile-define-macro node env (options (js-obj)))
+;;; Compile a `(declare ...)` expression.
+(define (compile-declare node env (options (js-obj)))
   (define language-env
     (oget options "languageEnvironment"))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
     (rose->sexp node))
-  (define name-and-args
-    (second exp))
   (define name
-    (car name-and-args))
-  (define macro-fn-form
-    (define-macro->lambda-form exp))
-  (define args
-    (second macro-fn-form))
-  (define body
-    (drop macro-fn-form 2))
-  (define result
-    (compile-rose
-     (transfer-comments
-      node
-      (sexp->rose
-       `(begin
-          (define (,name ,@args)
-            ,@body)
-          (declare ,name (ftype "macro")))
-       node))
-     env options))
-  (make-type-binding env name '(macro-> Any * Any) lang-filter)
-  result)
-
-;;; Compile a `(declare-fexpr ...)` expression.
-(define (compile-declare-fexpr node env (options (js-obj)))
-  (define language-env
-    (oget options "languageEnvironment"))
-  (define (lang-filter x)
-    (not (eq? x language-env)))
-  (define name
-    (~> node
-        (send _ get 1)
-        (rose->sexp _)))
-  (make-type-binding env name '(fexpr-> Any * Any) lang-filter)
-  (empty-program))
-
-;;; Compile a `(declare-macro ...)` expression.
-(define (compile-declare-macro node env (options (js-obj)))
-  (define language-env
-    (oget options "languageEnvironment"))
-  (define (lang-filter x)
-    (not (eq? x language-env)))
-  (define name
-    (~> node
-        (send _ get 1)
-        (rose->sexp _)))
-  (make-type-binding env name '(macro-> Any * Any) lang-filter)
-  (empty-program))
+    (js/second exp))
+  (define specs
+    (drop exp 2))
+  (for ((spec specs))
+    (define field
+      (js/first spec))
+    (when (eq? field 'ftype)
+      (define value
+        (js/second spec))
+      (define type_
+        (parse-ftype value))
+      (make-type-binding env name type_ lang-filter)))
+  (define expansion
+    (funcall declare_ exp env))
+  (compile-sexp expansion env options))
 
 ;;; Compiler macro for `(make-hash ...)` expressions.
 (defmacro compile-make-hash-macro (assocs)
@@ -5893,6 +5879,34 @@
   (define f-exp
     (compile-map-macro-helper f env))
   `(send ,x map ,f-exp))
+
+;;; Wrap `f-exp` in a unary function wrapper.
+(define (compile-map-macro-helper f-exp env)
+  (cond
+   ;; If `f-exp` is a symbolic expression, then wrap it in a
+   ;; `lambda` expression.
+   ((symbol? f-exp)
+    `(lambda (x)
+       (,f-exp x)))
+   ;; If `f-exp` is an anonymous unary function, then there is
+   ;; no need to wrap it.
+   ((and (or (form? f-exp lambda_ env)
+             (form? f-exp js-function_ env)
+             (form? f-exp js-arrow_ env))
+         (array? (second f-exp))
+         (= (js/length (second f-exp)) 1))
+    f-exp)
+   (else
+    ;; Curried function application, i.e., the **A** combinator
+    ;; defined as a curried function. Calling this function with
+    ;; a single argument produces a unary function wrapper that
+    ;; calls a function with a single argument and disregards any
+    ;; additional arguments.
+    (define A-exp
+      '(lambda (f)
+         (lambda (x)
+           (f x))))
+    `(,A-exp ,f-exp))))
 
 ;;; Compiler macro for `(values ...)` expressions.
 (defmacro compile-values-macro (&rest args)
@@ -6216,41 +6230,6 @@
 
 ;;; Expand a `(define/async ...)` expression.
 (defmacro define-async_ (&whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
-
-;;; Expand a `(define-macro ...)` expression.
-;;;
-;;; Similar to [`define-macro` in Guile][guile:define-macro] and
-;;; [`defmacro` in Common Lisp][cl:defmacro].
-;;;
-;;; [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
-;;; [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
-(defmacro define-macro_ (&whole exp &environment env)
-  ;; FIXME: Kludge, remove.
-  (define name
-    (first (second exp)))
-  (define f-exp
-    (compile-sexp
-     exp
-     env
-     (current-compilation-options)))
-  (define f
-    (eval_ `(begin ,f-exp ,name) env))
-  (send env set name f '(macro-> Any * Any))
-  f-exp)
-
-;;; Expand a `(declare-fexpr ...)` expression.
-(defmacro declare-fexpr_ (x)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
-
-;;; Expand a `(declare-macro ...)` expression.
-(defmacro declare-macro_ (x)
   (compile-sexp
    exp
    env
@@ -7691,8 +7670,8 @@
                    (define begin-exp
                      `(begin ,exp ,name))
                    (set! result
-                         (eval_ begin-exp
-                                module-interpretation-env))
+                         (interpret begin-exp
+                                    module-interpretation-env))
                    (catch Error e
                      ;; Do nothing
                      ))
@@ -7841,6 +7820,16 @@
 (define (simple-type? x)
   (and (not (macro-type? x))
        (not (fexpr-type? x))))
+
+;;; Parse the value of the `ftype` spec.
+(define (parse-ftype x)
+  (cond
+   ((eq? x "macro")
+    '(macro-> Any * Any))
+   ((eq? x "fexpr")
+    '(fexpr-> Any * Any))
+   (else
+    x)))
 
 ;;; Lisp environment.
 (define lisp-environment
@@ -8327,6 +8316,7 @@
          (cond ,cond_ (macro-> Any * Any))
          (continue ,continue_ (macro-> Any * Any))
          (declare ,declare_ (macro-> Any * Any))
+         (declare-fexpr ,declare-fexpr_ (macro-> Any * Any))
          (declare-macro ,declare-macro_ (macro-> Any * Any))
          (defclass ,defclass_ (macro-> Any * Any))
          (define ,define_ (macro-> Any * Any))
@@ -8550,7 +8540,6 @@
   (rename-out (set-values_ set!-values))
   (rename-out (set-values_ set-values))
   (rename-out (sexp read-from-string))
-  ;; (rename-out (macroexpand*-1 macroexpand1))
   Module
   and_
   ann_
@@ -8574,8 +8563,6 @@
   define-async_
   define-generator_
   define-fields_
-  define-macro->function
-  define-macro->lambda-form
   define-macro_
   define-type_
   define-values_

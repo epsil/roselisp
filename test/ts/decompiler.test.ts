@@ -8,6 +8,8 @@ import { sexp } from '../../src/ts/sexp';
 
 import { assertEqual, testMacro } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('decompile', function (): any {
   it('(decompile "true;")', function (): any {
     return assertEqual(decompile('true;'), true);

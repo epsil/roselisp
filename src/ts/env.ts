@@ -392,9 +392,10 @@ class TypedEnvironment extends Environment {
    * return `Undefined`.
    */
   getType(key: any, options: any = {}): any {
+    const notFound: any = options['notFound'] || Symbol.for('Undefined');
     const inheritedOptions: any = {
       ...options,
-      notFound: [undefined, Symbol.for('Undefined')]
+      notFound: [undefined, notFound]
     };
     const [, typ]: any[] = this.getTypedValue(key, inheritedOptions);
     return typ;
@@ -405,9 +406,10 @@ class TypedEnvironment extends Environment {
    * return `Undefined`.
    */
   getLocalType(key: any, options: any = {}): any {
+    const notFound: any = options['notFound'] || Symbol.for('Undefined');
     const inheritedOptions: any = {
       ...options,
-      notFound: [undefined, Symbol.for('Undefined')]
+      notFound: [undefined, notFound]
     };
     const [, typ]: any[] = this.getTypedLocalValue(key, inheritedOptions);
     return typ;
@@ -575,6 +577,9 @@ class ThunkedEnvironment extends TypedEnvironment {
     return tuple;
   }
 
+  /**
+   * Like `get-tuple`, but does not force any thunks.
+   */
   getUnforcedTuple(key: any, options: any = {}): any {
     const notFound: any = options['notFound'];
     const filter: any = options['filter'];
@@ -596,6 +601,9 @@ class ThunkedEnvironment extends TypedEnvironment {
     }
   }
 
+  /**
+   * Like `get-local-tuple`, but does not force any thunks.
+   */
   getUnforcedLocalTuple(key: any, options: any = {}): any {
     return super.getLocalTuple(key, options);
   }
@@ -606,13 +614,14 @@ class ThunkedEnvironment extends TypedEnvironment {
    */
   getType(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
+    const notFound: any = options['notFound'] || Symbol.for('Undefined');
     let tuple: any = this.getUnforcedTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
       const [, typ]: any[] = binding;
       return typ;
     } else {
-      return Symbol.for('Undefined');
+      return notFound;
     }
   }
 
@@ -622,16 +631,51 @@ class ThunkedEnvironment extends TypedEnvironment {
    */
   getLocalType(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
+    const notFound: any = options['notFound'] || Symbol.for('Undefined');
     let tuple: any = this.getUnforcedLocalTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
       const [, typ]: any[] = binding;
       return typ;
     } else {
-      return Symbol.for('Undefined');
+      return notFound;
     }
   }
 
+  /**
+   * Whether `key` is bound to a thunk.
+   */
+  hasThunk(key: any, options: any = {}): any {
+    // Obtain the type without forcing the thunk.
+    let tuple: any = this.getUnforcedTuple(key, options);
+    let [binding, found]: any[] = tuple;
+    if (found) {
+      let [val]: any[] = binding;
+      return thunkp(val);
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Whether `key` is locally bound to a thunk.
+   */
+  hasLocalThunk(key: any, options: any = {}): any {
+    // Obtain the type without forcing the thunk.
+    let tuple: any = this.getUnforcedLocalTuple(key, options);
+    let [binding, found]: any[] = tuple;
+    if (found) {
+      let [val]: any[] = binding;
+      return thunkp(val);
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Set the type of `key` to `typ`.
+   * Does not force any thunks.
+   */
   setType(key: any, typ: any, options: any = {}): any {
     const inheritedOptions: any = {
       ...options,
@@ -644,6 +688,10 @@ class ThunkedEnvironment extends TypedEnvironment {
     return this.set(key, val, typ);
   }
 
+  /**
+   * Set the local type of `key` to `typ`.
+   * Does not force any thunks.
+   */
   setLocalType(key: any, typ: any, options: any = {}): any {
     const inheritedOptions: any = {
       ...options,

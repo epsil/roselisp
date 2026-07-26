@@ -15,7 +15,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 import { jsNew_ as new_ } from './javascript';
-import { cljTry_, definePublic_ } from './macros';
+import { cljTry_, defineMacro_, definePublic_ } from './macros';
 import { read, readRose, readSexp, tokenize } from './parser';
 import { isAP_, typeOf_ } from './procedures';
 import { s, sexp } from './sexp';
@@ -137,22 +137,6 @@ declare namespace splitComments {
 declare function definitionToMacro(exp: any, args: any): any;
 declare namespace definitionToMacro {
     var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[];
-}
-/**
- * Create a `(lambda ...)` form for a macro function
- * on the basis of a `(define-macro ...)` expression.
- */
-declare function defineMacroToLambdaForm(exp: any): any;
-declare namespace defineMacroToLambdaForm {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | symbol[])[] | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[];
-}
-/**
- * Create a macro function on the basis of a
- * `(define-macro ...)` expression.
- */
-declare function defineMacroToFunction(exp: any, env: any): any;
-declare namespace defineMacroToFunction {
-    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Convert a `(define ... (class ...))` expression to
@@ -397,20 +381,6 @@ declare namespace defineGenerator_ {
 declare function defineAsync_(exp: any, env: any): any;
 declare namespace defineAsync_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
-    var ftype: string;
-}
-/**
- * Expand a `(define-macro ...)` expression.
- *
- * Similar to [`define-macro` in Guile][guile:define-macro] and
- * [`defmacro` in Common Lisp][cl:defmacro].
- *
- * [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
- * [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
- */
-declare function defineMacro_(exp: any, env: any): any;
-declare namespace defineMacro_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -884,4 +854,4 @@ export * from './regexp';
 export * from './rose';
 export * from './string';
 export * from './symbol';
-export { and_ as and, ann_ as ann, begin_ as begin, jsBlock_ as block, jsBlock_ as block_, callWithCurrentContinuation_ as callWithCurrentContinuation, callWithCurrentContinuation_ as callCc, cljTry_ as try, cljTry_ as try_, colon_ as colon, compileWithEnvironment as compileLisp, compileWithEnvironment as compileLispToJavascript, cond_ as cond, defineAsync_ as defineAsync, defineClass_ as defineClass, defineGenerator_ as defineGenerator, defineFields_ as defineFields, defineFields_ as defineJsObj, defineMacro_ as defineMacro, definePublic_ as definePublic, defineType_ as defineType, defineValues_ as defineValues, define_ as define, dot_ as dot, getField_ as getField, jsAsync_ as async, jsAsync_ as async_, jsAsync_ as jsAsync, jsAwait_ as await, jsAwait_ as await_, jsAwait_ as jsAwait, js_ as js, lambda_ as compileFunction, lambda_ as fn, lambda_ as lambda, letFields_ as letFields, letFields_ as letJsObj, letStar_ as letStar, letStar_ as let_, letStar_ as letrec, letValues_ as letstarValues, letValues_ as letValues, letValues_ as letrecValues, lispEnvironment as lisp1Environment, new_ as jsNew, new_ as make, new_ as makeObject, new_ as makeObject_, new_ as newStar, new_ as rktMakeObject, new_ as scmNew, nop_ as nop, or_ as or, provide_ as provide, quasiquote_ as quasiquote, quote_ as quote, require_ as require, sendApply_ as sendApply, send_ as callMethod, send_ as send, setX_ as setX, setX_ as setq, setX_ as setq_, setField_ as setFieldX, setField_ as setField, setFields_ as setXFields, setFields_ as setXJsObj, setFields_ as setFieldsX, setFields_ as setFields, setValues_ as setXValues, setValues_ as setValues, sexp as readFromString, Module, and_, ann_, applyOptimizations, begin_, break_, class_, cljTry_, colon_, compilationEnvironment, compile, compileFileX, compileFilesX, compileModuleMap, compileModules, compileWithEnvironment, cond_, continue_, decompile, defineToDefineClass, defineAsync_, defineGenerator_, defineFields_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, defineType_, defineValues_, define_, definitionToMacro, dot_, findEstree, for_, getField_, interpret, interpretFiles, interpretString, interpretationEnvironment, isAP_, iterateRose, jsAsync_, jsAwait_, js_, lambda_, langEnvironment, letFields_, letStar_, letValues_, letVarsToConstVars, lisp, lispEnvironment, macroexpand, macroexpandStar, macroexpandstar1, macroexpandstarN, macroexpand1, macroexpandAll, macroexpandAllUntil, macroexpandN, macroexpandUntil, makeLisp, makeModuleMap, mapRose, mapSexp, mapVisitRose, moduleExpressionToModuleObject, module_, new_, nop_, optimizations, optimizeEstree, optimizeModule, optimizeRose, optimizeSexp, or_, provide_, quasiquote_, quotep, quote_, read, readRose, readSexp, require_, return_, s, sendApply_, sendMethod, send_, setX_, setField_, setFields_, setValues_, sexp, source, sourcep, splitComments, throw_, tokenize, traverseEstree, typeOf_, yield_ };
+export { and_ as and, ann_ as ann, begin_ as begin, jsBlock_ as block, jsBlock_ as block_, callWithCurrentContinuation_ as callWithCurrentContinuation, callWithCurrentContinuation_ as callCc, cljTry_ as try, cljTry_ as try_, colon_ as colon, compileWithEnvironment as compileLisp, compileWithEnvironment as compileLispToJavascript, cond_ as cond, defineAsync_ as defineAsync, defineClass_ as defineClass, defineGenerator_ as defineGenerator, defineFields_ as defineFields, defineFields_ as defineJsObj, defineMacro_ as defineMacro, definePublic_ as definePublic, defineType_ as defineType, defineValues_ as defineValues, define_ as define, dot_ as dot, getField_ as getField, jsAsync_ as async, jsAsync_ as async_, jsAsync_ as jsAsync, jsAwait_ as await, jsAwait_ as await_, jsAwait_ as jsAwait, js_ as js, lambda_ as compileFunction, lambda_ as fn, lambda_ as lambda, letFields_ as letFields, letFields_ as letJsObj, letStar_ as letStar, letStar_ as let_, letStar_ as letrec, letValues_ as letstarValues, letValues_ as letValues, letValues_ as letrecValues, lispEnvironment as lisp1Environment, new_ as jsNew, new_ as make, new_ as makeObject, new_ as makeObject_, new_ as newStar, new_ as rktMakeObject, new_ as scmNew, nop_ as nop, or_ as or, provide_ as provide, quasiquote_ as quasiquote, quote_ as quote, require_ as require, sendApply_ as sendApply, send_ as callMethod, send_ as send, setX_ as setX, setX_ as setq, setX_ as setq_, setField_ as setFieldX, setField_ as setField, setFields_ as setXFields, setFields_ as setXJsObj, setFields_ as setFieldsX, setFields_ as setFields, setValues_ as setXValues, setValues_ as setValues, sexp as readFromString, Module, and_, ann_, applyOptimizations, begin_, break_, class_, cljTry_, colon_, compilationEnvironment, compile, compileFileX, compileFilesX, compileModuleMap, compileModules, compileWithEnvironment, cond_, continue_, decompile, defineToDefineClass, defineAsync_, defineGenerator_, defineFields_, defineMacro_, defineType_, defineValues_, define_, definitionToMacro, dot_, findEstree, for_, getField_, interpret, interpretFiles, interpretString, interpretationEnvironment, isAP_, iterateRose, jsAsync_, jsAwait_, js_, lambda_, langEnvironment, letFields_, letStar_, letValues_, letVarsToConstVars, lisp, lispEnvironment, macroexpand, macroexpandStar, macroexpandstar1, macroexpandstarN, macroexpand1, macroexpandAll, macroexpandAllUntil, macroexpandN, macroexpandUntil, makeLisp, makeModuleMap, mapRose, mapSexp, mapVisitRose, moduleExpressionToModuleObject, module_, new_, nop_, optimizations, optimizeEstree, optimizeModule, optimizeRose, optimizeSexp, or_, provide_, quasiquote_, quotep, quote_, read, readRose, readSexp, require_, return_, s, sendApply_, sendMethod, send_, setX_, setField_, setFields_, setValues_, sexp, source, sourcep, splitComments, throw_, tokenize, traverseEstree, typeOf_, yield_ };

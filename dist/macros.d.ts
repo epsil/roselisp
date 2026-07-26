@@ -14,6 +14,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 /**
+ * Expand a `(defun ...)` expression.
+ */
+declare function defun_(exp: any, env: any): any;
+declare namespace defun_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
+    var ftype: string;
+}
+/**
  * Expand a `(define/private ...)` expression.
  */
 declare function definePrivate_(exp: any, env: any): any;
@@ -38,6 +46,36 @@ declare namespace defclass_ {
     var ftype: string;
 }
 /**
+ * Expand a `(define-macro ...)` expression.
+ *
+ * Similar to [`define-macro` in Guile][guile:define-macro] and
+ * [`defmacro` in Common Lisp][cl:defmacro].
+ *
+ * [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
+ * [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
+ */
+declare function defineMacro_(exp: any, env: any): any;
+declare namespace defineMacro_ {
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Create a macro function on the basis of a
+ * `(define-macro ...)` expression.
+ */
+declare function defineMacroToFunction(exp: any, env: any): any;
+declare namespace defineMacroToFunction {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+}
+/**
+ * Create a `(lambda ...)` form for a macro function
+ * on the basis of a `(define-macro ...)` expression.
+ */
+declare function defineMacroToLambdaForm(exp: any): any;
+declare namespace defineMacroToLambdaForm {
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | symbol[])[] | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[];
+}
+/**
  * Expand a `(defmacro ...)` expression.
  */
 declare function defmacro_(exp: any, env: any): any;
@@ -50,15 +88,31 @@ declare namespace defmacro_ {
  */
 declare function defineFexpr_(exp: any, env: any): any;
 declare namespace defineFexpr_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
 }
 /**
- * Expand a `(defun ...)` expression.
+ * Expand a `(declare ...)` expression.
  */
-declare function defun_(exp: any, env: any): any;
-declare namespace defun_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
+declare function declare_(exp: any, env: any): any;
+declare namespace declare_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Expand a `(declare-macro ...)` expression.
+ */
+declare function declareMacro_(exp: any, env: any): any;
+declare namespace declareMacro_ {
+    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Expand a `(declare-fexpr ...)` expression.
+ */
+declare function declareFexpr_(exp: any, env: any): any;
+declare namespace declareFexpr_ {
+    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
     var ftype: string;
 }
 /**
@@ -245,12 +299,4 @@ declare namespace cljTry_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
-/**
- * Expand a `(declare ...)` expression.
- */
-declare function declare_(exp: any, env: any): any;
-declare namespace declare_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
-    var ftype: string;
-}
-export { begin0_, caseEq_, case_, cljTry_, declare_, defclass_, defineFexpr_, definePrivate_, definePublic_, defmacro_, defun_, do_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };
+export { begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };

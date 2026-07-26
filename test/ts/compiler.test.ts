@@ -6,16 +6,19 @@ import {
   compile,
   compileModules,
   compileWithEnvironment,
-  defineMacroToLambdaForm,
   definitionToMacro,
   splitComments,
 } from '../../src/ts/language';
+
+import { defineMacroToLambdaForm } from '../../src/ts/macros';
 
 import { readRose } from '../../src/ts/parser';
 
 import { sexp } from '../../src/ts/sexp';
 
 import { assertEqual, testMacro } from './test-util';
+
+testMacro.ftype = 'macro';
 
 describe('Symbols', function (): any {
   it('(compile #t)', function (): any {
@@ -6912,7 +6915,7 @@ describe('Macros', function (): any {
         '}'
     );
   });
-  it("(compile '(module m scheme (defmacro foo (x . args) x) (define bar (foo 1 2 3))))", function (): any {
+  it("(compile '(module m scheme (defmacro foo (x . args) x) (define bar (foo 1))))", function (): any {
     return assertEqual(
       compile([
         Symbol.for('module'),
@@ -6924,7 +6927,7 @@ describe('Macros', function (): any {
           [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
           Symbol.for('x'),
         ],
-        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1, 2, 3]],
+        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1]],
       ]),
       'function foo(exp, env) {\n' +
         '  let [x, ...args] = exp.slice(1);\n' +
@@ -6936,7 +6939,7 @@ describe('Macros', function (): any {
         'let bar = 1;'
     );
   });
-  return xit("(compile '(begin (defmacro foo (x . args) x) (define bar (foo 1 2 3))))", function (): any {
+  it("(compile '(begin (defmacro foo (x . args) x) (define bar (foo 1))))", function (): any {
     return assertEqual(
       compile([
         Symbol.for('begin'),
@@ -6946,7 +6949,7 @@ describe('Macros', function (): any {
           [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
           Symbol.for('x'),
         ],
-        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1, 2, 3]],
+        [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), 1]],
       ]),
       'function foo(exp, env) {\n' +
         '  let [x, ...args] = exp.slice(1);\n' +
@@ -6956,6 +6959,456 @@ describe('Macros', function (): any {
         "foo.ftype = 'macro';\n" +
         '\n' +
         'let bar = 1;'
+    );
+  });
+  it("(compile '(begin (define (foo x) x) (defmacro bar (x) (foo x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define'),
+          [Symbol.for('foo'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'function foo(x) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return foo(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it("(compile '(begin (define (foo-bar x) x) (defmacro bar (x) (foo-bar x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define'),
+          [Symbol.for('foo-bar'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo-bar'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'function fooBar(x) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return fooBar(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it("(compile '(begin (define (foo-bar x) x) (defmacro bar (x) (foo-bar 'x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define'),
+          [Symbol.for('foo-bar'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo-bar'), [Symbol.for('quote'), Symbol.for('x')]],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'function fooBar(x) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        "  return fooBar(Symbol.for('x'));\n" +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = x;'
+    );
+  });
+  it("(compile '(begin (define (foo-bar x) 'x) (defmacro bar (x) (foo-bar x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define'),
+          [Symbol.for('foo-bar'), Symbol.for('x')],
+          [Symbol.for('quote'), Symbol.for('x')],
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo-bar'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'function fooBar(x) {\n' +
+        "  return Symbol.for('x');\n" +
+        '}\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return fooBar(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = x;'
+    );
+  });
+  it("(compile '(module m scheme (define (foo-bar x) (keyword? x)) (defmacro bar (x) (foo-bar x)) (define baz (bar 1))) :inline-functions #t)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('module'),
+          Symbol.for('m'),
+          Symbol.for('scheme'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('foo-bar'), Symbol.for('x')],
+            [Symbol.for('keyword?'), Symbol.for('x')],
+          ],
+          [
+            Symbol.for('defmacro'),
+            Symbol.for('bar'),
+            [Symbol.for('x')],
+            [Symbol.for('foo-bar'), Symbol.for('x')],
+          ],
+          [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+        ],
+        Symbol.for(':inline-functions'),
+        true
+      ),
+      'let [keywordp] = (() => {\n' +
+        '  function keywordp_(obj) {\n' +
+        "    if ((typeof obj === 'symbol') && obj.description.match(new RegExp('^:'))) {\n" +
+        '      return true;\n' +
+        '    } else {\n' +
+        '      return false;\n' +
+        '    }\n' +
+        '  }\n' +
+        '  return [keywordp_];\n' +
+        '})();\n' +
+        '\n' +
+        'function fooBar(x) {\n' +
+        '  return keywordp(x);\n' +
+        '}\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return fooBar(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = false;'
+    );
+  });
+  it("(compile '(begin (define foo (lambda (x) x)) (defmacro bar (x) (foo x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define'),
+          Symbol.for('foo'),
+          [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'let foo = function (x) {\n' +
+        '  return x;\n' +
+        '};\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return foo(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it("(compile '(begin (define-values (foo) (list (lambda (x) x))) (defmacro bar (x) (foo x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define-values'),
+          [Symbol.for('foo')],
+          [
+            Symbol.for('list'),
+            [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+          ],
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'let [foo] = [function (x) {\n' +
+        '  return x;\n' +
+        '}];\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return foo(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it('(compile \'(begin (define-fields (foo) (js-obj "foo" (lambda (x) x))) (defmacro bar (x) (foo x)) (define baz (bar 1))))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define-fields'),
+          [Symbol.for('foo')],
+          [
+            Symbol.for('js-obj'),
+            'foo',
+            [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+          ],
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'let {foo} = {\n' +
+        '  foo: function (x) {\n' +
+        '    return x;\n' +
+        '  }\n' +
+        '};\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return foo(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it('(compile \'(begin (define-fields ((foo foo1)) (js-obj "foo" (lambda (x) x))) (defmacro bar (x) (foo1 x)) (define baz (bar 1))))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define-fields'),
+          [[Symbol.for('foo'), Symbol.for('foo1')]],
+          [
+            Symbol.for('js-obj'),
+            'foo',
+            [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+          ],
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo1'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'let {foo: foo1} = {\n' +
+        '  foo: function (x) {\n' +
+        '    return x;\n' +
+        '  }\n' +
+        '};\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return foo1(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it("(compile '(begin (define/async (foo x) x) (defmacro bar (x) (foo x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define/async'),
+          [Symbol.for('foo'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'async function foo(x) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return foo(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it("(compile '(begin (define foo (async (lambda (x) x))) (defmacro bar (x) (foo x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define'),
+          Symbol.for('foo'),
+          [
+            Symbol.for('async'),
+            [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+          ],
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'async function foo(x) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return foo(x);\n' +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = 1;'
+    );
+  });
+  it("(compile '(begin (define-fexpr (foo x) x) (defmacro bar (x) (foo x)) (define baz (bar 1))))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define-fexpr'),
+          [Symbol.for('foo'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('bar'),
+          [Symbol.for('x')],
+          [Symbol.for('foo'), Symbol.for('x')],
+        ],
+        [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
+      ]),
+      'function foo(x) {\n' +
+        '  return x;\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'fexpr';\n" +
+        '\n' +
+        'function bar(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        "  return foo(Symbol.for('x'));\n" +
+        '}\n' +
+        '\n' +
+        "bar.ftype = 'macro';\n" +
+        '\n' +
+        'let baz = x;'
+    );
+  });
+  return it('(compile \'(begin (define-class Foo () (define/public (foo) "foo")) (define bar (new Foo)) (defmacro baz (x) (send bar foo)) (define quux (baz 1))))', function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('begin'),
+        [
+          Symbol.for('define-class'),
+          Symbol.for('Foo'),
+          [],
+          [Symbol.for('define/public'), [Symbol.for('foo')], 'foo'],
+        ],
+        [
+          Symbol.for('define'),
+          Symbol.for('bar'),
+          [Symbol.for('new'), Symbol.for('Foo')],
+        ],
+        [
+          Symbol.for('defmacro'),
+          Symbol.for('baz'),
+          [Symbol.for('x')],
+          [Symbol.for('send'), Symbol.for('bar'), Symbol.for('foo')],
+        ],
+        [Symbol.for('define'), Symbol.for('quux'), [Symbol.for('baz'), 1]],
+      ]),
+      'class Foo {\n' +
+        '  foo() {\n' +
+        "    return 'foo';\n" +
+        '  }\n' +
+        '}\n' +
+        '\n' +
+        'let bar = new Foo();\n' +
+        '\n' +
+        'function baz(exp, env) {\n' +
+        '  let [x] = exp.slice(1);\n' +
+        '  return bar.foo();\n' +
+        '}\n' +
+        '\n' +
+        "baz.ftype = 'macro';\n" +
+        '\n' +
+        "let quux = 'foo';"
     );
   });
 });
@@ -7674,6 +8127,8 @@ describe('compile-modules', function (): any {
           '  foo\n' +
           "} from './a';\n" +
           '\n' +
+          "foo.ftype = 'macro';\n" +
+          '\n' +
           'function bar(x) {\n' +
           '  return x;\n' +
           '}',
@@ -7722,6 +8177,8 @@ describe('compile-modules', function (): any {
         'import {\n' +
           '  bar\n' +
           "} from './b';\n" +
+          '\n' +
+          "bar.ftype = 'macro';\n" +
           '\n' +
           'function foo(x) {\n' +
           '  return x;\n' +
@@ -7862,6 +8319,8 @@ describe('compile-modules', function (): any {
         'import {\n' +
           '  foo as foo1\n' +
           "} from './a';\n" +
+          '\n' +
+          "foo1.ftype = 'macro';\n" +
           '\n' +
           'function bar(x) {\n' +
           '  return x;\n' +
@@ -8711,16 +9170,7 @@ describe('compile-with-environment', function (): any {
           optimize: true,
         }
       ),
-      '(() => {\n' +
-        '  function truep(x) {\n' +
-        '    if (x) {\n' +
-        '      return true;\n' +
-        '    } else {\n' +
-        '      return false;\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return truep;\n' +
-        '})()(x)'
+      'x ? true : false'
     );
   });
   it('(falsep x)', function (): any {
@@ -8734,19 +9184,7 @@ describe('compile-with-environment', function (): any {
           optimize: true,
         }
       ),
-      '(() => {\n' +
-        '  function falsep(x) {\n' +
-        '    return !truep(x);\n' +
-        '  }\n' +
-        '  function truep(x) {\n' +
-        '    if (x) {\n' +
-        '      return true;\n' +
-        '    } else {\n' +
-        '      return false;\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return falsep;\n' +
-        '})()(x)'
+      'x ? false : true'
     );
   });
   it('read-rose', function (): any {

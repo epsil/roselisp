@@ -91,7 +91,7 @@ function regexpMatchP_(pattern: any, input: any): any {
   }
 }
 
-regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('if'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')], true, false]];
+regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('true?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]];
 
 /**
  * Match `pattern` against `input` and replace with `insert`.

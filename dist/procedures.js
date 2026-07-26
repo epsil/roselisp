@@ -18,9 +18,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.procedurep = exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp_ = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep_ = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.memfp_ = exports.member_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep_ = exports.taggedListP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep = exports.taggedListP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = void 0;
+exports.procedurep = exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp_ = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
+exports.memfp_ = exports.member_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = void 0;
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
         if (x === y) {
@@ -92,7 +92,12 @@ const [equalp, keywordp] = (() => {
         }
     }
     function keywordp_(obj) {
-        return (typeof obj === 'symbol') && obj.description.match(new RegExp('^:'));
+        if ((typeof obj === 'symbol') && obj.description.match(new RegExp('^:'))) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     function cdr_(lst) {
         if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
@@ -590,7 +595,7 @@ evenp_.fsource = [Symbol.for('define'), [Symbol.for('even?_'), Symbol.for('n')],
 /**
  * Whether a value is truthy.
  */
-function truep(x) {
+function truep_(x) {
     if (x) {
         return true;
     }
@@ -598,18 +603,23 @@ function truep(x) {
         return false;
     }
 }
-exports.truep_ = truep;
-exports.truep = truep;
-truep.fsource = [Symbol.for('define'), [Symbol.for('true?'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), true, false]];
+exports.truep = truep_;
+exports.truep_ = truep_;
+truep_.fsource = [Symbol.for('define'), [Symbol.for('true?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), true, false]];
 /**
  * Whether a value is falsy.
  */
-function falsep(x) {
-    return !truep(x);
+function falsep_(x) {
+    if (x) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }
-exports.falsep_ = falsep;
-exports.falsep = falsep;
-falsep.fsource = [Symbol.for('define'), [Symbol.for('false?'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('true?'), Symbol.for('x')]]];
+exports.falsep = falsep_;
+exports.falsep_ = falsep_;
+falsep_.fsource = [Symbol.for('define'), [Symbol.for('false?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), false, true]];
 /**
  * The identity function.
  *
@@ -668,11 +678,16 @@ values_.fsource = [Symbol.for('define'), [Symbol.for('values_'), Symbol.for('.')
  * [cl:keywordp]: http://clhs.lisp.se/Body/f_kwdp.htm#keywordp
  */
 function keywordp_(obj) {
-    return (typeof obj === 'symbol') && obj.description.match(new RegExp('^:'));
+    if ((typeof obj === 'symbol') && obj.description.match(new RegExp('^:'))) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 exports.keywordp = keywordp_;
 exports.keywordp_ = keywordp_;
-keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]];
+keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('true?'), [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]]];
 /**
  * Whether something is a number.
  *

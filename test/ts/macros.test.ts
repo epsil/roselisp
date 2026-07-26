@@ -42,6 +42,8 @@ const [lastCdr]: any[] = ((): any => {
   return [lastCdr_];
 })();
 
+testMacro.ftype = 'macro';
+
 describe('macroexpand', function (): any {
   it('(macroexpand \'(foo bar) (new LispEnvironment `((foo ,(fn (exp env) \'(baz)) "macro"))))', function (): any {
     return assertEqual(

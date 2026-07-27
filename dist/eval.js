@@ -974,7 +974,7 @@ function evalEstreeClassDeclaration(node, env, options = {}) {
     const id = node.id;
     const sym = Symbol.for(id.name);
     const classExpression = evalEstreeClassExpression(node, env, options);
-    env.setX(sym, classExpression);
+    env.setx(sym, classExpression);
     return undefined;
 }
 evalEstreeClassDeclaration.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-class-declaration'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('get-field'), Symbol.for('id'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('id')]]], [Symbol.for('define'), Symbol.for('class-expression'), [Symbol.for('eval-estree-class-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('class-expression')], undefined];
@@ -1134,7 +1134,7 @@ function evalEstreeAssignmentExpressionHelper(node, env, options = {}, settings 
                     env.setLocalX(sym, val);
                 }
                 else {
-                    env.setX(sym, val);
+                    env.setx(sym, val);
                 }
             }
             else {
@@ -1145,7 +1145,7 @@ function evalEstreeAssignmentExpressionHelper(node, env, options = {}, settings 
                     env.setLocalX(sym, val);
                 }
                 else {
-                    env.setX(sym, val);
+                    env.setx(sym, val);
                 }
             }
         }
@@ -1162,7 +1162,7 @@ function evalEstreeAssignmentExpressionHelper(node, env, options = {}, settings 
                 env.setLocalX(sym, val);
             }
             else {
-                env.setX(sym, val);
+                env.setx(sym, val);
             }
         }
         return rightVal;
@@ -1173,7 +1173,7 @@ function evalEstreeAssignmentExpressionHelper(node, env, options = {}, settings 
             env.setLocalX(sym, rightVal);
         }
         else {
-            env.setX(sym, rightVal);
+            env.setx(sym, rightVal);
         }
         return rightVal;
     }

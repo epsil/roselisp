@@ -346,7 +346,7 @@ function setSpecial_(exp, env) {
             }
         }
         else {
-            env.setX(sym, val, Symbol.for('Any'));
+            env.setx(sym, val, Symbol.for('Any'));
         }
         return val;
     }
@@ -379,7 +379,7 @@ function fsetSpecial_(exp, env) {
         }
         return result;
     })() : params[1], env);
-    env.setX(sym, val, [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
+    env.setx(sym, val, [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
     return val;
 }
 exports.fsetSpecial_ = fsetSpecial_;
@@ -841,7 +841,7 @@ function defmacroSpecial_(exp, env) {
         name = name[0];
     }
     const macroFn = defmacroToFn(exp, env);
-    env.setX(name, macroFn, [Symbol.for('->macro'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
+    env.setx(name, macroFn, [Symbol.for('->macro'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
     // name
     return macroFn;
 }
@@ -964,7 +964,7 @@ function defineMacroSpecial_(exp, env) {
         return result;
     })() : exp[1])[0];
     const macroFn = defineMacroToFn(exp, env);
-    env.setX(name, macroFn, [Symbol.for('->macro'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
+    env.setx(name, macroFn, [Symbol.for('->macro'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
     return name;
 }
 exports.defineMacroSpecial_ = defineMacroSpecial_;
@@ -2021,7 +2021,7 @@ function defineClassSpecial_(exp, env) {
         }
     }
     if (className !== '') {
-        env.setX(classNameSymbol, constructor, Symbol.for('Any'));
+        env.setx(classNameSymbol, constructor, Symbol.for('Any'));
     }
     return constructor;
 }

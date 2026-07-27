@@ -132,7 +132,7 @@ export {
   objectRef_ as objectGet_,
   objectRef_ as oget_,
   objectSetX_ as objectSet_,
-  objectSetX_ as osetX_,
+  objectSetX_ as osetx_,
   objectSetX_ as oset_,
   fieldNames_,
   jsKeys_,

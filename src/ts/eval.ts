@@ -1043,7 +1043,7 @@ function evalEstreeClassDeclaration(node: any, env: any, options: any = {}): any
   const id: any = node.id;
   const sym: any = Symbol.for(id.name);
   const classExpression: any = evalEstreeClassExpression(node, env, options);
-  env.setX(sym, classExpression);
+  env.setx(sym, classExpression);
   return undefined;
 }
 
@@ -1212,7 +1212,7 @@ function evalEstreeAssignmentExpressionHelper(node: any, env: any, options: any 
         if (localSetting) {
           env.setLocalX(sym, val);
         } else {
-          env.setX(sym, val);
+          env.setx(sym, val);
         }
       } else {
         const name: any = x.name;
@@ -1221,7 +1221,7 @@ function evalEstreeAssignmentExpressionHelper(node: any, env: any, options: any 
         if (localSetting) {
           env.setLocalX(sym, val);
         } else {
-          env.setX(sym, val);
+          env.setx(sym, val);
         }
       }
     }
@@ -1236,7 +1236,7 @@ function evalEstreeAssignmentExpressionHelper(node: any, env: any, options: any 
       if (localSetting) {
         env.setLocalX(sym, val);
       } else {
-        env.setX(sym, val);
+        env.setx(sym, val);
       }
     }
     return rightVal;
@@ -1245,7 +1245,7 @@ function evalEstreeAssignmentExpressionHelper(node: any, env: any, options: any 
     if (localSetting) {
       env.setLocalX(sym, rightVal);
     } else {
-      env.setX(sym, rightVal);
+      env.setx(sym, rightVal);
     }
     return rightVal;
   } else if (leftType === 'MemberExpression') {

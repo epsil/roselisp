@@ -177,8 +177,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pop_ = exports.popLeft_ = exports.popLeft = exports.popLeftX = exports.pop = exports.popX_ = exports.popX = exports.nullp_ = exports.nullp = exports.nthcdr = exports.nth = exports.ninth = exports.nbutlast = exports.makeList = exports.list = exports.properListP = exports.listp_ = exports.listp = exports.listStar = exports.dottedPairP_ = exports.linkedListLast_ = exports.linkedListToArrayList_ = exports.length = exports.last = exports.linkedListLastPair_ = exports.linkedListLastCons_ = exports.lastCons_ = exports.linkedListLastCdr_ = exports.fourth = exports.flatten = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.listTail_ = exports.listTail = exports.drop = exports.dropRight = exports.dottedListP = exports.pairp_ = exports.pairp = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.properListToDottedList_ = exports.arrayListToLinkedList_ = exports.append = void 0;
-exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.arrayListP_ = exports.arrayListThird_ = exports.arrayListTenth_ = exports.arrayListTake_ = exports.arrayListSixth_ = exports.arrayListSeventh_ = exports.arrayListSecond_ = exports.arrayListReverse_ = exports.arrayListRest_ = exports.arrayListNthcdr_ = exports.arrayListNth_ = exports.arrayListNinth_ = exports.arrayListLength_ = exports.arrayListLast_ = exports.arrayListFourth_ = exports.arrayListFirst_ = exports.arrayListFifth_ = exports.arrayListEighth_ = exports.arrayListDrop_ = exports.arrayListDropRight_ = exports.arrayListCdr_ = exports.append_ = exports.third = exports.tenth = exports.sixth = exports.seventh = exports.setCdr_ = exports.setCar_ = exports.second = exports.cadr_ = exports.cadr = exports.reverse = exports.rest = exports.pushRight_ = exports.pushRight = exports.pushRightX = exports.appendToList = exports.push_ = exports.pushLeft_ = exports.pushLeft = exports.pushLeftX = exports.push = exports.pushX_ = exports.pushX = exports.popRight_ = exports.popRight = exports.popRightX = void 0;
+exports.pop_ = exports.popLeft_ = exports.popLeft = exports.popLeftX = exports.pop = exports.popx_ = exports.popx = exports.nullp_ = exports.nullp = exports.nthcdr = exports.nth = exports.ninth = exports.nbutlast = exports.makeList = exports.list = exports.properListP = exports.listp_ = exports.listp = exports.listStar = exports.dottedPairP_ = exports.linkedListLast_ = exports.linkedListToArrayList_ = exports.length = exports.last = exports.linkedListLastPair_ = exports.linkedListLastCons_ = exports.lastCons_ = exports.linkedListLastCdr_ = exports.fourth = exports.flatten = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.listTail_ = exports.listTail = exports.drop = exports.dropRight = exports.dottedListP = exports.pairp_ = exports.pairp = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.properListToDottedList_ = exports.arrayListToLinkedList_ = exports.append = void 0;
+exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.arrayListP_ = exports.arrayListThird_ = exports.arrayListTenth_ = exports.arrayListTake_ = exports.arrayListSixth_ = exports.arrayListSeventh_ = exports.arrayListSecond_ = exports.arrayListReverse_ = exports.arrayListRest_ = exports.arrayListNthcdr_ = exports.arrayListNth_ = exports.arrayListNinth_ = exports.arrayListLength_ = exports.arrayListLast_ = exports.arrayListFourth_ = exports.arrayListFirst_ = exports.arrayListFifth_ = exports.arrayListEighth_ = exports.arrayListDrop_ = exports.arrayListDropRight_ = exports.arrayListCdr_ = exports.append_ = exports.third = exports.tenth = exports.sixth = exports.seventh = exports.setCdr_ = exports.setCar_ = exports.second = exports.cadr_ = exports.cadr = exports.reverse = exports.rest = exports.pushRight_ = exports.pushRight = exports.pushRightX = exports.appendToList = exports.push_ = exports.pushLeft_ = exports.pushLeft = exports.pushLeftX = exports.push = exports.pushx_ = exports.pushx = exports.popRight_ = exports.popRight = exports.popRightX = void 0;
 exports.makeDottedList_ = exports.list_ = exports.listStar_ = exports.linkedPairP_ = exports.linkedPairCdr_ = exports.linkedPairCar_ = exports.linkedListP_ = exports.linkedListThird_ = exports.linkedListTenth_ = exports.linkedListTail_ = exports.linkedListSixth_ = exports.linkedListSeventh_ = exports.linkedListSecond_ = exports.linkedListParse_ = exports.linkedListNthcdr_ = exports.linkedListNth_ = exports.linkedListNinth_ = exports.linkedListLinkP_ = exports.linkedListLinkCdr_ = exports.linkedListLinkCar_ = exports.linkedListLength_ = exports.linkedListHead_ = exports.linkedListFourth_ = exports.linkedListFirst_ = exports.linkedListFifth_ = exports.linkedListEighth_ = exports.linkedListDrop_ = exports.linkedListDropRight_ = exports.linkedListCdr_ = exports.linkedListCar_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedListP_ = exports.cons_ = exports.consp_ = exports.consDot_ = exports.consDotP_ = exports.consDotF_ = exports.consDotCompiled_ = exports.circularListP_ = void 0;
 exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = void 0;
 const estree_1 = require("./estree");
@@ -996,8 +996,8 @@ nbutlast_.fsource = [Symbol.for('define'), [Symbol.for('nbutlast_'), Symbol.for(
 function popLeftX_(lst) {
     return lst.shift();
 }
-exports.popX = popLeftX_;
-exports.popX_ = popLeftX_;
+exports.popx = popLeftX_;
+exports.popx_ = popLeftX_;
 exports.pop = popLeftX_;
 exports.popLeftX = popLeftX_;
 exports.popLeft = popLeftX_;
@@ -1031,8 +1031,8 @@ function pushLeftX_(lst, x) {
     lst.unshift(x);
     return lst;
 }
-exports.pushX = pushLeftX_;
-exports.pushX_ = pushLeftX_;
+exports.pushx = pushLeftX_;
+exports.pushx_ = pushLeftX_;
 exports.push = pushLeftX_;
 exports.pushLeftX = pushLeftX_;
 exports.pushLeft = pushLeftX_;

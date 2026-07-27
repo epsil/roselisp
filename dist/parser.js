@@ -288,15 +288,15 @@ function parseRose(tokens, options = {}) {
     let parentValNode;
     // Helper function for inserting an expression
     // into another.
-    function insertX(val, exp, valNode, expNode) {
+    function insertx(val, exp, valNode, expNode) {
         exp.push(val);
         return expNode.insert(valNode);
     }
-    insertX.fsource = [Symbol.for('define'), [Symbol.for('insert!'), Symbol.for('val'), Symbol.for('exp'), Symbol.for('val-node'), Symbol.for('exp-node')], [Symbol.for('push-right!'), Symbol.for('exp'), Symbol.for('val')], [Symbol.for('send'), Symbol.for('exp-node'), Symbol.for('insert'), Symbol.for('val-node')]];
+    insertx.fsource = [Symbol.for('define'), [Symbol.for('insert!'), Symbol.for('val'), Symbol.for('exp'), Symbol.for('val-node'), Symbol.for('exp-node')], [Symbol.for('push-right!'), Symbol.for('exp'), Symbol.for('val')], [Symbol.for('send'), Symbol.for('exp-node'), Symbol.for('insert'), Symbol.for('val-node')]];
     // Helper function for updating current values.
-    function updateX(exp, node) {
+    function updatex(exp, node) {
         if (currentVal) {
-            insertX(exp, currentVal, node, currentValNode);
+            insertx(exp, currentVal, node, currentValNode);
             currentVal = undefined;
             currentValNode = undefined;
         }
@@ -305,10 +305,10 @@ function parseRose(tokens, options = {}) {
             currentExpNode = node;
         }
         if (parentExp) {
-            return insertX(currentExp, parentVal, currentExpNode, parentValNode);
+            return insertx(currentExp, parentVal, currentExpNode, parentValNode);
         }
     }
-    updateX.fsource = [Symbol.for('define'), [Symbol.for('update!'), Symbol.for('exp'), Symbol.for('node')], [Symbol.for('cond'), [Symbol.for('current-val'), [Symbol.for('insert!'), Symbol.for('exp'), Symbol.for('current-val'), Symbol.for('node'), Symbol.for('current-val-node')], [Symbol.for('set!'), Symbol.for('current-val'), undefined], [Symbol.for('set!'), Symbol.for('current-val-node'), undefined]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-exp-node'), Symbol.for('node')]]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('insert!'), Symbol.for('current-exp'), Symbol.for('parent-val'), Symbol.for('current-exp-node'), Symbol.for('parent-val-node')]]];
+    updatex.fsource = [Symbol.for('define'), [Symbol.for('update!'), Symbol.for('exp'), Symbol.for('node')], [Symbol.for('cond'), [Symbol.for('current-val'), [Symbol.for('insert!'), Symbol.for('exp'), Symbol.for('current-val'), Symbol.for('node'), Symbol.for('current-val-node')], [Symbol.for('set!'), Symbol.for('current-val'), undefined], [Symbol.for('set!'), Symbol.for('current-val-node'), undefined]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('current-exp'), Symbol.for('exp')], [Symbol.for('set!'), Symbol.for('current-exp-node'), Symbol.for('node')]]], [Symbol.for('when'), Symbol.for('parent-exp'), [Symbol.for('insert!'), Symbol.for('current-exp'), Symbol.for('parent-val'), Symbol.for('current-exp-node'), Symbol.for('parent-val-node')]]];
     // Iterate over the list of tokens.
     const _end = tokens.length;
     for (let i = 0; i < _end; i++) {
@@ -328,7 +328,7 @@ function parseRose(tokens, options = {}) {
                 exp = [operatorSymbols.get(tokenString)];
                 [node, comments] = attachComments(exp, comments, options);
                 if (currentVal) {
-                    insertX(exp, currentVal, node, currentValNode);
+                    insertx(exp, currentVal, node, currentValNode);
                     currentVal = exp;
                     currentValNode = node;
                 }
@@ -344,7 +344,7 @@ function parseRose(tokens, options = {}) {
                 exp = [];
                 [node, comments] = attachComments(exp, comments, options);
                 if (currentVal) {
-                    insertX(exp, currentVal, node, currentValNode);
+                    insertx(exp, currentVal, node, currentValNode);
                     currentVal = exp;
                     currentValNode = node;
                 }
@@ -353,7 +353,7 @@ function parseRose(tokens, options = {}) {
                     currentExpNode = node;
                 }
                 if (parentExp) {
-                    insertX(currentExp, parentVal, currentExpNode, parentValNode);
+                    insertx(currentExp, parentVal, currentExpNode, parentValNode);
                 }
                 currentVal = currentVal || currentExp;
                 currentValNode = currentValNode || currentExpNode;
@@ -379,20 +379,20 @@ function parseRose(tokens, options = {}) {
                 // Literal value.
                 exp = literalValues.get(tokenString);
                 [node, comments] = attachComments(exp, comments, options);
-                updateX(exp, node);
+                updatex(exp, node);
             }
             else {
                 // Symbolic value.
                 exp = Symbol.for(token.getValue());
                 [node, comments] = attachComments(exp, comments, options);
-                updateX(exp, node);
+                updatex(exp, node);
             }
         }
         else {
             // Non-symbolic value.
             exp = token.getValue();
             [node, comments] = attachComments(exp, comments, options);
-            updateX(exp, node);
+            updatex(exp, node);
         }
     }
     return currentExpNode;

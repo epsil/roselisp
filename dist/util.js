@@ -180,14 +180,14 @@ exports.makeIdentifierString = makeIdentifierString;
  * Helper function for `make-identifier-string`.
  */
 function makeIdentifierStringHelper(str) {
-    let result = str.replace(new RegExp('^\\+$', 'g'), '_add').replace(new RegExp('^-$', 'g'), '_sub').replace(new RegExp('^\\*$', 'g'), '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(new RegExp('%', 'g'), '').replace(new RegExp('/', 'g'), '-').replace(new RegExp('!', 'g'), '-x').replace(new RegExp(':', 'g'), '-').replace(new RegExp('->', 'g'), '-to-').replace(new RegExp('\\+', 'g'), '_').replace(new RegExp('\\*$', 'g'), '-star').replace(new RegExp('\\*', 'g'), 'star-');
-    if (result.match(new RegExp('-', 'g'))) {
-        result = result.replace(new RegExp('\\?', 'g'), '-p');
+    let result = str.replace(new RegExp('^\\+$', 'g'), '_add').replace(new RegExp('^-$', 'g'), '_sub').replace(new RegExp('^\\*$', 'g'), '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(new RegExp('%', 'g'), '').replace(new RegExp('/', 'g'), '-').replace(new RegExp(':', 'g'), '-').replace(new RegExp('->', 'g'), '-to-').replace(new RegExp('\\+', 'g'), '_').replace(new RegExp('\\*$', 'g'), '-star').replace(new RegExp('\\*', 'g'), 'star-');
+    const containsMultipleSegments = result.match(new RegExp('-', 'g'));
+    if (containsMultipleSegments) {
+        return result.replace(new RegExp('\\?', 'g'), '-p').replace(new RegExp('!', 'g'), '-x');
     }
     else {
-        result = result.replace(new RegExp('\\?', 'g'), 'p');
+        return result.replace(new RegExp('\\?', 'g'), 'p').replace(new RegExp('!', 'g'), 'x');
     }
-    return result;
 }
 /**
  * Convert an identifier string from kebab case

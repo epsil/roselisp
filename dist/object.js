@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.objectSetX_ = exports.objectRef_ = exports.jsObj_ = exports.jsObjAppend_ = exports.jsKeys_ = exports.fieldNames_ = exports.oset_ = exports.osetX_ = exports.objectSet_ = exports.oget_ = exports.objectGet_ = exports.jsObjectTypeP_ = exports.jsObjP_ = void 0;
+exports.objectSetX_ = exports.objectRef_ = exports.jsObj_ = exports.jsObjAppend_ = exports.jsKeys_ = exports.fieldNames_ = exports.oset_ = exports.osetx_ = exports.objectSet_ = exports.oget_ = exports.objectGet_ = exports.jsObjectTypeP_ = exports.jsObjP_ = void 0;
 /**
  * Make a JavaScript object.
  *
@@ -109,7 +109,7 @@ function objectSetX_(obj, key, val) {
     return obj[key] = val;
 }
 exports.objectSet_ = objectSetX_;
-exports.osetX_ = objectSetX_;
+exports.osetx_ = objectSetX_;
 exports.oset_ = objectSetX_;
 exports.objectSetX_ = objectSetX_;
 objectSetX_.fsource = [Symbol.for('define'), [Symbol.for('object-set!_'), Symbol.for('obj'), Symbol.for('key'), Symbol.for('val')], [Symbol.for('oset!'), Symbol.for('obj'), Symbol.for('key'), Symbol.for('val')]];

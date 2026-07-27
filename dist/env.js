@@ -132,7 +132,7 @@ class Environment {
     /**
      * Delete the binding for `key`, if any.
      */
-    deleteX(key) {
+    deletex(key) {
         let env = this.findFrame(key);
         if (env) {
             env.deleteLocalX(key);
@@ -288,7 +288,7 @@ class Environment {
     /**
      * Set `key` to `value` in the environment.
      */
-    setX(key, value) {
+    setx(key, value) {
         let env = this.findFrame(key, {
             notFound: this
         });
@@ -321,7 +321,7 @@ class Environment {
      */
     setValueX(key, value) {
         // Alias for `.set`.
-        return this.setX(key, value);
+        return this.setx(key, value);
     }
 }
 exports.Environment = Environment;
@@ -415,7 +415,7 @@ class TypedEnvironment extends Environment {
     /**
      * Set `key` to `value` with type `type` in the environment.
      */
-    setX(key, value, type = Symbol.for('Any')) {
+    setx(key, value, type = Symbol.for('Any')) {
         // Alias for `.set-typed-value`.
         return this.setTypedValueX(key, value, type);
     }
@@ -449,7 +449,7 @@ class TypedEnvironment extends Environment {
      */
     setTypeX(key, typ, options = {}) {
         let val = this.get(key, options);
-        return this.setX(key, val, typ);
+        return this.setx(key, val, typ);
     }
     /**
      * Set the local type of `key` to `typ`.
@@ -481,7 +481,7 @@ class TypedEnvironment extends Environment {
      */
     setValueX(key, value, type = Symbol.for('Any')) {
         // Alias for `.set`.
-        return this.setX(key, value, type);
+        return this.setx(key, value, type);
     }
 }
 exports.TypedEnvironment = TypedEnvironment;
@@ -611,7 +611,7 @@ class ThunkedEnvironment extends TypedEnvironment {
         let tuple = this.getUnforcedTuple(key, inheritedOptions);
         let [binding] = tuple;
         let [val] = binding;
-        return this.setX(key, val, typ);
+        return this.setx(key, val, typ);
     }
     /**
      * Set the local type of `key` to `typ`.

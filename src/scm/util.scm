@@ -153,20 +153,22 @@
         (regexp-replace (regexp "^/$" "g") _ "_div")
         (regexp-replace (regexp "%" "g") _ "")
         (regexp-replace (regexp "/" "g") _ "-")
-        (regexp-replace (regexp "!" "g") _ "-x")
         (regexp-replace (regexp ":" "g") _ "-")
         (regexp-replace (regexp "->" "g") _ "-to-")
         (regexp-replace (regexp "\\+" "g") _ "_")
         (regexp-replace (regexp "\\*$" "g") _ "-star")
         (regexp-replace (regexp "\\*" "g") _ "star-")))
+  (define contains-multiple-segments
+    (regexp-match (regexp "-" "g") result))
   (cond
-   ((regexp-match (regexp "-" "g") result)
-    (set! result
-          (regexp-replace (regexp "\\?" "g") result "-p")))
+   (contains-multiple-segments
+    (~> result
+        (regexp-replace (regexp "\\?" "g") _ "-p")
+        (regexp-replace (regexp "!" "g") _ "-x")))
    (else
-    (set! result
-          (regexp-replace (regexp "\\?" "g") result "p"))))
-  result)
+    (~> result
+        (regexp-replace (regexp "\\?" "g") _ "p")
+        (regexp-replace (regexp "!" "g") _ "x")))))
 
 ;;; Convert an identifier string from kebab case
 ;;; to camel case.

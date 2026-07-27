@@ -390,7 +390,7 @@ describe('Environment', function (): any {
     return assertEqual(
       ((): any => {
         const env: any = new Environment();
-        env.setX(Symbol.for('foo'), 'bar');
+        env.setx(Symbol.for('foo'), 'bar');
         return env.get(Symbol.for('foo'));
       })(),
       'bar'
@@ -419,7 +419,7 @@ describe('Environment', function (): any {
   return it('set!, mutate existing value in parent environment', function (): any {
     const parent: any = new Environment([[Symbol.for('foo'), 'bar']]);
     const env: any = extendEnvironment(new Environment(), parent);
-    env.setX(Symbol.for('foo'), 'quux');
+    env.setx(Symbol.for('foo'), 'quux');
     assertEqual(parent.get(Symbol.for('foo')), 'quux');
     assertEqual(env.getLocal(Symbol.for('foo')), undefined);
     return assertEqual(env.get(Symbol.for('foo')), 'quux');
@@ -847,7 +847,7 @@ describe('TypedEnvironment', function (): any {
     return assertEqual(
       ((): any => {
         const env: any = new TypedEnvironment();
-        env.setX(Symbol.for('foo'), 'bar', Symbol.for('Any'));
+        env.setx(Symbol.for('foo'), 'bar', Symbol.for('Any'));
         return env.get(Symbol.for('foo'));
       })(),
       'bar'
@@ -878,7 +878,7 @@ describe('TypedEnvironment', function (): any {
       [Symbol.for('foo'), 'bar', Symbol.for('Any')],
     ]);
     const env: any = extendEnvironment(new TypedEnvironment(), parent);
-    env.setX(Symbol.for('foo'), 'quux', Symbol.for('Any'));
+    env.setx(Symbol.for('foo'), 'quux', Symbol.for('Any'));
     assertEqual(parent.get(Symbol.for('foo')), 'quux');
     assertEqual(env.getLocal(Symbol.for('foo')), undefined);
     return assertEqual(env.get(Symbol.for('foo')), 'quux');
@@ -1290,7 +1290,7 @@ describe('LispEnvironment', function (): any {
     return assertEqual(
       ((): any => {
         const env: any = new LispEnvironment();
-        env.setX(Symbol.for('foo'), 'bar', Symbol.for('Any'));
+        env.setx(Symbol.for('foo'), 'bar', Symbol.for('Any'));
         return env.get(Symbol.for('foo'));
       })(),
       'bar'
@@ -1321,7 +1321,7 @@ describe('LispEnvironment', function (): any {
       [Symbol.for('foo'), 'bar', Symbol.for('Any')],
     ]);
     const env: any = extendEnvironment(new LispEnvironment(), parent);
-    env.setX(Symbol.for('foo'), 'quux', Symbol.for('Any'));
+    env.setx(Symbol.for('foo'), 'quux', Symbol.for('Any'));
     assertEqual(parent.get(Symbol.for('foo')), 'quux');
     assertEqual(env.getLocal(Symbol.for('foo')), undefined);
     return assertEqual(env.get(Symbol.for('foo')), 'quux');
@@ -1562,7 +1562,7 @@ describe('EnvironmentStack', function (): any {
   it('set!, one environment', function (): any {
     const env1: any = new LispEnvironment();
     const env: any = new EnvironmentStack(env1);
-    env.setX(Symbol.for('foo'), 'bar', Symbol.for('Any'));
+    env.setx(Symbol.for('foo'), 'bar', Symbol.for('Any'));
     assertEqual(env.get(Symbol.for('foo')), 'bar');
     return assertEqual(env1.get(Symbol.for('foo')), 'bar');
   });
@@ -1572,7 +1572,7 @@ describe('EnvironmentStack', function (): any {
       [Symbol.for('foo'), 'foo', Symbol.for('Any')],
     ]);
     const env: any = new EnvironmentStack(env1, env2);
-    env.setX(Symbol.for('foo'), 'bar', Symbol.for('Any'));
+    env.setx(Symbol.for('foo'), 'bar', Symbol.for('Any'));
     assertEqual(env.get(Symbol.for('foo')), 'bar');
     assertEqual(env1.get(Symbol.for('foo')), undefined);
     return assertEqual(env2.get(Symbol.for('foo')), 'bar');

@@ -82,7 +82,7 @@ declare class Environment {
     /**
      * Delete the binding for `key`, if any.
      */
-    deleteX(key: any): any;
+    deletex(key: any): any;
     /**
      * Delete the local binding for `key`, if any.
      */
@@ -142,7 +142,7 @@ declare class Environment {
     /**
      * Set `key` to `value` in the environment.
      */
-    setX(key: any, value: any): any;
+    setx(key: any, value: any): any;
     /**
      * Add an entry to the current environment frame.
      */
@@ -204,7 +204,7 @@ declare class TypedEnvironment extends Environment {
     /**
      * Set `key` to `value` with type `type` in the environment.
      */
-    setX(key: any, value: any, type?: any): any;
+    setx(key: any, value: any, type?: any): any;
     /**
      * Add an entry `(key value type)` or `(key (value type))`
      * to the environment.

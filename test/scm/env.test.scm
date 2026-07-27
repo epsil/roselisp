@@ -203,27 +203,27 @@
          #f)
        (send env get-local-tuple 'quux (js-obj "filter" filter)))
  (values #u #f)
- > (it "has"
+ > (it "has?"
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env has 'foo))
+       (send env has? 'foo))
  #t
- > (it "has, nonexistant binding"
+ > (it "has?, nonexistant binding"
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env has 'quux))
+       (send env has? 'quux))
  #f
- > (it "has, filter option"
+ > (it "has?, filter option"
        (define env
          (new Environment
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env has 'foo (js-obj "filter" filter)))
+       (send env has? 'foo (js-obj "filter" filter)))
  #f
- > (it "has, parent environment, filter option"
+ > (it "has?, parent environment, filter option"
        (define env
          (new Environment
               '((foo "bar"))
@@ -231,47 +231,47 @@
                    '((foo "baz")))))
        (define (filter x)
          (not (eq? x env)))
-       (send env has 'foo (js-obj "filter" filter)))
+       (send env has? 'foo (js-obj "filter" filter)))
  #f
- > (it "has-local"
+ > (it "has-local?"
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env has-local 'foo))
+       (send env has-local? 'foo))
  #t
- > (it "has-local, nonexistant binding"
+ > (it "has-local?, nonexistant binding"
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env has-local 'quux))
+       (send env has-local? 'quux))
  #f
- > (it "has-local, filter option"
+ > (it "has-local?, filter option"
        (define env
          (new Environment
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env has-local 'foo (js-obj "filter" filter)))
+       (send env has-local? 'foo (js-obj "filter" filter)))
  #f
- > (it "set"
+ > (it "set!"
        (define env
          (new Environment))
-       (send env set 'foo "bar")
+       (send env set! 'foo "bar")
        (send env get 'foo))
  "bar"
- > (it "set-entry"
+ > (it "set-entry!"
        (define env
          (new Environment))
-       (send env set-entry '(foo "bar"))
+       (send env set-entry! '(foo "bar"))
        (send env get 'foo))
  "bar"
- > (it "set-local"
+ > (it "set-local!"
        (define env
          (new Environment))
-       (send env set-local 'foo "bar")
+       (send env set-local! 'foo "bar")
        (send env get-local 'foo))
  "bar"
- > (it "set, mutate existing value in parent environment"
+ > (it "set!, mutate existing value in parent environment"
        (define parent
          (new Environment
               '((foo "bar"))))
@@ -279,7 +279,7 @@
          (extend-environment
           (new Environment)
           parent))
-       (send env set 'foo "quux")
+       (send env set! 'foo "quux")
        (assert-equal
         (send parent get 'foo)
         "quux")
@@ -464,27 +464,27 @@
          (not (eq? x env)))
        (send env get-type 'foo (js-obj "filter" filter)))
  'Undefined
- > (it "has"
+ > (it "has?"
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env has 'foo))
+       (send env has? 'foo))
  #t
- > (it "has, nonexistant binding"
+ > (it "has?, nonexistant binding"
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env has 'quux))
+       (send env has? 'quux))
  #f
- > (it "has, filter option"
+ > (it "has?, filter option"
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has 'foo (js-obj "filter" filter)))
+       (send env has? 'foo (js-obj "filter" filter)))
  #f
- > (it "has, parent environment, filter option"
+ > (it "has?, parent environment, filter option"
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))
@@ -492,47 +492,47 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env has 'foo (js-obj "filter" filter)))
+       (send env has? 'foo (js-obj "filter" filter)))
  #f
- > (it "has-local"
+ > (it "has-local?"
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env has-local 'foo))
+       (send env has-local? 'foo))
  #t
- > (it "has-local, nonexistant binding"
+ > (it "has-local?, nonexistant binding"
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env has-local 'quux))
+       (send env has-local? 'quux))
  #f
- > (it "has-local, filter option"
+ > (it "has-local?, filter option"
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has-local 'foo (js-obj "filter" filter)))
+       (send env has-local? 'foo (js-obj "filter" filter)))
  #f
- > (it "set"
+ > (it "set!"
        (define env
          (new TypedEnvironment))
-       (send env set 'foo "bar" 'Any)
+       (send env set! 'foo "bar" 'Any)
        (send env get 'foo))
  "bar"
- > (it "set-entry"
+ > (it "set-entry!"
        (define env
          (new TypedEnvironment))
-       (send env set-entry '(foo ("bar" Any)))
+       (send env set-entry! '(foo ("bar" Any)))
        (send env get 'foo))
  "bar"
- xit> (it "set-local"
+ xit> (it "set-local!"
           (define env
             (new TypedEnvironment))
-          (send env set-local 'foo "bar" 'Any)
+          (send env set-local! 'foo "bar" 'Any)
           (send env get-local 'foo))
  "bar"
- > (it "set, mutate existing value in parent environment"
+ > (it "set!, mutate existing value in parent environment"
        (define parent
          (new TypedEnvironment
               '((foo "bar" Any))))
@@ -540,7 +540,7 @@
          (extend-environment
           (new TypedEnvironment)
           parent))
-       (send env set 'foo "quux" 'Any)
+       (send env set! 'foo "quux" 'Any)
        (assert-equal
         (send parent get 'foo)
         "quux")
@@ -717,27 +717,27 @@
          (not (eq? x env)))
        (send env get-type 'foo (js-obj "filter" filter)))
  'Undefined
- > (it "has"
+ > (it "has?"
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env has 'foo))
+       (send env has? 'foo))
  #t
- > (it "has, nonexistant binding"
+ > (it "has?, nonexistant binding"
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env has 'quux))
+       (send env has? 'quux))
  #f
- > (it "has, filter option"
+ > (it "has?, filter option"
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has 'foo (js-obj "filter" filter)))
+       (send env has? 'foo (js-obj "filter" filter)))
  #f
- > (it "has, parent environment, filter option"
+ > (it "has?, parent environment, filter option"
        (define env
          (new LispEnvironment
               '((foo "bar" Any))
@@ -745,47 +745,47 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env has 'foo (js-obj "filter" filter)))
+       (send env has? 'foo (js-obj "filter" filter)))
  #f
- > (it "has-local"
+ > (it "has-local?"
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env has-local 'foo))
+       (send env has-local? 'foo))
  #t
- > (it "has-local, nonexistant binding"
+ > (it "has-local?, nonexistant binding"
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env has-local 'quux))
+       (send env has-local? 'quux))
  #f
- > (it "has-local, filter option"
+ > (it "has-local?, filter option"
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has-local 'foo (js-obj "filter" filter)))
+       (send env has-local? 'foo (js-obj "filter" filter)))
  #f
- > (it "set"
+ > (it "set!"
        (define env
          (new LispEnvironment))
-       (send env set 'foo "bar" 'Any)
+       (send env set! 'foo "bar" 'Any)
        (send env get 'foo))
  "bar"
- > (it "set-entry"
+ > (it "set-entry!"
        (define env
          (new LispEnvironment))
-       (send env set-entry '(foo ("bar" Any)))
+       (send env set-entry! '(foo ("bar" Any)))
        (send env get 'foo))
  "bar"
- xit> (it "set-local"
+ xit> (it "set-local!"
           (define env
             (new LispEnvironment))
-          (send env set-local 'foo "bar" 'Any)
+          (send env set-local! 'foo "bar" 'Any)
           (send env get-local 'foo))
  "bar"
- > (it "set, mutate existing value in parent environment"
+ > (it "set!, mutate existing value in parent environment"
        (define parent
          (new LispEnvironment
               '((foo "bar" Any))))
@@ -793,7 +793,7 @@
          (extend-environment
           (new LispEnvironment)
           parent))
-       (send env set 'foo "quux" 'Any)
+       (send env set! 'foo "quux" 'Any)
        (assert-equal
         (send parent get 'foo)
         "quux")
@@ -954,13 +954,13 @@
          (not (eq? x env1)))
        (send env get-typed-value 'foo (js-obj "filter" filter)))
  '(#u Undefined)
- > (it "set, one environment"
+ > (it "set!, one environment"
        (define env1
          (new LispEnvironment))
        (define env
          (new EnvironmentStack
               env1))
-       (send env set 'foo "bar" 'Any)
+       (send env set! 'foo "bar" 'Any)
        (assert-equal
         (send env get 'foo)
         "bar")
@@ -968,7 +968,7 @@
         (send env1 get 'foo)
         "bar"))
  _
- > (it "set, two environments, previously defined in second"
+ > (it "set!, two environments, previously defined in second"
        (define env1
          (new LispEnvironment))
        (define env2
@@ -978,7 +978,7 @@
          (new EnvironmentStack
               env1
               env2))
-       (send env set 'foo "bar" 'Any)
+       (send env set! 'foo "bar" 'Any)
        (assert-equal
         (send env get 'foo)
         "bar")
@@ -989,7 +989,7 @@
         (send env2 get 'foo)
         "bar"))
  _
- > (it "set-entry, two environments, previously defined in second"
+ > (it "set-entry!, two environments, previously defined in second"
        (define env1
          (new LispEnvironment))
        (define env2
@@ -999,7 +999,7 @@
          (new EnvironmentStack
               env1
               env2))
-       (send env set-entry '(foo ("bar" Any)))
+       (send env set-entry! '(foo ("bar" Any)))
        (assert-equal
         (send env get 'foo)
         "bar")
@@ -1318,15 +1318,15 @@
          (not (eq? x env)))
        (send env get 'foo (js-obj "filter" filter)))
  #u
- > (it "has-thunk, true"
+ > (it "has-thunk?, true"
        (define env
          (new ThunkedEnvironment
               `((foo
                  ,(thunk (lambda () "foo"))
                  Any))))
-       (send env has-thunk 'foo))
+       (send env has-thunk? 'foo))
  #t
- > (it "has-thunk, parent environment, true"
+ > (it "has-thunk?, parent environment, true"
        (define env
          (new ThunkedEnvironment
               `((foo
@@ -1336,18 +1336,18 @@
                    `((bar
                       ,(thunk (lambda () "bar"))
                       Any)))))
-       (send env has-thunk 'bar))
+       (send env has-thunk? 'bar))
  #t
- > (it "has-thunk, false"
+ > (it "has-thunk?, false"
        (define env
          (new ThunkedEnvironment
               `((foo
                  ,(thunk (lambda () "foo"))
                  Any)
                 (bar "bar" Any))))
-       (send env has-thunk 'bar))
+       (send env has-thunk? 'bar))
  #f
- > (it "has-local-thunk, true"
+ > (it "has-local-thunk?, true"
        (define env
          (new ThunkedEnvironment
               `((foo
@@ -1357,9 +1357,9 @@
                    `((bar
                       ,(thunk (lambda () "bar"))
                       Any)))))
-       (send env has-local-thunk 'foo))
+       (send env has-local-thunk? 'foo))
  #t
- > (it "has-local-thunk, false"
+ > (it "has-local-thunk?, false"
        (define env
          (new ThunkedEnvironment
               `((foo
@@ -1369,7 +1369,7 @@
                    `((bar
                       ,(thunk (lambda () "bar"))
                       Any)))))
-       (send env has-local-thunk 'bar))
+       (send env has-local-thunk? 'bar))
  #f
 
  ;; `JavaScriptEnvironment`
@@ -1419,37 +1419,37 @@
          #f)
        (send env get-local 'Map (js-obj "filter" filter)))
  #u
- > (it "has"
+ > (it "has?"
        (define env
          (new JavaScriptEnvironment))
-       (send env has 'Map))
+       (send env has? 'Map))
  #t
- > (it "has, nonexistant binding"
+ > (it "has?, nonexistant binding"
        (define env
          (new JavaScriptEnvironment))
-       (send env has 'quux))
+       (send env has? 'quux))
  #f
- > (it "has, filter option"
+ > (it "has?, filter option"
        (define env
          (new JavaScriptEnvironment))
        (define (filter x)
          #f)
-       (send env has 'Map (js-obj "filter" filter)))
+       (send env has? 'Map (js-obj "filter" filter)))
  #f
- > (it "has-local"
+ > (it "has-local?"
        (define env
          (new JavaScriptEnvironment))
-       (send env has-local 'Map))
+       (send env has-local? 'Map))
  #t
- > (it "has-local, nonexistant binding"
+ > (it "has-local?, nonexistant binding"
        (define env
          (new JavaScriptEnvironment))
-       (send env has-local 'quux))
+       (send env has-local? 'quux))
  #f
- > (it "has-local, filter option"
+ > (it "has-local?, filter option"
        (define env
          (new JavaScriptEnvironment))
        (define (filter x)
          #f)
-       (send env has-local 'Map (js-obj "filter" filter)))
+       (send env has-local? 'Map (js-obj "filter" filter)))
  #f)

@@ -42,7 +42,7 @@ declare class Environment {
     /**
      * Add a list of entries `((key value) ...)` to the environment.
      */
-    addEntries(entries: any): any;
+    addEntriesX(entries: any): any;
     /**
      * Clone the environment.
      *
@@ -82,11 +82,11 @@ declare class Environment {
     /**
      * Delete the binding for `key`, if any.
      */
-    delete(key: any): any;
+    deleteX(key: any): any;
     /**
      * Delete the local binding for `key`, if any.
      */
-    deleteLocal(key: any): any;
+    deleteLocalX(key: any): any;
     /**
      * Get the value of `key`, or `#u`
      * if there is no binding.
@@ -130,11 +130,11 @@ declare class Environment {
      * Whether `key` is bound in the environment,
      * or in a parent environment.
      */
-    has(key: any, options?: any): any;
+    hasp(key: any, options?: any): any;
     /**
      * Whether `key` is bound in the current environment frame.
      */
-    hasLocal(key: any, options?: any): any;
+    hasLocalP(key: any, options?: any): any;
     /**
      * Map a function over the environment.
      */
@@ -142,23 +142,23 @@ declare class Environment {
     /**
      * Set `key` to `value` in the environment.
      */
-    set(key: any, value: any): any;
+    setX(key: any, value: any): any;
     /**
      * Add an entry to the current environment frame.
      */
-    setEntry(entry: any): any;
+    setEntryX(entry: any): any;
     /**
      * Set `key` to `value` in the current environment frame.
      */
-    setLocal(key: any, value: any): any;
+    setLocalX(key: any, value: any): any;
     /**
      * Set the parent environment.
      */
-    setParent(parent: any): any;
+    setParentX(parent: any): any;
     /**
      * Set `key` to `value` in the environment.
      */
-    setValue(key: any, value: any): any;
+    setValueX(key: any, value: any): any;
 }
 /**
  * Typed environment.
@@ -204,39 +204,39 @@ declare class TypedEnvironment extends Environment {
     /**
      * Set `key` to `value` with type `type` in the environment.
      */
-    set(key: any, value: any, type?: any): any;
+    setX(key: any, value: any, type?: any): any;
     /**
      * Add an entry `(key value type)` or `(key (value type))`
      * to the environment.
      */
-    setEntry(entry: any): any;
+    setEntryX(entry: any): any;
     /**
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setLocal(key: any, value: any, type?: any): any;
+    setLocalX(key: any, value: any, type?: any): any;
     /**
      * Set the type of `key` to `typ`.
      * If there is no existing binding,
      * creates a new binding where the value is `#u`.
      */
-    setType(key: any, typ: any, options?: any): any;
+    setTypeX(key: any, typ: any, options?: any): any;
     /**
      * Set the local type of `key` to `typ`.
      * If there is no existing local binding,
      * creates a new binding where the value is `#u`.
      */
-    setLocalType(key: any, typ: any, options?: any): any;
+    setLocalTypeX(key: any, typ: any, options?: any): any;
     /**
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setTypedValue(key: any, value: any, type?: any): any;
+    setTypedValueX(key: any, value: any, type?: any): any;
     /**
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setValue(key: any, value: any, type?: any): any;
+    setValueX(key: any, value: any, type?: any): any;
 }
 /**
  * Thunked environment.
@@ -270,21 +270,21 @@ declare class ThunkedEnvironment extends TypedEnvironment {
     /**
      * Whether `key` is bound to a thunk.
      */
-    hasThunk(key: any, options?: any): any;
+    hasThunkP(key: any, options?: any): any;
     /**
      * Whether `key` is locally bound to a thunk.
      */
-    hasLocalThunk(key: any, options?: any): any;
+    hasLocalThunkP(key: any, options?: any): any;
     /**
      * Set the type of `key` to `typ`.
      * Does not force any thunks.
      */
-    setType(key: any, typ: any, options?: any): any;
+    setTypeX(key: any, typ: any, options?: any): any;
     /**
      * Set the local type of `key` to `typ`.
      * Does not force any thunks.
      */
-    setLocalType(key: any, typ: any, options?: any): any;
+    setLocalTypeX(key: any, typ: any, options?: any): any;
 }
 /**
  * Lisp environment.
@@ -344,12 +344,12 @@ declare class EnvironmentStack extends TypedEnvironment {
     /**
      * Whether the stack contains an environment that binds `key`.
      */
-    hasLocal(key: any): any;
+    hasLocalP(key: any): any;
     /**
      * Whether the environment stack contains a
      * particular environment.
      */
-    hasEnvironment(env: any): any;
+    hasEnvironmentP(env: any): any;
     /**
      * Map a function over the environment stack.
      */
@@ -358,7 +358,7 @@ declare class EnvironmentStack extends TypedEnvironment {
      * Set `key` to `value` in the first
      * environment in the stack.
      */
-    setLocal(key: any, value: any, type?: any): any;
+    setLocalX(key: any, value: any, type?: any): any;
 }
 /**
  * Compose environments left-to-right.
@@ -377,8 +377,15 @@ declare class EnvironmentPipe extends TypedEnvironment {
      * Get the local binding for `key` as a tuple `(value found)`.
      */
     getLocalTuple(key: any, options?: any): any;
-    has(key: any, options?: any): any;
-    hasLocal(key: any, options?: any): any;
+    /**
+     * Whether `key` is bound in the environment,
+     * or in a parent environment.
+     */
+    hasp(key: any, options?: any): any;
+    /**
+     * Whether `key` is bound in the current environment frame.
+     */
+    hasLocalP(key: any, options?: any): any;
 }
 /**
  * Compose environments right-to-left.
@@ -414,7 +421,7 @@ declare class DynamicEnvironment extends TypedEnvironment {
     /**
      * Whether `key` is bound by the dynamic environment.
      */
-    hasLocal(key: any, options?: any): any;
+    hasLocalP(key: any, options?: any): any;
 }
 /**
  * JavaScript environment.
@@ -507,6 +514,6 @@ declare namespace linkEnvironmentFrames {
  */
 declare function prefixBindings(prefix: any, bindings: any): any;
 declare namespace prefixBindings {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
 export { currentEnvironment_ as currentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, ThunkedEnvironment, TypedEnvironment, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withEnvironment };

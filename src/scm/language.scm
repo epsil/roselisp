@@ -1282,7 +1282,7 @@
         (first exp))
       (cond
        ((and (symbol? op)
-             (send env has op (js-obj "filter" lang-filter))
+             (send env has? op (js-obj "filter" lang-filter))
              (simple-type?
               (send env get-type op (js-obj "filter" lang-filter))))
         (set! result
@@ -1521,7 +1521,7 @@
   (cond
    ((or (eq? env lang-environment)
         (and (is-a? env EnvironmentStack)
-             (send env has-environment lang-environment)))
+             (send env has-environment? lang-environment)))
     env)
    (else
     (new EnvironmentStack
@@ -2378,7 +2378,7 @@
     (send node get 2))
   (define type-exp
     (rose->sexp type_))
-  (send env set-local-type sym-exp type-exp)
+  (send env set-local-type! sym-exp type-exp)
   (compile-nop node env options))
 
 ;;; Compile a `(cond ...)` expression.
@@ -2540,7 +2540,7 @@
     (define compiled-type
       (compile-type-exp type_ env options))
     (send env
-          set-local
+          set-local!
           name-sym
           (thunk
            (lambda ()
@@ -2611,7 +2611,7 @@
       result)))
    ;; Uninitialized variable.
    ((= (js/length exp) 2)
-    (send env set-local (js/second exp) #u 'Any)
+    (send env set-local! (js/second exp) #u 'Any)
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (compile-expression
@@ -2658,7 +2658,7 @@
                 sym
                 (js-obj "notFound" 'Any)))
     (send env
-          set-local
+          set-local!
           sym
           (thunk
            (lambda ()
@@ -2866,9 +2866,9 @@
          (should-inline? op env options)
          ;; Do not inline the operator if a
          ;; compilation macro is defined for it.
-         (not (send env has-thunk op))
+         (not (send env has-thunk? op))
          (not (send compilation-mapping-environment
-                    has
+                    has?
                     (send env get op)))))
   (define args
     (send node drop 1))
@@ -2925,10 +2925,10 @@
   (and (symbol? sym)
        ;; Do not inline if the symbol is listed in
        ;; `compilation-variables-env`.
-       (not (send compilation-variables-env has sym))
+       (not (send compilation-variables-env has? sym))
        ;; Do not inline if there is a local binding for the
        ;; value (e.g., a `let` variable).
-       (not (send env has sym (js-obj "filter" lang-filter)))
+       (not (send env has? sym (js-obj "filter" lang-filter)))
        ;; Do not inline if the current module defines the
        ;; value.
        (not (and current-module
@@ -2937,7 +2937,7 @@
        ;; However, do not inline if the value is a JavaScript
        ;; value, i.e., if it is provided by the very language
        ;; compiled to.
-       (send language-env has sym (js-obj "filter" js-filter))))
+       (send language-env has? sym (js-obj "filter" js-filter))))
 
 ;;; Compile a `(> ...)` expression.
 (define (compile-greater-than node env (options (js-obj)))
@@ -3299,7 +3299,7 @@
                  (first exp))
                (when (and (not make-block)
                           (send env
-                                has
+                                has?
                                 sym
                                 (js-obj "filter" lang-filter)))
                  (set! make-block #t))
@@ -3311,7 +3311,7 @@
                (define sym exp)
                (when (and (not make-block)
                           (send env
-                                has
+                                has?
                                 sym
                                 (js-obj "filter" lang-filter)))
                  (set! make-block #t))
@@ -3368,7 +3368,7 @@
                (define sym exp)
                (when (and (not make-block)
                           (send env
-                                has
+                                has?
                                 sym
                                 (js-obj "filter" lang-filter)))
                  (set! make-block #t))
@@ -3384,7 +3384,7 @@
                  (define sym variables)
                  (when (and (not make-block)
                             (send env
-                                  has
+                                  has?
                                   sym
                                   (js-obj "filter" lang-filter)))
                    (set! make-block #t)))
@@ -3394,7 +3394,7 @@
                  (unless make-block
                    (for ((sym (flatten variables)))
                      (when (send env
-                                 has
+                                 has?
                                  sym
                                  (js-obj "filter" lang-filter))
                        (set! make-block #t)
@@ -3480,7 +3480,7 @@
                  (sexp->rose variables)
                  env inherited-options)
                 inherited-options)))
-    (send env set-local variables expression-thunk 'Any))
+    (send env set-local! variables expression-thunk 'Any))
    (else
     (cond
      ((dotted-list? variables)
@@ -3512,7 +3512,7 @@
                             ))
                         result)))
                    (set! i (+ i 1))
-                   (send env set-local x var-thunk 'Any)
+                   (send env set-local! x var-thunk 'Any)
                    (new Identifier
                         (print-estree
                          (compile-symbol
@@ -3534,7 +3534,7 @@
                ))
            result)))
       (set! i (+ i 1))
-      (send env set-local rest-var rest-var-thunk 'Any)
+      (send env set-local! rest-var rest-var-thunk 'Any)
       (push-right! var-decls
                    (new RestElement
                         (new Identifier
@@ -3627,7 +3627,7 @@
                      f))
                (when (and (not make-block)
                           (send env
-                                has
+                                has?
                                 sym
                                 (js-obj "filter" lang-filter)))
                  (set! make-block #t)))
@@ -3706,7 +3706,7 @@
              ;; Do nothing
              ))
          result)))
-    (send env set-local sym prop-thunk 'Any))
+    (send env set-local! sym prop-thunk 'Any))
   (define expression-statement
     (compile-set-fields
      (sexp->rose
@@ -4295,7 +4295,7 @@
     (set! symbol (pop! referenced-symbols))
     (push-right! seen symbol)
     (when (and (not (memq? symbol external-symbols))
-               (send env1 has symbol))
+               (send env1 has? symbol))
       (set! value (send env1 get symbol))
       (cond
        ((source? value)
@@ -4684,7 +4684,7 @@
                   (js-obj "literalSymbol" #t))
                  options)))
         (unless (memq? x2-str seen)
-          (unless (send env has x2 (js-obj "filter" lang-filter))
+          (unless (send env has? x2 (js-obj "filter" lang-filter))
             (make-type-binding env x2 'Any lang-filter))
           (push-right! seen x2)
           (push-right! specifiers
@@ -4704,7 +4704,7 @@
                   (js-obj "literalSymbol" #t))
                  options)))
         (unless (memq? x1-str seen)
-          (unless (send env has x1 (js-obj "filter" lang-filter))
+          (unless (send env has? x1 (js-obj "filter" lang-filter))
             (make-type-binding env x1 'Any lang-filter))
           (push-right! seen x1-str)
           (push-right! specifiers
@@ -4739,7 +4739,7 @@
            options)))
   (set! src (new Literal y-exp))
   (when (symbol? x-exp)
-    (unless (send env has x-exp (js-obj "filter" lang-filter))
+    (unless (send env has? x-exp (js-obj "filter" lang-filter))
       (make-type-binding env x-exp 'Any lang-filter)))
   (cond
    ((null? specifiers)
@@ -4924,7 +4924,7 @@
     (define name
       (make-identifier-string str options))
     (new Identifier name))
-   ((send compilation-variables-env has exp)
+   ((send compilation-variables-env has? exp)
     (send compilation-variables-env get exp))
    ((eq? str "this")
     (new ThisExpression))
@@ -4949,7 +4949,7 @@
       (define regular-sym
         (string->symbol gensym-name))
       (while (send env
-                   has
+                   has?
                    regular-sym
                    (js-obj "filter" lang-filter))
         (set! gensym-name
@@ -4962,7 +4962,7 @@
       (define entry
         (list gensym-name name i))
       (hash-set! gensym-map exp entry)
-      (send env set-local regular-sym #u 'Any)
+      (send env set-local! regular-sym #u 'Any)
       identifier)))
    (else
     (define name
@@ -5500,7 +5500,7 @@
          body-declarations))
   (when has-name
     (send env
-          set-local
+          set-local!
           class-name
           (thunk
            (lambda ()
@@ -7640,7 +7640,7 @@
             (define-values (f f-type)
               (send env get-typed-value local))
             (unless (undefined-type? f-type)
-              (send module-env set-local imported f f-type)))))))
+              (send module-env set-local! imported f f-type)))))))
     ;; Iterate over `main-nodes`, evaluating definition forms
     ;; in the module environment.
     (for ((node (get-field main-nodes this)))
@@ -7661,7 +7661,7 @@
               '(macro-> Any * Any)
               '(-> Any * Any)))
         (send module-env
-              set-local
+              set-local!
               name
               (thunk
                (lambda ()
@@ -7743,7 +7743,7 @@
   ;; TODO: Check `parent`.
   (or (eq? env lisp-environment)
       (and (is-a? env EnvironmentStack)
-           (send env has-environment lisp-environment))))
+           (send env has-environment? lisp-environment))))
 
 ;;; Extract the module name from a `(require ...)` expression.
 (define (get-module-name name-obj)
@@ -7810,10 +7810,10 @@
 ;;; which should be a typed environment.
 (define (make-type-binding env sym typ (filter #u))
   (cond
-   ((send env has sym (js-obj "filter" filter))
-    (send env set-type sym typ))
+   ((send env has? sym (js-obj "filter" filter))
+    (send env set-type! sym typ))
    (else
-    (send env set-local sym #u typ))))
+    (send env set-local! sym #u typ))))
 
 ;;; Whether `x` is a simple type whose function call
 ;;; can be compiled without further ado.

@@ -79,11 +79,7 @@ const [equalp, keywordp]: any[] = ((): any => {
     }
   }
   function keywordp_(obj: any): any {
-    if ((typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'))) {
-      return true;
-    } else {
-      return false;
-    }
+    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
   }
   function cdr_(lst: any): any {
     if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
@@ -694,14 +690,16 @@ values_.fsource = [Symbol.for('define'), [Symbol.for('values_'), Symbol.for('.')
  * [cl:keywordp]: http://clhs.lisp.se/Body/f_kwdp.htm#keywordp
  */
 function keywordp_(obj: any): any {
-  if ((typeof obj === 'symbol') && (obj.description as string).match(new RegExp('^:'))) {
-    return true;
-  } else {
-    return false;
-  }
+  return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
 }
 
-keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('true?'), [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]]];
+keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match?'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]];
+
+// (define (keyword?-1_ obj)
+//   (true?
+//    (and (symbol? obj)
+//         (regexp-match (regexp "^:")
+//                       (symbol->string obj)))))
 
 /**
  * Whether something is a number.

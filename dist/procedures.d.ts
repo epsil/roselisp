@@ -392,7 +392,7 @@ declare namespace values_ {
  */
 declare function keywordp_(obj: any): any;
 declare namespace keywordp_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
 }
 /**
  * Whether something is a number.

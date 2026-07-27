@@ -42,13 +42,13 @@
   ;;; parent environment may be specified with `parent`.
   (define/public (constructor (entries '())
                               (parent #u))
-    (send this add-entries entries)
+    (send this add-entries! entries)
     (set-field! parent this parent))
 
   ;;; Add a list of entries `((key value) ...)` to the environment.
-  (define/public (add-entries entries)
+  (define/public (add-entries! entries)
     (for ((entry entries))
-      (send this set-entry entry))
+      (send this set-entry! entry))
     this)
 
   ;;; Clone the environment.
@@ -103,7 +103,7 @@
   ;;; Changes the current environment.
   (define/public (combine-into env)
     (send this
-          add-entries
+          add-entries!
           (send env entries))
     this)
 
@@ -124,7 +124,7 @@
      ((and filter
            (not (filter this)))
       not-found)
-     ((send this has-local key)
+     ((send this has-local? key)
       this)
      (parent
       (send parent find-frame key options))
@@ -132,15 +132,15 @@
       not-found)))
 
   ;;; Delete the binding for `key`, if any.
-  (define/public (delete key)
+  (define/public (delete! key)
     (define env
       (send this find-frame key))
     (when env
-      (send env delete-local key))
+      (send env delete-local! key))
     this)
 
   ;;; Delete the local binding for `key`, if any.
-  (define/public (delete-local key)
+  (define/public (delete-local! key)
     (hash-remove! (get-field table this) key)
     this)
 
@@ -235,7 +235,7 @@
                (not (filter this)))
       (return (values not-found #f)))
     (define found
-      (send this has-local key))
+      (send this has-local? key))
     (define value
       (if found
           (hash-ref (get-field table this) key)
@@ -254,7 +254,7 @@
 
   ;;; Whether `key` is bound in the environment,
   ;;; or in a parent environment.
-  (define/public (has key (options (js-obj)))
+  (define/public (has? key (options (js-obj)))
     (define env
       (send this find-frame key options))
     (if env
@@ -262,7 +262,7 @@
         #f))
 
   ;;; Whether `key` is bound in the current environment frame.
-  (define/public (has-local key (options (js-obj)))
+  (define/public (has-local? key (options (js-obj)))
     (define filter
       (oget options "filter"))
     (cond
@@ -281,36 +281,36 @@
          (get-field parent this)))
 
   ;;; Set `key` to `value` in the environment.
-  (define/public (set key value)
+  (define/public (set! key value)
     (define env
       (send this
             find-frame
             key
             (js-obj "notFound" this)))
-    (send env set-local key value))
+    (send env set-local! key value))
 
   ;;; Add an entry to the current environment frame.
-  (define/public (set-entry entry)
+  (define/public (set-entry! entry)
     (define-values (key binding)
       entry)
-    (send this set-local key binding))
+    (send this set-local! key binding))
 
   ;;; Set `key` to `value` in the current environment frame.
-  (define/public (set-local key value)
+  (define/public (set-local! key value)
     (define table
       (get-field table this))
     (hash-set! table key value)
     this)
 
   ;;; Set the parent environment.
-  (define/public (set-parent parent)
+  (define/public (set-parent! parent)
     (set-field! parent this parent)
     this)
 
   ;;; Set `key` to `value` in the environment.
-  (define/public (set-value key value)
+  (define/public (set-value! key value)
     ;; Alias for `.set`.
-    (send this set key value)))
+    (send this set! key value)))
 
 ;;; Typed environment.
 ;;;
@@ -420,50 +420,50 @@
         value))
 
   ;;; Set `key` to `value` with type `type` in the environment.
-  (define/public (set key value (type 'Any))
+  (define/public (set! key value (type 'Any))
     ;; Alias for `.set-typed-value`.
-    (send this set-typed-value key value type))
+    (send this set-typed-value! key value type))
 
   ;;; Add an entry `(key value type)` or `(key (value type))`
   ;;; to the environment.
-  (define/public (set-entry entry)
+  (define/public (set-entry! entry)
     (cond
      ((= (js/length entry) 3)
       (define-values (key value type)
         entry)
-      (send this set-local key value type))
+      (send this set-local! key value type))
      (else
       (define-values (key binding)
         entry)
       (define-values (value type)
         binding)
-      (send this set-local key value type)))
+      (send this set-local! key value type)))
     this)
 
   ;;; Set `key` to `value` with type `type` in
   ;;; the current environment frame.
-  (define/public (set-local key value (type 'Any))
-    (send super set-local key (list value type)))
+  (define/public (set-local! key value (type 'Any))
+    (send super set-local! key (list value type)))
 
   ;;; Set the type of `key` to `typ`.
   ;;; If there is no existing binding,
   ;;; creates a new binding where the value is `#u`.
-  (define/public (set-type key typ (options (js-obj)))
+  (define/public (set-type! key typ (options (js-obj)))
     (define val
       (send this get key options))
-    (send this set key val typ))
+    (send this set! key val typ))
 
   ;;; Set the local type of `key` to `typ`.
   ;;; If there is no existing local binding,
   ;;; creates a new binding where the value is `#u`.
-  (define/public (set-local-type key typ (options (js-obj)))
+  (define/public (set-local-type! key typ (options (js-obj)))
     (define val
       (send this get-local key options))
-    (send this set-local key val typ))
+    (send this set-local! key val typ))
 
   ;;; Set `key` to `value` with type `type` in
   ;;; the current environment frame.
-  (define/public (set-typed-value key value (type 'Any))
+  (define/public (set-typed-value! key value (type 'Any))
     (define env
       (send this
             find-frame
@@ -471,15 +471,15 @@
             (js-obj "notFound" this)))
     (cond
      ((is-a? env TypedEnvironment)
-      (send env set-local key value type))
+      (send env set-local! key value type))
      (else
-      (send key set-local value))))
+      (send key set-local! value))))
 
   ;;; Set `key` to `value` with type `type` in
   ;;; the current environment frame.
-  (define/public (set-value key value (type 'Any))
+  (define/public (set-value! key value (type 'Any))
     ;; Alias for `.set`.
-    (send this set key value type)))
+    (send this set! key value type)))
 
 ;;; Thunked environment.
 ;;;
@@ -497,7 +497,7 @@
         binding)
       (when (thunk? val)
         (set! val (force val))
-        (send this set-local key val typ)
+        (send this set-local! key val typ)
         (set! binding (list val typ))
         (set! tuple (list binding found))))
     tuple)
@@ -511,7 +511,7 @@
     (cond
      ((and filter (not (filter this)))
       (values not-found #f))
-     ((send this has-local key options)
+     ((send this has-local? key options)
       (send this get-unforced-local-tuple key options))
      (else
       (define inherited-options
@@ -519,7 +519,7 @@
          options
          (js-obj "offset" 1)))
       (for ((frame (send this get-frames inherited-options)))
-        (when (send frame has-local key options)
+        (when (send frame has-local? key options)
           (return
            (if (is-a? frame ThunkedEnvironment)
                (send frame get-unforced-local-tuple key options)
@@ -569,7 +569,7 @@
       not-found)))
 
   ;;; Whether `key` is bound to a thunk.
-  (define/public (has-thunk key (options (js-obj)))
+  (define/public (has-thunk? key (options (js-obj)))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-tuple key options))
@@ -584,7 +584,7 @@
       #f)))
 
   ;;; Whether `key` is locally bound to a thunk.
-  (define/public (has-local-thunk key (options (js-obj)))
+  (define/public (has-local-thunk? key (options (js-obj)))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-local-tuple key options))
@@ -600,7 +600,7 @@
 
   ;;; Set the type of `key` to `typ`.
   ;;; Does not force any thunks.
-  (define/public (set-type key typ (options (js-obj)))
+  (define/public (set-type! key typ (options (js-obj)))
     (define inherited-options
       (js-obj-append
        options
@@ -612,11 +612,11 @@
       tuple)
     (define-values (val)
       binding)
-    (send this set key val typ))
+    (send this set! key val typ))
 
   ;;; Set the local type of `key` to `typ`.
   ;;; Does not force any thunks.
-  (define/public (set-local-type key typ (options (js-obj)))
+  (define/public (set-local-type! key typ (options (js-obj)))
     (define inherited-options
       (js-obj-append
        options
@@ -628,7 +628,7 @@
       tuple)
     (define-values (val)
       binding)
-    (send this set-local key val typ)))
+    (send this set-local! key val typ)))
 
 ;;; Lisp environment.
 ;;;
@@ -769,7 +769,7 @@
         (values not-found #f)))
 
   ;;; Whether the stack contains an environment that binds `key`.
-  (define/public (has-local key)
+  (define/public (has-local? key)
     ;; This could have been implemented in terms of
     ;; `find-local-frame`, but the following is faster since it
     ;; doesn't concern itself with the finer details of which
@@ -777,14 +777,14 @@
     ;; binding.
     (define result #f)
     (for ((env (get-field stack this)))
-      (when (send env has key)
+      (when (send env has? key)
         (set! result #t)
         (break)))
     result)
 
   ;;; Whether the environment stack contains a
   ;;; particular environment.
-  (define/public (has-environment env)
+  (define/public (has-environment? env)
     (when (eq? env this)
       (return #t))
     (for ((x (get-field stack this)))
@@ -792,14 +792,14 @@
        ((eq? x env)
         (return #t))
        ((and (is-a? x EnvironmentStack)
-             (send x has-environment env))
+             (send x has-environment? env))
         (return #t))))
     (cond
      ((and (get-field parent this)
            (is-a? (get-field parent this)
                   EnvironmentStack))
       (send (get-field parent this)
-            has-environment
+            has-environment?
             env))
      (else
       #f)))
@@ -814,15 +814,15 @@
 
   ;;; Set `key` to `value` in the first
   ;;; environment in the stack.
-  (define/public (set-local key value (type 'Any))
+  (define/public (set-local! key value (type 'Any))
     (define env
       (first (get-field stack this)))
     (when env
       (cond
        ((is-a? env TypedEnvironment)
-        (send env set-local key value type))
+        (send env set-local! key value type))
        (else
-        (send key set-local value))))
+        (send key set-local! value))))
     this))
 
 ;;; Compose environments left-to-right.
@@ -856,7 +856,7 @@
                  (not (filter env)))
         (break))
       (cond
-       ((send env has current-key)
+       ((send env has? current-key)
         (set! last-env env)
         (set! last-key current-key)
         (set! current-key
@@ -874,12 +874,15 @@
      (else
       (values not-found #f))))
 
-  (define/public (has key (options (js-obj)))
+  ;;; Whether `key` is bound in the environment,
+  ;;; or in a parent environment.
+  (define/public (has? key (options (js-obj)))
     (define-values (value found)
       (send this get-tuple key options))
     found)
 
-  (define/public (has-local key (options (js-obj)))
+  ;;; Whether `key` is bound in the current environment frame.
+  (define/public (has-local? key (options (js-obj)))
     (define-values (value found)
       (send this get-local-tuple key options))
     found))
@@ -931,7 +934,7 @@
         (values not-found #f))))))
 
   ;;; Whether `key` is bound by the dynamic environment.
-  (define/public (has-local key (options (js-obj)))
+  (define/public (has-local? key (options (js-obj)))
     (define-values (_ found)
       (send this get-local-tuple key options))
     found))
@@ -1034,16 +1037,13 @@
 
 ;;; Prefix a set of bindings.
 (define (prefix-bindings prefix bindings)
-  (map (lambda (x)
-         (define prefixed-sym
-           (string->symbol
-            (string-append
-             prefix
-             (symbol->string
-              (first x)))))
-         (append (list prefixed-sym)
-                 (rest x)))
-       bindings))
+  (define (prefix-binding binding)
+    (~> (first binding)
+        (symbol->string _)
+        (string-append prefix _)
+        (string->symbol _)
+        (append (list _) (rest binding))))
+  (map prefix-binding bindings))
 
 (provide
   (rename-out (current-environment_ current-environment))

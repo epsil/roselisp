@@ -197,14 +197,10 @@ const [equalp, lastCdr, length, last, keywordp]: any[] = ((): any => {
     }
   }
   function keywordp_(obj: any): any {
-    if (
+    return (
       typeof obj === 'symbol' &&
-      (obj.description as string).match(new RegExp('^:'))
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+      ((obj.description as string).match(new RegExp('^:')) ? true : false)
+    );
   }
   function cdr_(lst: any): any {
     if (Array.isArray(lst) && lst.length === 3 && lst[1] === Symbol.for('.')) {

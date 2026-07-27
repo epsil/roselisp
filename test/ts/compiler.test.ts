@@ -7110,11 +7110,7 @@ describe('Macros', function (): any {
       ),
       'let [keywordp] = (() => {\n' +
         '  function keywordp_(obj) {\n' +
-        "    if ((typeof obj === 'symbol') && obj.description.match(new RegExp('^:'))) {\n" +
-        '      return true;\n' +
-        '    } else {\n' +
-        '      return false;\n' +
-        '    }\n' +
+        "    return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);\n" +
         '  }\n' +
         '  return [keywordp_];\n' +
         '})();\n' +
@@ -8949,13 +8945,14 @@ describe('compile-with-environment', function (): any {
       compileWithEnvironment(
         readRose(
           '(module m scheme\n' +
-            '             ;; Hello, world.\n' +
-            '             (: hello-world (-> Void))\n' +
-            '             (define (hello-world)\n' +
-            '               (display "hello, world")))'
+            '  ;;; Hello, world.\n' +
+            '  (: hello-world (-> Void))\n' +
+            '  (define (hello-world)\n' +
+            '    (display "hello, world")))'
         ),
         compilationEnvironment,
         {
+          case: 'camelcase',
           language: 'JavaScript',
           optimize: true,
         }

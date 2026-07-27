@@ -581,7 +581,7 @@
     (string->symbol (get-field name id)))
   (define f
     (eval-estree-function-expression node env options))
-  (send env set-local name f '(->* :rest Any Any))
+  (send env set-local! name f '(->* :rest Any Any))
   #u)
 
 ;;; Evaluate an ESTree [`FunctionExpression`][estree:functionexpression] node.
@@ -876,7 +876,7 @@
          handler-env
          (js/arrow ()
            (send handler-env
-                 set-local
+                 set-local!
                  handler-param-sym
                  err)
            (set! result
@@ -900,7 +900,7 @@
     (string->symbol (get-field name id)))
   (define class-expression
     (eval-estree-class-expression node env options))
-  (send env set sym class-expression)
+  (send env set! sym class-expression)
   #u)
 
 ;;; Evaluate an ESTree [`ClassExpression`][estree:classexpression] node.
@@ -1058,9 +1058,9 @@
           (drop right-val i))
         (cond
          (local-setting
-          (send env set-local sym val))
+          (send env set-local! sym val))
          (else
-          (send env set sym val))))
+          (send env set! sym val))))
        (else
         (define name
           (get-field name x))
@@ -1070,9 +1070,9 @@
           (aget right-val i))
         (cond
          (local-setting
-          (send env set-local sym val))
+          (send env set-local! sym val))
          (else
-          (send env set sym val))))))
+          (send env set! sym val))))))
     right-val)
    ((eq? left-type "ObjectPattern")
     (define properties
@@ -1089,18 +1089,18 @@
               (get-field name key)))
       (cond
        (local-setting
-        (send env set-local sym val))
+        (send env set-local! sym val))
        (else
-        (send env set sym val))))
+        (send env set! sym val))))
     right-val)
    ((eq? left-type "Identifier")
     (define sym
       (string->symbol (get-field name left)))
     (cond
      (local-setting
-      (send env set-local sym right-val))
+      (send env set-local! sym right-val))
      (else
-      (send env set sym right-val)))
+      (send env set! sym right-val)))
     right-val)
    ((eq? left-type "MemberExpression")
     (define obj

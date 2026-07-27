@@ -379,10 +379,15 @@
 ;;; [rkt:keywordp]: https://docs.racket-lang.org/reference/keywords.html#%28def._%28%28quote._~23~25kernel%29._keyword~3f%29%29
 ;;; [cl:keywordp]: http://clhs.lisp.se/Body/f_kwdp.htm#keywordp
 (define (keyword?_ obj)
-  (true?
-   (and (symbol? obj)
-        (regexp-match (regexp "^:")
-                      (symbol->string obj)))))
+  (and (symbol? obj)
+       (regexp-match? (regexp "^:")
+                      (symbol->string obj))))
+
+;; (define (keyword?-1_ obj)
+;;   (true?
+;;    (and (symbol? obj)
+;;         (regexp-match (regexp "^:")
+;;                       (symbol->string obj)))))
 
 ;;; Whether something is a number.
 ;;;

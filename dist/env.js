@@ -42,15 +42,15 @@ class Environment {
          * The table of bindings.
          */
         this.table = new Map();
-        this.addEntries(entries);
+        this.addEntriesX(entries);
         this.parent = parent;
     }
     /**
      * Add a list of entries `((key value) ...)` to the environment.
      */
-    addEntries(entries) {
+    addEntriesX(entries) {
         for (let entry of entries) {
-            this.setEntry(entry);
+            this.setEntryX(entry);
         }
         return this;
     }
@@ -99,7 +99,7 @@ class Environment {
      * Changes the current environment.
      */
     combineInto(env) {
-        this.addEntries(env.entries());
+        this.addEntriesX(env.entries());
         return this;
     }
     /**
@@ -119,7 +119,7 @@ class Environment {
         if (filter && !filter(this)) {
             return notFound;
         }
-        else if (this.hasLocal(key)) {
+        else if (this.hasLocalP(key)) {
             return this;
         }
         else if (parent) {
@@ -132,17 +132,17 @@ class Environment {
     /**
      * Delete the binding for `key`, if any.
      */
-    delete(key) {
+    deleteX(key) {
         let env = this.findFrame(key);
         if (env) {
-            env.deleteLocal(key);
+            env.deleteLocalX(key);
         }
         return this;
     }
     /**
      * Delete the local binding for `key`, if any.
      */
-    deleteLocal(key) {
+    deleteLocalX(key) {
         this.table.delete(key);
         return this;
     }
@@ -237,7 +237,7 @@ class Environment {
         if (filter && !filter(this)) {
             return [notFound, false];
         }
-        let found = this.hasLocal(key);
+        let found = this.hasLocalP(key);
         const value = found ? this.table.get(key) : notFound;
         return [value, found];
     }
@@ -258,7 +258,7 @@ class Environment {
      * Whether `key` is bound in the environment,
      * or in a parent environment.
      */
-    has(key, options = {}) {
+    hasp(key, options = {}) {
         let env = this.findFrame(key, options);
         if (env) {
             return true;
@@ -270,7 +270,7 @@ class Environment {
     /**
      * Whether `key` is bound in the current environment frame.
      */
-    hasLocal(key, options = {}) {
+    hasLocalP(key, options = {}) {
         const filter = options['filter'];
         if (filter && !filter(this)) {
             return false;
@@ -288,23 +288,23 @@ class Environment {
     /**
      * Set `key` to `value` in the environment.
      */
-    set(key, value) {
+    setX(key, value) {
         let env = this.findFrame(key, {
             notFound: this
         });
-        return env.setLocal(key, value);
+        return env.setLocalX(key, value);
     }
     /**
      * Add an entry to the current environment frame.
      */
-    setEntry(entry) {
+    setEntryX(entry) {
         let [key, binding] = entry;
-        return this.setLocal(key, binding);
+        return this.setLocalX(key, binding);
     }
     /**
      * Set `key` to `value` in the current environment frame.
      */
-    setLocal(key, value) {
+    setLocalX(key, value) {
         const table = this.table;
         table.set(key, value);
         return this;
@@ -312,16 +312,16 @@ class Environment {
     /**
      * Set the parent environment.
      */
-    setParent(parent) {
+    setParentX(parent) {
         this.parent = parent;
         return this;
     }
     /**
      * Set `key` to `value` in the environment.
      */
-    setValue(key, value) {
+    setValueX(key, value) {
         // Alias for `.set`.
-        return this.set(key, value);
+        return this.setX(key, value);
     }
 }
 exports.Environment = Environment;
@@ -415,23 +415,23 @@ class TypedEnvironment extends Environment {
     /**
      * Set `key` to `value` with type `type` in the environment.
      */
-    set(key, value, type = Symbol.for('Any')) {
+    setX(key, value, type = Symbol.for('Any')) {
         // Alias for `.set-typed-value`.
-        return this.setTypedValue(key, value, type);
+        return this.setTypedValueX(key, value, type);
     }
     /**
      * Add an entry `(key value type)` or `(key (value type))`
      * to the environment.
      */
-    setEntry(entry) {
+    setEntryX(entry) {
         if (entry.length === 3) {
             const [key, value, type] = entry;
-            this.setLocal(key, value, type);
+            this.setLocalX(key, value, type);
         }
         else {
             let [key, binding] = entry;
             const [value, type] = binding;
-            this.setLocal(key, value, type);
+            this.setLocalX(key, value, type);
         }
         return this;
     }
@@ -439,49 +439,49 @@ class TypedEnvironment extends Environment {
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setLocal(key, value, type = Symbol.for('Any')) {
-        return super.setLocal(key, [value, type]);
+    setLocalX(key, value, type = Symbol.for('Any')) {
+        return super.setLocalX(key, [value, type]);
     }
     /**
      * Set the type of `key` to `typ`.
      * If there is no existing binding,
      * creates a new binding where the value is `#u`.
      */
-    setType(key, typ, options = {}) {
+    setTypeX(key, typ, options = {}) {
         let val = this.get(key, options);
-        return this.set(key, val, typ);
+        return this.setX(key, val, typ);
     }
     /**
      * Set the local type of `key` to `typ`.
      * If there is no existing local binding,
      * creates a new binding where the value is `#u`.
      */
-    setLocalType(key, typ, options = {}) {
+    setLocalTypeX(key, typ, options = {}) {
         let val = this.getLocal(key, options);
-        return this.setLocal(key, val, typ);
+        return this.setLocalX(key, val, typ);
     }
     /**
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setTypedValue(key, value, type = Symbol.for('Any')) {
+    setTypedValueX(key, value, type = Symbol.for('Any')) {
         let env = this.findFrame(key, {
             notFound: this
         });
         if (env instanceof TypedEnvironment) {
-            return env.setLocal(key, value, type);
+            return env.setLocalX(key, value, type);
         }
         else {
-            return key.setLocal(value);
+            return key.setLocalX(value);
         }
     }
     /**
      * Set `key` to `value` with type `type` in
      * the current environment frame.
      */
-    setValue(key, value, type = Symbol.for('Any')) {
+    setValueX(key, value, type = Symbol.for('Any')) {
         // Alias for `.set`.
-        return this.set(key, value, type);
+        return this.setX(key, value, type);
     }
 }
 exports.TypedEnvironment = TypedEnvironment;
@@ -502,7 +502,7 @@ class ThunkedEnvironment extends TypedEnvironment {
             let [val, typ] = binding;
             if ((0, thunk_1.thunkp)(val)) {
                 val = (0, thunk_1.force)(val);
-                this.setLocal(key, val, typ);
+                this.setLocalX(key, val, typ);
                 binding = [val, typ];
                 tuple = [binding, found];
             }
@@ -518,13 +518,13 @@ class ThunkedEnvironment extends TypedEnvironment {
         if (filter && !filter(this)) {
             return [notFound, false];
         }
-        else if (this.hasLocal(key, options)) {
+        else if (this.hasLocalP(key, options)) {
             return this.getUnforcedLocalTuple(key, options);
         }
         else {
             const inheritedOptions = Object.assign(Object.assign({}, options), { offset: 1 });
             for (let frame of this.getFrames(inheritedOptions)) {
-                if (frame.hasLocal(key, options)) {
+                if (frame.hasLocalP(key, options)) {
                     return (frame instanceof ThunkedEnvironment) ? frame.getUnforcedLocalTuple(key, options) : frame.getLocalTuple(key, options);
                 }
             }
@@ -574,7 +574,7 @@ class ThunkedEnvironment extends TypedEnvironment {
     /**
      * Whether `key` is bound to a thunk.
      */
-    hasThunk(key, options = {}) {
+    hasThunkP(key, options = {}) {
         // Obtain the type without forcing the thunk.
         let tuple = this.getUnforcedTuple(key, options);
         let [binding, found] = tuple;
@@ -589,7 +589,7 @@ class ThunkedEnvironment extends TypedEnvironment {
     /**
      * Whether `key` is locally bound to a thunk.
      */
-    hasLocalThunk(key, options = {}) {
+    hasLocalThunkP(key, options = {}) {
         // Obtain the type without forcing the thunk.
         let tuple = this.getUnforcedLocalTuple(key, options);
         let [binding, found] = tuple;
@@ -605,25 +605,25 @@ class ThunkedEnvironment extends TypedEnvironment {
      * Set the type of `key` to `typ`.
      * Does not force any thunks.
      */
-    setType(key, typ, options = {}) {
+    setTypeX(key, typ, options = {}) {
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
         // Obtain the type without forcing the thunk.
         let tuple = this.getUnforcedTuple(key, inheritedOptions);
         let [binding] = tuple;
         let [val] = binding;
-        return this.set(key, val, typ);
+        return this.setX(key, val, typ);
     }
     /**
      * Set the local type of `key` to `typ`.
      * Does not force any thunks.
      */
-    setLocalType(key, typ, options = {}) {
+    setLocalTypeX(key, typ, options = {}) {
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
         // Obtain the type without forcing the thunk.
         let tuple = this.getUnforcedLocalTuple(key, inheritedOptions);
         let [binding] = tuple;
         let [val] = binding;
-        return this.setLocal(key, val, typ);
+        return this.setLocalX(key, val, typ);
     }
 }
 exports.ThunkedEnvironment = ThunkedEnvironment;
@@ -775,7 +775,7 @@ class EnvironmentStack extends TypedEnvironment {
     /**
      * Whether the stack contains an environment that binds `key`.
      */
-    hasLocal(key) {
+    hasLocalP(key) {
         // This could have been implemented in terms of
         // `find-local-frame`, but the following is faster since it
         // doesn't concern itself with the finer details of which
@@ -783,7 +783,7 @@ class EnvironmentStack extends TypedEnvironment {
         // binding.
         let result = false;
         for (let env of this.stack) {
-            if (env.has(key)) {
+            if (env.hasp(key)) {
                 result = true;
                 break;
             }
@@ -794,7 +794,7 @@ class EnvironmentStack extends TypedEnvironment {
      * Whether the environment stack contains a
      * particular environment.
      */
-    hasEnvironment(env) {
+    hasEnvironmentP(env) {
         if (env === this) {
             return true;
         }
@@ -802,12 +802,12 @@ class EnvironmentStack extends TypedEnvironment {
             if (x === env) {
                 return true;
             }
-            else if ((x instanceof EnvironmentStack) && x.hasEnvironment(env)) {
+            else if ((x instanceof EnvironmentStack) && x.hasEnvironmentP(env)) {
                 return true;
             }
         }
         if (this.parent && (this.parent instanceof EnvironmentStack)) {
-            return this.parent.hasEnvironment(env);
+            return this.parent.hasEnvironmentP(env);
         }
         else {
             return false;
@@ -825,14 +825,14 @@ class EnvironmentStack extends TypedEnvironment {
      * Set `key` to `value` in the first
      * environment in the stack.
      */
-    setLocal(key, value, type = Symbol.for('Any')) {
+    setLocalX(key, value, type = Symbol.for('Any')) {
         let env = this.stack[0];
         if (env) {
             if (env instanceof TypedEnvironment) {
-                env.setLocal(key, value, type);
+                env.setLocalX(key, value, type);
             }
             else {
-                key.setLocal(value);
+                key.setLocalX(value);
             }
         }
         return this;
@@ -874,7 +874,7 @@ class EnvironmentPipe extends TypedEnvironment {
             if (filter && !filter(env)) {
                 break;
             }
-            if (env.has(currentKey)) {
+            if (env.hasp(currentKey)) {
                 lastEnv = env;
                 lastKey = currentKey;
                 currentKey = env.get(currentKey);
@@ -894,11 +894,18 @@ class EnvironmentPipe extends TypedEnvironment {
             return [notFound, false];
         }
     }
-    has(key, options = {}) {
+    /**
+     * Whether `key` is bound in the environment,
+     * or in a parent environment.
+     */
+    hasp(key, options = {}) {
         let [value, found] = this.getTuple(key, options);
         return found;
     }
-    hasLocal(key, options = {}) {
+    /**
+     * Whether `key` is bound in the current environment frame.
+     */
+    hasLocalP(key, options = {}) {
         let [value, found] = this.getLocalTuple(key, options);
         return found;
     }
@@ -954,7 +961,7 @@ class DynamicEnvironment extends TypedEnvironment {
     /**
      * Whether `key` is bound by the dynamic environment.
      */
-    hasLocal(key, options = {}) {
+    hasLocalP(key, options = {}) {
         let [, found] = this.getLocalTuple(key, options);
         return found;
     }
@@ -1103,10 +1110,13 @@ linkEnvironmentFrames.fsource = [Symbol.for('define'), [Symbol.for('link-environ
  * Prefix a set of bindings.
  */
 function prefixBindings(prefix, bindings) {
+    function prefixBinding(binding) {
+        return [Symbol.for(prefix + binding[0].description), ...binding.slice(1)];
+    }
+    prefixBinding.fsource = [Symbol.for('define'), [Symbol.for('prefix-binding'), Symbol.for('binding')], [Symbol.for('~>'), [Symbol.for('first'), Symbol.for('binding')], [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('string-append'), Symbol.for('prefix'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('_')], [Symbol.for('rest'), Symbol.for('binding')]]]];
     return bindings.map(function (x) {
-        const prefixedSym = Symbol.for(prefix + x[0].description);
-        return [prefixedSym, ...x.slice(1)];
+        return prefixBinding(x);
     });
 }
 exports.prefixBindings = prefixBindings;
-prefixBindings.fsource = [Symbol.for('define'), [Symbol.for('prefix-bindings'), Symbol.for('prefix'), Symbol.for('bindings')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('prefixed-sym'), [Symbol.for('string->symbol'), [Symbol.for('string-append'), Symbol.for('prefix'), [Symbol.for('symbol->string'), [Symbol.for('first'), Symbol.for('x')]]]]], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('prefixed-sym')], [Symbol.for('rest'), Symbol.for('x')]]], Symbol.for('bindings')]];
+prefixBindings.fsource = [Symbol.for('define'), [Symbol.for('prefix-bindings'), Symbol.for('prefix'), Symbol.for('bindings')], [Symbol.for('define'), [Symbol.for('prefix-binding'), Symbol.for('binding')], [Symbol.for('~>'), [Symbol.for('first'), Symbol.for('binding')], [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('string-append'), Symbol.for('prefix'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('_')], [Symbol.for('rest'), Symbol.for('binding')]]]], [Symbol.for('map'), Symbol.for('prefix-binding'), Symbol.for('bindings')]];

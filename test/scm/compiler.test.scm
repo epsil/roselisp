@@ -3182,11 +3182,7 @@ let baz = x;"
     :inline-functions #t)
  "let [keywordp] = (() => {
   function keywordp_(obj) {
-    if ((typeof obj === 'symbol') && obj.description.match(new RegExp('^:'))) {
-      return true;
-    } else {
-      return false;
-    }
+    return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
   }
   return [keywordp_];
 })();
@@ -4383,12 +4379,13 @@ class Foo {
           (compile-with-environment
            (read-rose
             "(module m scheme
-             ;; Hello, world.
-             (: hello-world (-> Void))
-             (define (hello-world)
-               (display \"hello, world\")))")
+  ;;; Hello, world.
+  (: hello-world (-> Void))
+  (define (hello-world)
+    (display \"hello, world\")))")
            compilation-environment
-           (js-obj "language" "JavaScript"
+           (js-obj "case" "camelcase"
+                   "language" "JavaScript"
                    "optimize" #t)))
  "/**
  * Hello, world.

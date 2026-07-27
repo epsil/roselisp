@@ -154,7 +154,7 @@
           (set! prop (second match))
           (set! (oget obj prop) val)))))
      (else
-      (send env set sym val 'Any)))
+      (send env set! sym val 'Any)))
     val)))
 
 ;;; Evaluate a `(fset ...)` form.
@@ -165,7 +165,7 @@
     (eval_ (first params) env))
   (define val
     (eval_ (second params) env))
-  (send env set sym val '(->* :rest Any Any))
+  (send env set! sym val '(->* :rest Any Any))
   val)
 
 ;;; Evaluate a `(module ...)` form.
@@ -367,7 +367,7 @@
           ,curried-arity))
       (define val
         (eval_ curried-function-exp env))
-      (send env set-local curried-name val)
+      (send env set-local! curried-name val)
       val)
      ;; Uncurried function definition.
      (else
@@ -376,7 +376,7 @@
            ,@body))
       (define val
         (eval_ lambda-exp env))
-      (send env set-local f-name val)
+      (send env set-local! f-name val)
       val)))
    ;; Class definition.
    ((and (= (js/length exp) 3)
@@ -389,7 +389,7 @@
       (third exp))
     (define val
       (eval_ val-exp env))
-    (send env set-local name val)
+    (send env set-local! name val)
     val)))
 
 ;;; Convert a `(define ... (class ...))` form to
@@ -439,7 +439,7 @@
     (set! name (first name)))
   (define macro-fn
     (defmacro->fn exp env))
-  (send env set name macro-fn '(->macro :rest Any Any))
+  (send env set! name macro-fn '(->macro :rest Any Any))
   ;; name
   macro-fn)
 
@@ -493,7 +493,7 @@
     (car (second exp)))
   (define macro-fn
     (define-macro->fn exp env))
-  (send env set name macro-fn '(->macro :rest Any Any))
+  (send env set! name macro-fn '(->macro :rest Any Any))
   name)
 
 ;;; Create a macro function on the basis of a
@@ -949,7 +949,7 @@
         (set! (oget (get-field prototype constructor) def-name)
               method-fn)))
   (unless (eq? class-name "")
-    (send env set class-name-symbol constructor 'Any))
+    (send env set! class-name-symbol constructor 'Any))
   constructor)
 
 ;;; Evaluate a `(try ...)` form.

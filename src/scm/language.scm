@@ -2794,7 +2794,7 @@
            "operator" "==")))
 
 ;;; Compiler macro for `(foldl ...)` expressions.
-(defmacro compile-foldl-macro (f v lst &environment env)
+(define-macro (compile-foldl-macro f v lst &environment env)
   ;; `foldl()` and `.reduce()` invoke the reducing function with
   ;; opposite argument order, and `.reduce()` passes additional
   ;; arguments to it. We therefore wrap it in a binary function
@@ -2803,7 +2803,7 @@
   `(js/reduce ,lst ,(flip-function-expression f env) ,v))
 
 ;;; Compiler macro for `(foldr ...)` expressions.
-(defmacro compile-foldr-macro (f v lst &environment env)
+(define-macro (compile-foldr-macro f v lst &environment env)
   ;; Like `foldl`, but invokes the `reduceRight` method instead.
   `(js/reduce-right ,lst ,(flip-function-expression f env) ,v))
 
@@ -5787,7 +5787,7 @@
   (compile-sexp expansion env options))
 
 ;;; Compiler macro for `(make-hash ...)` expressions.
-(defmacro compile-make-hash-macro (assocs)
+(define-macro (compile-make-hash-macro assocs)
   (cond
    (assocs
     (cond
@@ -5831,7 +5831,7 @@
     `(new Map))))
 
 ;;; Compiler macro for `(hash-clear ...)` expressions.
-(defmacro compile-hash-clear-macro (ht)
+(define-macro (compile-hash-clear-macro ht)
   (cond
    ((symbol? ht)
     `(begin
@@ -5844,7 +5844,7 @@
       ,ht))))
 
 ;;; Compiler macro for `(hash-remove! ...)` expressions.
-(defmacro compile-hash-remove-macro (ht key)
+(define-macro (compile-hash-remove-macro ht key)
   (cond
    ((symbol? ht)
     `(begin
@@ -5857,7 +5857,7 @@
       ,ht ,key))))
 
 ;;; Compiler macro for `(hash-ref ...)` expressions.
-(defmacro compile-hash-ref-macro (ht key failure-result)
+(define-macro (compile-hash-ref-macro ht key failure-result)
   (cond
    ((undefined? failure-result)
     `(send ,ht get ,key))
@@ -5870,7 +5870,7 @@
       (list ht key failure-result)))))
 
 ;;; Compiler macro for `(map ...)` expressions.
-(defmacro compile-map-macro (f x)
+(define-macro (compile-map-macro f x)
   ;; Note that `` `(send ,x map ,f) `` is too simple, as JavaScript's
   ;; `.map()` method calls the function with multiple arguments. This
   ;; can lead to unintuitive bugs in cases where the function has an
@@ -5909,15 +5909,15 @@
     `(,A-exp ,f-exp))))
 
 ;;; Compiler macro for `(values ...)` expressions.
-(defmacro compile-values-macro (&rest args)
+(define-macro (compile-values-macro &rest args)
   `(list ,@args))
 
 ;;; Compiler macro for `(string? ...)` expressions.
-(defmacro compile-stringp-macro (x)
+(define-macro (compile-stringp-macro x)
   `(eq? (type-of ,x) "string"))
 
 ;;; Compiler macro for `(string-trim ...)` expressions.
-(defmacro compile-string-trim-macro (&rest args)
+(define-macro (compile-string-trim-macro &rest args)
   (cond
    ((= (js/length args) 1)
     `(send ,(js/first args) trim))
@@ -5925,7 +5925,7 @@
     (definition->macro (source string-trim_) args))))
 
 ;;; Compiler macro for `(member? ...)` expressions.
-(defmacro compile-member-p-macro (v lst is-equal)
+(define-macro (compile-member-p-macro v lst is-equal)
   (cond
    ((not is-equal)
     (definition->macro
@@ -5943,11 +5943,11 @@
       (list v lst is-equal)))))
 
 ;;; Compiler macro for `(substring ...)` expressions.
-(defmacro compile-substring-macro (str &rest args)
+(define-macro (compile-substring-macro str &rest args)
   `(send ,str substring ,@args))
 
 ;;; Compiler macro for `(array-drop ...)` expressions.
-(defmacro compile-array-drop-macro (arr n)
+(define-macro (compile-array-drop-macro arr n)
   (cond
    ((number? n)
     (cond
@@ -5961,7 +5961,7 @@
       (list arr n)))))
 
 ;;; Compiler macro for `(drop-right ...)` expressions.
-(defmacro compile-array-drop-right-macro (arr n)
+(define-macro (compile-array-drop-right-macro arr n)
   (cond
    ((number? n)
     (cond
@@ -5975,7 +5975,7 @@
       (list arr n)))))
 
 ;;; Compiler macro for `(drop ...)` expressions.
-(defmacro compile-drop-macro (lst pos)
+(define-macro (compile-drop-macro lst pos)
   (cond
    ((number? pos)
     (cond
@@ -5987,7 +5987,7 @@
     (definition->macro (source drop_) (list lst pos)))))
 
 ;;; Compiler macro for `(drop-right ...)` expressions.
-(defmacro compile-drop-right-macro (lst n)
+(define-macro (compile-drop-right-macro lst n)
   (cond
    ((number? n)
     (cond
@@ -5999,7 +5999,7 @@
     (definition->macro (source drop-right_) (list lst n)))))
 
 ;;; Compiler macro for `(array-list-drop ...)` expressions.
-(defmacro compile-array-list-drop-macro (lst n)
+(define-macro (compile-array-list-drop-macro lst n)
   (cond
    ((number? n)
     (cond
@@ -6013,7 +6013,7 @@
       (list lst n)))))
 
 ;;; Compiler macro for `(array-list-drop-right ...)` expressions.
-(defmacro compile-array-list-drop-right-macro (lst n)
+(define-macro (compile-array-list-drop-right-macro lst n)
   (cond
    ((number? n)
     (cond
@@ -6027,19 +6027,19 @@
       (list lst n)))))
 
 ;;; Compiler macro for `(js/regexp ...)` expressions.
-(defmacro compile-js-regexp-macro (&rest args)
+(define-macro (compile-js-regexp-macro &rest args)
   `(new RegExp ,@args))
 
 ;;; Compiler macro for `(assert ...)` expressions.
-(defmacro compile-assert-macro (&rest args)
+(define-macro (compile-assert-macro &rest args)
   `(send console assert ,@args))
 
 ;;; Compiler macro for `(display ...)` expressions.
-(defmacro compile-display-macro (&rest args)
+(define-macro (compile-display-macro &rest args)
   `(send console log ,@args))
 
 ;;; Compiler macro for `(current-environment)` expressions.
-(defmacro compile-current-environment-macro ()
+(define-macro (compile-current-environment-macro )
   (define arg-sym
     (gensym "_arg"))
   (define str-sym
@@ -6131,7 +6131,7 @@
 ;;;
 ;;; [rkt:quote]: https://docs.racket-lang.org/reference/quote.html
 ;;; [cl:quote]: http://clhs.lisp.se/Body/s_quote.htm#quote
-(defmacro quote_ (&whole exp &environment env)
+(define-macro (quote_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6146,7 +6146,7 @@
 ;;;
 ;;; [rkt:quasiquote]: https://docs.racket-lang.org/reference/quasiquote.html
 ;;; [cl:backquote]: http://clhs.lisp.se/Body/02_df.htm
-(defmacro quasiquote_ (&whole exp &environment env)
+(define-macro (quasiquote_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6159,126 +6159,126 @@
 ;;;
 ;;; [rkt:setx]: https://docs.racket-lang.org/reference/set_.html#%28form._%28%28quote._~23~25kernel%29._set%21%29%29
 ;;; [cl:setq]: http://clhs.lisp.se/Body/s_setq.htm#setq
-(defmacro set!_ (&whole exp &environment env)
+(define-macro (set!_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(module ...)` expression.
-(defmacro module_ (&whole exp &environment env)
+(define-macro (module_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/block ...)` expression.
-(defmacro js-block_ (&whole exp &environment env)
+(define-macro (js-block_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(begin ...)` expression.
-(defmacro begin_ (&whole exp &environment env)
+(define-macro (begin_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(let* ...)` expression.
-(defmacro let-star_ (&whole exp &environment env)
+(define-macro (let-star_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(let-values ...)` expression.
-(defmacro let-values_ (&whole exp &environment env)
+(define-macro (let-values_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(define-values ...)` expression.
-(defmacro define-values_ (&whole exp &environment env)
+(define-macro (define-values_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(set!-values ...)` expression.
-(defmacro set-values_ (&whole exp &environment env)
+(define-macro (set-values_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(define ...)` expression.
-(defmacro define_ (&whole exp &environment env)
+(define-macro (define_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(define/generator ...)` expression.
-(defmacro define-generator_ (&whole exp &environment env)
+(define-macro (define-generator_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(define/async ...)` expression.
-(defmacro define-async_ (&whole exp &environment env)
+(define-macro (define-async_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(for ...)` expression.
-(defmacro for_ (&whole exp &environment env)
+(define-macro (for_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/while ...)` expression.
-(defmacro js-while_ (&whole exp &environment env)
+(define-macro (js-while_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/do-while ...)` expression.
-(defmacro js-do-while_ (&whole exp &environment env)
+(define-macro (js-do-while_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(break)` expression.
-(defmacro break_ (&whole exp &environment env)
+(define-macro (break_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(continue)` expression.
-(defmacro continue_ (&whole exp &environment env)
+(define-macro (continue_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(yield ...)` expression.
-(defmacro yield_ (&whole exp &environment env)
+(define-macro (yield_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(return ...)` expression.
-(defmacro return_ (&whole exp &environment env)
+(define-macro (return_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6289,21 +6289,21 @@
 ;;; Similar to the [`throw`][clj:throw] special form in Clojure.
 ;;;
 ;;; [clj:throw]: https://clojuredocs.org/clojure.core/throw
-(defmacro throw_ (&whole exp &environment env)
+(define-macro (throw_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/async ...)` expression.
-(defmacro js-async_ (&whole exp &environment env)
+(define-macro (js-async_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/await ...)` expression.
-(defmacro js-await_ (&whole exp &environment env)
+(define-macro (js-await_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6315,7 +6315,7 @@
 ;;; a reference to [lambda calculus][w:Lambda calculus].
 ;;;
 ;;; [w:Lambda calculus]: https://en.wikipedia.org/wiki/Lambda_calculus
-(defmacro lambda_ (&whole exp &environment env)
+(define-macro (lambda_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6324,7 +6324,7 @@
 ;;; Expand a `(js/function ...)` expression.
 ;;;
 ;;; Creates an anonymous JavaScript function.
-(defmacro js-function_ (&whole exp &environment env)
+(define-macro (js-function_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6333,28 +6333,28 @@
 ;;; Expand a `(js/arrow ...)` expression.
 ;;;
 ;;; Creates a JavaScript arrow function.
-(defmacro js-arrow_ (&whole exp &environment env)
+(define-macro (js-arrow_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(cond ...)` expression.
-(defmacro cond_ (&whole exp &environment env)
+(define-macro (cond_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand an `(and ...)` expression.
-(defmacro and_ (&whole exp &environment env)
+(define-macro (and_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand an `(or ...)` expression.
-(defmacro or_ (&whole exp &environment env)
+(define-macro (or_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6380,14 +6380,14 @@
 ;;; Similar to [`send`][rkt:send] in Racket.
 ;;;
 ;;; [rkt:send]: https://docs.racket-lang.org/guide/classes.html#(part._methods)
-(defmacro send_ (&whole exp &environment env)
+(define-macro (send_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(send/apply ...)` expression.
-(defmacro send-apply_ (&whole exp &environment env)
+(define-macro (send-apply_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6400,18 +6400,18 @@
 ;;;
 ;;; [clj:dot]: https://clojure.org/reference/java_interop#dot
 ;;; [cljs:dot]: https://cljs.github.io/api/syntax/dot
-(defmacro dot_ (&whole exp &environment env)
+(define-macro (dot_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(get-field ...)` expression.
-(defmacro get-field_ (field obj)
+(define-macro (get-field_ field obj)
   `(js/. ,obj ,field))
 
 ;;; Expand a `(set-field! ...)` expression.
-(defmacro set-field_ (&whole exp &environment env)
+(define-macro (set-field_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6424,7 +6424,7 @@
 ;;;
 ;;; [rkt:class]: https://docs.racket-lang.org/guide/classes.html
 ;;; [cl:define-class]: http://clhs.lisp.se/Body/07_.htm
-(defmacro class_ (&whole exp &environment env)
+(define-macro (class_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6437,28 +6437,28 @@
 ;;;
 ;;; [rkt:class]: https://docs.racket-lang.org/guide/classes.html
 ;;; [cl:defclass]: http://clhs.lisp.se/Body/m_defcla.htm#defclass
-(defmacro define-class_ (&whole exp &environment env)
+(define-macro (define-class_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/try ...)` expression.
-(defmacro js-try_ (&whole exp &environment env)
+(define-macro (js-try_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(provide ...)` expression.
-(defmacro provide_ (&whole exp &environment env)
+(define-macro (provide_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(require ...)` expression.
-(defmacro require_ (&whole exp &environment env)
+(define-macro (require_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -7045,42 +7045,42 @@
             env))
 
 ;;; Expand an `(ann ...)` expression.
-(defmacro ann_ (&whole exp &environment env)
+(define-macro (ann_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(: ...)` expression.
-(defmacro colon_ (&whole exp &environment env)
+(define-macro (colon_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(define-type ...)` expression.
-(defmacro define-type_ (&whole exp &environment env)
+(define-macro (define-type_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(let-fields ...)` expression.
-(defmacro let-fields_ (&whole exp &environment env)
+(define-macro (let-fields_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(define-fields ...)` expression.
-(defmacro define-fields_ (&whole exp &environment env)
+(define-macro (define-fields_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(set!-fields ...)` expression.
-(defmacro set-fields_ (&whole exp &environment env)
+(define-macro (set-fields_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -7147,14 +7147,14 @@
          cases-compiled))))
 
 ;;; Expand a `(js/switch ...)` expression.
-(defmacro js-switch_ (&whole exp &environment env)
+(define-macro (js-switch_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(field-bound? ...)` expression.
-(defmacro field-bound?_ (id obj)
+(define-macro (field-bound?_ id obj)
   (define prop
     (make-identifier-string
      (symbol->string id)

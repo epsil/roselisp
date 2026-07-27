@@ -27,20 +27,20 @@
                   tagged-list?))
 
 ;;; Expand a `(defun ...)` expression.
-(defmacro defun_ (name args &rest body)
+(define-macro (defun_ name args &rest body)
   `(define (,name ,@args)
      ,@body))
 
 ;;; Expand a `(define/private ...)` expression.
-(defmacro define-private_ (&rest body)
+(define-macro (define-private_ &rest body)
   `(define ,@body))
 
 ;;; Expand a `(define/public ...)` expression.
-(defmacro define-public_ (&rest body)
+(define-macro (define-public_ &rest body)
   `(define ,@body))
 
 ;;; Expand a `(defclass ...)` expression.
-(defmacro defclass_ (&rest body)
+(define-macro (defclass_ &rest body)
   `(define-class ,@body))
 
 ;;; Expand a `(define-macro ...)` expression.
@@ -50,7 +50,7 @@
 ;;;
 ;;; [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
 ;;; [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
-(defmacro define-macro_ (name-and-args &rest body)
+(define-macro (define-macro_ name-and-args &rest body)
   (define name
     (car name-and-args))
   (define macro-fn-form
@@ -126,19 +126,19 @@
      ,@body))
 
 ;;; Expand a `(defmacro ...)` expression.
-(defmacro defmacro_ (name args &rest body)
+(define-macro (defmacro_ name args &rest body)
   `(define-macro ,(cons name args)
      ,@body))
 
 ;;; Expand a `(define-fexpr ...)` expression.
-(defmacro define-fexpr_ (name-and-args &rest body)
+(define-macro (define-fexpr_ name-and-args &rest body)
   `(begin
      (define ,name-and-args
        ,@body)
      (declare-fexpr ,(car name-and-args))))
 
 ;;; Expand a `(declare ...)` expression.
-(defmacro declare_ (name &rest specs)
+(define-macro (declare_ name &rest specs)
   `(begin
      ,@(map (lambda (spec)
               `(set-field! ,(js/first spec)
@@ -147,15 +147,15 @@
             specs)))
 
 ;;; Expand a `(declare-macro ...)` expression.
-(defmacro declare-macro_ (name)
+(define-macro (declare-macro_ name)
   `(declare ,name (ftype "macro")))
 
 ;;; Expand a `(declare-fexpr ...)` expression.
-(defmacro declare-fexpr_ (name)
+(define-macro (declare-fexpr_ name)
   `(declare ,name (ftype "fexpr")))
 
 ;;; Expand a `(begin0 ...)` or `(prog1 ...)` expression.
-(defmacro begin0_ (x &rest xs)
+(define-macro (begin0_ x &rest xs)
   (cond
    ((= (js/length xs) 0)
     x)
@@ -167,12 +167,12 @@
        ,result))))
 
 ;;; Expand a `(multiple-values-bind ...)` expression.
-(defmacro multiple-value-bind_ (bindings expression &rest body)
+(define-macro (multiple-value-bind_ bindings expression &rest body)
   `(let-values ((,bindings ,expression))
      ,@body))
 
 ;;; Expand a `(rkt/new ...)' expression.
-(defmacro rkt-new_ (constructor &rest args)
+(define-macro (rkt-new_ constructor &rest args)
   ;; We are not able to do much here other than to rewrite the
   ;; expression to a `(make-object ...)` expression. JavaScript lacks
   ;; support for creating a new object on the basis of by-name
@@ -181,7 +181,7 @@
   `(make-object ,constructor ,@(map js/second args)))
 
 ;;; Expand an `(if ...)` expression.
-(defmacro if_ (condition then-clause &rest else-clauses)
+(define-macro (if_ condition then-clause &rest else-clauses)
   `(cond
     (,condition
      ,then-clause)
@@ -192,12 +192,12 @@
         '()))))
 
 ;;; Expand a `(when ...)` expression.
-(defmacro when_ (condition &rest body)
+(define-macro (when_ condition &rest body)
   `(if ,condition
        (begin ,@body)))
 
 ;;; Expand an `(unless ...)` expression.
-(defmacro unless_ (condition &rest body)
+(define-macro (unless_ condition &rest body)
   `(if (not ,condition)
        (begin ,@body)))
 
@@ -206,7 +206,7 @@
 ;;; Similar to the [`as->` macro][clj:thread-as] in Clojure.
 ;;;
 ;;; [clj:thread-as]: https://clojuredocs.org/clojure.core/as-%3E
-(defmacro thread-as_ (val sym &rest forms)
+(define-macro (thread-as_ val sym &rest forms)
   ;; This macro goes to some lengths to avoid introducing a `let`
   ;; variable unless it is absolutely necessary. In many cases, the
   ;; forms can simply be chained together, using `sym` as the
@@ -271,7 +271,7 @@
 ;;; the "`thread-first` macro").
 ;;;
 ;;; [clj:thread-first]: https://clojuredocs.org/clojure.core/-%3E
-(defmacro thread-first_ (x &rest forms)
+(define-macro (thread-first_ x &rest forms)
   (define hole-marker '_)
   (when (and (> (js/length forms) 1)
              (eq? (js/first forms) ':hole-marker))
@@ -299,7 +299,7 @@
 ;;; the "`thread-last` macro").
 ;;;
 ;;; [clj:thread-last]: https://clojuredocs.org/clojure.core/-%3E%3E
-(defmacro thread-last_ (x &rest forms)
+(define-macro (thread-last_ x &rest forms)
   (define hole-marker '_)
   (when (and (> (js/length forms) 1)
              (eq? (js/first forms) ':hole-marker))
@@ -321,14 +321,14 @@
   (foldl f as-exp forms))
 
 ;;; Expand an `(unwind-protect ...)` expression.
-(defmacro unwind-protect_ (body-form &rest unwind-forms)
+(define-macro (unwind-protect_ body-form &rest unwind-forms)
   `(try
      ,body-form
      (finally
        ,@unwind-forms)))
 
 ;;; Expand a `(do ...)` expression.
-(defmacro do_ (bindings tests &rest body)
+(define-macro (do_ bindings tests &rest body)
   (cond
    ;; For expressions with no bindings, we wrap
    ;; the expansion in `begin`.
@@ -364,13 +364,13 @@
     result)))
 
 ;;; Expand a `(while ...)` expression.
-(defmacro while_ (test &rest body)
+(define-macro (while_ test &rest body)
   `(do ()
        ((not ,test))
      ,@body))
 
 ;;; Expand a `(js/for ...)` expression.
-(defmacro js/for_ (args &rest body)
+(define-macro (js/for_ args &rest body)
   (define inits '())
   (define tests '())
   (for ((arg args))
@@ -395,7 +395,7 @@
      ,@body))
 
 ;;; Expand a `(js/for-in ...)` expression.
-(defmacro js/for-in_ (args &rest body)
+(define-macro (js/for-in_ args &rest body)
   (define bindings
     (map (lambda (x)
            (define left
@@ -408,7 +408,7 @@
               ,@body))
 
 ;;; Expand a `(js/for-of ...)` expression.
-(defmacro js/for-of_ (args &rest body)
+(define-macro (js/for-of_ args &rest body)
   (define bindings
     (map (lambda (x)
            (define left
@@ -423,7 +423,7 @@
      ,@body))
 
 ;;; Expand a `(case ...)` expression.
-(defmacro case_ (val &rest clauses)
+(define-macro (case_ val &rest clauses)
   (define has-complex-clauses #f)
   (define (is-simple-value x)
     (or (boolean? x)
@@ -473,7 +473,7 @@
     `(case/eq ,val ,@clauses))))
 
 ;;; Expand a `(case/eq ...)` expression.
-(defmacro case-eq_ (val &rest clauses)
+(define-macro (case-eq_ val &rest clauses)
   (define has-complex-clauses #f)
   (for ((x clauses))
     (when (and (not (eq? (js/first x) 'else))
@@ -526,18 +526,18 @@
                 ,@switch-clauses))))
 
 ;;; Expand a `(let-env ...)` expression.
-(defmacro let-env_ (x &rest body)
+(define-macro (let-env_ x &rest body)
   `(scm/eval (quote (begin ,@body))
              (extend-environment
               ,x
               (current-environment))))
 
 ;;; Expand a `(set ...)` expression.
-(defmacro set_ (sym val)
+(define-macro (set_ sym val)
   `(set! ,(js/second sym) ,val))
 
 ;;; Expand a `(new/apply ...)` expression.
-(defmacro new-apply_ (&rest args)
+(define-macro (new-apply_ &rest args)
   `(apply new ,@args))
 
 ;;; Expand a `(clj/try ...)` expression.
@@ -545,7 +545,7 @@
 ;;; Similar to the [`try` special form][clj:try] in Clojure.
 ;;;
 ;;; [clj:try]: https://clojuredocs.org/clojure.core/try
-(defmacro clj-try_ (&rest body)
+(define-macro (clj-try_ &rest body)
   (define body-exps '())
   (define catch-clauses '())
   (define clj-catch-clauses '())

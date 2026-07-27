@@ -12,6 +12,140 @@
 (declare-macro test-macro)
 
 (test-macro
+ ;; `test-macro`
+ > (describe "test-macro")
+ _
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              _)
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ())))
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              _
+              > (foo)
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (it "(foo)"
+            (fn ()
+              (assert-equal
+               (foo)
+               "foo"))))))
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              _
+              > (define (foo x)
+                  x)
+              _
+              > (foo "foo")
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (define (foo x)
+          x)
+        (it "(foo \"foo\")"
+            (fn ()
+              (assert-equal
+               (foo "foo")
+               "foo"))))))
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              _
+              only> (foo)
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (send it only "(foo)"
+              (fn ()
+                (assert-equal
+                 (foo)
+                 "foo"))))))
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              _
+              > (it "Call foo with no arguments"
+                    (foo))
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (it "Call foo with no arguments"
+            (fn ()
+              (assert-equal
+               (foo)
+               "foo"))))))
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              _
+              > (it "Call foo twice"
+                    (assert-equal
+                     (foo "foo")
+                     "foo")
+                    (assert-equal
+                     (foo "bar")
+                     "bar"))
+              _)
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (it "Call foo twice"
+            (fn ()
+              (assert-equal
+               (foo "foo")
+               "foo")
+              (assert-equal
+               (foo "bar")
+               "bar"))))))
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              _
+              xit> (foo)
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (xit "(foo)"
+             (fn ()
+               (assert-equal
+                (foo)
+                "foo"))))))
+ > (funcall test-macro
+            '(test-macro
+              :repl #t
+              > (describe "foo")
+              _
+              > (foo)
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (it "(foo)"
+            (fn ()
+              (test-repl
+               '(roselisp
+                 > (foo)
+                 "foo")))))))
+
  ;; `test-repl`
  > (describe "test-repl")
  _

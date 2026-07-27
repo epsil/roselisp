@@ -969,17 +969,21 @@ function testMacro(exp: any, env: any): any {
               [
                 Symbol.for('fn'),
                 [],
-                replOption
+                ...(replOption
                   ? [
-                      Symbol.for('test-repl'),
                       [
-                        Symbol.for('quote'),
-                        [Symbol.for('roselisp'), prompt, actual, expected],
+                        Symbol.for('test-repl'),
+                        [
+                          Symbol.for('quote'),
+                          [Symbol.for('roselisp'), prompt, actual, expected],
+                        ],
                       ],
                     ]
                   : expected === Symbol.for('_')
-                  ? actual
-                  : [Symbol.for('assert-equal'), actual, expected],
+                  ? taggedListP(actual, Symbol.for('begin'))
+                    ? actual.slice(1)
+                    : [actual]
+                  : [[Symbol.for('assert-equal'), actual, expected]]),
               ],
             ];
       group.push(test);

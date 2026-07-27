@@ -347,7 +347,7 @@
 
 ;;; Macro for expanding tests written in "REPL style"
 ;;; to Mocha tests.
-(defmacro test-macro (&rest body)
+(define-macro (test-macro &rest body)
   ;; Parse options.
   (define options
     (js-obj))
@@ -425,19 +425,21 @@
           `(,@f
             ,description
             (fn ()
-              ,(cond
-                (repl-option
-                 `(test-repl
-                   '(roselisp
-                     ,prompt
+              ,@(cond
+                 (repl-option
+                  `((test-repl
+                     '(roselisp
+                       ,prompt
+                       ,actual
+                       ,expected))))
+                 ((eq? expected '_)
+                  (if (tagged-list? actual 'begin)
+                      (drop actual 1)
+                      (list actual)))
+                 (else
+                  `((assert-equal
                      ,actual
-                     ,expected)))
-                ((eq? expected '_)
-                 actual)
-                (else
-                 `(assert-equal
-                   ,actual
-                   ,expected))))))))
+                     ,expected)))))))))
       (push-right! group test)
       (set! only #f))))
   (when (> (js/length group) 0)

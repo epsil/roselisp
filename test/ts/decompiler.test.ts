@@ -1327,7 +1327,7 @@ describe('decompile', function (): any {
         decompile('for (let x in foo) {\n' + '  bar();\n' + '}'),
         [
           Symbol.for('for'),
-          [[Symbol.for('x'), [Symbol.for('js-keys'), Symbol.for('foo')]]],
+          [[Symbol.for('x'), [Symbol.for('js/keys'), Symbol.for('foo')]]],
           [Symbol.for('bar')],
         ]
       );
@@ -1545,21 +1545,21 @@ describe('decompile', function (): any {
     return assertEqual(decompile('const foo = {};'), [
       Symbol.for('define'),
       Symbol.for('foo'),
-      [Symbol.for('js-obj')],
+      [Symbol.for('js/obj')],
     ]);
   });
   it('(decompile "const foo = { bar: true };")', function (): any {
     return assertEqual(decompile('const foo = { bar: true };'), [
       Symbol.for('define'),
       Symbol.for('foo'),
-      [Symbol.for('js-obj'), 'bar', true],
+      [Symbol.for('js/obj'), 'bar', true],
     ]);
   });
   it('(decompile "const foo = { ...{ bar: true } };")', function (): any {
     return assertEqual(decompile('const foo = { ...{ bar: true } };'), [
       Symbol.for('define'),
       Symbol.for('foo'),
-      [Symbol.for('js-obj-append'), [Symbol.for('js-obj'), 'bar', true]],
+      [Symbol.for('js/obj-append'), [Symbol.for('js/obj'), 'bar', true]],
     ]);
   });
   it('(decompile "class Foo {\n' + '}")', function (): any {

@@ -373,6 +373,25 @@
 (define-macro (js/for_ args &rest body)
   (define inits '())
   (define tests '())
+  (define-values (init test update)
+    args)
+  (when (tagged-list? init 'define)
+    (set! init (drop init 1)))
+  (when (tagged-list? update 'set!)
+    (set! update (js/third init)))
+  (push-right! inits `(,@init ,update))
+  (push-right! tests test)
+  (define test-exp
+    (if (= (js/length tests) 1)
+        (js/first tests)
+        `(and ,@tests)))
+  `(do ,inits
+       ((not ,test-exp))
+     ,@body))
+
+(define-macro (js/for-2_ args &rest body)
+  (define inits '())
+  (define tests '())
   (for ((arg args))
     (define init
       (js/first arg))
@@ -402,7 +421,7 @@
              (js/first x))
            (define right
              (js/second x))
-           (list left `(js-keys ,right)))
+           (list left `(js/keys ,right)))
          args))
   `(js/for-of ,bindings
               ,@body))

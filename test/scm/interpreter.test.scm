@@ -221,20 +221,20 @@
  ;; `dot`
  > (describe "dot")
  _
- > (let ((obj (js-obj "add1" (lambda (x) (+ x 1)))))
+ > (let ((obj (js/obj "add1" (lambda (x) (+ x 1)))))
      (. obj add1 1))
  2
- > (let ((obj (js-obj "add1" (lambda (x) (+ x 1)))))
+ > (let ((obj (js/obj "add1" (lambda (x) (+ x 1)))))
      (.add1 obj 1))
  2
- > (let ((obj (js-obj "add" (lambda (x y) (+ x y)))))
+ > (let ((obj (js/obj "add" (lambda (x y) (+ x y)))))
      (.add obj 1 1))
  2
- > (let ((obj (js-obj)))
+ > (let ((obj (js/obj)))
      (set! (.-prop obj) "bar")
      (.-prop obj))
  "bar"
- > (let ((obj (js-obj "prop" "foo")))
+ > (let ((obj (js/obj "prop" "foo")))
      (.-prop obj))
  "foo"
 
@@ -365,9 +365,9 @@
  _
  > (js/eval "1")
  1
- > (interpret '(js/eval "1") #u (js-obj "eval" #t))
+ > (interpret '(js/eval "1") #u (js/obj "eval" #t))
  1
- xit> (interpret 'js/eval #u (js-obj "eval" #f))
+ xit> (interpret 'js/eval #u (js/obj "eval" #f))
  #u
 
  ;; `interpret`

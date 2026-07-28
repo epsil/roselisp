@@ -49,7 +49,7 @@
                   YieldException
                   ReturnException))
 (require (only-in "./javascript"
-                  js-eval_))
+                  js/eval_))
 (require (only-in "./printer"
                   print-estree
                   write-to-string))
@@ -83,7 +83,7 @@
 ;;; that performs no such stacking.
 (define eval_
   (dashify
-   (lambda (exp (env #u) (options (js-obj)))
+   (lambda (exp (env #u) (options (js/obj)))
      (define evaluator
        (or (oget options "evaluator")
            default-evaluator))
@@ -93,7 +93,7 @@
 (define (call-evaluator evaluator
                         exp
                         (env #u)
-                        (options (js-obj)))
+                        (options (js/obj)))
   (cond
    ((is-a? evaluator Evaluator)
     (send evaluator eval exp env options))
@@ -111,11 +111,11 @@
 (define-class Evaluator ()
   ;;; The simplest possible evaluator is the
   ;;; identity function.
-  (define/public (eval exp (env #u) (options (js-obj)))
+  (define/public (eval exp (env #u) (options (js/obj)))
     exp))
 
 ;;; Lisp-1 evaluator function.
-(define (eval1 exp env (options (js-obj)))
+(define (eval1 exp env (options (js/obj)))
   (cond
    ((is-a? exp Rose)
     (eval-rose exp env options))
@@ -125,7 +125,7 @@
 ;;; Evaluate an S-expression.
 ;;;
 ;;; This is a case-by-case function.
-(define (eval-sexp exp env (options (js-obj)))
+(define (eval-sexp exp env (options (js/obj)))
   (with-environment
    env
    (lambda ()
@@ -256,7 +256,7 @@
        exp)))))
 
 ;;; Evaluate an S-expression wrapped in a rose tree.
-(define (eval-rose node env (options (js-obj)))
+(define (eval-rose node env (options (js/obj)))
   (~> node
       (rose->sexp _)
       (eval-sexp _ env options)))
@@ -266,7 +266,7 @@
 ;;;
 ;;; [github:estree]: https://github.com/estree/estree
 ;;; [w:Abstract syntax tree]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
-(define (eval-estree node env (options (js-obj)))
+(define (eval-estree node env (options (js/obj)))
   (define type_
     (estree-type node))
   (define evaluator
@@ -284,7 +284,7 @@
 ;;; (i.e., a JavaScript program).
 ;;;
 ;;; [estree:program]: https://github.com/estree/estree/blob/master/es5.md#programs
-(define (eval-estree-program node env (options (js-obj)))
+(define (eval-estree-program node env (options (js/obj)))
   (define body
     (get-field body node))
   (define result #u)
@@ -296,7 +296,7 @@
 ;;; Evaluate an ESTree [`BlockStatement`][estree:blockstatement] node.
 ;;;
 ;;; [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
-(define (eval-estree-block-statement node env (options (js-obj)))
+(define (eval-estree-block-statement node env (options (js/obj)))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
@@ -310,7 +310,7 @@
 ;;; Evaluate an ESTree [`SequenceExpression`][estree:sequenceexpression] node.
 ;;;
 ;;; [estree:sequenceexpression]: https://github.com/estree/estree/blob/master/es5.md#sequenceexpression
-(define (eval-estree-sequence-expression node env (options (js-obj)))
+(define (eval-estree-sequence-expression node env (options (js/obj)))
   (define expressions
     (get-field expressions node))
   (define program
@@ -320,13 +320,13 @@
 ;;; Evaluate an ESTree [`Literal`][estree:literal] node.
 ;;;
 ;;; [estree:literal]: https://github.com/estree/estree/blob/master/es5.md#literal
-(define (eval-estree-literal node env (options (js-obj)))
+(define (eval-estree-literal node env (options (js/obj)))
   (get-field value node))
 
 ;;; Evaluate an ESTree [`Identifier`][estree:identifier] node.
 ;;;
 ;;; [estree:identifier]: https://github.com/estree/estree/blob/master/es5.md#identifier
-(define (eval-estree-identifier node env (options (js-obj)))
+(define (eval-estree-identifier node env (options (js/obj)))
   (define name
     (get-field name node))
   (cond
@@ -343,7 +343,7 @@
 ;;; Evaluate an ESTree [`MemberExpression`][estree:memberexpression] node.
 ;;;
 ;;; [estree:memberexpression]: https://github.com/estree/estree/blob/master/es5.md#memberexpression
-(define (eval-estree-member-expression node env (options (js-obj)))
+(define (eval-estree-member-expression node env (options (js/obj)))
   (define object
     (get-field object node))
   (define property
@@ -370,7 +370,7 @@
 ;;; Evaluate an ESTree [`CallExpression`][estree:callexpression] node.
 ;;;
 ;;; [estree:callexpression]: https://github.com/estree/estree/blob/master/es5.md#callexpression
-(define (eval-estree-call-expression node env (options (js-obj)))
+(define (eval-estree-call-expression node env (options (js/obj)))
   ;; TODO: Handle `js/eval` calls directly?
   (define callee
     (get-field callee node))
@@ -407,19 +407,19 @@
 ;;; Evaluate an ESTree [`BreakStatement`][estree:breakstatement] node.
 ;;;
 ;;; [estree:breakstatement]: https://github.com/estree/estree/blob/master/es5.md#breakstatement
-(define (eval-estree-break-statement node env (options (js-obj)))
+(define (eval-estree-break-statement node env (options (js/obj)))
   (throw (new BreakException)))
 
 ;;; Evaluate an ESTree [`ContinueStatement`][estree:continuestatement] node.
 ;;;
 ;;; [estree:continuestatement]: https://github.com/estree/estree/blob/master/es5.md#continuestatement
-(define (eval-estree-continue-statement node env (options (js-obj)))
+(define (eval-estree-continue-statement node env (options (js/obj)))
   (throw (new ContinueException)))
 
 ;;; Evaluate an ESTree [`YieldExpression`][estree:yieldexpression] node.
 ;;;
 ;;; [estree:yieldexpression]: https://github.com/estree/estree/blob/master/es2015.md#yieldexpression
-(define (eval-estree-yield-expression node env (options (js-obj)))
+(define (eval-estree-yield-expression node env (options (js/obj)))
   (define argument
     (get-field argument node))
   (define argument-val
@@ -429,7 +429,7 @@
 ;;; Evaluate an ESTree [`ReturnStatement`][estree:returnstatement] node.
 ;;;
 ;;; [estree:returnstatement]: https://github.com/estree/estree/blob/master/es5.md#returnstatement
-(define (eval-estree-return-statement node env (options (js-obj)))
+(define (eval-estree-return-statement node env (options (js/obj)))
   (define argument
     (get-field argument node))
   (define argument-val
@@ -439,7 +439,7 @@
 ;;; Evaluate an ESTree [`ThrowStatement`][estree:throwstatement] node.
 ;;;
 ;;; [estree:throwstatement]: https://github.com/estree/estree/blob/master/es5.md#throwstatement
-(define (eval-estree-throw-statement node env (options (js-obj)))
+(define (eval-estree-throw-statement node env (options (js/obj)))
   (define argument
     (get-field argument node))
   (define argument-val
@@ -449,13 +449,13 @@
 ;;; Evaluate an ESTree [`ThisExpression`][estree:thisexpression] node.
 ;;;
 ;;; [estree:thisexpression]: https://github.com/estree/estree/blob/master/es5.md#thisexpression
-(define (eval-estree-this-expression node env (options (js-obj)))
+(define (eval-estree-this-expression node env (options (js/obj)))
   current-this-value)
 
 ;;; Evaluate an ESTree [`NewExpression`][estree:newexpression] node.
 ;;;
 ;;; [estree:newexpression]: https://github.com/estree/estree/blob/master/es2015.md#expressions
-(define (eval-estree-new-expression node env (options (js-obj)))
+(define (eval-estree-new-expression node env (options (js/obj)))
   (define callee
     (get-field callee node))
   (define args
@@ -471,9 +471,9 @@
 ;;; Evaluate an ESTree [`ObjectExpression`][estree:objectexpression] node.
 ;;;
 ;;; [estree:objectexpression]: https://github.com/estree/estree/blob/master/es5.md#objectexpression
-(define (eval-estree-object-expression node env (options (js-obj)))
+(define (eval-estree-object-expression node env (options (js/obj)))
   (define result
-    (js-obj))
+    (js/obj))
   (define properties
     (get-field properties node))
   (for ((prop properties))
@@ -483,7 +483,7 @@
         (get-field argument prop))
       (define argument-val
         (eval-estree argument env options))
-      (set! result (js-obj-append result argument-val)))
+      (set! result (js/obj-append result argument-val)))
      (else
       (define key
         (get-field key prop))
@@ -503,7 +503,7 @@
 ;;; Evaluate an ESTree [`VariableDeclaration`][estree:variabledeclaration] node.
 ;;;
 ;;; [estree:variabledeclaration]: https://github.com/estree/estree/blob/master/es5.md#variabledeclaration
-(define (eval-estree-variable-declaration node env (options (js-obj)))
+(define (eval-estree-variable-declaration node env (options (js/obj)))
   (define declarations
     (get-field declarations node))
   (for ((x declarations))
@@ -513,7 +513,7 @@
 ;;; Evaluate an ESTree [`VariableDeclarator`][estree:variabledeclarator] node.
 ;;;
 ;;; [estree:variabledeclarator]: https://github.com/estree/estree/blob/master/es5.md#variabledeclarator
-(define (eval-estree-variable-declarator node env (options (js-obj)))
+(define (eval-estree-variable-declarator node env (options (js/obj)))
   (define id
     (get-field id node))
   (define init
@@ -524,18 +524,18 @@
    assignment
    env
    options
-   (js-obj "local" #t)))
+   (js/obj "local" #t)))
 
 ;;; Evaluate an ESTree [`AssignmentExpression`][estree:assignmentexpression] node.
 ;;;
 ;;; [estree:assignmentexpression]: https://github.com/estree/estree/blob/master/es5.md#assignmentexpression
-(define (eval-estree-assignment-expression node env (options (js-obj)))
+(define (eval-estree-assignment-expression node env (options (js/obj)))
   (eval-estree-assignment-expression-helper node env options))
 
 ;;; Evaluate an ESTree [`ArrayExpression`][estree:arrayexpression] node.
 ;;;
 ;;; [estree:arrayexpression]: https://github.com/estree/estree/blob/master/es5.md#arrayexpression
-(define (eval-estree-array-expression node env (options (js-obj)))
+(define (eval-estree-array-expression node env (options (js/obj)))
   (define elements
     (get-field elements node))
   (eval-estree-array-expression-helper
@@ -544,13 +544,13 @@
 ;;; Evaluate an ESTree [`ArrayPattern`][estree:arraypattern] node.
 ;;;
 ;;; [estree:arraypattern]: https://github.com/estree/estree/blob/master/es2015.md#arraypattern
-(define (eval-estree-array-pattern node env (options (js-obj)))
+(define (eval-estree-array-pattern node env (options (js/obj)))
   (eval-estree-array-expression node env options))
 
 ;;; Evaluate an ESTree [`RestElement`][estree:restelement] node.
 ;;;
 ;;; [estree:restelement]: https://github.com/estree/estree/blob/master/es2015.md#restelement
-(define (eval-estree-rest-element node env (options (js-obj)))
+(define (eval-estree-rest-element node env (options (js/obj)))
   (define argument
     (get-field argument node))
   (eval-estree argument env options))
@@ -558,7 +558,7 @@
 ;;; Evaluate an ESTree [`SpreadElement`][estree:spreadelement] node.
 ;;;
 ;;; [estree:spreadelement]: https://github.com/estree/estree/blob/master/es2015.md#expressions
-(define (eval-estree-spread-element node env (options (js-obj)))
+(define (eval-estree-spread-element node env (options (js/obj)))
   (define argument
     (get-field argument node))
   (eval-estree argument env options))
@@ -566,7 +566,7 @@
 ;;; Evaluate an ESTree [`ExpressionStatement`][estree:expressionstatement] node.
 ;;;
 ;;; [estree:expressionstatement]: https://github.com/estree/estree/blob/master/es5.md#expressionstatement
-(define (eval-estree-expression-statement node env (options (js-obj)))
+(define (eval-estree-expression-statement node env (options (js/obj)))
   (define expression
     (get-field expression node))
   (eval-estree expression env options))
@@ -574,7 +574,7 @@
 ;;; Evaluate an ESTree [`FunctionDeclaration`][estree:functiondeclaration] node.
 ;;;
 ;;; [estree:functiondeclaration]: https://github.com/estree/estree/blob/master/es5.md#functiondeclaration
-(define (eval-estree-function-declaration node env (options (js-obj)))
+(define (eval-estree-function-declaration node env (options (js/obj)))
   (define id
     (get-field id node))
   (define name
@@ -589,7 +589,7 @@
 ;;; <https://docs.esprima.org/en/latest/syntax-tree-format.html#function-expression>
 ;;;
 ;;; [estree:functionexpression]: https://github.com/estree/estree/blob/master/es5.md#functionexpression
-(define (eval-estree-function-expression node env (options (js-obj)))
+(define (eval-estree-function-expression node env (options (js/obj)))
   (eval-estree-function-expression-helper
    node
    env
@@ -598,17 +598,17 @@
 ;;; Evaluate an ESTree [`ArrowFunctionExpression`][estree:arrowfunctionexpression] node.
 ;;;
 ;;; [estree:arrowfunctionexpression]: https://github.com/estree/estree/blob/master/es2015.md#arrowfunctionexpression
-(define (eval-estree-arrow-function-expression node env (options (js-obj)))
+(define (eval-estree-arrow-function-expression node env (options (js/obj)))
   (eval-estree-function-expression-helper
    node
    env
    options
-   (js-obj "arrow" #t)))
+   (js/obj "arrow" #t)))
 
 ;;; Evaluate an ESTree [`UnaryExpression`][estree:unaryexpression] node.
 ;;;
 ;;; [estree:unaryexpression]: https://github.com/estree/estree/blob/master/es5.md#unaryexpression
-(define (eval-estree-unary-expression node env (options (js-obj)))
+(define (eval-estree-unary-expression node env (options (js/obj)))
   (define operator
     (get-field operator node))
   (define prefix
@@ -657,13 +657,13 @@
 ;;; Evaluate an ESTree [`UpdateExpression`][estree:updateexpression] node.
 ;;;
 ;;; [estree:updateexpression]: https://github.com/estree/estree/blob/master/es5.md#updateexpression
-(define (eval-estree-update-expression node env (options (js-obj)))
+(define (eval-estree-update-expression node env (options (js/obj)))
   (eval-estree-unary-expression node env options))
 
 ;;; Evaluate an ESTree [`BinaryExpression`][estree:binaryexpression] node.
 ;;;
 ;;; [estree:binaryexpression]: https://github.com/estree/estree/blob/master/es5.md#binaryexpression
-(define (eval-estree-binary-expression node env (options (js-obj)))
+(define (eval-estree-binary-expression node env (options (js/obj)))
   (define operator
     (get-field operator node))
   (define left
@@ -706,7 +706,7 @@
 ;;; Evaluate an ESTree [`LogicalExpression`][estree:logicalexpression] node.
 ;;;
 ;;; [estree:logicalexpression]: https://github.com/estree/estree/blob/master/es5.md#logicalexpression
-(define (eval-estree-logical-expression node env (options (js-obj)))
+(define (eval-estree-logical-expression node env (options (js/obj)))
   (define operator
     (get-field operator node))
   (define left
@@ -736,13 +736,13 @@
 ;;; Evaluate an ESTree [`IfStatement`][estree:ifstatement] node.
 ;;;
 ;;; [estree:ifstatement]: https://github.com/estree/estree/blob/master/es5.md#ifstatement
-(define (eval-estree-if-statement node env (options (js-obj)))
+(define (eval-estree-if-statement node env (options (js/obj)))
   (eval-estree-conditional-expression node env options))
 
 ;;; Evaluate an ESTree [`ConditionalExpression`][estree:conditionalexpression] node.
 ;;;
 ;;; [estree:conditionalexpression]: https://github.com/estree/estree/blob/master/es5.md#conditionalexpression
-(define (eval-estree-conditional-expression node env (options (js-obj)))
+(define (eval-estree-conditional-expression node env (options (js/obj)))
   (define test
     (get-field test node))
   (define consequent
@@ -760,7 +760,7 @@
 ;;; Evaluate an ESTree [`WhileStatement`][estree:whilestatement] node.
 ;;;
 ;;; [estree:whilestatement]: https://github.com/estree/estree/blob/master/es5.md#whilestatement
-(define (eval-estree-while-statement node env (options (js-obj)))
+(define (eval-estree-while-statement node env (options (js/obj)))
   ;; TODO: Convert `BlockStatement` to `Program` fragment
   ;; and extend the environment manually, only once.
   (define test
@@ -778,7 +778,7 @@
 ;;; Evaluate an ESTree [`ForStatement`][estree:forstatement] node.
 ;;;
 ;;; [estree:forstatement]: https://github.com/estree/estree/blob/master/es5.md#forstatement
-(define (eval-estree-for-statement node env (options (js-obj)))
+(define (eval-estree-for-statement node env (options (js/obj)))
   (define init
     (get-field init node))
   (define test
@@ -806,7 +806,7 @@
 ;;; Evaluate an ESTree [`ForOfStatement`][estree:forofstatement] node.
 ;;;
 ;;; [estree:forofstatement]: https://github.com/estree/estree/blob/master/es2015.md#forofstatement
-(define (eval-estree-for-of-statement node env (options (js-obj)))
+(define (eval-estree-for-of-statement node env (options (js/obj)))
   (define left
     (get-field left node))
   (define right
@@ -849,7 +849,7 @@
 ;;; Evaluate an ESTree [`TryStatement`][estree:trystatement] node.
 ;;;
 ;;; [estree:trystatement]: https://github.com/estree/estree/blob/master/es5.md#trystatement
-(define (eval-estree-try-statement node env (options (js-obj)))
+(define (eval-estree-try-statement node env (options (js/obj)))
   (define block
     (get-field block node))
   (define handler
@@ -893,7 +893,7 @@
 ;;; Evaluate an ESTree [`ClassDeclaration`][estree:classdeclaration] node.
 ;;;
 ;;; [estree:classdeclaration]: https://github.com/estree/estree/blob/master/es2015.md#classdeclaration
-(define (eval-estree-class-declaration node env (options (js-obj)))
+(define (eval-estree-class-declaration node env (options (js/obj)))
   (define id
     (get-field id node))
   (define sym
@@ -906,7 +906,7 @@
 ;;; Evaluate an ESTree [`ClassExpression`][estree:classexpression] node.
 ;;;
 ;;; [estree:classexpression]: https://github.com/estree/estree/blob/master/es2015.md#classexpression
-(define (eval-estree-class-expression node env (options (js-obj)))
+(define (eval-estree-class-expression node env (options (js/obj)))
   (define super-class
     (get-field superClass node))
   (define class-body
@@ -951,7 +951,7 @@
 ;;; Evaluate an ESTree [`SwitchStatement`][estree:switchstatement] node.
 ;;;
 ;;; [estree:switchstatement]: https://github.com/estree/estree/blob/master/es5.md#switchstatement
-(define (eval-estree-switch-statement node env (options (js-obj)))
+(define (eval-estree-switch-statement node env (options (js/obj)))
   (define discriminant
     (get-field discriminant node))
   (define discriminant-val
@@ -974,7 +974,7 @@
 ;;; Evaluate an ESTree [`SwitchCase`][estree:switchcase] node.
 ;;;
 ;;; [estree:switchcase]: https://github.com/estree/estree/blob/master/es5.md#switchcase
-(define (eval-estree-switch-case node env (options (js-obj)))
+(define (eval-estree-switch-case node env (options (js/obj)))
   (define consequent
     (get-field consequent node))
   (when (and (= (js/length consequent) 1)
@@ -991,14 +991,14 @@
   result)
 
 ;;; Evaluate a TSESTree `TSAsExpression` node.
-(define (eval-estree-ts-as-expression node env (options (js-obj)))
+(define (eval-estree-ts-as-expression node env (options (js/obj)))
   (define expression
     (get-field expression node))
   (eval-estree expression env options))
 
 ;;; Evaluate an ESTree `XRawJavaScript` node.
 ;;; This is an unofficial ESTree extension.
-(define (eval-estree-x-raw-javascript node env (options (js-obj)))
+(define (eval-estree-x-raw-javascript node env (options (js/obj)))
   (define str
     (get-field js node))
   (set! str (string-append "(" str ")"))
@@ -1022,7 +1022,7 @@
   result)
 
 ;;; Helper function for `eval-estree-assignment-expression`.
-(define (eval-estree-assignment-expression-helper node env (options (js-obj)) (settings (js-obj)))
+(define (eval-estree-assignment-expression-helper node env (options (js/obj)) (settings (js/obj)))
   (define local-setting
     (oget settings "local"))
   (define left
@@ -1126,7 +1126,7 @@
     #u)))
 
 ;;; Helper function for `eval-estree-array-expression`.
-(define (eval-estree-array-expression-helper elements env (options (js-obj)))
+(define (eval-estree-array-expression-helper elements env (options (js/obj)))
   (define result '())
   (for ((x elements))
     (cond
@@ -1140,7 +1140,7 @@
   result)
 
 ;;; Helper function for `eval-estree-function-expression`.
-(define (eval-estree-function-expression-helper node env (options (js-obj)) (settings (js-obj)))
+(define (eval-estree-function-expression-helper node env (options (js/obj)) (settings (js/obj)))
   (define arrow-setting
     (oget settings "arrow"))
   (define params
@@ -1253,4 +1253,4 @@
   eval1
   eval_
   evaluator?
-  js-eval_)
+  js/eval_)

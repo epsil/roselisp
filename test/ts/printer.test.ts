@@ -698,7 +698,7 @@ describe('write-to-string', function (): any {
     return assertEqual(writeToString([1, Symbol.for('.'), 2]), '(1 . 2)');
   });
   it(
-    '(write-to-string \'(begin "foo\n' + 'bar") (js-obj "pretty" #t))',
+    '(write-to-string \'(begin "foo\n' + 'bar") (js/obj "pretty" #t))',
     function (): any {
       return assertEqual(
         writeToString([Symbol.for('begin'), 'foo\n' + 'bar'], {
@@ -708,7 +708,7 @@ describe('write-to-string', function (): any {
       );
     }
   );
-  it('(write-to-string \'(begin "\\"foo bar\\"") (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(begin "\\"foo bar\\"") (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString([Symbol.for('begin'), '"foo bar"'], {
         pretty: true,
@@ -752,7 +752,7 @@ describe('write-to-string', function (): any {
       '(foo (bar (baz)))'
     );
   });
-  it('(write-to-string \'(begin (foo) (bar)) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(begin (foo) (bar)) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [Symbol.for('begin'), [Symbol.for('foo')], [Symbol.for('bar')]],
@@ -763,7 +763,7 @@ describe('write-to-string', function (): any {
       '(begin\n' + '  (foo)\n' + '  (bar))'
     );
   });
-  it('(write-to-string \'(begin (foo (bar)) (bar (baz))) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(begin (foo (bar)) (bar (baz))) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [
@@ -778,7 +778,7 @@ describe('write-to-string', function (): any {
       '(begin\n' + '  (foo (bar))\n' + '  (bar (baz)))'
     );
   });
-  it('(write-to-string \'(cond (foo (bar)) (bar (baz))) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(cond (foo (bar)) (bar (baz))) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [
@@ -793,7 +793,7 @@ describe('write-to-string', function (): any {
       '(cond\n' + ' (foo\n' + '  (bar))\n' + ' (bar\n' + '  (baz)))'
     );
   });
-  it('(write-to-string \'(if foo bar baz) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(if foo bar baz) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [
@@ -809,7 +809,7 @@ describe('write-to-string', function (): any {
       '(if foo\n' + '    bar\n' + '    baz)'
     );
   });
-  it('(write-to-string \'(when foo bar) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(when foo bar) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [Symbol.for('when'), Symbol.for('foo'), Symbol.for('bar')],
@@ -820,7 +820,7 @@ describe('write-to-string', function (): any {
       '(when foo\n' + '  bar)'
     );
   });
-  it('(write-to-string \'(unless foo bar) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(unless foo bar) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [Symbol.for('unless'), Symbol.for('foo'), Symbol.for('bar')],
@@ -831,7 +831,7 @@ describe('write-to-string', function (): any {
       '(unless foo\n' + '  bar)'
     );
   });
-  it('(write-to-string \'(define (foo x) x) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(define (foo x) x) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [
@@ -846,7 +846,7 @@ describe('write-to-string', function (): any {
       '(define (foo x)\n' + '  x)'
     );
   });
-  it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (js-obj "pretty" #t))', function (): any {
+  it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (js/obj "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [
@@ -876,7 +876,7 @@ describe('write-to-string', function (): any {
         '    y))'
     );
   });
-  return it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (js-obj "noModuleForm" #t "pretty" #t))', function (): any {
+  return it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (js/obj "noModuleForm" #t "pretty" #t))', function (): any {
     return assertEqual(
       writeToString(
         [

@@ -174,7 +174,7 @@
  #f
  > (symbol? "foo")
  #f
- > (symbol? (js-obj))
+ > (symbol? (js/obj))
  #f
  > (symbol? '())
  #f
@@ -843,16 +843,16 @@
  ;; `js/.`
  > (describe "js/.")
  _
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/. obj foo))
  "bar"
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/. obj "foo"))
  "bar"
- > (let ((obj (js-obj "foo" (js-obj "bar" "baz"))))
+ > (let ((obj (js/obj "foo" (js/obj "bar" "baz"))))
      (js/. obj foo bar))
  "baz"
- > (let ((obj (js-obj "foo" (js-obj "bar" "baz"))))
+ > (let ((obj (js/obj "foo" (js/obj "bar" "baz"))))
      (js/. (js/. obj foo) bar))
  "baz"
  > (compile '(js/. obj prop))
@@ -865,22 +865,22 @@
  ;; `js/?.`
  > (describe "js/?.")
  _
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/?. obj foo))
  "bar"
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/?. obj "foo"))
  "bar"
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/?. obj quux))
  #u
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      ((js/?. obj quux)))
  #u
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/?. obj quux wobble))
  #u
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/?. (js/?. obj quux) wobble))
  #u
  > (compile '(js/?. obj prop))
@@ -895,7 +895,7 @@
  ;; `get-field`
  > (describe "get-field")
  _
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (get-field foo obj))
  "bar"
  > (compile '(get-field foo obj))
@@ -904,7 +904,7 @@
  ;; `set-field!`
  > (describe "set-field!")
  _
- > (let ((obj (js-obj)))
+ > (let ((obj (js/obj)))
      (set-field! foo obj "bar")
      (get-field foo obj))
  "bar"
@@ -914,14 +914,14 @@
  ;; `field-bound?`
  > (describe "field-bound?")
  _
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (field-bound? foo obj))
  #t
 
  ;; `oget`
  > (describe "oget")
  _
- > (let ((obj (js-obj "prop" "foo")))
+ > (let ((obj (js/obj "prop" "foo")))
      (oget obj "prop"))
  "foo"
  > (oget _ "@@functional/placeholder")
@@ -934,7 +934,7 @@
  ;; `send`
  > (describe "send")
  _
- > (let ((obj (js-obj "add" (lambda (x y) (+ x y)))))
+ > (let ((obj (js/obj "add" (lambda (x y) (+ x y)))))
      (send obj add 1 1))
  2
  > (let ((obj (make-hash '(("foo" . "foo")))))
@@ -1098,58 +1098,58 @@
  > (compile '(is-a? x Foo))
  "x instanceof Foo;"
 
- ;; `js-obj`
- > (describe "js-obj")
+ ;; `js/obj`
+ > (describe "js/obj")
  _
- > (js-obj)
- (js-obj)
- > (js-obj "foo" "bar")
- (js-obj "foo" "bar")
- > (js-obj "foo" 1 "bar" 2)
- (js-obj "foo" 1 "bar" 2)
- > (compile '(js-obj))
+ > (js/obj)
+ (js/obj)
+ > (js/obj "foo" "bar")
+ (js/obj "foo" "bar")
+ > (js/obj "foo" 1 "bar" 2)
+ (js/obj "foo" 1 "bar" 2)
+ > (compile '(js/obj))
  "({});"
- > (compile '(js-obj "foo" "bar"))
+ > (compile '(js/obj "foo" "bar"))
  "({
   foo: 'bar'
 });"
- > (compile '(js-obj "foo" 1 "bar" 2))
+ > (compile '(js/obj "foo" 1 "bar" 2))
  "({
   foo: 1,
   bar: 2
 });"
- > (compile '(js-obj)
+ > (compile '(js/obj)
             :as 'expression)
  "{}"
- > (compile '(js-obj "foo" "bar")
+ > (compile '(js/obj "foo" "bar")
             :as 'expression)
  "{
   foo: 'bar'
 }"
- > (compile '(js-obj "foo" 1 "bar" 2)
+ > (compile '(js/obj "foo" 1 "bar" 2)
             :as 'expression)
  "{
   foo: 1,
   bar: 2
 }"
 
- ;; `js-keys`
- > (describe "js-keys")
+ ;; `js/keys`
+ > (describe "js/keys")
  _
- > (js-keys (js-obj))
+ > (js/keys (js/obj))
  '()
- > (js-keys (js-obj "foo" "bar"))
+ > (js/keys (js/obj "foo" "bar"))
  '("foo")
- > (js-keys (js-obj "foo" "bar"
+ > (js/keys (js/obj "foo" "bar"
                     "baz" "quux"))
  '("foo" "baz")
- > (compile '(js-keys x))
+ > (compile '(js/keys x))
  "Object.keys(x);"
 
  ;; `js/in`
  > (describe "js/in")
  _
- > (let ((obj (js-obj "foo" "bar")))
+ > (let ((obj (js/obj "foo" "bar")))
      (js/in "foo" obj))
  #t
  > (compile '(js/in "foo" obj))
@@ -1169,11 +1169,11 @@
  > (describe "plist->object")
  _
  > (plist->object '())
- (js-obj)
+ (js/obj)
  > (plist->object '(foo bar))
- (js-obj "foo" 'bar)
+ (js/obj "foo" 'bar)
  > (plist->object '(foo bar baz quux))
- (js-obj "foo" 'bar
+ (js/obj "foo" 'bar
          "baz" 'quux)
 
  ;; `module`
@@ -1381,26 +1381,26 @@ let z = x + y + w + z;"
  _
  > ((lambda ()
       (define-fields (x)
-        (js-obj "x" 1))
+        (js/obj "x" 1))
       x))
  1
  > ((lambda ()
       (define-fields (foo)
-        (js-obj "foo" "bar"))
+        (js/obj "foo" "bar"))
       foo))
  "bar"
  > ((lambda ()
       (define-fields ((foo bar))
-        (js-obj "foo" "bar"))
+        (js/obj "foo" "bar"))
       bar))
  "bar"
  > (compile '(define-fields (foo)
-               (js-obj "foo" "bar")))
+               (js/obj "foo" "bar")))
  "let {foo} = {
   foo: 'bar'
 };"
  > (compile '(define-fields ((foo bar))
-               (js-obj "foo" "bar")))
+               (js/obj "foo" "bar")))
  "let {foo: bar} = {
   foo: 'bar'
 };"
@@ -1410,10 +1410,10 @@ let z = x + y + w + z;"
  _
  > ((lambda ()
       (let (x)
-        (set!-fields (x) (js-obj "x" 1))
+        (set!-fields (x) (js/obj "x" 1))
         x)))
  1
- > (compile '(set!-fields (x) (js-obj "x" 1)))
+ > (compile '(set!-fields (x) (js/obj "x" 1)))
  "({x} = {
   x: 1
 });"
@@ -1858,17 +1858,17 @@ let z = x + y + w + z;"
  #t
  > (string? 1)
  #f
- > (string? (js-obj))
+ > (string? (js/obj))
  #f
  > (string? (list "foo"))
  #f
- > (string? (js-obj "foo" ""))
+ > (string? (js/obj "foo" ""))
  #f
- > (string? (js-obj "foo" (quote ())))
+ > (string? (js/obj "foo" (quote ())))
  #f
- > (string? (js-obj "foo" (js-obj)))
+ > (string? (js/obj "foo" (js/obj)))
  #f
- > (string? (js-obj "foo" "foo"))
+ > (string? (js/obj "foo" "foo"))
  #f
  > (string? (quote ()))
  #f

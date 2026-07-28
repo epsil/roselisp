@@ -61,7 +61,7 @@ Type ,q to quit.")
   (define rl
     (send readline
           createInterface
-          (js-obj "input" stdin
+          (js/obj "input" stdin
                   "output" stdout)))
   (define quit-flag #f)
   (define (quit)
@@ -125,7 +125,7 @@ Type ,q to quit.")
            "(exit)")))
 
 ;;; Print a value.
-(define (print-value x (options (js-obj)))
+(define (print-value x (options (js/obj)))
   (display
    (print-sexp-as-expression x options)))
 

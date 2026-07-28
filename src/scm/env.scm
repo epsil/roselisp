@@ -113,7 +113,7 @@
     (hash-entries (get-field table this)))
 
   ;;; Find an environment frame binding `key`.
-  (define/public (find-frame key (options (js-obj)))
+  (define/public (find-frame key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define filter
@@ -147,13 +147,13 @@
   ;;; Get the value of `key`, or `#u`
   ;;; if there is no binding.
   (define/public (get key
-                      (options (js-obj)))
+                      (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" #f)))
+       (js/obj "notFound" #f)))
     (define-values (value found)
       (send this get-tuple key inherited-options))
     (if found
@@ -162,13 +162,13 @@
 
   ;;; Get the entry of `key`, which is a list `(key binding)`.
   (define/public (get-entry key
-                            (options (js-obj)))
+                            (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" #f)))
+       (js/obj "notFound" #f)))
     (define-values (value found)
       (send this get-tuple key options))
     (if found
@@ -180,7 +180,7 @@
   ;;; Returns a list of `Environment` objects that are accessible by
   ;;; following the `parent` pointer. The list also includes the
   ;;; current environment, which is the first element in the list.
-  (define/public (get-frames (options (js-obj)))
+  (define/public (get-frames (options (js/obj)))
     (define filter
       (oget options "filter"))
     (define offset
@@ -196,13 +196,13 @@
     (drop frames offset))
 
   ;;; Get the binding for `key` as a tuple `(value found)`.
-  (define/public (get-tuple key (options (js-obj)))
+  (define/public (get-tuple key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" #f)))
+       (js/obj "notFound" #f)))
     (define env
       (send this find-frame key inherited-options))
     (if env
@@ -211,13 +211,13 @@
 
   ;;; Get the binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get-local key (options (js-obj)))
+  (define/public (get-local key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" #f)))
+       (js/obj "notFound" #f)))
     (define-values (value found)
       (send this get-local-tuple key inherited-options))
     (if found
@@ -226,7 +226,7 @@
 
   ;;; Get the binding defined by the current environment frame,
   ;;; if any, as a tuple `(binding found)`.
-  (define/public (get-local-tuple key (options (js-obj)))
+  (define/public (get-local-tuple key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define filter
@@ -248,13 +248,13 @@
 
   ;;; Get the value of `key`.
   (define/public (get-value key
-                            (options (js-obj)))
+                            (options (js/obj)))
     ;; Alias for `.get`.
     (send this get key options))
 
   ;;; Whether `key` is bound in the environment,
   ;;; or in a parent environment.
-  (define/public (has? key (options (js-obj)))
+  (define/public (has? key (options (js/obj)))
     (define env
       (send this find-frame key options))
     (if env
@@ -262,7 +262,7 @@
         #f))
 
   ;;; Whether `key` is bound in the current environment frame.
-  (define/public (has-local? key (options (js-obj)))
+  (define/public (has-local? key (options (js/obj)))
     (define filter
       (oget options "filter"))
     (cond
@@ -286,7 +286,7 @@
       (send this
             find-frame
             key
-            (js-obj "notFound" this)))
+            (js/obj "notFound" this)))
     (send env set-local! key value))
 
   ;;; Add an entry to the current environment frame.
@@ -319,38 +319,38 @@
 (define-class TypedEnvironment (Environment)
   ;;; Get the binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get key (options (js-obj)))
+  (define/public (get key (options (js/obj)))
     (send this get-untyped-value key options))
 
   ;;; Get the local binding defined by the current environment frame,
   ;;; if any.
-  (define/public (get-local key (options (js-obj)))
+  (define/public (get-local key (options (js/obj)))
     (send this get-untyped-local-value key options))
 
   ;;; Get the type of `key`. If there is no binding,
   ;;; return `Undefined`.
-  (define/public (get-type key (options (js-obj)))
+  (define/public (get-type key (options (js/obj)))
     (define not-found
       (or (oget options "notFound")
           'Undefined))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" `(#u ,not-found))))
+       (js/obj "notFound" `(#u ,not-found))))
     (define-values (_ typ)
       (send this get-typed-value key inherited-options))
     typ)
 
   ;;; Get the local type of `key`. If there is no binding,
   ;;; return `Undefined`.
-  (define/public (get-local-type key (options (js-obj)))
+  (define/public (get-local-type key (options (js/obj)))
     (define not-found
       (or (oget options "notFound")
           'Undefined))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" `(#u ,not-found))))
+       (js/obj "notFound" `(#u ,not-found))))
     (define-values (_ typ)
       (send this get-typed-local-value key inherited-options))
     typ)
@@ -359,7 +359,7 @@
   ;;; `(value type)`.
   (define/public (get-typed-value key
                                   (options
-                                   (js-obj
+                                   (js/obj
                                     "notFound"
                                     '(#u Undefined))))
     ;; The same as `super.get`, except that
@@ -367,15 +367,15 @@
     (send super
           get
           key
-          (js-obj-append
+          (js/obj-append
            options
-           (js-obj "notFound"
+           (js/obj "notFound"
                    (or (oget options "notFound")
                        '(#u Undefined))))))
 
   (define/public (get-typed-local-value key
                                         (options
-                                         (js-obj
+                                         (js/obj
                                           "notFound"
                                           '(#u Undefined))))
     ;; The same as `super.get-local`, except that
@@ -383,21 +383,21 @@
     (send super
           get-local
           key
-          (js-obj-append
+          (js/obj-append
            options
-           (js-obj "notFound"
+           (js/obj "notFound"
                    (or (oget options "notFound")
                        '(#u Undefined))))))
 
   ;;; Get the untyped value of `key`.
   (define/public (get-untyped-value key
-                                    (options (js-obj)))
+                                    (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" '(#u Undefined))))
+       (js/obj "notFound" '(#u Undefined))))
     (define-values (value typ)
       (send this get-typed-value key inherited-options))
     (if (eq? typ 'Undefined)
@@ -406,13 +406,13 @@
 
   ;;; Get the untyped local value of `key`.
   (define/public (get-untyped-local-value key
-                                          (options (js-obj)))
+                                          (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" '(#u Undefined))))
+       (js/obj "notFound" '(#u Undefined))))
     (define-values (value typ)
       (send this get-typed-local-value key inherited-options))
     (if (eq? typ 'Undefined)
@@ -448,7 +448,7 @@
   ;;; Set the type of `key` to `typ`.
   ;;; If there is no existing binding,
   ;;; creates a new binding where the value is `#u`.
-  (define/public (set-type! key typ (options (js-obj)))
+  (define/public (set-type! key typ (options (js/obj)))
     (define val
       (send this get key options))
     (send this set! key val typ))
@@ -456,7 +456,7 @@
   ;;; Set the local type of `key` to `typ`.
   ;;; If there is no existing local binding,
   ;;; creates a new binding where the value is `#u`.
-  (define/public (set-local-type! key typ (options (js-obj)))
+  (define/public (set-local-type! key typ (options (js/obj)))
     (define val
       (send this get-local key options))
     (send this set-local! key val typ))
@@ -468,7 +468,7 @@
       (send this
             find-frame
             key
-            (js-obj "notFound" this)))
+            (js/obj "notFound" this)))
     (cond
      ((is-a? env TypedEnvironment)
       (send env set-local! key value type))
@@ -487,7 +487,7 @@
 (define-class ThunkedEnvironment (TypedEnvironment)
   ;;; Get the binding defined by the current environment frame,
   ;;; if any, as a tuple `(binding found)`.
-  (define/public (get-local-tuple key (options (js-obj)))
+  (define/public (get-local-tuple key (options (js/obj)))
     (define tuple
       (send this get-unforced-local-tuple key options))
     (define-values (binding found)
@@ -503,7 +503,7 @@
     tuple)
 
   ;;; Like `get-tuple`, but does not force any thunks.
-  (define/public (get-unforced-tuple key (options (js-obj)))
+  (define/public (get-unforced-tuple key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define filter
@@ -515,9 +515,9 @@
       (send this get-unforced-local-tuple key options))
      (else
       (define inherited-options
-        (js-obj-append
+        (js/obj-append
          options
-         (js-obj "offset" 1)))
+         (js/obj "offset" 1)))
       (for ((frame (send this get-frames inherited-options)))
         (when (send frame has-local? key options)
           (return
@@ -527,12 +527,12 @@
       (values not-found #f))))
 
   ;;; Like `get-local-tuple`, but does not force any thunks.
-  (define/public (get-unforced-local-tuple key (options (js-obj)))
+  (define/public (get-unforced-local-tuple key (options (js/obj)))
     (send super get-local-tuple key options))
 
   ;;; Get the type of `key`. If there is no binding,
   ;;; return `Undefined`.
-  (define/public (get-type key (options (js-obj)))
+  (define/public (get-type key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define not-found
       (or (oget options "notFound")
@@ -551,7 +551,7 @@
 
   ;;; Get the local type of `key`. If there is no binding,
   ;;; return `Undefined`.
-  (define/public (get-local-type key (options (js-obj)))
+  (define/public (get-local-type key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define not-found
       (or (oget options "notFound")
@@ -569,7 +569,7 @@
       not-found)))
 
   ;;; Whether `key` is bound to a thunk.
-  (define/public (has-thunk? key (options (js-obj)))
+  (define/public (has-thunk? key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-tuple key options))
@@ -584,7 +584,7 @@
       #f)))
 
   ;;; Whether `key` is locally bound to a thunk.
-  (define/public (has-local-thunk? key (options (js-obj)))
+  (define/public (has-local-thunk? key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-local-tuple key options))
@@ -600,11 +600,11 @@
 
   ;;; Set the type of `key` to `typ`.
   ;;; Does not force any thunks.
-  (define/public (set-type! key typ (options (js-obj)))
+  (define/public (set-type! key typ (options (js/obj)))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" '(#u Undefined))))
+       (js/obj "notFound" '(#u Undefined))))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-tuple key inherited-options))
@@ -616,11 +616,11 @@
 
   ;;; Set the local type of `key` to `typ`.
   ;;; Does not force any thunks.
-  (define/public (set-local-type! key typ (options (js-obj)))
+  (define/public (set-local-type! key typ (options (js/obj)))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" '(#u Undefined))))
+       (js/obj "notFound" '(#u Undefined))))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-local-tuple key inherited-options))
@@ -666,13 +666,13 @@
     env)
 
   ;;; Find an environment frame binding `key`.
-  (define/public (find-frame key (options (js-obj)))
+  (define/public (find-frame key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" #f)))
+       (js/obj "notFound" #f)))
     (define env
       (send this
             find-local-frame
@@ -692,7 +692,7 @@
         not-found))
 
   ;;; Find a local environment frame binding `key`.
-  (define/public (find-local-frame key (options (js-obj)))
+  (define/public (find-local-frame key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define filter
@@ -701,9 +701,9 @@
                (not (filter this)))
       (return not-found))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "notFound" #f)))
+       (js/obj "notFound" #f)))
     (define result not-found)
     (define environments
       (get-field stack this))
@@ -720,7 +720,7 @@
 
   ;;; Get all the environment frames of all the environments
   ;;; on the stack.
-  (define/public (get-frames (options (js-obj)))
+  (define/public (get-frames (options (js/obj)))
     (define filter
       (oget options "filter"))
     (define frames '())
@@ -731,9 +731,9 @@
     (define parent
       (get-field parent this))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "offset" 0)))
+       (js/obj "offset" 0)))
     (when parent
       (push-right! environments parent))
     (for ((env environments))
@@ -749,7 +749,7 @@
     (drop frames offset))
 
   ;;; Get the binding for `key` as a tuple `(value found)`.
-  (define/public (get-tuple key (options (js-obj)))
+  (define/public (get-tuple key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define env
@@ -759,7 +759,7 @@
         (values not-found #f)))
 
   ;;; Get the local binding for `key` as a tuple `(value found)`.
-  (define/public (get-local-tuple key (options (js-obj)))
+  (define/public (get-local-tuple key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define env
@@ -835,11 +835,11 @@
     (set-field! environments this args))
 
   ;;; Get the binding for `key` as a tuple `(value found)`.
-  (define/public (get-tuple key (options (js-obj)))
+  (define/public (get-tuple key (options (js/obj)))
     (send this get-local-tuple key options))
 
   ;;; Get the local binding for `key` as a tuple `(value found)`.
-  (define/public (get-local-tuple key (options (js-obj)))
+  (define/public (get-local-tuple key (options (js/obj)))
     (define not-found
       (oget options "filter"))
     (define filter
@@ -876,13 +876,13 @@
 
   ;;; Whether `key` is bound in the environment,
   ;;; or in a parent environment.
-  (define/public (has? key (options (js-obj)))
+  (define/public (has? key (options (js/obj)))
     (define-values (value found)
       (send this get-tuple key options))
     found)
 
   ;;; Whether `key` is bound in the current environment frame.
-  (define/public (has-local? key (options (js-obj)))
+  (define/public (has-local? key (options (js/obj)))
     (define-values (value found)
       (send this get-local-tuple key options))
     found))
@@ -912,7 +912,7 @@
 
   ;;; Get the binding defined by the dynamic environment,
   ;;; if any, as a tuple `(binding found)`.
-  (define/public (get-local-tuple key (options (js-obj)))
+  (define/public (get-local-tuple key (options (js/obj)))
     (define not-found
       (oget options "notFound"))
     (define filter
@@ -934,7 +934,7 @@
         (values not-found #f))))))
 
   ;;; Whether `key` is bound by the dynamic environment.
-  (define/public (has-local? key (options (js-obj)))
+  (define/public (has-local? key (options (js/obj)))
     (define-values (_ found)
       (send this get-local-tuple key options))
     found))

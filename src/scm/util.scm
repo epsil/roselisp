@@ -127,7 +127,7 @@
 ;;; string, provided an appropriate casing style
 ;;; (camel case or snake case) is specified in `options`.
 ;;; The input is assumed to be kebab case.
-(define (make-identifier-string str (options (js-obj)))
+(define (make-identifier-string str (options (js/obj)))
   (define result str)
   (define case-option
     (or (oget options "case")

@@ -564,7 +564,7 @@
   result)
 
 ;;; Evaluate a `(js/while ...)` form.
-(define (js-while-special_ exp env)
+(define (js/while-special_ exp env)
   (define test
     `(truep ,(second exp)))
   (define body
@@ -580,7 +580,7 @@
   result)
 
 ;;; Evaluate a `(js/do-while ...)` form.
-(define (js-do-while-special_ exp env)
+(define (js/do-while-special_ exp env)
   (define body (second exp))
   (define test (third exp))
   (define begin-exp
@@ -631,10 +631,10 @@
 
 ;;; Evaluate a `(lambda ...)` form.
 (define (lambda-special_ exp env)
-  (js-function-special_ exp env))
+  (js/function-special_ exp env))
 
 ;;; Evaluate a `(js/function ...)` form.
-(define (js-function-special_ exp env)
+(define (js/function-special_ exp env)
   (define f
     (js/function
         args
@@ -650,7 +650,7 @@
   f)
 
 ;;; Evaluate a `(js/arrow ...)` form.
-(define (js-arrow-special_ exp env)
+(define (js/arrow-special_ exp env)
   (define f
     (js/arrow
         args
@@ -819,7 +819,7 @@
       (oget _ field-name)))
 
 ;;; Evaluate a `(js/optional-chaining ...)` form.
-(define (js-optional-chaining-special_ exp env)
+(define (js/optional-chaining-special_ exp env)
   (define obj
     (second exp))
   (define field
@@ -1059,8 +1059,8 @@
   continue-special_
   define-async-special_
   define-class-special_
-  define-generator-special_
   define-fields-special_
+  define-generator-special_
   define-macro-special_
   define-public-special_
   define-special_
@@ -1071,11 +1071,11 @@
   for-special_
   fset-special_
   get-field-special_
-  js-arrow-special_
-  js-do-while-special_
-  js-function-special_
-  js-optional-chaining-special_
-  js-while-special_
+  js/arrow-special_
+  js/do-while-special_
+  js/function-special_
+  js/optional-chaining-special_
+  js/while-special_
   lambda-special_
   let-env-special_
   let-fields-special_

@@ -34,54 +34,54 @@
 ;;;
 ;;; [npm:minimist-options]: https://www.npmjs.com/package/minimist-options
 (define cli-options
-  (js-obj
-   "case" (js-obj
+  (js/obj
+   "case" (js/obj
            "default" "camelcase"
            "type" "string")
-   "comments" (js-obj
+   "comments" (js/obj
                "default" #t
                "type" "boolean")
-   "compile" (js-obj
+   "compile" (js/obj
               "default" #f
               "alias" "c"
               "type" "boolean")
-   "decompile" (js-obj
+   "decompile" (js/obj
                 "default" #f
                 "alias" "d"
                 "type" "boolean")
-   "eval" (js-obj
+   "eval" (js/obj
            "default" ""
            "alias" "e"
            "type" "string")
-   "fevalBindings" (js-obj
+   "fevalBindings" (js/obj
                     "alias" "feval-bindings"
                     "default" #f
                     "type" "boolean")
-   "finlineFunctions" (js-obj
+   "finlineFunctions" (js/obj
                        "alias" "finline-functions"
                        "default" #f
                        "type" "boolean")
-   "help" (js-obj
+   "help" (js/obj
            "default" #f
            "alias" "h"
            "type" "boolean")
-   "indent" (js-obj
+   "indent" (js/obj
              "default" 2
              "type" "number")
-   "language" (js-obj
+   "language" (js/obj
                "type" "string")
-   "optimize" (js-obj
+   "optimize" (js/obj
                "default" #t
                "type" "boolean")
-   "outDir" (js-obj
+   "outDir" (js/obj
              "alias" "out-dir"
              "type" "string"
              "default" ".")
-   "quick" (js-obj
+   "quick" (js/obj
             "default" #f
             "alias" "q"
             "type" "boolean")
-   "repl" (js-obj
+   "repl" (js/obj
            "default" #f
            "alias" "i"
            "type" "boolean")))
@@ -138,18 +138,18 @@ Options:
                       language-option)
         "TypeScript"
         "JavaScript"))
-  (js-obj-append
+  (js/obj-append
    options
-   (js-obj "language" language
+   (js/obj "language" language
            "inlineFunctions" inline-functions-option)))
 
 ;;; Normalize compilation options.
 (define (normalize-compilation-options options)
   (define eval-bindings-option
     (oget options "fevalBindings"))
-  (js-obj-append
+  (js/obj-append
    options
-   (js-obj "eval" eval-bindings-option)))
+   (js/obj "eval" eval-bindings-option)))
 
 ;;; `main` function. Invoked when the program is
 ;;; run from the command line.

@@ -107,15 +107,15 @@
   (new DocCommand "literalline"))
 
 ;;; `Doc` command `align`.
-(define (align offset doc (options (js-obj)))
+(define (align offset doc (options (js/obj)))
   (new DocCommand "align" offset doc options))
 
 ;;; `Doc` command `indent`.
-(define (indent doc (options (js-obj)))
+(define (indent doc (options (js/obj)))
   (new DocCommand "indent" doc options))
 
 ;;; `Doc` command `noindent`.
-(define (noindent doc (options (js-obj)))
+(define (noindent doc (options (js/obj)))
   (new DocCommand "noindent" doc options))
 
 ;;; `Doc` command `join`.
@@ -132,7 +132,7 @@
 ;;; `Doc` command `group`.
 ;;;
 ;;; Makes a document group.
-(define (group doc (options (js-obj)))
+(define (group doc (options (js/obj)))
   (new DocCommand "group" doc options))
 
 ;;; Get the type of a `Doc` object.
@@ -180,7 +180,7 @@
     #f)))
 
 ;;; Wrap a `Doc` object in a pair of parentheses.
-(define (doc-wrap doc (options (js-obj)) (settings (js-obj)))
+(define (doc-wrap doc (options (js/obj)) (settings (js/obj)))
   (define open
     (or (oget settings "open")
         "("))
@@ -206,7 +206,7 @@
 
 ;;; Print comments of an ESTree node and attach them
 ;;; to a `Doc` object.
-(define (attach-comments result node (options (js-obj)))
+(define (attach-comments result node (options (js/obj)))
   (define comments-option
     (oget options "comments"))
   (define comments
@@ -274,7 +274,7 @@
    (list leading-comments
          code
          trailing-comments)
-   (js-obj "should-break" #t
+   (js/obj "should-break" #t
            "has-comments" #t)))
 
 ;;; Make a line comment.
@@ -368,7 +368,7 @@
          (get-field comments node)))
 
 ;;; Print an ESTree node or an S-expression.
-(define (print obj (options (js-obj)))
+(define (print obj (options (js/obj)))
   (cond
    ((estree? obj)
     (print-estree obj options))
@@ -376,27 +376,27 @@
     (print-sexp obj options))))
 
 ;;; Print an ESTree node.
-(define (print-estree node (options (js-obj)))
+(define (print-estree node (options (js/obj)))
   (print-to-string node options))
 
 ;;; Print a rose tree.
-(define (print-rose node (options (js-obj)))
+(define (print-rose node (options (js/obj)))
   (print-sexp (rose->sexp node) options))
 
 ;;; Print an S-expression.
-(define (print-sexp exp (options (js-obj)))
+(define (print-sexp exp (options (js/obj)))
   (write-to-string exp options))
 
 ;;; Print an S-expression as an expression
 ;;; that can be evaluated.
-(define (print-sexp-as-expression exp (options (js-obj)))
+(define (print-sexp-as-expression exp (options (js/obj)))
   (print-sexp exp
-              (js-obj-append
+              (js/obj-append
                options
-               (js-obj "quoteToplevel" #t))))
+               (js/obj "quoteToplevel" #t))))
 
 ;;; Print an S-expression to a string.
-(define (write-to-string obj (options (js-obj)))
+(define (write-to-string obj (options (js/obj)))
   (define result
     (write-to-doc obj options))
   (unless (oget options "doc")
@@ -404,7 +404,7 @@
   result)
 
 ;;; Print an S-expression to a `Doc` object.
-(define (write-to-doc obj (options (js-obj)))
+(define (write-to-doc obj (options (js/obj)))
   (define doc-option
     (oget options "doc"))
   (define pretty-option
@@ -496,9 +496,9 @@
          (map (lambda (x)
                 (write-to-doc
                  x
-                 (js-obj-append
+                 (js/obj-append
                   options
-                  (js-obj "quoteToplevel"
+                  (js/obj "quoteToplevel"
                           #f))))
               form))
    ")"))
@@ -519,9 +519,9 @@
     (map (lambda (x)
            (write-to-doc
             x
-            (js-obj-append
+            (js/obj-append
              options
-             (js-obj "quoteToplevel"
+             (js/obj "quoteToplevel"
                      #f))))
          form))
   (define elements1
@@ -562,9 +562,9 @@
                (map (lambda (x1)
                       (write-to-doc
                        x1
-                       (js-obj-append
+                       (js/obj-append
                         options
-                        (js-obj "quoteToplevel"
+                        (js/obj "quoteToplevel"
                                 #f))))
                     (rest x))))
              ")"))
@@ -649,13 +649,13 @@
      (while . 1))))
 
 ;;; Print a `Doc` object to a string.
-(define (print-doc doc (options (js-obj)))
+(define (print-doc doc (options (js/obj)))
   (~> doc
       (print-doc-to-doc-list options)
       (print-doc-list-to-string options)))
 
 ;;; Print a `Doc` object to a `Doc` list.
-(define (print-doc-to-doc-list doc (options (js-obj)))
+(define (print-doc-to-doc-list doc (options (js/obj)))
   (define dtype
     (doc-type doc))
   (cond
@@ -718,7 +718,7 @@
     (list doc))))
 
 ;;; Print a `Doc` list to a string.
-(define (print-doc-list-to-string doc (options (js-obj)))
+(define (print-doc-list-to-string doc (options (js/obj)))
   (define dtype
     (doc-type doc))
   (cond
@@ -736,11 +736,11 @@
     empty)))
 
 ;;; Print an ESTree node to a string.
-(define (print-to-string node (options (js-obj)))
+(define (print-to-string node (options (js/obj)))
   (print-doc (print-node node options) options))
 
 ;;; Print an ESTree node to a `Doc` object.
-(define (print-node node (options (js-obj)))
+(define (print-node node (options (js/obj)))
   (visit print-visitor node options))
 
 ;;; Visitor function for printing ESTree nodes.
@@ -760,7 +760,7 @@
   result)
 
 ;;; Print an `ExpressionStatement` ESTree node to a `Doc` object.
-(define (print-expression-statement node (options (js-obj)))
+(define (print-expression-statement node (options (js/obj)))
   (define expression
     (get-field expression node))
   (define wrap-in-parentheses
@@ -774,7 +774,7 @@
    ";"))
 
 ;;; Print a `ReturnStatement` ESTree node to a `Doc` object.
-(define (print-return-statement node (options (js-obj)))
+(define (print-return-statement node (options (js/obj)))
   (define argument
     (get-field argument node))
   (cond
@@ -799,7 +799,7 @@
     (list "return" ";"))))
 
 ;;; Print a `YieldExpression` ESTree node to a `Doc` object.
-(define (print-yield-expression node (options (js-obj)))
+(define (print-yield-expression node (options (js/obj)))
   (list
    "yield"
    (if (get-field argument node)
@@ -809,7 +809,7 @@
        empty)))
 
 ;;; Print a `ThrowStatement` ESTree node to a `Doc` object.
-(define (print-throw-statement node (options (js-obj)))
+(define (print-throw-statement node (options (js/obj)))
   (list
    "throw"
    space
@@ -817,14 +817,14 @@
    ";"))
 
 ;;; Print an `AwaitExpression` ESTree node to a `Doc` object.
-(define (print-await-expression node (options (js-obj)))
+(define (print-await-expression node (options (js/obj)))
   (list
    "await"
    space
    (print-node (get-field argument node) options)))
 
 ;;; Print a `BreakStatement` ESTree node to a `Doc` object.
-(define (print-break-statement node (options (js-obj)))
+(define (print-break-statement node (options (js/obj)))
   (list
    "break"
    (if (get-field label node)
@@ -835,7 +835,7 @@
    ";"))
 
 ;;; Print a `ContinueStatement` ESTree node to a `Doc` object.
-(define (print-continue-statement node (options (js-obj)))
+(define (print-continue-statement node (options (js/obj)))
   (list
    "continue"
    (if (get-field label node)
@@ -846,11 +846,11 @@
    ";"))
 
 ;;; Print a `ThisExpression` ESTree node to a `Doc` object.
-(define (print-this-expression node (options (js-obj)))
+(define (print-this-expression node (options (js/obj)))
   "this")
 
 ;;; Print an `Identifier` ESTree node to a `Doc` object.
-(define (print-identifier node (options (js-obj)))
+(define (print-identifier node (options (js/obj)))
   (define language
     (oget options "language"))
   (define no-implicit-any
@@ -870,7 +870,7 @@
        empty)))
 
 ;;; Print a `Literal` ESTree node to a `Doc` object.
-(define (print-literal node (options (js-obj)))
+(define (print-literal node (options (js/obj)))
   (define value
     (get-field value node))
   (cond
@@ -890,7 +890,7 @@
 ;;; Print a string `Literal` ESTree node to a `Doc` object.
 ;;;
 ;;; Helper function for `print-literal`.
-(define (print-string-literal node (options (js-obj)))
+(define (print-string-literal node (options (js/obj)))
   (define str
     (~> node
         (get-field value _)
@@ -912,13 +912,13 @@
    "`"))
 
 ;;; Print a `TemplateElement` ESTree node to a `Doc` object.
-(define (print-template-element node (options (js-obj)))
+(define (print-template-element node (options (js/obj)))
   (define str
     (get-field raw (get-field value node)))
   (print-template-string str))
 
 ;;; Print a `TemplateLiteral` ESTree node to a `Doc` object.
-(define (print-template-literal node (options (js-obj)))
+(define (print-template-literal node (options (js/obj)))
   (define str
     (get-field raw
                (get-field value
@@ -927,7 +927,7 @@
   (print-template-string str))
 
 ;;; Print a `TaggedTemplateExpression` ESTree node to a `Doc` object.
-(define (print-tagged-template-expression node (options (js-obj)))
+(define (print-tagged-template-expression node (options (js/obj)))
   (define tag
     (get-field tag node))
   (define tag-printed
@@ -939,7 +939,7 @@
   (list tag-printed quasi-printed))
 
 ;;; Print a `UnaryExpression` ESTree node to a `Doc` object.
-(define (print-unary-expression node (options (js-obj)))
+(define (print-unary-expression node (options (js/obj)))
   (define prefix
     (get-field prefix node))
   (define operator
@@ -967,7 +967,7 @@
      operator-printed))))
 
 ;;; Print a `BinaryExpression` ESTree node to a `Doc` object.
-(define (print-binary-expression node (options (js-obj)))
+(define (print-binary-expression node (options (js/obj)))
   (define type_
     (estree-type node))
   (define operator
@@ -1011,9 +1011,9 @@
                    (eq? (get-field operator left) operator)))
     (set! left-printed-str
           (doc-wrap left-printed-str
-                    (js-obj-append
+                    (js/obj-append
                      options
-                     (js-obj "has-comments"
+                     (js/obj "has-comments"
                              (doc-has-comments?
                               left-printed))))))
   (unless (or (estree-simple? right)
@@ -1022,9 +1022,9 @@
                    (memq? operator '("+" "*" "&&" "||"))))
     (set! right-printed-str
           (doc-wrap right-printed-str
-                    (js-obj-append
+                    (js/obj-append
                      options
-                     (js-obj "has-comments"
+                     (js/obj "has-comments"
                              (doc-has-comments?
                               right-printed))))))
   (cond
@@ -1057,14 +1057,14 @@
                   space
                   right-printed-str))))
   (group result
-         (js-obj "should-break" should-break)))
+         (js/obj "should-break" should-break)))
 
 ;;; Print a `LogicalExpression` ESTree node to a `Doc` object.
-(define (print-logical-expression node (options (js-obj)))
+(define (print-logical-expression node (options (js/obj)))
   (print-binary-expression node options))
 
 ;;; Print an `AssignmentExpression` ESTree node to a `Doc` object.
-(define (print-assignment-expression node (options (js-obj)))
+(define (print-assignment-expression node (options (js/obj)))
   ;; TODO: Break up statement if one of the sides have comments.
   (define language
     (oget options "language"))
@@ -1080,9 +1080,9 @@
     (get-field right node))
   (define right-printed
     (print-node right
-                (js-obj-append
+                (js/obj-append
                  options
-                 (js-obj "noImplicitAny" #f))))
+                 (js/obj "noImplicitAny" #f))))
   (define result
     (list
      left-printed
@@ -1099,7 +1099,7 @@
   result)
 
 ;;; Print an `AssignmentPattern` ESTree node to a `Doc` object.
-(define (print-assignment-pattern node (options (js-obj)))
+(define (print-assignment-pattern node (options (js/obj)))
   (print-node
    (new VariableDeclarator
         (get-field left node)
@@ -1107,7 +1107,7 @@
    options))
 
 ;;; Print a `CallExpression` ESTree node to a `Doc` object.
-(define (print-call-expression node (options (js-obj)))
+(define (print-call-expression node (options (js/obj)))
   (define callee
     (get-field callee node))
   (define callee-type
@@ -1135,7 +1135,7 @@
    ")"))
 
 ;;; Print a `SequenceExpression` ESTree node to a `Doc` object.
-(define (print-sequence-expression node (options (js-obj)))
+(define (print-sequence-expression node (options (js/obj)))
   (define expressions
     (get-field expressions node))
   (define expressions-printed
@@ -1152,7 +1152,7 @@
   result)
 
 ;;; Print a `BlockStatement` ESTree node to a `Doc` object.
-(define (print-block-statement node (options (js-obj)))
+(define (print-block-statement node (options (js/obj)))
   (define body
     (get-field body node))
   (define body-modified
@@ -1185,7 +1185,7 @@
    "}"))
 
 ;;; Print a `MemberExpression` ESTree node to a `Doc` object.
-(define (print-member-expression node (options (js-obj)))
+(define (print-member-expression node (options (js/obj)))
   (define language
     (oget options "language"))
   (define object
@@ -1225,11 +1225,11 @@
      property-printed))))
 
 ;;; Print an `UpdateExpression` ESTree node to a `Doc` object.
-(define (print-update-expression node (options (js-obj)))
+(define (print-update-expression node (options (js/obj)))
   (print-unary-expression node options))
 
 ;;; Print a `SpreadElement` ESTree node to a `Doc` object.
-(define (print-spread-element node (options (js-obj)))
+(define (print-spread-element node (options (js/obj)))
   (define language
     (oget options "language"))
   (define no-implicit-any
@@ -1238,9 +1238,9 @@
     (get-field argument node))
   (define argument-printed
     (print-node argument
-                (js-obj-append
+                (js/obj-append
                  options
-                 (js-obj "noImplicitAny" #f))))
+                 (js/obj "noImplicitAny" #f))))
   (define type_
     (get-field typeAnnotation node))
   (when (and no-implicit-any (not type_))
@@ -1260,12 +1260,12 @@
        empty)))
 
 ;;; Print a `RestElement` ESTree node to a `Doc` object.
-(define (print-rest-element node (options (js-obj)))
+(define (print-rest-element node (options (js/obj)))
   (print-spread-element node options))
 
 ;;; Print a function declaration or function expression to a
 ;;; `Doc` object. Also handles arrow functions.
-(define (print-function node (options (js-obj)) (settings (js-obj)))
+(define (print-function node (options (js/obj)) (settings (js/obj)))
   (define language
     (oget options "language"))
   (define arrow
@@ -1303,9 +1303,9 @@
    (~> (get-field params node)
        (map (lambda (x)
               (print-node x
-                          (js-obj-append
+                          (js/obj-append
                            options
-                           (js-obj "noImplicitAny" #t))))
+                           (js/obj "noImplicitAny" #t))))
             _)
        (join (list "," space) _))
    ")"
@@ -1320,19 +1320,19 @@
                options)))
 
 ;;; Print a `FunctionDeclaration` ESTree node to a `Doc` object.
-(define (print-function-declaration node (options (js-obj)))
+(define (print-function-declaration node (options (js/obj)))
   (print-function node options))
 
 ;;; Print a `FunctionExpression` ESTree node to a `Doc` object.
-(define (print-function-expression node (options (js-obj)))
+(define (print-function-expression node (options (js/obj)))
   (print-function node options))
 
 ;;; Print a `ArrowFunctionExpression` ESTree node to a `Doc` object.
-(define (print-arrow-function-expression node (options (js-obj)))
-  (print-function node options (js-obj "arrow" #t)))
+(define (print-arrow-function-expression node (options (js/obj)))
+  (print-function node options (js/obj "arrow" #t)))
 
 ;;; Print a `VariableDeclaration` ESTree node to a `Doc` object.
-(define (print-variable-declaration node (options (js-obj)))
+(define (print-variable-declaration node (options (js/obj)))
   (list
    (get-field kind node)
    space
@@ -1344,25 +1344,25 @@
    ";"))
 
 ;;; Print a `VariableDeclarator` ESTree node to a `Doc` object.
-(define (print-variable-declarator node (options (js-obj)))
+(define (print-variable-declarator node (options (js/obj)))
   (define language
     (oget options "language"))
   (define id
     (get-field id node))
   (define id-printed
     (print-node id
-                (js-obj-append
+                (js/obj-append
                  options
-                 (js-obj "noImplicitAny" #t))))
+                 (js/obj "noImplicitAny" #t))))
   (cond
    ((get-field init node)
     (define init
       (get-field init node))
     (define init-printed
       (print-node init
-                  (js-obj-append
+                  (js/obj-append
                    options
-                   (js-obj "noImplicitAny" #f))))
+                   (js/obj "noImplicitAny" #f))))
     (list
      id-printed
      space
@@ -1376,7 +1376,7 @@
     id-printed)))
 
 ;;; Print an `IfStatement` ESTree node to a `Doc` object.
-(define (print-if-statement node (options (js-obj)))
+(define (print-if-statement node (options (js/obj)))
   (define test
     (get-field test node))
   (define test-printed
@@ -1415,7 +1415,7 @@
   result)
 
 ;;; Print a `ConditionalExpression` ESTree node to a `Doc` object.
-(define (print-conditional-expression node (options (js-obj)))
+(define (print-conditional-expression node (options (js/obj)))
   (define test
     (get-field test node))
   (define test-printed
@@ -1451,7 +1451,7 @@
    alternate-printed))
 
 ;;; Print a `WhileStatement` ESTree node to a `Doc` object.
-(define (print-while-statement node (options (js-obj)))
+(define (print-while-statement node (options (js/obj)))
   (define test
     (get-field test node))
   (define test-printed
@@ -1473,7 +1473,7 @@
    body-printed))
 
 ;;; Print a `DoWhileStatement` ESTree node to a `Doc` object.
-(define (print-do-while-statement node (options (js-obj)))
+(define (print-do-while-statement node (options (js/obj)))
   (define test
     (get-field test node))
   (define test-printed
@@ -1498,7 +1498,7 @@
    ";"))
 
 ;;; Print a `ForStatement` ESTree node to a `Doc` object.
-(define (print-for-statement node (options (js-obj)))
+(define (print-for-statement node (options (js/obj)))
   (define init
     (get-field init node))
   (define init-printed
@@ -1535,7 +1535,7 @@
    body-printed))
 
 ;;; Print a `ForOfStatement` ESTree node to a `Doc` object.
-(define (print-for-of-statement node (options (js-obj)))
+(define (print-for-of-statement node (options (js/obj)))
   (define language
     (oget options "language"))
   (define left
@@ -1572,7 +1572,7 @@
    body-printed))
 
 ;;; Print a `ForInStatement` ESTree node to a `Doc` object.
-(define (print-for-in-statement node (options (js-obj)))
+(define (print-for-in-statement node (options (js/obj)))
   (define language
     (oget options "language"))
   (define left
@@ -1610,7 +1610,7 @@
    "}"))
 
 ;;; Print a `TryStatement` ESTree node to a `Doc` object.
-(define (print-try-statement node (options (js-obj)))
+(define (print-try-statement node (options (js/obj)))
   (define block
     (get-field block node))
   (define block-printed
@@ -1659,7 +1659,7 @@
   result)
 
 ;;; Print a `ClassDeclaration` ESTree node to a `Doc` object.
-(define (print-class-declaration node (options (js-obj)))
+(define (print-class-declaration node (options (js/obj)))
   (define id
     (get-field id node))
   (define body
@@ -1694,7 +1694,7 @@
    "}"))
 
 ;;; Print a `ClassExpression` ESTree node to a `Doc` object.
-(define (print-class-expression node (options (js-obj)))
+(define (print-class-expression node (options (js/obj)))
   (print-class-declaration
    (new ClassDeclaration
         #n
@@ -1703,7 +1703,7 @@
    options))
 
 ;;; Print a `ClassBody` ESTree node to a `Doc` object.
-(define (print-class-body node (options (js-obj)))
+(define (print-class-body node (options (js/obj)))
   (~> node
       (get-field body _)
       (map (lambda (x)
@@ -1712,7 +1712,7 @@
       (join (list line line) _)))
 
 ;;; Print a `PropertyDefinition` ESTree node to a `Doc` object.
-(define (print-property-definition node (options (js-obj)))
+(define (print-property-definition node (options (js/obj)))
   (define language
     (oget options "language"))
   (define key
@@ -1743,7 +1743,7 @@
    ";"))
 
 ;;; Print a `MethodDefinition` ESTree node to a `Doc` object.
-(define (print-method-definition node (options (js-obj)))
+(define (print-method-definition node (options (js/obj)))
   (define language
     (oget options "language"))
   (define key
@@ -1759,7 +1759,7 @@
         (print-function
          _
          options
-         (js-obj "returnType"
+         (js/obj "returnType"
                  (if (eq? key-printed-str
                           "constructor")
                      ""
@@ -1791,7 +1791,7 @@
    value-printed))
 
 ;;; Print an `ArrayExpression` ESTree node to a `Doc` object.
-(define (print-array-expression node (options (js-obj)))
+(define (print-array-expression node (options (js/obj)))
   (define language
     (oget options "language"))
   (define no-implicit-any
@@ -1806,9 +1806,9 @@
     (if exp
         (set! printed-exp
               (print-node exp
-                          (js-obj-append
+                          (js/obj-append
                            options
-                           (js-obj "noImplicitAny" #f))))
+                           (js/obj "noImplicitAny" #f))))
         (set! printed-exp empty))
     (push-right! printed-expressions
                  (doc-value-string printed-exp))
@@ -1849,15 +1849,15 @@
             (print-node type_ options)))))
   (when should-break
     (set! result
-          (group result (js-obj "should-break" should-break))))
+          (group result (js/obj "should-break" should-break))))
   result)
 
 ;;; Print an `ArrayPattern` ESTree node to a `Doc` object.
-(define (print-array-pattern node (options (js-obj)))
+(define (print-array-pattern node (options (js/obj)))
   (print-array-expression node options))
 
 ;;; Print a `NewExpression` ESTree node to a `Doc` object.
-(define (print-new-expression node (options (js-obj)))
+(define (print-new-expression node (options (js/obj)))
   (list
    "new"
    space
@@ -1867,7 +1867,7 @@
                options)))
 
 ;;; Print an `ImportDeclaration` ESTree node to a `Doc` object.
-(define (print-import-declaration node (options (js-obj)))
+(define (print-import-declaration node (options (js/obj)))
   (define specifiers
     (get-field specifiers node))
   (define source
@@ -1906,7 +1906,7 @@
      ";"))))
 
 ;;; Print an `ImportSpecifier` ESTree node to a `Doc` object.
-(define (print-import-specifier node (options (js-obj)))
+(define (print-import-specifier node (options (js/obj)))
   (define local
     (get-field local node))
   (define local-printed
@@ -1927,11 +1927,11 @@
      imported-printed))))
 
 ;;; Print an `ImportDefaultSpecifier` ESTree node to a `Doc` object.
-(define (print-import-default-specifier node (options (js-obj)))
+(define (print-import-default-specifier node (options (js/obj)))
   (print-node (get-field local node) options))
 
 ;;; Print an `ImportNamespaceSpecifier` ESTree node to a `Doc` object.
-(define (print-import-namespace-specifier node (options (js-obj)))
+(define (print-import-namespace-specifier node (options (js/obj)))
   (list
    "*"
    space
@@ -1940,7 +1940,7 @@
    (print-node (get-field local node) options)))
 
 ;;; Print an `ExportNamedDeclaration` ESTree node to a `Doc` object.
-(define (print-export-named-declaration node (options (js-obj)))
+(define (print-export-named-declaration node (options (js/obj)))
   (define specifiers
     (get-field specifiers node))
   (define specifiers-printed
@@ -1964,7 +1964,7 @@
    ";"))
 
 ;;; Print an `ExportSpecifier` ESTree node to a `Doc` object.
-(define (print-export-specifier node (options (js-obj)))
+(define (print-export-specifier node (options (js/obj)))
   (print-import-specifier
    (new ImportSpecifier
         (get-field local node)
@@ -1972,7 +1972,7 @@
    options))
 
 ;;; Print an `ExportAllDeclaration` ESTree node to a `Doc` object.
-(define (print-export-all-declaration node (options (js-obj)))
+(define (print-export-all-declaration node (options (js/obj)))
   (list
    "export"
    space
@@ -1984,7 +1984,7 @@
    ";"))
 
 ;;; Print an `ObjectExpression` ESTree node to a `Doc` object.
-(define (print-object-expression node (options (js-obj)))
+(define (print-object-expression node (options (js/obj)))
   (define properties
     (get-field properties node))
   (list
@@ -2003,7 +2003,7 @@
    "}"))
 
 ;;; Print an `ObjectPattern` ESTree node to a `Doc` object.
-(define (print-object-pattern node (options (js-obj)))
+(define (print-object-pattern node (options (js/obj)))
   (list
    "{"
    (~> (get-field properties node)
@@ -2014,11 +2014,11 @@
    "}"))
 
 ;;; Print an `AssignmentProperty` ESTree node to a `Doc` object.
-(define (print-assignment-property node (options (js-obj)))
+(define (print-assignment-property node (options (js/obj)))
   (define options1
-    (js-obj-append
+    (js/obj-append
      options
-     (js-obj "noImplicitAny" #f)))
+     (js/obj "noImplicitAny" #f)))
   (define key
     (get-field key node))
   (define key-printed
@@ -2036,7 +2036,7 @@
       (list key-printed ":" space value-printed)))
 
 ;;; Print a `Property` ESTree node to a `Doc` object.
-(define (print-property node (options (js-obj)))
+(define (print-property node (options (js/obj)))
   (define language
     (oget options "language"))
   (define key
@@ -2062,7 +2062,7 @@
         value-printed))
 
 ;;; Print a `Program` ESTree node to a `Doc` object.
-(define (print-program node (options (js-obj)))
+(define (print-program node (options (js/obj)))
   (~> (get-field body node)
       (map (lambda (x)
              (print-node x options))
@@ -2070,7 +2070,7 @@
       (join (list line line) _)))
 
 ;;; Print a `SwitchStatement` ESTree node to a `Doc` object.
-(define (print-switch-statement node (options (js-obj)))
+(define (print-switch-statement node (options (js/obj)))
   (define discriminant
     (get-field discriminant node))
   (define discriminant-printed
@@ -2098,7 +2098,7 @@
    "}"))
 
 ;;; Print a `SwitchCase` ESTree node to a `Doc` object.
-(define (print-switch-case node (options (js-obj)))
+(define (print-switch-case node (options (js/obj)))
   (define test
     (get-field test node))
   (define test-printed
@@ -2139,7 +2139,7 @@
    consequent-printed))
 
 ;;; Print a `TSAsExpression` TSESTree node to a `Doc` object.
-(define (print-ts-as-expression node (options (js-obj)))
+(define (print-ts-as-expression node (options (js/obj)))
   (define expression
     (get-field expression node))
   (define expression-printed
@@ -2156,7 +2156,7 @@
    type-annotation-printed))
 
 ;;; Print TSESTree type to a `Doc` object.
-(define (print-ts-type node (options (js-obj)))
+(define (print-ts-type node (options (js/obj)))
   (define type_
     (estree-type node))
   (cond
@@ -2166,31 +2166,31 @@
     "any")))
 
 ;;; Print a `TSAnyKeyword` TSESTree node to a `Doc` object.
-(define (print-ts-any-keyword node (options (js-obj)))
+(define (print-ts-any-keyword node (options (js/obj)))
   "any")
 
 ;;; Print a `TSVoidKeyword` TSESTree node to a `Doc` object.
-(define (print-ts-void-keyword node (options (js-obj)))
+(define (print-ts-void-keyword node (options (js/obj)))
   "void")
 
 ;;; Print a `TSUndefinedKeyword` TSESTree node to a `Doc` object.
-(define (print-ts-undefined-keyword node (options (js-obj)))
+(define (print-ts-undefined-keyword node (options (js/obj)))
   "undefined")
 
 ;;; Print a `TSBooleanKeyword` TSESTree node to a `Doc` object.
-(define (print-ts-boolean-keyword node (options (js-obj)))
+(define (print-ts-boolean-keyword node (options (js/obj)))
   "boolean")
 
 ;;; Print a `TSNumberKeyword` TSESTree node to a `Doc` object.
-(define (print-ts-number-keyword node (options (js-obj)))
+(define (print-ts-number-keyword node (options (js/obj)))
   "number")
 
 ;;; Print a `TSStringKeyword` TSESTree node to a `Doc` object.
-(define (print-ts-string-keyword node (options (js-obj)))
+(define (print-ts-string-keyword node (options (js/obj)))
   "string")
 
 ;;; Print a `TSArrayType` TSESTree node to a `Doc` object.
-(define (print-ts-array-type node (options (js-obj)))
+(define (print-ts-array-type node (options (js/obj)))
   (define element-type
     (get-field elementType node))
   (define result
@@ -2201,7 +2201,7 @@
   (list result "[]"))
 
 ;;; Print a `TSTupleType` TSESTree node to a `Doc` object.
-(define (print-ts-tuple-type node (options (js-obj)))
+(define (print-ts-tuple-type node (options (js/obj)))
   (define element-types
     (get-field elementTypes node))
   (list
@@ -2213,7 +2213,7 @@
    "]"))
 
 ;;; Print a `TSUnionType` TSESTree node to a `Doc` object.
-(define (print-ts-union-type node (options (js-obj)))
+(define (print-ts-union-type node (options (js/obj)))
   (~> (get-field types node)
       (map (lambda (x)
              (define result
@@ -2226,7 +2226,7 @@
       (join (list space "|" space) _)))
 
 ;;; Print a `TSFunctionType` TSESTree node to a `Doc` object.
-(define (print-ts-function-type node (options (js-obj)))
+(define (print-ts-function-type node (options (js/obj)))
   (list
    "("
    (~> (get-field params node)
@@ -2241,7 +2241,7 @@
    (print-node (get-field returnType node) options)))
 
 ;;; Print a `TSTypeAliasDeclaration` TSESTree node to a `Doc` object.
-(define (print-ts-type-alias-declaration node (options (js-obj)))
+(define (print-ts-type-alias-declaration node (options (js/obj)))
   (list
    "type"
    space
@@ -2253,36 +2253,36 @@
    ";"))
 
 ;;; Print a `TSTypeAnnotation` TSESTree node to a `Doc` object.
-(define (print-ts-type-annotation node (options (js-obj)))
+(define (print-ts-type-annotation node (options (js/obj)))
   (print-node (get-field typeAnnotation node) options))
 
 ;;; Print a `TSLiteralType` TSESTree node to a `Doc` object.
-(define (print-ts-literal-type node (options (js-obj)))
+(define (print-ts-literal-type node (options (js/obj)))
   (print-node (get-field literal node)
-              (js-obj-append
+              (js/obj-append
                options
-               (js-obj "noImplicitAny" #f))))
+               (js/obj "noImplicitAny" #f))))
 
 ;;; Print a `TSTypeReference` TSESTree node to a `Doc` object.
-(define (print-ts-type-reference node (options (js-obj)))
+(define (print-ts-type-reference node (options (js/obj)))
   (define name
     (get-field typeName node))
   (define params
     (get-field typeParameters node))
   (list
    (print-node name
-               (js-obj-append
+               (js/obj-append
                 options
-                (js-obj "noImplicitAny" #f)))
+                (js/obj "noImplicitAny" #f)))
    (if params
        (print-node params
-                   (js-obj-append
+                   (js/obj-append
                     options
-                    (js-obj "noImplicitAny" #f)))
+                    (js/obj "noImplicitAny" #f)))
        empty)))
 
 ;;; Print a `TSTypeParameterInstantiation` TSESTree node to a `Doc` object.
-(define (print-ts-type-parameter-instantiation node (options (js-obj)))
+(define (print-ts-type-parameter-instantiation node (options (js/obj)))
   (define params
     (get-field params node))
   (list
@@ -2291,15 +2291,15 @@
        (map (lambda (x)
               (print-ts-type
                x
-               (js-obj-append
+               (js/obj-append
                 options
-                (js-obj "noImplicitAny" #f))))
+                (js/obj "noImplicitAny" #f))))
             _)
        (join "," _))
    ">"))
 
 ;;; Print an `XRawJavaScript` ESTree extension node to a `Doc` object.
-(define (print-x-raw-javascript node (options (js-obj)))
+(define (print-x-raw-javascript node (options (js/obj)))
   (define str
     (get-field js node))
   (when (regexp-match (regexp "^function \\(") str)
@@ -2309,7 +2309,7 @@
 ;;; Default printer.
 ;;;
 ;;; Returns the empty string.
-(define (default-printer node (options (js-obj)))
+(define (default-printer node (options (js/obj)))
   empty)
 
 ;;; Mapping from node types to printer functions.

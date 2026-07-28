@@ -529,7 +529,7 @@ let z = 3;")
  > (decompile "for (let x in foo) {
   bar();
 }")
- '(for ((x (js-keys foo)))
+ '(for ((x (js/keys foo)))
     (bar))
  > (decompile "new Foo();")
  '(new Foo)
@@ -621,13 +621,13 @@ let z = 3;")
  '(provide (all-from-out "foo"))
  > (decompile "const foo = {};")
  '(define foo
-    (js-obj))
+    (js/obj))
  > (decompile "const foo = { bar: true };")
  '(define foo
-    (js-obj "bar" #t))
+    (js/obj "bar" #t))
  > (decompile "const foo = { ...{ bar: true } };")
  '(define foo
-    (js-obj-append (js-obj "bar" #t)))
+    (js/obj-append (js/obj "bar" #t)))
  > (decompile "class Foo {
 }")
  '(define-class Foo ())

@@ -459,11 +459,11 @@ describe('symbol?', function (): any {
       false,
     ]);
   });
-  it('(symbol? (js-obj))', function (): any {
+  it('(symbol? (js/obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('symbol?'), [Symbol.for('js-obj')]],
+      [Symbol.for('symbol?'), [Symbol.for('js/obj')]],
       false,
     ]);
   });
@@ -2624,31 +2624,31 @@ describe('return', function (): any {
 });
 
 describe('js/.', function (): any {
-  it('(let ((obj (js-obj "foo" "bar"))) (js/. obj foo))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/. obj foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for('foo')],
       ],
       'bar',
     ]);
   });
-  it('(let ((obj (js-obj "foo" "bar"))) (js/. obj "foo"))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/. obj "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('js/.'), Symbol.for('obj'), 'foo'],
       ],
       'bar',
     ]);
   });
-  it('(let ((obj (js-obj "foo" (js-obj "bar" "baz")))) (js/. obj foo bar))', function (): any {
+  it('(let ((obj (js/obj "foo" (js/obj "bar" "baz")))) (js/. obj foo bar))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2657,7 +2657,7 @@ describe('js/.', function (): any {
         [
           [
             Symbol.for('obj'),
-            [Symbol.for('js-obj'), 'foo', [Symbol.for('js-obj'), 'bar', 'baz']],
+            [Symbol.for('js/obj'), 'foo', [Symbol.for('js/obj'), 'bar', 'baz']],
           ],
         ],
         [
@@ -2670,7 +2670,7 @@ describe('js/.', function (): any {
       'baz',
     ]);
   });
-  it('(let ((obj (js-obj "foo" (js-obj "bar" "baz")))) (js/. (js/. obj foo) bar))', function (): any {
+  it('(let ((obj (js/obj "foo" (js/obj "bar" "baz")))) (js/. (js/. obj foo) bar))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2679,7 +2679,7 @@ describe('js/.', function (): any {
         [
           [
             Symbol.for('obj'),
-            [Symbol.for('js-obj'), 'foo', [Symbol.for('js-obj'), 'bar', 'baz']],
+            [Symbol.for('js/obj'), 'foo', [Symbol.for('js/obj'), 'bar', 'baz']],
           ],
         ],
         [
@@ -2745,61 +2745,61 @@ describe('js/.', function (): any {
 });
 
 describe('js/?.', function (): any {
-  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj foo))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/?. obj foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('foo')],
       ],
       'bar',
     ]);
   });
-  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj "foo"))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/?. obj "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('js/?.'), Symbol.for('obj'), 'foo'],
       ],
       'bar',
     ]);
   });
-  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj quux))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/?. obj quux))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('quux')],
       ],
       undefined,
     ]);
   });
-  it('(let ((obj (js-obj "foo" "bar"))) ((js/?. obj quux)))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) ((js/?. obj quux)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [[Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('quux')]],
       ],
       undefined,
     ]);
   });
-  it('(let ((obj (js-obj "foo" "bar"))) (js/?. obj quux wobble))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/?. obj quux wobble))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [
           Symbol.for('js/?.'),
           Symbol.for('obj'),
@@ -2810,13 +2810,13 @@ describe('js/?.', function (): any {
       undefined,
     ]);
   });
-  it('(let ((obj (js-obj "foo" "bar"))) (js/?. (js/?. obj quux) wobble))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/?. (js/?. obj quux) wobble))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [
           Symbol.for('js/?.'),
           [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('quux')],
@@ -2902,13 +2902,13 @@ describe('js/?.', function (): any {
 });
 
 describe('get-field', function (): any {
-  it('(let ((obj (js-obj "foo" "bar"))) (get-field foo obj))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (get-field foo obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('get-field'), Symbol.for('foo'), Symbol.for('obj')],
       ],
       'bar',
@@ -2931,13 +2931,13 @@ describe('get-field', function (): any {
 });
 
 describe('set-field!', function (): any {
-  it('(let ((obj (js-obj))) (set-field! foo obj "bar") (get-field foo obj))', function (): any {
+  it('(let ((obj (js/obj))) (set-field! foo obj "bar") (get-field foo obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj')]]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj')]]],
         [Symbol.for('set-field!'), Symbol.for('foo'), Symbol.for('obj'), 'bar'],
         [Symbol.for('get-field'), Symbol.for('foo'), Symbol.for('obj')],
       ],
@@ -2966,13 +2966,13 @@ describe('set-field!', function (): any {
 });
 
 describe('field-bound?', function (): any {
-  return it('(let ((obj (js-obj "foo" "bar"))) (field-bound? foo obj))', function (): any {
+  return it('(let ((obj (js/obj "foo" "bar"))) (field-bound? foo obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('field-bound?'), Symbol.for('foo'), Symbol.for('obj')],
       ],
       true,
@@ -2981,13 +2981,13 @@ describe('field-bound?', function (): any {
 });
 
 describe('oget', function (): any {
-  it('(let ((obj (js-obj "prop" "foo"))) (oget obj "prop"))', function (): any {
+  it('(let ((obj (js/obj "prop" "foo"))) (oget obj "prop"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'prop', 'foo']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'prop', 'foo']]],
         [Symbol.for('oget'), Symbol.for('obj'), 'prop'],
       ],
       'foo',
@@ -3029,7 +3029,7 @@ describe('oget', function (): any {
 });
 
 describe('send', function (): any {
-  it('(let ((obj (js-obj "add" (lambda (x y) (+ x y))))) (send obj add 1 1))', function (): any {
+  it('(let ((obj (js/obj "add" (lambda (x y) (+ x y))))) (send obj add 1 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -3039,7 +3039,7 @@ describe('send', function (): any {
           [
             Symbol.for('obj'),
             [
-              Symbol.for('js-obj'),
+              Symbol.for('js/obj'),
               'add',
               [
                 Symbol.for('lambda'),
@@ -3591,94 +3591,94 @@ describe('is-a?', function (): any {
   });
 });
 
-describe('js-obj', function (): any {
-  it('(js-obj)', function (): any {
+describe('js/obj', function (): any {
+  it('(js/obj)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('js-obj')],
-      [Symbol.for('js-obj')],
+      [Symbol.for('js/obj')],
+      [Symbol.for('js/obj')],
     ]);
   });
-  it('(js-obj "foo" "bar")', function (): any {
+  it('(js/obj "foo" "bar")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('js-obj'), 'foo', 'bar'],
-      [Symbol.for('js-obj'), 'foo', 'bar'],
+      [Symbol.for('js/obj'), 'foo', 'bar'],
+      [Symbol.for('js/obj'), 'foo', 'bar'],
     ]);
   });
-  it('(js-obj "foo" 1 "bar" 2)', function (): any {
+  it('(js/obj "foo" 1 "bar" 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('js-obj'), 'foo', 1, 'bar', 2],
-      [Symbol.for('js-obj'), 'foo', 1, 'bar', 2],
+      [Symbol.for('js/obj'), 'foo', 1, 'bar', 2],
+      [Symbol.for('js/obj'), 'foo', 1, 'bar', 2],
     ]);
   });
-  it("(compile '(js-obj))", function (): any {
+  it("(compile '(js/obj))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js-obj')]]],
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj')]]],
       '({});',
     ]);
   });
-  it('(compile \'(js-obj "foo" "bar"))', function (): any {
+  it('(compile \'(js/obj "foo" "bar"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 'bar']],
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 'bar']],
       ],
       '({\n' + "  foo: 'bar'\n" + '});',
     ]);
   });
-  it('(compile \'(js-obj "foo" 1 "bar" 2))', function (): any {
+  it('(compile \'(js/obj "foo" 1 "bar" 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 1, 'bar', 2]],
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]],
       ],
       '({\n' + '  foo: 1,\n' + '  bar: 2\n' + '});',
     ]);
   });
-  it("(compile '(js-obj) :as 'expression)", function (): any {
+  it("(compile '(js/obj) :as 'expression)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js-obj')]],
+        [Symbol.for('quote'), [Symbol.for('js/obj')]],
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('expression')],
       ],
       '{}',
     ]);
   });
-  it('(compile \'(js-obj "foo" "bar") :as \'expression)', function (): any {
+  it('(compile \'(js/obj "foo" "bar") :as \'expression)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 'bar']],
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 'bar']],
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('expression')],
       ],
       '{\n' + "  foo: 'bar'\n" + '}',
     ]);
   });
-  return it('(compile \'(js-obj "foo" 1 "bar" 2) :as \'expression)', function (): any {
+  return it('(compile \'(js/obj "foo" 1 "bar" 2) :as \'expression)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js-obj'), 'foo', 1, 'bar', 2]],
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]],
         Symbol.for(':as'),
         [Symbol.for('quote'), Symbol.for('expression')],
       ],
@@ -3687,41 +3687,41 @@ describe('js-obj', function (): any {
   });
 });
 
-describe('js-keys', function (): any {
-  it('(js-keys (js-obj))', function (): any {
+describe('js/keys', function (): any {
+  it('(js/keys (js/obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('js-keys'), [Symbol.for('js-obj')]],
+      [Symbol.for('js/keys'), [Symbol.for('js/obj')]],
       [Symbol.for('quote'), []],
     ]);
   });
-  it('(js-keys (js-obj "foo" "bar"))', function (): any {
+  it('(js/keys (js/obj "foo" "bar"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('js-keys'), [Symbol.for('js-obj'), 'foo', 'bar']],
+      [Symbol.for('js/keys'), [Symbol.for('js/obj'), 'foo', 'bar']],
       [Symbol.for('quote'), ['foo']],
     ]);
   });
-  it('(js-keys (js-obj "foo" "bar" "baz" "quux"))', function (): any {
+  it('(js/keys (js/obj "foo" "bar" "baz" "quux"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
-        Symbol.for('js-keys'),
-        [Symbol.for('js-obj'), 'foo', 'bar', 'baz', 'quux'],
+        Symbol.for('js/keys'),
+        [Symbol.for('js/obj'), 'foo', 'bar', 'baz', 'quux'],
       ],
       [Symbol.for('quote'), ['foo', 'baz']],
     ]);
   });
-  return it("(compile '(js-keys x))", function (): any {
+  return it("(compile '(js/keys x))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js-keys'), Symbol.for('x')]],
+        [Symbol.for('quote'), [Symbol.for('js/keys'), Symbol.for('x')]],
       ],
       'Object.keys(x);',
     ]);
@@ -3729,13 +3729,13 @@ describe('js-keys', function (): any {
 });
 
 describe('js/in', function (): any {
-  it('(let ((obj (js-obj "foo" "bar"))) (js/in "foo" obj))', function (): any {
+  it('(let ((obj (js/obj "foo" "bar"))) (js/in "foo" obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'foo', 'bar']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'foo', 'bar']]],
         [Symbol.for('js/in'), 'foo', Symbol.for('obj')],
       ],
       true,
@@ -3810,7 +3810,7 @@ describe('plist->object', function (): any {
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('plist->object'), [Symbol.for('quote'), []]],
-      [Symbol.for('js-obj')],
+      [Symbol.for('js/obj')],
     ]);
   });
   it("(plist->object '(foo bar))", function (): any {
@@ -3821,7 +3821,7 @@ describe('plist->object', function (): any {
         Symbol.for('plist->object'),
         [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]],
       ],
-      [Symbol.for('js-obj'), 'foo', [Symbol.for('quote'), Symbol.for('bar')]],
+      [Symbol.for('js/obj'), 'foo', [Symbol.for('quote'), Symbol.for('bar')]],
     ]);
   });
   return it("(plist->object '(foo bar baz quux))", function (): any {
@@ -3841,7 +3841,7 @@ describe('plist->object', function (): any {
         ],
       ],
       [
-        Symbol.for('js-obj'),
+        Symbol.for('js/obj'),
         'foo',
         [Symbol.for('quote'), Symbol.for('bar')],
         'baz',
@@ -4421,7 +4421,7 @@ describe('let*-values', function (): any {
 });
 
 describe('define-fields', function (): any {
-  it('((lambda () (define-fields (x) (js-obj "x" 1)) x))', function (): any {
+  it('((lambda () (define-fields (x) (js/obj "x" 1)) x))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4432,7 +4432,7 @@ describe('define-fields', function (): any {
           [
             Symbol.for('define-fields'),
             [Symbol.for('x')],
-            [Symbol.for('js-obj'), 'x', 1],
+            [Symbol.for('js/obj'), 'x', 1],
           ],
           Symbol.for('x'),
         ],
@@ -4440,7 +4440,7 @@ describe('define-fields', function (): any {
       1,
     ]);
   });
-  it('((lambda () (define-fields (foo) (js-obj "foo" "bar")) foo))', function (): any {
+  it('((lambda () (define-fields (foo) (js/obj "foo" "bar")) foo))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4451,7 +4451,7 @@ describe('define-fields', function (): any {
           [
             Symbol.for('define-fields'),
             [Symbol.for('foo')],
-            [Symbol.for('js-obj'), 'foo', 'bar'],
+            [Symbol.for('js/obj'), 'foo', 'bar'],
           ],
           Symbol.for('foo'),
         ],
@@ -4459,7 +4459,7 @@ describe('define-fields', function (): any {
       'bar',
     ]);
   });
-  it('((lambda () (define-fields ((foo bar)) (js-obj "foo" "bar")) bar))', function (): any {
+  it('((lambda () (define-fields ((foo bar)) (js/obj "foo" "bar")) bar))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4470,7 +4470,7 @@ describe('define-fields', function (): any {
           [
             Symbol.for('define-fields'),
             [[Symbol.for('foo'), Symbol.for('bar')]],
-            [Symbol.for('js-obj'), 'foo', 'bar'],
+            [Symbol.for('js/obj'), 'foo', 'bar'],
           ],
           Symbol.for('bar'),
         ],
@@ -4478,7 +4478,7 @@ describe('define-fields', function (): any {
       'bar',
     ]);
   });
-  it('(compile \'(define-fields (foo) (js-obj "foo" "bar")))', function (): any {
+  it('(compile \'(define-fields (foo) (js/obj "foo" "bar")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4489,14 +4489,14 @@ describe('define-fields', function (): any {
           [
             Symbol.for('define-fields'),
             [Symbol.for('foo')],
-            [Symbol.for('js-obj'), 'foo', 'bar'],
+            [Symbol.for('js/obj'), 'foo', 'bar'],
           ],
         ],
       ],
       'let {foo} = {\n' + "  foo: 'bar'\n" + '};',
     ]);
   });
-  return it('(compile \'(define-fields ((foo bar)) (js-obj "foo" "bar")))', function (): any {
+  return it('(compile \'(define-fields ((foo bar)) (js/obj "foo" "bar")))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4507,7 +4507,7 @@ describe('define-fields', function (): any {
           [
             Symbol.for('define-fields'),
             [[Symbol.for('foo'), Symbol.for('bar')]],
-            [Symbol.for('js-obj'), 'foo', 'bar'],
+            [Symbol.for('js/obj'), 'foo', 'bar'],
           ],
         ],
       ],
@@ -4517,7 +4517,7 @@ describe('define-fields', function (): any {
 });
 
 describe('set!-fields', function (): any {
-  it('((lambda () (let (x) (set!-fields (x) (js-obj "x" 1)) x)))', function (): any {
+  it('((lambda () (let (x) (set!-fields (x) (js/obj "x" 1)) x)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4531,7 +4531,7 @@ describe('set!-fields', function (): any {
             [
               Symbol.for('set!-fields'),
               [Symbol.for('x')],
-              [Symbol.for('js-obj'), 'x', 1],
+              [Symbol.for('js/obj'), 'x', 1],
             ],
             Symbol.for('x'),
           ],
@@ -4540,7 +4540,7 @@ describe('set!-fields', function (): any {
       1,
     ]);
   });
-  return it('(compile \'(set!-fields (x) (js-obj "x" 1)))', function (): any {
+  return it('(compile \'(set!-fields (x) (js/obj "x" 1)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4551,7 +4551,7 @@ describe('set!-fields', function (): any {
           [
             Symbol.for('set!-fields'),
             [Symbol.for('x')],
-            [Symbol.for('js-obj'), 'x', 1],
+            [Symbol.for('js/obj'), 'x', 1],
           ],
         ],
       ],
@@ -5964,11 +5964,11 @@ describe('string?', function (): any {
       false,
     ]);
   });
-  it('(string? (js-obj))', function (): any {
+  it('(string? (js/obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('string?'), [Symbol.for('js-obj')]],
+      [Symbol.for('string?'), [Symbol.for('js/obj')]],
       false,
     ]);
   });
@@ -5980,41 +5980,41 @@ describe('string?', function (): any {
       false,
     ]);
   });
-  it('(string? (js-obj "foo" ""))', function (): any {
+  it('(string? (js/obj "foo" ""))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('string?'), [Symbol.for('js-obj'), 'foo', '']],
+      [Symbol.for('string?'), [Symbol.for('js/obj'), 'foo', '']],
       false,
     ]);
   });
-  it('(string? (js-obj "foo" \'()))', function (): any {
+  it('(string? (js/obj "foo" \'()))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('string?'),
-        [Symbol.for('js-obj'), 'foo', [Symbol.for('quote'), []]],
+        [Symbol.for('js/obj'), 'foo', [Symbol.for('quote'), []]],
       ],
       false,
     ]);
   });
-  it('(string? (js-obj "foo" (js-obj)))', function (): any {
+  it('(string? (js/obj "foo" (js/obj)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('string?'),
-        [Symbol.for('js-obj'), 'foo', [Symbol.for('js-obj')]],
+        [Symbol.for('js/obj'), 'foo', [Symbol.for('js/obj')]],
       ],
       false,
     ]);
   });
-  it('(string? (js-obj "foo" "foo"))', function (): any {
+  it('(string? (js/obj "foo" "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('string?'), [Symbol.for('js-obj'), 'foo', 'foo']],
+      [Symbol.for('string?'), [Symbol.for('js/obj'), 'foo', 'foo']],
       false,
     ]);
   });

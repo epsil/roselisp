@@ -1328,7 +1328,7 @@ describe('let', function (): any {
         '}'
     );
   });
-  it('(compile \'(define make-compilation-evaluator (memoize (lambda (env (options (js-obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))) :to \'typescript)', function (): any {
+  it('(compile \'(define make-compilation-evaluator (memoize (lambda (env (options (js/obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))) :to \'typescript)', function (): any {
     return assertEqual(
       compile(
         [
@@ -1340,7 +1340,7 @@ describe('let', function (): any {
               Symbol.for('lambda'),
               [
                 Symbol.for('env'),
-                [Symbol.for('options'), [Symbol.for('js-obj')]],
+                [Symbol.for('options'), [Symbol.for('js/obj')]],
               ],
               [
                 Symbol.for('let'),
@@ -1713,12 +1713,12 @@ describe('lambda', function (): any {
         '};'
     );
   });
-  it("(compile '(lambda (arg (options (js-obj))) arg) :to 'typescript)", function (): any {
+  it("(compile '(lambda (arg (options (js/obj))) arg) :to 'typescript)", function (): any {
     return assertEqual(
       compile(
         [
           Symbol.for('lambda'),
-          [Symbol.for('arg'), [Symbol.for('options'), [Symbol.for('js-obj')]]],
+          [Symbol.for('arg'), [Symbol.for('options'), [Symbol.for('js/obj')]]],
           Symbol.for('arg'),
         ],
         Symbol.for(':to'),
@@ -2274,31 +2274,31 @@ describe('define', function (): any {
         '}'
     );
   });
-  it('(compile \'(define _ (js-obj "dash" #t)))', function (): any {
+  it('(compile \'(define _ (js/obj "dash" #t)))', function (): any {
     return assertEqual(
       compile([
         Symbol.for('define'),
         Symbol.for('_'),
-        [Symbol.for('js-obj'), 'dash', true],
+        [Symbol.for('js/obj'), 'dash', true],
       ]),
       'let _ = {\n' + '  dash: true\n' + '};'
     );
   });
-  it('(compile \'(define __ (js-obj "dash" #t)))', function (): any {
+  it('(compile \'(define __ (js/obj "dash" #t)))', function (): any {
     return assertEqual(
       compile([
         Symbol.for('define'),
         Symbol.for('__'),
-        [Symbol.for('js-obj'), 'dash', true],
+        [Symbol.for('js/obj'), 'dash', true],
       ]),
       'let __ = {\n' + '  dash: true\n' + '};'
     );
   });
-  xit('(compile \'(lambda (env (options (js-obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))', function (): any {
+  xit('(compile \'(lambda (env (options (js/obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))', function (): any {
     return assertEqual(
       compile([
         Symbol.for('lambda'),
-        [Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js-obj')]]],
+        [Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]],
         [
           Symbol.for('let'),
           [
@@ -2572,7 +2572,7 @@ describe('define-fields', function (): any {
       'let {x: y, z} = obj;'
     );
   });
-  it("(compile '(module m scheme (define (foo) (define obj (js-obj)) (define-fields (x rest) obj) (append rest '(5)))) :to 'typescript)", function (): any {
+  it("(compile '(module m scheme (define (foo) (define obj (js/obj)) (define-fields (x rest) obj) (append rest '(5)))) :to 'typescript)", function (): any {
     return assertEqual(
       compile(
         [
@@ -2582,7 +2582,7 @@ describe('define-fields', function (): any {
           [
             Symbol.for('define'),
             [Symbol.for('foo')],
-            [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js-obj')]],
+            [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]],
             [
               Symbol.for('define-fields'),
               [Symbol.for('x'), Symbol.for('rest')],
@@ -2605,7 +2605,7 @@ describe('define-fields', function (): any {
         '}'
     );
   });
-  return it("(compile '(module m scheme (define (foo) (define obj (js-obj)) (define-fields ((rest r) x) obj) (list r x))) :to 'typescript)", function (): any {
+  return it("(compile '(module m scheme (define (foo) (define obj (js/obj)) (define-fields ((rest r) x) obj) (list r x))) :to 'typescript)", function (): any {
     return assertEqual(
       compile(
         [
@@ -2615,7 +2615,7 @@ describe('define-fields', function (): any {
           [
             Symbol.for('define'),
             [Symbol.for('foo')],
-            [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js-obj')]],
+            [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]],
             [
               Symbol.for('define-fields'),
               [[Symbol.for('rest'), Symbol.for('r')], Symbol.for('x')],
@@ -3685,46 +3685,46 @@ describe('js/do-while', function (): any {
   });
 });
 
-describe('js-obj', function (): any {
-  it("(compile '(js-obj))", function (): any {
-    return assertEqual(compile([Symbol.for('js-obj')]), '({});');
+describe('js/obj', function (): any {
+  it("(compile '(js/obj))", function (): any {
+    return assertEqual(compile([Symbol.for('js/obj')]), '({});');
   });
-  it('(compile \'(js-obj foo "bar"))', function (): any {
+  it('(compile \'(js/obj foo "bar"))', function (): any {
     return assertEqual(
-      compile([Symbol.for('js-obj'), Symbol.for('foo'), 'bar']),
+      compile([Symbol.for('js/obj'), Symbol.for('foo'), 'bar']),
       '({\n' + "  [foo]: 'bar'\n" + '});'
     );
   });
-  it('(compile \'(js-obj "foo" "bar"))', function (): any {
+  it('(compile \'(js/obj "foo" "bar"))', function (): any {
     return assertEqual(
-      compile([Symbol.for('js-obj'), 'foo', 'bar']),
+      compile([Symbol.for('js/obj'), 'foo', 'bar']),
       '({\n' + "  foo: 'bar'\n" + '});'
     );
   });
-  it('(compile \'(js-obj "foo bar" "foo bar"))', function (): any {
+  it('(compile \'(js/obj "foo bar" "foo bar"))', function (): any {
     return assertEqual(
-      compile([Symbol.for('js-obj'), 'foo bar', 'foo bar']),
+      compile([Symbol.for('js/obj'), 'foo bar', 'foo bar']),
       '({\n' + "  'foo bar': 'foo bar'\n" + '});'
     );
   });
-  it('(compile \'(js-obj "foo" (js-obj "bar" "baz")))', function (): any {
+  it('(compile \'(js/obj "foo" (js/obj "bar" "baz")))', function (): any {
     return assertEqual(
       compile([
-        Symbol.for('js-obj'),
+        Symbol.for('js/obj'),
         'foo',
-        [Symbol.for('js-obj'), 'bar', 'baz'],
+        [Symbol.for('js/obj'), 'bar', 'baz'],
       ]),
       '({\n' + '  foo: {\n' + "    bar: 'baz'\n" + '  }\n' + '});'
     );
   });
-  it('(compile \'(js-obj "foo" (js-obj "foo" "foo") "bar" (js-obj "bar" "bar")))', function (): any {
+  it('(compile \'(js/obj "foo" (js/obj "foo" "foo") "bar" (js/obj "bar" "bar")))', function (): any {
     return assertEqual(
       compile([
-        Symbol.for('js-obj'),
+        Symbol.for('js/obj'),
         'foo',
-        [Symbol.for('js-obj'), 'foo', 'foo'],
+        [Symbol.for('js/obj'), 'foo', 'foo'],
         'bar',
-        [Symbol.for('js-obj'), 'bar', 'bar'],
+        [Symbol.for('js/obj'), 'bar', 'bar'],
       ]),
       '({\n' +
         '  foo: {\n' +
@@ -3736,16 +3736,16 @@ describe('js-obj', function (): any {
         '});'
     );
   });
-  return it('(compile \'(js-obj "foo" (js-obj) "bar" (js-obj "bar" "bar") "baz" (js-obj "baz" "baz")))', function (): any {
+  return it('(compile \'(js/obj "foo" (js/obj) "bar" (js/obj "bar" "bar") "baz" (js/obj "baz" "baz")))', function (): any {
     return assertEqual(
       compile([
-        Symbol.for('js-obj'),
+        Symbol.for('js/obj'),
         'foo',
-        [Symbol.for('js-obj')],
+        [Symbol.for('js/obj')],
         'bar',
-        [Symbol.for('js-obj'), 'bar', 'bar'],
+        [Symbol.for('js/obj'), 'bar', 'bar'],
         'baz',
-        [Symbol.for('js-obj'), 'baz', 'baz'],
+        [Symbol.for('js/obj'), 'baz', 'baz'],
       ]),
       '({\n' +
         '  foo: {},\n' +
@@ -3760,32 +3760,32 @@ describe('js-obj', function (): any {
   });
 });
 
-describe('js-obj?', function (): any {
-  return it("(compile '(js-obj? x))", function (): any {
+describe('js/obj?', function (): any {
+  return it("(compile '(js/obj? x))", function (): any {
     return assertEqual(
-      compile([Symbol.for('js-obj?'), Symbol.for('x')]),
+      compile([Symbol.for('js/obj?'), Symbol.for('x')]),
       "(x !== null) && (typeof x === 'object');"
     );
   });
 });
 
-describe('js-obj-append', function (): any {
-  return it('(compile \'(js-obj-append obj (js-obj "foo" "bar")))', function (): any {
+describe('js/obj-append', function (): any {
+  return it('(compile \'(js/obj-append obj (js/obj "foo" "bar")))', function (): any {
     return assertEqual(
       compile([
-        Symbol.for('js-obj-append'),
+        Symbol.for('js/obj-append'),
         Symbol.for('obj'),
-        [Symbol.for('js-obj'), 'foo', 'bar'],
+        [Symbol.for('js/obj'), 'foo', 'bar'],
       ]),
       '({\n' + '  ...obj,\n' + "  foo: 'bar'\n" + '});'
     );
   });
 });
 
-describe('js-keys', function (): any {
-  return it("(compile '(js-keys x))", function (): any {
+describe('js/keys', function (): any {
+  return it("(compile '(js/keys x))", function (): any {
     return assertEqual(
-      compile([Symbol.for('js-keys'), Symbol.for('x')]),
+      compile([Symbol.for('js/keys'), Symbol.for('x')]),
       'Object.keys(x);'
     );
   });
@@ -6576,7 +6576,7 @@ describe('define-type', function (): any {
       'function f(x: number = 1): number {\n' + '  return x;\n' + '}'
     );
   });
-  it("(compile '(define (f (options : Any (js-obj))) : Any x) :to 'typescript)", function (): any {
+  it("(compile '(define (f (options : Any (js/obj))) : Any x) :to 'typescript)", function (): any {
     return assertEqual(
       compile(
         [
@@ -6587,7 +6587,7 @@ describe('define-type', function (): any {
               Symbol.for('options'),
               Symbol.for(':'),
               Symbol.for('Any'),
-              [Symbol.for('js-obj')],
+              [Symbol.for('js/obj')],
             ],
           ],
           Symbol.for(':'),
@@ -6706,11 +6706,11 @@ describe('define-type', function (): any {
 });
 
 describe('field-bound?', function (): any {
-  it("(compile '(begin (define foo (js-obj)) (define bar (field-bound? baz foo))))", function (): any {
+  it("(compile '(begin (define foo (js/obj)) (define bar (field-bound? baz foo))))", function (): any {
     return assertEqual(
       compile([
         Symbol.for('begin'),
-        [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js-obj')]],
+        [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js/obj')]],
         [
           Symbol.for('define'),
           Symbol.for('bar'),
@@ -6720,11 +6720,11 @@ describe('field-bound?', function (): any {
       'let foo = {};\n' + '\n' + "let bar = foo && ('baz' in foo);"
     );
   });
-  return it("(compile '(begin (define foo (js-obj)) (define bar (field-bound? baz-baz foo))))", function (): any {
+  return it("(compile '(begin (define foo (js/obj)) (define bar (field-bound? baz-baz foo))))", function (): any {
     return assertEqual(
       compile([
         Symbol.for('begin'),
-        [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js-obj')]],
+        [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js/obj')]],
         [
           Symbol.for('define'),
           Symbol.for('bar'),
@@ -7200,7 +7200,7 @@ describe('Macros', function (): any {
         'let baz = 1;'
     );
   });
-  it('(compile \'(begin (define-fields (foo) (js-obj "foo" (lambda (x) x))) (defmacro bar (x) (foo x)) (define baz (bar 1))))', function (): any {
+  it('(compile \'(begin (define-fields (foo) (js/obj "foo" (lambda (x) x))) (defmacro bar (x) (foo x)) (define baz (bar 1))))', function (): any {
     return assertEqual(
       compile([
         Symbol.for('begin'),
@@ -7208,7 +7208,7 @@ describe('Macros', function (): any {
           Symbol.for('define-fields'),
           [Symbol.for('foo')],
           [
-            Symbol.for('js-obj'),
+            Symbol.for('js/obj'),
             'foo',
             [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
           ],
@@ -7237,7 +7237,7 @@ describe('Macros', function (): any {
         'let baz = 1;'
     );
   });
-  it('(compile \'(begin (define-fields ((foo foo1)) (js-obj "foo" (lambda (x) x))) (defmacro bar (x) (foo1 x)) (define baz (bar 1))))', function (): any {
+  it('(compile \'(begin (define-fields ((foo foo1)) (js/obj "foo" (lambda (x) x))) (defmacro bar (x) (foo1 x)) (define baz (bar 1))))', function (): any {
     return assertEqual(
       compile([
         Symbol.for('begin'),
@@ -7245,7 +7245,7 @@ describe('Macros', function (): any {
           Symbol.for('define-fields'),
           [[Symbol.for('foo'), Symbol.for('foo1')]],
           [
-            Symbol.for('js-obj'),
+            Symbol.for('js/obj'),
             'foo',
             [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
           ],
@@ -7481,7 +7481,7 @@ describe('Global environment', function (): any {
         'let lst = [symbolp, booleanp];'
     );
   });
-  xit('(compile \'(define-values (_ regexp) (rl/sandbox ((js/arrow () (define __ (js-obj "@@functional/placeholder" #t)) (define (js-regexp_ input (flags #u)) (if (eq? (type-of input) "string") (new RegExp input flags) input)) (values __ js-regexp_))))) :inline-functions #t)', function (): any {
+  xit('(compile \'(define-values (_ regexp) (rl/sandbox ((js/arrow () (define __ (js/obj "@@functional/placeholder" #t)) (define (js/regexp_ input (flags #u)) (if (eq? (type-of input) "string") (new RegExp input flags) input)) (values __ js/regexp_))))) :inline-functions #t)', function (): any {
     return assertEqual(
       compile(
         [
@@ -7496,12 +7496,12 @@ describe('Global environment', function (): any {
                 [
                   Symbol.for('define'),
                   Symbol.for('__'),
-                  [Symbol.for('js-obj'), '@@functional/placeholder', true],
+                  [Symbol.for('js/obj'), '@@functional/placeholder', true],
                 ],
                 [
                   Symbol.for('define'),
                   [
-                    Symbol.for('js-regexp_'),
+                    Symbol.for('js/regexp_'),
                     Symbol.for('input'),
                     [Symbol.for('flags'), undefined],
                   ],
@@ -7524,7 +7524,7 @@ describe('Global environment', function (): any {
                 [
                   Symbol.for('values'),
                   Symbol.for('__'),
-                  Symbol.for('js-regexp_'),
+                  Symbol.for('js/regexp_'),
                 ],
               ],
             ],
@@ -9297,7 +9297,7 @@ describe('compile-with-environment', function (): any {
         '};'
     );
   });
-  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js-obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [
@@ -9324,7 +9324,7 @@ describe('compile-with-environment', function (): any {
         "foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
     );
   });
-  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js-obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [
@@ -9351,7 +9351,7 @@ describe('compile-with-environment', function (): any {
         "foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
     );
   });
-  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js-obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [

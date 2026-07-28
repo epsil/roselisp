@@ -228,7 +228,7 @@ declare namespace while_ {
  */
 declare function jsFor_(exp: any, env: any): any;
 declare namespace jsFor_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | symbol[][])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
 }
 /**

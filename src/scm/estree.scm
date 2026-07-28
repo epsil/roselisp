@@ -16,11 +16,11 @@
 ;;;
 ;;; amounts to the same as
 ;;;
-;;;     (js-obj "type" "BlockStatement"
+;;;     (js/obj "type" "BlockStatement"
 ;;;             "body" (list ...))
 ;;;
 ;;; Objects instantiated with `new` are compatible with objects
-;;; created with `js-obj`.
+;;; created with `js/obj`.
 ;;;
 ;;; There are no private fields. For maximum compatibility with
 ;;; existing implementations, every field and method is public.
@@ -1123,7 +1123,7 @@
     (set-field! tail this tail)
     (set-field! value
                 this
-                (js-obj
+                (js/obj
                  "cooked"
                  cooked
                  "raw"

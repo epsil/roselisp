@@ -32,10 +32,10 @@ describe('equal?', function (): any {
       true
     );
   });
-  it('(equal?_ (js-obj) (js-obj))', function (): any {
+  it('(equal?_ (js/obj) (js/obj))', function (): any {
     return assertEqual(equalp_({}, {}), true);
   });
-  it('(equal?_ (js-obj "foo" "bar") (js-obj "foo" "bar"))', function (): any {
+  it('(equal?_ (js/obj "foo" "bar") (js/obj "foo" "bar"))', function (): any {
     return assertEqual(
       equalp_(
         {
@@ -48,7 +48,7 @@ describe('equal?', function (): any {
       true
     );
   });
-  return it('(equal?_ (js-obj "foo" (js-obj "bar" "baz")) (js-obj "foo" (js-obj "bar" "baz")))', function (): any {
+  return it('(equal?_ (js/obj "foo" (js/obj "bar" "baz")) (js/obj "foo" (js/obj "bar" "baz")))', function (): any {
     return assertEqual(
       equalp_(
         {

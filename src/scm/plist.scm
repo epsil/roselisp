@@ -90,9 +90,9 @@
   alst)
 
 ;;; Convert a property list to a JavaScript object.
-(define (plist->object_ plist (options (js-obj)))
+(define (plist->object_ plist (options (js/obj)))
   (define result
-    (js-obj))
+    (js/obj))
   (for ((i (range 0 (js/length plist) 2)))
     (define prop
       (aget plist i))

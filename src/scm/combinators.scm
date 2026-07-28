@@ -678,7 +678,7 @@
 (define Y Y1c)
 
 (define curried
-  (js-obj "A" A1c
+  (js/obj "A" A1c
           "B" B1c
           "C" C1c
           "I" I1c
@@ -692,7 +692,7 @@
           "Y" Y1c))
 
 (define variadic
-  (js-obj "A" A2c
+  (js/obj "A" A2c
           "B" B2c
           "C" C2c
           "I" I2c

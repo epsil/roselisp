@@ -558,6 +558,25 @@ function jsFor_(exp, env) {
     const [args, ...body] = exp.slice(1);
     const inits = [];
     const tests = [];
+    let [init, test, update] = args;
+    if ((0, util_1.taggedListP)(init, Symbol.for('define'))) {
+        init = init.slice(1);
+    }
+    if ((0, util_1.taggedListP)(update, Symbol.for('set!'))) {
+        update = init[2];
+    }
+    inits.push([...init, update]);
+    tests.push(test);
+    const testExp = (tests.length === 1) ? tests[0] : [Symbol.for('and'), ...tests];
+    return [Symbol.for('do'), inits, [[Symbol.for('not'), testExp]], ...body];
+}
+exports.jsFor_ = jsFor_;
+jsFor_.fsource = [Symbol.for('define'), [Symbol.for('js/for_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('inits'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('tests'), [Symbol.for('quote'), []]], [Symbol.for('define-values'), [Symbol.for('init'), Symbol.for('test'), Symbol.for('update')], Symbol.for('args')], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('init'), [Symbol.for('quote'), Symbol.for('define')]], [Symbol.for('set!'), Symbol.for('init'), [Symbol.for('drop'), Symbol.for('init'), 1]]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('update'), [Symbol.for('quote'), Symbol.for('set!')]], [Symbol.for('set!'), Symbol.for('update'), [Symbol.for('js/third'), Symbol.for('init')]]], [Symbol.for('push-right!'), Symbol.for('inits'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('init')], [Symbol.for('unquote'), Symbol.for('update')]]]], [Symbol.for('push-right!'), Symbol.for('tests'), Symbol.for('test')], [Symbol.for('define'), Symbol.for('test-exp'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('tests')], 1], [Symbol.for('js/first'), Symbol.for('tests')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote-splicing'), Symbol.for('tests')]]]]], [Symbol.for('quasiquote'), [Symbol.for('do'), [Symbol.for('unquote'), Symbol.for('inits')], [[Symbol.for('not'), [Symbol.for('unquote'), Symbol.for('test-exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
+jsFor_.ftype = 'macro';
+function jsFor2_(exp, env) {
+    const [args, ...body] = exp.slice(1);
+    const inits = [];
+    const tests = [];
     for (let arg of args) {
         let init = arg[0];
         const test = arg[1];
@@ -574,9 +593,8 @@ function jsFor_(exp, env) {
     const testExp = (tests.length === 1) ? tests[0] : [Symbol.for('and'), ...tests];
     return [Symbol.for('do'), inits, [[Symbol.for('not'), testExp]], ...body];
 }
-exports.jsFor_ = jsFor_;
-jsFor_.fsource = [Symbol.for('define'), [Symbol.for('js/for_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('inits'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('tests'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('js/first'), Symbol.for('arg')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('js/second'), Symbol.for('arg')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('js/third'), Symbol.for('arg')]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('init'), [Symbol.for('quote'), Symbol.for('define')]], [Symbol.for('set!'), Symbol.for('init'), [Symbol.for('drop'), Symbol.for('init'), 1]]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('update'), [Symbol.for('quote'), Symbol.for('set!')]], [Symbol.for('set!'), Symbol.for('update'), [Symbol.for('js/third'), Symbol.for('init')]]], [Symbol.for('push-right!'), Symbol.for('inits'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('init')], [Symbol.for('unquote'), Symbol.for('update')]]]], [Symbol.for('push-right!'), Symbol.for('tests'), Symbol.for('test')]], [Symbol.for('define'), Symbol.for('test-exp'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('tests')], 1], [Symbol.for('js/first'), Symbol.for('tests')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote-splicing'), Symbol.for('tests')]]]]], [Symbol.for('quasiquote'), [Symbol.for('do'), [Symbol.for('unquote'), Symbol.for('inits')], [[Symbol.for('not'), [Symbol.for('unquote'), Symbol.for('test-exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-jsFor_.ftype = 'macro';
+jsFor2_.fsource = [Symbol.for('define'), [Symbol.for('js/for-2_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('inits'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('tests'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('js/first'), Symbol.for('arg')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('js/second'), Symbol.for('arg')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('js/third'), Symbol.for('arg')]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('init'), [Symbol.for('quote'), Symbol.for('define')]], [Symbol.for('set!'), Symbol.for('init'), [Symbol.for('drop'), Symbol.for('init'), 1]]], [Symbol.for('when'), [Symbol.for('tagged-list?'), Symbol.for('update'), [Symbol.for('quote'), Symbol.for('set!')]], [Symbol.for('set!'), Symbol.for('update'), [Symbol.for('js/third'), Symbol.for('init')]]], [Symbol.for('push-right!'), Symbol.for('inits'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('init')], [Symbol.for('unquote'), Symbol.for('update')]]]], [Symbol.for('push-right!'), Symbol.for('tests'), Symbol.for('test')]], [Symbol.for('define'), Symbol.for('test-exp'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('tests')], 1], [Symbol.for('js/first'), Symbol.for('tests')], [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote-splicing'), Symbol.for('tests')]]]]], [Symbol.for('quasiquote'), [Symbol.for('do'), [Symbol.for('unquote'), Symbol.for('inits')], [[Symbol.for('not'), [Symbol.for('unquote'), Symbol.for('test-exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
+jsFor2_.ftype = 'macro';
 /**
  * Expand a `(js/for-in ...)` expression.
  */
@@ -585,12 +603,12 @@ function jsForIn_(exp, env) {
     const bindings = args.map(function (x) {
         let left = x[0];
         const right = x[1];
-        return [left, [Symbol.for('js-keys'), right]];
+        return [left, [Symbol.for('js/keys'), right]];
     });
     return [Symbol.for('js/for-of'), bindings, ...body];
 }
 exports.jsForIn_ = jsForIn_;
-jsForIn_.fsource = [Symbol.for('define'), [Symbol.for('js/for-in_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('js/first'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('js/second'), Symbol.for('x')]], [Symbol.for('list'), Symbol.for('left'), [Symbol.for('quasiquote'), [Symbol.for('js-keys'), [Symbol.for('unquote'), Symbol.for('right')]]]]], Symbol.for('args')]], [Symbol.for('quasiquote'), [Symbol.for('js/for-of'), [Symbol.for('unquote'), Symbol.for('bindings')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
+jsForIn_.fsource = [Symbol.for('define'), [Symbol.for('js/for-in_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('js/first'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('js/second'), Symbol.for('x')]], [Symbol.for('list'), Symbol.for('left'), [Symbol.for('quasiquote'), [Symbol.for('js/keys'), [Symbol.for('unquote'), Symbol.for('right')]]]]], Symbol.for('args')]], [Symbol.for('quasiquote'), [Symbol.for('js/for-of'), [Symbol.for('unquote'), Symbol.for('bindings')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 jsForIn_.ftype = 'macro';
 /**
  * Expand a `(js/for-of ...)` expression.

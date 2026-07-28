@@ -45,7 +45,7 @@
                   tagged-list?))
 
 ;;; Decompile a JavaScript or TypeScript program.
-(define (decompile x (options (js-obj)))
+(define (decompile x (options (js/obj)))
   (define language
     (oget options "language"))
   (cond
@@ -56,7 +56,7 @@
 
 ;;; Read a JavaScript or TypeScript program from disk
 ;;; and decompile it. The result is written to disk.
-(define (decompile-file! file (options (js-obj)))
+(define (decompile-file! file (options (js/obj)))
   ;; TODO: Refactor to `(compile-file in-file out-file options)`?
   (define extension
     (extname file))
@@ -84,33 +84,33 @@
             "TypeScript"
             "JavaScript"))
   (set! options
-        (js-obj-append
+        (js/obj-append
          options
-         (js-obj "language" language
+         (js/obj "language" language
                  "module" #t
                  "noModuleForm" #t
                  "pretty" #t)))
   (set! data
         (readFileSync file
-                      (js-obj "encoding" "utf8")))
+                      (js/obj "encoding" "utf8")))
   (set! code (decompile data options))
-  (mkdirSync out-dir (js-obj "recursive" #t))
+  (mkdirSync out-dir (js/obj "recursive" #t))
   (writeFileSync out-file
                  code
-                 (js-obj "encoding" "utf8"))
+                 (js/obj "encoding" "utf8"))
   (display
    (string-append "Decompiled " file " to " out-file))
   file)
 
 ;;; Read JavaScript or TypeScript programs from disk
 ;;; and decompile them. The results are written to disk.
-(define (decompile-files! files (options (js-obj)))
+(define (decompile-files! files (options (js/obj)))
   (for ((file files))
     (decompile-file! file options))
   files)
 
 ;;; Decompile a JavaScript or TypeScript module.
-(define (decompile-module m (options (js-obj)))
+(define (decompile-module m (options (js/obj)))
   ;; TODO
   m)
 
@@ -120,7 +120,7 @@
 ;;;
 ;;; [github:estree]: https://github.com/estree/estree
 ;;; [w:Abstract syntax tree]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
-(define (decompile-js x (options (js-obj)))
+(define (decompile-js x (options (js/obj)))
   (decompile-ts x options))
 
 ;;; Decompile a TypeScript program
@@ -129,7 +129,7 @@
 ;;;
 ;;; [npm:typescript-estree] https://www.npmjs.com/package/@typescript-eslint/typescript-estree
 ;;; [w:Abstract syntax tree]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
-(define (decompile-ts x (options (js-obj)))
+(define (decompile-ts x (options (js/obj)))
   (define ast
     (parse-ts x))
   (define result-node
@@ -145,7 +145,7 @@
 ;;;
 ;;; [github:estree]: https://github.com/estree/estree
 ;;; [w:Abstract syntax tree]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
-(define (decompile-estree node (options (js-obj)))
+(define (decompile-estree node (options (js/obj)))
   (define type
     (and node (estree-type node)))
   (define decompiler
@@ -157,7 +157,7 @@
 ;;; (i.e., a JavaScript program).
 ;;;
 ;;; [estree:program]: https://github.com/estree/estree/blob/master/es5.md#programs
-(define (decompile-program node (options (js-obj)))
+(define (decompile-program node (options (js/obj)))
   (define module-option
     (oget options "module"))
   (define result
@@ -179,14 +179,14 @@
 ;;; Decompile an ESTree [`ExpressionStatement`][estree:expressionstatement] node.
 ;;;
 ;;; [estree:expressionstatement]: https://github.com/estree/estree/blob/master/es5.md#expressionstatement
-(define (decompile-expression-statement node (options (js-obj)))
+(define (decompile-expression-statement node (options (js/obj)))
   (decompile-estree (get-field expression node)
                     options))
 
 ;;; Decompile an ESTree [`CallExpression`][estree:callexpression] node.
 ;;;
 ;;; [estree:callexpression]: https://github.com/estree/estree/blob/master/es5.md#callexpression
-(define (decompile-call-expression node (options (js-obj)))
+(define (decompile-call-expression node (options (js/obj)))
   (define (is-spread-element x)
     (and x
          (estree-type? x "SpreadElement")))
@@ -246,7 +246,7 @@
 ;;; Decompile an ESTree [`AssignmentExpression`][estree:assignmentexpression] node.
 ;;;
 ;;; [estree:assignmentexpression]: https://github.com/estree/estree/blob/master/es5.md#assignmentexpression
-(define (decompile-assignment-expression node (options (js-obj)))
+(define (decompile-assignment-expression node (options (js/obj)))
   (define op
     (get-field operator node))
   (define left
@@ -290,7 +290,7 @@
 ;;; Decompile an ESTree [`AssignmentPattern`][estree:assignmentpattern] node.
 ;;;
 ;;; [estree:assignmentpattern]: https://github.com/estree/estree/blob/master/es2015.md#assignmentpattern
-(define (decompile-assignment-pattern node (options (js-obj)))
+(define (decompile-assignment-pattern node (options (js/obj)))
   (define assignment
     (decompile-assignment-expression node options))
   (define left
@@ -311,7 +311,7 @@
 ;;; Decompile an ESTree [`UnaryExpression`][estree:unaryexpression] node.
 ;;;
 ;;; [estree:unaryexpression]: https://github.com/estree/estree/blob/master/es5.md#unaryexpression
-(define (decompile-unary-expression node (options (js-obj)))
+(define (decompile-unary-expression node (options (js/obj)))
   (define op
     (get-field operator node))
   (define op-decompiled
@@ -344,7 +344,7 @@
 ;;; Decompile an ESTree [`UpdateExpression`][estree:updateexpression] node.
 ;;;
 ;;; [estree:updateexpression]: https://github.com/estree/estree/blob/master/es5.md#updateexpression
-(define (decompile-update-expression node (options (js-obj)))
+(define (decompile-update-expression node (options (js/obj)))
   (define op
     (get-field operator node))
   (define argument
@@ -367,7 +367,7 @@
 ;;; Decompile an ESTree [`BinaryExpression`][estree:binaryexpression] node.
 ;;;
 ;;; [estree:binaryexpression]: https://github.com/estree/estree/blob/master/es5.md#binaryexpression
-(define (decompile-binary-expression node (options (js-obj)))
+(define (decompile-binary-expression node (options (js/obj)))
   (define (is-string-expression exp)
     (or (string? exp)
         (tagged-list? exp 'string-append)))
@@ -433,13 +433,13 @@
 ;;; Decompile an ESTree [`LogicalExpression`][estree:logicalexpression] node.
 ;;;
 ;;; [estree:logicalexpression]: https://github.com/estree/estree/blob/master/es5.md#logicalexpression
-(define (decompile-logical-expression node (options (js-obj)))
+(define (decompile-logical-expression node (options (js/obj)))
   (decompile-binary-expression node options))
 
 ;;; Decompile an ESTree [`VariableDeclaration`][estree:variabledeclaration] node.
 ;;;
 ;;; [estree:variabledeclaration]: https://github.com/estree/estree/blob/master/es5.md#variabledeclaration
-(define (decompile-variable-declaration node (options (js-obj)))
+(define (decompile-variable-declaration node (options (js/obj)))
   (define decls
     (map (lambda (x)
            (decompile-estree x options))
@@ -454,7 +454,7 @@
 ;;; Decompile an ESTree [`VariableDeclarator`][estree:variabledeclarator] node.
 ;;;
 ;;; [estree:variabledeclarator]: https://github.com/estree/estree/blob/master/es5.md#variabledeclarator
-(define (decompile-variable-declarator node (options (js-obj)))
+(define (decompile-variable-declarator node (options (js/obj)))
   (define id
     (get-field id node))
   (define id-type
@@ -480,7 +480,7 @@
 ;;; Decompile an ESTree [`Identifier`][estree:identifier] node.
 ;;;
 ;;; [estree:identifier]: https://github.com/estree/estree/blob/master/es5.md#identifier
-(define (decompile-identifier node (options (js-obj)))
+(define (decompile-identifier node (options (js/obj)))
   (define name
     (string->symbol (get-field name node)))
   (sexp->rose name))
@@ -488,7 +488,7 @@
 ;;; Decompile an ESTree [`Literal`][estree:literal] node.
 ;;;
 ;;; [estree:literal]: https://github.com/estree/estree/blob/master/es5.md#literal
-(define (decompile-literal node (options (js-obj)))
+(define (decompile-literal node (options (js/obj)))
   (define value
     (get-field value node))
   (cond
@@ -524,7 +524,7 @@
 ;;; Decompile an ESTree [`MemberExpression`][estree:memberexpression] node.
 ;;;
 ;;; [estree:memberexpression]: https://github.com/estree/estree/blob/master/es5.md#memberexpression
-(define (decompile-member-expression node (options (js-obj)))
+(define (decompile-member-expression node (options (js/obj)))
   (define property
     (decompile-estree (get-field property node)
                       options))
@@ -566,7 +566,7 @@
 ;;; Decompile an ESTree [`ChainExpression`][estree:chainexpression] node.
 ;;;
 ;;; [estree:chainexpression]: https://github.com/estree/estree/blob/master/es2020.md#chainexpression
-(define (decompile-chain-expression node (options (js-obj)))
+(define (decompile-chain-expression node (options (js/obj)))
   (define expression
     (get-field expression node))
   (define expression-decompiled
@@ -614,41 +614,41 @@
 ;;; Decompile an ESTree [`FunctionDeclaration`][estree:functiondeclaration] node.
 ;;;
 ;;; [estree:functiondeclaration]: https://github.com/estree/estree/blob/master/es5.md#functiondeclaration
-(define (decompile-function-declaration node (options (js-obj)))
+(define (decompile-function-declaration node (options (js/obj)))
   (decompile-function node options))
 
 ;;; Decompile an ESTree [`FunctionExpression`][estree:functionexpression] node.
 ;;;
 ;;; [estree:functionexpression]: https://github.com/estree/estree/blob/master/es5.md#functionexpression
-(define (decompile-function-expression node (options (js-obj)))
+(define (decompile-function-expression node (options (js/obj)))
   (decompile-function node options))
 
 ;;; Decompile an ESTree [`ArrowFunctionExpression`][estree:arrowfunctionexpression] node.
 ;;;
 ;;; [estree:arrowfunctionexpression]: https://github.com/estree/estree/blob/master/es2015.md#arrowfunctionexpression
-(define (decompile-arrow-function-expression node (options (js-obj)))
+(define (decompile-arrow-function-expression node (options (js/obj)))
   (decompile-function node options))
 
 ;;; Decompile an ESTree [`RestElement`][estree:restelement] node.
 ;;;
 ;;; [estree:restelement]: https://github.com/estree/estree/blob/master/es2015.md#restelement
-(define (decompile-rest-element node (options (js-obj)))
+(define (decompile-rest-element node (options (js/obj)))
   (decompile-estree (get-field argument node) options))
 
 ;;; Decompile an ESTree [`BlockStatement`][estree:blockstatement] node.
 ;;;
 ;;; [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
-(define (decompile-block-statement node (options (js-obj)))
+(define (decompile-block-statement node (options (js/obj)))
   (sexp->rose
    `(js/block
-      ,@(map (lambda (x)
-               (decompile-estree x options))
-             (get-field body node)))))
+     ,@(map (lambda (x)
+              (decompile-estree x options))
+            (get-field body node)))))
 
 ;;; Decompile an ESTree [`SequenceExpression`][estree:sequenceexpression] node.
 ;;;
 ;;; [estree:sequenceexpression]: https://github.com/estree/estree/blob/master/es5.md#sequenceexpression
-(define (decompile-sequence-expression node (options (js-obj)))
+(define (decompile-sequence-expression node (options (js/obj)))
   (sexp->rose
    `(begin
       ,@(map (lambda (x)
@@ -658,7 +658,7 @@
 ;;; Decompile an ESTree [`ReturnStatement`][estree:returnstatement] node.
 ;;;
 ;;; [estree:returnstatement]: https://github.com/estree/estree/blob/master/es5.md#returnstatement
-(define (decompile-return-statement node (options (js-obj)))
+(define (decompile-return-statement node (options (js/obj)))
   (define argument
     (get-field argument node))
   (cond
@@ -672,7 +672,7 @@
 ;;; Decompile an ESTree [`IfStatement`][estree:ifstatement] node.
 ;;;
 ;;; [estree:ifstatement]: https://github.com/estree/estree/blob/master/es5.md#ifstatement
-(define (decompile-if-statement node (options (js-obj)))
+(define (decompile-if-statement node (options (js/obj)))
   (define test
     (decompile-estree (get-field test node) options))
   (define test-exp
@@ -776,7 +776,7 @@
 ;;; Decompile an ESTree [`WhileStatement`][estree:whilestatement] node.
 ;;;
 ;;; [estree:whilestatement]: https://github.com/estree/estree/blob/master/es5.md#whilestatement
-(define (decompile-while-statement node (options (js-obj)))
+(define (decompile-while-statement node (options (js/obj)))
   (define test
     (decompile-estree (get-field test node) options))
   (define body
@@ -795,7 +795,7 @@
 ;;; Decompile an ESTree [`DoWhileStatement`][estree:dowhilestatement] node.
 ;;;
 ;;; [estree:dowhilestatement]: https://github.com/estree/estree/blob/master/es5.md#dowhilestatement
-(define (decompile-do-while-statement node (options (js-obj)))
+(define (decompile-do-while-statement node (options (js/obj)))
   (define test
     (decompile-estree (get-field test node) options))
   (define body
@@ -810,7 +810,7 @@
 ;;; Decompile an ESTree [`ForStatement`][estree:forstatement] node.
 ;;;
 ;;; [estree:forstatement]: https://github.com/estree/estree/blob/master/es5.md#forstatement
-(define (decompile-for-statement node (options (js-obj)))
+(define (decompile-for-statement node (options (js/obj)))
   (define init
     (decompile-estree (get-field init node) options))
   (define inits
@@ -895,7 +895,7 @@
 ;;; Decompile an ESTree [`ForOfStatement`][estree:forofstatement] node.
 ;;;
 ;;; [estree:forofstatement]: https://github.com/estree/estree/blob/master/es2015.md#forofstatement
-(define (decompile-for-of-statement node (options (js-obj)))
+(define (decompile-for-of-statement node (options (js/obj)))
   (define left
     (decompile-estree (get-field left node) options))
   (define left-exp
@@ -928,7 +928,7 @@
 ;;; Decompile an ESTree [`ForInStatement`][estree:forinstatement] node.
 ;;;
 ;;; [estree:forinstatement]: https://github.com/estree/estree/blob/master/es5.md#forinstatement
-(define (decompile-for-in-statement node (options (js-obj)))
+(define (decompile-for-in-statement node (options (js/obj)))
   (define left
     (decompile-estree (get-field left node) options))
   (define left-exp
@@ -941,13 +941,13 @@
   (define body
     (decompile-estree (get-field body node) options))
   (sexp->rose
-   `(for ((,left (js-keys ,right)))
+   `(for ((,left (js/keys ,right)))
       ,@(send body drop 1))))
 
 ;;; Decompile an ESTree [`BreakStatement`][estree:breakstatement] node.
 ;;;
 ;;; [estree:breakstatement]: https://github.com/estree/estree/blob/master/es5.md#breakstatement
-(define (decompile-break-statement node (options (js-obj)))
+(define (decompile-break-statement node (options (js/obj)))
   (sexp->rose
    `(break
      ,@(if (get-field label node)
@@ -958,7 +958,7 @@
 ;;; Decompile an ESTree [`ContinueStatement`][estree:continuestatement] node.
 ;;;
 ;;; [estree:continuestatement]: https://github.com/estree/estree/blob/master/es5.md#continuestatement
-(define (decompile-continue-statement node (options (js-obj)))
+(define (decompile-continue-statement node (options (js/obj)))
   (sexp->rose
    `(continue
      ,@(if (get-field label node)
@@ -969,7 +969,7 @@
 ;;; Decompile an ESTree [`ThrowStatement`][estree:throwstatement] node.
 ;;;
 ;;; [estree:throwstatement]: https://github.com/estree/estree/blob/master/es5.md#throwstatement
-(define (decompile-throw-statement node (options (js-obj)))
+(define (decompile-throw-statement node (options (js/obj)))
   (sexp->rose
    `(throw
      ,(decompile-estree (get-field argument node)
@@ -978,7 +978,7 @@
 ;;; Decompile an ESTree [`TryStatement`][estree:trystatement] node.
 ;;;
 ;;; [estree:trystatement]: https://github.com/estree/estree/blob/master/es5.md#trystatement
-(define (decompile-try-statement node (options (js-obj)))
+(define (decompile-try-statement node (options (js/obj)))
   (define block
     (get-field block node))
   (define handler
@@ -1011,7 +1011,7 @@
 ;;; Decompile an ESTree [`YieldExpression`][estree:yieldexpression] node.
 ;;;
 ;;; [estree:yieldexpression]: https://github.com/estree/estree/blob/master/es2015.md#yieldexpression
-(define (decompile-yield-expression node (options (js-obj)))
+(define (decompile-yield-expression node (options (js/obj)))
   (sexp->rose
    `(yield
      ,(decompile-estree (get-field argument node)
@@ -1020,7 +1020,7 @@
 ;;; Decompile an ESTree [`NewExpression`][estree:newexpression] node.
 ;;;
 ;;; [estree:newexpression]: https://github.com/estree/estree/blob/master/es2015.md#expressions
-(define (decompile-new-expression node (options (js-obj)))
+(define (decompile-new-expression node (options (js/obj)))
   (define arguments_
     (get-field arguments node))
   (define is-spread
@@ -1040,13 +1040,13 @@
 ;;; Decompile an ESTree [`ConditionalExpression`][estree:conditionalexpression] node.
 ;;;
 ;;; [estree:conditionalexpression]: https://github.com/estree/estree/blob/master/es5.md#conditionalexpression
-(define (decompile-conditional-expression node (options (js-obj)))
+(define (decompile-conditional-expression node (options (js/obj)))
   (decompile-if-statement node options))
 
 ;;; Decompile an ESTree [`ImportDeclaration`][estree:importdeclaration] node.
 ;;;
 ;;; [estree:importdeclaration]: https://github.com/estree/estree/blob/master/es2015.md#importdeclaration
-(define (decompile-import-declaration node (options (js-obj)))
+(define (decompile-import-declaration node (options (js/obj)))
   (define source
     (get-field source node))
   (define source-decompiled
@@ -1088,7 +1088,7 @@
 ;;; Decompile an ESTree [`ExportNamedDeclaration`][estree:exportnameddeclaration] node.
 ;;;
 ;;; [estree:exportnameddeclaration]: https://github.com/estree/estree/blob/master/es2015.md#exportnameddeclaration
-(define (decompile-export-named-declaration node (options (js-obj)))
+(define (decompile-export-named-declaration node (options (js/obj)))
   (define specifiers
     (get-field specifiers node))
   (define specifiers-decompiled
@@ -1110,7 +1110,7 @@
 ;;; Decompile an ESTree [`ExportAllDeclaration`][estree:exportalldeclaration] node.
 ;;;
 ;;; [estree:exportalldeclaration]: https://github.com/estree/estree/blob/master/es2015.md#exportalldeclaration
-(define (decompile-export-all-declaration node (options (js-obj)))
+(define (decompile-export-all-declaration node (options (js/obj)))
   (define source
     (get-field source node))
   (define source-decompiled
@@ -1121,7 +1121,7 @@
 ;;; Decompile an ESTree [`ObjectExpression`][estree:objectexpression] node.
 ;;;
 ;;; [estree:objectexpression]: https://github.com/estree/estree/blob/master/es5.md#objectexpression
-(define (decompile-object-expression node (options (js-obj)))
+(define (decompile-object-expression node (options (js/obj)))
   (define spreads '())
   (define properties '())
   (for ((prop (get-field properties node)))
@@ -1142,19 +1142,19 @@
   (cond
    ((= (js/length spreads) 0)
     (sexp->rose
-     `(js-obj ,@properties)))
+     `(js/obj ,@properties)))
    (else
     (sexp->rose
-     `(js-obj-append
+     `(js/obj-append
        ,@spreads
        ,@(if (> (js/length properties) 0)
-             (list `(js-obj ,@properties))
+             (list `(js/obj ,@properties))
              '()))))))
 
 ;;; Decompile an ESTree [`ObjectPattern`][estree:objectpattern] node.
 ;;;
 ;;; [estree:objectpattern]: https://github.com/estree/estree/blob/master/es2015.md#objectpattern
-(define (decompile-object-pattern node (options (js-obj)))
+(define (decompile-object-pattern node (options (js/obj)))
   (define properties '())
   (for ((prop (get-field properties node)))
     (define key
@@ -1172,7 +1172,7 @@
 ;;; Decompile an ESTree [`TemplateLiteral`][estree:templateliteral] node.
 ;;;
 ;;; [estree:templateliteral]: https://github.com/estree/estree/blob/master/es2015.md#templateliteral
-(define (decompile-template-literal node (options (js-obj)))
+(define (decompile-template-literal node (options (js/obj)))
   (define str "")
   (define quasis
     (get-field quasis node))
@@ -1186,7 +1186,7 @@
 ;;; Decompile an ESTree [`TaggedTemplateExpression`][estree:taggedtemplateexpression] node.
 ;;;
 ;;; [estree:taggedtemplateexpression]: https://github.com/estree/estree/blob/master/es2015.md#taggedtemplateexpression
-(define (decompile-tagged-template-expression node (options (js-obj)))
+(define (decompile-tagged-template-expression node (options (js/obj)))
   (define tag
     (get-field tag node))
   (define tag-decompiled
@@ -1201,7 +1201,7 @@
 ;;; Decompile an ESTree [`ArrayExpression`][estree:arrayexpression] node.
 ;;;
 ;;; [estree:arrayexpression]: https://github.com/estree/estree/blob/master/es5.md#arrayexpression
-(define (decompile-array-expression node (options (js-obj)))
+(define (decompile-array-expression node (options (js/obj)))
   (define elements
     (get-field elements node))
   (define (decompile-element x)
@@ -1245,7 +1245,7 @@
 ;;; Decompile an ESTree [`ArrayPattern`][estree:arraypattern] node.
 ;;;
 ;;; [estree:arraypattern]: https://github.com/estree/estree/blob/master/es2015.md#arraypattern
-(define (decompile-array-pattern node (options (js-obj)))
+(define (decompile-array-pattern node (options (js/obj)))
   (define array-expression
     (decompile-array-expression node options))
   (sexp->rose
@@ -1257,7 +1257,7 @@
 ;;; Decompile an ESTree [`SpreadElement`][estree:spreadelement] node.
 ;;;
 ;;; [estree:spreadelement]: https://github.com/estree/estree/blob/master/es2015.md#expressions
-(define (decompile-spread-element node (options (js-obj)))
+(define (decompile-spread-element node (options (js/obj)))
   (define argument
     (get-field argument node))
   (decompile-estree argument options))
@@ -1265,19 +1265,19 @@
 ;;; Decompile an ESTree [`Super`][estree:super] node.
 ;;;
 ;;; [estree:super]: https://github.com/estree/estree/blob/master/es2015.md#expressions
-(define (decompile-super node (options (js-obj)))
+(define (decompile-super node (options (js/obj)))
   (sexp->rose 'super))
 
 ;;; Decompile an ESTree [`ThisExpression`][estree:thisexpression] node.
 ;;;
 ;;; [estree:thisexpression]: https://github.com/estree/estree/blob/master/es5.md#thisexpression
-(define (decompile-this-expression node (options (js-obj)))
+(define (decompile-this-expression node (options (js/obj)))
   (sexp->rose 'this))
 
 ;;; Decompile an ESTree [`ClassDeclaration`][estree:classdeclaration] node.
 ;;;
 ;;; [estree:classdeclaration]: https://github.com/estree/estree/blob/master/es2015.md#classdeclaration
-(define (decompile-class-declaration node (options (js-obj)))
+(define (decompile-class-declaration node (options (js/obj)))
   (define id
     (get-field id node))
   (define id-decompiled
@@ -1308,7 +1308,7 @@
 ;;; Decompile an ESTree [`PropertyDefinition`][estree:propertydefinition] node.
 ;;;
 ;;; [estree:propertydefinition]: https://github.com/estree/estree/blob/master/es2022.md#propertydefinition
-(define (decompile-property-definition node (options (js-obj)))
+(define (decompile-property-definition node (options (js/obj)))
   (define key
     (get-field key node))
   (define key-decompiled
@@ -1332,7 +1332,7 @@
 ;;; Decompile an ESTree [`MethodDefinition`][estree:methoddefinition] node.
 ;;;
 ;;; [estree:methoddefinition]: https://github.com/estree/estree/blob/master/es2015.md#methoddefinition
-(define (decompile-method-definition node (options (js-obj)))
+(define (decompile-method-definition node (options (js/obj)))
   (define key
     (get-field key node))
   (define key-decompiled
@@ -1361,7 +1361,7 @@
       ,@(send value-decompiled drop 2))))
 
 ;;; Decompile a TSESTree `TSAsExpression` node.
-(define (decompile-ts-as-expression node (options (js-obj)))
+(define (decompile-ts-as-expression node (options (js/obj)))
   (define expression
     (get-field expression node))
   (define expression-decompiled
@@ -1375,31 +1375,31 @@
          ,type-annotation-decompiled)))
 
 ;;; Decompile a TSESTree `TSAnyKeyword` node.
-(define (decompile-ts-any-keyword node (options (js-obj)))
+(define (decompile-ts-any-keyword node (options (js/obj)))
   (sexp->rose 'Any))
 
 ;;; Decompile a TSESTree `TSBooleanKeyword` node.
-(define (decompile-ts-boolean-keyword node (options (js-obj)))
+(define (decompile-ts-boolean-keyword node (options (js/obj)))
   (sexp->rose 'Boolean))
 
 ;;; Decompile a TSESTree `TSNumberKeyword` node.
-(define (decompile-ts-number-keyword node (options (js-obj)))
+(define (decompile-ts-number-keyword node (options (js/obj)))
   (sexp->rose 'Number))
 
 ;;; Decompile a TSESTree `TSStringKeyword` node.
-(define (decompile-ts-string-keyword node (options (js-obj)))
+(define (decompile-ts-string-keyword node (options (js/obj)))
   (sexp->rose 'String))
 
 ;;; Decompile a TSESTree `TSUndefinedKeyword` node.
-(define (decompile-ts-undefined-keyword node (options (js-obj)))
+(define (decompile-ts-undefined-keyword node (options (js/obj)))
   (sexp->rose 'Undefined))
 
 ;;; Decompile a TSESTree `TSVoidKeyword` node.
-(define (decompile-ts-void-keyword node (options (js-obj)))
+(define (decompile-ts-void-keyword node (options (js/obj)))
   (sexp->rose 'Void))
 
 ;;; Decompile a TSESTree `TSLiteralType` node.
-(define (decompile-ts-literal-type node (options (js-obj)))
+(define (decompile-ts-literal-type node (options (js/obj)))
   (define literal
     (get-field literal node))
   (define literal-decompiled
@@ -1409,7 +1409,7 @@
   (sexp->rose literal-decompiled))
 
 ;;; Decompile a TSESTree `TSArrayType` node.
-(define (decompile-ts-array-type node (options (js-obj)))
+(define (decompile-ts-array-type node (options (js/obj)))
   (define element-type
     (get-field elementType node))
   (define element-type-decompiled
@@ -1418,7 +1418,7 @@
    `(Listof ,element-type-decompiled)))
 
 ;;; Decompile a TSESTree `TSTupleType` node.
-(define (decompile-ts-tuple-type node (options (js-obj)))
+(define (decompile-ts-tuple-type node (options (js/obj)))
   (define element-types
     (get-field elementTypes node))
   (define element-types-decompiled
@@ -1429,7 +1429,7 @@
    `(List ,@element-types-decompiled)))
 
 ;;; Decompile a TSESTree `TSNamedTupleMember` node.
-(define (decompile-ts-named-tuple-member node (options (js-obj)))
+(define (decompile-ts-named-tuple-member node (options (js/obj)))
   ;; FIXME: Better decompilation of `TSNamedTupleMember`.
   ;; The following strips away the identifier.
   (define element-type
@@ -1437,7 +1437,7 @@
   (decompile-estree element-type options))
 
 ;;; Decompile a TSESTree `TSUnionType` node.
-(define (decompile-ts-union-type node (options (js-obj)))
+(define (decompile-ts-union-type node (options (js/obj)))
   (define types
     (get-field types node))
   (define types-decompiled
@@ -1448,7 +1448,7 @@
    `(U ,@types-decompiled)))
 
 ;;; Decompile a TSESTree `TSFunctionType` node.
-(define (decompile-ts-function-type node (options (js-obj)))
+(define (decompile-ts-function-type node (options (js/obj)))
   (define params
     (get-field params node))
   (define params-decompiled
@@ -1466,7 +1466,7 @@
         ,return-type-decompiled)))
 
 ;;; Decompile a TSESTree `TSTypeReference` node.
-(define (decompile-ts-type-reference node (options (js-obj)))
+(define (decompile-ts-type-reference node (options (js/obj)))
   (define name
     (get-field typeName node))
   (define params
@@ -1486,7 +1486,7 @@
        ,@params-decompiled)))))
 
 ;;; Decompile a TSESTree `TSTypeParameterInstantiation` node.
-(define (decompile-ts-type-parameter-instantiation node (options (js-obj)))
+(define (decompile-ts-type-parameter-instantiation node (options (js/obj)))
   (define params
     (get-field params node))
   (map (lambda (x)
@@ -1494,7 +1494,7 @@
        params))
 
 ;;; Decompile a TSESTree `TSTypeAliasDeclaration` node.
-(define (decompile-ts-type-alias-declaration node (options (js-obj)))
+(define (decompile-ts-type-alias-declaration node (options (js/obj)))
   (define id
     (get-field id node))
   (define id-decompiled
@@ -1508,13 +1508,13 @@
       ,type-annotation-decompiled)))
 
 ;;; Decompile a TSESTree `TSTypeAnnotation` node.
-(define (decompile-ts-type-annotation node (options (js-obj)))
+(define (decompile-ts-type-annotation node (options (js/obj)))
   (decompile-estree
    (get-field typeAnnotation node)
    options))
 
 ;;; Decompile a function expression or declaration.
-(define (decompile-function node (options (js-obj)))
+(define (decompile-function node (options (js/obj)))
   (define type_
     (estree-type node))
   (define id
@@ -1572,7 +1572,7 @@
 
 ;;; Decompile a function parameter.
 ;;; Helper function for `decompile-function`.
-(define (decompile-parameter node (options (js-obj)))
+(define (decompile-parameter node (options (js/obj)))
   (cond
    ((estree-type? node "Identifier")
     (define type-annotation
@@ -1636,7 +1636,7 @@
     node)))
 
 ;;; Default decompiler function.
-(define (default-decompiler node (options (js-obj)))
+(define (default-decompiler node (options (js/obj)))
   (sexp->rose
    (string-append
     (and node (estree-type node))

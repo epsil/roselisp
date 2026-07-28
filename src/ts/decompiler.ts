@@ -805,7 +805,7 @@ function decompileForInStatement(node: any, options: any = {}): any {
   }
   const right: any = decompileEstree(node.right, options);
   const body: any = decompileEstree(node.body, options);
-  return sexpToRose([Symbol.for('for'), [[left, [Symbol.for('js-keys'), right]]], ...body.drop(1)]);
+  return sexpToRose([Symbol.for('for'), [[left, [Symbol.for('js/keys'), right]]], ...body.drop(1)]);
 }
 
 /**
@@ -953,9 +953,9 @@ function decompileObjectExpression(node: any, options: any = {}): any {
     }
   }
   if (spreads.length === 0) {
-    return sexpToRose([Symbol.for('js-obj'), ...properties]);
+    return sexpToRose([Symbol.for('js/obj'), ...properties]);
   } else {
-    return sexpToRose([Symbol.for('js-obj-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('js-obj'), ...properties]] : [])]);
+    return sexpToRose([Symbol.for('js/obj-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('js/obj'), ...properties]] : [])]);
   }
 }
 

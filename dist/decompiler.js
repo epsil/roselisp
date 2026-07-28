@@ -783,7 +783,7 @@ function decompileForInStatement(node, options = {}) {
     }
     const right = decompileEstree(node.right, options);
     const body = decompileEstree(node.body, options);
-    return (0, rose_1.sexpToRose)([Symbol.for('for'), [[left, [Symbol.for('js-keys'), right]]], ...body.drop(1)]);
+    return (0, rose_1.sexpToRose)([Symbol.for('for'), [[left, [Symbol.for('js/keys'), right]]], ...body.drop(1)]);
 }
 /**
  * Decompile an ESTree [`BreakStatement`][estree:breakstatement] node.
@@ -925,10 +925,10 @@ function decompileObjectExpression(node, options = {}) {
         }
     }
     if (spreads.length === 0) {
-        return (0, rose_1.sexpToRose)([Symbol.for('js-obj'), ...properties]);
+        return (0, rose_1.sexpToRose)([Symbol.for('js/obj'), ...properties]);
     }
     else {
-        return (0, rose_1.sexpToRose)([Symbol.for('js-obj-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('js-obj'), ...properties]] : [])]);
+        return (0, rose_1.sexpToRose)([Symbol.for('js/obj-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('js/obj'), ...properties]] : [])]);
     }
 }
 /**

@@ -47,7 +47,7 @@
 ;;; of a value. It is treated as falsy.
 ;;;
 ;;; [js:null]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/null
-(define js-null_ #n)
+(define js/null_ #n)
 
 ;;; JavaScript's `undefined` value.
 ;;;
@@ -90,7 +90,7 @@
 (provide
   default-language
   false_
-  js-null_
+  js/null_
   license
   null_
   package-name

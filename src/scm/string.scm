@@ -153,7 +153,7 @@
   (string-append n ""))
 
 ;;; Indent a string by prepending each line with `n` spaces.
-(define (indent-string str (n 2) (options (js-obj)))
+(define (indent-string str (n 2) (options (js/obj)))
   (define whitespace-option
     (oget options "whitespace"))
   (define whitespace

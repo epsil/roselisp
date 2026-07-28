@@ -31,14 +31,14 @@
   (read-sexp input))
 
 ;;; Parse a string of Lisp code and return an S-expression.
-(define (read-sexp str (options (js-obj)))
+(define (read-sexp str (options (js/obj)))
   (~> str
       (read-rose _ options)
       (rose->sexp _)))
 
 ;;; Parse a string of Lisp code and return an S-expression
 ;;; wrapped in a rose tree.
-(define (read-rose str (options (js-obj)))
+(define (read-rose str (options (js/obj)))
   ;; Parsing is implemented in two stages: a lexical analysis stage
   ;; (`tokenize`) and a syntax analysis stage (`parse-rose`).
   ;; The lexical analysis stage converts a string to a stream of
@@ -59,7 +59,7 @@
 ;;;     [s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]
 ;;;
 ;;; The output of this function is passed to `parse-rose`.
-(define (tokenize str (options (js-obj)))
+(define (tokenize str (options (js/obj)))
   (define comments
     (oget options "comments"))
   (when (undefined? comments)
@@ -221,7 +221,7 @@
 ;;;
 ;;; The output of this function is a S-expression wrapped in a
 ;;; rose tree.
-(define (parse-rose tokens (options (js-obj)))
+(define (parse-rose tokens (options (js/obj)))
   ;; In order to implement this function in a non-recursive way, a
   ;; stack is needed to keep track of expressions and their
   ;; subexpressions. Each stack entry is a list
@@ -392,7 +392,7 @@
 ;;;
 ;;; The output of this function is a fully valid S-expression which
 ;;; can be evaluated in a Lisp environment.
-(define (parse-sexp tokens (options (js-obj)))
+(define (parse-sexp tokens (options (js/obj)))
   (~> tokens
       (parse-rose _ options)
       (rose->sexp _)))
@@ -431,7 +431,7 @@
 
 ;;; Attach comments to a rose tree node, conditional on options.
 ;;; Returns the resulting node and an empty list of comments.
-(define (attach-comments node comments (options (js-obj)))
+(define (attach-comments node comments (options (js/obj)))
   (define comments-option
     (oget options "comments"))
   (when (undefined? comments-option)

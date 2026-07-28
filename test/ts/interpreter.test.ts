@@ -673,7 +673,7 @@ describe('send', function (): any {
 });
 
 describe('dot', function (): any {
-  it('(let ((obj (js-obj "add1" (lambda (x) (+ x 1))))) (. obj add1 1))', function (): any {
+  it('(let ((obj (js/obj "add1" (lambda (x) (+ x 1))))) (. obj add1 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -683,7 +683,7 @@ describe('dot', function (): any {
           [
             Symbol.for('obj'),
             [
-              Symbol.for('js-obj'),
+              Symbol.for('js/obj'),
               'add1',
               [
                 Symbol.for('lambda'),
@@ -698,7 +698,7 @@ describe('dot', function (): any {
       2,
     ]);
   });
-  it('(let ((obj (js-obj "add1" (lambda (x) (+ x 1))))) (.add1 obj 1))', function (): any {
+  it('(let ((obj (js/obj "add1" (lambda (x) (+ x 1))))) (.add1 obj 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -708,7 +708,7 @@ describe('dot', function (): any {
           [
             Symbol.for('obj'),
             [
-              Symbol.for('js-obj'),
+              Symbol.for('js/obj'),
               'add1',
               [
                 Symbol.for('lambda'),
@@ -723,7 +723,7 @@ describe('dot', function (): any {
       2,
     ]);
   });
-  it('(let ((obj (js-obj "add" (lambda (x y) (+ x y))))) (.add obj 1 1))', function (): any {
+  it('(let ((obj (js/obj "add" (lambda (x y) (+ x y))))) (.add obj 1 1))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -733,7 +733,7 @@ describe('dot', function (): any {
           [
             Symbol.for('obj'),
             [
-              Symbol.for('js-obj'),
+              Symbol.for('js/obj'),
               'add',
               [
                 Symbol.for('lambda'),
@@ -748,26 +748,26 @@ describe('dot', function (): any {
       2,
     ]);
   });
-  it('(let ((obj (js-obj))) (set! (.-prop obj) "bar") (.-prop obj))', function (): any {
+  it('(let ((obj (js/obj))) (set! (.-prop obj) "bar") (.-prop obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj')]]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj')]]],
         [Symbol.for('set!'), [Symbol.for('.-prop'), Symbol.for('obj')], 'bar'],
         [Symbol.for('.-prop'), Symbol.for('obj')],
       ],
       'bar',
     ]);
   });
-  return it('(let ((obj (js-obj "prop" "foo"))) (.-prop obj))', function (): any {
+  return it('(let ((obj (js/obj "prop" "foo"))) (.-prop obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
-        [[Symbol.for('obj'), [Symbol.for('js-obj'), 'prop', 'foo']]],
+        [[Symbol.for('obj'), [Symbol.for('js/obj'), 'prop', 'foo']]],
         [Symbol.for('.-prop'), Symbol.for('obj')],
       ],
       'foo',
@@ -1184,7 +1184,7 @@ describe('js/eval', function (): any {
       1,
     ]);
   });
-  it('(interpret \'(js/eval "1") #u (js-obj "eval" #t))', function (): any {
+  it('(interpret \'(js/eval "1") #u (js/obj "eval" #t))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -1192,12 +1192,12 @@ describe('js/eval', function (): any {
         Symbol.for('interpret'),
         [Symbol.for('quote'), [Symbol.for('js/eval'), '1']],
         undefined,
-        [Symbol.for('js-obj'), 'eval', true],
+        [Symbol.for('js/obj'), 'eval', true],
       ],
       1,
     ]);
   });
-  return xit('(interpret \'js/eval #u (js-obj "eval" #f))', function (): any {
+  return xit('(interpret \'js/eval #u (js/obj "eval" #f))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -1205,7 +1205,7 @@ describe('js/eval', function (): any {
         Symbol.for('interpret'),
         [Symbol.for('quote'), Symbol.for('js/eval')],
         undefined,
-        [Symbol.for('js-obj'), 'eval', false],
+        [Symbol.for('js/obj'), 'eval', false],
       ],
       undefined,
     ]);

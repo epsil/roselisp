@@ -49,7 +49,7 @@
 (require (only-in "./constants"
                   default-language
                   false_
-                  js-null_
+                  js/null_
                   license
                   null_
                   package-name
@@ -188,53 +188,53 @@
                   hash?_
                   make-hash_))
 (require (only-in "./javascript"
-                  (js-new_ new_)
-                  js-array?_
-                  js-delete_
-                  js-dot_
-                  js-eighth_
-                  js-eval_
-                  js-fifth_
-                  js-find-index_
-                  js-first_
-                  js-fourth_
-                  js-function-object?_
-                  js-function-type?_
-                  js-function?_
-                  js-get_
-                  js-in_
-                  js-instance-of?_
-                  js-last_
-                  js-length_
-                  js-loosely-equal?_
-                  js-nan?_
-                  js-new_
-                  js-ninth_
-                  js-null?_
-                  js-optional-chaining_
-                  js-plus_
-                  js-reduce-right_
-                  js-reduce_
-                  js-regexp-match_
-                  js-regexp-replace_
-                  js-regexp?_
-                  js-regexp_
-                  js-rest_
-                  js-return_
-                  js-reverse_
-                  js-same-value-zero?_
-                  js-same-value?_
-                  js-second_
-                  js-seventh_
-                  js-sixth_
-                  js-slice_
-                  js-strictly-equal?_
-                  js-tagged-template_
-                  js-take_
-                  js-tenth_
-                  js-third_
-                  js-type-of_
-                  js-yield_))
+                  (js/new_ new_)
+                  js/array?_
+                  js/delete_
+                  js/dot_
+                  js/eighth_
+                  js/eval_
+                  js/fifth_
+                  js/find-index_
+                  js/first_
+                  js/fourth_
+                  js/function-object?_
+                  js/function-type?_
+                  js/function?_
+                  js/get_
+                  js/in_
+                  js/instance-of?_
+                  js/last_
+                  js/length_
+                  js/loosely-equal?_
+                  js/nan?_
+                  js/new_
+                  js/ninth_
+                  js/null?_
+                  js/optional-chaining_
+                  js/plus_
+                  js/reduce-right_
+                  js/reduce_
+                  js/regexp-match_
+                  js/regexp-replace_
+                  js/regexp?_
+                  js/regexp_
+                  js/rest_
+                  js/return_
+                  js/reverse_
+                  js/same-value-zero?_
+                  js/same-value?_
+                  js/second_
+                  js/seventh_
+                  js/sixth_
+                  js/slice_
+                  js/strictly-equal?_
+                  js/tagged-template_
+                  js/take_
+                  js/tenth_
+                  js/third_
+                  js/type-of_
+                  js/yield_))
 (require (only-in "./list"
                   append_
                   array-list-cdr_
@@ -371,11 +371,11 @@
                   while_))
 (require (only-in "./object"
                   field-names_
-                  js-keys_
-                  js-obj-append_
-                  js-obj-p_
-                  js-obj_
-                  js-object-type?_
+                  js/keys_
+                  js/obj-append_
+                  js/obj-p_
+                  js/obj_
+                  js/object-type?_
                   object-ref_
                   object-set!_))
 (require (only-in "./parser"
@@ -527,7 +527,7 @@
 ;;; Default options for interpretation and compilation.
 ;;; See also `default-compilation-options`.
 (define default-options
-  (js-obj "comments" #t
+  (js/obj "comments" #t
           "expressionType" "expression"
           "eval" #f
           "shouldInline" #t
@@ -542,8 +542,8 @@
   (define result
     (if modify
         options
-        (js-obj-append options)))
-  (for ((key (js-keys default-options)))
+        (js/obj-append options)))
+  (for ((key (js/keys default-options)))
     (when (undefined? (oget result key))
       (oset! result key (oget default-options key))))
   result)
@@ -607,32 +607,32 @@
          (,funcall_ ,compile-funcall (compiler-> Any * Any))
          (,gt_ ,compile-greater-than (compiler-> Any * Any))
          (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
-         (,js-arrow_ ,compile-js-arrow (compiler-> Any * Any))
-         (,js-async_ ,compile-js-async (compiler-> Any * Any))
-         (,js-await_ ,compile-js-await (compiler-> Any * Any))
-         (,js-block_ ,compile-js-block (compiler-> Any * Any))
-         (,js-delete_ ,compile-js-delete (compiler-> Any * Any))
-         (,js-do-while_ ,compile-js-do-while (compiler-> Any * Any))
-         (,js-dot_ ,compile-js-dot (compiler-> Any * Any))
-         (,js-eval_ ,compile-js-eval (compiler-> Any * Any))
-         (,js-function_ ,compile-js-function (compiler-> Any * Any))
-         (,js-get_ ,compile-js-get (compiler-> Any * Any))
-         (,js-in_ ,compile-js-in (compiler-> Any * Any))
-         (,js-instance-of?_ ,compile-js-instance-of (compiler-> Any * Any))
-         (,js-loosely-equal?_ ,compile-js-loosely-equal (compiler-> Any * Any))
-         (,js-new_ ,compile-js-new (compiler-> Any * Any))
-         (,js-obj-append_ ,compile-js-obj-append (compiler-> Any * Any))
-         (,js-obj_ ,compile-js-obj (compiler-> Any * Any))
-         (,js-optional-chaining_ ,compile-js-optional-chaining (compiler-> Any * Any))
-         (,js-plus_ ,compile-add (compiler-> Any * Any))
-         (,js-return_ ,compile-return (compiler-> Any * Any))
-         (,js-strictly-equal?_ ,compile-js-strictly-equal (compiler-> Any * Any))
-         (,js-switch_ ,compile-js-switch (compiler-> Any * Any))
-         (,js-tagged-template_ ,compile-js-tagged-template (compiler-> Any * Any))
-         (,js-try_ ,compile-js-try (compiler-> Any * Any))
-         (,js-type-of_ ,compile-js-type-of (compiler-> Any * Any))
-         (,js-while_ ,compile-js-while (compiler-> Any * Any))
-         (,js-yield_ ,compile-yield (compiler-> Any * Any))
+         (,js/arrow_ ,compile-js/arrow (compiler-> Any * Any))
+         (,js/async_ ,compile-js/async (compiler-> Any * Any))
+         (,js/await_ ,compile-js/await (compiler-> Any * Any))
+         (,js/block_ ,compile-js/block (compiler-> Any * Any))
+         (,js/delete_ ,compile-js/delete (compiler-> Any * Any))
+         (,js/do-while_ ,compile-js/do-while (compiler-> Any * Any))
+         (,js/dot_ ,compile-js/dot (compiler-> Any * Any))
+         (,js/eval_ ,compile-js/eval (compiler-> Any * Any))
+         (,js/function_ ,compile-js/function (compiler-> Any * Any))
+         (,js/get_ ,compile-js/get (compiler-> Any * Any))
+         (,js/in_ ,compile-js/in (compiler-> Any * Any))
+         (,js/instance-of?_ ,compile-js/instance-of (compiler-> Any * Any))
+         (,js/loosely-equal?_ ,compile-js/loosely-equal (compiler-> Any * Any))
+         (,js/new_ ,compile-js/new (compiler-> Any * Any))
+         (,js/obj-append_ ,compile-js/obj-append (compiler-> Any * Any))
+         (,js/obj_ ,compile-js/obj (compiler-> Any * Any))
+         (,js/optional-chaining_ ,compile-js/optional-chaining (compiler-> Any * Any))
+         (,js/plus_ ,compile-add (compiler-> Any * Any))
+         (,js/return_ ,compile-return (compiler-> Any * Any))
+         (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
+         (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
+         (,js/tagged-template_ ,compile-js/tagged-template (compiler-> Any * Any))
+         (,js/try_ ,compile-js/try (compiler-> Any * Any))
+         (,js/type-of_ ,compile-js/type-of (compiler-> Any * Any))
+         (,js/while_ ,compile-js/while (compiler-> Any * Any))
+         (,js/yield_ ,compile-yield (compiler-> Any * Any))
          (,js_ ,compile-js (compiler-> Any * Any))
          (,lambda_ ,compile-lambda (compiler-> Any * Any))
          (,let-fields_ ,compile-let-fields (compiler-> Any * Any))
@@ -682,7 +682,7 @@
          (,hash-ref_ ,compile-hash-ref-macro (macro-> Any * Any))
          (,hash-remove!_ ,compile-hash-remove-macro (macro-> Any * Any))
          (,hash-remove_ ,compile-hash-remove-macro (macro-> Any * Any))
-         (,js-regexp_ ,compile-js-regexp-macro (macro-> Any * Any))
+         (,js/regexp_ ,compile-js/regexp-macro (macro-> Any * Any))
          (,make-hash_ ,compile-make-hash-macro (macro-> Any * Any))
          (,map_ ,compile-map-macro (macro-> Any * Any))
          (,member?_ ,compile-member-p-macro (macro-> Any * Any))
@@ -777,38 +777,38 @@
    hash?_
    index-where_
    is-a?_
-   js-array?_
-   js-eighth_
-   js-fifth_
-   js-find-index_
-   js-first_
-   js-fourth_
-   js-function-object?_
-   js-function-type?_
-   js-function?_
-   js-keys_
-   js-last_
-   js-length_
-   js-nan?_
-   js-ninth_
-   js-null?_
-   js-obj-p_
-   js-object-type?_
-   js-reduce-right_
-   js-reduce_
-   js-regexp-match_
-   js-regexp-replace_
-   js-regexp?_
-   js-rest_
-   js-reverse_
-   js-same-value?_
-   js-second_
-   js-seventh_
-   js-sixth_
-   js-slice_
-   js-take_
-   js-tenth_
-   js-third_
+   js/array?_
+   js/eighth_
+   js/fifth_
+   js/find-index_
+   js/first_
+   js/fourth_
+   js/function-object?_
+   js/function-type?_
+   js/function?_
+   js/keys_
+   js/last_
+   js/length_
+   js/nan?_
+   js/ninth_
+   js/null?_
+   js/obj-p_
+   js/object-type?_
+   js/reduce-right_
+   js/reduce_
+   js/regexp-match_
+   js/regexp-replace_
+   js/regexp?_
+   js/rest_
+   js/reverse_
+   js/same-value?_
+   js/second_
+   js/seventh_
+   js/sixth_
+   js/slice_
+   js/take_
+   js/tenth_
+   js/third_
    linked-list-car_
    linked-list-cdr_
    linked-list-eighth_
@@ -907,7 +907,7 @@
     (if (= (js/length args) 1)
         (js/first args)
         (plist->object_ args
-                        (js-obj "case" "camelcase"))))
+                        (js/obj "case" "camelcase"))))
   (define from
     (or (oget options "from")
         'roselisp))
@@ -921,9 +921,9 @@
   (cond
    ((eq? to-language "Roselisp")
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "language" from-language
+       (js/obj "language" from-language
                "sexp" #t)))
     (decompile1 exp inherited-options))
    (else
@@ -942,9 +942,9 @@
       (or (oget options "case")
           "camelcase"))
     (define inherited-options
-      (js-obj-append
+      (js/obj-append
        options
-       (js-obj "case" case-option
+       (js/obj "case" case-option
                "language" to-language
                "expressionType" expression-type)))
     (define env
@@ -962,7 +962,7 @@
   (define options
     (if (= (js/length args) 1)
         (js/first args)
-        (plist->object_ args (js-obj "case" "camelcase"))))
+        (plist->object_ args (js/obj "case" "camelcase"))))
   (define from
     (or (oget options "from")
         'javascript))
@@ -970,9 +970,9 @@
     (or (oget options "to")
         'roselisp))
   (define inherited-options
-    (js-obj-append
+    (js/obj-append
      options
-     (js-obj "from" from
+     (js/obj "from" from
              "to" to)))
   (compile exp inherited-options))
 
@@ -981,7 +981,7 @@
 ;;; Returns a string of JavaScript or TypeScript code.
 (define (compile-with-environment exp
                                   (env (new LispEnvironment))
-                                  (options (js-obj)))
+                                  (options (js/obj)))
   (define language-option
     (or (oget options "language")
         default-language))
@@ -1012,7 +1012,7 @@
          mapping-env)
   (oset! compilation-options "compiledEnvironment" compiled-env)
   (set! compilation-options
-        (js-obj-append
+        (js/obj-append
          default-compilation-options
          compilation-options))
   (with-compilation-options
@@ -1034,7 +1034,7 @@
 
 ;;; Compile a set of modules together.
 ;;; The modules may reference one another.
-(define (compile-modules modules env (options (js-obj)))
+(define (compile-modules modules env (options (js/obj)))
   (define module-map
     (make-hash))
   (define compiled-module-map)
@@ -1057,7 +1057,7 @@
 
 ;;; Compile a module map.
 ;;; Returns a new map containing compiled modules.
-(define (compile-module-map module-map env (options (js-obj)))
+(define (compile-module-map module-map env (options (js/obj)))
   (define result
     (make-hash))
   (define module-object-map
@@ -1072,7 +1072,7 @@
   result)
 
 ;;; Compile a module expression or object.
-(define (compile-module obj env (options (js-obj)))
+(define (compile-module obj env (options (js/obj)))
   (cond
    ((is-a? obj Module)
     (compile-module-object obj env options))
@@ -1080,24 +1080,24 @@
     (compile-module-expression obj env options))))
 
 ;;; Compile a `(module ...)` expression.
-(define (compile-module-expression node env (options (js-obj)))
+(define (compile-module-expression node env (options (js/obj)))
   (define module
     (module-expression->module-object node env))
   (define compilation-options
-    (js-obj-append
+    (js/obj-append
      options
-     (js-obj "currentModule" module)))
+     (js/obj "currentModule" module)))
   (compile-module-object module env compilation-options))
 
 ;;; Compile a `Module` object.
-(define (compile-module-object module env (options (js-obj)))
+(define (compile-module-object module env (options (js/obj)))
   (define expressions
     (send module get-expressions))
   (define module-environment
     (send module get-environment))
   (define module-options
-    (js-obj-append
-     (js-obj "currentModule"
+    (js/obj-append
+     (js/obj "currentModule"
              module
              "referencedSymbols"
              '()
@@ -1143,7 +1143,7 @@
 
 ;;; Compile a set of files.
 ;;; This function writes to disk.
-(define (compile-files! files (options (js-obj)))
+(define (compile-files! files (options (js/obj)))
   (define module-expression-map
     (new ThunkedMap))
   (define filename-map
@@ -1163,9 +1163,9 @@
   (define quick-option
     (oget options "quick"))
   (define compilation-options
-    (js-obj-append
+    (js/obj-append
      options
-     (js-obj "expressionType" "statement"
+     (js/obj "expressionType" "statement"
              "language" language-option)))
   (define extension
     (if (eq? language-option "TypeScript")
@@ -1191,7 +1191,7 @@
                 (lambda ()
                   (define data
                     (~> file
-                        (readFileSync _ (js-obj "encoding" "utf8"))
+                        (readFileSync _ (js/obj "encoding" "utf8"))
                         (regexp-replace (regexp "^#!.*") _ "")
                         (string-append
                          "(module m scheme\n"
@@ -1199,7 +1199,7 @@
                          "\n)")))
                   (define node
                     (read-rose data
-                               (js-obj "comments"
+                               (js/obj "comments"
                                        comments-option)))
                   node)))
     (cond
@@ -1239,10 +1239,10 @@
                 (string-append module-name
                                extension)))
     (mkdirSync out-dir-option
-               (js-obj "recursive" #t))
+               (js/obj "recursive" #t))
     (writeFileSync out-file
                    code
-                   (js-obj "encoding" "utf8"))
+                   (js/obj "encoding" "utf8"))
     (display
      (string-append "Compiled "
                     (hash-ref filename-map module-name)
@@ -1252,13 +1252,13 @@
 
 ;;; Compile a file.
 ;;; This function writes to disk.
-(define (compile-file! infile outfile (options (js-obj)))
+(define (compile-file! infile outfile (options (js/obj)))
   ;; TODO: `outfile`. Maybe by adding an
   ;; `outFileMap` option to `compile-files!`?
   (compile-files! (list infile) options))
 
 ;;; Compile a S-expression wrapped in a rose tree.
-(define (compile-rose node env (options (js-obj)))
+(define (compile-rose node env (options (js/obj)))
   (define language-env
     (oget options "languageEnvironment"))
   (define (lang-filter x)
@@ -1282,9 +1282,9 @@
         (first exp))
       (cond
        ((and (symbol? op)
-             (send env has? op (js-obj "filter" lang-filter))
+             (send env has? op (js/obj "filter" lang-filter))
              (simple-type?
-              (send env get-type op (js-obj "filter" lang-filter))))
+              (send env get-type op (js/obj "filter" lang-filter))))
         (set! result
               (compile-function-call
                node1 env options)))
@@ -1374,26 +1374,26 @@
   result)
 
 ;;; Compile a S-expression.
-(define (compile-sexp exp env (options (js-obj)))
+(define (compile-sexp exp env (options (js/obj)))
   (~> exp
       (sexp->rose _)
       (compile-rose _ env options)))
 
 ;;; Compile `node` as an expression.
-(define (compile-expression node env (options (js-obj)))
+(define (compile-expression node env (options (js/obj)))
   (compile-rose node env (make-expression-options options)))
 
 ;;; Compile `node` as a regular statement.
-(define (compile-statement node env (options (js-obj)))
+(define (compile-statement node env (options (js/obj)))
   (compile-rose node env (make-statement-options options)))
 
 ;;; Compile `node` as a return statement.
-(define (compile-return-statement node env (options (js-obj)))
+(define (compile-return-statement node env (options (js/obj)))
   (compile-rose node env (make-return-statement-options options)))
 
 ;;; Compile `node` as a regular statement or as a return statement,
 ;;; depending on the value of the `expressionType` option.
-(define (compile-statement-or-return-statement node env (options (js-obj)))
+(define (compile-statement-or-return-statement node env (options (js/obj)))
   (cond
    ((eq? (oget options "expressionType") "return")
     (compile-return-statement node env options))
@@ -1441,14 +1441,14 @@
 ;;; by {@link Environment}. The expression is evaluated in
 ;;; context of a basic Lisp environment defining such constructs
 ;;; as `(if ...)`, `(cond ...)`, and so on.
-(define (interpret exp (env (default-environment)) (options (js-obj)))
+(define (interpret exp (env (default-environment)) (options (js/obj)))
   (define expression-type
     (or (oget options "expressionType")
         "statement"))
   (define inherited-options
-    (js-obj-append
+    (js/obj-append
      options
-     (js-obj
+     (js/obj
       "case" "none"
       "expressionType" expression-type
       "estree" #t
@@ -1470,7 +1470,7 @@
 ;;; as `(if ...)`, `(cond ...)`, and so on.
 (define interpret1
   (dashify
-   (lambda (exp (env (default-environment)) (options (js-obj)))
+   (lambda (exp (env (default-environment)) (options (js/obj)))
      (define evaluator
        (or (oget options "evaluator")
            eval_
@@ -1483,15 +1483,15 @@
                      options))))
 
 ;;; Interpret a string of Lisp code.
-(define (interpret-string str (env #u) (options (js-obj)))
+(define (interpret-string str (env #u) (options (js/obj)))
   (interpret (read-sexp str) env options))
 
 ;;; Interpret a list of files.
-(define (interpret-files files (env #u) (options (js-obj)))
+(define (interpret-files files (env #u) (options (js/obj)))
   (map (lambda (file)
          (define str
            (~> file
-               (readFileSync _ (js-obj "encoding" "utf8"))
+               (readFileSync _ (js/obj "encoding" "utf8"))
                (regexp-replace (regexp "^#!.*") _ "")
                (string-append "(begin\n" _ "\n)")))
          (define result
@@ -1512,7 +1512,7 @@
        lisp-environment))
 
 ;;; Make a Lisp interpretation environment.
-(define (make-interpretation-environment env (options (js-obj)))
+(define (make-interpretation-environment env (options (js/obj)))
   (define eval-option
     (oget options "eval"))
   ;; TODO: Make `#f` the default.
@@ -1542,27 +1542,27 @@
 ;;; Make compilation options for compiling a form as
 ;;; an expression.
 (define (make-expression-options options)
-  (js-obj-append
+  (js/obj-append
    options
-   (js-obj "expressionType" "expression")))
+   (js/obj "expressionType" "expression")))
 
 ;;; Make compilation options for compiling a form as
 ;;; a statement.
 (define (make-statement-options options)
-  (js-obj-append
+  (js/obj-append
    options
-   (js-obj "expressionType" "statement")))
+   (js/obj "expressionType" "statement")))
 
 ;;; Make compilation options for compiling a form as
 ;;; a return statement.
 (define (make-return-statement-options options)
-  (js-obj-append
+  (js/obj-append
    options
-   (js-obj "expressionType" "return")))
+   (js/obj "expressionType" "return")))
 
 ;;; Make an expression or statement ESTree node,
 ;;; conditional on options.
-(define (make-expression-or-statement node (options (js-obj)))
+(define (make-expression-or-statement node (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -1574,7 +1574,7 @@
 
 ;;; Wrap an expression in a statement. An `ExpressionStatement`
 ;;; or `ReturnStatement` node is returned, conditional on options.
-(define (wrap-expression-in-statement node (options (js-obj)))
+(define (wrap-expression-in-statement node (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -1682,7 +1682,7 @@
 
 ;;; Transfer the `comments` property from ESTree `node1` to ESTree `node2`,
 ;;; compiling them in the process.
-(define (transfer-and-compile-comments node1 node2 (options (js-obj)))
+(define (transfer-and-compile-comments node1 node2 (options (js/obj)))
   (define comments-option
     (oget options "comments"))
   (define comments
@@ -1810,7 +1810,7 @@
 
 ;;; Convert a `(define (...) ...)` form to
 ;;; a `(lambda (...) ...)` form.
-(define (define->lambda node (options (js-obj)))
+(define (define->lambda node (options (js/obj)))
   (define curried-option
     (oget options "curried"))
   (define exp
@@ -2012,15 +2012,15 @@
         (rose->sexp _)))))
 
 ;;; Compile an `(and ...)` expression.
-(define (compile-and node env (options (js-obj)))
+(define (compile-and node env (options (js/obj)))
   (compile-logical-expression
    node env
    options
-   (js-obj "identity" #t
+   (js/obj "identity" #t
            "operator" "&&")))
 
 ;;; Compile an `(ann ...)` expression.
-(define (compile-ann node env (options (js-obj)))
+(define (compile-ann node env (options (js/obj)))
   (define language
     (oget options "language"))
   (define e_
@@ -2038,7 +2038,7 @@
     (compile-rose e_ env options))))
 
 ;;; Compile a `(define-type ...)` expression.
-(define (compile-define-type node env (options (js-obj)))
+(define (compile-define-type node env (options (js/obj)))
   (define language
     (oget options "language"))
   (cond
@@ -2057,7 +2057,7 @@
     (empty-program))))
 
 ;;; Compile a type expression.
-(define (compile-type node env (options (js-obj)))
+(define (compile-type node env (options (js/obj)))
   (define exp
     (if (is-a? node Rose)
         (rose->sexp node)
@@ -2065,7 +2065,7 @@
   (compile-type-exp exp env options))
 
 ;;; Helper function for `compile-type`.
-(define (compile-type-exp exp env (options (js-obj)))
+(define (compile-type-exp exp env (options (js/obj)))
   (cond
    ((symbol? exp)
     (cond
@@ -2156,7 +2156,7 @@
     (define pos 0)
     (define (compile-param param
                            (options
-                            (js-obj "optional" #f
+                            (js/obj "optional" #f
                                     "rest" #f)))
       (define-fields (optional rest)
         options)
@@ -2178,13 +2178,13 @@
     (define optional-params-compiled
       (map (lambda (param)
              (compile-param param
-                            (js-obj "optional" #t)))
+                            (js/obj "optional" #t)))
            optional-params))
     (define rest-params-compiled
       (if rest-param
           (list
            (compile-param rest-param
-                          (js-obj "rest" #t)))
+                          (js/obj "rest" #t)))
           '()))
     (define return-value-compiled
       (compile-type-exp return-value env options))
@@ -2223,14 +2223,14 @@
   #u)
 
 ;;; Compile a `(+ ...)` expression.
-(define (compile-add node env (options (js-obj)))
+(define (compile-add node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js-obj "identity" 0
+   (js/obj "identity" 0
            "operator" "+")))
 
 ;;; Compile an `(apply ...)` expression.
-(define (compile-apply node env (options (js-obj)))
+(define (compile-apply node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (define f
@@ -2298,7 +2298,7 @@
      options))))
 
 ;;; Compile an `(array-ref ...)` expression.
-(define (compile-array-ref node env (options (js-obj)))
+(define (compile-array-ref node env (options (js/obj)))
   (define language
     (oget options "language"))
   (define variable
@@ -2326,7 +2326,7 @@
     (compile-expression variable env options))
   (define computed #t)
   (define optional
-    (form? variable js-optional-chaining_ env))
+    (form? variable js/optional-chaining_ env))
   (define result
     (foldl (lambda (idx arr)
              (new MemberExpression arr idx computed optional))
@@ -2335,7 +2335,7 @@
   (make-expression-or-statement result options))
 
 ;;; Compile an `(array-set! ...)` expression.
-(define (compile-array-set node env (options (js-obj)))
+(define (compile-array-set node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (define arr
@@ -2351,25 +2351,25 @@
    env options))
 
 ;;; Compile a `(js/get ...)` expression.
-(define (compile-js-get node env (options (js-obj)))
+(define (compile-js/get node env (options (js/obj)))
   (compile-array-ref node env options))
 
 ;;; Compile an `(object-ref ...)` expression.
-(define (compile-object-ref node env (options (js-obj)))
+(define (compile-object-ref node env (options (js/obj)))
   (compile-array-ref node env options))
 
 ;;; Compile an `(object-set! ...)` expression.
-(define (compile-object-set node env (options (js-obj)))
+(define (compile-object-set node env (options (js/obj)))
   (compile-array-set node env options))
 
 ;;; Compile an atomic expression, such as `foo`.
-(define (compile-atom node env (options (js-obj)))
+(define (compile-atom node env (options (js/obj)))
   (make-expression-or-statement
    (new Literal (rose->sexp node))
    options))
 
 ;;; Compile a `(: ...)` expression.
-(define (compile-colon node env (options (js-obj)))
+(define (compile-colon node env (options (js/obj)))
   (define sym
     (send node get 1))
   (define sym-exp
@@ -2382,7 +2382,7 @@
   (compile-nop node env options))
 
 ;;; Compile a `(cond ...)` expression.
-(define (compile-cond node env (options (js-obj)))
+(define (compile-cond node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (define cond-clauses
@@ -2470,7 +2470,7 @@
              cond-clauses))))))
 
 ;;; Compile a `(define ...)` expression.
-(define (compile-define node env (options (js-obj)))
+(define (compile-define node env (options (js/obj)))
   (define language-env
     (oget options "languageEnvironment"))
   (define (lang-filter x)
@@ -2575,12 +2575,12 @@
             "void"
             #u))
       (set! result
-            (compile-js-function
+            (compile-js/function
              lambda-exp
              env
              (make-expression-options
               options)
-             (js-obj "functionName" function-name
+             (js/obj "functionName" function-name
                      "returnType" return-type)))
       (when (is-a? compiled-type TSFunctionType)
         (for ((i (range 0 (js/length (get-field params result)))))
@@ -2620,7 +2620,7 @@
                      options)))
          "let"))
    ;; Asynchronous function definition.
-   ((and (form? (third exp) js-async_ env)
+   ((and (form? (third exp) js/async_ env)
          (form? (second (third exp)) lambda_ env))
     (define lambda-node
       (send (send node get 2) get 1))
@@ -2656,7 +2656,7 @@
           (send env
                 get-local-type
                 sym
-                (js-obj "notFound" 'Any)))
+                (js/obj "notFound" 'Any)))
     (send env
           set-local!
           sym
@@ -2684,7 +2684,7 @@
          "let"))))
 
 ;;; Compile a `(define/async ...)` expression.
-(define (compile-define-async node env (options (js-obj)))
+(define (compile-define-async node env (options (js/obj)))
   (define inline-lisp-sources
     (oget options "inlineLispSources"))
   (define result
@@ -2707,14 +2707,14 @@
   result)
 
 ;;; Compile a `(define/generator ...)` expression.
-(define (compile-define-generator node env (options (js-obj)))
+(define (compile-define-generator node env (options (js/obj)))
   (define result
     (compile-define node env options))
   (set-field! generator result #t)
   result)
 
 ;;; Compile a `(/ ...)` expression.
-(define (compile-div node env (options (js-obj)))
+(define (compile-div node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -2731,11 +2731,11 @@
    (else
     (compile-binary-expression
      node env options
-     (js-obj "identity" 1
+     (js/obj "identity" 1
              "operator" "/")))))
 
 ;;; Compile a `(send ...)` expression.
-(define (compile-send node env (options (js-obj)))
+(define (compile-send node env (options (js/obj)))
   (define obj
     (send node get 1))
   (define method
@@ -2764,7 +2764,7 @@
    options))
 
 ;;; Compile a `(send/apply ...)` expression.
-(define (compile-send-apply node env (options (js-obj)))
+(define (compile-send-apply node env (options (js/obj)))
   (define obj
     (send node get 1))
   (define method
@@ -2780,17 +2780,17 @@
    options))
 
 ;;; Compile a `(js/=== ...)` expression.
-(define (compile-js-strictly-equal node env (options (js-obj)))
+(define (compile-js/strictly-equal node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js-obj "identity" #t
+   (js/obj "identity" #t
            "operator" "===")))
 
 ;;; Compile a `(js/== ...)` expression.
-(define (compile-js-loosely-equal node env (options (js-obj)))
+(define (compile-js/loosely-equal node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js-obj "identity" #t
+   (js/obj "identity" #t
            "operator" "==")))
 
 ;;; Compiler macro for `(foldl ...)` expressions.
@@ -2842,13 +2842,13 @@
     `(,C-exp ,exp))))
 
 ;;; Compile a `(funcall ...)` expression.
-(define (compile-funcall node env (options (js-obj)))
+(define (compile-funcall node env (options (js/obj)))
   (compile-function-call
    (slice-rose node 1)
    env options))
 
 ;;; Compile a function call.
-(define (compile-function-call node env (options (js-obj)))
+(define (compile-function-call node env (options (js/obj)))
   (define referenced-symbols
     (oget options "referencedSymbols"))
   (define current-module
@@ -2880,9 +2880,9 @@
          ;; Set the `shouldInline` option to `#f`
          ;; if `op` is a symbol and there is a
          ;; compilation macro defined for it.
-         (js-obj-append
+         (js/obj-append
           options
-          (js-obj "shouldInline" #f))
+          (js/obj "shouldInline" #f))
          options)))
   (define args-exps
     (map (lambda (x)
@@ -2895,7 +2895,7 @@
 
 ;;; Add symbol `sym` to `referencedSymbols` if it references a value
 ;;; not defined in the current module.
-(define (add-referenced-symbol sym env (options (js-obj)))
+(define (add-referenced-symbol sym env (options (js/obj)))
   (define referenced-symbols
     (oget options "referencedSymbols"))
   (when (and referenced-symbols
@@ -2906,7 +2906,7 @@
 
 ;;; Whether the language binding for `sym` should be added to
 ;;; the global environment.
-(define (should-inline? sym env (options (js-obj)))
+(define (should-inline? sym env (options (js/obj)))
   ;; This may be disabled with the `shouldInline` option.
   (define should-inline-option
     (oget options "shouldInline"))
@@ -2928,7 +2928,7 @@
        (not (send compilation-variables-env has? sym))
        ;; Do not inline if there is a local binding for the
        ;; value (e.g., a `let` variable).
-       (not (send env has? sym (js-obj "filter" lang-filter)))
+       (not (send env has? sym (js/obj "filter" lang-filter)))
        ;; Do not inline if the current module defines the
        ;; value.
        (not (and current-module
@@ -2937,10 +2937,10 @@
        ;; However, do not inline if the value is a JavaScript
        ;; value, i.e., if it is provided by the very language
        ;; compiled to.
-       (send language-env has? sym (js-obj "filter" js-filter))))
+       (send language-env has? sym (js/obj "filter" js-filter))))
 
 ;;; Compile a `(> ...)` expression.
-(define (compile-greater-than node env (options (js-obj)))
+(define (compile-greater-than node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -2951,7 +2951,7 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js-obj "identity" #t
+     (js/obj "identity" #t
              "operator" ">")))
    (else
     ;; Create `(and ...)` expression.
@@ -2966,7 +2966,7 @@
      env options))))
 
 ;;; Compile a `(>= ...)` expression.
-(define (compile-greater-than-or-equal node env (options (js-obj)))
+(define (compile-greater-than-or-equal node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -2977,7 +2977,7 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js-obj "identity" #t
+     (js/obj "identity" #t
              "operator" ">=")))
    (else
     ;; Create `(and ...)` expression.
@@ -2996,8 +2996,8 @@
 (define (compile-binary-expression
          node
          env
-         (options (js-obj))
-         (settings (js-obj)))
+         (options (js/obj))
+         (settings (js/obj)))
   (define operator
     (oget settings "operator"))
   (define logical
@@ -3048,22 +3048,22 @@
 (define (compile-logical-expression
          node
          env
-         (options (js-obj))
-         (settings (js-obj)))
+         (options (js/obj))
+         (settings (js/obj)))
   (compile-binary-expression
    node env options
-   (js-obj-append
+   (js/obj-append
     settings
-    (js-obj "logical" #t))))
+    (js/obj "logical" #t))))
 
 ;;; Compile a `(lambda ...)` expression.
-(define (compile-lambda node env (options (js-obj)))
-  (compile-js-function node env options))
+(define (compile-lambda node env (options (js/obj)))
+  (compile-js/function node env options))
 
 ;;; Compile a `(js/function ...)` expression.
-(define (compile-js-function node env (options (js-obj)) (settings (js-obj)))
+(define (compile-js/function node env (options (js/obj)) (settings (js/obj)))
   (define inherited-options
-    (js-obj-append options))
+    (js/obj-append options))
   (define exp
     (rose->sexp node))
   (define function-name
@@ -3171,9 +3171,9 @@
            body-statements)
           (send set-parent node))
       env1
-      (js-obj-append
+      (js/obj-append
        inherited-options
-       (js-obj "expressionType"
+       (js/obj "expressionType"
                (if (eq? return-type "void")
                    "statement"
                    "return"))))))
@@ -3197,9 +3197,9 @@
    result inherited-options))
 
 ;;; Compile a `(js/arrow ...)` expression.
-(define (compile-js-arrow node env (options (js-obj)))
+(define (compile-js/arrow node env (options (js/obj)))
   (define f
-    (compile-js-function node env options))
+    (compile-js/function node env options))
   (cond
    ((is-a? f FunctionExpression)
     (new ArrowFunctionExpression
@@ -3209,7 +3209,7 @@
     f)))
 
 ;;; Compile a `(< ...)` expression.
-(define (compile-less-than node env (options (js-obj)))
+(define (compile-less-than node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -3220,7 +3220,7 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js-obj "identity" #t
+     (js/obj "identity" #t
              "operator" "<")))
    (else
     ;; Create `(and ...)` expression.
@@ -3235,7 +3235,7 @@
      env options))))
 
 ;;; Compile a `(<= ...)` expression.
-(define (compile-less-than-or-equal node env (options (js-obj)))
+(define (compile-less-than-or-equal node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -3246,7 +3246,7 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js-obj "identity" #t
+     (js/obj "identity" #t
              "operator" "<=")))
    (else
     ;; Create `(and ...)` expression.
@@ -3261,13 +3261,13 @@
      env options))))
 
 ;;; Compile a `(let ...)` expression.
-(define (compile-let node env (options (js-obj)))
+(define (compile-let node env (options (js/obj)))
   ;; There is no distinction between `(let ...)` and `(let* ...)`
   ;; expressions---they are compiled in the same way.
   (compile-let-star node env options))
 
 ;;; Compile a `(let* ...)` expression.
-(define (compile-let-star node env (options (js-obj)))
+(define (compile-let-star node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -3281,7 +3281,7 @@
     (define (lang-filter x)
       (not (eq? x language-env)))
     (define inherited-options
-      (js-obj-append options))
+      (js/obj-append options))
     (define make-block #f)
     (define let-nodes
       (~> node
@@ -3301,7 +3301,7 @@
                           (send env
                                 has?
                                 sym
-                                (js-obj "filter" lang-filter)))
+                                (js/obj "filter" lang-filter)))
                  (set! make-block #t))
                (sexp->rose
                 `(define ,(send x get 0)
@@ -3313,7 +3313,7 @@
                           (send env
                                 has?
                                 sym
-                                (js-obj "filter" lang-filter)))
+                                (js/obj "filter" lang-filter)))
                  (set! make-block #t))
                (sexp->rose
                 `(define ,x)
@@ -3337,7 +3337,7 @@
     result)))
 
 ;;; Compile a `(let-values ...)` expression.
-(define (compile-let-values node env (options (js-obj)))
+(define (compile-let-values node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -3351,7 +3351,7 @@
     (define (lang-filter x)
       (not (eq? x language-env)))
     (define inherited-options
-      (js-obj-append options))
+      (js/obj-append options))
     (define make-block #f)
     (define let-nodes
       (~> node
@@ -3370,7 +3370,7 @@
                           (send env
                                 has?
                                 sym
-                                (js-obj "filter" lang-filter)))
+                                (js/obj "filter" lang-filter)))
                  (set! make-block #t))
                (sexp->rose
                 `(define ,x)))
@@ -3386,7 +3386,7 @@
                             (send env
                                   has?
                                   sym
-                                  (js-obj "filter" lang-filter)))
+                                  (js/obj "filter" lang-filter)))
                    (set! make-block #t)))
                 (else
                  (define syms
@@ -3396,7 +3396,7 @@
                      (when (send env
                                  has?
                                  sym
-                                 (js-obj "filter" lang-filter))
+                                 (js/obj "filter" lang-filter))
                        (set! make-block #t)
                        (break))))))
                (define expression
@@ -3424,11 +3424,11 @@
     result)))
 
 ;;; Compile a `(define-values ...)` expression.
-(define (compile-define-values node env (options (js-obj)))
+(define (compile-define-values node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (define inherited-options
-    (js-obj-append options))
+    (js/obj-append options))
   (define expression-type
     (oget inherited-options
           "expressionType"))
@@ -3558,11 +3558,11 @@
        "let"))
 
 ;;; Compile a `(set!-values ...)` expression.
-(define (compile-set-values node env (options (js-obj)))
+(define (compile-set-values node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (define inherited-options
-    (js-obj-append options))
+    (js/obj-append options))
   (define expression-type
     (oget inherited-options
           "expressionType"))
@@ -3590,7 +3590,7 @@
    inherited-options))
 
 ;;; Compile a `(let-fields ...)` expression.
-(define (compile-let-fields node env (options (js-obj)))
+(define (compile-let-fields node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -3604,7 +3604,7 @@
     (define (lang-filter x)
       (not (eq? x language-env)))
     (define inherited-options
-      (js-obj-append options))
+      (js/obj-append options))
     (define make-block #f)
     (define let-nodes
       (~> node
@@ -3629,7 +3629,7 @@
                           (send env
                                 has?
                                 sym
-                                (js-obj "filter" lang-filter)))
+                                (js/obj "filter" lang-filter)))
                  (set! make-block #t)))
              (sexp->rose
               `(define-fields ,fields
@@ -3654,7 +3654,7 @@
     result)))
 
 ;;; Compile a `(define-fields ...)` expression.
-(define (compile-define-fields node env (options (js-obj)))
+(define (compile-define-fields node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (define language-env
@@ -3674,7 +3674,7 @@
   (define obj-thunk
     (thunk
      (lambda ()
-       (define result (js-obj))
+       (define result (js/obj))
        (try
          (set! result
                (interpret obj-exp env))
@@ -3728,7 +3728,7 @@
        "let"))
 
 ;;; Compile a `(set!-fields! ...)` expression.
-(define (compile-set-fields node env (options (js-obj)))
+(define (compile-set-fields node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (wrap-expression-in-statement
@@ -3757,7 +3757,7 @@
    options))
 
 ;;; Compile a `(list ...)` expression.
-(define (compile-list node env (options (js-obj)))
+(define (compile-list node env (options (js/obj)))
   (make-expression-or-statement
    (new ArrayExpression
         (map (lambda (x)
@@ -3767,7 +3767,7 @@
    options))
 
 ;;; Compile a fexpr call.
-(define (compile-fexpr-call node env (options (js-obj)))
+(define (compile-fexpr-call node env (options (js/obj)))
   (define op
     (send node get 0))
   (define args
@@ -3781,7 +3781,7 @@
   (compile-function-call call env options))
 
 ;;; Compile a macro call.
-(define (compile-macro-call node env (options (js-obj)))
+(define (compile-macro-call node env (options (js/obj)))
   ;; Only expand the macro a single step, as there might be
   ;; compilers defined for the immediate expansion.
   (define expansion
@@ -3969,7 +3969,7 @@
 
 ;;; Compile a `(. ...)` expression.
 ;;; Also handles `(.method obj ...)` calls.
-(define (compile-dot node env (options (js-obj)))
+(define (compile-dot node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (define match
@@ -3992,7 +3992,7 @@
         (string->symbol field))
       (define obj
         (send node get 1))
-      (compile-js-dot
+      (compile-js/dot
        (sexp->rose
         `(js/. ,obj ,field-sym))
        env
@@ -4010,7 +4010,7 @@
                           method))
       (define field
         (second match))
-      (compile-js-dot
+      (compile-js/dot
        (sexp->rose
         `(js/. ,obj ,(string->symbol field))
         node)
@@ -4027,10 +4027,10 @@
        env options))))))
 
 ;;; Compile a `(js/. ...)` expression.
-(define (compile-js-dot node env (options (js-obj)))
+(define (compile-js/dot node env (options (js/obj)))
   (cond
    ((> (send node size) 3)
-    (compile-js-dot
+    (compile-js/dot
      (sexp->rose
       (foldl (lambda (prop obj)
                `(js/. ,obj ,prop))
@@ -4082,10 +4082,10 @@
      options))))
 
 ;;; Compile a `(js/?. ...)` expression.
-(define (compile-js-optional-chaining node env (options (js-obj)))
+(define (compile-js/optional-chaining node env (options (js/obj)))
   (cond
    ((> (send node size) 3)
-    (compile-js-optional-chaining
+    (compile-js/optional-chaining
      (sexp->rose
       (foldl (lambda (prop obj)
                `(js/?. ,obj ,prop))
@@ -4117,7 +4117,7 @@
      result options))))
 
 ;;; Compile a `(set-field! ...)` expression.
-(define (compile-set-field node env (options (js-obj)))
+(define (compile-set-field node env (options (js/obj)))
   (define field
     (send node get 1))
   (define obj
@@ -4131,26 +4131,26 @@
    env options))
 
 ;;; Compile a `(modulo ...)` expression.
-(define (compile-modulo node env (options (js-obj)))
+(define (compile-modulo node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js-obj "identity" 1
+   (js/obj "identity" 1
            "operator" "%")))
 
 ;;; Compile a `(* ...)` expression.
-(define (compile-mul node env (options (js-obj)))
+(define (compile-mul node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js-obj "identity" 1
+   (js/obj "identity" 1
            "operator" "*")))
 
 ;;; "NO-OP" compilation operation.
 ;;; Creates an empty program fragment and does nothing else.
-(define (compile-nop node env (options (js-obj)))
+(define (compile-nop node env (options (js/obj)))
   (make-program-fragment))
 
 ;;; Compile a `(not ...)` expression.
-(define (compile-not node env (options (js-obj)))
+(define (compile-not node env (options (js/obj)))
   (define (is-not-expression? x)
     (and (estree-type? x "UnaryExpression")
          (eq? (get-field operator x) "!")))
@@ -4185,7 +4185,7 @@
   (make-expression-or-statement result options))
 
 ;;; Compile a `(begin ...)` expression.
-(define (compile-begin node env (options (js-obj)))
+(define (compile-begin node env (options (js/obj)))
   (define language-env
     (oget options "languageEnvironment"))
   (define (lang-filter x)
@@ -4240,7 +4240,7 @@
     (make-program-fragment body-statements))))
 
 ;;; Compile a `(js/block ...)` expression.
-(define (compile-js-block node env (options (js-obj)))
+(define (compile-js/block node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -4253,7 +4253,7 @@
 ;;; Make and compile a `(require ...)` or `(define-values ...)` form
 ;;; that defines referenced values from the language environment.
 ;;; `symbols` is a list of symbols bound in the language environment.
-(define (build-global-environment symbols env (options (js-obj)))
+(define (build-global-environment symbols env (options (js/obj)))
   (define exp
     (make-global-environment-exp symbols env options))
   (compile-global-environment exp env options))
@@ -4312,9 +4312,9 @@
             (compile-rose
              (sexp->rose exp)
              env2
-             (js-obj-append
+             (js/obj-append
               options
-              (js-obj "currentModule"
+              (js/obj "currentModule"
                       current-module
                       "referencedSymbols"
                       referenced-symbols-1))))
@@ -4342,7 +4342,7 @@
             (set! exp
                   `(define ,internal-symbol
                      (js ,js-string))))))
-         ((js-obj? value)
+         ((js/obj? value)
           (define js-string
             (send JSON stringify value #n 2))
           (set! internal-symbol symbol)
@@ -4384,7 +4384,7 @@
 
 ;;; Compile a `(define-values ...)` form that defines referenced values
 ;;; from the language environment.
-(define (compile-global-environment exp env (options (js-obj)))
+(define (compile-global-environment exp env (options (js/obj)))
   (cond
    ((not exp)
     (empty-program))
@@ -4405,9 +4405,9 @@
         (compile-sexp
          body
          env1
-         (js-obj-append
+         (js/obj-append
           options
-          (js-obj "continuationEnvironment" (new LispEnvironment)
+          (js/obj "continuationEnvironment" (new LispEnvironment)
                   "expressionType" "expression"))))
       (define var-decl
         (compile-sexp define-values-form env1 options))
@@ -4434,9 +4434,9 @@
     (make-global-environment-exp
      (list symbol)
      env
-     (js-obj-append
+     (js/obj-append
       options
-      (js-obj "inlineFunctions" #t))))
+      (js/obj "inlineFunctions" #t))))
   (cond
    ((> (js/length global-environment-exp) 1)
     (define lambda-call
@@ -4467,15 +4467,15 @@
     global-environment-exp)))
 
 ;;; Compile an `(or ...)` expression.
-(define (compile-or node env (options (js-obj)))
+(define (compile-or node env (options (js/obj)))
   (compile-logical-expression
    node env
    options
-   (js-obj "identity" #f
+   (js/obj "identity" #f
            "operator" "||")))
 
 ;;; Compile a `(provide ...)` expression.
-(define (compile-provide node env (options (js-obj)))
+(define (compile-provide node env (options (js/obj)))
   (define expressions
     (send node drop 1))
   ;; Sort `all-from-out` expressions from the rest.
@@ -4517,7 +4517,7 @@
                     (sexp->rose x1)
                     env
                     options
-                    (js-obj "literalSymbol" #t))
+                    (js/obj "literalSymbol" #t))
                    options)))
           (when (symbol? x2)
             (set! x2
@@ -4526,7 +4526,7 @@
                     (sexp->rose x2)
                     env
                     options
-                    (js-obj "literalSymbol" #t))
+                    (js/obj "literalSymbol" #t))
                    options)))
           (unless (memq? x2 seen)
             (push-right! seen x2)
@@ -4543,7 +4543,7 @@
                   (sexp->rose x1)
                   env
                   options
-                  (js-obj "literalSymbol" #t))
+                  (js/obj "literalSymbol" #t))
                  options)))
         (unless (memq? x1 seen)
           (push-right! seen x1)
@@ -4562,7 +4562,7 @@
     (make-program-fragment results))))
 
 ;;; Compile a `(quote ...)` expression.
-(define (compile-quote node env (options (js-obj)))
+(define (compile-quote node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (define result)
@@ -4583,7 +4583,7 @@
            (send node get 1)
            env
            options
-           (js-obj "quotedSymbol" #t))))
+           (js/obj "quotedSymbol" #t))))
    (else
     (set! result
           (compile-expression
@@ -4594,14 +4594,14 @@
    result options))
 
 ;;; Compile a `(quasiquote ...)` expression.
-(define (compile-quasiquote node env (options (js-obj)))
+(define (compile-quasiquote node env (options (js/obj)))
   (make-expression-or-statement
    (compile-quasiquote-helper
     (send node get 1) env options)
    options))
 
 ;;; Helper function for `compile-quasiquote`.
-(define (compile-quasiquote-helper node env (options (js-obj)))
+(define (compile-quasiquote-helper node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -4634,7 +4634,7 @@
               (send node get-nodes))))))
 
 ;;; Compile a `(require ...)` expression.
-(define (compile-require node env (options (js-obj)))
+(define (compile-require node env (options (js/obj)))
   (define es-module-interop
     (oget options "esModuleInterop"))
   (define language-env
@@ -4672,7 +4672,7 @@
                   (sexp->rose x1)
                   env
                   options
-                  (js-obj "literalSymbol" #t))
+                  (js/obj "literalSymbol" #t))
                  options)))
         (when (symbol? x2)
           (set! x2-str
@@ -4681,10 +4681,10 @@
                   (sexp->rose x2)
                   env
                   options
-                  (js-obj "literalSymbol" #t))
+                  (js/obj "literalSymbol" #t))
                  options)))
         (unless (memq? x2-str seen)
-          (unless (send env has? x2 (js-obj "filter" lang-filter))
+          (unless (send env has? x2 (js/obj "filter" lang-filter))
             (make-type-binding env x2 'Any lang-filter))
           (push-right! seen x2)
           (push-right! specifiers
@@ -4701,10 +4701,10 @@
                   (sexp->rose x1)
                   env
                   options
-                  (js-obj "literalSymbol" #t))
+                  (js/obj "literalSymbol" #t))
                  options)))
         (unless (memq? x1-str seen)
-          (unless (send env has? x1 (js-obj "filter" lang-filter))
+          (unless (send env has? x1 (js/obj "filter" lang-filter))
             (make-type-binding env x1 'Any lang-filter))
           (push-right! seen x1-str)
           (push-right! specifiers
@@ -4719,7 +4719,7 @@
               (sexp->rose x-exp)
               env
               options
-              (js-obj "literalSymbol" #t))
+              (js/obj "literalSymbol" #t))
              options)))
     (set! specifiers
           (list
@@ -4735,11 +4735,11 @@
             (sexp->rose y-exp)
             env
             options
-            (js-obj "literalSymbol" #t))
+            (js/obj "literalSymbol" #t))
            options)))
   (set! src (new Literal y-exp))
   (when (symbol? x-exp)
-    (unless (send env has? x-exp (js-obj "filter" lang-filter))
+    (unless (send env has? x-exp (js/obj "filter" lang-filter))
       (make-type-binding env x-exp 'Any lang-filter)))
   (cond
    ((null? specifiers)
@@ -4750,7 +4750,7 @@
          src))))
 
 ;;; Compile a `(set! ...)` expression.
-(define (compile-set node env (options (js-obj)))
+(define (compile-set node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (define sym-node
@@ -4814,7 +4814,7 @@
   (make-expression-or-statement result options))
 
 ;;; Compile a string expression.
-(define (compile-string node env (options (js-obj)))
+(define (compile-string node env (options (js/obj)))
   (define str
     (rose->sexp node))
   (cond
@@ -4838,7 +4838,7 @@
     (compile-atom node env options))))
 
 ;;; Compile a `(- ...)` expression.
-(define (compile-sub node env (options (js-obj)))
+(define (compile-sub node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -4854,11 +4854,11 @@
    (else
     (compile-binary-expression
      node env options
-     (js-obj "identity" 0
+     (js/obj "identity" 0
              "operator" "-")))))
 
 ;;; Compile a variable expression.
-(define (compile-variable node env (options (js-obj)))
+(define (compile-variable node env (options (js/obj)))
   (define compilation-mapping-environment
     (oget options "compilationMappingEnvironment"))
   (define literal-symbol
@@ -4892,7 +4892,7 @@
    options))
 
 ;;; Compile a symbol expression.
-(define (compile-symbol node env (options (js-obj)) (settings (js-obj)))
+(define (compile-symbol node env (options (js/obj)) (settings (js/obj)))
   ;; TODO: Better handling of gensym'ed symbols.
   (define literal-symbol-option
     (or (oget settings "literalSymbol") #f))
@@ -4951,7 +4951,7 @@
       (while (send env
                    has?
                    regular-sym
-                   (js-obj "filter" lang-filter))
+                   (js/obj "filter" lang-filter))
         (set! gensym-name
               (string-append name (number->string i)))
         (set! regular-sym
@@ -4980,11 +4980,11 @@
   (form? exp let-star_ env))
 
 ;;; Compile a `(for ...)` expression.
-(define (compile-for node env (options (js-obj)))
-  ;; TODO: Implement `compile-js-for` and implement this
+(define (compile-for node env (options (js/obj)))
+  ;; TODO: Implement `compile-js/for` and implement this
   ;; in terms of that?
   (define inherited-options
-    (js-obj-append options))
+    (js/obj-append options))
   (define language
     (oget options "language"))
   (define decls-node
@@ -5153,7 +5153,7 @@
          body))))
 
 ;;; Compile a `(break)` expression.
-(define (compile-break node env (options (js-obj)))
+(define (compile-break node env (options (js/obj)))
   (new BreakStatement
        (if (> (send node size) 1)
            (compile-expression
@@ -5162,7 +5162,7 @@
            #n)))
 
 ;;; Compile a `(continue)` expression.
-(define (compile-continue node env (options (js-obj)))
+(define (compile-continue node env (options (js/obj)))
   (new ContinueStatement
        (if (> (send node size) 1)
            (compile-expression
@@ -5171,7 +5171,7 @@
            #n)))
 
 ;;; Compile a `(js/type-of ...)` expression.
-(define (compile-js-type-of node env (options (js-obj)))
+(define (compile-js/type-of node env (options (js/obj)))
   (make-expression-or-statement
    (new UnaryExpression
         "typeof"
@@ -5182,7 +5182,7 @@
    options))
 
 ;;; Compile a `(js/instance-of? ...)` expression.
-(define (compile-js-instance-of node env (options (js-obj)))
+(define (compile-js/instance-of node env (options (js/obj)))
   (make-expression-or-statement
    (new BinaryExpression
         "instanceof"
@@ -5195,7 +5195,7 @@
    options))
 
 ;;; Compile a `(js/in ...)` expression.
-(define (compile-js-in node env (options (js-obj)))
+(define (compile-js/in node env (options (js/obj)))
   (make-expression-or-statement
    (new BinaryExpression
         "in"
@@ -5208,7 +5208,7 @@
    options))
 
 ;;; Compile a `(js/new ...)` expression.
-(define (compile-js-new node env (options (js-obj)))
+(define (compile-js/new node env (options (js/obj)))
   (make-expression-or-statement
    (new NewExpression
         (compile-expression
@@ -5221,7 +5221,7 @@
    options))
 
 ;;; Compile a `(js/do-while ...)` expression.
-(define (compile-js-do-while node env (options (js-obj)))
+(define (compile-js/do-while node env (options (js/obj)))
   (define body
     (send node get 1))
   (define body-exp
@@ -5237,7 +5237,7 @@
         body-exp env options)))
 
 ;;; Compile a `(js/while ...)` expression.
-(define (compile-js-while node env (options (js-obj)))
+(define (compile-js/while node env (options (js/obj)))
   (define test
     (send node get 1))
   (define body
@@ -5250,7 +5250,7 @@
          body env options))))
 
 ;;; Compile a `(yield ...)` expression.
-(define (compile-yield node env (options (js-obj)))
+(define (compile-yield node env (options (js/obj)))
   (make-expression-or-statement
    (new YieldExpression
         (if (> (send node size) 1)
@@ -5261,14 +5261,14 @@
    options))
 
 ;;; Compile a `(throw ...)` expression.
-(define (compile-throw node env (options (js-obj)))
+(define (compile-throw node env (options (js/obj)))
   (new ThrowStatement
        (compile-expression
         (send node get 1)
         env options)))
 
 ;;; Compile a `(js/delete ...)` expression.
-(define (compile-js-delete node env (options (js-obj)))
+(define (compile-js/delete node env (options (js/obj)))
   (make-expression-or-statement
    (new UnaryExpression
         "delete"
@@ -5279,7 +5279,7 @@
    options))
 
 ;;; Compile a `(return ...)` expression.
-(define (compile-return node env (options (js-obj)))
+(define (compile-return node env (options (js/obj)))
   (new ReturnStatement
        (if (> (send node size) 1)
            (compile-expression
@@ -5288,7 +5288,7 @@
            #n)))
 
 ;;; Compile a `(js/async ...)` expression.
-(define (compile-js-async node env (options (js-obj)))
+(define (compile-js/async node env (options (js/obj)))
   (define result
     (compile-expression
      (send node get 1)
@@ -5308,7 +5308,7 @@
    result options))
 
 ;;; Compile a `(js/await ...)` expression.
-(define (compile-js-await node env (options (js-obj)))
+(define (compile-js/await node env (options (js/obj)))
   (make-expression-or-statement
    (new AwaitExpression
         (compile-expression
@@ -5317,7 +5317,7 @@
    options))
 
 ;;; Compile a `(string-append ...)` expression.
-(define (compile-string-append node env (options (js-obj)))
+(define (compile-string-append node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (cond
@@ -5329,21 +5329,21 @@
    (else
     (compile-binary-expression
      node env options
-     (js-obj "identity" ""
+     (js/obj "identity" ""
              "operator" "+")))))
 
 ;;; Compile a `(class ...)` expression.
-(define (compile-class node env (options (js-obj)))
+(define (compile-class node env (options (js/obj)))
   (compile-class-helper node env options))
 
 ;;; Compile a `(define-class ...)` expression.
-(define (compile-define-class node env (options (js-obj)))
+(define (compile-define-class node env (options (js/obj)))
   (compile-class-helper node env options))
 
 ;;; Helper function for `compile-class` and `compile-define-class`.
-(define (compile-class-helper node env (options (js-obj)))
+(define (compile-class-helper node env (options (js/obj)))
   (define inherited-options
-    (js-obj-append options))
+    (js/obj-append options))
   (define exp
     (rose->sexp node))
   (define class-name-node
@@ -5448,12 +5448,12 @@
          ((not is-initialized)
           #u)
          (is-method
-          (compile-js-function
-           (define->lambda x (js-obj "curried"  #f))
+          (compile-js/function
+           (define->lambda x (js/obj "curried"  #f))
            env1
            (make-expression-options
             inherited-options)
-           (js-obj "generator" is-generator
+           (js/obj "generator" is-generator
                    "returnType" return-type)))
          (else
           (compile-expression
@@ -5523,8 +5523,8 @@
            body
            super-class)))
 
-;;; Compile a `(js-obj ...)` expression.
-(define (compile-js-obj node env (options (js-obj)))
+;;; Compile a `(js/obj ...)` expression.
+(define (compile-js/obj node env (options (js/obj)))
   (define exp
     (rose->sexp node))
   (define properties '())
@@ -5559,8 +5559,8 @@
    (new ObjectExpression properties)
    options))
 
-;;; Compile a `(js-obj-append ...)` expression.
-(define (compile-js-obj-append node env (options (js-obj)))
+;;; Compile a `(js/obj-append ...)` expression.
+(define (compile-js/obj-append node env (options (js/obj)))
   (define args
     (send node drop 1))
   (define properties '())
@@ -5578,7 +5578,7 @@
    options))
 
 ;;; Compile a `(js/tag ...)` expression.
-(define (compile-js-tagged-template node env (options (js-obj)))
+(define (compile-js/tagged-template node env (options (js/obj)))
   (define tag
     (send node get 1))
   (define tag-compiled
@@ -5598,7 +5598,7 @@
    options))
 
 ;;; Compile an `(append ...)` expression.
-(define (compile-append node env (options (js-obj)))
+(define (compile-append node env (options (js/obj)))
   (define elements '())
   (for ((x (send node drop 1)))
     (define el
@@ -5622,7 +5622,7 @@
    options))
 
 ;;; Compile a `(js/try ...)` expression.
-(define (compile-js-try node env (options (js-obj)))
+(define (compile-js/try node env (options (js/obj)))
   (define body-exps '())
   (define catch-clause #n)
   (define finally-clause #n)
@@ -5679,7 +5679,7 @@
    options))
 
 ;;; Compile a `(push-left! ...)` expression.
-(define (compile-push-left node env (options (js-obj)))
+(define (compile-push-left node env (options (js/obj)))
   ;; `.unshift()` returns the length of the array, while `push!()`
   ;; returns the list.
   (compile-push-helper
@@ -5696,7 +5696,7 @@
    node env options))
 
 ;;; Compile a `(push-right! ...)` expression.
-(define (compile-push-right node env (options (js-obj)))
+(define (compile-push-right node env (options (js/obj)))
   ;; `.push()` returns the length of the array, while `push-right!()`
   ;; returns the list.
   (compile-push-helper
@@ -5718,7 +5718,7 @@
                              expression-exp
                              node
                              env
-                             (options (js-obj)))
+                             (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -5762,7 +5762,7 @@
      expression-exp env options))))
 
 ;;; Compile a `(declare ...)` expression.
-(define (compile-declare node env (options (js-obj)))
+(define (compile-declare node env (options (js/obj)))
   (define language-env
     (oget options "languageEnvironment"))
   (define (lang-filter x)
@@ -5891,8 +5891,8 @@
    ;; If `f-exp` is an anonymous unary function, then there is
    ;; no need to wrap it.
    ((and (or (form? f-exp lambda_ env)
-             (form? f-exp js-function_ env)
-             (form? f-exp js-arrow_ env))
+             (form? f-exp js/function_ env)
+             (form? f-exp js/arrow_ env))
          (array? (second f-exp))
          (= (js/length (second f-exp)) 1))
     f-exp)
@@ -6027,7 +6027,7 @@
       (list lst n)))))
 
 ;;; Compiler macro for `(js/regexp ...)` expressions.
-(define-macro (compile-js-regexp-macro &rest args)
+(define-macro (compile-js/regexp-macro &rest args)
   `(new RegExp ,@args))
 
 ;;; Compiler macro for `(assert ...)` expressions.
@@ -6046,7 +6046,7 @@
     (gensym "_str"))
   (define identifier-regexp
     '(regexp "^\\w+$"))
-  `(js-obj "get"
+  `(js/obj "get"
            (js/arrow (,arg-sym)
              (try
                (define ,str-sym
@@ -6073,7 +6073,7 @@
                  (return #f))))))
 
 ;;; Compile a `(js ...)` expression.
-(define (compile-js node env (options (js-obj)))
+(define (compile-js node env (options (js/obj)))
   (define eval-option
     (oget options "eval"))
   (set! eval-option #t)
@@ -6091,10 +6091,10 @@
      (new XRawJavaScript str-exp)
      options))
    (else
-    (compile-js-eval node env options))))
+    (compile-js/eval node env options))))
 
 ;;; Compile a `(js/eval ...)` expression.
-(define (compile-js-eval node env (options (js-obj)))
+(define (compile-js/eval node env (options (js/obj)))
   ;; TODO: Disable if `eval-option` is `#f`.
   (define eval-option
     (oget options "eval"))
@@ -6173,7 +6173,7 @@
    (current-compilation-options)))
 
 ;;; Expand a `(js/block ...)` expression.
-(define-macro (js-block_ &whole exp &environment env)
+(define-macro (js/block_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6243,14 +6243,14 @@
    (current-compilation-options)))
 
 ;;; Expand a `(js/while ...)` expression.
-(define-macro (js-while_ &whole exp &environment env)
+(define-macro (js/while_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/do-while ...)` expression.
-(define-macro (js-do-while_ &whole exp &environment env)
+(define-macro (js/do-while_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6296,14 +6296,14 @@
    (current-compilation-options)))
 
 ;;; Expand a `(js/async ...)` expression.
-(define-macro (js-async_ &whole exp &environment env)
+(define-macro (js/async_ &whole exp &environment env)
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
 ;;; Expand a `(js/await ...)` expression.
-(define-macro (js-await_ &whole exp &environment env)
+(define-macro (js/await_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6324,7 +6324,7 @@
 ;;; Expand a `(js/function ...)` expression.
 ;;;
 ;;; Creates an anonymous JavaScript function.
-(define-macro (js-function_ &whole exp &environment env)
+(define-macro (js/function_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6333,7 +6333,7 @@
 ;;; Expand a `(js/arrow ...)` expression.
 ;;;
 ;;; Creates a JavaScript arrow function.
-(define-macro (js-arrow_ &whole exp &environment env)
+(define-macro (js/arrow_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6444,7 +6444,7 @@
    (current-compilation-options)))
 
 ;;; Expand a `(js/try ...)` expression.
-(define-macro (js-try_ &whole exp &environment env)
+(define-macro (js/try_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -6679,7 +6679,7 @@
   (define visit-for visit-let)
   ;; `(while ...)` form.
   (define (visit-while-p node)
-    (form? node js-while_ env))
+    (form? node js/while_ env))
   (define visit-while visit-function-call)
   ;; `(cond ...)` form.
   (define (visit-cond-p node)
@@ -6702,8 +6702,8 @@
   ;; `(lambda ...)` form.
   (define (visit-lambda-p node)
     (or (form? node lambda_ env)
-        (form? node js-function_ env)
-        (form? node js-arrow_ env)))
+        (form? node js/function_ env)
+        (form? node js/arrow_ env)))
   (define (visit-lambda node stack bindings)
     (define result node)
     (define bindings-2
@@ -7087,7 +7087,7 @@
    (current-compilation-options)))
 
 ;;; Compile a `(js/switch ...)` form.
-(define (compile-js-switch node env (options (js-obj)))
+(define (compile-js/switch node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -7147,7 +7147,7 @@
          cases-compiled))))
 
 ;;; Expand a `(js/switch ...)` expression.
-(define-macro (js-switch_ &whole exp &environment env)
+(define-macro (js/switch_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -7208,7 +7208,7 @@
     (return result))
   (when enter
     (enter node))
-  (for ((key (js-keys node)))
+  (for ((key (js/keys node)))
     (set! val (oget node key))
     (cond
      ((array? val)
@@ -7592,7 +7592,7 @@
     (define module-interpretation-env
       (new EnvironmentStack
            module-env
-           js-environment))
+           js/environment))
     (define imported)
     (define local)
     (define module)
@@ -7810,7 +7810,7 @@
 ;;; which should be a typed environment.
 (define (make-type-binding env sym typ (filter #u))
   (cond
-   ((send env has? sym (js-obj "filter" filter))
+   ((send env has? sym (js/obj "filter" filter))
     (send env set-type! sym typ))
    (else
     (send env set-local! sym #u typ))))
@@ -7840,13 +7840,13 @@
          (__ ,__ Any)
          (,(string->symbol "#f") ,false_ Any)
          (,(string->symbol "#t") ,true_ Any)
-         (,(string->symbol "#n") ,js-null_ Any)
+         (,(string->symbol "#n") ,js/null_ Any)
          (,(string->symbol "#u") ,undefined_ Any)
          (false ,false_ Any)
          (,(string->symbol "nil") ,null_ Any)
          (null ,null_ Any)
-         (js/null ,js-null_ Any)
-         (js-null ,js-null_ Any)
+         (js/null ,js/null_ Any)
+         (js-null ,js/null_ Any)
          (,(string->symbol "t") ,true_ Any)
          (true ,true_ Any)
          (js-undefined ,undefined_ Any)
@@ -7946,7 +7946,7 @@
          (curry ,curry (-> Any * Any))
          (curry-n ,curry-n (-> Any * Any))
          (decompile ,decompile (-> Any * Any))
-         (delete ,js-delete_ (-> Any * Any))
+         (delete ,js/delete_ (-> Any * Any))
          (display ,display_ (-> Any * Any))
          (div ,div_ (-> Any * Any))
          (dotted-list->proper-list ,linked-list->array-list_ (-> Any * Any))
@@ -7993,8 +7993,8 @@
          (foldr ,foldr_ (-> Any * Any))
          (fourth ,fourth_ (-> Any * Any))
          (funcall ,funcall_ (-> Any * Any))
-         (function-object? ,js-function-object?_ (-> Any * Any))
-         (function-type? ,js-function-type?_ (-> Any * Any))
+         (function-object? ,js/function-object?_ (-> Any * Any))
+         (function-type? ,js/function-type?_ (-> Any * Any))
          (function? ,procedure?_ (-> Any * Any))
          (functionp ,procedure?_ (-> Any * Any))
          (gensym ,gensym_ (-> Any * Any))
@@ -8033,80 +8033,81 @@
          (is-a? ,is-a?_ (-> Any * Any))
          (js ,js_ (-> Any * Any))
          (js-field ,array-ref_ (-> Any * Any))
-         (js-keys ,js-keys_ (-> Any * Any))
-         (js-obj ,js-obj_ (-> Any * Any))
-         (js-obj-append ,js-obj-append_ (-> Any * Any))
-         (js-obj-keys ,js-keys_ (-> Any * Any))
-         (js-obj? ,js-obj-p_ (-> Any * Any))
-         (js/+ ,js-plus_ (-> Any * Any))
-         (js/. ,js-dot_ (-> Any * Any))
-         (js/== ,js-loosely-equal?_ (-> Any * Any))
-         (js/=== ,js-strictly-equal?_ (-> Any * Any))
-         (js/===? ,js-strictly-equal?_ (-> Any * Any))
-         (js/==? ,js-loosely-equal?_ (-> Any * Any))
-         (js/?. ,js-optional-chaining_ (-> Any * Any))
-         (js/append ,js-plus_ (-> Any * Any))
-         (js/array? ,js-array?_ (-> Any * Any))
+         (js-keys ,js/keys_ (-> Any * Any))
+         (js-obj ,js/obj_ (-> Any * Any))
+         (js-obj-append ,js/obj-append_ (-> Any * Any))
+         (js-obj-keys ,js/keys_ (-> Any * Any))
+         (js-obj? ,js/obj-p_ (-> Any * Any))
+         (js/+ ,js/plus_ (-> Any * Any))
+         (js/. ,js/dot_ (-> Any * Any))
+         (js/== ,js/loosely-equal?_ (-> Any * Any))
+         (js/=== ,js/strictly-equal?_ (-> Any * Any))
+         (js/===? ,js/strictly-equal?_ (-> Any * Any))
+         (js/==? ,js/loosely-equal?_ (-> Any * Any))
+         (js/?. ,js/optional-chaining_ (-> Any * Any))
+         (js/append ,js/plus_ (-> Any * Any))
+         (js/array? ,js/array?_ (-> Any * Any))
          (js/console.log ,(get-field log console) (-> Any * Any))
-         (js/delete ,js-delete_ (-> Any * Any))
-         (js/eighth ,js-eighth_ (-> Any * Any))
+         (js/delete ,js/delete_ (-> Any * Any))
+         (js/eighth ,js/eighth_ (-> Any * Any))
          (js/field ,array-ref_ (-> Any * Any))
-         (js/fifth ,js-fifth_ (-> Any * Any))
-         (js/find-index ,js-find-index_ (-> Any * Any))
-         (js/findf-index ,js-find-index_ (-> Any * Any))
-         (js/first ,js-first_ (-> Any * Any))
-         (js/fourth ,js-fourth_ (-> Any * Any))
-         (js/function-object? ,js-function-object?_ (-> Any * Any))
-         (js/function-type? ,js-function-type?_ (-> Any * Any))
-         (js/function? ,js-function?_ (-> Any * Any))
-         (js/get ,js-get_ (-> Any * Any))
-         (js/in ,js-in_ (-> Any * Any))
-         (js/instance-of ,js-instance-of?_ (-> Any * Any))
-         (js/instance-of? ,js-instance-of?_ (-> Any * Any))
-         (js/instanceof ,js-instance-of?_ (-> Any * Any))
-         (js/instanceof? ,js-instance-of?_ (-> Any * Any))
-         (js/is-loosely-equal? ,js-loosely-equal?_ (-> Any * Any))
-         (js/is-strictly-equal? ,js-strictly-equal?_ (-> Any * Any))
-         (js/js-obj ,js-obj_ (-> Any * Any))
-         (js/js-obj-append ,js-obj-append_ (-> Any * Any))
-         (js/js-obj? ,js-obj-p_ (-> Any * Any))
-         (js/keys ,js-keys_ (-> Any * Any))
-         (js/last ,js-last_ (-> Any * Any))
-         (js/length ,js-length_ (-> Any * Any))
-         (js/nan? ,js-nan?_ (-> Any * Any))
-         (js/new ,js-new_ (-> Any * Any))
-         (js/ninth ,js-ninth_ (-> Any * Any))
-         (js/null? ,js-null?_ (-> Any * Any))
-         (js/obj ,js-obj_ (-> Any * Any))
-         (js/obj-append ,js-obj-append_ (-> Any * Any))
-         (js/obj-keys ,js-keys_ (-> Any * Any))
-         (js/obj? ,js-obj-p_ (-> Any * Any))
-         (js/object-type? ,js-object-type?_ (-> Any * Any))
-         (js/object? ,js-object-type?_ (-> Any * Any))
-         (js/reduce ,js-reduce_ (-> Any * Any))
-         (js/reduce-right ,js-reduce-right_ (-> Any * Any))
-         (js/regexp ,js-regexp_ (-> Any * Any))
-         (js/regexp-match ,js-regexp-match_ (-> Any * Any))
+         (js/fifth ,js/fifth_ (-> Any * Any))
+         (js/find-index ,js/find-index_ (-> Any * Any))
+         (js/findf-index ,js/find-index_ (-> Any * Any))
+         (js/first ,js/first_ (-> Any * Any))
+         (js/fourth ,js/fourth_ (-> Any * Any))
+         (js/function-object? ,js/function-object?_ (-> Any * Any))
+         (js/function-type? ,js/function-type?_ (-> Any * Any))
+         (js/function? ,js/function?_ (-> Any * Any))
+         (js/get ,js/get_ (-> Any * Any))
+         (js/in ,js/in_ (-> Any * Any))
+         (js/instance-of ,js/instance-of?_ (-> Any * Any))
+         (js/instance-of? ,js/instance-of?_ (-> Any * Any))
+         (js/instanceof ,js/instance-of?_ (-> Any * Any))
+         (js/instanceof? ,js/instance-of?_ (-> Any * Any))
+         (js/is-loosely-equal? ,js/loosely-equal?_ (-> Any * Any))
+         (js/is-strictly-equal? ,js/strictly-equal?_ (-> Any * Any))
+         (js/js-obj ,js/obj_ (-> Any * Any))
+         (js/js-obj-append ,js/obj-append_ (-> Any * Any))
+         (js/js-obj? ,js/obj-p_ (-> Any * Any))
+         (js/keys ,js/keys_ (-> Any * Any))
+         (js/last ,js/last_ (-> Any * Any))
+         (js/length ,js/length_ (-> Any * Any))
+         (js/nan? ,js/nan?_ (-> Any * Any))
+         (js/new ,js/new_ (-> Any * Any))
+         (js/ninth ,js/ninth_ (-> Any * Any))
+         (js/null? ,js/null?_ (-> Any * Any))
+         (js/obj ,js/obj_ (-> Any * Any))
+         (js/obj-append ,js/obj-append_ (-> Any * Any))
+         (js/obj-keys ,js/keys_ (-> Any * Any))
+         (js/obj? ,js/obj-p_ (-> Any * Any))
+         (js/object ,js/obj_ (-> Any * Any))
+         (js/object-type? ,js/object-type?_ (-> Any * Any))
+         (js/object? ,js/object-type?_ (-> Any * Any))
+         (js/reduce ,js/reduce_ (-> Any * Any))
+         (js/reduce-right ,js/reduce-right_ (-> Any * Any))
+         (js/regexp ,js/regexp_ (-> Any * Any))
+         (js/regexp-match ,js/regexp-match_ (-> Any * Any))
          (js/regexp-quote ,regexp-quote_ (-> Any * Any))
-         (js/regexp-replace ,js-regexp-replace_ (-> Any * Any))
-         (js/regexp? ,js-regexp?_ (-> Any * Any))
-         (js/rest ,js-rest_ (-> Any * Any))
-         (js/return ,js-return_ (-> Any * Any))
-         (js/reverse ,js-reverse_ (-> Any * Any))
-         (js/same-value-zero? ,js-same-value-zero?_ (-> Any * Any))
-         (js/same-value? ,js-same-value?_ (-> Any * Any))
-         (js/second ,js-second_ (-> Any * Any))
-         (js/seventh ,js-seventh_ (-> Any * Any))
-         (js/sixth ,js-sixth_ (-> Any * Any))
-         (js/slice ,js-slice_ (-> Any * Any))
-         (js/tag ,js-tagged-template_ (-> Any * Any))
-         (js/tagged-template ,js-tagged-template_ (-> Any * Any))
-         (js/take ,js-take_ (-> Any * Any))
-         (js/tenth ,js-tenth_ (-> Any * Any))
-         (js/third ,js-third_ (-> Any * Any))
-         (js/type-of ,js-type-of_ (-> Any * Any))
+         (js/regexp-replace ,js/regexp-replace_ (-> Any * Any))
+         (js/regexp? ,js/regexp?_ (-> Any * Any))
+         (js/rest ,js/rest_ (-> Any * Any))
+         (js/return ,js/return_ (-> Any * Any))
+         (js/reverse ,js/reverse_ (-> Any * Any))
+         (js/same-value-zero? ,js/same-value-zero?_ (-> Any * Any))
+         (js/same-value? ,js/same-value?_ (-> Any * Any))
+         (js/second ,js/second_ (-> Any * Any))
+         (js/seventh ,js/seventh_ (-> Any * Any))
+         (js/sixth ,js/sixth_ (-> Any * Any))
+         (js/slice ,js/slice_ (-> Any * Any))
+         (js/tag ,js/tagged-template_ (-> Any * Any))
+         (js/tagged-template ,js/tagged-template_ (-> Any * Any))
+         (js/take ,js/take_ (-> Any * Any))
+         (js/tenth ,js/tenth_ (-> Any * Any))
+         (js/third ,js/third_ (-> Any * Any))
+         (js/type-of ,js/type-of_ (-> Any * Any))
+         (js/typeof ,js/type-of_ (-> Any * Any))
          (js/yield ,yield_ (-> Any * Any))
-         (js/typeof ,js-type-of_ (-> Any * Any))
          (keyword? ,keyword?_ (-> Any * Any))
          (keywordp ,keyword?_ (-> Any * Any))
          (last ,last_ (-> Any * Any))
@@ -8158,10 +8159,10 @@
          (macroexpand* ,macroexpand* (-> Any * Any))
          (macroexpand*-1 ,macroexpand*-1 (-> Any * Any))
          (macroexpand-1 ,macroexpand-1 (-> Any * Any))
-         (make ,js-new_ (-> Any * Any))
+         (make ,js/new_ (-> Any * Any))
          (make-hash ,make-hash_ (-> Any * Any))
          (make-list ,make-list_ (-> Any * Any))
-         (make-object ,js-new_ (-> Any * Any))
+         (make-object ,js/new_ (-> Any * Any))
          (map ,map_ (-> Any * Any))
          (mapcar ,map_ (-> Any * Any))
          (member ,member_ (-> Any * Any))
@@ -8175,8 +8176,8 @@
          (mod ,modulo_ (-> Any * Any))
          (modulo ,modulo_ (-> Any * Any))
          (mul ,mul_ (-> Any * Any))
-         (new ,js-new_ (-> Any * Any))
-         (new* ,js-new_ (-> Any * Any))
+         (new ,js/new_ (-> Any * Any))
+         (new* ,js/new_ (-> Any * Any))
          (ninth ,ninth_ (-> Any * Any))
          (not ,not_ (-> Any * Any))
          (nth ,nth_ (-> Any * Any))
@@ -8186,8 +8187,8 @@
          (number->string ,number->string_ (-> Any * Any))
          (number? ,number?_ (-> Any * Any))
          (numberp ,number?_ (-> Any * Any))
-         (object? ,js-obj-p_ (-> Any * Any))
-         (objectp ,js-obj-p_ (-> Any * Any))
+         (object? ,js/obj-p_ (-> Any * Any))
+         (objectp ,js/obj-p_ (-> Any * Any))
          (odd? ,odd?_ (-> Any * Any))
          (oget ,object-ref_ (-> Any * Any))
          (one? ,one?_ (-> Any * Any))
@@ -8224,9 +8225,9 @@
          (push-right ,push-right!_ (-> Any * Any))
          (push-right! ,push-right!_ (-> Any * Any))
          (range ,range_ (-> Any * Any))
-         (re ,js-regexp_ (-> Any * Any))
-         (re-pattern ,js-regexp_ (-> Any * Any))
-         (regexp ,js-regexp_ (-> Any * Any))
+         (re ,js/regexp_ (-> Any * Any))
+         (re-pattern ,js/regexp_ (-> Any * Any))
+         (regexp ,js/regexp_ (-> Any * Any))
          (regexp-match ,regexp-match_ (-> Any * Any))
          (regexp-match? ,regexp-match?_ (-> Any * Any))
          (regexp-quote ,regexp-quote_ (-> Any * Any))
@@ -8234,8 +8235,8 @@
          (regexp? ,regexp?_ (-> Any * Any))
          (rest ,rest_ (-> Any * Any))
          (reverse ,reverse_ (-> Any * Any))
-         (rx ,js-regexp_ (-> Any * Any))
-         (scm/new ,js-new_ (-> Any * Any))
+         (rx ,js/regexp_ (-> Any * Any))
+         (scm/new ,js/new_ (-> Any * Any))
          (second ,second_ (-> Any * Any))
          (self-evaluating? ,self-evaluating?_ (-> Any * Any))
          (set-car! ,set-car!_ (-> Any * Any))
@@ -8298,15 +8299,15 @@
          (->> ,thread-last_ (macro-> Any * Any))
          (~> ,thread-first_ (macro-> Any * Any))
          (~>> ,thread-last_ (macro-> Any * Any))
+         (as-> ,thread-as_ (macro-> Any * Any))
+         (as~> ,thread-as_ (macro-> Any * Any))
          (and ,and_ (macro-> Any * Any))
          (ann ,ann_ (macro-> Any * Any))
-         (as-> ,thread-as_ (macro-> Any * Any))
-         (async ,js-async_ (macro-> Any * Any))
-         (as~> ,thread-as_ (macro-> Any * Any))
-         (await ,js-await_ (macro-> Any * Any))
+         (async ,js/async_ (macro-> Any * Any))
+         (await ,js/await_ (macro-> Any * Any))
          (begin ,begin_ (macro-> Any * Any))
          (begin0 ,begin0_ (macro-> Any * Any))
-         (block ,js-block_ (macro-> Any * Any))
+         (block ,js/block_ (macro-> Any * Any))
          (break ,break_ (macro-> Any * Any))
          (call-method ,send_ (macro-> Any * Any))
          (case ,case_ (macro-> Any * Any))
@@ -8323,7 +8324,7 @@
          (define-class ,define-class_ (macro-> Any * Any))
          (define-fexpr ,define-fexpr_ (macro-> Any * Any))
          (define-fields ,define-fields_ (macro-> Any * Any))
-         (define-js-obj ,define-fields_ (macro-> Any * Any))
+         (define-js/obj ,define-fields_ (macro-> Any * Any))
          (define-macro ,define-macro_ (macro-> Any * Any))
          (define-type ,define-type_ (macro-> Any * Any))
          (define-values ,define-values_ (macro-> Any * Any))
@@ -8341,18 +8342,18 @@
          (fset ,set_ (macro-> Any * Any))
          (get-field ,get-field_ (macro-> Any * Any))
          (if ,if_ (macro-> Any * Any))
-         (js/arrow ,js-arrow_ (macro-> Any * Any))
-         (js/async ,js-async_ (macro-> Any * Any))
-         (js/await ,js-await_ (macro-> Any * Any))
-         (js/block ,js-block_ (macro-> Any * Any))
-         (js/do-while ,js-do-while_ (macro-> Any * Any))
+         (js/arrow ,js/arrow_ (macro-> Any * Any))
+         (js/async ,js/async_ (macro-> Any * Any))
+         (js/await ,js/await_ (macro-> Any * Any))
+         (js/block ,js/block_ (macro-> Any * Any))
+         (js/do-while ,js/do-while_ (macro-> Any * Any))
          (js/for ,js/for_ (macro-> Any * Any))
          (js/for-in ,js/for-in_ (macro-> Any * Any))
          (js/for-of ,js/for-of_ (macro-> Any * Any))
-         (js/function ,js-function_ (macro-> Any * Any))
-         (js/switch ,js-switch_ (macro-> Any * Any))
-         (js/try ,js-try_ (macro-> Any * Any))
-         (js/while ,js-while_ (macro-> Any * Any))
+         (js/function ,js/function_ (macro-> Any * Any))
+         (js/switch ,js/switch_ (macro-> Any * Any))
+         (js/try ,js/try_ (macro-> Any * Any))
+         (js/while ,js/while_ (macro-> Any * Any))
          (λ ,lambda_ (macro-> Any * Any))
          (lambda ,lambda_ (macro-> Any * Any))
          (let ,let-star_ (macro-> Any * Any))
@@ -8360,7 +8361,7 @@
          (let*-values ,let-values_ (macro-> Any * Any))
          (let-env ,let-env_ (macro-> Any * Any))
          (let-fields ,let-fields_ (macro-> Any * Any))
-         (let-js-obj ,let-fields_ (macro-> Any * Any))
+         (let-js/obj ,let-fields_ (macro-> Any * Any))
          (let-values ,let-values_ (macro-> Any * Any))
          (letrec ,let-star_ (macro-> Any * Any))
          (letrec-values ,let-values_ (macro-> Any * Any))
@@ -8380,7 +8381,7 @@
          (set ,set_ (macro-> Any * Any))
          (set! ,set!_ (macro-> Any * Any))
          (set!-fields ,set-fields_ (macro-> Any * Any))
-         (set!-js-obj ,set-fields_ (macro-> Any * Any))
+         (set!-js/obj ,set-fields_ (macro-> Any * Any))
          (set!-values ,set-values_ (macro-> Any * Any))
          (set-field! ,set-field_ (macro-> Any * Any))
          (setq ,set!_ (macro-> Any * Any))
@@ -8397,7 +8398,7 @@
   (new LispEnvironment
        `((eval ,interpret (-> Any * Any))
          (interpret ,interpret (-> Any * Any))
-         (js/eval ,js-eval_ (-> Any * Any))
+         (js/eval ,js/eval_ (-> Any * Any))
          (scm/eval ,interpret (-> Any * Any))
          (seval ,eval_ (-> Any * Any)))))
 
@@ -8432,7 +8433,7 @@
 
 ;;; Default options used when compiling.
 (define default-compilation-options
-  (js-obj "languageEnvironment"
+  (js/obj "languageEnvironment"
           lang-environment
           "compilationMappingEnvironment"
           compilation-mapping-env
@@ -8467,8 +8468,8 @@
   (rename-out (and_ and))
   (rename-out (ann_ ann))
   (rename-out (begin_ begin))
-  (rename-out (js-block_ block))
-  (rename-out (js-block_ block_))
+  (rename-out (js/block_ block))
+  (rename-out (js/block_ block_))
   (rename-out (call-with-current-continuation_ call-with-current-continuation))
   (rename-out (call-with-current-continuation_ call/cc))
   (rename-out (clj-try_ try))
@@ -8483,7 +8484,7 @@
   (rename-out (define-generator_ define-generator))
   (rename-out (define-generator_ define/generator))
   (rename-out (define-fields_ define-fields))
-  (rename-out (define-fields_ define-js-obj))
+  (rename-out (define-fields_ define-js/obj))
   (rename-out (define-macro_ define-macro))
   (rename-out (define-public_ define-public))
   (rename-out (define-public_ define/public))
@@ -8492,18 +8493,18 @@
   (rename-out (define_ define))
   (rename-out (dot_ dot))
   (rename-out (get-field_ get-field))
-  (rename-out (js-async_ async))
-  (rename-out (js-async_ async_))
-  (rename-out (js-async_ js-async))
-  (rename-out (js-await_ await))
-  (rename-out (js-await_ await_))
-  (rename-out (js-await_ js-await))
+  (rename-out (js/async_ async))
+  (rename-out (js/async_ async_))
+  (rename-out (js/async_ js-async))
+  (rename-out (js/await_ await))
+  (rename-out (js/await_ await_))
+  (rename-out (js/await_ js-await))
   (rename-out (js_ js))
   (rename-out (lambda_ compile-function))
   (rename-out (lambda_ fn))
   (rename-out (lambda_ lambda))
   (rename-out (let-fields_ let-fields))
-  (rename-out (let-fields_ let-js-obj))
+  (rename-out (let-fields_ let-js/obj))
   (rename-out (let-star_ let*))
   (rename-out (let-star_ let-star))
   (rename-out (let-star_ let_))
@@ -8534,7 +8535,7 @@
   (rename-out (set-field_ set-field!))
   (rename-out (set-field_ set-field))
   (rename-out (set-fields_ set!-fields))
-  (rename-out (set-fields_ set!-js-obj))
+  (rename-out (set-fields_ set!-js/obj))
   (rename-out (set-fields_ set-fields!))
   (rename-out (set-fields_ set-fields))
   (rename-out (set-values_ set!-values))
@@ -8578,8 +8579,8 @@
   interpretation-environment
   is-a?_
   iterate-rose
-  js-async_
-  js-await_
+  js/async_
+  js/await_
   js_
   lambda_
   lang-environment

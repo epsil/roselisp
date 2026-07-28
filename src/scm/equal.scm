@@ -93,10 +93,10 @@
    ;; Compare objects.
    ((and (object? x)
          (object? y))
-    (unless (= (array-list-length (js-keys x))
-               (array-list-length (js-keys y)))
+    (unless (= (array-list-length (js/keys x))
+               (array-list-length (js/keys y)))
       (return #f))
-    (for ((key (js-keys x)))
+    (for ((key (js/keys x)))
       (unless (equal?_ (oget x key)
                        (oget y key))
         (return #f)))

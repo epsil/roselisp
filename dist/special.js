@@ -38,7 +38,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.throwSpecial_ = exports.setqSpecial_ = exports.setValuesSpecial_ = exports.setSpecial_ = exports.setFieldsSpecial_ = exports.setFieldSpecial_ = exports.sendSpecial_ = exports.sendApplySpecial_ = exports.returnSpecial_ = exports.requireSpecial_ = exports.quoteSpecial_ = exports.quasiquoteSpecial_ = exports.provideSpecial_ = exports.orSpecial_ = exports.nlambdaSpecial_ = exports.moduleSpecial_ = exports.macropSpecial_ = exports.letValuesSpecial_ = exports.letStarSpecial_ = exports.letFieldsSpecial_ = exports.letEnvSpecial_ = exports.lambdaSpecial_ = exports.jsWhileSpecial_ = exports.jsOptionalChainingSpecial_ = exports.jsFunctionSpecial_ = exports.jsDoWhileSpecial_ = exports.jsArrowSpecial_ = exports.getFieldSpecial_ = exports.fsetSpecial_ = exports.forSpecial_ = exports.dotSpecial_ = exports.defmacroSpecial_ = exports.defineValuesSpecial_ = exports.defineTypeSpecial_ = exports.defineSpecial_ = exports.definePublicSpecial_ = exports.defineMacroSpecial_ = exports.defineFieldsSpecial_ = exports.defineGeneratorSpecial_ = exports.defineClassSpecial_ = exports.defineAsyncSpecial_ = exports.continueSpecial_ = exports.condSpecial_ = exports.colonSpecial_ = exports.breakSpecial_ = exports.beginSpecial_ = exports.awaitSpecial_ = exports.asyncSpecial_ = exports.annSpecial_ = exports.andSpecial_ = void 0;
+exports.throwSpecial_ = exports.setqSpecial_ = exports.setValuesSpecial_ = exports.setSpecial_ = exports.setFieldsSpecial_ = exports.setFieldSpecial_ = exports.sendSpecial_ = exports.sendApplySpecial_ = exports.returnSpecial_ = exports.requireSpecial_ = exports.quoteSpecial_ = exports.quasiquoteSpecial_ = exports.provideSpecial_ = exports.orSpecial_ = exports.nlambdaSpecial_ = exports.moduleSpecial_ = exports.macropSpecial_ = exports.letValuesSpecial_ = exports.letStarSpecial_ = exports.letFieldsSpecial_ = exports.letEnvSpecial_ = exports.lambdaSpecial_ = exports.jsWhileSpecial_ = exports.jsOptionalChainingSpecial_ = exports.jsFunctionSpecial_ = exports.jsDoWhileSpecial_ = exports.jsArrowSpecial_ = exports.getFieldSpecial_ = exports.fsetSpecial_ = exports.forSpecial_ = exports.dotSpecial_ = exports.defmacroSpecial_ = exports.defineValuesSpecial_ = exports.defineTypeSpecial_ = exports.defineSpecial_ = exports.definePublicSpecial_ = exports.defineMacroSpecial_ = exports.defineGeneratorSpecial_ = exports.defineFieldsSpecial_ = exports.defineClassSpecial_ = exports.defineAsyncSpecial_ = exports.continueSpecial_ = exports.condSpecial_ = exports.colonSpecial_ = exports.breakSpecial_ = exports.beginSpecial_ = exports.awaitSpecial_ = exports.asyncSpecial_ = exports.annSpecial_ = exports.andSpecial_ = void 0;
 exports.yieldSpecial_ = exports.trySpecial_ = void 0;
 const array_1 = require("./array");
 const env_1 = require("./env");
@@ -1141,7 +1141,7 @@ function jsWhileSpecial_(exp, env) {
     return result;
 }
 exports.jsWhileSpecial_ = jsWhileSpecial_;
-jsWhileSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js-while-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('quasiquote'), [Symbol.for('truep'), [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('exp')]]]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('begin-wrap'), [Symbol.for('drop'), Symbol.for('exp'), 2]]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('while'), [Symbol.for('eval_'), Symbol.for('test'), Symbol.for('env')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('body'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('ContinueException'), Symbol.for('e')]]], [Symbol.for('catch'), Symbol.for('BreakException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), undefined]]], Symbol.for('result')];
+jsWhileSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js/while-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('quasiquote'), [Symbol.for('truep'), [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('exp')]]]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('begin-wrap'), [Symbol.for('drop'), Symbol.for('exp'), 2]]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('while'), [Symbol.for('eval_'), Symbol.for('test'), Symbol.for('env')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('body'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('ContinueException'), Symbol.for('e')]]], [Symbol.for('catch'), Symbol.for('BreakException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), undefined]]], Symbol.for('result')];
 /**
  * Evaluate a `(js/do-while ...)` form.
  */
@@ -1190,7 +1190,7 @@ function jsDoWhileSpecial_(exp, env) {
     return (0, eval_1.eval_)(beginExp, env);
 }
 exports.jsDoWhileSpecial_ = jsDoWhileSpecial_;
-jsDoWhileSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js-do-while-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('begin-exp'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('body')], [Symbol.for('while'), [Symbol.for('unquote'), Symbol.for('test')], [Symbol.for('unquote'), Symbol.for('body')]]]]], [Symbol.for('eval_'), Symbol.for('begin-exp'), Symbol.for('env')]];
+jsDoWhileSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js/do-while-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('begin-exp'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('body')], [Symbol.for('while'), [Symbol.for('unquote'), Symbol.for('test')], [Symbol.for('unquote'), Symbol.for('body')]]]]], [Symbol.for('eval_'), Symbol.for('begin-exp'), Symbol.for('env')]];
 /**
  * Evaluate a `(break)` form.
  */
@@ -1354,7 +1354,7 @@ function lambdaSpecial_(exp, env) {
     return jsFunctionSpecial_(exp, env);
 }
 exports.lambdaSpecial_ = lambdaSpecial_;
-lambdaSpecial_.fsource = [Symbol.for('define'), [Symbol.for('lambda-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('js-function-special_'), Symbol.for('exp'), Symbol.for('env')]];
+lambdaSpecial_.fsource = [Symbol.for('define'), [Symbol.for('lambda-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('js/function-special_'), Symbol.for('exp'), Symbol.for('env')]];
 /**
  * Evaluate a `(js/function ...)` form.
  */
@@ -1379,7 +1379,7 @@ function jsFunctionSpecial_(exp, env) {
     return f;
 }
 exports.jsFunctionSpecial_ = jsFunctionSpecial_;
-jsFunctionSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js-function-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('js/function'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('let-exp'), [Symbol.for('lambda->let'), Symbol.for('exp'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('let-exp'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('e')]]]], Symbol.for('result')]], [Symbol.for('set-field!'), Symbol.for('lisp-info'), Symbol.for('f'), [Symbol.for('list'), Symbol.for('exp'), Symbol.for('env')]], Symbol.for('f')];
+jsFunctionSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js/function-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('js/function'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('let-exp'), [Symbol.for('lambda->let'), Symbol.for('exp'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('let-exp'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('e')]]]], Symbol.for('result')]], [Symbol.for('set-field!'), Symbol.for('lisp-info'), Symbol.for('f'), [Symbol.for('list'), Symbol.for('exp'), Symbol.for('env')]], Symbol.for('f')];
 /**
  * Evaluate a `(js/arrow ...)` form.
  */
@@ -1404,7 +1404,7 @@ function jsArrowSpecial_(exp, env) {
     return f;
 }
 exports.jsArrowSpecial_ = jsArrowSpecial_;
-jsArrowSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js-arrow-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('js/arrow'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('let-exp'), [Symbol.for('lambda->let'), Symbol.for('exp'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('let-exp'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('e')]]]], Symbol.for('result')]], [Symbol.for('set-field!'), Symbol.for('lisp-info'), Symbol.for('f'), [Symbol.for('list'), Symbol.for('exp'), Symbol.for('env')]], Symbol.for('f')];
+jsArrowSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js/arrow-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('js/arrow'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('let-exp'), [Symbol.for('lambda->let'), Symbol.for('exp'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('let-exp'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('e')]]]], Symbol.for('result')]], [Symbol.for('set-field!'), Symbol.for('lisp-info'), Symbol.for('f'), [Symbol.for('list'), Symbol.for('exp'), Symbol.for('env')]], Symbol.for('f')];
 /**
  * Evaluate a `(cond ...)` form.
  */
@@ -1800,7 +1800,7 @@ function jsOptionalChainingSpecial_(exp, env) {
     return (0, eval_1.eval_)(obj, env)[fieldName];
 }
 exports.jsOptionalChainingSpecial_ = jsOptionalChainingSpecial_;
-jsOptionalChainingSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js-optional-chaining-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('field'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('field-name'), [Symbol.for('symbol->string'), Symbol.for('field')]], [Symbol.for('~>'), [Symbol.for('eval_'), Symbol.for('obj'), Symbol.for('env')], [Symbol.for('oget'), Symbol.for('_'), Symbol.for('field-name')]]];
+jsOptionalChainingSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js/optional-chaining-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('field'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('field-name'), [Symbol.for('symbol->string'), Symbol.for('field')]], [Symbol.for('~>'), [Symbol.for('eval_'), Symbol.for('obj'), Symbol.for('env')], [Symbol.for('oget'), Symbol.for('_'), Symbol.for('field-name')]]];
 /**
  * Evaluate a `(set-field! ...)` form.
  */

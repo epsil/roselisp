@@ -96,4 +96,4 @@ declare function fieldNames_(obj: any): any;
 declare namespace fieldNames_ {
     var fsource: (symbol | symbol[])[];
 }
-export { jsObjP_, jsObjectTypeP_, objectRef_ as objectGet_, objectRef_ as oget_, objectSetX_ as objectSet_, objectSetX_ as osetx_, objectSetX_ as oset_, fieldNames_, jsKeys_, jsObjAppend_, jsObj_, objectRef_, objectSetX_ };
+export { objectRef_ as objectGet_, objectRef_ as oget_, objectSetX_ as objectSet_, objectSetX_ as osetx_, objectSetX_ as oset_, fieldNames_, jsKeys_, jsObjAppend_, jsObjP_, jsObj_, jsObjectTypeP_, objectRef_, objectSetX_ };

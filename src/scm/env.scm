@@ -773,8 +773,8 @@
     ;; This could have been implemented in terms of
     ;; `find-local-frame`, but the following is faster since it
     ;; doesn't concern itself with the finer details of which
-    ;; particular frame of which particular environment contains the
-    ;; binding.
+    ;; particular frame of which particular environment contains
+    ;; the binding.
     (define result #f)
     (for ((env (get-field stack this)))
       (when (send env has? key)

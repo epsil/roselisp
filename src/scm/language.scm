@@ -359,7 +359,7 @@
                   js/for_
                   let-env_
                   multiple-value-bind_
-                  new-apply_
+                  new/apply_
                   rkt-new_
                   set_
                   thread-as_
@@ -654,7 +654,7 @@
          (,quote_ ,compile-quote (compiler-> Any * Any))
          (,require_ ,compile-require (compiler-> Any * Any))
          (,return_ ,compile-return (compiler-> Any * Any))
-         (,send-apply_ ,compile-send-apply (compiler-> Any * Any))
+         (,send/apply_ ,compile-send/apply (compiler-> Any * Any))
          (,send_ ,compile-send (compiler-> Any * Any))
          (,set!_ ,compile-set (compiler-> Any * Any))
          (,set-field_ ,compile-set-field (compiler-> Any * Any))
@@ -2764,7 +2764,7 @@
    options))
 
 ;;; Compile a `(send/apply ...)` expression.
-(define (compile-send-apply node env (options (js/obj)))
+(define (compile-send/apply node env (options (js/obj)))
   (define obj
     (send node get 1))
   (define method
@@ -6387,7 +6387,7 @@
    (current-compilation-options)))
 
 ;;; Expand a `(send/apply ...)` expression.
-(define-macro (send-apply_ &whole exp &environment env)
+(define-macro (send/apply_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -8368,7 +8368,7 @@
          (module ,module_ (macro-> Any * Any))
          (multiple-value-bind ,multiple-value-bind_ (macro-> Any * Any))
          (multiple-values-bind ,multiple-value-bind_ (macro-> Any * Any))
-         (new/apply ,new-apply_ (macro-> Any * Any))
+         (new/apply ,new/apply_ (macro-> Any * Any))
          (or ,or_ (macro-> Any * Any))
          (prog1 ,begin0_ (macro-> Any * Any))
          (progn ,begin_ (macro-> Any * Any))
@@ -8377,7 +8377,7 @@
          (return ,return_ (macro-> Any * Any))
          (rkt/new ,rkt-new_ (macro-> Any * Any))
          (send ,send_ (macro-> Any * Any))
-         (send/apply ,send-apply_ (macro-> Any * Any))
+         (send/apply ,send/apply_ (macro-> Any * Any))
          (set ,set_ (macro-> Any * Any))
          (set! ,set!_ (macro-> Any * Any))
          (set!-fields ,set-fields_ (macro-> Any * Any))
@@ -8526,7 +8526,7 @@
   (rename-out (quasiquote_ quasiquote))
   (rename-out (quote_ quote))
   (rename-out (require_ require))
-  (rename-out (send-apply_ send/apply))
+  (rename-out (send/apply_ send/apply))
   (rename-out (send_ call-method))
   (rename-out (send_ send))
   (rename-out (set!_ set!))
@@ -8624,7 +8624,7 @@
   require_
   return_
   s
-  send-apply_
+  send/apply_
   send-method
   send_
   set!_

@@ -4,7 +4,7 @@
 (require (only-in "../../src/ts/sexp"
                   s))
 (require (only-in "../../src/ts/string"
-                  stringp))
+                  string?))
 (require (only-in "./test-util"
                   assert-equal
                   test-macro))
@@ -12,14 +12,14 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `stringp`
- > (describe "stringp")
+ ;; `string?`
+ > (describe "string?")
  _
- > (stringp "foo")
+ > (string? "foo")
  #t
- > (stringp (new String "foo"))
+ > (string? (new String "foo"))
  #t
- > (stringp 'foo)
+ > (string? 'foo)
  #f
 
  ;; `compose`

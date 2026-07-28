@@ -389,29 +389,29 @@
        ((not ,test-exp))
      ,@body))
 
-(define-macro (js/for-2_ args &rest body)
-  (define inits '())
-  (define tests '())
-  (for ((arg args))
-    (define init
-      (js/first arg))
-    (define test
-      (js/second arg))
-    (define update
-      (js/third arg))
-    (when (tagged-list? init 'define)
-      (set! init (drop init 1)))
-    (when (tagged-list? update 'set!)
-      (set! update (js/third init)))
-    (push-right! inits `(,@init ,update))
-    (push-right! tests test))
-  (define test-exp
-    (if (= (js/length tests) 1)
-        (js/first tests)
-        `(and ,@tests)))
-  `(do ,inits
-       ((not ,test-exp))
-     ,@body))
+;; (define-macro (js/for-2_ args &rest body)
+;;   (define inits '())
+;;   (define tests '())
+;;   (for ((arg args))
+;;     (define init
+;;       (js/first arg))
+;;     (define test
+;;       (js/second arg))
+;;     (define update
+;;       (js/third arg))
+;;     (when (tagged-list? init 'define)
+;;       (set! init (drop init 1)))
+;;     (when (tagged-list? update 'set!)
+;;       (set! update (js/third init)))
+;;     (push-right! inits `(,@init ,update))
+;;     (push-right! tests test))
+;;   (define test-exp
+;;     (if (= (js/length tests) 1)
+;;         (js/first tests)
+;;         `(and ,@tests)))
+;;   `(do ,inits
+;;        ((not ,test-exp))
+;;      ,@body))
 
 ;;; Expand a `(js/for-in ...)` expression.
 (define-macro (js/for-in_ args &rest body)
@@ -444,16 +444,16 @@
 ;;; Expand a `(case ...)` expression.
 (define-macro (case_ val &rest clauses)
   (define has-complex-clauses #f)
-  (define (is-simple-value x)
+  (define (simple-value? x)
     (or (boolean? x)
         (number? x)
         (symbol? x)
         (string? x)))
-  (define (is-complex-value x)
-    (not (is-simple-value x)))
+  (define (complex-value? x)
+    (not (simple-value? x)))
   (for ((x clauses))
     (when (and (not (eq? (js/first x) 'else))
-               (memf? is-complex-value (js/first x)))
+               (memf? complex-value? (js/first x)))
       (set! has-complex-clauses #t)
       (break)))
   (cond
@@ -556,7 +556,7 @@
   `(set! ,(js/second sym) ,val))
 
 ;;; Expand a `(new/apply ...)` expression.
-(define-macro (new-apply_ &rest args)
+(define-macro (new/apply_ &rest args)
   `(apply new ,@args))
 
 ;;; Expand a `(clj/try ...)` expression.
@@ -639,7 +639,7 @@
   js/for_
   let-env_
   multiple-value-bind_
-  new-apply_
+  new/apply_
   rkt-new_
   set_
   thread-as_

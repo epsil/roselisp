@@ -85,7 +85,7 @@
        (else
         (set! char (aget str pos))
         (cond
-         ((is-whitespace char)
+         ((whitespace? char)
           (set! pos (+ pos 1)))
          ((eq? char "(")
           (push-right! result (new SymbolToken char))
@@ -96,7 +96,7 @@
          ((eq? char "\"")
           (set! state "string")
           (set! pos (+ pos 1)))
-         ((is-comment char)
+         ((comment? char)
           (set! state "comment"))
          ((eq? char "'")
           (push-right! result (new SymbolToken char))
@@ -188,10 +188,10 @@
           (set! char (aget str pos)))
         ;; Skip past indentation on the next line and see if there
         ;; is another leading comment; if so, merge it into this.
-        (while (is-indentation char)
+        (while (indentation? char)
           (set! pos (+ pos 1))
           (set! char (aget str pos)))
-        (unless (is-comment char)
+        (unless (comment? char)
           ;; Exit `comment` state.
           (when comments
             (push-right! result
@@ -405,13 +405,13 @@
 
 ;;; Whether a character is indentation
 ;;; (i.e., tabs or spaces, but not newlines).
-(define (is-indentation char)
+(define (indentation? char)
   ;; Newlines are whitespace, but not indentation.
   (regexp-match (regexp "^[^\\S\\r\\n]+$") char))
 
 ;;; Whether a character is whitespace
 ;;; (i.e., tabs, spaces or newlines).
-(define (is-whitespace char)
+(define (whitespace? char)
   (regexp-match (regexp "^\\s$") char))
 
 ;;; Whether a character is a newline.
@@ -421,12 +421,12 @@
 ;;; (i.e., LF "Line Feed", U+000A).
 ;;;
 ;;; [w:Unix text files]: https://en.wikipedia.org/wiki/Text_file#Unix_text_files
-(define (is-newline char)
+(define (newline? char)
   (eq? char "\n"))
 
 ;;; Whether a character is a comment character
 ;;; (i.e., `;`).
-(define (is-comment char)
+(define (comment? char)
   (eq? char ";"))
 
 ;;; Attach comments to a rose tree node, conditional on options.
@@ -462,7 +462,7 @@
 
 ;;; Get the comment level, e.g., 2 for a `;;`-comment,
 ;;; 3 for a `;;;`-comment, etc.
-(define (is-comment-level comment level)
+(define (comment-level? comment level)
   (= (get-comment-level comment) level))
 
 ;;; Map of operator symbols.
@@ -552,8 +552,8 @@
   SymbolToken
   Token
   TrailingCommentToken
+  comment-level?
   get-comment-level
-  is-comment-level
   parse-rose
   parse-sexp
   read

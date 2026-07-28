@@ -1,16 +1,13 @@
 /**
- * # Unsorted tests
+ * # Various unsorted tests
  *
- * Tests that have not been sorted yet.
+ * This file functions as an "inbox" for incoming tests.
  */
 
 import { assertEqual, testRepl, testMacro } from './test-util';
 
 testMacro.ftype = 'macro';
 
-/**
- * Test inbox
- */
 describe('js/for', function (): any {
   return xit("(compile '(js/for ((i 0) (< i 10) (+ i 1)) (foo)))", function (): any {
     return testRepl([

@@ -2676,7 +2676,7 @@ function compileSendApply(node: any, env: any, options: any = {}): any {
   return makeExpressionOrStatement(compileExpression(sexpToRose([Symbol.for('apply'), [Symbol.for('get-field'), method, obj], ...args], node), env, options), options);
 }
 
-compileSendApply.fsource = [Symbol.for('define'), [Symbol.for('compile-send-apply'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('method'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 3]], [Symbol.for('make-expression-or-statement'), [Symbol.for('compile-expression'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('apply'), [Symbol.for('get-field'), [Symbol.for('unquote'), Symbol.for('method')], [Symbol.for('unquote'), Symbol.for('obj')]], [Symbol.for('unquote-splicing'), Symbol.for('args')]]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')], Symbol.for('options')]];
+compileSendApply.fsource = [Symbol.for('define'), [Symbol.for('compile-send/apply'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('method'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 3]], [Symbol.for('make-expression-or-statement'), [Symbol.for('compile-expression'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('apply'), [Symbol.for('get-field'), [Symbol.for('unquote'), Symbol.for('method')], [Symbol.for('unquote'), Symbol.for('obj')]], [Symbol.for('unquote-splicing'), Symbol.for('args')]]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')], Symbol.for('options')]];
 
 /**
  * Compile a `(js/=== ...)` expression.
@@ -7059,7 +7059,7 @@ function sendApply_(exp: any, env: any): any {
   return compileSexp(exp, env, currentCompilationOptions());
 }
 
-sendApply_.fsource = [Symbol.for('define'), [Symbol.for('send-apply_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('compile-sexp'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('current-compilation-options')]]];
+sendApply_.fsource = [Symbol.for('define'), [Symbol.for('send/apply_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('compile-sexp'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('current-compilation-options')]]];
 
 sendApply_.ftype = 'macro';
 

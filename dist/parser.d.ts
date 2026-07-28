@@ -99,8 +99,8 @@ declare namespace getCommentLevel {
  * Get the comment level, e.g., 2 for a `;;`-comment,
  * 3 for a `;;;`-comment, etc.
  */
-declare function isCommentLevel(comment: any, level: any): any;
-declare namespace isCommentLevel {
+declare function commentLevelP(comment: any, level: any): any;
+declare namespace commentLevelP {
     var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
@@ -174,4 +174,4 @@ declare class StringToken extends Token {
 declare class SymbolToken extends Token {
     constructor(value: any);
 }
-export { CommentToken, LeadingCommentToken, NumberToken, StringToken, SymbolToken, Token, TrailingCommentToken, getCommentLevel, isCommentLevel, parseRose, parseSexp, read, readRose, readSexp, tokenize };
+export { CommentToken, LeadingCommentToken, NumberToken, StringToken, SymbolToken, Token, TrailingCommentToken, commentLevelP, getCommentLevel, parseRose, parseSexp, read, readRose, readSexp, tokenize };

@@ -1,6 +1,6 @@
-;;; # Unsorted tests
+;;; # Test utilities tests
 ;;;
-;;; Tests that have not been sorted yet.
+;;; Tests for the test utilities.
 
 (require (only-in "./test-util"
                   assert-equal

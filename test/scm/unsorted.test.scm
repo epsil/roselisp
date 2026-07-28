@@ -1,6 +1,6 @@
-;;; # Unsorted tests
+;;; # Various unsorted tests
 ;;;
-;;; Tests that have not been sorted yet.
+;;; This file functions as an "inbox" for incoming tests.
 
 (require (only-in "./test-util"
                   assert-equal
@@ -9,7 +9,6 @@
 
 (declare-macro test-macro)
 
-;;; Test inbox
 (test-macro
  :repl #t
 

@@ -96,7 +96,7 @@ function tokenize(str: any, options: any = {}): any {
         state = 'stop';
       } else {
         char = (str as any)[pos];
-        if (isWhitespace(char)) {
+        if (whitespacep(char)) {
           pos++;
         } else if (char === '(') {
           result.push(new SymbolToken(char));
@@ -107,7 +107,7 @@ function tokenize(str: any, options: any = {}): any {
         } else if (char === '"') {
           state = 'string';
           pos++;
-        } else if (isComment(char)) {
+        } else if (commentp(char)) {
           state = 'comment';
         } else if (char === '\'') {
           result.push(new SymbolToken(char));
@@ -193,11 +193,11 @@ function tokenize(str: any, options: any = {}): any {
         }
         // Skip past indentation on the next line and see if there
         // is another leading comment; if so, merge it into this.
-        while (isIndentation(char)) {
+        while (indentationp(char)) {
           pos++;
           char = (str as any)[pos];
         }
-        if (!isComment(char)) {
+        if (!commentp(char)) {
           // Exit `comment` state.
           if (comments) {
             result.push(new LeadingCommentToken(removeIndentation(buffer)));
@@ -214,7 +214,7 @@ function tokenize(str: any, options: any = {}): any {
   return result;
 }
 
-tokenize.fsource = [Symbol.for('define'), [Symbol.for('tokenize'), Symbol.for('str'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('when'), [Symbol.for('undefined?'), Symbol.for('comments')], [Symbol.for('set!'), Symbol.for('comments'), true]], [Symbol.for('define'), Symbol.for('pos'), 0], [Symbol.for('define'), Symbol.for('len'), [Symbol.for('js/length'), Symbol.for('str')]], [Symbol.for('define'), Symbol.for('char'), ''], [Symbol.for('define'), Symbol.for('buffer'), ''], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('state'), 'start'], [Symbol.for('while'), [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('state'), 'stop']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('state'), 'start'], [Symbol.for('set!'), Symbol.for('state'), [Symbol.for('if'), [Symbol.for('='), Symbol.for('len'), 0], 'stop', 'read']]], [[Symbol.for('eq?'), Symbol.for('state'), 'read'], [Symbol.for('cond'), [[Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('set!'), Symbol.for('state'), 'stop']], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('is-whitespace'), Symbol.for('char')], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), '('], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), ')'], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), '"'], [Symbol.for('set!'), Symbol.for('state'), 'string'], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('is-comment'), Symbol.for('char')], [Symbol.for('set!'), Symbol.for('state'), 'comment']], [[Symbol.for('eq?'), Symbol.for('char'), '\''], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), '`'], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), ','], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('<'), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('str'), [Symbol.for('+'), Symbol.for('pos'), 1]], '@']], [Symbol.for('define'), Symbol.for('next-token'), [Symbol.for('aget'), Symbol.for('str'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), [Symbol.for('string-append'), Symbol.for('char'), Symbol.for('next-token')]]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('state'), 'symbol'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]]]], [[Symbol.for('eq?'), Symbol.for('state'), 'symbol'], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('or'), [Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\s'], Symbol.for('char')], [Symbol.for('eq?'), Symbol.for('char'), ')']], [Symbol.for('define'), Symbol.for('num'), [Symbol.for('parse-float'), Symbol.for('buffer')]], [Symbol.for('if'), [Symbol.for('not'), [Symbol.for('is-NaN'), Symbol.for('num')]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('NumberToken'), Symbol.for('num')]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('buffer')]]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [[Symbol.for('eq?'), Symbol.for('state'), 'string'], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('StringToken'), Symbol.for('buffer')]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']], [[Symbol.for('eq?'), Symbol.for('char'), '\\'], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('define'), Symbol.for('next-token'), [Symbol.for('aget'), Symbol.for('str'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('next-token'), 'n'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), '\n']]], [[Symbol.for('eq?'), Symbol.for('next-token'), 't'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), '	']]], [[Symbol.for('eq?'), Symbol.for('next-token'), 'r'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), '\n']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('next-token')]]]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 2]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [[Symbol.for('eq?'), Symbol.for('char'), '"'], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('StringToken'), Symbol.for('buffer')]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [[Symbol.for('eq?'), Symbol.for('state'), 'comment'], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('LeadingCommentToken'), [Symbol.for('remove-indentation'), Symbol.for('buffer')]]]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'stop']], [[Symbol.for('eq?'), Symbol.for('char'), '\n'], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('char'), '\n'], [Symbol.for('<'), Symbol.for('pos'), Symbol.for('len')]], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]]], [Symbol.for('while'), [Symbol.for('is-indentation'), Symbol.for('char')], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]]], [Symbol.for('unless'), [Symbol.for('is-comment'), Symbol.for('char')], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('LeadingCommentToken'), [Symbol.for('remove-indentation'), Symbol.for('buffer')]]]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]]]], Symbol.for('result')];
+tokenize.fsource = [Symbol.for('define'), [Symbol.for('tokenize'), Symbol.for('str'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('when'), [Symbol.for('undefined?'), Symbol.for('comments')], [Symbol.for('set!'), Symbol.for('comments'), true]], [Symbol.for('define'), Symbol.for('pos'), 0], [Symbol.for('define'), Symbol.for('len'), [Symbol.for('js/length'), Symbol.for('str')]], [Symbol.for('define'), Symbol.for('char'), ''], [Symbol.for('define'), Symbol.for('buffer'), ''], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('state'), 'start'], [Symbol.for('while'), [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('state'), 'stop']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('state'), 'start'], [Symbol.for('set!'), Symbol.for('state'), [Symbol.for('if'), [Symbol.for('='), Symbol.for('len'), 0], 'stop', 'read']]], [[Symbol.for('eq?'), Symbol.for('state'), 'read'], [Symbol.for('cond'), [[Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('set!'), Symbol.for('state'), 'stop']], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('whitespace?'), Symbol.for('char')], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), '('], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), ')'], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), '"'], [Symbol.for('set!'), Symbol.for('state'), 'string'], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('comment?'), Symbol.for('char')], [Symbol.for('set!'), Symbol.for('state'), 'comment']], [[Symbol.for('eq?'), Symbol.for('char'), '\''], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), '`'], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [[Symbol.for('eq?'), Symbol.for('char'), ','], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('<'), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('str'), [Symbol.for('+'), Symbol.for('pos'), 1]], '@']], [Symbol.for('define'), Symbol.for('next-token'), [Symbol.for('aget'), Symbol.for('str'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), [Symbol.for('string-append'), Symbol.for('char'), Symbol.for('next-token')]]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('state'), 'symbol'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]]]], [[Symbol.for('eq?'), Symbol.for('state'), 'symbol'], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('or'), [Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\s'], Symbol.for('char')], [Symbol.for('eq?'), Symbol.for('char'), ')']], [Symbol.for('define'), Symbol.for('num'), [Symbol.for('parse-float'), Symbol.for('buffer')]], [Symbol.for('if'), [Symbol.for('not'), [Symbol.for('is-NaN'), Symbol.for('num')]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('NumberToken'), Symbol.for('num')]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('SymbolToken'), Symbol.for('buffer')]]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [[Symbol.for('eq?'), Symbol.for('state'), 'string'], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('StringToken'), Symbol.for('buffer')]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']], [[Symbol.for('eq?'), Symbol.for('char'), '\\'], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('define'), Symbol.for('next-token'), [Symbol.for('aget'), Symbol.for('str'), [Symbol.for('+'), Symbol.for('pos'), 1]]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('next-token'), 'n'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), '\n']]], [[Symbol.for('eq?'), Symbol.for('next-token'), 't'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), '	']]], [[Symbol.for('eq?'), Symbol.for('next-token'), 'r'], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), '\n']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('next-token')]]]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 2]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [[Symbol.for('eq?'), Symbol.for('char'), '"'], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('StringToken'), Symbol.for('buffer')]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]], [[Symbol.for('eq?'), Symbol.for('state'), 'comment'], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]], [Symbol.for('cond'), [[Symbol.for('>='), Symbol.for('pos'), Symbol.for('len')], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('LeadingCommentToken'), [Symbol.for('remove-indentation'), Symbol.for('buffer')]]]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'stop']], [[Symbol.for('eq?'), Symbol.for('char'), '\n'], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('char'), '\n'], [Symbol.for('<'), Symbol.for('pos'), Symbol.for('len')]], [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]]], [Symbol.for('while'), [Symbol.for('indentation?'), Symbol.for('char')], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]], [Symbol.for('set!'), Symbol.for('char'), [Symbol.for('aget'), Symbol.for('str'), Symbol.for('pos')]]], [Symbol.for('unless'), [Symbol.for('comment?'), Symbol.for('char')], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('new'), Symbol.for('LeadingCommentToken'), [Symbol.for('remove-indentation'), Symbol.for('buffer')]]]], [Symbol.for('set!'), Symbol.for('buffer'), ''], [Symbol.for('set!'), Symbol.for('state'), 'read']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('buffer'), [Symbol.for('string-append'), Symbol.for('buffer'), Symbol.for('char')]], [Symbol.for('set!'), Symbol.for('pos'), [Symbol.for('+'), Symbol.for('pos'), 1]]]]]]], Symbol.for('result')];
 
 /**
  * Take the array of tokens produced by `tokenize` and make a
@@ -405,22 +405,22 @@ removeIndentation.fsource = [Symbol.for('define'), [Symbol.for('remove-indentati
  * Whether a character is indentation
  * (i.e., tabs or spaces, but not newlines).
  */
-function isIndentation(char: any): any {
+function indentationp(char: any): any {
   // Newlines are whitespace, but not indentation.
   return char.match(new RegExp('^[^\\S\\r\\n]+$'));
 }
 
-isIndentation.fsource = [Symbol.for('define'), [Symbol.for('is-indentation'), Symbol.for('char')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^[^\\S\\r\\n]+$'], Symbol.for('char')]];
+indentationp.fsource = [Symbol.for('define'), [Symbol.for('indentation?'), Symbol.for('char')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^[^\\S\\r\\n]+$'], Symbol.for('char')]];
 
 /**
  * Whether a character is whitespace
  * (i.e., tabs, spaces or newlines).
  */
-function isWhitespace(char: any): any {
+function whitespacep(char: any): any {
   return char.match(new RegExp('^\\s$'));
 }
 
-isWhitespace.fsource = [Symbol.for('define'), [Symbol.for('is-whitespace'), Symbol.for('char')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^\\s$'], Symbol.for('char')]];
+whitespacep.fsource = [Symbol.for('define'), [Symbol.for('whitespace?'), Symbol.for('char')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^\\s$'], Symbol.for('char')]];
 
 /**
  * Whether a character is a newline.
@@ -431,21 +431,21 @@ isWhitespace.fsource = [Symbol.for('define'), [Symbol.for('is-whitespace'), Symb
  *
  * [w:Unix text files]: https://en.wikipedia.org/wiki/Text_file#Unix_text_files
  */
-function isNewline(char: any): any {
+function newlinep(char: any): any {
   return char === '\n';
 }
 
-isNewline.fsource = [Symbol.for('define'), [Symbol.for('is-newline'), Symbol.for('char')], [Symbol.for('eq?'), Symbol.for('char'), '\n']];
+newlinep.fsource = [Symbol.for('define'), [Symbol.for('newline?'), Symbol.for('char')], [Symbol.for('eq?'), Symbol.for('char'), '\n']];
 
 /**
  * Whether a character is a comment character
  * (i.e., `;`).
  */
-function isComment(char: any): any {
+function commentp(char: any): any {
   return char === ';';
 }
 
-isComment.fsource = [Symbol.for('define'), [Symbol.for('is-comment'), Symbol.for('char')], [Symbol.for('eq?'), Symbol.for('char'), ';']];
+commentp.fsource = [Symbol.for('define'), [Symbol.for('comment?'), Symbol.for('char')], [Symbol.for('eq?'), Symbol.for('char'), ';']];
 
 /**
  * Attach comments to a rose tree node, conditional on options.
@@ -480,11 +480,11 @@ getCommentLevel.fsource = [Symbol.for('define'), [Symbol.for('get-comment-level'
  * Get the comment level, e.g., 2 for a `;;`-comment,
  * 3 for a `;;;`-comment, etc.
  */
-function isCommentLevel(comment: any, level: any): any {
+function commentLevelP(comment: any, level: any): any {
   return getCommentLevel(comment) === level;
 }
 
-isCommentLevel.fsource = [Symbol.for('define'), [Symbol.for('is-comment-level'), Symbol.for('comment'), Symbol.for('level')], [Symbol.for('='), [Symbol.for('get-comment-level'), Symbol.for('comment')], Symbol.for('level')]];
+commentLevelP.fsource = [Symbol.for('define'), [Symbol.for('comment-level?'), Symbol.for('comment'), Symbol.for('level')], [Symbol.for('='), [Symbol.for('get-comment-level'), Symbol.for('comment')], Symbol.for('level')]];
 
 /**
  * Map of operator symbols.
@@ -613,8 +613,8 @@ export {
   SymbolToken,
   Token,
   TrailingCommentToken,
+  commentLevelP,
   getCommentLevel,
-  isCommentLevel,
   parseRose,
   parseSexp,
   read,

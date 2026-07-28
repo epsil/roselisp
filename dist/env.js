@@ -779,8 +779,8 @@ class EnvironmentStack extends TypedEnvironment {
         // This could have been implemented in terms of
         // `find-local-frame`, but the following is faster since it
         // doesn't concern itself with the finer details of which
-        // particular frame of which particular environment contains the
-        // binding.
+        // particular frame of which particular environment contains
+        // the binding.
         let result = false;
         for (let env of this.stack) {
             if (env.hasp(key)) {

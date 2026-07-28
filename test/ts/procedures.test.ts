@@ -8,14 +8,14 @@ import { assertEqual, testMacro } from './test-util';
 
 testMacro.ftype = 'macro';
 
-describe('stringp', function (): any {
-  it('(stringp "foo")', function (): any {
+describe('string?', function (): any {
+  it('(string? "foo")', function (): any {
     return assertEqual(stringp('foo'), true);
   });
-  it('(stringp (new String "foo"))', function (): any {
+  it('(string? (new String "foo"))', function (): any {
     return assertEqual(stringp(new String('foo')), true);
   });
-  return it("(stringp 'foo)", function (): any {
+  return it("(string? 'foo)", function (): any {
     return assertEqual(stringp(Symbol.for('foo')), false);
   });
 });

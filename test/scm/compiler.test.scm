@@ -49,8 +49,12 @@
  "fooBar;"
  > (compile 'foo/bar)
  "fooBar;"
+ > (compile 'foo!)
+ "foox;"
  > (compile 'foo-bar!)
  "fooBarX;"
+ > (compile 'foo?)
+ "foop;"
  > (compile 'foo-bar?)
  "fooBarP;"
  > (compile '*foo-bar*)

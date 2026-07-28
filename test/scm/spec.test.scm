@@ -1300,6 +1300,16 @@
          (x 10)
          (error "error"))))
  15
+ > (it "(try ... (+ 5 (call/cc (lambda (x) (error ...)))) ...)"
+       (let ((result 0))
+         (try
+           (set! result
+                 (+ 5 (call/cc
+                       (lambda (x)
+                         (error "error")))))
+           (catch Object e))
+         result))
+ 0
 
  ;; `define-values`
  > (describe "define-values")

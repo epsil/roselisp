@@ -4117,7 +4117,7 @@ describe('call/cc', function (): any {
       15,
     ]);
   });
-  return it('(+ 5 (call/cc (lambda (x) (x 10) (error "error"))))', function (): any {
+  it('(+ 5 (call/cc (lambda (x) (x 10) (error "error"))))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4135,6 +4135,38 @@ describe('call/cc', function (): any {
         ],
       ],
       15,
+    ]);
+  });
+  return it('(try ... (+ 5 (call/cc (lambda (x) (error ...)))) ...)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('result'), 0]],
+        [
+          Symbol.for('try'),
+          [
+            Symbol.for('set!'),
+            Symbol.for('result'),
+            [
+              Symbol.for('+'),
+              5,
+              [
+                Symbol.for('call/cc'),
+                [
+                  Symbol.for('lambda'),
+                  [Symbol.for('x')],
+                  [Symbol.for('error'), 'error'],
+                ],
+              ],
+            ],
+          ],
+          [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('e')],
+        ],
+        Symbol.for('result'),
+      ],
+      0,
     ]);
   });
 });

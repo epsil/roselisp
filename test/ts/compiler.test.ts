@@ -60,8 +60,14 @@ describe('Symbols', function (): any {
   it("(compile 'foo/bar)", function (): any {
     return assertEqual(compile(Symbol.for('foo/bar')), 'fooBar;');
   });
+  it("(compile 'foo!)", function (): any {
+    return assertEqual(compile(Symbol.for('foo!')), 'foox;');
+  });
   it("(compile 'foo-bar!)", function (): any {
     return assertEqual(compile(Symbol.for('foo-bar!')), 'fooBarX;');
+  });
+  it("(compile 'foo?)", function (): any {
+    return assertEqual(compile(Symbol.for('foo?')), 'foop;');
   });
   it("(compile 'foo-bar?)", function (): any {
     return assertEqual(compile(Symbol.for('foo-bar?')), 'fooBarP;');

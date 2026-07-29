@@ -1155,6 +1155,7 @@
 (define (print-block-statement node (options (js/obj)))
   (define body
     (get-field body node))
+  ;; FIXME: Kludge, this code belongs in the compiler.
   (define body-modified
     (begin
       (when (and (get-field comments node)

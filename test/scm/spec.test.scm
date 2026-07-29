@@ -561,8 +561,28 @@
 } else {
   bar();
 }"
+ > (compile '(if #t (foo) (bar))
+            :as 'statement)
+ "if (true) {
+  foo();
+} else {
+  bar();
+}"
+ > (compile '(if #t (foo) (bar))
+            :as 'return)
+ "if (true) {
+  return foo();
+} else {
+  return bar();
+}"
  > (compile '(if #t (foo) (bar)) :as 'expression)
  "true ? foo() : bar()"
+ > (compile '(if #t (foo) (bar) (baz)))
+ "if (true) {
+  foo();
+} else {
+  bar();
+}"
 
  ;; `when`
  > (describe "when")
@@ -625,6 +645,26 @@
     (#t
      2))
  2
+ xit> (macroexpand '(cond
+                     (#f
+                      (foo))
+                     (else
+                      (bar))))
+ '(if #f
+      (foo)
+      (bar))
+ xit> (macroexpand '(cond
+                     (x
+                      (foo))
+                     (y
+                      (bar))
+                     (else
+                      (baz))))
+ '(if x
+      (foo)
+      (if y
+          (bar)
+          (baz)))
  > (compile '(cond
               (#f
                (foo))
@@ -640,8 +680,92 @@
                (foo))
               (else
                (bar)))
+            :as 'statement)
+ "if (false) {
+  foo();
+} else {
+  bar();
+}"
+ > (compile '(cond
+              (#f
+               (foo))
+              (else
+               (bar)))
+            :as 'return)
+ "if (false) {
+  return foo();
+} else {
+  return bar();
+}"
+ > (compile '(cond
+              (#f
+               (foo))
+              (else
+               (bar)))
             :as 'expression)
  "false ? foo() : bar()"
+
+ ;; `js/?`
+ > (describe "js/?")
+ _
+ > (compile '(js/? x y))
+ "x ? y : undefined;"
+ > (compile '(js/? x y z))
+ "x ? y : z;"
+ > (compile '(js/? x y (js/? z w)))
+ "x ? y : (z ? w : undefined);"
+ > (compile '(js/? x y z)
+            :as 'statement)
+ "x ? y : z;"
+ > (compile '(js/? x y z)
+            :as 'return)
+ "return x ? y : z;"
+ > (compile '(js/? x y z)
+            :as 'expression)
+ "x ? y : z"
+
+ ;; `js/if`
+ > (describe "js/if")
+ _
+ > (compile '(js/if x y))
+ "if (x) {
+  y;
+}"
+ > (compile '(js/if x y z))
+ "if (x) {
+  y;
+} else {
+  z;
+}"
+ > (compile '(js/if x y (js/if z w)))
+ "if (x) {
+  y;
+} else if (z) {
+  w;
+}"
+ > (compile '(js/if x y z)
+            :as 'statement)
+ "if (x) {
+  y;
+} else {
+  z;
+}"
+ > (compile '(js/if x y z)
+            :as 'return)
+ "if (x) {
+  return y;
+} else {
+  return z;
+}"
+ it> (compile '(js/if x y z)
+              :as 'expression)
+ "(() => {
+  if (x) {
+    return y;
+  } else {
+    return z;
+  }
+})()"
 
  ;; `js/switch`
  > (describe "js/switch")

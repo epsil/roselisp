@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.if_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
 const eval_1 = require("./eval");
 const util_1 = require("./util");
 const [lastCdr, cdr, listStar, cons, take] = (() => {
@@ -355,24 +355,6 @@ function rktNew_(exp, env) {
 exports.rktNew_ = rktNew_;
 rktNew_.fsource = [Symbol.for('define'), [Symbol.for('rkt/new_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('make-object'), [Symbol.for('unquote'), Symbol.for('constructor')], [Symbol.for('unquote-splicing'), [Symbol.for('map'), Symbol.for('js/second'), Symbol.for('args')]]]]];
 rktNew_.ftype = 'macro';
-/**
- * Expand an `(if ...)` expression.
- *
- * Similar to [`if` in Racket][rkt:if], [`if` in Guile][guile:if],
- * [`if` in Common Lisp][cl:if] and [`if` in Emacs Lisp][el:if].
- *
- * [rkt:if]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28quote._~23~25kernel%29._if%29%29
- * [guile:if]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-if-1
- * [cl:if]: http://clhs.lisp.se/Body/s_if.htm#if
- * [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
- */
-function if_(exp, env) {
-    const [condition, thenClause, ...elseClauses] = exp.slice(1);
-    return [Symbol.for('cond'), [condition, thenClause], ...((elseClauses.length > 0) ? [[Symbol.for('else'), ...elseClauses]] : [])];
-}
-exports.if_ = if_;
-if_.fsource = [Symbol.for('define'), [Symbol.for('if_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('condition'), Symbol.for('then-clause'), Symbol.for('.'), Symbol.for('else-clauses')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('cond'), [[Symbol.for('unquote'), Symbol.for('condition')], [Symbol.for('unquote'), Symbol.for('then-clause')]], [Symbol.for('unquote-splicing'), [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('else-clauses')], 0], [Symbol.for('quasiquote'), [[Symbol.for('else'), [Symbol.for('unquote-splicing'), Symbol.for('else-clauses')]]]]], [Symbol.for('else'), [Symbol.for('quote'), []]]]]]]];
-if_.ftype = 'macro';
 /**
  * Expand a `(when ...)` expression.
  *

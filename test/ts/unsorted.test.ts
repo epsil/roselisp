@@ -9,42 +9,26 @@ import { assertEqual, testRepl, testMacro } from './test-util';
 testMacro.ftype = 'macro';
 
 describe('To do', function (): any {
-  xit("(compile '(js/? x y z))", function (): any {
+  xit("(compile '(abs x))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
       [
         Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('js/?'),
-            Symbol.for('x'),
-            Symbol.for('y'),
-            Symbol.for('z'),
-          ],
-        ],
+        [Symbol.for('quote'), [Symbol.for('abs'), Symbol.for('x')]],
       ],
-      'x ? y : z;',
+      'Math.abs(x);',
     ]);
   });
-  xit("(compile '(js/if x y z))", function (): any {
+  xit("(compile '(js/abs x))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
       [
         Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('js/if'),
-            Symbol.for('x'),
-            Symbol.for('y'),
-            Symbol.for('z'),
-          ],
-        ],
+        [Symbol.for('quote'), [Symbol.for('js/abs'), Symbol.for('x')]],
       ],
-      'if (x) {\n' + '  y;\n' + '} else {\n' + '  z;\n' + '}',
+      'Math.abs(x);',
     ]);
   });
   xit("(compile '(js/< x y))", function (): any {
@@ -504,26 +488,18 @@ describe('Bitwise operators', function (): any {
       'x ^= y;',
     ]);
   });
-  xit("(compile '(abs x))", function (): any {
+  return xit("(compile '(js/= x y))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
       [
         Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('abs'), Symbol.for('x')]],
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/='), Symbol.for('x'), Symbol.for('y')],
+        ],
       ],
-      'Math.abs(x);',
-    ]);
-  });
-  return xit("(compile '(js/abs x))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js/abs'), Symbol.for('x')]],
-      ],
-      'Math.abs(x);',
+      'x = y;',
     ]);
   });
 });

@@ -376,26 +376,6 @@ rktNew_.fsource = [Symbol.for('define'), [Symbol.for('rkt/new_'), Symbol.for('ex
 rktNew_.ftype = 'macro';
 
 /**
- * Expand an `(if ...)` expression.
- *
- * Similar to [`if` in Racket][rkt:if], [`if` in Guile][guile:if],
- * [`if` in Common Lisp][cl:if] and [`if` in Emacs Lisp][el:if].
- *
- * [rkt:if]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28quote._~23~25kernel%29._if%29%29
- * [guile:if]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-if-1
- * [cl:if]: http://clhs.lisp.se/Body/s_if.htm#if
- * [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
- */
-function if_(exp: any, env: any): any {
-  const [condition, thenClause, ...elseClauses]: any[] = exp.slice(1);
-  return [Symbol.for('cond'), [condition, thenClause], ...((elseClauses.length > 0) ? [[Symbol.for('else'), ...elseClauses]] : [])];
-}
-
-if_.fsource = [Symbol.for('define'), [Symbol.for('if_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('condition'), Symbol.for('then-clause'), Symbol.for('.'), Symbol.for('else-clauses')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('cond'), [[Symbol.for('unquote'), Symbol.for('condition')], [Symbol.for('unquote'), Symbol.for('then-clause')]], [Symbol.for('unquote-splicing'), [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('else-clauses')], 0], [Symbol.for('quasiquote'), [[Symbol.for('else'), [Symbol.for('unquote-splicing'), Symbol.for('else-clauses')]]]]], [Symbol.for('else'), [Symbol.for('quote'), []]]]]]]];
-
-if_.ftype = 'macro';
-
-/**
  * Expand a `(when ...)` expression.
  *
  * Similar to [`when` in Racket][rkt:when], [`when` in Guile][guile:when],
@@ -989,7 +969,6 @@ export {
   defun_,
   do_,
   for_,
-  if_,
   letEnv_,
   multipleValueBind_,
   newApply_,

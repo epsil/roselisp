@@ -458,6 +458,12 @@ declare namespace lambda_ {
 }
 /**
  * Expand a `(cond ...)` expression.
+ *
+ * Similar to [`cond` in Racket][rkt:cond] and
+ * [`cond` in Guile][guile:cond].
+ *
+ * [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
+ * [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
  */
 declare function cond_(exp: any, env: any): any;
 declare namespace cond_ {

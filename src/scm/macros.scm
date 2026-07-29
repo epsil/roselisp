@@ -212,25 +212,6 @@
   ;; initialization arguments, which are passed to the constructor.
   `(make-object ,constructor ,@(map js/second args)))
 
-;;; Expand an `(if ...)` expression.
-;;;
-;;; Similar to [`if` in Racket][rkt:if], [`if` in Guile][guile:if],
-;;; [`if` in Common Lisp][cl:if] and [`if` in Emacs Lisp][el:if].
-;;;
-;;; [rkt:if]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28quote._~23~25kernel%29._if%29%29
-;;; [guile:if]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-if-1
-;;; [cl:if]: http://clhs.lisp.se/Body/s_if.htm#if
-;;; [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
-(define-macro (if_ condition then-clause &rest else-clauses)
-  `(cond
-    (,condition
-     ,then-clause)
-    ,@(cond
-       ((> (js/length else-clauses) 0)
-        `((else ,@else-clauses)))
-       (else
-        '()))))
-
 ;;; Expand a `(when ...)` expression.
 ;;;
 ;;; Similar to [`when` in Racket][rkt:when], [`when` in Guile][guile:when],
@@ -738,7 +719,6 @@
   defun_
   do_
   for_
-  if_
   let-env_
   multiple-value-bind_
   new/apply_

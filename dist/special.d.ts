@@ -53,7 +53,7 @@ declare namespace quasiquoteSpecial_ {
  */
 declare function setqSpecial_(exp: any, env: any): any;
 declare namespace setqSpecial_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[])[];
 }
 /**
  * Evaluate a `(set ...)` form.

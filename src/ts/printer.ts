@@ -1181,6 +1181,7 @@ printSequenceExpression.fsource = [Symbol.for('define'), [Symbol.for('print-sequ
  */
 function printBlockStatement(node: any, options: any = {}): any {
   const body: any = node.body;
+  // FIXME: Kludge, this code belongs in the compiler.
   const bodyModified: any = ((): any => {
     if (node.comments && (body.length > 0)) {
       body[0].comments = [...node.comments, ...(body[0].comments || [])];

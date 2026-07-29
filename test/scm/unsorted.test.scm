@@ -14,14 +14,10 @@
 
  > (describe "To do")
  _
- xit> (compile '(js/? x y z))
- "x ? y : z;"
- xit> (compile '(js/if x y z))
- "if (x) {
-  y;
-} else {
-  z;
-}"
+ xit> (compile '(abs x))
+ "Math.abs(x);"
+ xit> (compile '(js/abs x))
+ "Math.abs(x);"
  xit> (compile '(js/< x y))
  "x < y;"
  xit> (compile '(js/> x y))
@@ -91,7 +87,5 @@
  "x |= y;"
  xit> (compile '(js/^= x y))
  "x ^= y;"
- xit> (compile '(abs x))
- "Math.abs(x);"
- xit> (compile '(js/abs x))
- "Math.abs(x);")
+ xit> (compile '(js/= x y))
+ "x = y;")

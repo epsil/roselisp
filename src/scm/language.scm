@@ -355,7 +355,6 @@
                   defun_
                   do_
                   for_
-                  if_
                   let-env_
                   multiple-value-bind_
                   new/apply_
@@ -606,6 +605,7 @@
          (,funcall_ ,compile-funcall (compiler-> Any * Any))
          (,gt_ ,compile-greater-than (compiler-> Any * Any))
          (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
+         (,if_ ,compile-if (compiler-> Any * Any))
          (,js/arrow_ ,compile-js/arrow (compiler-> Any * Any))
          (,js/async_ ,compile-js/async (compiler-> Any * Any))
          (,js/await_ ,compile-js/await (compiler-> Any * Any))
@@ -614,11 +614,12 @@
          (,js/do-while_ ,compile-js/do-while (compiler-> Any * Any))
          (,js/dot_ ,compile-js/dot (compiler-> Any * Any))
          (,js/eval_ ,compile-js/eval (compiler-> Any * Any))
-         (,js/for_ ,compile-js/for (compiler-> Any * Any))
          (,js/for-in_ ,compile-js/for-in (compiler-> Any * Any))
          (,js/for-of_ ,compile-js/for-of (compiler-> Any * Any))
+         (,js/for_ ,compile-js/for (compiler-> Any * Any))
          (,js/function_ ,compile-js/function (compiler-> Any * Any))
          (,js/get_ ,compile-js/get (compiler-> Any * Any))
+         (,js/if_ ,compile-js/if (compiler-> Any * Any))
          (,js/in_ ,compile-js/in (compiler-> Any * Any))
          (,js/instance-of?_ ,compile-js/instance-of (compiler-> Any * Any))
          (,js/loosely-equal?_ ,compile-js/loosely-equal (compiler-> Any * Any))
@@ -631,6 +632,7 @@
          (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
          (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
          (,js/tagged-template_ ,compile-js/tagged-template (compiler-> Any * Any))
+         (,js/ternary-operator_ ,compile-js/ternary-operator (compiler-> Any * Any))
          (,js/try_ ,compile-js/try (compiler-> Any * Any))
          (,js/type-of_ ,compile-js/type-of (compiler-> Any * Any))
          (,js/while_ ,compile-js/while (compiler-> Any * Any))
@@ -1541,30 +1543,6 @@
             compilation-macro-mapping-env)
        env))
 
-;;; Convert an ESTree node to an expression.
-(define (make-expression node)
-  (cond
-   ((estree-type? node "ExpressionStatement")
-    (get-field expression node))
-   (else
-    node)))
-
-;;; Convert an ESTree node to a statement.
-(define (make-statement node)
-  (cond
-   ((estree-type? node "ExpressionStatement")
-    node)
-   (else
-    (new ExpressionStatement node))))
-
-;;; Convert an ESTree node to a return statement.
-(define (make-return-statement node)
-  (cond
-   ((estree-type? node "ReturnStatement")
-    node)
-   (else
-    (new ReturnStatement (make-expression node)))))
-
 ;;; Make compilation options for compiling a form as
 ;;; an expression.
 (define (make-expression-options options)
@@ -1586,21 +1564,19 @@
    options
    (js/obj "expressionType" "return")))
 
-;;; Make an expression or statement ESTree node,
-;;; conditional on options.
-(define (make-expression-or-statement node (options (js/obj)))
-  (define expression-type
-    (oget options "expressionType"))
+;;; Convert an ESTree node to an expression.
+(define (make-expression node (options (js/obj)))
   (cond
-   ((or (eq? expression-type "statement")
-        (eq? expression-type "return"))
-    (wrap-expression-in-statement node options))
+   ((estree-type? node "ExpressionStatement")
+    (get-field expression node))
    (else
     node)))
 
-;;; Wrap an expression in a statement. An `ExpressionStatement`
+;;; Convert an ESTree node to a statement.
+;;;
+;;; Wraps an expression in a statement. An `ExpressionStatement`
 ;;; or `ReturnStatement` node is returned, conditional on options.
-(define (wrap-expression-in-statement node (options (js/obj)))
+(define (make-statement node (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
   (cond
@@ -1610,6 +1586,26 @@
     (new ReturnStatement node))
    (else
     (new ExpressionStatement node))))
+
+;;; Convert an ESTree node to a return statement.
+(define (make-return-statement node (options (js/obj)))
+  (cond
+   ((estree-type? node "ReturnStatement")
+    node)
+   (else
+    (new ReturnStatement (make-expression node)))))
+
+;;; Make an expression or statement ESTree node,
+;;; conditional on options.
+(define (make-expression-or-statement node (options (js/obj)))
+  (define expression-type
+    (oget options "expressionType"))
+  (cond
+   ((or (eq? expression-type "statement")
+        (eq? expression-type "return"))
+    (make-statement node options))
+   (else
+    node)))
 
 ;;; Wraps `node` in a `BlockStatement`.
 (define (wrap-in-block-statement obj)
@@ -1716,22 +1712,24 @@
         (send node1 get-property "comments")
         (get-field comments node1)))
   (when (and comments-option comments)
-    (if (is-a? node2 Rose)
-        (send node2
-              set-property
-              "comments"
-              (append comments
-                      (or (send node2
-                                get-property
-                                "comments")
-                          '())))
-        (set! comments
-              (compile-comments comments))
-        (set-field! comments
-                    node2
-                    (append comments
-                            (or (get-field comments node2)
-                                '())))))
+    (cond
+     ((is-a? node2 Rose)
+      (send node2
+            set-property
+            "comments"
+            (append comments
+                    (or (send node2
+                              get-property
+                              "comments")
+                        '()))))
+     (else
+      (set! comments
+            (compile-comments comments))
+      (set-field! comments
+                  node2
+                  (append comments
+                          (or (get-field comments node2)
+                              '()))))))
   node2)
 
 ;;; Compile comments.
@@ -2411,89 +2409,121 @@
 (define (compile-cond node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
-  (define cond-clauses
-    (send node drop 1))
-  (cond
-   ((= (js/length cond-clauses) 0)
-    (make-expression-or-statement
-     (new Literal #f)
+  (define (wrap exps)
+    (if (= (js/length exps) 1)
+        (js/first exps)
+        (sexp->rose
+         `(begin ,@exps))))
+  (define clauses
+    (~> node
+        (send _ drop 1)
+        (drop-right _ 1)))
+  (define final-clause
+    (send node last))
+  (define final-exp
+    (if (tagged-list? final-clause 'else)
+        (sexp->rose
+         `(,(if (eq? expression-type "expression")
+                'begin
+                'js/block)
+           ,@(send final-clause drop 1)))
+        (sexp->rose
+         `(if ,(send final-clause get 0)
+              ,(wrap (send final-clause drop 1))))))
+  (define final-exp-compiled
+    (transfer-and-compile-comments
+     final-clause
+     (compile-rose final-exp env options)
      options))
+  (define result
+    (foldr (lambda (clause alternate)
+             (define conditional
+               (compile-rose
+                (sexp->rose
+                 `(if ,(send clause get 0)
+                      ,(transfer-comments
+                        clause
+                        (wrap (send clause drop 1)))))
+                env options))
+             (set-field! alternate conditional alternate)
+             conditional)
+           final-exp-compiled
+           clauses))
+  (transfer-and-compile-comments
+   node result options))
+
+;;; Compile an `(if ...)` expression.
+(define (compile-if node env (options (js/obj)))
+  (define expression-type
+    (oget options "expressionType"))
+  (cond
+   ((eq? expression-type "expression")
+    (compile-js/ternary-operator node env options))
    (else
-    (define (reducing-f cond-clause compiled-exp)
-      (define condition
-        (send cond-clause get 0))
-      (define then-clauses
-        (begin-wrap-rose-smart
-         (send cond-clause drop 1)))
-      (cond
-       ((eq? expression-type "expression")
-        (new ConditionalExpression
-             (compile-expression
-              condition
-              env options)
-             (transfer-and-compile-comments
-              cond-clause
-              (compile-expression
-               then-clauses
-               env options)
-              options)
-             compiled-exp))
-       (else
-        (new IfStatement
-             (compile-expression
-              condition
-              env options)
-             (transfer-and-compile-comments
-              cond-clause
-              (unwrap-block-statement
-               (wrap-in-block-statement-smart
-                (compile-statement-or-return-statement
-                 then-clauses
-                 env options)))
-              options)
-             compiled-exp))))
-    (cond
-     ((eq? (~> (js/last cond-clauses)
-               (send _ get 0)
-               (rose->sexp _))
-           'else)
-      (define final-clause
-        (cond
-         ((eq? expression-type "expression")
-          (transfer-and-compile-comments
-           (js/last cond-clauses)
-           (compile-expression
-            (begin-wrap-rose
-             (send (js/last cond-clauses)
-                   drop 1))
-            env options)
-           options))
-         (else
-          (transfer-and-compile-comments
-           (js/last cond-clauses)
-           (wrap-in-block-statement-smart
-            (compile-statement-or-return-statement
-             (begin-wrap-rose-smart-1
-              (send (js/last cond-clauses)
-                    drop 1))
-             env options))
-           options))))
-      (unless (or (not (eq? expression-type
-                            "statement"))
-                  (estree-type? final-clause
-                                "BlockStatement"))
-        (set! final-clause
-              (make-block-statement
-               (list final-clause))))
-      (foldr reducing-f
-             final-clause
-             (drop-right cond-clauses 1)))
-     (else
-      (foldr reducing-f
-             (if (eq? expression-type "expression")
-                 (new Identifier "undefined")
-                 #n)
-             cond-clauses))))))
+    (compile-js/if node env options))))
+
+;;; Compile a `(js/if ...)` expression.
+(define (compile-js/if node env (options (js/obj)))
+  (define expression-type
+    (oget options "expressionType"))
+  (cond
+   ((eq? expression-type "expression")
+    (compile-expression
+     (wrap-in-arrow-call node)
+     env options))
+   (else
+    (define condition
+      (send node get 1))
+    (define then-exp
+      (sexp->rose
+       `(js/block ,(send node get 2))))
+    (define else-exp
+      (send node get 3))
+    (when (and else-exp
+               (not (form? else-exp js/if_ env)))
+      (set! else-exp
+            (sexp->rose
+             `(js/block ,else-exp))))
+    (define condition-compiled
+      (compile-expression
+       condition env options))
+    (define then-compiled
+      (compile-statement-or-return-statement
+       then-exp env options))
+    (define else-compiled
+      (if else-exp
+          (compile-statement-or-return-statement
+           else-exp env options)
+          #n))
+    (transfer-and-compile-comments
+     node
+     (new IfStatement
+          condition-compiled
+          then-compiled
+          else-compiled)
+     options))))
+
+;;; Compile a `(js/? ...)` expression.
+(define (compile-js/ternary-operator node env (options (js/obj)))
+  (define condition
+    (send node get 1))
+  (define then-exp
+    (send node get 2))
+  (define else-exp
+    (or (send node get 3)
+        (sexp->rose #u)))
+  (transfer-and-compile-comments
+   node
+   (make-expression-or-statement
+    (new ConditionalExpression
+         (compile-expression
+          condition env options)
+         (compile-expression
+          then-exp env options)
+         (compile-expression
+          else-exp env options))
+    options)
+   options))
 
 ;;; Compile a `(define ...)` expression.
 (define (compile-define node env (options (js/obj)))
@@ -3608,7 +3638,7 @@
                           declaration)))
   (set! left (get-field id declarator))
   (set! right (get-field init declarator))
-  (wrap-expression-in-statement
+  (make-statement
    (new AssignmentExpression
         "="
         left
@@ -3757,7 +3787,7 @@
 (define (compile-set-fields node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
-  (wrap-expression-in-statement
+  (make-statement
    (new AssignmentExpression
         "="
         (new
@@ -4253,7 +4283,7 @@
        env options))
      (else
       (compile-expression
-       (wrap-in-arrow-call exp)
+       (wrap-in-arrow-call node)
        env options))))
    (else
     (define body-statements
@@ -6331,7 +6361,41 @@
    env
    (current-compilation-options)))
 
+;;; Expand a `(js/if ...)` expression.
+(define-macro (js/if_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(js/? ...)` expression.
+(define-macro (js/ternary-operator_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand an `(if ...)` expression.
+;;;
+;;; Similar to [`if` in Racket][rkt:if], [`if` in Guile][guile:if]
+;;; and [`if` in Common Lisp][cl:if].
+;;;
+;;; [rkt:if]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28quote._~23~25kernel%29._if%29%29
+;;; [guile:if]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-if-1
+;;; [cl:if]: http://clhs.lisp.se/Body/s_if.htm#if
+(define-macro (if_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
 ;;; Expand a `(cond ...)` expression.
+;;;
+;;; Similar to [`cond` in Racket][rkt:cond] and
+;;; [`cond` in Guile][guile:cond].
+;;;
+;;; [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
+;;; [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
 (define-macro (cond_ &whole exp &environment env)
   (compile-sexp
    exp
@@ -8334,6 +8398,7 @@
          (fset ,set_ (macro-> Any * Any))
          (get-field ,get-field_ (macro-> Any * Any))
          (if ,if_ (macro-> Any * Any))
+         (js/? ,js/ternary-operator_ (macro-> Any * Any))
          (js/arrow ,js/arrow_ (macro-> Any * Any))
          (js/async ,js/async_ (macro-> Any * Any))
          (js/await ,js/await_ (macro-> Any * Any))
@@ -8343,10 +8408,10 @@
          (js/for-in ,js/for-in_ (macro-> Any * Any))
          (js/for-of ,js/for-of_ (macro-> Any * Any))
          (js/function ,js/function_ (macro-> Any * Any))
+         (js/if ,js/if_ (macro-> Any * Any))
          (js/switch ,js/switch_ (macro-> Any * Any))
          (js/try ,js/try_ (macro-> Any * Any))
          (js/while ,js/while_ (macro-> Any * Any))
-         (λ ,lambda_ (macro-> Any * Any))
          (lambda ,lambda_ (macro-> Any * Any))
          (let ,let-star_ (macro-> Any * Any))
          (let* ,let-star_ (macro-> Any * Any))
@@ -8383,6 +8448,7 @@
          (unwind-protect ,unwind-protect_ (macro-> Any * Any))
          (when ,when_ (macro-> Any * Any))
          (while ,while_ (macro-> Any * Any))
+         (λ ,lambda_ (macro-> Any * Any))
          (yield ,yield_ (macro-> Any * Any)))))
 
 ;;; Evaluation environment.

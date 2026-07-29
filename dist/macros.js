@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.if_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.if_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
 const eval_1 = require("./eval");
 const util_1 = require("./util");
 const [lastCdr, cdr, listStar, cons, take] = (() => {
@@ -83,6 +83,12 @@ const [lastCdr, cdr, listStar, cons, take] = (() => {
 })();
 /**
  * Expand a `(defun ...)` expression.
+ *
+ * Similar to [`defun` in Common Lisp][cl:defun] and
+ * [`defun` in Emacs Lisp][el:defun].
+ *
+ * [cl:defun]: http://clhs.lisp.se/Body/m_defun.htm
+ * [el:defun]: https://www.gnu.org/software/emacs/manual/html_node/eintr/defun.html
  */
 function defun_(exp, env) {
     const [name, args, ...body] = exp.slice(1);
@@ -113,6 +119,10 @@ definePublic_.fsource = [Symbol.for('define'), [Symbol.for('define-public_'), Sy
 definePublic_.ftype = 'macro';
 /**
  * Expand a `(defclass ...)` expression.
+ *
+ * Similar to [`defclass` in Common Lisp][cl:defclass].
+ *
+ * [cl:defclass]: http://clhs.lisp.se/Body/m_defcla.htm
  */
 function defclass_(exp, env) {
     const body = exp.slice(1);
@@ -225,6 +235,12 @@ exports.defineMacroToLambdaForm = defineMacroToLambdaForm;
 defineMacroToLambdaForm.fsource = [Symbol.for('define'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('name-and-args'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('cdr'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('exp-arg'), [Symbol.for('quote'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('env-arg'), [Symbol.for('quote'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('macro-args'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-arg'), undefined], [Symbol.for('cond'), [[Symbol.for('list?'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('i'), 0], [Symbol.for('while'), [Symbol.for('<'), Symbol.for('i'), [Symbol.for('js/length'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('arg'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&rest')]], [Symbol.for('set!'), Symbol.for('rest-arg'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [[Symbol.for('eq?'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&whole')]], [Symbol.for('set!'), Symbol.for('exp-arg'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [[Symbol.for('eq?'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&environment')]], [Symbol.for('set!'), Symbol.for('env-arg'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('macro-args'), Symbol.for('arg')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('args')]]], [Symbol.for('when'), Symbol.for('rest-arg'), [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('rest-arg')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), [Symbol.for('apply'), Symbol.for('list*'), [Symbol.for('append'), Symbol.for('macro-args'), [Symbol.for('list'), Symbol.for('rest-arg')]]]]]]], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [[Symbol.for('unquote'), Symbol.for('exp-arg')], [Symbol.for('unquote'), Symbol.for('env-arg')]], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('quote'), []], [Symbol.for('quasiquote'), [[Symbol.for('define-values'), [Symbol.for('unquote'), Symbol.for('macro-args')], [Symbol.for('rest'), [Symbol.for('unquote'), Symbol.for('exp-arg')]]]]]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 /**
  * Expand a `(defmacro ...)` expression.
+ *
+ * Similar to [`defmacro` in Common Lisp][cl:defmacro]
+ * and [`defmacro` in Emacs Lisp][el:defmacro].
+ *
+ * [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm
+ * [el:defmacro]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Macros.html#index-defmacro
  */
 function defmacro_(exp, env) {
     const [name, args, ...body] = exp.slice(1);
@@ -245,6 +261,12 @@ defineFexpr_.fsource = [Symbol.for('define'), [Symbol.for('define-fexpr_'), Symb
 defineFexpr_.ftype = 'macro';
 /**
  * Expand a `(declare ...)` expression.
+ *
+ * Similar to [`declare` in Common Lisp] and
+ * [`declare` in Emacs Lisp][el:declare].
+ *
+ * [cl:declare]: http://clhs.lisp.se/Body/s_declar.htm#declare
+ * [el:declare]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Declare-Form.html
  */
 function declare_(exp, env) {
     const [name, ...specs] = exp.slice(1);
@@ -276,7 +298,13 @@ exports.declareFexpr_ = declareFexpr_;
 declareFexpr_.fsource = [Symbol.for('define'), [Symbol.for('declare-fexpr_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('declare'), [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('ftype'), 'fexpr']]]];
 declareFexpr_.ftype = 'macro';
 /**
- * Expand a `(begin0 ...)` or `(prog1 ...)` expression.
+ * Expand a `(begin0 ...)` expression.
+ *
+ * Similar to [`begin0` in Racket] and
+ * [`prog1` in Common Lisp][cl:prog1].
+ *
+ * [rkt:begin0]: https://docs.racket-lang.org/reference/begin.html#%28form._%28%28quote._~23~25kernel%29._begin0%29%29
+ * [cl:prog1]: http://clhs.lisp.se/Body/m_prog1c.htm
  */
 function begin0_(exp, env) {
     const [x, ...xs] = exp.slice(1);
@@ -292,7 +320,12 @@ exports.begin0_ = begin0_;
 begin0_.fsource = [Symbol.for('define'), [Symbol.for('begin0_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('xs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('xs')], 0], Symbol.for('x')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('gensym'), 'begin0-result']], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('result')], [Symbol.for('unquote'), Symbol.for('x')]]], [Symbol.for('unquote-splicing'), Symbol.for('xs')], [Symbol.for('unquote'), Symbol.for('result')]]]]]];
 begin0_.ftype = 'macro';
 /**
- * Expand a `(multiple-values-bind ...)` expression.
+ * Expand a `(multiple-value-bind ...)` expression.
+ *
+ * Similar to [`multiple-value-bind` in
+ * Common Lisp][cl:multiple-value-bind].
+ *
+ * [cl:multiple-value-bind]: http://clhs.lisp.se/Body/m_multip.htm
  */
 function multipleValueBind_(exp, env) {
     const [bindings, expression, ...body] = exp.slice(1);
@@ -303,6 +336,10 @@ multipleValueBind_.fsource = [Symbol.for('define'), [Symbol.for('multiple-value-
 multipleValueBind_.ftype = 'macro';
 /**
  * Expand a `(rkt/new ...)' expression.
+ *
+ * Similar to [`new` in Racket][rkt:new].
+ *
+ * [rkt:new]: https://docs.racket-lang.org/reference/objcreation.html#%28form._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._new%29%29
  */
 function rktNew_(exp, env) {
     const [constructor, ...args] = exp.slice(1);
@@ -316,10 +353,18 @@ function rktNew_(exp, env) {
         })];
 }
 exports.rktNew_ = rktNew_;
-rktNew_.fsource = [Symbol.for('define'), [Symbol.for('rkt-new_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('make-object'), [Symbol.for('unquote'), Symbol.for('constructor')], [Symbol.for('unquote-splicing'), [Symbol.for('map'), Symbol.for('js/second'), Symbol.for('args')]]]]];
+rktNew_.fsource = [Symbol.for('define'), [Symbol.for('rkt/new_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('make-object'), [Symbol.for('unquote'), Symbol.for('constructor')], [Symbol.for('unquote-splicing'), [Symbol.for('map'), Symbol.for('js/second'), Symbol.for('args')]]]]];
 rktNew_.ftype = 'macro';
 /**
  * Expand an `(if ...)` expression.
+ *
+ * Similar to [`if` in Racket][rkt:if], [`if` in Guile][guile:if],
+ * [`if` in Common Lisp][cl:if] and [`if` in Emacs Lisp][el:if].
+ *
+ * [rkt:if]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28quote._~23~25kernel%29._if%29%29
+ * [guile:if]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-if-1
+ * [cl:if]: http://clhs.lisp.se/Body/s_if.htm#if
+ * [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
  */
 function if_(exp, env) {
     const [condition, thenClause, ...elseClauses] = exp.slice(1);
@@ -330,6 +375,14 @@ if_.fsource = [Symbol.for('define'), [Symbol.for('if_'), Symbol.for('exp'), Symb
 if_.ftype = 'macro';
 /**
  * Expand a `(when ...)` expression.
+ *
+ * Similar to [`when` in Racket][rkt:when], [`when` in Guile][guile:when],
+ * [`when` in Common Lisp][cl:when] and [`when` in Emacs Lisp][el:when].
+ *
+ * [rkt:when]: https://docs.racket-lang.org/reference/when_unless.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._when%29%29
+ * [guile:when]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-when-1
+ * [cl:when]: http://clhs.lisp.se/Body/m_when_.htm
+ * [el:when]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-when
  */
 function when_(exp, env) {
     const [condition, ...body] = exp.slice(1);
@@ -340,6 +393,14 @@ when_.fsource = [Symbol.for('define'), [Symbol.for('when_'), Symbol.for('exp'), 
 when_.ftype = 'macro';
 /**
  * Expand an `(unless ...)` expression.
+ *
+ * Similar to [`unless` in Racket][rkt:unless], [`unless` in Guile][guile:unless],
+ * [`unless` in Common Lisp][cl:unless] and [`unless` in Emacs Lisp][el:unless].
+ *
+ * [rkt:unless]: https://docs.racket-lang.org/reference/when_unless.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._unless%29%29
+ * [guile:unless]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-unless-1
+ * [cl:unless]: http://clhs.lisp.se/Body/m_when_.htm
+ * [el:unless]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-unless
  */
 function unless_(exp, env) {
     const [condition, ...body] = exp.slice(1);
@@ -499,6 +560,12 @@ threadLast_.fsource = [Symbol.for('define'), [Symbol.for('thread-last_'), Symbol
 threadLast_.ftype = 'macro';
 /**
  * Expand an `(unwind-protect ...)` expression.
+ *
+ * Similar to [`unwind-protect` in Common Lisp][cl:unwind-protect]
+ * and [`unwind-protect` in Emacs Lisp][el:unwind-protect]
+ *
+ * [cl:unwind-protect]: http://clhs.lisp.se/Body/s_unwind.htm
+ * [el:unwind-protect]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Cleanups.html#index-unwind_002dprotect
  */
 function unwindProtect_(exp, env) {
     const [bodyForm, ...unwindForms] = exp.slice(1);
@@ -509,6 +576,12 @@ unwindProtect_.fsource = [Symbol.for('define'), [Symbol.for('unwind-protect_'), 
 unwindProtect_.ftype = 'macro';
 /**
  * Expand a `(do ...)` expression.
+ *
+ * Similar to [`do` in Racket][rkt:do] and
+ * [`do` in Guile][guile:do].
+ *
+ * [rkt:do]: https://docs.racket-lang.org/reference/for.html#%28form._%28%28lib._racket%2Fprivate%2Fmore-scheme..rkt%29._do%29%29
+ * [guile:do]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-do
  */
 function do_(exp, env) {
     const [bindings, tests, ...body] = exp.slice(1);
@@ -543,6 +616,12 @@ do_.fsource = [Symbol.for('define'), [Symbol.for('do_'), Symbol.for('exp'), Symb
 do_.ftype = 'macro';
 /**
  * Expand a `(while ...)` expression.
+ *
+ * Similar to [`while` in Guile][guile:while] and
+ * [`while` in Emacs Lisp][el:while].
+ *
+ * [guile:while]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-while
+ * [el:while]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Iteration.html#index-while
  */
 function while_(exp, env) {
     const [test, ...body] = exp.slice(1);
@@ -553,6 +632,10 @@ while_.fsource = [Symbol.for('define'), [Symbol.for('while_'), Symbol.for('exp')
 while_.ftype = 'macro';
 /**
  * Expand a `(for ...)` expression.
+ *
+ * Similar to [`for` in Racket][rkt:for].
+ *
+ * [rkt:for]: https://docs.racket-lang.org/reference/for.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._for%29%29
  */
 function for_(exp, env) {
     const [args, ...body] = exp.slice(1);
@@ -590,6 +673,10 @@ for_.fsource = [Symbol.for('define'), [Symbol.for('for_'), Symbol.for('exp'), Sy
 for_.ftype = 'macro';
 /**
  * Expand a `(case ...)` expression.
+ *
+ * Similar to [`case` in Racket][rkt:case].
+ *
+ * [rkt:case]: https://docs.racket-lang.org/reference/case.html#%28form._%28%28lib._racket%2Fprivate%2Fmore-scheme..rkt%29._case%29%29
  */
 function case_(exp, env) {
     const [val, ...clauses] = exp.slice(1);
@@ -701,6 +788,12 @@ letEnv_.fsource = [Symbol.for('define'), [Symbol.for('let-env_'), Symbol.for('ex
 letEnv_.ftype = 'macro';
 /**
  * Expand a `(set ...)` expression.
+ *
+ * Similar to [`set` in Common Lisp][cl:set] and
+ * [`set` in Emacs Lisp][el:set].
+ *
+ * [cl:set]: http://clhs.lisp.se/Body/f_set.htm
+ * [el:set]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-set
  */
 function set_(exp, env) {
     const [sym, val] = exp.slice(1);
@@ -719,6 +812,20 @@ function newApply_(exp, env) {
 exports.newApply_ = newApply_;
 newApply_.fsource = [Symbol.for('define'), [Symbol.for('new/apply_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('apply'), Symbol.for('new'), [Symbol.for('unquote-splicing'), Symbol.for('args')]]]];
 newApply_.ftype = 'macro';
+/**
+ * Expand a `(try ...)` expression.
+ *
+ * Similar to the [`try` special form][clj:try] in Clojure.
+ *
+ * [clj:try]: https://clojuredocs.org/clojure.core/try
+ */
+function try_(exp, env) {
+    const body = exp.slice(1);
+    return [Symbol.for('clj/try'), ...body];
+}
+exports.try_ = try_;
+try_.fsource = [Symbol.for('define'), [Symbol.for('try_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('clj/try'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
+try_.ftype = 'macro';
 /**
  * Expand a `(clj/try ...)` expression.
  *
@@ -831,5 +938,5 @@ function cljTry_(exp, env) {
     return [Symbol.for('js/try'), ...bodyExps, ...catchClauses, ...finalizerClauses];
 }
 exports.cljTry_ = cljTry_;
-cljTry_.fsource = [Symbol.for('define'), [Symbol.for('clj-try_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body-exps'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('clj-catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('finalizer-clauses'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('body')]], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('catch')]], [Symbol.for('push-right!'), Symbol.for('clj-catch-clauses'), Symbol.for('x')]], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('finally')]], [Symbol.for('push-right!'), Symbol.for('finalizer-clauses'), Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('body-exps'), Symbol.for('x')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('clj-catch-clauses')], 0], [Symbol.for('define'), Symbol.for('exception'), [Symbol.for('second'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('third'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('clj-catch-clauses')], 1], [Symbol.for('memq?'), Symbol.for('exception'), [Symbol.for('quote'), [Symbol.for('_'), Symbol.for('js/Object'), Symbol.for('Object'), Symbol.for('object%')]]]], [Symbol.for('define'), Symbol.for('clj-catch-clause'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('clj-catch-clause'), 3]]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('cond-exp'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('is-a?'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('x'), 3]]]]], Symbol.for('clj-catch-clauses')]], [Symbol.for('else'), [Symbol.for('throw'), [Symbol.for('unquote'), Symbol.for('sym')]]]]]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('cond-exp')]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]]]], [Symbol.for('quasiquote'), [Symbol.for('js/try'), [Symbol.for('unquote-splicing'), Symbol.for('body-exps')], [Symbol.for('unquote-splicing'), Symbol.for('catch-clauses')], [Symbol.for('unquote-splicing'), Symbol.for('finalizer-clauses')]]]];
+cljTry_.fsource = [Symbol.for('define'), [Symbol.for('clj/try_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body-exps'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('clj-catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('finalizer-clauses'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('body')]], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('catch')]], [Symbol.for('push-right!'), Symbol.for('clj-catch-clauses'), Symbol.for('x')]], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('finally')]], [Symbol.for('push-right!'), Symbol.for('finalizer-clauses'), Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('body-exps'), Symbol.for('x')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('clj-catch-clauses')], 0], [Symbol.for('define'), Symbol.for('exception'), [Symbol.for('second'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('third'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('clj-catch-clauses')], 1], [Symbol.for('memq?'), Symbol.for('exception'), [Symbol.for('quote'), [Symbol.for('_'), Symbol.for('js/Object'), Symbol.for('Object'), Symbol.for('object%')]]]], [Symbol.for('define'), Symbol.for('clj-catch-clause'), [Symbol.for('first'), Symbol.for('clj-catch-clauses')]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('clj-catch-clause'), 3]]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('cond-exp'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('is-a?'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('x'), 3]]]]], Symbol.for('clj-catch-clauses')]], [Symbol.for('else'), [Symbol.for('throw'), [Symbol.for('unquote'), Symbol.for('sym')]]]]]], [Symbol.for('define'), Symbol.for('catch-clause'), [Symbol.for('quasiquote'), [Symbol.for('catch'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('cond-exp')]]]], [Symbol.for('set!'), Symbol.for('catch-clauses'), [Symbol.for('list'), Symbol.for('catch-clause')]]]]], [Symbol.for('quasiquote'), [Symbol.for('js/try'), [Symbol.for('unquote-splicing'), Symbol.for('body-exps')], [Symbol.for('unquote-splicing'), Symbol.for('catch-clauses')], [Symbol.for('unquote-splicing'), Symbol.for('finalizer-clauses')]]]];
 cljTry_.ftype = 'macro';

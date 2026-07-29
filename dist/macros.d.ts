@@ -15,6 +15,12 @@
  */
 /**
  * Expand a `(defun ...)` expression.
+ *
+ * Similar to [`defun` in Common Lisp][cl:defun] and
+ * [`defun` in Emacs Lisp][el:defun].
+ *
+ * [cl:defun]: http://clhs.lisp.se/Body/m_defun.htm
+ * [el:defun]: https://www.gnu.org/software/emacs/manual/html_node/eintr/defun.html
  */
 declare function defun_(exp: any, env: any): any;
 declare namespace defun_ {
@@ -39,6 +45,10 @@ declare namespace definePublic_ {
 }
 /**
  * Expand a `(defclass ...)` expression.
+ *
+ * Similar to [`defclass` in Common Lisp][cl:defclass].
+ *
+ * [cl:defclass]: http://clhs.lisp.se/Body/m_defcla.htm
  */
 declare function defclass_(exp: any, env: any): any;
 declare namespace defclass_ {
@@ -77,6 +87,12 @@ declare namespace defineMacroToLambdaForm {
 }
 /**
  * Expand a `(defmacro ...)` expression.
+ *
+ * Similar to [`defmacro` in Common Lisp][cl:defmacro]
+ * and [`defmacro` in Emacs Lisp][el:defmacro].
+ *
+ * [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm
+ * [el:defmacro]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Macros.html#index-defmacro
  */
 declare function defmacro_(exp: any, env: any): any;
 declare namespace defmacro_ {
@@ -93,6 +109,12 @@ declare namespace defineFexpr_ {
 }
 /**
  * Expand a `(declare ...)` expression.
+ *
+ * Similar to [`declare` in Common Lisp] and
+ * [`declare` in Emacs Lisp][el:declare].
+ *
+ * [cl:declare]: http://clhs.lisp.se/Body/s_declar.htm#declare
+ * [el:declare]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Declare-Form.html
  */
 declare function declare_(exp: any, env: any): any;
 declare namespace declare_ {
@@ -116,7 +138,13 @@ declare namespace declareFexpr_ {
     var ftype: string;
 }
 /**
- * Expand a `(begin0 ...)` or `(prog1 ...)` expression.
+ * Expand a `(begin0 ...)` expression.
+ *
+ * Similar to [`begin0` in Racket] and
+ * [`prog1` in Common Lisp][cl:prog1].
+ *
+ * [rkt:begin0]: https://docs.racket-lang.org/reference/begin.html#%28form._%28%28quote._~23~25kernel%29._begin0%29%29
+ * [cl:prog1]: http://clhs.lisp.se/Body/m_prog1c.htm
  */
 declare function begin0_(exp: any, env: any): any;
 declare namespace begin0_ {
@@ -124,7 +152,12 @@ declare namespace begin0_ {
     var ftype: string;
 }
 /**
- * Expand a `(multiple-values-bind ...)` expression.
+ * Expand a `(multiple-value-bind ...)` expression.
+ *
+ * Similar to [`multiple-value-bind` in
+ * Common Lisp][cl:multiple-value-bind].
+ *
+ * [cl:multiple-value-bind]: http://clhs.lisp.se/Body/m_multip.htm
  */
 declare function multipleValueBind_(exp: any, env: any): any;
 declare namespace multipleValueBind_ {
@@ -133,6 +166,10 @@ declare namespace multipleValueBind_ {
 }
 /**
  * Expand a `(rkt/new ...)' expression.
+ *
+ * Similar to [`new` in Racket][rkt:new].
+ *
+ * [rkt:new]: https://docs.racket-lang.org/reference/objcreation.html#%28form._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._new%29%29
  */
 declare function rktNew_(exp: any, env: any): any;
 declare namespace rktNew_ {
@@ -141,6 +178,14 @@ declare namespace rktNew_ {
 }
 /**
  * Expand an `(if ...)` expression.
+ *
+ * Similar to [`if` in Racket][rkt:if], [`if` in Guile][guile:if],
+ * [`if` in Common Lisp][cl:if] and [`if` in Emacs Lisp][el:if].
+ *
+ * [rkt:if]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28quote._~23~25kernel%29._if%29%29
+ * [guile:if]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-if-1
+ * [cl:if]: http://clhs.lisp.se/Body/s_if.htm#if
+ * [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
  */
 declare function if_(exp: any, env: any): any;
 declare namespace if_ {
@@ -149,6 +194,14 @@ declare namespace if_ {
 }
 /**
  * Expand a `(when ...)` expression.
+ *
+ * Similar to [`when` in Racket][rkt:when], [`when` in Guile][guile:when],
+ * [`when` in Common Lisp][cl:when] and [`when` in Emacs Lisp][el:when].
+ *
+ * [rkt:when]: https://docs.racket-lang.org/reference/when_unless.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._when%29%29
+ * [guile:when]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-when-1
+ * [cl:when]: http://clhs.lisp.se/Body/m_when_.htm
+ * [el:when]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-when
  */
 declare function when_(exp: any, env: any): any;
 declare namespace when_ {
@@ -157,6 +210,14 @@ declare namespace when_ {
 }
 /**
  * Expand an `(unless ...)` expression.
+ *
+ * Similar to [`unless` in Racket][rkt:unless], [`unless` in Guile][guile:unless],
+ * [`unless` in Common Lisp][cl:unless] and [`unless` in Emacs Lisp][el:unless].
+ *
+ * [rkt:unless]: https://docs.racket-lang.org/reference/when_unless.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._unless%29%29
+ * [guile:unless]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-unless-1
+ * [cl:unless]: http://clhs.lisp.se/Body/m_when_.htm
+ * [el:unless]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-unless
  */
 declare function unless_(exp: any, env: any): any;
 declare namespace unless_ {
@@ -201,6 +262,12 @@ declare namespace threadLast_ {
 }
 /**
  * Expand an `(unwind-protect ...)` expression.
+ *
+ * Similar to [`unwind-protect` in Common Lisp][cl:unwind-protect]
+ * and [`unwind-protect` in Emacs Lisp][el:unwind-protect]
+ *
+ * [cl:unwind-protect]: http://clhs.lisp.se/Body/s_unwind.htm
+ * [el:unwind-protect]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Cleanups.html#index-unwind_002dprotect
  */
 declare function unwindProtect_(exp: any, env: any): any;
 declare namespace unwindProtect_ {
@@ -209,6 +276,12 @@ declare namespace unwindProtect_ {
 }
 /**
  * Expand a `(do ...)` expression.
+ *
+ * Similar to [`do` in Racket][rkt:do] and
+ * [`do` in Guile][guile:do].
+ *
+ * [rkt:do]: https://docs.racket-lang.org/reference/for.html#%28form._%28%28lib._racket%2Fprivate%2Fmore-scheme..rkt%29._do%29%29
+ * [guile:do]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-do
  */
 declare function do_(exp: any, env: any): any;
 declare namespace do_ {
@@ -217,6 +290,12 @@ declare namespace do_ {
 }
 /**
  * Expand a `(while ...)` expression.
+ *
+ * Similar to [`while` in Guile][guile:while] and
+ * [`while` in Emacs Lisp][el:while].
+ *
+ * [guile:while]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-while
+ * [el:while]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Iteration.html#index-while
  */
 declare function while_(exp: any, env: any): any;
 declare namespace while_ {
@@ -225,6 +304,10 @@ declare namespace while_ {
 }
 /**
  * Expand a `(for ...)` expression.
+ *
+ * Similar to [`for` in Racket][rkt:for].
+ *
+ * [rkt:for]: https://docs.racket-lang.org/reference/for.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._for%29%29
  */
 declare function for_(exp: any, env: any): any;
 declare namespace for_ {
@@ -233,6 +316,10 @@ declare namespace for_ {
 }
 /**
  * Expand a `(case ...)` expression.
+ *
+ * Similar to [`case` in Racket][rkt:case].
+ *
+ * [rkt:case]: https://docs.racket-lang.org/reference/case.html#%28form._%28%28lib._racket%2Fprivate%2Fmore-scheme..rkt%29._case%29%29
  */
 declare function case_(exp: any, env: any): any;
 declare namespace case_ {
@@ -257,6 +344,12 @@ declare namespace letEnv_ {
 }
 /**
  * Expand a `(set ...)` expression.
+ *
+ * Similar to [`set` in Common Lisp][cl:set] and
+ * [`set` in Emacs Lisp][el:set].
+ *
+ * [cl:set]: http://clhs.lisp.se/Body/f_set.htm
+ * [el:set]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-set
  */
 declare function set_(exp: any, env: any): any;
 declare namespace set_ {
@@ -272,6 +365,18 @@ declare namespace newApply_ {
     var ftype: string;
 }
 /**
+ * Expand a `(try ...)` expression.
+ *
+ * Similar to the [`try` special form][clj:try] in Clojure.
+ *
+ * [clj:try]: https://clojuredocs.org/clojure.core/try
+ */
+declare function try_(exp: any, env: any): any;
+declare namespace try_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var ftype: string;
+}
+/**
  * Expand a `(clj/try ...)` expression.
  *
  * Similar to the [`try` special form][clj:try] in Clojure.
@@ -283,4 +388,4 @@ declare namespace cljTry_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
-export { begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, for_, if_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };
+export { begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, for_, if_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };

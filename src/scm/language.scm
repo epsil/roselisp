@@ -342,7 +342,7 @@
                   begin0_
                   case-eq_
                   case_
-                  clj-try_
+                  clj/try_
                   declare-fexpr_
                   declare-macro_
                   declare_
@@ -359,11 +359,12 @@
                   let-env_
                   multiple-value-bind_
                   new/apply_
-                  rkt-new_
+                  rkt/new_
                   set_
                   thread-as_
                   thread-first_
                   thread-last_
+                  try_
                   unless_
                   unwind-protect_
                   when_
@@ -8304,7 +8305,7 @@
          (case ,case_ (macro-> Any * Any))
          (case/eq ,case-eq_ (macro-> Any * Any))
          (class ,class_ (macro-> Any * Any))
-         (clj/try ,clj-try_ (macro-> Any * Any))
+         (clj/try ,clj/try_ (macro-> Any * Any))
          (cond ,cond_ (macro-> Any * Any))
          (continue ,continue_ (macro-> Any * Any))
          (declare ,declare_ (macro-> Any * Any))
@@ -8366,7 +8367,7 @@
          (provide ,provide_ (macro-> Any * Any))
          (require ,require_ (macro-> Any * Any))
          (return ,return_ (macro-> Any * Any))
-         (rkt/new ,rkt-new_ (macro-> Any * Any))
+         (rkt/new ,rkt/new_ (macro-> Any * Any))
          (send ,send_ (macro-> Any * Any))
          (send/apply ,send/apply_ (macro-> Any * Any))
          (set ,set_ (macro-> Any * Any))
@@ -8377,7 +8378,7 @@
          (set-field! ,set-field_ (macro-> Any * Any))
          (setq ,set!_ (macro-> Any * Any))
          (throw ,throw_ (macro-> Any * Any))
-         (try ,clj-try_ (macro-> Any * Any))
+         (try ,try_ (macro-> Any * Any))
          (unless ,unless_ (macro-> Any * Any))
          (unwind-protect ,unwind-protect_ (macro-> Any * Any))
          (when ,when_ (macro-> Any * Any))
@@ -8463,8 +8464,8 @@
   (rename-out (js/block_ block_))
   (rename-out (call-with-current-continuation_ call-with-current-continuation))
   (rename-out (call-with-current-continuation_ call/cc))
-  (rename-out (clj-try_ try))
-  (rename-out (clj-try_ try_))
+  ;; (rename-out (clj/try_ try))
+  ;; (rename-out (clj/try_ try_))
   (rename-out (colon_ colon))
   (rename-out (compile-with-environment compile-lisp))
   (rename-out (compile-with-environment compile-lisp-to-javascript))
@@ -8539,7 +8540,7 @@
   begin_
   break_
   class_
-  clj-try_
+  clj/try_
   colon_
   compilation-environment
   compile
@@ -8628,6 +8629,7 @@
   split-comments
   throw_
   tokenize
+  try_
   traverse-estree
   type-of_
   yield_)

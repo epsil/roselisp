@@ -248,12 +248,13 @@
         (send _ for-each-node f recursive))
     this)
 
-  ;;; Get the `n`-th node in the forest.
-  ;;; Counting begins at zero.
-  ;;;
-  ;;; Alias for `nth`.
-  (define/public (get n)
-    (send this nth n))
+  ;;; Get a node in the forest, following a path
+  ;;; of indices. Counting begins at zero.
+  (define/public (get . indices)
+    (foldl (lambda (idx node)
+             (send node nth idx))
+           this
+           indices))
 
   ;;; Get the numerical index of `node` in the forest.
   ;;; Returns `-1` if not found.
@@ -513,12 +514,20 @@
         (f node))))
     this)
 
-  ;;; Get the `n`-th node.
+  ;;; Get a node, following a path of indices.
   ;;; Counting begins at zero.
-  ;;;
-  ;;; Alias for `nth`.
-  (define/public (get n)
-    (send this nth n))
+  (define/public (get . indices)
+    (foldl (lambda (idx acc)
+             (send acc nth idx))
+           this
+           indices))
+
+  ;; ;;; Get the `n`-th node.
+  ;; ;;; Counting begins at zero.
+  ;; ;;;
+  ;; ;;; Alias for `nth`.
+  ;; (define/public (get n)
+  ;;   (send this nth n))
 
   ;;; Get the numerical index of `node`.
   ;;; Returns `-1` if not found.

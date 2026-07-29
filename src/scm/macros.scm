@@ -335,7 +335,7 @@
    ((= (js/length bindings) 0)
     (define result
       `(begin
-         (js/while (not ,(js/first tests))
+         (while (not ,(js/first tests))
            ,@body)
          ,@(drop tests 1)))
     ;; If there is no finishing expression,
@@ -357,7 +357,7 @@
                             ,(js/third binding)))))
     (define result
       `(let ,let-bindings
-         (js/while (not ,(js/first tests))
+         (while (not ,(js/first tests))
            ,@body
            ,@setters)
          ,@(drop tests 1)))
@@ -365,81 +365,89 @@
 
 ;;; Expand a `(while ...)` expression.
 (define-macro (while_ test &rest body)
-  `(do ()
-       ((not ,test))
-     ,@body))
+  `(js/while ,test ,@body))
 
-;;; Expand a `(js/for ...)` expression.
-(define-macro (js/for_ args &rest body)
-  (define inits '())
-  (define tests '())
-  (define-values (init test update)
+;;; Expand a `(for ...)` expression.
+(define-macro (for_ args &rest body)
+  (define-values (decl)
     args)
-  (when (tagged-list? init 'define)
-    (set! init (drop init 1)))
-  (when (tagged-list? update 'set!)
-    (set! update (js/third init)))
-  (push-right! inits `(,@init ,update))
-  (push-right! tests test)
-  (define test-exp
-    (if (= (js/length tests) 1)
-        (js/first tests)
-        `(and ,@tests)))
-  `(do ,inits
-       ((not ,test-exp))
-     ,@body))
-
-;; (define-macro (js/for-2_ args &rest body)
-;;   (define inits '())
-;;   (define tests '())
-;;   (for ((arg args))
-;;     (define init
-;;       (js/first arg))
-;;     (define test
-;;       (js/second arg))
-;;     (define update
-;;       (js/third arg))
-;;     (when (tagged-list? init 'define)
-;;       (set! init (drop init 1)))
-;;     (when (tagged-list? update 'set!)
-;;       (set! update (js/third init)))
-;;     (push-right! inits `(,@init ,update))
-;;     (push-right! tests test))
-;;   (define test-exp
-;;     (if (= (js/length tests) 1)
-;;         (js/first tests)
-;;         `(and ,@tests)))
-;;   `(do ,inits
-;;        ((not ,test-exp))
-;;      ,@body))
-
-;;; Expand a `(js/for-in ...)` expression.
-(define-macro (js/for-in_ args &rest body)
-  (define bindings
-    (map (lambda (x)
-           (define left
-             (js/first x))
-           (define right
-             (js/second x))
-           (list left `(js/keys ,right)))
-         args))
-  `(js/for-of ,bindings
-              ,@body))
-
-;;; Expand a `(js/for-of ...)` expression.
-(define-macro (js/for-of_ args &rest body)
-  (define bindings
-    (map (lambda (x)
-           (define left
-             (js/first x))
-           (define right
-             (js/second x))
-           (when (tagged-list? left 'define)
-             (set! left (js/second left)))
-           (list left right))
-         args))
-  `(for ,bindings
-     ,@body))
+  (define-values (sym val)
+    decl)
+  (cond
+   ((tagged-list? val 'range)
+    (define start
+      (js/second val))
+    (define end
+      (js/third val))
+    (define step
+      (or (js/fourth val) 1))
+    (cond
+     ;; If `start`, `end` or `step` is a function call,
+     ;; then rewrite the expression to a `let` expression
+     ;; so that the function is called only once.
+     ((or (array? start)
+          (array? end)
+          (array? step))
+      (define start-var
+        (if (array? start)
+            (gensym "_start")
+            #u))
+      (define end-var
+        (if (array? end)
+            (gensym "_end")
+            #u))
+      (define step-var
+        (if (array? step)
+            (gensym "_step")
+            #u))
+      `(let (,@(if start-var
+                   `((,start-var ,start))
+                   '())
+             ,@(if end-var
+                   `((,end-var ,end))
+                   '())
+             ,@(if step-var
+                   `((,step-var ,step))
+                   '()))
+         (for ((,sym
+                (range ,(if start-var
+                            start-var
+                            start)
+                       ,(if end-var
+                            end-var
+                            end)
+                       ,(if step-var
+                            step-var
+                            step))))
+           ,@body)))
+    ;; Otherwise, proceed to create a `js/for` loop.
+     (else
+      (define init
+        `(,sym ,start))
+      (define test
+        (cond
+         ((number? step)
+          (if (< step 0)
+              `(> ,sym ,end)
+              `(< ,sym ,end)))
+         (else
+          `(if (< ,step 0)
+               (> ,sym ,end)
+               (< ,sym ,end)))))
+      (define update
+        (cond
+         ((number? step)
+          (if (< step 0)
+              `(- ,sym ,(send Math abs step))
+              `(+ ,sym ,step)))
+         (else
+          `(+ ,sym ,step))))
+      `(js/for (,init ,test ,update)
+               ,@body))))
+   ;; If the loop cannot easily be expressed as a
+   ;; `js/for` loop, create a `js/for-of` loop instead.
+   (else
+    `(js/for-of ,args ,@body))))
 
 ;;; Expand a `(case ...)` expression.
 (define-macro (case_ val &rest clauses)
@@ -633,10 +641,8 @@
   defmacro_
   defun_
   do_
+  for_
   if_
-  js/for-in_
-  js/for-of_
-  js/for_
   let-env_
   multiple-value-bind_
   new/apply_

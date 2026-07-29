@@ -1572,11 +1572,18 @@ estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.f
  * Whether the type of the ESTree node `node` is `typ`.
  */
 function estreeTypeP(node, typ) {
-    return estreeType(node) === typ;
+    if (Array.isArray(typ)) {
+        return typ.findIndex(function (x) {
+            return estreeTypeP(node, x);
+        }) >= 0;
+    }
+    else {
+        return estreeType(node) === typ;
+    }
 }
 exports.estreeIsP = estreeTypeP;
 exports.estreeTypeP = estreeTypeP;
-estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]];
+estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
 /**
  * Wrap a value in an ESTree node.
  *

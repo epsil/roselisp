@@ -12,15 +12,6 @@
 (test-macro
  :repl #t
 
- ;; `js/for`
- > (describe "js/for")
- _
- xit> (compile '(js/for ((i 0) (< i 10) (+ i 1))
-                        (foo)))
- "for (let i = 0; i < 10; i++) {
-  foo();
-}"
-
  > (describe "To do")
  _
  xit> (compile '(js/? x y z))
@@ -99,4 +90,8 @@
  xit> (compile '(js/|= x y))
  "x |= y;"
  xit> (compile '(js/^= x y))
- "x ^= y;")
+ "x ^= y;"
+ xit> (compile '(abs x))
+ "Math.abs(x);"
+ xit> (compile '(js/abs x))
+ "Math.abs(x);")

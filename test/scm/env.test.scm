@@ -239,6 +239,14 @@
               '((foo "bar"))))
        (send env has-local? 'foo))
  #t
+ > (it "has-local?, parent environment"
+       (define env
+         (new Environment
+              '((foo "foo"))
+              (new Environment
+                   '((bar "bar")))))
+       (send env has-local? 'bar))
+ #f
  > (it "has-local?, nonexistant binding"
        (define env
          (new Environment

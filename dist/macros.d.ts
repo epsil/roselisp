@@ -220,31 +220,15 @@ declare namespace do_ {
  */
 declare function while_(exp: any, env: any): any;
 declare namespace while_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
 }
 /**
- * Expand a `(js/for ...)` expression.
+ * Expand a `(for ...)` expression.
  */
-declare function jsFor_(exp: any, env: any): any;
-declare namespace jsFor_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[])[];
-    var ftype: string;
-}
-/**
- * Expand a `(js/for-in ...)` expression.
- */
-declare function jsForIn_(exp: any, env: any): any;
-declare namespace jsForIn_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
-    var ftype: string;
-}
-/**
- * Expand a `(js/for-of ...)` expression.
- */
-declare function jsForOf_(exp: any, env: any): any;
-declare namespace jsForOf_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
+declare function for_(exp: any, env: any): any;
+declare namespace for_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((symbol | (number | symbol | symbol[])[])[] | (symbol | ((symbol | (symbol | (string | symbol)[] | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][][])[])[])[][] | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][][])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -299,4 +283,4 @@ declare namespace cljTry_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
-export { begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, if_, jsForIn_, jsForOf_, jsFor_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };
+export { begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, for_, if_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, unless_, unwindProtect_, when_, while_ };

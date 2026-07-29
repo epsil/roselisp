@@ -1146,9 +1146,9 @@
   (set! result
         (join (list "," space)
               expressions-printed))
-  (when (> (js/length expressions) 1)
-    (set! result
-          (doc-wrap result options)))
+  ;; (when (> (js/length expressions) 1)
+  ;;   (set! result
+  ;;         (doc-wrap result options)))
   result)
 
 ;;; Print a `BlockStatement` ESTree node to a `Doc` object.
@@ -1603,11 +1603,7 @@
        empty)
    ")"
    space
-   "{"
-   line
-   (indent body-printed)
-   line
-   "}"))
+   body-printed))
 
 ;;; Print a `TryStatement` ESTree node to a `Doc` object.
 (define (print-try-statement node (options (js/obj)))

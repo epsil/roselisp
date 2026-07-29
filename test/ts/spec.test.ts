@@ -2443,7 +2443,7 @@ describe('for', function (): any {
       [Symbol.for('quote'), []],
     ]);
   });
-  return it("(compile '(for ((i (range 0 10))) (foo)))", function (): any {
+  it("(compile '(for ((i (range 0 10))) (foo)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -2459,6 +2459,312 @@ describe('for', function (): any {
         ],
       ],
       'for (let i = 0; i < 10; i++) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  it("(compile '(for ((i (range 0 10 2))) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('for'),
+            [[Symbol.for('i'), [Symbol.for('range'), 0, 10, 2]]],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let i = 0; i < 10; i = i + 2) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  it("(compile '(for ((x lst)) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('for'),
+            [[Symbol.for('x'), Symbol.for('lst')]],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let x of lst) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  it("(compile '(for ((x '(1 2 3))) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('for'),
+            [[Symbol.for('x'), [Symbol.for('quote'), [1, 2, 3]]]],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let x of [1, 2, 3]) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  it("(compile '(for ((i (range 0 len))) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('for'),
+            [[Symbol.for('i'), [Symbol.for('range'), 0, Symbol.for('len')]]],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let i = 0; i < len; i++) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  it("(compile '(for ((i (range 0 (js/length foo)))) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('for'),
+            [
+              [
+                Symbol.for('i'),
+                [
+                  Symbol.for('range'),
+                  0,
+                  [Symbol.for('js/length'), Symbol.for('foo')],
+                ],
+              ],
+            ],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'let _end = foo.length;\n' +
+        '\n' +
+        'for (let i = 0; i < _end; i++) {\n' +
+        '  foo();\n' +
+        '}',
+    ]);
+  });
+  return xit("(compile '(for ((i (range 0 10)) (j (range 0 10))) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('for'),
+            [
+              [Symbol.for('i'), [Symbol.for('range'), 0, 10]],
+              [Symbol.for('j'), [Symbol.for('range'), 0, 10]],
+            ],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {\n' +
+        '  foo();\n' +
+        '}',
+    ]);
+  });
+});
+
+describe('js/for', function (): any {
+  it('(let ((result 0)) (js/for ((i 0) (< i 10) (+ i 1)) (set! result (+ result 2))) result)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('result'), 0]],
+        [
+          Symbol.for('js/for'),
+          [
+            [Symbol.for('i'), 0],
+            [Symbol.for('<'), Symbol.for('i'), 10],
+            [Symbol.for('+'), Symbol.for('i'), 1],
+          ],
+          [
+            Symbol.for('set!'),
+            Symbol.for('result'),
+            [Symbol.for('+'), Symbol.for('result'), 2],
+          ],
+        ],
+        Symbol.for('result'),
+      ],
+      20,
+    ]);
+  });
+  it("(compile '(js/for ((i 0) (< i 10) (+ i 1)) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for'),
+            [
+              [Symbol.for('i'), 0],
+              [Symbol.for('<'), Symbol.for('i'), 10],
+              [Symbol.for('+'), Symbol.for('i'), 1],
+            ],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let i = 0; i < 10; i++) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  it("(compile '(js/for ((set! i 0) (< i 10) (+ i 1)) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for'),
+            [
+              [Symbol.for('set!'), Symbol.for('i'), 0],
+              [Symbol.for('<'), Symbol.for('i'), 10],
+              [Symbol.for('+'), Symbol.for('i'), 1],
+            ],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (i = 0; i < 10; i++) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  it("(compile '(js/for ((define i 0) (< i 10) (+ i 1)) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for'),
+            [
+              [Symbol.for('define'), Symbol.for('i'), 0],
+              [Symbol.for('<'), Symbol.for('i'), 10],
+              [Symbol.for('+'), Symbol.for('i'), 1],
+            ],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let i = 0; i < 10; i++) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+  return it("(compile '(js/for ((begin (set! i 0) (set! j 0)) (and (< i 10) (< j 10)) (begin (set! i (+ i 1)) (set! j (+ j 1)))) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for'),
+            [
+              [
+                Symbol.for('begin'),
+                [Symbol.for('set!'), Symbol.for('i'), 0],
+                [Symbol.for('set!'), Symbol.for('j'), 0],
+              ],
+              [
+                Symbol.for('and'),
+                [Symbol.for('<'), Symbol.for('i'), 10],
+                [Symbol.for('<'), Symbol.for('j'), 10],
+              ],
+              [
+                Symbol.for('begin'),
+                [
+                  Symbol.for('set!'),
+                  Symbol.for('i'),
+                  [Symbol.for('+'), Symbol.for('i'), 1],
+                ],
+                [
+                  Symbol.for('set!'),
+                  Symbol.for('j'),
+                  [Symbol.for('+'), Symbol.for('j'), 1],
+                ],
+              ],
+            ],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {\n' +
+        '  foo();\n' +
+        '}',
+    ]);
+  });
+});
+
+describe('js/for-in', function (): any {
+  return it("(compile '(js/for-in ((i obj)) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for-in'),
+            [[Symbol.for('i'), Symbol.for('obj')]],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let i in obj) {\n' + '  foo();\n' + '}',
+    ]);
+  });
+});
+
+describe('js/for-of', function (): any {
+  return it("(compile '(js/for-of ((i lst)) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for-of'),
+            [[Symbol.for('i'), Symbol.for('lst')]],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'for (let i of lst) {\n' + '  foo();\n' + '}',
     ]);
   });
 });

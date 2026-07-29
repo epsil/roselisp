@@ -1410,7 +1410,13 @@
 
 ;;; Whether the type of the ESTree node `node` is `typ`.
 (define (estree-type? node typ)
-  (eq? (estree-type node) typ))
+  (cond
+   ((array? typ)
+    (memf? (lambda (x)
+             (estree-type? node x))
+           typ))
+   (else
+    (eq? (estree-type node) typ))))
 
 ;;; Wrap a value in an ESTree node.
 ;;;

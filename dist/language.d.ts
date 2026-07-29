@@ -15,7 +15,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 import { jsNew_ as new_ } from './javascript';
-import { cljTry_, defineMacro_, definePublic_ } from './macros';
+import { cljTry_, defineMacro_, definePublic_, for_ } from './macros';
 import { read, readRose, readSexp, tokenize } from './parser';
 import { isAP_, typeOf_ } from './procedures';
 import { s, sexp } from './sexp';
@@ -384,14 +384,6 @@ declare namespace defineAsync_ {
     var ftype: string;
 }
 /**
- * Expand a `(for ...)` expression.
- */
-declare function for_(exp: any, env: any): any;
-declare namespace for_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-    var ftype: string;
-}
-/**
  * Expand a `(break)` expression.
  */
 declare function break_(exp: any, env: any): any;
@@ -747,7 +739,7 @@ declare namespace optimizeEstree {
 }
 declare function letVarsToConstVars(program: any): any;
 declare namespace letVarsToConstVars {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | ((string | symbol)[] | (symbol | ((string | symbol | symbol[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[] | (symbol | (string | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[])[])[])[])[])[])[])[])[])[])[])[] | undefined)[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | ((string | symbol)[] | (symbol | ((string | symbol | symbol[])[] | (symbol | (symbol | (symbol | symbol[])[])[][] | (symbol | (symbol | (string | symbol)[])[])[])[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[] | (symbol | (string | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[])[])[])[])[])[])[])[])[])[])[])[] | undefined)[])[];
 }
 /**
  * Apply optimizations to `node`.

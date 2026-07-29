@@ -773,6 +773,88 @@
  "for (let i = 0; i < 10; i++) {
   foo();
 }"
+ > (compile '(for ((i (range 0 10 2)))
+               (foo)))
+ "for (let i = 0; i < 10; i = i + 2) {
+  foo();
+}"
+ > (compile '(for ((x lst))
+               (foo)))
+ "for (let x of lst) {
+  foo();
+}"
+ > (compile '(for ((x '(1 2 3)))
+               (foo)))
+ "for (let x of [1, 2, 3]) {
+  foo();
+}"
+ > (compile '(for ((i (range 0 len)))
+               (foo)))
+ "for (let i = 0; i < len; i++) {
+  foo();
+}"
+ > (compile '(for ((i (range 0 (js/length foo))))
+               (foo)))
+ "let _end = foo.length;
+
+for (let i = 0; i < _end; i++) {
+  foo();
+}"
+ xit> (compile '(for ((i (range 0 10))
+                      (j (range 0 10)))
+                  (foo)))
+ "for (i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {
+  foo();
+}"
+
+ ;; `js/for`
+ > (describe "js/for")
+ _
+ > (let ((result 0))
+     (js/for ((i 0) (< i 10) (+ i 1))
+             (set! result (+ result 2)))
+     result)
+ 20
+ > (compile '(js/for ((i 0) (< i 10) (+ i 1))
+                     (foo)))
+ "for (let i = 0; i < 10; i++) {
+  foo();
+}"
+ > (compile '(js/for ((set! i 0) (< i 10) (+ i 1))
+                     (foo)))
+ "for (i = 0; i < 10; i++) {
+  foo();
+}"
+ > (compile '(js/for ((define i 0) (< i 10) (+ i 1))
+                     (foo)))
+ "for (let i = 0; i < 10; i++) {
+  foo();
+}"
+ > (compile '(js/for ((begin (set! i 0) (set! j 0))
+                      (and (< i 10) (< j 10))
+                      (begin (set! i (+ i 1)) (set! j (+ j 1))))
+                     (foo)))
+ "for (i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {
+  foo();
+}"
+
+ ;; `js/for-in`
+ > (describe "js/for-in")
+ _
+ > (compile '(js/for-in ((i obj))
+                        (foo)))
+ "for (let i in obj) {
+  foo();
+}"
+
+ ;; `js/for-of`
+ > (describe "js/for-of")
+ _
+ > (compile '(js/for-of ((i lst))
+                        (foo)))
+ "for (let i of lst) {
+  foo();
+}"
 
  ;; `break`
  > (describe "break")

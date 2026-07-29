@@ -106,6 +106,7 @@
                   ExportSpecifier
                   Expression
                   ExpressionStatement
+                  ForInStatement
                   ForOfStatement
                   ForStatement
                   FunctionDeclaration
@@ -353,10 +354,8 @@
                   defmacro_
                   defun_
                   do_
+                  for_
                   if_
-                  js/for-in_
-                  js/for-of_
-                  js/for_
                   let-env_
                   multiple-value-bind_
                   new/apply_
@@ -603,7 +602,6 @@
          (,define_ ,compile-define (compiler-> Any * Any))
          (,div_ ,compile-div (compiler-> Any * Any))
          (,dot_ ,compile-send (compiler-> Any * Any))
-         (,for_ ,compile-for (compiler-> Any * Any))
          (,funcall_ ,compile-funcall (compiler-> Any * Any))
          (,gt_ ,compile-greater-than (compiler-> Any * Any))
          (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
@@ -615,6 +613,9 @@
          (,js/do-while_ ,compile-js/do-while (compiler-> Any * Any))
          (,js/dot_ ,compile-js/dot (compiler-> Any * Any))
          (,js/eval_ ,compile-js/eval (compiler-> Any * Any))
+         (,js/for_ ,compile-js/for (compiler-> Any * Any))
+         (,js/for-in_ ,compile-js/for-in (compiler-> Any * Any))
+         (,js/for-of_ ,compile-js/for-of (compiler-> Any * Any))
          (,js/function_ ,compile-js/function (compiler-> Any * Any))
          (,js/get_ ,compile-js/get (compiler-> Any * Any))
          (,js/in_ ,compile-js/in (compiler-> Any * Any))
@@ -1538,6 +1539,30 @@
             env
             compilation-macro-mapping-env)
        env))
+
+;;; Convert an ESTree node to an expression.
+(define (make-expression node)
+  (cond
+   ((estree-type? node "ExpressionStatement")
+    (get-field expression node))
+   (else
+    node)))
+
+;;; Convert an ESTree node to a statement.
+(define (make-statement node)
+  (cond
+   ((estree-type? node "ExpressionStatement")
+    node)
+   (else
+    (new ExpressionStatement node))))
+
+;;; Convert an ESTree node to a return statement.
+(define (make-return-statement node)
+  (cond
+   ((estree-type? node "ReturnStatement")
+    node)
+   (else
+    (new ReturnStatement (make-expression node)))))
 
 ;;; Make compilation options for compiling a form as
 ;;; an expression.
@@ -4979,179 +5004,6 @@
 (define (is-let-expression exp env)
   (form? exp let-star_ env))
 
-;;; Compile a `(for ...)` expression.
-(define (compile-for node env (options (js/obj)))
-  ;; TODO: Implement `compile-js/for` and implement this
-  ;; in terms of that?
-  (define inherited-options
-    (js/obj-append options))
-  (define language
-    (oget options "language"))
-  (define decls-node
-    (send node get 1))
-  (define decls
-    (rose->sexp decls-node))
-  (define body-nodes
-    (send node drop 2))
-  (define body-node
-    (begin-wrap-rose-smart-1 body-nodes))
-  (define decl1-node
-    (send decls-node get 0))
-  (define decl1
-    (rose->sexp decl1-node))
-  (define sym-node
-    (send decl1-node get 0))
-  (define sym-exp
-    (rose->sexp sym-node))
-  (define vals-node
-    (send decl1-node get 1))
-  (define vals-exp
-    (rose->sexp vals-node))
-  (cond
-   ((form? vals-exp range_ env)
-    (define start
-      (if (>= (js/length vals-exp) 2)
-          (second vals-exp)
-          #u))
-    (define end
-      (if (>= (js/length vals-exp) 3)
-          (third vals-exp)
-          #u))
-    (define step
-      (if (>= 4 (js/length vals-exp))
-          (fourth vals-exp)
-          #u))
-    (set! start
-          (if (undefined? end)
-              0
-              start))
-    (set! end
-          (if (undefined? end)
-              start
-              end))
-    ;; If `start`, `end` or `step` is a function call,
-    ;; then rewrite the expression to a `let` expression,
-    ;; storing the values in local variables so that
-    ;; the function is only called once.
-    (when (or (array? start)
-              (array? end)
-              (array? step))
-      (define start-var
-        (gensym "_start"))
-      (define end-var
-        (gensym "_end"))
-      (define step-var
-        (gensym "_step"))
-      (return
-       (compile-rose
-        (sexp->rose
-         `(let (,@(if (array? start)
-                      `((,start-var ,start))
-                      '())
-                ,@(if (array? end)
-                      `((,end-var ,end))
-                      '())
-                ,@(if (array? step)
-                      `((,step-var ,step))
-                      '()))
-            (for ((,sym-exp
-                   (range ,(if (array? start)
-                               start-var
-                               start)
-                          ,(if (array? end)
-                               end-var
-                               end)
-                          ,@(if step
-                                (if (array? step)
-                                    `(,step-var)
-                                    `(,step))
-                                '()))))
-              ,@body-nodes))
-         node)
-        env options)))
-    ;; Otherwise, proceed to create a `for` loop.
-    (set! step (or step 1))
-    (define init
-      (compile-statement
-       (sexp->rose
-        `(define ,sym-exp ,start))
-       env inherited-options))
-    (define test)
-    (define update)
-    (cond
-     ((number? step)
-      (cond
-       ((< step 0)
-        (set! test
-              (compile-expression
-               (sexp->rose
-                `(> ,sym-exp ,end))
-               env inherited-options))
-        (set! update
-              (compile-statement
-               (sexp->rose
-                `(set! ,sym-exp
-                       (- ,sym-exp
-                          ,(send Math abs step))))
-               env inherited-options)))
-       (else
-        (set! test
-              (compile-expression
-               (sexp->rose
-                `(< ,sym-exp ,end))
-               env inherited-options))
-        (set! update
-              (compile-statement
-               (sexp->rose
-                `(set! ,sym-exp
-                       (+ ,sym-exp
-                          ,step)))
-               env inherited-options)))))
-     (else
-      (set! test
-            (compile-expression
-             (sexp->rose
-              `(if (< ,step 0)
-                   (> ,sym-exp ,end)
-                   (< ,sym-exp ,end)))
-             env inherited-options))
-      (set! update
-            (compile-statement
-             (sexp->rose
-              `(set! ,sym-exp
-                     (+ ,sym-exp
-                        ,step)))
-             env inherited-options))))
-    (when (estree-type? update "ExpressionStatement")
-      (set! update
-            (get-field expression update)))
-    (define body
-      (wrap-in-block-statement
-       (compile-statement
-        body-node env inherited-options)))
-    (new ForStatement
-         init
-         test
-         update
-         body))
-   (else
-    (define left
-      (compile-expression
-       (sexp->rose
-        `(define ,sym-exp))
-       env inherited-options))
-    (define right
-      (compile-expression
-       vals-node env inherited-options))
-    (define body
-      (wrap-in-block-statement
-       (compile-statement
-        body-node env inherited-options)))
-    (new ForOfStatement
-         left
-         right
-         body))))
-
 ;;; Compile a `(break)` expression.
 (define (compile-break node env (options (js/obj)))
   (new BreakStatement
@@ -5248,6 +5100,131 @@
        (wrap-in-block-statement-smart
         (compile-statement-or-return-statement
          body env options))))
+
+;;; Compile a `(js/for ...)` expression.
+(define (compile-js/for node env (options (js/obj)))
+  (define body
+    (sexp->rose
+     `(js/block ,@(send node drop 2))
+     node))
+  (define init
+    (send node get 1 0))
+  (define init-exp
+    (rose->sexp init))
+  (define test
+    (send node get 1 1))
+  (define update
+    (send node get 1 2))
+  (define update-exp
+    (rose->sexp update))
+  (define sym #u)
+  (define (binding? x)
+    (and (= (js/length x) 2)
+         (symbol? (js/first x))))
+  (cond
+   ((binding? init-exp)
+    (set! sym (js/first init-exp))
+    (set! init
+          (sexp->rose
+           `(define ,@(send init drop 0))
+           init)))
+   ((form? init-exp define_ env)
+    (set! sym (js/second init-exp)))
+   ((form? init-exp set!_ env)
+    (set! sym (js/second init-exp))))
+  (define init-compiled
+    (compile-statement init env options))
+  (when (estree-type? init-compiled
+                      '("Program"
+                        "BlockStatement"))
+    (set! init-compiled
+          (new SequenceExpression
+               (map make-expression
+                    (get-field body init-compiled)))))
+  (define test-compiled
+    (compile-expression test env options))
+  (define (increment? x)
+    (or (form? x add_ env)
+        (form? x sub_ env)))
+  (when (increment? update-exp)
+    (unless sym
+      (cond
+       ((symbol? (js/second update-exp))
+        (set! sym (js/second update-exp)))
+       ((symbol? (js/third update-exp))
+        (set! sym (js/third update-exp)))))
+    (when sym
+      (set! update
+            (sexp->rose
+             `(set! ,sym ,update)
+             update))))
+  (define update-compiled
+    (compile-statement update env options))
+  (cond
+   ((estree-type? update-compiled
+                  '("Program"
+                    "BlockStatement"))
+    (set! update-compiled
+          (new SequenceExpression
+               (map make-expression
+                    (get-field body update-compiled)))))
+   ((estree-type? update-compiled
+                  "ExpressionStatement")
+    (set! update-compiled
+          (get-field expression update-compiled))))
+  (define body-compiled
+    (compile-statement body env options))
+  (new ForStatement
+       init-compiled
+       test-compiled
+       update-compiled
+       body-compiled))
+
+;;; Compile a `(js/for-in ...)` expression.
+(define (compile-js/for-in node env (options (js/obj)))
+  (define left
+    (sexp->rose
+     `(define ,(send node get 1 0 0))
+     node))
+  (define right
+    (send node get 1 0 1))
+  (define body
+    (sexp->rose
+     `(js/block ,@(send node drop 2))
+     node))
+  (define left-compiled
+    (compile-statement left env options))
+  (define right-compiled
+    (compile-expression right env options))
+  (define body-compiled
+    (compile-statement body env options))
+  (new ForInStatement
+       left-compiled
+       right-compiled
+       body-compiled))
+
+;;; Compile a `(js/for-of ...)` expression.
+(define (compile-js/for-of node env (options (js/obj)))
+  (define left
+    (sexp->rose
+     `(define ,(send node get 1 0 0))
+     node))
+  (define right
+    (send node get 1 0 1))
+  (define body
+    (sexp->rose
+     `(js/block ,@(send node drop 2))
+     node))
+  (define left-compiled
+    (compile-statement left env options))
+  (define right-compiled
+    (compile-expression right env options))
+  (define body-compiled
+    (compile-statement body env options))
+  (new ForOfStatement
+       left-compiled
+       right-compiled
+       body-compiled))
 
 ;;; Compile a `(yield ...)` expression.
 (define (compile-yield node env (options (js/obj)))
@@ -6235,8 +6212,22 @@
    env
    (current-compilation-options)))
 
-;;; Expand a `(for ...)` expression.
-(define-macro (for_ &whole exp &environment env)
+;;; Expand a `(js/for ...)` expression.
+(define-macro (js/for_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(js/for-in ...)` expression.
+(define-macro (js/for-in_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(js/for-of ...)` expression.
+(define-macro (js/for-of_ &whole exp &environment env)
   (compile-sexp
    exp
    env

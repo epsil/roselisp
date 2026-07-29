@@ -8,31 +8,6 @@ import { assertEqual, testRepl, testMacro } from './test-util';
 
 testMacro.ftype = 'macro';
 
-describe('js/for', function (): any {
-  return xit("(compile '(js/for ((i 0) (< i 10) (+ i 1)) (foo)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('js/for'),
-            [
-              [Symbol.for('i'), 0],
-              [Symbol.for('<'), Symbol.for('i'), 10],
-              [Symbol.for('+'), Symbol.for('i'), 1],
-            ],
-            [Symbol.for('foo')],
-          ],
-        ],
-      ],
-      'for (let i = 0; i < 10; i++) {\n' + '  foo();\n' + '}',
-    ]);
-  });
-});
-
 describe('To do', function (): any {
   xit("(compile '(js/? x y z))", function (): any {
     return testRepl([
@@ -515,7 +490,7 @@ describe('Bitwise operators', function (): any {
       'x |= y;',
     ]);
   });
-  return xit("(compile '(js/^= x y))", function (): any {
+  xit("(compile '(js/^= x y))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -527,6 +502,28 @@ describe('Bitwise operators', function (): any {
         ],
       ],
       'x ^= y;',
+    ]);
+  });
+  xit("(compile '(abs x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('abs'), Symbol.for('x')]],
+      ],
+      'Math.abs(x);',
+    ]);
+  });
+  return xit("(compile '(js/abs x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/abs'), Symbol.for('x')]],
+      ],
+      'Math.abs(x);',
     ]);
   });
 });

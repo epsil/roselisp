@@ -1030,12 +1030,12 @@ function printSequenceExpression(node, options = {}) {
     });
     let result;
     result = join([',', space], expressionsPrinted);
-    if (expressions.length > 1) {
-        result = docWrap(result, options);
-    }
+    // (when (> (js/length expressions) 1)
+    //   (set! result
+    //         (doc-wrap result options)))
     return result;
 }
-printSequenceExpression.fsource = [Symbol.for('define'), [Symbol.for('print-sequence-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expressions'), [Symbol.for('get-field'), Symbol.for('expressions'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('expressions-printed'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('expressions')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('space')], Symbol.for('expressions-printed')]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('expressions')], 1], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('doc-wrap'), Symbol.for('result'), Symbol.for('options')]]], Symbol.for('result')];
+printSequenceExpression.fsource = [Symbol.for('define'), [Symbol.for('print-sequence-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expressions'), [Symbol.for('get-field'), Symbol.for('expressions'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('expressions-printed'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('expressions')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('space')], Symbol.for('expressions-printed')]], Symbol.for('result')];
 /**
  * Print a `BlockStatement` ESTree node to a `Doc` object.
  */
@@ -1289,9 +1289,9 @@ function printForInStatement(node, options = {}) {
     const rightPrinted = printNode(right, options);
     const body = node.body;
     const bodyPrinted = printNode(body, options);
-    return ['for', space, '(', leftPrinted, space, 'in', space, rightPrinted, (language === 'TypeScript') ? ' as any[]' : empty, ')', space, '{', line, indent(bodyPrinted), line, '}'];
+    return ['for', space, '(', leftPrinted, space, 'in', space, rightPrinted, (language === 'TypeScript') ? ' as any[]' : empty, ')', space, bodyPrinted];
 }
-printForInStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-in-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('right'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('left-printed'), Symbol.for('space'), 'in', Symbol.for('space'), Symbol.for('right-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], ' as any[]', Symbol.for('empty')], ')', Symbol.for('space'), '{', Symbol.for('line'), [Symbol.for('indent'), Symbol.for('body-printed')], Symbol.for('line'), '}']];
+printForInStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-in-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('right'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('left-printed'), Symbol.for('space'), 'in', Symbol.for('space'), Symbol.for('right-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], ' as any[]', Symbol.for('empty')], ')', Symbol.for('space'), Symbol.for('body-printed')]];
 /**
  * Print a `TryStatement` ESTree node to a `Doc` object.
  */

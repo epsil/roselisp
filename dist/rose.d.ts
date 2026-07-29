@@ -179,12 +179,10 @@ declare class Rose {
      */
     forEachNode(f: any, recursive?: any): any;
     /**
-     * Get the `n`-th node in the forest.
-     * Counting begins at zero.
-     *
-     * Alias for `nth`.
+     * Get a node in the forest, following a path
+     * of indices. Counting begins at zero.
      */
-    get(n: any): any;
+    get(...indices: any[]): any;
     /**
      * Get the numerical index of `node` in the forest.
      * Returns `-1` if not found.
@@ -402,12 +400,10 @@ declare class Forest {
      */
     forEachNode(f: any, recursive?: any): any;
     /**
-     * Get the `n`-th node.
+     * Get a node, following a path of indices.
      * Counting begins at zero.
-     *
-     * Alias for `nth`.
      */
-    get(n: any): any;
+    get(...indices: any[]): any;
     /**
      * Get the numerical index of `node`.
      * Returns `-1` if not found.

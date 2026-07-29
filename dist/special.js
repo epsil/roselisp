@@ -1878,7 +1878,9 @@ function defineClassSpecial_(exp, env) {
     const constructors = new Map();
     const constructor = function (...args) {
         // Initialize fields.
-        for (let field of fields) {
+        for ( // Initialize fields.
+        let field of fields) {
+            // Initialize fields.
             let name = ((Array.isArray(field) && (field.length >= 3) && (field[field.length - 2] === Symbol.for('.')) && (() => {
                 const x = lastCdr(field);
                 return Array.isArray(x) && (x.length === 0);
@@ -1955,7 +1957,9 @@ function defineClassSpecial_(exp, env) {
         constructor['prototype'] = Object.create(baseClass['prototype']);
     }
     // Sort field definitions from method definitions.
-    for (let definition of definitions) {
+    for ( // Sort field definitions from method definitions.
+    let definition of definitions) {
+        // Sort field definitions from method definitions.
         if (typeof ((Array.isArray(definition) && (definition.length >= 3) && (definition[definition.length - 2] === Symbol.for('.')) && (() => {
             const x = lastCdr(definition);
             return Array.isArray(x) && (x.length === 0);

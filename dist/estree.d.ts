@@ -1244,7 +1244,7 @@ declare namespace estreeType {
  */
 declare function estreeTypeP(node: any, typ: any): any;
 declare namespace estreeTypeP {
-    var fsource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | symbol[])[])[][])[])[];
 }
 /**
  * Wrap a value in an ESTree node.

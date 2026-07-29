@@ -270,13 +270,13 @@ class Rose {
         return this;
     }
     /**
-     * Get the `n`-th node in the forest.
-     * Counting begins at zero.
-     *
-     * Alias for `nth`.
+     * Get a node in the forest, following a path
+     * of indices. Counting begins at zero.
      */
-    get(n) {
-        return this.nth(n);
+    get(...indices) {
+        return indices.reduce(function (node, idx) {
+            return node.nth(idx);
+        }, this);
     }
     /**
      * Get the numerical index of `node` in the forest.
@@ -615,14 +615,20 @@ class Forest {
         return this;
     }
     /**
-     * Get the `n`-th node.
+     * Get a node, following a path of indices.
      * Counting begins at zero.
-     *
-     * Alias for `nth`.
      */
-    get(n) {
-        return this.nth(n);
+    get(...indices) {
+        return indices.reduce(function (acc, idx) {
+            return acc.nth(idx);
+        }, this);
     }
+    // ;;; Get the `n`-th node.
+    // ;;; Counting begins at zero.
+    // ;;;
+    // ;;; Alias for `nth`.
+    // (define/public (get n)
+    //   (send this nth n))
     /**
      * Get the numerical index of `node`.
      * Returns `-1` if not found.

@@ -363,6 +363,18 @@ describe('Environment', function (): any {
       true
     );
   });
+  it('has-local?, parent environment', function (): any {
+    return assertEqual(
+      ((): any => {
+        const env: any = new Environment(
+          [[Symbol.for('foo'), 'foo']],
+          new Environment([[Symbol.for('bar'), 'bar']])
+        );
+        return env.hasLocalP(Symbol.for('bar'));
+      })(),
+      false
+    );
+  });
   it('has-local?, nonexistant binding', function (): any {
     return assertEqual(
       ((): any => {

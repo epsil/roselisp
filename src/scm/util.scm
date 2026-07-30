@@ -245,11 +245,24 @@
    ((is-a? exp Rose)
     (form? (rose->sexp exp) f env))
    (else
-    (and (array? exp)
-         (> (array-length exp) 0)
-         (symbol? (array-first exp))
-         (eq? (send env get (array-first exp))
-              f)))))
+    (cond
+     ((and (array? exp)
+           (> (js/length exp) 0))
+      (define op
+        (js/first exp))
+      (cond
+       ((not (symbol? op))
+        #f)
+       ;; If the operator is bound to a thunk,
+       ;; it is a user-defined binding.
+       ((send env has-thunk? op)
+        #f)
+       (else
+        (define val
+          (send env get op))
+        (eq? f val))))
+     (else
+      #f)))))
 
 ;;; Whether `exp` is a `(: ...)` expression.
 (define (colon-form? exp)

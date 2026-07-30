@@ -288,7 +288,21 @@ function formp(exp: any, f: any, env: any): any {
   if (exp instanceof Rose) {
     return formp(roseToSexp(exp), f, env);
   } else {
-    return Array.isArray(exp) && (exp.length > 0) && (typeof exp[0] === 'symbol') && (env.get(exp[0]) === f);
+    if (Array.isArray(exp) && (exp.length > 0)) {
+      const op: any = exp[0];
+      if (typeof op !== 'symbol') {
+        return false;
+      } else if (env.hasThunkP(op)) {
+        // If the operator is bound to a thunk,
+        // it is a user-defined binding.
+        return false;
+      } else {
+        const val: any = env.get(op);
+        return f === val;
+      }
+    } else {
+      return false;
+    }
   }
 }
 

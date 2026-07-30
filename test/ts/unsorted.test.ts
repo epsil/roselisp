@@ -9,28 +9,6 @@ import { assertEqual, testRepl, testMacro } from './test-util';
 testMacro.ftype = 'macro';
 
 describe('To do', function (): any {
-  xit("(compile '(abs x))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('abs'), Symbol.for('x')]],
-      ],
-      'Math.abs(x);',
-    ]);
-  });
-  xit("(compile '(js/abs x))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('js/abs'), Symbol.for('x')]],
-      ],
-      'Math.abs(x);',
-    ]);
-  });
   xit("(compile '(js/< x y))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),

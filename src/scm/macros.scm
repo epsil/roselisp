@@ -497,7 +497,7 @@
         (cond
          ((number? step)
           (if (< step 0)
-              `(- ,sym ,(send Math abs step))
+              `(- ,sym ,(abs step))
               `(+ ,sym ,step)))
          (else
           `(+ ,sym ,step))))

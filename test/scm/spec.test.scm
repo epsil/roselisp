@@ -1922,6 +1922,18 @@ let z = x + y + w + z;"
  > (compile '(> 2 1))
  "2 > 1;"
 
+ ;; `abs`
+ > (describe "abs")
+ _
+ > (abs 1)
+ 1
+ > (abs -1)
+ 1
+ > (compile '(abs x))
+ "Math.abs(x);"
+ > (compile '(js/abs x))
+ "Math.abs(x);"
+
  ;; `range`
  > (describe "range")
  _

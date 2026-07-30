@@ -6201,6 +6201,47 @@ describe('>', function (): any {
   });
 });
 
+describe('abs', function (): any {
+  it('(abs 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('abs'), 1],
+      1,
+    ]);
+  });
+  it('(abs -1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('abs'), -1],
+      1,
+    ]);
+  });
+  it("(compile '(abs x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('abs'), Symbol.for('x')]],
+      ],
+      'Math.abs(x);',
+    ]);
+  });
+  return it("(compile '(js/abs x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/abs'), Symbol.for('x')]],
+      ],
+      'Math.abs(x);',
+    ]);
+  });
+});
+
 describe('range', function (): any {
   it('(range 1 2)', function (): any {
     return testRepl([

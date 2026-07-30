@@ -1194,6 +1194,15 @@ function isAP_(obj: any, cls: any): any {
 
 isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instance-of?'), Symbol.for('obj'), Symbol.for('cls')]];
 
+/**
+ * Return the absolute value of `x`.
+ */
+function abs_(x: any): any {
+  return Math.abs(x);
+}
+
+abs_.fsource = [Symbol.for('define'), [Symbol.for('abs_'), Symbol.for('x')], [Symbol.for('js/abs'), Symbol.for('x')]];
+
 export {
   add1_ as add1,
   add_ as _add,
@@ -1260,6 +1269,7 @@ export {
   values_ as values,
   variableTypeP_ as variableTypeP,
   zerop_ as zerop,
+  abs_,
   add1_,
   add_,
   apply_,

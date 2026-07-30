@@ -65,6 +65,10 @@
 (define (js/nan?_ x y)
   (send Number isNaN x))
 
+;;; Return the absolute value of `x`.
+(define (js/abs_ x)
+  (send Math abs x))
+
 ;;; Variadic version of JavaScript's `+` operator.
 ;;;
 ;;; Performs [addition][js:add] or [string concatenation][js:concat],
@@ -264,6 +268,7 @@
   x)
 
 (provide
+  js/abs_
   js/array?_
   js/delete_
   js/dot_

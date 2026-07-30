@@ -14,10 +14,6 @@
 
  > (describe "To do")
  _
- xit> (compile '(abs x))
- "Math.abs(x);"
- xit> (compile '(js/abs x))
- "Math.abs(x);"
  xit> (compile '(js/< x y))
  "x < y;"
  xit> (compile '(js/> x y))

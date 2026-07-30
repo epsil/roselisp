@@ -716,6 +716,10 @@
 (define (is-a?_ obj cls)
   (js/instance-of? obj cls))
 
+;;; Return the absolute value of `x`.
+(define (abs_ x)
+  (js/abs x))
+
 (provide
   (rename-out (add1_ add1))
   (rename-out (add_ _add))
@@ -786,6 +790,7 @@
   (rename-out (values_ values))
   (rename-out (variable-type?_ variable-type?))
   (rename-out (zero?_ zerop))
+  abs_
   add1_
   add_
   apply_

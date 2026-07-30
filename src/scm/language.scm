@@ -190,6 +190,7 @@
                   make-hash_))
 (require (only-in "./javascript"
                   (js/new_ new_)
+                  js/abs_
                   js/array?_
                   js/delete_
                   js/dot_
@@ -400,6 +401,7 @@
                   print-sexp-as-expression
                   write-to-string))
 (require (only-in "./procedures"
+                  abs_
                   add1_
                   add_
                   apply_
@@ -711,6 +713,7 @@
 ;;; that it might be inlined directly into the call site.
 (define inlined-functions
   (list
+   abs_
    add1_
    array-eighth_
    array-fifth_
@@ -781,6 +784,7 @@
    hash?_
    index-where_
    is-a?_
+   js/abs_
    js/array?_
    js/eighth_
    js/fifth_
@@ -7923,6 +7927,7 @@
          (=? ,eq?_ (-> Any * Any))
          (> ,gt_ (-> Any * Any))
          (>= ,gte_ (-> Any * Any))
+         (abs ,abs_ (-> Any * Any))
          (add ,add_ (-> Any * Any))
          (add1 ,add1_ (-> Any * Any))
          (aget ,array-ref_ (-> Any * Any))
@@ -8101,6 +8106,7 @@
          (js/===? ,js/strictly-equal?_ (-> Any * Any))
          (js/==? ,js/loosely-equal?_ (-> Any * Any))
          (js/?. ,js/optional-chaining_ (-> Any * Any))
+         (js/abs ,js/abs_ (-> Any * Any))
          (js/append ,js/plus_ (-> Any * Any))
          (js/array? ,js/array?_ (-> Any * Any))
          (js/console.log ,(get-field log console) (-> Any * Any))

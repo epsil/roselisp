@@ -101,6 +101,15 @@ function jsNanP_(x: any, y: any): any {
 jsNanP_.fsource = [Symbol.for('define'), [Symbol.for('js/nan?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')]];
 
 /**
+ * Return the absolute value of `x`.
+ */
+function jsAbs_(x: any): any {
+  return Math.abs(x);
+}
+
+jsAbs_.fsource = [Symbol.for('define'), [Symbol.for('js/abs_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Math'), Symbol.for('abs'), Symbol.for('x')]];
+
+/**
  * Variadic version of JavaScript's `+` operator.
  *
  * Performs [addition][js:add] or [string concatenation][js:concat],
@@ -495,6 +504,7 @@ function jsYield_(x: any = undefined): any {
 jsYield_.fsource = [Symbol.for('define'), [Symbol.for('js/yield_'), [Symbol.for('x'), undefined]], Symbol.for('x')];
 
 export {
+  jsAbs_,
   jsArrayP_,
   jsDelete_,
   jsDot_,

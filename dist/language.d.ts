@@ -15,7 +15,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 import { jsNew_ as new_ } from './javascript';
-import { cljTry_, defineMacro_, definePublic_, for_, try_ } from './macros';
+import { and_, cljTry_, defineMacro_, definePublic_, for_, or_, try_ } from './macros';
 import { read, readRose, readSexp, tokenize } from './parser';
 import { isAP_, typeOf_ } from './procedures';
 import { s, sexp } from './sexp';
@@ -467,22 +467,6 @@ declare namespace lambda_ {
  */
 declare function cond_(exp: any, env: any): any;
 declare namespace cond_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-    var ftype: string;
-}
-/**
- * Expand an `(and ...)` expression.
- */
-declare function and_(exp: any, env: any): any;
-declare namespace and_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-    var ftype: string;
-}
-/**
- * Expand an `(or ...)` expression.
- */
-declare function or_(exp: any, env: any): any;
-declare namespace or_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
     var ftype: string;
 }

@@ -55,53 +55,20 @@ declare namespace jsSameValueZeroP_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
- * JavaScript's [`typeof`][js:typeof] operator,
- * as a function.
- *
- * [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+ * Whether something is JavaScript's `null`.
  */
-declare function jsTypeOf_(x: any): any;
-declare namespace jsTypeOf_ {
-    var fsource: (symbol | symbol[])[];
+declare function jsNullP_(obj: any): any;
+declare namespace jsNullP_ {
+    var fsource: (symbol | (symbol | null)[])[];
 }
 /**
- * JavaScript's [`instanceof`][js:instanceof] operator,
- * as a function.
- *
- * [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
- */
-declare function jsInstanceOfP_(x: any, y: any): any;
-declare namespace jsInstanceOfP_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Whether a number is [NaN][js:nan].
+ * Whether a number is JavaScript's [NaN][js:nan].
  *
  * [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
  */
 declare function jsNanP_(x: any, y: any): any;
 declare namespace jsNanP_ {
     var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the absolute value of `x`.
- */
-declare function jsAbs_(x: any): any;
-declare namespace jsAbs_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Variadic version of JavaScript's `+` operator.
- *
- * Performs [addition][js:add] or [string concatenation][js:concat],
- * depending on the types.
- *
- * [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
- * [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
- */
-declare function jsPlus_(...args: any[]): any;
-declare namespace jsPlus_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | undefined)[])[];
 }
 /**
  * Whether `obj` is a JavaScript function.
@@ -127,20 +94,23 @@ declare namespace jsFunctionTypeP_ {
     var fsource: (symbol | (string | symbol | symbol[])[])[];
 }
 /**
- * Whether something is JavaScript's `null`.
+ * JavaScript's [`typeof`][js:typeof] operator,
+ * as a function.
+ *
+ * [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
  */
-declare function jsNullP_(obj: any): any;
-declare namespace jsNullP_ {
-    var fsource: (symbol | (symbol | null)[])[];
+declare function jsTypeOf_(x: any): any;
+declare namespace jsTypeOf_ {
+    var fsource: (symbol | symbol[])[];
 }
 /**
- * Find the index of a list element matching a predicate.
+ * JavaScript's [`instanceof`][js:instanceof] operator,
+ * as a function.
  *
- * Like `findf-index`, but returns `-1` rather than `#f`
- * if there is no match.
+ * [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
  */
-declare function jsFindIndex_(proc: any, seq: any): any;
-declare namespace jsFindIndex_ {
+declare function jsInstanceOfP_(x: any, y: any): any;
+declare namespace jsInstanceOfP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -151,6 +121,82 @@ declare namespace jsFindIndex_ {
  */
 declare function jsIn_(prop: any, obj: any): any;
 declare namespace jsIn_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Make a JavaScript object.
+ *
+ * Similar to [`js-obj` in ClojureScript][cljs:js-obj].
+ *
+ * [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
+ */
+declare function jsObj_(...args: any[]): any;
+declare namespace jsObj_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[];
+}
+/**
+ * Whether something is a JavaScript object.
+ */
+declare function jsObjP_(x: any): any;
+declare namespace jsObjP_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+}
+/**
+ * Whether something types as a JavaScript object.
+ *
+ * Note that this includes JavaScript's `null` value.
+ */
+declare function jsObjectTypeP_(x: any): any;
+declare namespace jsObjectTypeP_ {
+    var fsource: (symbol | (string | symbol | symbol[])[])[];
+}
+/**
+ * Combine multiple JavaScript objects into a new JavaScript object.
+ *
+ * Like `append`, but for JavaScript objects.
+ */
+declare function jsObjAppend_(...args: any[]): any;
+declare namespace jsObjAppend_ {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+}
+/**
+ * Return the keys for a JavaScript object.
+ *
+ * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
+ * [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
+ */
+declare function jsKeys_(obj: any): any;
+declare namespace jsKeys_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Variadic version of JavaScript's `+` operator.
+ *
+ * Performs [addition][js:add] or [string concatenation][js:concat],
+ * depending on the types.
+ *
+ * [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
+ * [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
+ */
+declare function jsPlus_(...args: any[]): any;
+declare namespace jsPlus_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | undefined)[])[];
+}
+/**
+ * Return the absolute value of `x`.
+ */
+declare function jsAbs_(x: any): any;
+declare namespace jsAbs_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Find the index of a list element matching a predicate.
+ *
+ * Like `findf-index`, but returns `-1` rather than `#f`
+ * if there is no match.
+ */
+declare function jsFindIndex_(proc: any, seq: any): any;
+declare namespace jsFindIndex_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -391,4 +437,109 @@ declare function jsYield_(x?: any): any;
 declare namespace jsYield_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
-export { jsAbs_, jsArrayP_, jsDelete_, jsDot_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsIn_, jsInstanceOfP_, jsLast_, jsLength_, jsLooselyEqualP_, jsNanP_, jsNew_, jsNinth_, jsNullP_, jsOptionalChaining_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsYield_ };
+/**
+ * Less than comparison.
+ */
+declare function jsLt_(...args: any[]): any;
+declare namespace jsLt_ {
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+}
+/**
+ * Less than or equal comparison.
+ */
+declare function jsLte_(...args: any[]): any;
+declare namespace jsLte_ {
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+}
+/**
+ * Greater than comparison.
+ */
+declare function jsGt_(...args: any[]): any;
+declare namespace jsGt_ {
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+}
+/**
+ * Greater than or equal comparison.
+ */
+declare function jsGte_(...args: any[]): any;
+declare namespace jsGte_ {
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+}
+/**
+ * Modulo operation.
+ */
+declare function jsMod_(x: any, y: any): any;
+declare namespace jsMod_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Logical negation.
+ */
+declare function jsNot_(x: any): any;
+declare namespace jsNot_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Logical AND.
+ */
+declare function jsAnd_(...args: any[]): any;
+declare namespace jsAnd_ {
+    var fsource: (symbol | (boolean | symbol)[])[];
+}
+/**
+ * Logical OR.
+ */
+declare function jsOr_(...args: any[]): any;
+declare namespace jsOr_ {
+    var fsource: (symbol | (boolean | symbol)[])[];
+}
+/**
+ * Bitwise NOT.
+ */
+declare function jsBitwiseNot_(x: any): any;
+declare namespace jsBitwiseNot_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Bitwise AND.
+ */
+declare function jsBitwiseAnd_(...args: any[]): any;
+declare namespace jsBitwiseAnd_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Bitwise OR.
+ */
+declare function jsBitwiseOr_(...args: any[]): any;
+declare namespace jsBitwiseOr_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Bitwise XOR.
+ */
+declare function jsBitwiseXor_(...args: any[]): any;
+declare namespace jsBitwiseXor_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Bitwise left shift.
+ */
+declare function jsBitwiseShiftLeft_(...args: any[]): any;
+declare namespace jsBitwiseShiftLeft_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Bitwise right shift.
+ */
+declare function jsBitwiseShiftRight_(...args: any[]): any;
+declare namespace jsBitwiseShiftRight_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Bitwise unsigned right shift.
+ */
+declare function jsUnsignedBitwiseShiftRight_(...args: any[]): any;
+declare namespace jsUnsignedBitwiseShiftRight_ {
+    var fsource: (symbol | symbol[])[];
+}
+export { jsAbs_, jsAnd_, jsArrayP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceOfP_, jsKeys_, jsLast_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNinth_, jsNot_, jsNullP_, jsObjAppend_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsUnsignedBitwiseShiftRight_, jsYield_ };

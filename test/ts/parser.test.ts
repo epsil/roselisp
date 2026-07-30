@@ -51,6 +51,15 @@ describe('tokenize', function (): any {
   it('(tokenize "foo")', function (): any {
     return assertEqual(tokenize('foo'), [new SymbolToken('foo')]);
   });
+  it('(tokenize "\\\\foo")', function (): any {
+    return assertEqual(tokenize('\\foo'), [new SymbolToken('foo')]);
+  });
+  it('(tokenize "f\\\\oo")', function (): any {
+    return assertEqual(tokenize('f\\oo'), [new SymbolToken('foo')]);
+  });
+  xit('(tokenize "|foo|")', function (): any {
+    return assertEqual(tokenize('|foo|'), [new SymbolToken('foo')]);
+  });
   it('(tokenize "\\"foo\\"")', function (): any {
     return assertEqual(tokenize('"foo"'), [new StringToken('foo')]);
   });

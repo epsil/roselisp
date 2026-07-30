@@ -45,43 +45,15 @@
       (and (js/nan? x)
            (js/nan? y))))
 
-;;; JavaScript's [`typeof`][js:typeof] operator,
-;;; as a function.
-;;;
-;;; [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
-(define (js/type-of_ x)
-  (js/type-of x))
+;;; Whether something is JavaScript's `null`.
+(define (js/null?_ obj)
+  (eq? obj #n))
 
-;;; JavaScript's [`instanceof`][js:instanceof] operator,
-;;; as a function.
-;;;
-;;; [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
-(define (js/instance-of?_ x y)
-  (js/instance-of? x y))
-
-;;; Whether a number is [NaN][js:nan].
+;;; Whether a number is JavaScript's [NaN][js:nan].
 ;;;
 ;;; [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
 (define (js/nan?_ x y)
   (send Number isNaN x))
-
-;;; Return the absolute value of `x`.
-(define (js/abs_ x)
-  (send Math abs x))
-
-;;; Variadic version of JavaScript's `+` operator.
-;;;
-;;; Performs [addition][js:add] or [string concatenation][js:concat],
-;;; depending on the types.
-;;;
-;;; [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
-;;; [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
-(define (js/plus_ . args)
-  (if (zero? (js/length args))
-      #u
-      (js/reduce args
-                 (lambda (acc x)
-                   (js/+ acc x)))))
 
 ;;; Whether `obj` is a JavaScript function.
 (define (js/function?_ obj)
@@ -99,9 +71,87 @@
 (define (js/function-type?_ obj)
   (eq? (type-of obj) "function"))
 
-;;; Whether something is JavaScript's `null`.
-(define (js/null?_ obj)
-  (eq? obj #n))
+;;; JavaScript's [`typeof`][js:typeof] operator,
+;;; as a function.
+;;;
+;;; [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+(define (js/type-of_ x)
+  (js/type-of x))
+
+;;; JavaScript's [`instanceof`][js:instanceof] operator,
+;;; as a function.
+;;;
+;;; [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
+(define (js/instance-of?_ x y)
+  (js/instance-of? x y))
+
+;;; JavaScript's [`in`][js:in] operator,
+;;; as a function.
+;;;
+;;; [js:in]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in
+(define (js/in_ prop obj)
+  (js/in prop obj))
+
+;;; Make a JavaScript object.
+;;;
+;;; Similar to [`js-obj` in ClojureScript][cljs:js-obj].
+;;;
+;;; [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
+(define (js/obj_ . args)
+  (let ((entries '()))
+    (for ((i (range 0 (js/length args) 2)))
+      (push-right! entries
+                   (list (js/get args i)
+                         (js/get args (+ i 1)))))
+    (send Object fromEntries entries)))
+
+;;; Whether something is a JavaScript object.
+(define (js/obj?_ x)
+  ;; This function avoids regarding JavaScript's `null` value as an
+  ;; object (even if JavaScript does), because it has no properties;
+  ;; and unlike the empty object, attempting to access a property on
+  ;; it causes an error to be thrown. This is more trouble than it is
+  ;; worth, so only non-`null` object values are considered to be
+  ;; proper objects here.
+  (and (not (js/null? x))
+       (js/object-type? x)))
+
+;;; Whether something types as a JavaScript object.
+;;;
+;;; Note that this includes JavaScript's `null` value.
+(define (js/object-type?_ x)
+  (eq? (type-of x) "object"))
+
+;;; Combine multiple JavaScript objects into a new JavaScript object.
+;;;
+;;; Like `append`, but for JavaScript objects.
+(define (js/obj-append_ . args)
+  (send/apply Object assign (js/obj) args))
+
+;;; Return the keys for a JavaScript object.
+;;;
+;;; Similar to [`js-keys` in ClojureScript][cljs:js-keys].
+;;; [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
+(define (js/keys_ obj)
+  (send Object keys obj))
+
+;;; Variadic version of JavaScript's `+` operator.
+;;;
+;;; Performs [addition][js:add] or [string concatenation][js:concat],
+;;; depending on the types.
+;;;
+;;; [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
+;;; [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
+(define (js/plus_ . args)
+  (if (zero? (js/length args))
+      #u
+      (js/reduce args
+                 (lambda (acc x)
+                   (js/+ acc x)))))
+
+;;; Return the absolute value of `x`.
+(define (js/abs_ x)
+  (send Math abs x))
 
 ;;; Find the index of a list element matching a predicate.
 ;;;
@@ -111,13 +161,6 @@
   ;; This construct maps neatly onto
   ;; [`Array.prototype.findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex).
   (send seq findIndex proc))
-
-;;; JavaScript's [`in`][js:in] operator,
-;;; as a function.
-;;;
-;;; [js:in]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in
-(define (js/in_ prop obj)
-  (js/in prop obj))
 
 ;;; Placeholder function for JavaScript's
 ;;; [tagged template][js:tagged-template] construct.
@@ -267,9 +310,112 @@
 (define (js/yield_ (x #u))
   x)
 
+;;; Less than comparison.
+(define (js/lt_ . args)
+  (cond
+   ((< (js/length args) 2)
+    #t)
+   (else
+    (for ((i (range 1 (js/length args))))
+      ;; !(x < y) === (x >= y)
+      (when (js/>= (aget args (- i 1))
+                   (aget args i))
+        (return #f)))
+    #t)))
+
+;;; Less than or equal comparison.
+(define (js/lte_ . args)
+  (cond
+   ((< (js/length args) 2)
+    #t)
+   (else
+    (for ((i (range 1 (js/length args))))
+      ;; !(x <= y) === (x > y)
+      (when (js/> (aget args (- i 1))
+                  (aget args i))
+        (return #f)))
+    #t)))
+
+;;; Greater than comparison.
+(define (js/gt_ . args)
+  (cond
+   ((< (js/length args) 2)
+    #t)
+   (else
+    (for ((i (range 1 (js/length args))))
+      ;; !(x > y) === (x <= y)
+      (when (js/<= (aget args (- i 1))
+                   (aget args i))
+        (return #f)))
+    #t)))
+
+;;; Greater than or equal comparison.
+(define (js/gte_ . args)
+  (cond
+   ((< (js/length args) 2)
+    #t)
+   (else
+    (for ((i (range 1 (js/length args))))
+      ;; !(x >= y) === (x < y)
+      (when (js/< (aget args (- i 1))
+                  (aget args i))
+        (return #f)))
+    #t)))
+
+;;; Modulo operation.
+(define (js/mod_ x y)
+  (js/% x y))
+
+;;; Logical negation.
+(define (js/not_ x)
+  (js/! x))
+
+;;; Logical AND.
+(define (js/and_ . args)
+  (js/op/apply && args :identity #t))
+
+;;; Logical OR.
+(define (js/or_ . args)
+  (js/op/apply \|\| args :identity #f))
+
+;;; Bitwise NOT.
+(define (js/bitwise-not_ x)
+  (js/op ~ x))
+
+;;; Bitwise AND.
+(define (js/bitwise-and_ . args)
+  (js/op/apply & args))
+
+;;; Bitwise OR.
+(define (js/bitwise-or_ . args)
+  (js/op/apply \| args))
+
+;;; Bitwise XOR.
+(define (js/bitwise-xor_ . args)
+  (js/op/apply ^ args))
+
+;;; Bitwise left shift.
+(define (js/bitwise-shift-left_ . args)
+  (js/op/apply << args))
+
+;;; Bitwise right shift.
+(define (js/bitwise-shift-right_ . args)
+  (js/op/apply >> args))
+
+;;; Bitwise unsigned right shift.
+(define (js/unsigned-bitwise-shift-right_ . args)
+  (js/op/apply >>> args))
+
 (provide
   js/abs_
+  js/and_
   js/array?_
+  js/bitwise-and_
+  js/bitwise-not_
+  js/bitwise-or_
+  js/bitwise-shift-left_
+  js/bitwise-shift-right_
+  js/bitwise-xor_
   js/delete_
   js/dot_
   js/eighth_
@@ -282,16 +428,28 @@
   js/function-type?_
   js/function?_
   js/get_
+  js/gt_
+  js/gte_
   js/in_
   js/instance-of?_
+  js/keys_
   js/last_
   js/length_
   js/loosely-equal?_
+  js/lt_
+  js/lte_
+  js/mod_
   js/nan?_
   js/new_
   js/ninth_
+  js/not_
   js/null?_
+  js/obj-append_
+  js/obj?_
+  js/obj_
+  js/object-type?_
   js/optional-chaining_
+  js/or_
   js/plus_
   js/reduce-right_
   js/reduce_
@@ -314,4 +472,5 @@
   js/tenth_
   js/third_
   js/type-of_
+  js/unsigned-bitwise-shift-right_
   js/yield_)

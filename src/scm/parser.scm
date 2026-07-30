@@ -119,9 +119,7 @@
             (push-right! result (new SymbolToken char))
             (set! pos (+ pos 1)))))
          (else
-          (set! state "symbol")
-          (set! buffer (string-append buffer char))
-          (set! pos (+ pos 1)))))))
+          (set! state "symbol"))))))
      ((eq? state "symbol")
       (set! char (aget str pos))
       (cond
@@ -135,6 +133,10 @@
             (push-right! result (new SymbolToken buffer)))
         (set! buffer "")
         (set! state "read"))
+       ((eq? char "\\")
+        (set! char (aget str (+ pos 1)))
+        (set! buffer (string-append buffer char))
+        (set! pos (+ pos 2)))
        (else
         (set! buffer (string-append buffer char))
         (set! pos (+ pos 1)))))

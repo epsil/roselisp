@@ -376,6 +376,46 @@ rktNew_.fsource = [Symbol.for('define'), [Symbol.for('rkt/new_'), Symbol.for('ex
 rktNew_.ftype = 'macro';
 
 /**
+ * Expand an `(and ...)` expression.
+ *
+ * Similar to [`and` in Racket][rkt:and], [`and` in Guile][guile:and],
+ * [`and` in Common Lisp][cl:and] and [`and` in Emacs Lisp][el:and].
+ *
+ * [rkt:and]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._and%29%29
+ * [guile:and]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-and
+ * [cl:and]: http://clhs.lisp.se/Body/m_and.htm
+ * [el:and]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-and
+ */
+function and_(exp: any, env: any): any {
+  const args: any = exp.slice(1);
+  return [Symbol.for('js/&&'), ...args];
+}
+
+and_.fsource = [Symbol.for('define'), [Symbol.for('and_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('js/&&'), [Symbol.for('unquote-splicing'), Symbol.for('args')]]]];
+
+and_.ftype = 'macro';
+
+/**
+ * Expand an `(or ...)` expression.
+ *
+ * Similar to [`or` in Racket][rkt:or], [`or` in Guile][guile:or],
+ * [`or` in Common Lisp][cl:or] and [`or` in Emacs Lisp][el:or].
+ *
+ * [rkt:or]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._or%29%29
+ * [guile:or]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-or
+ * [cl:or]: http://clhs.lisp.se/Body/m_or.htm
+ * [el:or]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-or
+ */
+function or_(exp: any, env: any): any {
+  const args: any = exp.slice(1);
+  return [Symbol.for('js/||'), ...args];
+}
+
+or_.fsource = [Symbol.for('define'), [Symbol.for('or_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('js/||'), [Symbol.for('unquote-splicing'), Symbol.for('args')]]]];
+
+or_.ftype = 'macro';
+
+/**
  * Expand a `(when ...)` expression.
  *
  * Similar to [`when` in Racket][rkt:when], [`when` in Guile][guile:when],
@@ -951,6 +991,7 @@ cljTry_.fsource = [Symbol.for('define'), [Symbol.for('clj/try_'), Symbol.for('ex
 cljTry_.ftype = 'macro';
 
 export {
+  and_,
   begin0_,
   caseEq_,
   case_,
@@ -972,6 +1013,7 @@ export {
   letEnv_,
   multipleValueBind_,
   newApply_,
+  or_,
   rktNew_,
   set_,
   threadAs_,

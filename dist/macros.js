@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.or_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.and_ = void 0;
 const eval_1 = require("./eval");
 const util_1 = require("./util");
 const [lastCdr, cdr, listStar, cons, take] = (() => {
@@ -355,6 +355,42 @@ function rktNew_(exp, env) {
 exports.rktNew_ = rktNew_;
 rktNew_.fsource = [Symbol.for('define'), [Symbol.for('rkt/new_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('make-object'), [Symbol.for('unquote'), Symbol.for('constructor')], [Symbol.for('unquote-splicing'), [Symbol.for('map'), Symbol.for('js/second'), Symbol.for('args')]]]]];
 rktNew_.ftype = 'macro';
+/**
+ * Expand an `(and ...)` expression.
+ *
+ * Similar to [`and` in Racket][rkt:and], [`and` in Guile][guile:and],
+ * [`and` in Common Lisp][cl:and] and [`and` in Emacs Lisp][el:and].
+ *
+ * [rkt:and]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._and%29%29
+ * [guile:and]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-and
+ * [cl:and]: http://clhs.lisp.se/Body/m_and.htm
+ * [el:and]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-and
+ */
+function and_(exp, env) {
+    const args = exp.slice(1);
+    return [Symbol.for('js/&&'), ...args];
+}
+exports.and_ = and_;
+and_.fsource = [Symbol.for('define'), [Symbol.for('and_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('js/&&'), [Symbol.for('unquote-splicing'), Symbol.for('args')]]]];
+and_.ftype = 'macro';
+/**
+ * Expand an `(or ...)` expression.
+ *
+ * Similar to [`or` in Racket][rkt:or], [`or` in Guile][guile:or],
+ * [`or` in Common Lisp][cl:or] and [`or` in Emacs Lisp][el:or].
+ *
+ * [rkt:or]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._or%29%29
+ * [guile:or]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-or
+ * [cl:or]: http://clhs.lisp.se/Body/m_or.htm
+ * [el:or]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-or
+ */
+function or_(exp, env) {
+    const args = exp.slice(1);
+    return [Symbol.for('js/||'), ...args];
+}
+exports.or_ = or_;
+or_.fsource = [Symbol.for('define'), [Symbol.for('or_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('js/||'), [Symbol.for('unquote-splicing'), Symbol.for('args')]]]];
+or_.ftype = 'macro';
 /**
  * Expand a `(when ...)` expression.
  *

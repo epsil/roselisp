@@ -191,7 +191,14 @@
 (require (only-in "./javascript"
                   (js/new_ new_)
                   js/abs_
+                  js/and_
                   js/array?_
+                  js/bitwise-and_
+                  js/bitwise-not_
+                  js/bitwise-or_
+                  js/bitwise-shift-left_
+                  js/bitwise-shift-right_
+                  js/bitwise-xor_
                   js/delete_
                   js/dot_
                   js/eighth_
@@ -204,16 +211,28 @@
                   js/function-type?_
                   js/function?_
                   js/get_
+                  js/gt_
+                  js/gte_
                   js/in_
                   js/instance-of?_
+                  js/keys_
                   js/last_
                   js/length_
                   js/loosely-equal?_
+                  js/lt_
+                  js/lte_
+                  js/mod_
                   js/nan?_
                   js/new_
                   js/ninth_
+                  js/not_
                   js/null?_
+                  js/obj-append_
+                  js/obj?_
+                  js/obj_
+                  js/object-type?_
                   js/optional-chaining_
+                  js/or_
                   js/plus_
                   js/reduce-right_
                   js/reduce_
@@ -236,6 +255,7 @@
                   js/tenth_
                   js/third_
                   js/type-of_
+                  js/unsigned-bitwise-shift-right_
                   js/yield_))
 (require (only-in "./list"
                   append_
@@ -340,6 +360,7 @@
                   tenth_
                   third_))
 (require (only-in "./macros"
+                  and_
                   begin0_
                   case-eq_
                   case_
@@ -359,6 +380,7 @@
                   let-env_
                   multiple-value-bind_
                   new/apply_
+                  or_
                   rkt/new_
                   set_
                   thread-as_
@@ -371,11 +393,6 @@
                   while_))
 (require (only-in "./object"
                   field-names_
-                  js/keys_
-                  js/obj-append_
-                  js/obj-p_
-                  js/obj_
-                  js/object-type?_
                   object-ref_
                   object-set!_))
 (require (only-in "./parser"
@@ -549,170 +566,14 @@
       (oset! result key (oget default-options key))))
   result)
 
-;;; Compilation environment class.
-;;;
-;;; A compilation environment is a typed environment mapping
-;;; Lisp functions to compiled values, compiler procedures
-;;; or compiler macros.
-(define-class CompilationEnvironment (TypedEnvironment))
-
-;;; Compilation variable environment.
-;;;
-;;; An environment mapping various Lisp values to their
-;;; JavaScript equivalents.
-(define compilation-variables-env
-  (new CompilationEnvironment
-       `((,(string->symbol "#f") ,(new Literal #f) Any)
-         (,(string->symbol "#t") ,(new Literal #t) Any)
-         (,(string->symbol "#n") ,(new Literal #n) Any)
-         (,(string->symbol "#u") ,(new Identifier "undefined") Any)
-         (,(string->symbol "js-null") ,(new Literal #n) Any)
-         (,(string->symbol "js-undefined") ,(new Identifier "undefined") Any)
-         (,(string->symbol "js/arguments") ,(new Identifier "arguments") Any)
-         (,(string->symbol "js/null") ,(new Literal #n) Any)
-         (,(string->symbol "js/require") ,(new Identifier "require") Any)
-         (,(string->symbol "js/undefined") ,(new Identifier "undefined") Any)
-         (,(string->symbol "*cons-dot*") ,cons-dot-compiled_ Any)
-         (,(string->symbol "nil") ,(new ArrayExpression) Any)
-         (,(string->symbol "null") ,(new ArrayExpression) Any)
-         (,(string->symbol "t") ,(new Literal #t) Any)
-         (,(string->symbol "undefined") ,(new Identifier "undefined") Any))))
-
-;;; Compiler procedures mapping environment.
-(define compilation-compiler-mapping-env
-  (new CompilationEnvironment
-       `((,add_ ,compile-add (compiler-> Any * Any))
-         (,and_ ,compile-and (compiler-> Any * Any))
-         (,ann_ ,compile-ann (compiler-> Any * Any))
-         (,append_ ,compile-append (compiler-> Any * Any))
-         (,apply_ ,compile-apply (compiler-> Any * Any))
-         (,array-ref_ ,compile-array-ref (compiler-> Any * Any))
-         (,array-set_ ,compile-array-set (compiler-> Any * Any))
-         (,begin_ ,compile-begin (compiler-> Any * Any))
-         (,break_ ,compile-break (compiler-> Any * Any))
-         (,class_ ,compile-class (compiler-> Any * Any))
-         (,colon_ ,compile-colon (compiler-> Any * Any))
-         (,cond_ ,compile-cond (compiler-> Any * Any))
-         (,continue_ ,compile-continue (compiler-> Any * Any))
-         (,declare_ ,compile-declare (compiler-> Any * Any))
-         (,define-async_ ,compile-define-async (compiler-> Any * Any))
-         (,define-class_ ,compile-define-class (compiler-> Any * Any))
-         (,define-fields_ ,compile-define-fields (compiler-> Any * Any))
-         (,define-generator_ ,compile-define-generator (compiler-> Any * Any))
-         (,define-type_ ,compile-define-type (compiler-> Any * Any))
-         (,define-values_ ,compile-define-values (compiler-> Any * Any))
-         (,define_ ,compile-define (compiler-> Any * Any))
-         (,div_ ,compile-div (compiler-> Any * Any))
-         (,dot_ ,compile-send (compiler-> Any * Any))
-         (,funcall_ ,compile-funcall (compiler-> Any * Any))
-         (,gt_ ,compile-greater-than (compiler-> Any * Any))
-         (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
-         (,if_ ,compile-if (compiler-> Any * Any))
-         (,js/arrow_ ,compile-js/arrow (compiler-> Any * Any))
-         (,js/async_ ,compile-js/async (compiler-> Any * Any))
-         (,js/await_ ,compile-js/await (compiler-> Any * Any))
-         (,js/block_ ,compile-js/block (compiler-> Any * Any))
-         (,js/delete_ ,compile-js/delete (compiler-> Any * Any))
-         (,js/do-while_ ,compile-js/do-while (compiler-> Any * Any))
-         (,js/dot_ ,compile-js/dot (compiler-> Any * Any))
-         (,js/eval_ ,compile-js/eval (compiler-> Any * Any))
-         (,js/for-in_ ,compile-js/for-in (compiler-> Any * Any))
-         (,js/for-of_ ,compile-js/for-of (compiler-> Any * Any))
-         (,js/for_ ,compile-js/for (compiler-> Any * Any))
-         (,js/function_ ,compile-js/function (compiler-> Any * Any))
-         (,js/get_ ,compile-js/get (compiler-> Any * Any))
-         (,js/if_ ,compile-js/if (compiler-> Any * Any))
-         (,js/in_ ,compile-js/in (compiler-> Any * Any))
-         (,js/instance-of?_ ,compile-js/instance-of (compiler-> Any * Any))
-         (,js/loosely-equal?_ ,compile-js/loosely-equal (compiler-> Any * Any))
-         (,js/new_ ,compile-js/new (compiler-> Any * Any))
-         (,js/obj-append_ ,compile-js/obj-append (compiler-> Any * Any))
-         (,js/obj_ ,compile-js/obj (compiler-> Any * Any))
-         (,js/optional-chaining_ ,compile-js/optional-chaining (compiler-> Any * Any))
-         (,js/plus_ ,compile-add (compiler-> Any * Any))
-         (,js/return_ ,compile-return (compiler-> Any * Any))
-         (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
-         (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
-         (,js/tagged-template_ ,compile-js/tagged-template (compiler-> Any * Any))
-         (,js/ternary-operator_ ,compile-js/ternary-operator (compiler-> Any * Any))
-         (,js/try_ ,compile-js/try (compiler-> Any * Any))
-         (,js/type-of_ ,compile-js/type-of (compiler-> Any * Any))
-         (,js/while_ ,compile-js/while (compiler-> Any * Any))
-         (,js/yield_ ,compile-yield (compiler-> Any * Any))
-         (,js_ ,compile-js (compiler-> Any * Any))
-         (,lambda_ ,compile-lambda (compiler-> Any * Any))
-         (,let-fields_ ,compile-let-fields (compiler-> Any * Any))
-         (,let-star_ ,compile-let (compiler-> Any * Any))
-         (,let-values_ ,compile-let-values (compiler-> Any * Any))
-         (,list_ ,compile-list (compiler-> Any * Any))
-         (,lt_ ,compile-less-than (compiler-> Any * Any))
-         (,lte_ ,compile-less-than-or-equal (compiler-> Any * Any))
-         (,module_ ,compile-module (compiler-> Any * Any))
-         (,modulo_ ,compile-modulo (compiler-> Any * Any))
-         (,mul_ ,compile-mul (compiler-> Any * Any))
-         (,not_ ,compile-not (compiler-> Any * Any))
-         (,object-set!_ ,compile-object-set (compiler-> Any * Any))
-         (,or_ ,compile-or (compiler-> Any * Any))
-         (,provide_ ,compile-provide (compiler-> Any * Any))
-         (,push-left!_ ,compile-push-left (compiler-> Any * Any))
-         (,push-right!_ ,compile-push-right (compiler-> Any * Any))
-         (,quasiquote_ ,compile-quasiquote (compiler-> Any * Any))
-         (,quote_ ,compile-quote (compiler-> Any * Any))
-         (,require_ ,compile-require (compiler-> Any * Any))
-         (,return_ ,compile-return (compiler-> Any * Any))
-         (,send/apply_ ,compile-send/apply (compiler-> Any * Any))
-         (,send_ ,compile-send (compiler-> Any * Any))
-         (,set!_ ,compile-set (compiler-> Any * Any))
-         (,set-field_ ,compile-set-field (compiler-> Any * Any))
-         (,set-fields_ ,compile-set-fields (compiler-> Any * Any))
-         (,set-values_ ,compile-set-values (compiler-> Any * Any))
-         (,string-append_ ,compile-string-append (compiler-> Any * Any))
-         (,sub_ ,compile-sub (compiler-> Any * Any))
-         (,throw_ ,compile-throw (compiler-> Any * Any))
-         (,yield_ ,compile-yield (compiler-> Any * Any)))))
-
-;;; Compiler macros mapping environment.
-(define compilation-macro-mapping-env
-  (new CompilationEnvironment
-       `((,array-drop-right_ ,compile-array-drop-right-macro (macro-> Any * Any))
-         (,array-drop_ ,compile-array-drop-macro (macro-> Any * Any))
-         (,array-list-drop-right_ ,compile-array-list-drop-right-macro (macro-> Any * Any))
-         (,array-list-drop_ ,compile-array-list-drop-macro (macro-> Any * Any))
-         (,assert_ ,compile-assert-macro (macro-> Any * Any))
-         (,display_ ,compile-display-macro (macro-> Any * Any))
-         (,drop-right_ ,compile-drop-right-macro (macro-> Any * Any))
-         (,drop_ ,compile-drop-macro (macro-> Any * Any))
-         (,foldl_ ,compile-foldl-macro (macro-> Any * Any))
-         (,foldr_ ,compile-foldr-macro (macro-> Any * Any))
-         (,hash-clear_ ,compile-hash-clear-macro (macro-> Any * Any))
-         (,hash-ref_ ,compile-hash-ref-macro (macro-> Any * Any))
-         (,hash-remove!_ ,compile-hash-remove-macro (macro-> Any * Any))
-         (,hash-remove_ ,compile-hash-remove-macro (macro-> Any * Any))
-         (,js/regexp_ ,compile-js/regexp-macro (macro-> Any * Any))
-         (,make-hash_ ,compile-make-hash-macro (macro-> Any * Any))
-         (,map_ ,compile-map-macro (macro-> Any * Any))
-         (,member?_ ,compile-member-p-macro (macro-> Any * Any))
-         (,print ,compile-display-macro (macro-> Any * Any))
-         (,string-trim_ ,compile-string-trim-macro (macro-> Any * Any))
-         (,string?_ ,compile-stringp-macro (macro-> Any * Any))
-         (,substring_ ,compile-substring-macro (macro-> Any * Any))
-         (,values_ ,compile-values-macro (macro-> Any * Any)))))
-
-;;; Compilation mapping environment.
-;;;
-;;; An environment mapping Lisp functions to compiler procedures
-;;; or compiler macros.
-(define compilation-mapping-env
-  (new EnvironmentStack
-       compilation-macro-mapping-env
-       compilation-compiler-mapping-env))
-
 ;;; Inlined functions.
 ;;;
 ;;; A list of functions whose definition is so simple
 ;;; that it might be inlined directly into the call site.
 (define inlined-functions
   (list
+   js/and_
+   js/or_
    abs_
    add1_
    array-eighth_
@@ -786,6 +647,12 @@
    is-a?_
    js/abs_
    js/array?_
+   js/bitwise-and_
+   js/bitwise-not_
+   js/bitwise-or_
+   js/bitwise-shift-left_
+   js/bitwise-shift-right_
+   js/bitwise-xor_
    js/eighth_
    js/fifth_
    js/find-index_
@@ -800,7 +667,7 @@
    js/nan?_
    js/ninth_
    js/null?_
-   js/obj-p_
+   js/obj?_
    js/object-type?_
    js/reduce-right_
    js/reduce_
@@ -817,6 +684,7 @@
    js/take_
    js/tenth_
    js/third_
+   js/unsigned-bitwise-shift-right_
    linked-list-car_
    linked-list-cdr_
    linked-list-eighth_
@@ -887,10 +755,174 @@
    undefined?_
    zero?_))
 
+;;; Compilation environment class.
+;;;
+;;; A compilation environment is a typed environment mapping
+;;; Lisp functions to compiled values, compiler procedures
+;;; or compiler macros.
+(define-class CompilationEnvironment (TypedEnvironment))
+
+;;; Compilation variable environment.
+;;;
+;;; An environment mapping various Lisp values to their
+;;; JavaScript equivalents.
+(define compilation-variables-env
+  (new CompilationEnvironment
+       `((,(string->symbol "#f") ,(new Literal #f) Any)
+         (,(string->symbol "#t") ,(new Literal #t) Any)
+         (,(string->symbol "#n") ,(new Literal #n) Any)
+         (,(string->symbol "#u") ,(new Identifier "undefined") Any)
+         (,(string->symbol "js-null") ,(new Literal #n) Any)
+         (,(string->symbol "js-undefined") ,(new Identifier "undefined") Any)
+         (,(string->symbol "js/arguments") ,(new Identifier "arguments") Any)
+         (,(string->symbol "js/null") ,(new Literal #n) Any)
+         (,(string->symbol "js/require") ,(new Identifier "require") Any)
+         (,(string->symbol "js/undefined") ,(new Identifier "undefined") Any)
+         (,(string->symbol "*cons-dot*") ,cons-dot-compiled_ Any)
+         (,(string->symbol "nil") ,(new ArrayExpression) Any)
+         (,(string->symbol "null") ,(new ArrayExpression) Any)
+         (,(string->symbol "t") ,(new Literal #t) Any)
+         (,(string->symbol "undefined") ,(new Identifier "undefined") Any))))
+
+;;; Compiler procedures mapping environment.
+(define compilation-compiler-mapping-env
+  (new CompilationEnvironment
+       `((,add_ ,compile-add (compiler-> Any * Any))
+         (,ann_ ,compile-ann (compiler-> Any * Any))
+         (,append_ ,compile-append (compiler-> Any * Any))
+         (,apply_ ,compile-apply (compiler-> Any * Any))
+         (,array-ref_ ,compile-array-ref (compiler-> Any * Any))
+         (,array-set_ ,compile-array-set (compiler-> Any * Any))
+         (,begin_ ,compile-begin (compiler-> Any * Any))
+         (,break_ ,compile-break (compiler-> Any * Any))
+         (,class_ ,compile-class (compiler-> Any * Any))
+         (,colon_ ,compile-colon (compiler-> Any * Any))
+         (,cond_ ,compile-cond (compiler-> Any * Any))
+         (,continue_ ,compile-continue (compiler-> Any * Any))
+         (,declare_ ,compile-declare (compiler-> Any * Any))
+         (,define-async_ ,compile-define-async (compiler-> Any * Any))
+         (,define-class_ ,compile-define-class (compiler-> Any * Any))
+         (,define-fields_ ,compile-define-fields (compiler-> Any * Any))
+         (,define-generator_ ,compile-define-generator (compiler-> Any * Any))
+         (,define-type_ ,compile-define-type (compiler-> Any * Any))
+         (,define-values_ ,compile-define-values (compiler-> Any * Any))
+         (,define_ ,compile-define (compiler-> Any * Any))
+         (,div_ ,compile-div (compiler-> Any * Any))
+         (,dot_ ,compile-send (compiler-> Any * Any))
+         (,funcall_ ,compile-funcall (compiler-> Any * Any))
+         (,gt_ ,compile-greater-than (compiler-> Any * Any))
+         (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
+         (,if_ ,compile-if (compiler-> Any * Any))
+         (,js/arrow_ ,compile-js/arrow (compiler-> Any * Any))
+         (,js/async_ ,compile-js/async (compiler-> Any * Any))
+         (,js/await_ ,compile-js/await (compiler-> Any * Any))
+         (,js/block_ ,compile-js/block (compiler-> Any * Any))
+         (,js/delete_ ,compile-js/delete (compiler-> Any * Any))
+         (,js/do-while_ ,compile-js/do-while (compiler-> Any * Any))
+         (,js/dot_ ,compile-js/dot (compiler-> Any * Any))
+         (,js/eval_ ,compile-js/eval (compiler-> Any * Any))
+         (,js/for-in_ ,compile-js/for-in (compiler-> Any * Any))
+         (,js/for-of_ ,compile-js/for-of (compiler-> Any * Any))
+         (,js/for_ ,compile-js/for (compiler-> Any * Any))
+         (,js/function_ ,compile-js/function (compiler-> Any * Any))
+         (,js/get_ ,compile-js/get (compiler-> Any * Any))
+         (,js/gt_ ,compile-greater-than (compiler-> Any * Any))
+         (,js/gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
+         (,js/if_ ,compile-js/if (compiler-> Any * Any))
+         (,js/in_ ,compile-js/in (compiler-> Any * Any))
+         (,js/instance-of?_ ,compile-js/instance-of (compiler-> Any * Any))
+         (,js/loosely-equal?_ ,compile-js/loosely-equal (compiler-> Any * Any))
+         (,js/lt_ ,compile-less-than (compiler-> Any * Any))
+         (,js/lte_ ,compile-less-than-or-equal (compiler-> Any * Any))
+         (,js/mod_ ,compile-modulo (compiler-> Any * Any))
+         (,js/new_ ,compile-js/new (compiler-> Any * Any))
+         (,js/not_ ,compile-not (compiler-> Any * Any))
+         (,js/obj-append_ ,compile-js/obj-append (compiler-> Any * Any))
+         (,js/obj_ ,compile-js/obj (compiler-> Any * Any))
+         (,js/op_ ,compile-js/op (compiler-> Any * Any))
+         (,js/optional-chaining_ ,compile-js/optional-chaining (compiler-> Any * Any))
+         (,js/plus_ ,compile-add (compiler-> Any * Any))
+         (,js/return_ ,compile-return (compiler-> Any * Any))
+         (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
+         (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
+         (,js/tagged-template_ ,compile-js/tagged-template (compiler-> Any * Any))
+         (,js/ternary-operator_ ,compile-js/ternary-operator (compiler-> Any * Any))
+         (,js/try_ ,compile-js/try (compiler-> Any * Any))
+         (,js/type-of_ ,compile-js/type-of (compiler-> Any * Any))
+         (,js/while_ ,compile-js/while (compiler-> Any * Any))
+         (,js/yield_ ,compile-yield (compiler-> Any * Any))
+         (,js_ ,compile-js (compiler-> Any * Any))
+         (,lambda_ ,compile-lambda (compiler-> Any * Any))
+         (,let-fields_ ,compile-let-fields (compiler-> Any * Any))
+         (,let-star_ ,compile-let (compiler-> Any * Any))
+         (,let-values_ ,compile-let-values (compiler-> Any * Any))
+         (,list_ ,compile-list (compiler-> Any * Any))
+         (,lt_ ,compile-less-than (compiler-> Any * Any))
+         (,lte_ ,compile-less-than-or-equal (compiler-> Any * Any))
+         (,module_ ,compile-module (compiler-> Any * Any))
+         (,modulo_ ,compile-modulo (compiler-> Any * Any))
+         (,mul_ ,compile-mul (compiler-> Any * Any))
+         (,not_ ,compile-not (compiler-> Any * Any))
+         (,object-set!_ ,compile-object-set (compiler-> Any * Any))
+         (,provide_ ,compile-provide (compiler-> Any * Any))
+         (,push-left!_ ,compile-push-left (compiler-> Any * Any))
+         (,push-right!_ ,compile-push-right (compiler-> Any * Any))
+         (,quasiquote_ ,compile-quasiquote (compiler-> Any * Any))
+         (,quote_ ,compile-quote (compiler-> Any * Any))
+         (,require_ ,compile-require (compiler-> Any * Any))
+         (,return_ ,compile-return (compiler-> Any * Any))
+         (,send/apply_ ,compile-send/apply (compiler-> Any * Any))
+         (,send_ ,compile-send (compiler-> Any * Any))
+         (,set!_ ,compile-set (compiler-> Any * Any))
+         (,set-field_ ,compile-set-field (compiler-> Any * Any))
+         (,set-fields_ ,compile-set-fields (compiler-> Any * Any))
+         (,set-values_ ,compile-set-values (compiler-> Any * Any))
+         (,string-append_ ,compile-string-append (compiler-> Any * Any))
+         (,sub_ ,compile-sub (compiler-> Any * Any))
+         (,throw_ ,compile-throw (compiler-> Any * Any))
+         (,yield_ ,compile-yield (compiler-> Any * Any)))))
+
+;;; Compiler macros mapping environment.
+(define compilation-macro-mapping-env
+  (new CompilationEnvironment
+       `((,array-drop-right_ ,compile-array-drop-right-macro (macro-> Any * Any))
+         (,array-drop_ ,compile-array-drop-macro (macro-> Any * Any))
+         (,array-list-drop-right_ ,compile-array-list-drop-right-macro (macro-> Any * Any))
+         (,array-list-drop_ ,compile-array-list-drop-macro (macro-> Any * Any))
+         (,assert_ ,compile-assert-macro (macro-> Any * Any))
+         (,display_ ,compile-display-macro (macro-> Any * Any))
+         (,drop-right_ ,compile-drop-right-macro (macro-> Any * Any))
+         (,drop_ ,compile-drop-macro (macro-> Any * Any))
+         (,foldl_ ,compile-foldl-macro (macro-> Any * Any))
+         (,foldr_ ,compile-foldr-macro (macro-> Any * Any))
+         (,hash-clear_ ,compile-hash-clear-macro (macro-> Any * Any))
+         (,hash-ref_ ,compile-hash-ref-macro (macro-> Any * Any))
+         (,hash-remove!_ ,compile-hash-remove-macro (macro-> Any * Any))
+         (,hash-remove_ ,compile-hash-remove-macro (macro-> Any * Any))
+         (,js/regexp_ ,compile-js/regexp-macro (macro-> Any * Any))
+         (,make-hash_ ,compile-make-hash-macro (macro-> Any * Any))
+         (,map_ ,compile-map-macro (macro-> Any * Any))
+         (,member?_ ,compile-member-p-macro (macro-> Any * Any))
+         (,print ,compile-display-macro (macro-> Any * Any))
+         (,string-trim_ ,compile-string-trim-macro (macro-> Any * Any))
+         (,string?_ ,compile-stringp-macro (macro-> Any * Any))
+         (,substring_ ,compile-substring-macro (macro-> Any * Any))
+         (,values_ ,compile-values-macro (macro-> Any * Any)))))
+
+;;; Compilation mapping environment.
+;;;
+;;; An environment mapping Lisp functions to compiler procedures
+;;; or compiler macros.
+(define compilation-mapping-env
+  (new EnvironmentStack
+       compilation-macro-mapping-env
+       compilation-compiler-mapping-env))
+
 ;;; Compilation map.
 ;;;
 ;;; Map from languages to compilation mapping environments.
 (define compilation-map
+  ;; TODO: Remove.
   (make-hash
    `(("JavaScript" . ,compilation-mapping-env)
      ("TypeScript" . ,compilation-mapping-env))))
@@ -2039,14 +2071,6 @@
         (define->define-class _)
         (rose->sexp _)))))
 
-;;; Compile an `(and ...)` expression.
-(define (compile-and node env (options (js/obj)))
-  (compile-logical-expression
-   node env
-   options
-   (js/obj "identity" #t
-           "operator" "&&")))
-
 ;;; Compile an `(ann ...)` expression.
 (define (compile-ann node env (options (js/obj)))
   (define language
@@ -3088,16 +3112,17 @@
               options))
            operands))
     (make-expression-or-statement
-     (foldl (lambda (x acc)
+     ;; TODO: Option for toggling right fold?
+     (foldl (lambda (right left)
               (if logical
                   (new LogicalExpression
                        operator
-                       acc
-                       x)
+                       left
+                       right)
                   (new BinaryExpression
                        operator
-                       acc
-                       x)))
+                       left
+                       right)))
             (first compiled-operands)
             (rest compiled-operands))
      options))))
@@ -3115,6 +3140,53 @@
    (js/obj-append
     settings
     (js/obj "logical" #t))))
+
+;;; Compile an unary expression.
+;;; Returns an `UnaryExpression`.
+(define (compile-unary-expression
+         node
+         env
+         (options (js/obj))
+         (settings (js/obj)))
+  (define op
+    (oget settings "operator"))
+  (define arg
+    (send node get 1))
+  (define arg-compiled
+    (compile-expression arg env options))
+  (make-expression-or-statement
+   (new UnaryExpression
+        op
+        #t
+        arg-compiled)
+   options))
+
+;;; Compile a `(js/op ...)` expression.
+(define (compile-js/op node env (options (js/obj)))
+  (define op
+    (~> (send node get 1)
+        (rose->sexp _)))
+  (when (symbol? op)
+    (set! op (symbol->string op)))
+  (define logical
+    (memq? op '("&&" "||")))
+  (define node1
+    (sexp->rose
+     (send node drop 1)
+     node))
+  (cond
+   ((= (send node size) 3)
+    (compile-unary-expression
+     node1 env options
+     (js/obj "operator" op)))
+   (logical
+    (compile-logical-expression
+     node1 env options
+     (js/obj "operator" op)))
+   (else
+    (compile-binary-expression
+     node1 env options
+     (js/obj "operator" op)))))
 
 ;;; Compile a `(lambda ...)` expression.
 (define (compile-lambda node env (options (js/obj)))
@@ -4525,14 +4597,6 @@
     result)
    (else
     global-environment-exp)))
-
-;;; Compile an `(or ...)` expression.
-(define (compile-or node env (options (js/obj)))
-  (compile-logical-expression
-   node env
-   options
-   (js/obj "identity" #f
-           "operator" "||")))
 
 ;;; Compile a `(provide ...)` expression.
 (define (compile-provide node env (options (js/obj)))
@@ -6365,6 +6429,72 @@
    env
    (current-compilation-options)))
 
+;;; Expand a `(js/op ...)` expression.
+;;;
+;;; Creates a JavaScript operator expression.
+(define-macro (js/op_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(js/op/apply ...)` expression.
+;;; This macro generalizes a binary operator
+;;; to multiple operands, using a left fold.
+(define-macro (js/op/apply_ op args . options)
+  (define identity
+    (plist-get_ options ':identity))
+  (cond
+   ;; If `args` is a variable, then fold over it
+   ;; at runtime.
+   ((symbol? args)
+    (if (undefined? identity)
+        `(foldl (lambda (right left)
+                  (js/op ,op left right))
+                (js/first ,args)
+                (js/rest ,args))
+        `(foldl (lambda (right left)
+                  (js/op ,op left right))
+                ,identity
+                ,args)))
+   ;; If `args` is a list expression, however,
+   ;; then it is actually possible to perform
+   ;; the fold at compile time.
+   ((tagged-list? args 'list)
+    (define args1
+      (rest args))
+    (cond
+     ((= (js/length args1) 0)
+      identity)
+     ((= (js/length args1) 1)
+      ;; `(js/op ,op ,identity ,(js/first args1))
+      (js/first args1))
+     (else
+      (foldl (lambda (right left)
+               `(js/op ,op ,left ,right))
+             (first args1)
+             (rest args1)))))
+   ;; A quoted list is just another way of
+   ;; writing a list.
+   ((tagged-list? args 'quote)
+    `(js/op/apply ,op
+                  (list
+                   ,(map (lambda (x)
+                           `(quote ,x))
+                         (js/second args))))
+    (define args1
+      (rest args))
+    (foldl (lambda (right left)
+             `(js/op ,op ,left ,right))
+           (first args1)
+           (rest args1)))
+   ;; A function call can be stored in a variable.
+   (else
+    (define args-var
+      (gensym "_args"))
+    `(let ((,args-var ,args))
+       (js/op/apply ,op ,args-var)))))
+
 ;;; Expand a `(js/if ...)` expression.
 (define-macro (js/if_ &whole exp &environment env)
   (compile-sexp
@@ -6401,20 +6531,6 @@
 ;;; [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
 ;;; [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
 (define-macro (cond_ &whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
-
-;;; Expand an `(and ...)` expression.
-(define-macro (and_ &whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
-
-;;; Expand an `(or ...)` expression.
-(define-macro (or_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -7982,6 +8098,19 @@
          (aset ,array-set_ (-> Any * Any))
          (aset! ,array-set_ (-> Any * Any))
          (assert ,assert_ (-> Any * Any))
+         (bit-and ,js/bitwise-and_ (-> Any * Any))
+         (bit-not ,js/bitwise-not_ (-> Any * Any))
+         (bit-or ,js/bitwise-or_ (-> Any * Any))
+         (bit-shift-left ,js/bitwise-shift-left_ (-> Any * Any))
+         (bit-shift-right ,js/bitwise-shift-right_ (-> Any * Any))
+         (bit-xor ,js/bitwise-xor_ (-> Any * Any))
+         (bitwise-and ,js/bitwise-and_ (-> Any * Any))
+         (bitwise-negation ,js/bitwise-not_ (-> Any * Any))
+         (bitwise-not ,js/bitwise-not_ (-> Any * Any))
+         (bitwise-or ,js/bitwise-or_ (-> Any * Any))
+         (bitwise-shift-left ,js/bitwise-shift-left_ (-> Any * Any))
+         (bitwise-shift-right ,js/bitwise-shift-right_ (-> Any * Any))
+         (bitwise-xor ,js/bitwise-xor_ (-> Any * Any))
          (boolean? ,boolean?_ (-> Any * Any))
          (booleanp ,boolean?_ (-> Any * Any))
          (build-list ,build-list_ (-> Any * Any))
@@ -8098,14 +8227,32 @@
          (js-obj ,js/obj_ (-> Any * Any))
          (js-obj-append ,js/obj-append_ (-> Any * Any))
          (js-obj-keys ,js/keys_ (-> Any * Any))
-         (js-obj? ,js/obj-p_ (-> Any * Any))
+         (js-obj? ,js/obj?_ (-> Any * Any))
+         (js/! ,js/not_ (-> Any * Any))
+         (js/% ,js/mod_ (-> Any * Any))
+         (js/& ,js/bitwise-and_ (-> Any * Any))
+         (js/&& ,js/and_ (-> Any * Any))
+         (js/* ,mul_ (-> Any * Any))
+         (js/+ ,add_ (-> Any * Any))
          (js/+ ,js/plus_ (-> Any * Any))
+         (js/- ,sub_ (-> Any * Any))
          (js/. ,js/dot_ (-> Any * Any))
+         (js// ,div_ (-> Any * Any))
+         (js/< ,js/lt_ (-> Any * Any))
+         (js/<< ,js/bitwise-shift-left_ (-> Any * Any))
+         (js/<= ,js/lte_ (-> Any * Any))
          (js/== ,js/loosely-equal?_ (-> Any * Any))
          (js/=== ,js/strictly-equal?_ (-> Any * Any))
          (js/===? ,js/strictly-equal?_ (-> Any * Any))
          (js/==? ,js/loosely-equal?_ (-> Any * Any))
+         (js/> ,js/gt_ (-> Any * Any))
+         (js/>= ,js/gte_ (-> Any * Any))
+         (js/>> ,js/bitwise-shift-right_ (-> Any * Any))
+         (js/>>> ,js/unsigned-bitwise-shift-right_ (-> Any * Any))
          (js/?. ,js/optional-chaining_ (-> Any * Any))
+         (js/\| ,js/bitwise-or_ (-> Any * Any))
+         (js/\|\| ,js/or_ (-> Any * Any))
+         (js/^ ,js/bitwise-xor_ (-> Any * Any))
          (js/abs ,js/abs_ (-> Any * Any))
          (js/append ,js/plus_ (-> Any * Any))
          (js/array? ,js/array?_ (-> Any * Any))
@@ -8131,18 +8278,19 @@
          (js/is-strictly-equal? ,js/strictly-equal?_ (-> Any * Any))
          (js/js-obj ,js/obj_ (-> Any * Any))
          (js/js-obj-append ,js/obj-append_ (-> Any * Any))
-         (js/js-obj? ,js/obj-p_ (-> Any * Any))
+         (js/js-obj? ,js/obj?_ (-> Any * Any))
          (js/keys ,js/keys_ (-> Any * Any))
          (js/last ,js/last_ (-> Any * Any))
          (js/length ,js/length_ (-> Any * Any))
          (js/nan? ,js/nan?_ (-> Any * Any))
          (js/new ,js/new_ (-> Any * Any))
          (js/ninth ,js/ninth_ (-> Any * Any))
+         (js/nth ,array-list-nth_ (-> Any * Any))
          (js/null? ,js/null?_ (-> Any * Any))
          (js/obj ,js/obj_ (-> Any * Any))
          (js/obj-append ,js/obj-append_ (-> Any * Any))
          (js/obj-keys ,js/keys_ (-> Any * Any))
-         (js/obj? ,js/obj-p_ (-> Any * Any))
+         (js/obj? ,js/obj?_ (-> Any * Any))
          (js/object ,js/obj_ (-> Any * Any))
          (js/object-type? ,js/object-type?_ (-> Any * Any))
          (js/object? ,js/object-type?_ (-> Any * Any))
@@ -8170,6 +8318,7 @@
          (js/type-of ,js/type-of_ (-> Any * Any))
          (js/typeof ,js/type-of_ (-> Any * Any))
          (js/yield ,yield_ (-> Any * Any))
+         (js/~ ,js/bitwise-not_ (-> Any * Any))
          (keyword? ,keyword?_ (-> Any * Any))
          (keywordp ,keyword?_ (-> Any * Any))
          (last ,last_ (-> Any * Any))
@@ -8249,8 +8398,8 @@
          (number->string ,number->string_ (-> Any * Any))
          (number? ,number?_ (-> Any * Any))
          (numberp ,number?_ (-> Any * Any))
-         (object? ,js/obj-p_ (-> Any * Any))
-         (objectp ,js/obj-p_ (-> Any * Any))
+         (object? ,js/obj?_ (-> Any * Any))
+         (objectp ,js/obj?_ (-> Any * Any))
          (odd? ,odd?_ (-> Any * Any))
          (oget ,object-ref_ (-> Any * Any))
          (one? ,one?_ (-> Any * Any))
@@ -8344,6 +8493,8 @@
          (typeof ,type-of_ (-> Any * Any))
          (undefined? ,undefined?_ (-> Any * Any))
          (union ,union_ (-> Any * Any))
+         (unsigned-bit-shift-right ,js/unsigned-bitwise-shift-right_ (-> Any * Any))
+         (unsigned-bitwise-shift-right ,js/unsigned-bitwise-shift-right_ (-> Any * Any))
          (values ,values_ (-> Any * Any))
          (vector ,list_ (-> Any * Any))
          (vector-ref ,nth_ (-> Any * Any))
@@ -8361,11 +8512,11 @@
          (->> ,thread-last_ (macro-> Any * Any))
          (~> ,thread-first_ (macro-> Any * Any))
          (~>> ,thread-last_ (macro-> Any * Any))
-         (as-> ,thread-as_ (macro-> Any * Any))
-         (as~> ,thread-as_ (macro-> Any * Any))
          (and ,and_ (macro-> Any * Any))
          (ann ,ann_ (macro-> Any * Any))
+         (as-> ,thread-as_ (macro-> Any * Any))
          (async ,js/async_ (macro-> Any * Any))
+         (as~> ,thread-as_ (macro-> Any * Any))
          (await ,js/await_ (macro-> Any * Any))
          (begin ,begin_ (macro-> Any * Any))
          (begin0 ,begin0_ (macro-> Any * Any))
@@ -8415,9 +8566,13 @@
          (js/for-of ,js/for-of_ (macro-> Any * Any))
          (js/function ,js/function_ (macro-> Any * Any))
          (js/if ,js/if_ (macro-> Any * Any))
+         (js/op ,js/op_ (macro-> Any * Any))
+         (js/op/apply ,js/op/apply_ (macro-> Any * Any))
+         (js/operator ,js/op_ (macro-> Any * Any))
          (js/switch ,js/switch_ (macro-> Any * Any))
          (js/try ,js/try_ (macro-> Any * Any))
          (js/while ,js/while_ (macro-> Any * Any))
+         (λ ,lambda_ (macro-> Any * Any))
          (lambda ,lambda_ (macro-> Any * Any))
          (let ,let-star_ (macro-> Any * Any))
          (let* ,let-star_ (macro-> Any * Any))
@@ -8454,7 +8609,6 @@
          (unwind-protect ,unwind-protect_ (macro-> Any * Any))
          (when ,when_ (macro-> Any * Any))
          (while ,while_ (macro-> Any * Any))
-         (λ ,lambda_ (macro-> Any * Any))
          (yield ,yield_ (macro-> Any * Any)))))
 
 ;;; Evaluation environment.

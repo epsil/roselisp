@@ -814,6 +814,26 @@
  > (equal? '() '())
  #t
 
+ ;; `not`
+ > (describe "not")
+ _
+ > (not #f)
+ #t
+ > (not #t)
+ #f
+ > (compile '(not x))
+ "!x;"
+
+ ;; `js/!`
+ > (describe "js/!")
+ _
+ > (js/! #f)
+ #t
+ > (js/! #t)
+ #f
+ > (compile '(js/! x))
+ "!x;"
+
  ;; `and`
  > (describe "and")
  _
@@ -831,6 +851,30 @@
  #f
  > (compile '(and #t #t))
  "true && true;"
+
+ ;; `js/&&`
+ > (describe "js/&&")
+ _
+ > (js/&&)
+ #t
+ > (js/&& #t)
+ #t
+ > (js/&& #t #t)
+ #t
+ > (js/&& #t #f)
+ #f
+ > (funcall js/&&)
+ #t
+ > (funcall js/&& #t)
+ #t
+ > (funcall js/&& #t #t)
+ #t
+ > (funcall js/&& #t #f)
+ #f
+ > (compile '(js/&& x y))
+ "x && y;"
+ > (compile '(js/&& x y z))
+ "x && y && z;"
 
  ;; `or`
  > (describe "or")
@@ -853,6 +897,126 @@
  2
  > (compile '(or #t #t))
  "true || true;"
+
+ ;; `js/\|\|`
+ > (describe "js/\|\|")
+ _
+ > (js/\|\|)
+ #f
+ > (js/\|\| #t)
+ #t
+ > (js/\|\| #t #t)
+ #t
+ > (js/\|\| #t #f)
+ #t
+ > (funcall js/\|\|)
+ #f
+ > (funcall js/\|\| #t)
+ #t
+ > (funcall js/\|\| #t #t)
+ #t
+ > (funcall js/\|\| #t #f)
+ #t
+ > (compile '(js/\|\| x y))
+ "x || y;"
+ > (compile '(js/\|\| x y z))
+ "x || y || z;"
+
+ ;; `bitwise-and`
+ > (describe "bitwise-and")
+ _
+ > (compile '(bitwise-and x y))
+ "x & y;"
+ > (compile '(bit-and x y))
+ "x & y;"
+ > (compile '(js/& x y))
+ "x & y;"
+ > (compile '(js/& x y z))
+ "x & y & z;"
+
+ ;; `bitwise-or`
+ > (describe "bitwise-or")
+ _
+ > (compile '(bitwise-or x y))
+ "x | y;"
+ > (compile '(bit-or x y))
+ "x | y;"
+ > (compile '(js/\| x y))
+ "x | y;"
+ > (compile '(js/\| x y z))
+ "x | y | z;"
+
+ ;; `bitwise-xor`
+ > (describe "bitwise-xor")
+ _
+ > (compile '(bitwise-xor x y))
+ "x ^ y;"
+ > (compile '(bit-xor x y))
+ "x ^ y;"
+ > (compile '(js/^ x y))
+ "x ^ y;"
+
+ ;; `bitwise-not`
+ > (describe "bitwise-not")
+ _
+ > (compile '(bitwise-negation x))
+ "~x;"
+ > (compile '(bitwise-not x))
+ "~x;"
+ > (compile '(bit-not x))
+ "~x;"
+ > (compile '(js/~ x))
+ "~x;"
+
+ ;; `bitwise-shift-left`
+ > (describe "bitwise-shift-left")
+ _
+ > (compile '(bitwise-shift-left x y))
+ "x << y;"
+ > (compile '(bit-shift-left x y))
+ "x << y;"
+ > (compile '(js/<< x y))
+ "x << y;"
+
+ ;; `bitwise-shift-right`
+ > (describe "bitwise-shift-right")
+ _
+ > (compile '(bitwise-shift-right x y))
+ "x >> y;"
+ > (compile '(bit-shift-right x y))
+ "x >> y;"
+ > (compile '(js/>> x y))
+ "x >> y;"
+
+ ;; `unsigned-bitwise-shift-right`
+ > (describe "unsigned-bitwise-shift-right")
+ _
+ > (compile '(unsigned-bitwise-shift-right x y))
+ "x >>> y;"
+ > (compile '(unsigned-bit-shift-right x y))
+ "x >>> y;"
+ > (compile '(js/>>> x y))
+ "x >>> y;"
+
+ ;; `js/op`
+ > (describe "js/op")
+ _
+ > (js/op ! #t)
+ #f
+ > (js/op && #t #f)
+ #f
+ > (js/op \|\| #t #f)
+ #t
+ > (compile '(js/op ! x))
+ "!x;"
+ > (compile '(js/op ~ x))
+ "~x;"
+ > (compile '(js/op & x y))
+ "x & y;"
+ > (compile '(js/op && x y))
+ "x && y;"
+ > (compile '(js/op \|\| x y))
+ "x || y;"
 
  ;; `while`
  > (describe "while")
@@ -1838,6 +2002,33 @@ let z = x + y + w + z;"
  > (compile '(+ 1 1 1))
  "1 + 1 + 1;"
 
+ ;; `js/+`
+ > (describe "js/+")
+ _
+ > (js/+)
+ 0
+ > (js/+ 1)
+ 1
+ > (js/+ 1 2)
+ 3
+ > (js/+ 2 2)
+ 4
+ > (js/+ 1 2 3)
+ 6
+ > (js/+ 1 2 4)
+ 7
+ > (js/+ (js/+ 1 1) (js/+ 1 1))
+ 4
+ > (let ((x 2))
+     (js/+ x x))
+ 4
+ > (js/+ 1 "")
+ "1"
+ > (compile '(js/+ 1 1))
+ "1 + 1;"
+ > (compile '(js/+ 1 1 1))
+ "1 + 1 + 1;"
+
  ;; `-`
  > (describe "-")
  _
@@ -1858,6 +2049,26 @@ let z = x + y + w + z;"
  > (compile '(- 1 1 1))
  "1 - 1 - 1;"
 
+ ;; `js/-`
+ > (describe "js/-")
+ _
+ > (js/-)
+ 0
+ > (js/- 1)
+ -1
+ > (js/- 1 2)
+ -1
+ > (js/- 1 2 3)
+ -4
+ > (js/- 1 2 4)
+ -5
+ > (compile '(js/- 1))
+ "-1;"
+ > (compile '(js/- 1 1))
+ "1 - 1;"
+ > (compile '(js/- 1 1 1))
+ "1 - 1 - 1;"
+
  ;; `*`
  > (describe "*")
  _
@@ -1874,6 +2085,24 @@ let z = x + y + w + z;"
  > (compile '(* 1 1))
  "1 * 1;"
  > (compile '(* 1 1 1))
+ "1 * 1 * 1;"
+
+ ;; `js/*`
+ > (describe "js/*")
+ _
+ > (js/*)
+ 1
+ > (js/* 1)
+ 1
+ > (js/* 1 2)
+ 2
+ > (js/* 1 2 3)
+ 6
+ > (js/* 1 2 4)
+ 8
+ > (compile '(js/* 1 1))
+ "1 * 1;"
+ > (compile '(js/* 1 1 1))
  "1 * 1 * 1;"
 
  ;; `/`
@@ -1894,6 +2123,24 @@ let z = x + y + w + z;"
  > (compile '(/ 1 2 4))
  "1 / 2 / 4;"
 
+ ;; `js//`
+ > (describe "js//")
+ _
+ > (js//)
+ #u
+ > (js// 1)
+ 1
+ > (js// 1 2)
+ 0.5
+ > (js// 1 2 3)
+ (js// 1 2 3)
+ > (/ 1 2 4)
+ 0.125
+ > (compile '(js// 1 2))
+ "1 / 2;"
+ > (compile '(js// 1 2 4))
+ "1 / 2 / 4;"
+
  ;; `<`
  > (describe "<")
  _
@@ -1901,12 +2148,120 @@ let z = x + y + w + z;"
  #t
  > (< 1 2)
  #t
+ > (< 2 1)
+ #f
  > (< 1 2 3)
  #t
- > (< 1 2 0)
+ > (< 2 1 3)
  #f
- > (compile '(< 1 2))
- "1 < 2;"
+ > (< 1 3 2)
+ #f
+ > (funcall < 1 2)
+ #t
+ > (funcall < 2 1)
+ #f
+ > (funcall < 1 2 3)
+ #t
+ > (funcall < 2 1 3)
+ #f
+ > (funcall < 1 3 2)
+ #f
+ > (compile '(< x y))
+ "x < y;"
+ > (compile '(< x y z))
+ "(x < y) && (y < z);"
+
+ ;; `js/<`
+ > (describe "js/<")
+ _
+ > (js/< 1 2)
+ #t
+ > (js/< 2 1)
+ #f
+ > (js/< 1 2 3)
+ #t
+ > (js/< 2 1 3)
+ #f
+ > (js/< 1 3 2)
+ #f
+ > (funcall js/< 1 2)
+ #t
+ > (funcall js/< 2 1)
+ #f
+ > (funcall js/< 1 2 3)
+ #t
+ > (funcall js/< 2 1 3)
+ #f
+ > (funcall js/< 1 3 2)
+ #f
+ > (compile '(js/< x y))
+ "x < y;"
+ > (compile '(js/< x y z))
+ "(x < y) && (y < z);"
+
+ ;; `<=`
+ > (describe "<=")
+ _
+ > (<= 1 2)
+ #t
+ > (<= 2 1)
+ #f
+ > (<= 1 2 3)
+ #t
+ > (<= 1 1 2)
+ #t
+ > (<= 2 1 3)
+ #f
+ > (<= 1 3 2)
+ #f
+ > (funcall <= 1 2)
+ #t
+ > (funcall <= 2 1)
+ #f
+ > (funcall <= 1 2 3)
+ #t
+ > (funcall <= 1 1 2)
+ #t
+ > (funcall <= 2 1 3)
+ #f
+ > (funcall <= 1 3 2)
+ #f
+ > (compile '(<= x y))
+ "x <= y;"
+ > (compile '(<= x y z))
+ "(x <= y) && (y <= z);"
+
+ ;; `js/<=`
+ > (describe "js/<=")
+ _
+ > (js/<= 1 2)
+ #t
+ > (js/<= 2 1)
+ #f
+ > (js/<= 1 2 3)
+ #t
+ > (js/<= 1 1 2)
+ #t
+ > (js/<= 2 1 3)
+ #f
+ > (js/<= 1 3 2)
+ #f
+ > (funcall js/<= 1 2)
+ #t
+ > (funcall js/<= 2 1)
+ #f
+ > (funcall js/<= 1 2 3)
+ #t
+ > (funcall js/<= 1 1 2)
+ #t
+ > (funcall js/<= 2 1 3)
+ #f
+ > (funcall js/<= 1 3 2)
+ #f
+ > (compile '(js/<= x y))
+ "x <= y;"
+ > (compile '(js/<= x y z))
+ "(x <= y) && (y <= z);"
 
  ;; `>`
  > (describe ">")
@@ -1915,12 +2270,149 @@ let z = x + y + w + z;"
  #t
  > (> 2 1)
  #t
+ > (> 1 2)
+ #f
  > (> 3 2 1)
  #t
- > (> 0 2 1)
+ > (> 1 2 3)
  #f
- > (compile '(> 2 1))
- "2 > 1;"
+ > (> 2 1 3)
+ #f
+ > (> 1 3 2)
+ #f
+ > (funcall > 2 1)
+ #t
+ > (funcall > 1 2)
+ #f
+ > (funcall > 3 2 1)
+ #t
+ > (funcall > 1 2 3)
+ #f
+ > (funcall > 2 1 3)
+ #f
+ > (funcall > 1 3 2)
+ #f
+ > (compile '(> x y))
+ "x > y;"
+ > (compile '(> x y z))
+ "(x > y) && (y > z);"
+
+ ;; `js/>`
+ > (describe "js/>")
+ _
+ > (js/> 2 1)
+ #t
+ > (js/> 1 2)
+ #f
+ > (js/> 3 2 1)
+ #t
+ > (js/> 1 2 3)
+ #f
+ > (js/> 2 1 3)
+ #f
+ > (js/> 1 3 2)
+ #f
+ > (funcall js/> 2 1)
+ #t
+ > (funcall js/> 1 2)
+ #f
+ > (funcall js/> 3 2 1)
+ #t
+ > (funcall js/> 1 2 3)
+ #f
+ > (funcall js/> 2 1 3)
+ #f
+ > (funcall js/> 1 3 2)
+ #f
+ > (compile '(js/> x y))
+ "x > y;"
+ > (compile '(js/> x y z))
+ "(x > y) && (y > z);"
+
+ ;; `>=`
+ > (describe ">=")
+ _
+ > (>= 1)
+ #t
+ > (>= 2 1)
+ #t
+ > (>= 2 2)
+ #t
+ > (>= 1 2)
+ #f
+ > (>= 3 2 1)
+ #t
+ > (>= 3 2 2)
+ #t
+ > (>= 1 2 3)
+ #f
+ > (>= 2 1 3)
+ #f
+ > (>= 1 3 2)
+ #f
+ > (funcall >= 2 1)
+ #t
+ > (funcall >= 2 2)
+ #t
+ > (funcall >= 1 2)
+ #f
+ > (funcall >= 3 2 1)
+ #t
+ > (funcall >= 3 2 2)
+ #t
+ > (funcall >= 1 2 3)
+ #f
+ > (funcall >= 2 1 3)
+ #f
+ > (funcall >= 1 3 2)
+ #f
+ > (compile '(>= x y))
+ "x >= y;"
+ > (compile '(>= x y z))
+ "(x >= y) && (y >= z);"
+
+ ;; `js/>=`
+ > (describe "js/>=")
+ _
+ > (js/>= 2 1)
+ #t
+ > (js/>= 2 2)
+ #t
+ > (js/>= 1 2)
+ #f
+ > (js/>= 3 2 1)
+ #t
+ > (js/>= 3 2 2)
+ #t
+ > (js/>= 1 2 3)
+ #f
+ > (js/>= 2 1 3)
+ #f
+ > (js/>= 1 3 2)
+ #f
+ > (funcall js/>= 2 1)
+ #t
+ > (funcall js/>= 2 2)
+ #t
+ > (funcall js/>= 1 2)
+ #f
+ > (funcall js/>= 3 2 1)
+ #t
+ > (funcall js/>= 3 2 2)
+ #t
+ > (funcall js/>= 1 2 3)
+ #f
+ > (funcall js/>= 2 1 3)
+ #f
+ > (funcall js/>= 1 3 2)
+ #f
+ > (compile '(js/>= x y))
+ "x >= y;"
+ > (compile '(js/>= x y z))
+ "(x >= y) && (y >= z);"
+
+ > (compile '(js/% x y))
+ "x % y;"
 
  ;; `abs`
  > (describe "abs")

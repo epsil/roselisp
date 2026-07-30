@@ -177,6 +177,38 @@ declare namespace rktNew_ {
     var ftype: string;
 }
 /**
+ * Expand an `(and ...)` expression.
+ *
+ * Similar to [`and` in Racket][rkt:and], [`and` in Guile][guile:and],
+ * [`and` in Common Lisp][cl:and] and [`and` in Emacs Lisp][el:and].
+ *
+ * [rkt:and]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._and%29%29
+ * [guile:and]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-and
+ * [cl:and]: http://clhs.lisp.se/Body/m_and.htm
+ * [el:and]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-and
+ */
+declare function and_(exp: any, env: any): any;
+declare namespace and_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Expand an `(or ...)` expression.
+ *
+ * Similar to [`or` in Racket][rkt:or], [`or` in Guile][guile:or],
+ * [`or` in Common Lisp][cl:or] and [`or` in Emacs Lisp][el:or].
+ *
+ * [rkt:or]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._or%29%29
+ * [guile:or]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-or
+ * [cl:or]: http://clhs.lisp.se/Body/m_or.htm
+ * [el:or]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-or
+ */
+declare function or_(exp: any, env: any): any;
+declare namespace or_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var ftype: string;
+}
+/**
  * Expand a `(when ...)` expression.
  *
  * Similar to [`when` in Racket][rkt:when], [`when` in Guile][guile:when],
@@ -372,4 +404,4 @@ declare namespace cljTry_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
-export { begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, for_, letEnv_, multipleValueBind_, newApply_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };
+export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, for_, letEnv_, multipleValueBind_, newApply_, or_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };

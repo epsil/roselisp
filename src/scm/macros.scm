@@ -212,6 +212,30 @@
   ;; initialization arguments, which are passed to the constructor.
   `(make-object ,constructor ,@(map js/second args)))
 
+;;; Expand an `(and ...)` expression.
+;;;
+;;; Similar to [`and` in Racket][rkt:and], [`and` in Guile][guile:and],
+;;; [`and` in Common Lisp][cl:and] and [`and` in Emacs Lisp][el:and].
+;;;
+;;; [rkt:and]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._and%29%29
+;;; [guile:and]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-and
+;;; [cl:and]: http://clhs.lisp.se/Body/m_and.htm
+;;; [el:and]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-and
+(define-macro (and_ &rest args)
+  `(js/&& ,@args))
+
+;;; Expand an `(or ...)` expression.
+;;;
+;;; Similar to [`or` in Racket][rkt:or], [`or` in Guile][guile:or],
+;;; [`or` in Common Lisp][cl:or] and [`or` in Emacs Lisp][el:or].
+;;;
+;;; [rkt:or]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._or%29%29
+;;; [guile:or]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-or
+;;; [cl:or]: http://clhs.lisp.se/Body/m_or.htm
+;;; [el:or]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-or
+(define-macro (or_ &rest args)
+  `(js/\|\| ,@args))
+
 ;;; Expand a `(when ...)` expression.
 ;;;
 ;;; Similar to [`when` in Racket][rkt:when], [`when` in Guile][guile:when],
@@ -701,6 +725,7 @@
     ,@finalizer-clauses))
 
 (provide
+  and_
   begin0_
   case-eq_
   case_
@@ -722,6 +747,7 @@
   let-env_
   multiple-value-bind_
   new/apply_
+  or_
   rkt/new_
   set_
   thread-as_

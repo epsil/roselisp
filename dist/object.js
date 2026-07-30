@@ -18,68 +18,12 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.objectSetX_ = exports.objectRef_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjAppend_ = exports.jsKeys_ = exports.fieldNames_ = exports.oset_ = exports.osetx_ = exports.objectSet_ = exports.oget_ = exports.objectGet_ = void 0;
-/**
- * Make a JavaScript object.
- *
- * Similar to [`js-obj` in ClojureScript][cljs:js-obj].
- *
- * [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
- */
-function jsObj_(...args) {
-    const entries = [];
-    const _end = args.length;
-    for (let i = 0; i < _end; i = i + 2) {
-        entries.push([args[i], args[i + 1]]);
-    }
-    return Object.fromEntries(entries);
-}
-exports.jsObj_ = jsObj_;
-jsObj_.fsource = [Symbol.for('define'), [Symbol.for('js/obj_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('entries'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('args')], 2]]], [Symbol.for('push-right!'), Symbol.for('entries'), [Symbol.for('list'), [Symbol.for('js/get'), Symbol.for('args'), Symbol.for('i')], [Symbol.for('js/get'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('fromEntries'), Symbol.for('entries')]]];
-/**
- * Whether something is a JavaScript object.
- */
-function jsObjP_(x) {
-    // This function avoids regarding JavaScript's `null` value as an
-    // object (even if JavaScript does), because it has no properties;
-    // and unlike the empty object, attempting to access a property on
-    // it causes an error to be thrown. This is more trouble than it is
-    // worth, so only non-`null` object values are considered to be
-    // proper objects here.
-    return (x !== null) && (typeof x === 'object');
-}
-exports.jsObjP_ = jsObjP_;
-jsObjP_.fsource = [Symbol.for('define'), [Symbol.for('js/obj?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('js/null?'), Symbol.for('x')]], [Symbol.for('js/object-type?'), Symbol.for('x')]]];
-/**
- * Whether something types as a JavaScript object.
- *
- * Note that this includes JavaScript's `null` value.
- */
-function jsObjectTypeP_(x) {
-    return typeof x === 'object';
-}
-exports.jsObjectTypeP_ = jsObjectTypeP_;
-jsObjectTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/object-type?_'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'object']];
-/**
- * Combine multiple JavaScript objects into a new JavaScript object.
- *
- * Like `append`, but for JavaScript objects.
- */
-function jsObjAppend_(...args) {
-    return Object.assign({}, ...args);
-}
-exports.jsObjAppend_ = jsObjAppend_;
-jsObjAppend_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('Object'), Symbol.for('assign'), [Symbol.for('js/obj')], Symbol.for('args')]];
-/**
- * Return the keys for a JavaScript object.
- *
- * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
- * [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
- */
-function jsKeys_(obj) {
-    return Object.keys(obj);
-}
-exports.jsKeys_ = jsKeys_;
-jsKeys_.fsource = [Symbol.for('define'), [Symbol.for('js/keys_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('keys'), Symbol.for('obj')]];
+const javascript_1 = require("./javascript");
+Object.defineProperty(exports, "jsObj_", { enumerable: true, get: function () { return javascript_1.jsObj_; } });
+Object.defineProperty(exports, "jsObjP_", { enumerable: true, get: function () { return javascript_1.jsObjP_; } });
+Object.defineProperty(exports, "jsObjectTypeP_", { enumerable: true, get: function () { return javascript_1.jsObjectTypeP_; } });
+Object.defineProperty(exports, "jsObjAppend_", { enumerable: true, get: function () { return javascript_1.jsObjAppend_; } });
+Object.defineProperty(exports, "jsKeys_", { enumerable: true, get: function () { return javascript_1.jsKeys_; } });
 /**
  * Look up the property `key` in `obj`.
  *

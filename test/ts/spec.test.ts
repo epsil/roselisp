@@ -2568,6 +2568,66 @@ describe('equal?', function (): any {
   });
 });
 
+describe('not', function (): any {
+  it('(not #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('not'), false],
+      true,
+    ]);
+  });
+  it('(not #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('not'), true],
+      false,
+    ]);
+  });
+  return it("(compile '(not x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('not'), Symbol.for('x')]],
+      ],
+      '!x;',
+    ]);
+  });
+});
+
+describe('js/!', function (): any {
+  it('(js/! #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/!'), false],
+      true,
+    ]);
+  });
+  it('(js/! #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/!'), true],
+      false,
+    ]);
+  });
+  return it("(compile '(js/! x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/!'), Symbol.for('x')]],
+      ],
+      '!x;',
+    ]);
+  });
+});
+
 describe('and', function (): any {
   it('(and)', function (): any {
     return testRepl([
@@ -2626,6 +2686,106 @@ describe('and', function (): any {
         [Symbol.for('quote'), [Symbol.for('and'), true, true]],
       ],
       'true && true;',
+    ]);
+  });
+});
+
+describe('js/&&', function (): any {
+  it('(js/&&)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/&&')],
+      true,
+    ]);
+  });
+  it('(js/&& #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/&&'), true],
+      true,
+    ]);
+  });
+  it('(js/&& #t #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/&&'), true, true],
+      true,
+    ]);
+  });
+  it('(js/&& #t #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/&&'), true, false],
+      false,
+    ]);
+  });
+  it('(funcall js/&&)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/&&')],
+      true,
+    ]);
+  });
+  it('(funcall js/&& #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/&&'), true],
+      true,
+    ]);
+  });
+  it('(funcall js/&& #t #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/&&'), true, true],
+      true,
+    ]);
+  });
+  it('(funcall js/&& #t #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/&&'), true, false],
+      false,
+    ]);
+  });
+  it("(compile '(js/&& x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/&&'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x && y;',
+    ]);
+  });
+  return it("(compile '(js/&& x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/&&'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      'x && y && z;',
     ]);
   });
 });
@@ -2704,6 +2864,584 @@ describe('or', function (): any {
         [Symbol.for('quote'), [Symbol.for('or'), true, true]],
       ],
       'true || true;',
+    ]);
+  });
+});
+
+describe('js/||', function (): any {
+  it('(js/||)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/||')],
+      false,
+    ]);
+  });
+  it('(js/|| #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/||'), true],
+      true,
+    ]);
+  });
+  it('(js/|| #t #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/||'), true, true],
+      true,
+    ]);
+  });
+  it('(js/|| #t #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/||'), true, false],
+      true,
+    ]);
+  });
+  it('(funcall js/||)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/||')],
+      false,
+    ]);
+  });
+  it('(funcall js/|| #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/||'), true],
+      true,
+    ]);
+  });
+  it('(funcall js/|| #t #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/||'), true, true],
+      true,
+    ]);
+  });
+  it('(funcall js/|| #t #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/||'), true, false],
+      true,
+    ]);
+  });
+  it("(compile '(js/|| x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/||'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x || y;',
+    ]);
+  });
+  return it("(compile '(js/|| x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/||'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      'x || y || z;',
+    ]);
+  });
+});
+
+describe('bitwise-and', function (): any {
+  it("(compile '(bitwise-and x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bitwise-and'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x & y;',
+    ]);
+  });
+  it("(compile '(bit-and x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bit-and'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x & y;',
+    ]);
+  });
+  it("(compile '(js/& x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/&'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x & y;',
+    ]);
+  });
+  return it("(compile '(js/& x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/&'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      'x & y & z;',
+    ]);
+  });
+});
+
+describe('bitwise-or', function (): any {
+  it("(compile '(bitwise-or x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bitwise-or'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x | y;',
+    ]);
+  });
+  it("(compile '(bit-or x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bit-or'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x | y;',
+    ]);
+  });
+  it("(compile '(js/| x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/|'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x | y;',
+    ]);
+  });
+  return it("(compile '(js/| x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/|'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      'x | y | z;',
+    ]);
+  });
+});
+
+describe('bitwise-xor', function (): any {
+  it("(compile '(bitwise-xor x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bitwise-xor'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x ^ y;',
+    ]);
+  });
+  it("(compile '(bit-xor x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bit-xor'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x ^ y;',
+    ]);
+  });
+  return it("(compile '(js/^ x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/^'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x ^ y;',
+    ]);
+  });
+});
+
+describe('bitwise-not', function (): any {
+  it("(compile '(bitwise-negation x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bitwise-negation'), Symbol.for('x')],
+        ],
+      ],
+      '~x;',
+    ]);
+  });
+  it("(compile '(bitwise-not x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('bitwise-not'), Symbol.for('x')]],
+      ],
+      '~x;',
+    ]);
+  });
+  it("(compile '(bit-not x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('bit-not'), Symbol.for('x')]],
+      ],
+      '~x;',
+    ]);
+  });
+  return it("(compile '(js/~ x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/~'), Symbol.for('x')]],
+      ],
+      '~x;',
+    ]);
+  });
+});
+
+describe('bitwise-shift-left', function (): any {
+  it("(compile '(bitwise-shift-left x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bitwise-shift-left'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x << y;',
+    ]);
+  });
+  it("(compile '(bit-shift-left x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bit-shift-left'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x << y;',
+    ]);
+  });
+  return it("(compile '(js/<< x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/<<'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x << y;',
+    ]);
+  });
+});
+
+describe('bitwise-shift-right', function (): any {
+  it("(compile '(bitwise-shift-right x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bitwise-shift-right'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x >> y;',
+    ]);
+  });
+  it("(compile '(bit-shift-right x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('bit-shift-right'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x >> y;',
+    ]);
+  });
+  return it("(compile '(js/>> x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/>>'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x >> y;',
+    ]);
+  });
+});
+
+describe('unsigned-bitwise-shift-right', function (): any {
+  it("(compile '(unsigned-bitwise-shift-right x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('unsigned-bitwise-shift-right'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+          ],
+        ],
+      ],
+      'x >>> y;',
+    ]);
+  });
+  it("(compile '(unsigned-bit-shift-right x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('unsigned-bit-shift-right'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+          ],
+        ],
+      ],
+      'x >>> y;',
+    ]);
+  });
+  return it("(compile '(js/>>> x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/>>>'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x >>> y;',
+    ]);
+  });
+});
+
+describe('js/op', function (): any {
+  it('(js/op ! #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/op'), Symbol.for('!'), true],
+      false,
+    ]);
+  });
+  it('(js/op && #t #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/op'), Symbol.for('&&'), true, false],
+      false,
+    ]);
+  });
+  it('(js/op || #t #f)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/op'), Symbol.for('||'), true, false],
+      true,
+    ]);
+  });
+  it("(compile '(js/op ! x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/op'), Symbol.for('!'), Symbol.for('x')],
+        ],
+      ],
+      '!x;',
+    ]);
+  });
+  it("(compile '(js/op ~ x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/op'), Symbol.for('~'), Symbol.for('x')],
+        ],
+      ],
+      '~x;',
+    ]);
+  });
+  it("(compile '(js/op & x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/op'),
+            Symbol.for('&'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+          ],
+        ],
+      ],
+      'x & y;',
+    ]);
+  });
+  it("(compile '(js/op && x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/op'),
+            Symbol.for('&&'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+          ],
+        ],
+      ],
+      'x && y;',
+    ]);
+  });
+  return it("(compile '(js/op || x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/op'),
+            Symbol.for('||'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+          ],
+        ],
+      ],
+      'x || y;',
     ]);
   });
 });
@@ -5921,6 +6659,111 @@ describe('+', function (): any {
   });
 });
 
+describe('js/+', function (): any {
+  it('(js/+)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/+')],
+      0,
+    ]);
+  });
+  it('(js/+ 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/+'), 1],
+      1,
+    ]);
+  });
+  it('(js/+ 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/+'), 1, 2],
+      3,
+    ]);
+  });
+  it('(js/+ 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/+'), 2, 2],
+      4,
+    ]);
+  });
+  it('(js/+ 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/+'), 1, 2, 3],
+      6,
+    ]);
+  });
+  it('(js/+ 1 2 4)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/+'), 1, 2, 4],
+      7,
+    ]);
+  });
+  it('(js/+ (js/+ 1 1) (js/+ 1 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('js/+'),
+        [Symbol.for('js/+'), 1, 1],
+        [Symbol.for('js/+'), 1, 1],
+      ],
+      4,
+    ]);
+  });
+  it('(let ((x 2)) (js/+ x x))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('x'), 2]],
+        [Symbol.for('js/+'), Symbol.for('x'), Symbol.for('x')],
+      ],
+      4,
+    ]);
+  });
+  it('(js/+ 1 "")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/+'), 1, ''],
+      '1',
+    ]);
+  });
+  it("(compile '(js/+ 1 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/+'), 1, 1]],
+      ],
+      '1 + 1;',
+    ]);
+  });
+  return it("(compile '(js/+ 1 1 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/+'), 1, 1, 1]],
+      ],
+      '1 + 1 + 1;',
+    ]);
+  });
+});
+
 describe('-', function (): any {
   it('(-)', function (): any {
     return testRepl([
@@ -5991,6 +6834,79 @@ describe('-', function (): any {
   });
 });
 
+describe('js/-', function (): any {
+  it('(js/-)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/-')],
+      0,
+    ]);
+  });
+  it('(js/- 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/-'), 1],
+      -1,
+    ]);
+  });
+  it('(js/- 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/-'), 1, 2],
+      -1,
+    ]);
+  });
+  it('(js/- 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/-'), 1, 2, 3],
+      -4,
+    ]);
+  });
+  it('(js/- 1 2 4)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/-'), 1, 2, 4],
+      -5,
+    ]);
+  });
+  it("(compile '(js/- 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/-'), 1]]],
+      '-1;',
+    ]);
+  });
+  it("(compile '(js/- 1 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/-'), 1, 1]],
+      ],
+      '1 - 1;',
+    ]);
+  });
+  return it("(compile '(js/- 1 1 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/-'), 1, 1, 1]],
+      ],
+      '1 - 1 - 1;',
+    ]);
+  });
+});
+
 describe('*', function (): any {
   it('(*)', function (): any {
     return testRepl([
@@ -6047,6 +6963,71 @@ describe('*', function (): any {
       [
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('*'), 1, 1, 1]],
+      ],
+      '1 * 1 * 1;',
+    ]);
+  });
+});
+
+describe('js/*', function (): any {
+  it('(js/*)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/*')],
+      1,
+    ]);
+  });
+  it('(js/* 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/*'), 1],
+      1,
+    ]);
+  });
+  it('(js/* 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/*'), 1, 2],
+      2,
+    ]);
+  });
+  it('(js/* 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/*'), 1, 2, 3],
+      6,
+    ]);
+  });
+  it('(js/* 1 2 4)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/*'), 1, 2, 4],
+      8,
+    ]);
+  });
+  it("(compile '(js/* 1 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/*'), 1, 1]],
+      ],
+      '1 * 1;',
+    ]);
+  });
+  return it("(compile '(js/* 1 1 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/*'), 1, 1, 1]],
       ],
       '1 * 1 * 1;',
     ]);
@@ -6115,6 +7096,71 @@ describe('/', function (): any {
   });
 });
 
+describe('js//', function (): any {
+  it('(js//)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js//')],
+      undefined,
+    ]);
+  });
+  it('(js// 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js//'), 1],
+      1,
+    ]);
+  });
+  it('(js// 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js//'), 1, 2],
+      0.5,
+    ]);
+  });
+  it('(js// 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js//'), 1, 2, 3],
+      [Symbol.for('js//'), 1, 2, 3],
+    ]);
+  });
+  it('(/ 1 2 4)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('/'), 1, 2, 4],
+      0.125,
+    ]);
+  });
+  it("(compile '(js// 1 2))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js//'), 1, 2]],
+      ],
+      '1 / 2;',
+    ]);
+  });
+  return it("(compile '(js// 1 2 4))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js//'), 1, 2, 4]],
+      ],
+      '1 / 2 / 4;',
+    ]);
+  });
+});
+
 describe('<', function (): any {
   it('(< 1)', function (): any {
     return testRepl([
@@ -6132,6 +7178,14 @@ describe('<', function (): any {
       true,
     ]);
   });
+  it('(< 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('<'), 2, 1],
+      false,
+    ]);
+  });
   it('(< 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -6140,20 +7194,463 @@ describe('<', function (): any {
       true,
     ]);
   });
-  it('(< 1 2 0)', function (): any {
+  it('(< 2 1 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('<'), 1, 2, 0],
+      [Symbol.for('<'), 2, 1, 3],
       false,
     ]);
   });
-  return it("(compile '(< 1 2))", function (): any {
+  it('(< 1 3 2)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('<'), 1, 2]]],
-      '1 < 2;',
+      [Symbol.for('<'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall < 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<'), 1, 2],
+      true,
+    ]);
+  });
+  it('(funcall < 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<'), 2, 1],
+      false,
+    ]);
+  });
+  it('(funcall < 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<'), 1, 2, 3],
+      true,
+    ]);
+  });
+  it('(funcall < 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<'), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall < 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(< x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('<'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x < y;',
+    ]);
+  });
+  return it("(compile '(< x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('<'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+        ],
+      ],
+      '(x < y) && (y < z);',
+    ]);
+  });
+});
+
+describe('js/<', function (): any {
+  it('(js/< 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<'), 1, 2],
+      true,
+    ]);
+  });
+  it('(js/< 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<'), 2, 1],
+      false,
+    ]);
+  });
+  it('(js/< 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<'), 1, 2, 3],
+      true,
+    ]);
+  });
+  it('(js/< 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<'), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(js/< 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall js/< 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<'), 1, 2],
+      true,
+    ]);
+  });
+  it('(funcall js/< 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<'), 2, 1],
+      false,
+    ]);
+  });
+  it('(funcall js/< 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<'), 1, 2, 3],
+      true,
+    ]);
+  });
+  it('(funcall js/< 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<'), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall js/< 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(js/< x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/<'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x < y;',
+    ]);
+  });
+  return it("(compile '(js/< x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/<'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      '(x < y) && (y < z);',
+    ]);
+  });
+});
+
+describe('<=', function (): any {
+  it('(<= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('<='), 1, 2],
+      true,
+    ]);
+  });
+  it('(<= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('<='), 2, 1],
+      false,
+    ]);
+  });
+  it('(<= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('<='), 1, 2, 3],
+      true,
+    ]);
+  });
+  it('(<= 1 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('<='), 1, 1, 2],
+      true,
+    ]);
+  });
+  it('(<= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('<='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(<= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('<='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall <= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<='), 1, 2],
+      true,
+    ]);
+  });
+  it('(funcall <= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<='), 2, 1],
+      false,
+    ]);
+  });
+  it('(funcall <= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<='), 1, 2, 3],
+      true,
+    ]);
+  });
+  it('(funcall <= 1 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<='), 1, 1, 2],
+      true,
+    ]);
+  });
+  it('(funcall <= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall <= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('<='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(<= x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('<='), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x <= y;',
+    ]);
+  });
+  return it("(compile '(<= x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('<='), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+        ],
+      ],
+      '(x <= y) && (y <= z);',
+    ]);
+  });
+});
+
+describe('js/<=', function (): any {
+  it('(js/<= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<='), 1, 2],
+      true,
+    ]);
+  });
+  it('(js/<= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<='), 2, 1],
+      false,
+    ]);
+  });
+  it('(js/<= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<='), 1, 2, 3],
+      true,
+    ]);
+  });
+  it('(js/<= 1 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<='), 1, 1, 2],
+      true,
+    ]);
+  });
+  it('(js/<= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(js/<= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/<='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall js/<= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<='), 1, 2],
+      true,
+    ]);
+  });
+  it('(funcall js/<= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<='), 2, 1],
+      false,
+    ]);
+  });
+  it('(funcall js/<= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<='), 1, 2, 3],
+      true,
+    ]);
+  });
+  it('(funcall js/<= 1 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<='), 1, 1, 2],
+      true,
+    ]);
+  });
+  it('(funcall js/<= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall js/<= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/<='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(js/<= x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/<='), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x <= y;',
+    ]);
+  });
+  return it("(compile '(js/<= x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/<='),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      '(x <= y) && (y <= z);',
     ]);
   });
 });
@@ -6175,6 +7672,14 @@ describe('>', function (): any {
       true,
     ]);
   });
+  it('(> 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>'), 1, 2],
+      false,
+    ]);
+  });
   it('(> 3 2 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -6183,20 +7688,581 @@ describe('>', function (): any {
       true,
     ]);
   });
-  it('(> 0 2 1)', function (): any {
+  it('(> 1 2 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('>'), 0, 2, 1],
+      [Symbol.for('>'), 1, 2, 3],
       false,
     ]);
   });
-  return it("(compile '(> 2 1))", function (): any {
+  it('(> 2 1 3)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
-      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('>'), 2, 1]]],
-      '2 > 1;',
+      [Symbol.for('>'), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(> 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall > 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>'), 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall > 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>'), 1, 2],
+      false,
+    ]);
+  });
+  it('(funcall > 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>'), 3, 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall > 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>'), 1, 2, 3],
+      false,
+    ]);
+  });
+  it('(funcall > 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>'), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall > 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(> x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('>'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x > y;',
+    ]);
+  });
+  return it("(compile '(> x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('>'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+        ],
+      ],
+      '(x > y) && (y > z);',
+    ]);
+  });
+});
+
+describe('js/>', function (): any {
+  it('(js/> 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>'), 2, 1],
+      true,
+    ]);
+  });
+  it('(js/> 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>'), 1, 2],
+      false,
+    ]);
+  });
+  it('(js/> 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>'), 3, 2, 1],
+      true,
+    ]);
+  });
+  it('(js/> 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>'), 1, 2, 3],
+      false,
+    ]);
+  });
+  it('(js/> 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>'), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(js/> 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall js/> 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>'), 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall js/> 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>'), 1, 2],
+      false,
+    ]);
+  });
+  it('(funcall js/> 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>'), 3, 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall js/> 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>'), 1, 2, 3],
+      false,
+    ]);
+  });
+  it('(funcall js/> 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>'), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall js/> 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>'), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(js/> x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/>'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x > y;',
+    ]);
+  });
+  return it("(compile '(js/> x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/>'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      '(x > y) && (y > z);',
+    ]);
+  });
+});
+
+describe('>=', function (): any {
+  it('(>= 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 1],
+      true,
+    ]);
+  });
+  it('(>= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 2, 1],
+      true,
+    ]);
+  });
+  it('(>= 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 2, 2],
+      true,
+    ]);
+  });
+  it('(>= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 1, 2],
+      false,
+    ]);
+  });
+  it('(>= 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 3, 2, 1],
+      true,
+    ]);
+  });
+  it('(>= 3 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 3, 2, 2],
+      true,
+    ]);
+  });
+  it('(>= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 1, 2, 3],
+      false,
+    ]);
+  });
+  it('(>= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(>= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('>='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall >= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall >= 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 2, 2],
+      true,
+    ]);
+  });
+  it('(funcall >= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 1, 2],
+      false,
+    ]);
+  });
+  it('(funcall >= 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 3, 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall >= 3 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 3, 2, 2],
+      true,
+    ]);
+  });
+  it('(funcall >= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 1, 2, 3],
+      false,
+    ]);
+  });
+  it('(funcall >= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall >= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('>='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(>= x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('>='), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x >= y;',
+    ]);
+  });
+  return it("(compile '(>= x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('>='), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+        ],
+      ],
+      '(x >= y) && (y >= z);',
+    ]);
+  });
+});
+
+describe('js/>=', function (): any {
+  it('(js/>= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 2, 1],
+      true,
+    ]);
+  });
+  it('(js/>= 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 2, 2],
+      true,
+    ]);
+  });
+  it('(js/>= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 1, 2],
+      false,
+    ]);
+  });
+  it('(js/>= 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 3, 2, 1],
+      true,
+    ]);
+  });
+  it('(js/>= 3 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 3, 2, 2],
+      true,
+    ]);
+  });
+  it('(js/>= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 1, 2, 3],
+      false,
+    ]);
+  });
+  it('(js/>= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(js/>= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('js/>='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it('(funcall js/>= 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall js/>= 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 2, 2],
+      true,
+    ]);
+  });
+  it('(funcall js/>= 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 1, 2],
+      false,
+    ]);
+  });
+  it('(funcall js/>= 3 2 1)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 3, 2, 1],
+      true,
+    ]);
+  });
+  it('(funcall js/>= 3 2 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 3, 2, 2],
+      true,
+    ]);
+  });
+  it('(funcall js/>= 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 1, 2, 3],
+      false,
+    ]);
+  });
+  it('(funcall js/>= 2 1 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 2, 1, 3],
+      false,
+    ]);
+  });
+  it('(funcall js/>= 1 3 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('funcall'), Symbol.for('js/>='), 1, 3, 2],
+      false,
+    ]);
+  });
+  it("(compile '(js/>= x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/>='), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x >= y;',
+    ]);
+  });
+  it("(compile '(js/>= x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/>='),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      '(x >= y) && (y >= z);',
+    ]);
+  });
+  return it("(compile '(js/% x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/%'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'x % y;',
     ]);
   });
 });

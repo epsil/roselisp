@@ -16,72 +16,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-/**
- * Make a JavaScript object.
- *
- * Similar to [`js-obj` in ClojureScript][cljs:js-obj].
- *
- * [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
- */
-function jsObj_(...args: any[]): any {
-  const entries: any = [];
-  const _end: any = args.length;
-  for (let i: any = 0; i < _end; i = i + 2) {
-    entries.push([(args as any)[i], args[i + 1]]);
-  }
-  return Object.fromEntries(entries);
-}
-
-jsObj_.fsource = [Symbol.for('define'), [Symbol.for('js/obj_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('entries'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('args')], 2]]], [Symbol.for('push-right!'), Symbol.for('entries'), [Symbol.for('list'), [Symbol.for('js/get'), Symbol.for('args'), Symbol.for('i')], [Symbol.for('js/get'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('fromEntries'), Symbol.for('entries')]]];
-
-/**
- * Whether something is a JavaScript object.
- */
-function jsObjP_(x: any): any {
-  // This function avoids regarding JavaScript's `null` value as an
-  // object (even if JavaScript does), because it has no properties;
-  // and unlike the empty object, attempting to access a property on
-  // it causes an error to be thrown. This is more trouble than it is
-  // worth, so only non-`null` object values are considered to be
-  // proper objects here.
-  return (x !== null) && (typeof x === 'object');
-}
-
-jsObjP_.fsource = [Symbol.for('define'), [Symbol.for('js/obj?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('js/null?'), Symbol.for('x')]], [Symbol.for('js/object-type?'), Symbol.for('x')]]];
-
-/**
- * Whether something types as a JavaScript object.
- *
- * Note that this includes JavaScript's `null` value.
- */
-function jsObjectTypeP_(x: any): any {
-  return typeof x === 'object';
-}
-
-jsObjectTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/object-type?_'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'object']];
-
-/**
- * Combine multiple JavaScript objects into a new JavaScript object.
- *
- * Like `append`, but for JavaScript objects.
- */
-function jsObjAppend_(...args: any[]): any {
-  return Object.assign({}, ...args);
-}
-
-jsObjAppend_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('Object'), Symbol.for('assign'), [Symbol.for('js/obj')], Symbol.for('args')]];
-
-/**
- * Return the keys for a JavaScript object.
- *
- * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
- * [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
- */
-function jsKeys_(obj: any): any {
-  return Object.keys(obj);
-}
-
-jsKeys_.fsource = [Symbol.for('define'), [Symbol.for('js/keys_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('keys'), Symbol.for('obj')]];
+import {
+  jsObj_,
+  jsObjP_,
+  jsObjectTypeP_,
+  jsObjAppend_,
+  jsKeys_
+} from './javascript';
 
 /**
  * Look up the property `key` in `obj`.

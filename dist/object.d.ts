@@ -13,52 +13,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-/**
- * Make a JavaScript object.
- *
- * Similar to [`js-obj` in ClojureScript][cljs:js-obj].
- *
- * [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
- */
-declare function jsObj_(...args: any[]): any;
-declare namespace jsObj_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[];
-}
-/**
- * Whether something is a JavaScript object.
- */
-declare function jsObjP_(x: any): any;
-declare namespace jsObjP_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-}
-/**
- * Whether something types as a JavaScript object.
- *
- * Note that this includes JavaScript's `null` value.
- */
-declare function jsObjectTypeP_(x: any): any;
-declare namespace jsObjectTypeP_ {
-    var fsource: (symbol | (string | symbol | symbol[])[])[];
-}
-/**
- * Combine multiple JavaScript objects into a new JavaScript object.
- *
- * Like `append`, but for JavaScript objects.
- */
-declare function jsObjAppend_(...args: any[]): any;
-declare namespace jsObjAppend_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-}
-/**
- * Return the keys for a JavaScript object.
- *
- * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
- * [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
- */
-declare function jsKeys_(obj: any): any;
-declare namespace jsKeys_ {
-    var fsource: (symbol | symbol[])[];
-}
+import { jsObj_, jsObjP_, jsObjectTypeP_, jsObjAppend_, jsKeys_ } from './javascript';
 /**
  * Look up the property `key` in `obj`.
  *

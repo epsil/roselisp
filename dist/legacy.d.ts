@@ -1,7 +1,8 @@
 /**
- * # Special forms
+ * # Legacy code
  *
- * Interpreter procedures for special forms.
+ * This file contains unused interpreter procedures for
+ * special forms.
  *
  * ## Description
  *
@@ -15,18 +16,21 @@
  * directly. This file defines interpreter procedures which do just
  * that.
  *
- * The functions defined in this file are *special forms* and must be
- * typed as such in the language environment. A special form receives
- * its arguments unevaluated and returns a value that is used
- * directly. It is similar to a macro, except that the value returned
- * by a macro is re-evaluated, while the value returned by a special
- * form is used as-is.
- *
  * Care must be taken to implement these functions correctly, as
  * their behavior should be identical to the standard behavior of
  * compiling the code to an ESTree tree and then evaluating. In other
  * words, the only purpose of the code in this file is to make
  * interpretation faster.
+ *
+ * The functions defined in this file are *special forms*, and must
+ * be typed as such in the language environment. A special form
+ * receives its own form unevaluated and returns a value that is used
+ * directly. It is similar to a macro, except that the value returned
+ * by a macro is re-evaluated, while the value returned by a special
+ * form is used as-is.
+ *
+ * Alternatively, one could rewrite these functions to fexprs, which
+ * is almost the same thing.
  *
  * ## License
  *

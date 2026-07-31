@@ -84,12 +84,7 @@ const [lastCdr, flatten, nthcdr, cdr] = (() => {
             return lst[lst.length - 1];
         }
         else {
-            if (n === 0) {
-                return lst;
-            }
-            else {
-                return lst.slice(n);
-            }
+            return lst.slice(n);
         }
     }
     function cdr_(lst) {

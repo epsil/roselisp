@@ -177,29 +177,19 @@ arraySet_.fsource = [Symbol.for('define'), [Symbol.for('array-set_'), Symbol.for
  * the first `n` elements from `arr`.
  */
 function arrayDrop_(arr, n) {
-    if (n === 0) {
-        return arr;
-    }
-    else {
-        return arr.slice(n);
-    }
+    return arr.slice(n);
 }
 exports.arrayDrop_ = arrayDrop_;
-arrayDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-drop_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], Symbol.for('arr')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('n')]]]];
+arrayDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-drop_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('js/slice'), Symbol.for('arr'), Symbol.for('n')]];
 /**
  * Return the array obtained by dropping
  * the last `n` elements from `arr`.
  */
 function arrayDropRight_(arr, n) {
-    if (n === 0) {
-        return arr;
-    }
-    else {
-        return arr.slice(0, -n);
-    }
+    return arr.slice(0, -n);
 }
 exports.arrayDropRight_ = arrayDropRight_;
-arrayDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-drop-right_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], Symbol.for('arr')], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('arr'), Symbol.for('slice'), 0, [Symbol.for('-'), Symbol.for('n')]]]]];
+arrayDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-drop-right_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('js/slice'), Symbol.for('arr'), 0, [Symbol.for('-'), Symbol.for('n')]]];
 /**
  * Return the tail of an array.
  */
@@ -221,13 +211,7 @@ arrayReverse_.fsource = [Symbol.for('define'), [Symbol.for('array-reverse_'), Sy
  * Take the `n` first elements from `arr`.
  */
 function arrayTake_(arr, n) {
-    const n1 = arr.length - n;
-    if (n1 === 0) {
-        return arr;
-    }
-    else {
-        return arr.slice(0, -n1);
-    }
+    return arr.slice(0, -(arr.length - n));
 }
 exports.arrayTake_ = arrayTake_;
 arrayTake_.fsource = [Symbol.for('define'), [Symbol.for('array-take_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('arr')], Symbol.for('n')]]];

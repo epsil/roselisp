@@ -2085,15 +2085,8 @@ function compileTypeExp(exp: any, env: any, options: any = {}): any {
     const _end: any = params.length;
     for (let i: any = 0; i < _end; i++) {
       if (keywordp((params as any)[i])) {
-        plist = (i === 0) ? params : params.slice(i);
-        params = ((): any => {
-          const n: any = params.length - i;
-          if (n === 0) {
-            return params;
-          } else {
-            return params.slice(0, -n);
-          }
-        })();
+        plist = params.slice(i);
+        params = params.slice(0, -(params.length - i));
         break;
       }
     }
@@ -3690,14 +3683,7 @@ function compileDefineValues(node: any, env: any, options: any = {}): any {
       const restVarThunk: any = thunk(function (): any {
         let result: any = [];
         try {
-          result = ((): any => {
-            const arr: any = force(expressionThunk);
-            if (idx === 0) {
-              return arr;
-            } else {
-              return arr.slice(idx);
-            }
-          })();
+          result = force(expressionThunk).slice(idx);
         } catch (e) {
           if (e instanceof Error) {
           } else {

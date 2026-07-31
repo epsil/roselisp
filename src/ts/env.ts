@@ -216,11 +216,7 @@ class Environment {
       frames.push(env);
       env = env.parent;
     }
-    if (offset === 0) {
-      return frames;
-    } else {
-      return frames.slice(offset);
-    }
+    return frames.slice(offset);
   }
 
   /**
@@ -829,11 +825,7 @@ class EnvironmentStack extends TypedEnvironment {
         }
       }
     }
-    if (offset === 0) {
-      return frames;
-    } else {
-      return frames.slice(offset);
-    }
+    return frames.slice(offset);
   }
 
   /**

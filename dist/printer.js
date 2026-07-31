@@ -108,13 +108,7 @@ const [length, findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedure
         return Array.isArray(obj);
     }
     function take_(lst, n) {
-        const n1 = lst.length - n;
-        if (n1 === 0) {
-            return lst;
-        }
-        else {
-            return lst.slice(0, -n1);
-        }
+        return lst.slice(0, -(lst.length - n));
     }
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
@@ -555,15 +549,7 @@ function prettyPrintWithOffset(offset, form, options) {
         return writeToDoc(x, Object.assign(Object.assign({}, options), { quoteToplevel: false }));
     });
     const elements1 = take(elements, offset + 1);
-    const elements2 = (() => {
-        const n = offset + 1;
-        if (n === 0) {
-            return elements;
-        }
-        else {
-            return elements.slice(n);
-        }
-    })();
+    const elements2 = elements.slice(offset + 1);
     let result = [join(space, elements1), (elements2.length > 0) ? [line, indent(join(line, elements2))] : empty];
     result = ['(', result, ')'];
     return result;

@@ -911,7 +911,7 @@ function testMacro(exp: any, env: any): any {
       const val: any = body[i + 1];
       (options as any)[key] = val;
     } else {
-      bodyExps = i === 0 ? body : body.slice(i);
+      bodyExps = body.slice(i);
       break;
     }
   }

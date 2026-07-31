@@ -160,7 +160,7 @@ declare namespace map_ {
  */
 declare function lt_(...args: any[]): any;
 declare namespace lt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Less than or equal operator.
@@ -172,7 +172,7 @@ declare namespace lt_ {
  */
 declare function lte_(...args: any[]): any;
 declare namespace lte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Greater than operator.
@@ -184,7 +184,7 @@ declare namespace lte_ {
  */
 declare function gt_(...args: any[]): any;
 declare namespace gt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Greater than or equal operator.
@@ -196,7 +196,7 @@ declare namespace gt_ {
  */
 declare function gte_(...args: any[]): any;
 declare namespace gte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Modulo operation.

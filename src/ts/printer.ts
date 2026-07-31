@@ -129,12 +129,7 @@ const [length, findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedure
     return Array.isArray(obj);
   }
   function take_(lst: any, n: any): any {
-    const n1: any = lst.length - n;
-    if (n1 === 0) {
-      return lst;
-    } else {
-      return lst.slice(0, -n1);
-    }
+    return lst.slice(0, -(lst.length - n));
   }
   function lastCdr_(lst: any): any {
     if (!Array.isArray(lst)) {
@@ -641,14 +636,7 @@ function prettyPrintWithOffset(offset: any, form: any, options: any): any {
     });
   });
   const elements1: any = take(elements, offset + 1);
-  const elements2: any = ((): any => {
-    const n: any = offset + 1;
-    if (n === 0) {
-      return elements;
-    } else {
-      return elements.slice(n);
-    }
-  })();
+  const elements2: any = elements.slice(offset + 1);
   let result: any = [join(space, elements1), (elements2.length > 0) ? [line, indent(join(line, elements2))] : empty];
   result = ['(', result, ')'];
   return result;

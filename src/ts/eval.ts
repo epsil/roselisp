@@ -1208,7 +1208,7 @@ function evalEstreeAssignmentExpressionHelper(node: any, env: any, options: any 
       if (xType === 'RestElement') {
         const name: any = x.argument.name;
         const sym: any = Symbol.for(name);
-        const val: any = (i === 0) ? rightVal : rightVal.slice(i);
+        const val: any = rightVal.slice(i);
         if (localSetting) {
           env.setLocalX(sym, val);
         } else {

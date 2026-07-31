@@ -772,12 +772,7 @@ function member_(v, lst, isEqual = undefined) {
         return equalp(v, x);
     }));
     if (idx >= 0) {
-        if (idx === 0) {
-            return lst;
-        }
-        else {
-            return lst.slice(idx);
-        }
+        return lst.slice(idx);
     }
     else {
         return false;
@@ -818,12 +813,7 @@ function memq_(v, lst) {
         return v === x;
     });
     if (idx >= 0) {
-        if (idx === 0) {
-            return lst;
-        }
-        else {
-            return lst.slice(idx);
-        }
+        return lst.slice(idx);
     }
     else {
         return false;
@@ -857,12 +847,7 @@ memqp_.fsource = [Symbol.for('define'), [Symbol.for('memq?_'), Symbol.for('v'), 
 function memf_(proc, lst, notFound = false) {
     const idx = lst.findIndex(proc);
     if (idx >= 0) {
-        if (idx === 0) {
-            return lst;
-        }
-        else {
-            return lst.slice(idx);
-        }
+        return lst.slice(idx);
     }
     else {
         return notFound;

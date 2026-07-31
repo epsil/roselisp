@@ -132,7 +132,7 @@ declare namespace jsIn_ {
  */
 declare function jsObj_(...args: any[]): any;
 declare namespace jsObj_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
 }
 /**
  * Whether something is a JavaScript object.
@@ -442,28 +442,28 @@ declare namespace jsYield_ {
  */
 declare function jsLt_(...args: any[]): any;
 declare namespace jsLt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Less than or equal comparison.
  */
 declare function jsLte_(...args: any[]): any;
 declare namespace jsLte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Greater than comparison.
  */
 declare function jsGt_(...args: any[]): any;
 declare namespace jsGt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Greater than or equal comparison.
  */
 declare function jsGte_(...args: any[]): any;
 declare namespace jsGte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
 }
 /**
  * Modulo operation.

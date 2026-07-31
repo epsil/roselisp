@@ -70,12 +70,7 @@ const [lastCdr, cdr, listStar, cons, take]: any[] = ((): any => {
     }
   }
   function take_(lst: any, n: any): any {
-    const n1: any = lst.length - n;
-    if (n1 === 0) {
-      return lst;
-    } else {
-      return lst.slice(0, -n1);
-    }
+    return lst.slice(0, -(lst.length - n));
   }
   return [lastCdr_, cdr_, listStar_, cons_, take_];
 })();

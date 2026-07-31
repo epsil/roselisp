@@ -543,12 +543,7 @@ class Forest {
    * dropping the first `n` nodes.
    */
   drop(n: any): any {
-    const arr: any = this.nodeList;
-    if (n === 0) {
-      return arr;
-    } else {
-      return arr.slice(n);
-    }
+    return this.nodeList.slice(n);
   }
 
   /**
@@ -564,12 +559,7 @@ class Forest {
    * the last `n` nodes.
    */
   dropRight(n: any): any {
-    const arr: any = this.nodeList;
-    if (n === 0) {
-      return arr;
-    } else {
-      return arr.slice(0, -n);
-    }
+    return this.nodeList.slice(0, -n);
   }
 
   /**
@@ -1012,7 +1002,7 @@ function makeSexpRose(exp: any = []): any {
 function sliceRose(node: any, n: any): any {
   const value: any = node.getValue();
   if (Array.isArray(value)) {
-    const slicedNode: any = new Rose((n === 0) ? value : value.slice(n));
+    const slicedNode: any = new Rose(value.slice(n));
     for (let x of node.drop(n)) {
       slicedNode.insert(x);
     }

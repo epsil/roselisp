@@ -865,12 +865,7 @@ function nthcdr_(n, lst) {
         return lst[lst.length - 1];
     }
     else {
-        if (n === 0) {
-            return lst;
-        }
-        else {
-            return lst.slice(n);
-        }
+        return lst.slice(n);
     }
 }
 exports.nthcdr = nthcdr_;
@@ -884,13 +879,7 @@ nthcdr_.fsource = [Symbol.for('define'), [Symbol.for('nthcdr_'), Symbol.for('n')
  * [rkt:take]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._take%29%29
  */
 function take_(lst, n) {
-    const n1 = lst.length - n;
-    if (n1 === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(0, -n1);
-    }
+    return lst.slice(0, -(lst.length - n));
 }
 exports.take_ = take_;
 take_.fsource = [Symbol.for('define'), [Symbol.for('take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-list-take'), Symbol.for('lst'), Symbol.for('n')]];
@@ -903,12 +892,7 @@ take_.fsource = [Symbol.for('define'), [Symbol.for('take_'), Symbol.for('lst'), 
  * [rkt:drop]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._drop%29%29
  */
 function drop_(lst, n) {
-    if (n === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(n);
-    }
+    return lst.slice(n);
 }
 exports.drop = drop_;
 exports.listTail = drop_;
@@ -924,12 +908,7 @@ drop_.fsource = [Symbol.for('define'), [Symbol.for('drop_'), Symbol.for('lst'), 
  * [rkt:drop-right]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._drop-right%29%29
  */
 function dropRight_(lst, n) {
-    if (n === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(0, -n);
-    }
+    return lst.slice(0, -n);
 }
 exports.dropRight = dropRight_;
 exports.dropRight_ = dropRight_;
@@ -1123,13 +1102,7 @@ function lastPair_(lst) {
         return result;
     }
     else {
-        const n = lst.length - 1;
-        if (n === 0) {
-            return lst;
-        }
-        else {
-            return lst.slice(n);
-        }
+        return lst.slice(lst.length - 1);
     }
 }
 exports.lastCons_ = lastPair_;
@@ -1347,12 +1320,7 @@ arrayListNth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nth_'), S
  * Return the `n`-th CDR of an array list.
  */
 function arrayListNthcdr_(n, lst) {
-    if (n === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(n);
-    }
+    return lst.slice(n);
 }
 exports.arrayListNthcdr_ = arrayListNthcdr_;
 arrayListNthcdr_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nthcdr_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
@@ -1376,13 +1344,7 @@ arrayListRest_.fsource = [Symbol.for('define'), [Symbol.for('array-list-rest_'),
  * Take the `n` first elements from an array list.
  */
 function arrayListTake_(lst, n) {
-    const n1 = lst.length - n;
-    if (n1 === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(0, -n1);
-    }
+    return lst.slice(0, -(lst.length - n));
 }
 exports.arrayListTake_ = arrayListTake_;
 arrayListTake_.fsource = [Symbol.for('define'), [Symbol.for('array-list-take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-take'), Symbol.for('lst'), Symbol.for('n')]];
@@ -1391,12 +1353,7 @@ arrayListTake_.fsource = [Symbol.for('define'), [Symbol.for('array-list-take_'),
  * the first `n` elements from an array list.
  */
 function arrayListDrop_(lst, n) {
-    if (n === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(n);
-    }
+    return lst.slice(n);
 }
 exports.arrayListDrop_ = arrayListDrop_;
 arrayListDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
@@ -1405,12 +1362,7 @@ arrayListDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop_'),
  * the last `n` elements from an array list.
  */
 function arrayListDropRight_(lst, n) {
-    if (n === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(0, -n);
-    }
+    return lst.slice(0, -n);
 }
 exports.arrayListDropRight_ = arrayListDropRight_;
 arrayListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), Symbol.for('n')]];
@@ -1780,12 +1732,9 @@ linkedListNthcdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-nthc
  */
 function linkedListDrop_(lst, pos) {
     // TODO: Linked lists.
-    if (pos === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(pos);
-    }
+    return (
+    // TODO: Linked lists.
+    lst.slice(pos));
 }
 exports.linkedListDrop_ = linkedListDrop_;
 linkedListDrop_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-drop_'), Symbol.for('lst'), Symbol.for('pos')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('pos')]];
@@ -1795,13 +1744,9 @@ linkedListDrop_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-drop_'
  */
 function linkedListDropRight_(lst, n) {
     // TODO: Linked lists.
-    const n1 = n + 1;
-    if (n1 === 0) {
-        return lst;
-    }
-    else {
-        return lst.slice(0, -n1);
-    }
+    return (
+    // TODO: Linked lists.
+    lst.slice(0, -(n + 1)));
 }
 exports.linkedListDropRight_ = linkedListDropRight_;
 linkedListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), [Symbol.for('+'), Symbol.for('n'), 1]]];

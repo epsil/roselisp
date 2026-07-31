@@ -111,20 +111,12 @@
 ;;; Return the array obtained by dropping
 ;;; the first `n` elements from `arr`.
 (define (array-drop_ arr n)
-  (cond
-   ((= n 0)
-    arr)
-   (else
-    (send arr slice n))))
+  (js/slice arr n))
 
 ;;; Return the array obtained by dropping
 ;;; the last `n` elements from `arr`.
 (define (array-drop-right_ arr n)
-  (cond
-   ((= n 0)
-    arr)
-   (else
-    (send arr slice 0 (- n)))))
+  (js/slice arr 0 (- n)))
 
 ;;; Return the tail of an array.
 (define (array-rest_ arr)

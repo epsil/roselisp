@@ -140,7 +140,7 @@ declare namespace arraySet_ {
  */
 declare function arrayDrop_(arr: any, n: any): any;
 declare namespace arrayDrop_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[])[])[];
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * Return the array obtained by dropping
@@ -148,7 +148,7 @@ declare namespace arrayDrop_ {
  */
 declare function arrayDropRight_(arr: any, n: any): any;
 declare namespace arrayDropRight_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (number | symbol | symbol[])[])[];
 }
 /**
  * Return the tail of an array.

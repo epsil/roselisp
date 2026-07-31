@@ -115,11 +115,7 @@ const [lastCdr, flatten, nthcdr, cdr]: any[] = ((): any => {
     if ((lst.length === (n + 2)) && ((lst as any)[n] === Symbol.for('.'))) {
       return lst[lst.length - 1];
     } else {
-      if (n === 0) {
-        return lst;
-      } else {
-        return lst.slice(n);
-      }
+      return lst.slice(n);
     }
   }
   function cdr_(lst: any): any {

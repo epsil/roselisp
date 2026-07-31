@@ -191,12 +191,7 @@ class Environment {
             frames.push(env);
             env = env.parent;
         }
-        if (offset === 0) {
-            return frames;
-        }
-        else {
-            return frames.slice(offset);
-        }
+        return frames.slice(offset);
     }
     /**
      * Get the binding for `key` as a tuple `(value found)`.
@@ -739,12 +734,7 @@ class EnvironmentStack extends TypedEnvironment {
                 }
             }
         }
-        if (offset === 0) {
-            return frames;
-        }
-        else {
-            return frames.slice(offset);
-        }
+        return frames.slice(offset);
     }
     /**
      * Get the binding for `key` as a tuple `(value found)`.

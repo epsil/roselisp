@@ -56,7 +56,7 @@ declare namespace compileWithEnvironment {
  */
 declare function compileModules(modules: any, env: any, options?: any): any;
 declare namespace compileModules {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (string | symbol | (string | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 /**
  * Compile a module map.
@@ -136,7 +136,7 @@ declare namespace splitComments {
  */
 declare function definitionToMacro(exp: any, args: any): any;
 declare namespace definitionToMacro {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Convert a `(define ... (class ...))` expression to
@@ -227,7 +227,7 @@ declare namespace macroexpandN {
  */
 declare function macroexpandstarN(exp: any, env: any, n?: any): any;
 declare namespace macroexpandstarN {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (boolean | symbol)[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Expand the macro call `exp` in `env`, and keep

@@ -41,7 +41,7 @@ declare namespace plistCopy_ {
  */
 declare function plistGet_(plist: any, prop: any): any;
 declare namespace plistGet_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
 }
 /**
  * Whether a property list contains a given property.
@@ -74,13 +74,13 @@ declare namespace plistSet_ {
  */
 declare function plistToAlist_(plst: any): any;
 declare namespace plistToAlist_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
 }
 /**
  * Convert a property list to a JavaScript object.
  */
 declare function plistToObject_(plist: any, options?: any): any;
 declare namespace plistToObject_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 export { plistGet_ as plistRef_, plistHasP_ as plistHas_, plistToAlist_, plistCopy_, plistToObject_, plistGet_, plistHasP_, plistSetX_, plistSet_, plistp_ };

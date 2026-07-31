@@ -1520,16 +1520,8 @@ function compileTypeExp(exp, env, options = {}) {
         const _end = params.length;
         for (let i = 0; i < _end; i++) {
             if (keywordp(params[i])) {
-                plist = (i === 0) ? params : params.slice(i);
-                params = (() => {
-                    const n = params.length - i;
-                    if (n === 0) {
-                        return params;
-                    }
-                    else {
-                        return params.slice(0, -n);
-                    }
-                })();
+                plist = params.slice(i);
+                params = params.slice(0, -(params.length - i));
                 break;
             }
         }
@@ -3079,15 +3071,7 @@ function compileDefineValues(node, env, options = {}) {
             const restVarThunk = (0, thunk_1.thunk)(function () {
                 let result = [];
                 try {
-                    result = (() => {
-                        const arr = (0, thunk_1.force)(expressionThunk);
-                        if (idx === 0) {
-                            return arr;
-                        }
-                        else {
-                            return arr.slice(idx);
-                        }
-                    })();
+                    result = (0, thunk_1.force)(expressionThunk).slice(idx);
                 }
                 catch (e) {
                     if (e instanceof Error) {

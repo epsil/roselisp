@@ -177,10 +177,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pop_ = exports.popLeft_ = exports.popLeft = exports.popLeftX = exports.pop = exports.popx_ = exports.popx = exports.nullp_ = exports.nullp = exports.nthcdr = exports.nth = exports.ninth = exports.nbutlast = exports.makeList = exports.list = exports.properListP = exports.listp_ = exports.listp = exports.listStar = exports.dottedPairP_ = exports.linkedListLast_ = exports.linkedListToArrayList_ = exports.length = exports.last = exports.linkedListLastPair_ = exports.linkedListLastCons_ = exports.lastCons_ = exports.linkedListLastCdr_ = exports.fourth = exports.flatten = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.listTail_ = exports.listTail = exports.drop = exports.dropRight = exports.dottedListP = exports.pairp_ = exports.pairp = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.properListToDottedList_ = exports.arrayListToLinkedList_ = exports.append = void 0;
-exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.arrayListP_ = exports.arrayListThird_ = exports.arrayListTenth_ = exports.arrayListTake_ = exports.arrayListSixth_ = exports.arrayListSeventh_ = exports.arrayListSecond_ = exports.arrayListReverse_ = exports.arrayListRest_ = exports.arrayListNthcdr_ = exports.arrayListNth_ = exports.arrayListNinth_ = exports.arrayListLength_ = exports.arrayListLast_ = exports.arrayListFourth_ = exports.arrayListFirst_ = exports.arrayListFifth_ = exports.arrayListEighth_ = exports.arrayListDrop_ = exports.arrayListDropRight_ = exports.arrayListCdr_ = exports.append_ = exports.third = exports.tenth = exports.sixth = exports.seventh = exports.setCdr_ = exports.setCar_ = exports.second = exports.cadr_ = exports.cadr = exports.reverse = exports.rest = exports.pushRight_ = exports.pushRight = exports.pushRightX = exports.appendToList = exports.push_ = exports.pushLeft_ = exports.pushLeft = exports.pushLeftX = exports.push = exports.pushx_ = exports.pushx = exports.popRight_ = exports.popRight = exports.popRightX = void 0;
-exports.makeDottedList_ = exports.list_ = exports.listStar_ = exports.linkedPairP_ = exports.linkedPairCdr_ = exports.linkedPairCar_ = exports.linkedListP_ = exports.linkedListThird_ = exports.linkedListTenth_ = exports.linkedListTail_ = exports.linkedListSixth_ = exports.linkedListSeventh_ = exports.linkedListSecond_ = exports.linkedListParse_ = exports.linkedListNthcdr_ = exports.linkedListNth_ = exports.linkedListNinth_ = exports.linkedListLinkP_ = exports.linkedListLinkCdr_ = exports.linkedListLinkCar_ = exports.linkedListLength_ = exports.linkedListHead_ = exports.linkedListFourth_ = exports.linkedListFirst_ = exports.linkedListFifth_ = exports.linkedListEighth_ = exports.linkedListDrop_ = exports.linkedListDropRight_ = exports.linkedListCdr_ = exports.linkedListCar_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedListP_ = exports.cons_ = exports.consp_ = exports.consDot_ = exports.consDotP_ = exports.consDotF_ = exports.consDotCompiled_ = exports.circularListP_ = void 0;
-exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = void 0;
+exports.head_ = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.listTail_ = exports.listTail = exports.drop = exports.dropRight = exports.dottedListP = exports.cons = exports.pairp_ = exports.pairp = exports.consp = exports.consDot = exports.consDotP = exports.consDotF = exports.consDotCompiled = exports.circularListP = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.buildList = exports.arrayListP = exports.arrayListThird = exports.arrayListTenth = exports.arrayListTake = exports.arrayListSixth = exports.arrayListSeventh = exports.arrayListSecond = exports.arrayListReverse = exports.arrayListRest = exports.arrayListNthcdr = exports.arrayListNth = exports.arrayListNinth = exports.arrayListLength = exports.arrayListLast = exports.arrayListFourth = exports.arrayListFirst = exports.arrayListFifth = exports.arrayListEighth = exports.arrayListDrop = exports.arrayListDropRight = exports.arrayListCdr = exports.properListToDottedList_ = exports.arrayListToLinkedList = exports.append = void 0;
+exports.ninth = exports.nbutlast = exports.makePair = exports.makeList = exports.makeDottedList = exports.list = exports.properListP = exports.listp = exports.listStar = exports.linkedPairP = exports.dottedPairP_ = exports.linkedPairCdr = exports.linkedPairCar = exports.linkedListP = exports.linkedListThird = exports.linkedListTenth = exports.linkedListTail = exports.linkedListSixth = exports.linkedListSeventh = exports.linkedListSecond = exports.linkedListParse = exports.linkedListNthcdr = exports.linkedListNth = exports.linkedListNinth = exports.linkedListLinkP = exports.linkedListLinkCdr = exports.linkedListLinkCar = exports.linkedListLength = exports.linkedListLast = exports.linkedListHead = exports.linkedListFourth = exports.linkedListFirst = exports.linkedListFifth = exports.linkedListEighth = exports.linkedListDrop = exports.linkedListDropRight = exports.linkedListCdr = exports.linkedListCar = exports.linkedListToArrayList = exports.length = exports.last = exports.linkedListLastPair_ = exports.linkedListLastCons_ = exports.lastPair = exports.lastCons_ = exports.linkedListLastCdr_ = exports.lastCdr = exports.improperListP = exports.fourth = exports.flatten = void 0;
+exports.consDotCompiled_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.arrayListP_ = exports.arrayListThird_ = exports.arrayListTenth_ = exports.arrayListTake_ = exports.arrayListSixth_ = exports.arrayListSeventh_ = exports.arrayListSecond_ = exports.arrayListReverse_ = exports.arrayListRest_ = exports.arrayListNthcdr_ = exports.arrayListNth_ = exports.arrayListNinth_ = exports.arrayListLength_ = exports.arrayListLast_ = exports.arrayListFourth_ = exports.arrayListFirst_ = exports.arrayListFifth_ = exports.arrayListEighth_ = exports.arrayListDrop_ = exports.arrayListDropRight_ = exports.arrayListCdr_ = exports.arrayListToLinkedList_ = exports.append_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = exports.popRightX = exports.popLeftX = exports.popx_ = exports.popx = exports.nullp = exports.nthcdr = exports.nth = void 0;
+exports.list_ = exports.listp_ = exports.listStar_ = exports.linkedPairP_ = exports.linkedPairCdr_ = exports.linkedPairCar_ = exports.linkedListP_ = exports.linkedListThird_ = exports.linkedListTenth_ = exports.linkedListTail_ = exports.linkedListSixth_ = exports.linkedListSeventh_ = exports.linkedListSecond_ = exports.linkedListParse_ = exports.linkedListNthcdr_ = exports.linkedListNth_ = exports.linkedListNinth_ = exports.linkedListLinkP_ = exports.linkedListLinkCdr_ = exports.linkedListLinkCar_ = exports.linkedListLength_ = exports.linkedListLast_ = exports.linkedListHead_ = exports.linkedListFourth_ = exports.linkedListFirst_ = exports.linkedListFifth_ = exports.linkedListEighth_ = exports.linkedListDrop_ = exports.linkedListDropRight_ = exports.linkedListCdr_ = exports.linkedListCar_ = exports.linkedListToArrayList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedListP_ = exports.cons_ = exports.consp_ = exports.consDot_ = exports.consDotP_ = exports.consDotF_ = void 0;
+exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = void 0;
 const estree_1 = require("./estree");
 const [lastCdr, range, linkedListLength, linkedListLast] = (() => {
     function lastCdr_(lst) {
@@ -237,6 +238,7 @@ const [lastCdr, range, linkedListLength, linkedListLast] = (() => {
  * Cons dot value.
  */
 const consDot_ = Symbol.for('.');
+exports.consDot = consDot_;
 exports.consDot_ = consDot_;
 /**
  * Compiled cons dot value.
@@ -244,6 +246,7 @@ exports.consDot_ = consDot_;
 const consDotCompiled_ = 
 // `Symbol.for('.')`
 new estree_1.CallExpression(new estree_1.MemberExpression(new estree_1.Identifier('Symbol'), new estree_1.Identifier('for')), [new estree_1.Literal('.')]);
+exports.consDotCompiled = consDotCompiled_;
 exports.consDotCompiled_ = consDotCompiled_;
 /**
  * `cons-dot` function.
@@ -251,6 +254,7 @@ exports.consDotCompiled_ = consDotCompiled_;
 function consDotF_() {
     return Symbol.for('.');
 }
+exports.consDotF = consDotF_;
 exports.consDotF_ = consDotF_;
 consDotF_.fsource = [Symbol.for('define'), [Symbol.for('cons-dot-f_')], Symbol.for('*cons-dot*')];
 /**
@@ -259,6 +263,7 @@ consDotF_.fsource = [Symbol.for('define'), [Symbol.for('cons-dot-f_')], Symbol.f
 function consDotP_(obj) {
     return obj === Symbol.for('.');
 }
+exports.consDotP = consDotP_;
 exports.consDotP_ = consDotP_;
 consDotP_.fsource = [Symbol.for('define'), [Symbol.for('cons-dot?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), Symbol.for('*cons-dot*')]];
 /**
@@ -280,6 +285,7 @@ function cons_(x, y) {
         return [x, Symbol.for('.'), y];
     }
 }
+exports.cons = cons_;
 exports.cons_ = cons_;
 cons_.fsource = [Symbol.for('define'), [Symbol.for('cons_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('y')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote-splicing'), Symbol.for('y')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), Symbol.for('y')]]]]]];
 /**
@@ -296,6 +302,7 @@ function consp_(obj) {
     // qualify as cons cells.
     return Array.isArray(obj) && !(Array.isArray(obj) && (obj.length === 0));
 }
+exports.consp = consp_;
 exports.pairp = consp_;
 exports.pairp_ = consp_;
 exports.consp_ = consp_;
@@ -331,8 +338,8 @@ function listp_(x) {
     return Array.isArray(x1) && (x1.length === 0);
 }
 exports.listp = listp_;
-exports.listp_ = listp_;
 exports.properListP = listp_;
+exports.listp_ = listp_;
 listp_.fsource = [Symbol.for('define'), [Symbol.for('list?_'), Symbol.for('x')], [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]];
 /**
  * Make a dotted list. Like `list`, but the final argument
@@ -386,6 +393,7 @@ function buildList_(n, proc) {
         return proc(x);
     });
 }
+exports.buildList = buildList_;
 exports.buildList_ = buildList_;
 buildList_.fsource = [Symbol.for('define'), [Symbol.for('build-list_'), Symbol.for('n'), Symbol.for('proc')], [Symbol.for('map'), Symbol.for('proc'), [Symbol.for('range'), 0, Symbol.for('n')]]];
 /**
@@ -460,6 +468,7 @@ exports.car = first_;
 exports.car_ = first_;
 exports.first = first_;
 exports.head = first_;
+exports.head_ = first_;
 exports.first_ = first_;
 first_.fsource = [Symbol.for('define'), [Symbol.for('first_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
 /**
@@ -494,7 +503,6 @@ function second_(lst) {
         return lst[1];
     }
 }
-exports.cadr = second_;
 exports.cadr_ = second_;
 exports.second = second_;
 exports.second_ = second_;
@@ -881,6 +889,7 @@ nthcdr_.fsource = [Symbol.for('define'), [Symbol.for('nthcdr_'), Symbol.for('n')
 function take_(lst, n) {
     return lst.slice(0, -(lst.length - n));
 }
+exports.take = take_;
 exports.take_ = take_;
 take_.fsource = [Symbol.for('define'), [Symbol.for('take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-list-take'), Symbol.for('lst'), Symbol.for('n')]];
 /**
@@ -977,11 +986,7 @@ function popLeftX_(lst) {
 }
 exports.popx = popLeftX_;
 exports.popx_ = popLeftX_;
-exports.pop = popLeftX_;
 exports.popLeftX = popLeftX_;
-exports.popLeft = popLeftX_;
-exports.popLeft_ = popLeftX_;
-exports.pop_ = popLeftX_;
 exports.popLeftX_ = popLeftX_;
 popLeftX_.fsource = [Symbol.for('define'), [Symbol.for('pop-left!_'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('shift')]];
 /**
@@ -995,8 +1000,6 @@ function popRightX_(lst) {
     return lst.pop();
 }
 exports.popRightX = popRightX_;
-exports.popRight = popRightX_;
-exports.popRight_ = popRightX_;
 exports.popRightX_ = popRightX_;
 popRightX_.fsource = [Symbol.for('define'), [Symbol.for('pop-right!_'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('pop')]];
 /**
@@ -1011,12 +1014,7 @@ function pushLeftX_(lst, x) {
     return lst;
 }
 exports.pushx = pushLeftX_;
-exports.pushx_ = pushLeftX_;
-exports.push = pushLeftX_;
 exports.pushLeftX = pushLeftX_;
-exports.pushLeft = pushLeftX_;
-exports.pushLeft_ = pushLeftX_;
-exports.push_ = pushLeftX_;
 exports.pushLeftX_ = pushLeftX_;
 pushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('push-left!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('unshift'), Symbol.for('x')], Symbol.for('lst')];
 /**
@@ -1032,8 +1030,6 @@ function pushRightX_(lst, x) {
 }
 exports.appendToList = pushRightX_;
 exports.pushRightX = pushRightX_;
-exports.pushRight = pushRightX_;
-exports.pushRight_ = pushRightX_;
 exports.pushRightX_ = pushRightX_;
 pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('push'), Symbol.for('x')], Symbol.for('lst')];
 /**
@@ -1106,6 +1102,7 @@ function lastPair_(lst) {
     }
 }
 exports.lastCons_ = lastPair_;
+exports.lastPair = lastPair_;
 exports.linkedListLastCons_ = lastPair_;
 exports.linkedListLastPair_ = lastPair_;
 exports.lastPair_ = lastPair_;
@@ -1128,6 +1125,7 @@ function lastCdr_(lst) {
         return [];
     }
 }
+exports.lastCdr = lastCdr_;
 exports.linkedListLastCdr_ = lastCdr_;
 exports.lastCdr_ = lastCdr_;
 lastCdr_.fsource = [Symbol.for('define'), [Symbol.for('last-cdr_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('lst')]], undefined], [[Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('linked-list-link?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('linked-list-tail'), Symbol.for('result')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('quote'), []]]]];
@@ -1144,7 +1142,7 @@ function setCarX_(x, y) {
     }
     return undefined;
 }
-exports.setCar_ = setCarX_;
+exports.setCarX = setCarX_;
 exports.setCarX_ = setCarX_;
 setCarX_.fsource = [Symbol.for('define'), [Symbol.for('set-car!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0], [Symbol.for('aset!'), Symbol.for('x'), 0, Symbol.for('y')]], undefined];
 /**
@@ -1182,7 +1180,7 @@ function setCdrX_(x, y) {
     }
     return undefined;
 }
-exports.setCdr_ = setCdrX_;
+exports.setCdrX = setCdrX_;
 exports.setCdrX_ = setCdrX_;
 setCdrX_.fsource = [Symbol.for('define'), [Symbol.for('set-cdr!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('x')]], [[Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('aset!'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 1], Symbol.for('y')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]], [Symbol.for('else'), [Symbol.for('while'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 1], [Symbol.for('pop-right!'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('y')], [Symbol.for('for'), [[Symbol.for('z'), Symbol.for('y')]], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('z')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]]], undefined];
 /**
@@ -1210,6 +1208,7 @@ nullp_.fsource = [Symbol.for('define'), [Symbol.for('null?_'), Symbol.for('x')],
 function arrayListP_(x) {
     return Array.isArray(x);
 }
+exports.arrayListP = arrayListP_;
 exports.arrayListP_ = arrayListP_;
 arrayListP_.fsource = [Symbol.for('define'), [Symbol.for('array-list?_'), Symbol.for('x')], [Symbol.for('array?'), Symbol.for('x')]];
 /**
@@ -1218,6 +1217,7 @@ arrayListP_.fsource = [Symbol.for('define'), [Symbol.for('array-list?_'), Symbol
 function arrayListLength_(lst) {
     return lst.length;
 }
+exports.arrayListLength = arrayListLength_;
 exports.arrayListLength_ = arrayListLength_;
 arrayListLength_.fsource = [Symbol.for('define'), [Symbol.for('array-list-length_'), Symbol.for('lst')], [Symbol.for('array-length'), Symbol.for('lst')]];
 /**
@@ -1226,6 +1226,7 @@ arrayListLength_.fsource = [Symbol.for('define'), [Symbol.for('array-list-length
 function arrayListFirst_(lst) {
     return lst[0];
 }
+exports.arrayListFirst = arrayListFirst_;
 exports.arrayListFirst_ = arrayListFirst_;
 arrayListFirst_.fsource = [Symbol.for('define'), [Symbol.for('array-list-first_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
 /**
@@ -1234,6 +1235,7 @@ arrayListFirst_.fsource = [Symbol.for('define'), [Symbol.for('array-list-first_'
 function arrayListSecond_(lst) {
     return lst[1];
 }
+exports.arrayListSecond = arrayListSecond_;
 exports.arrayListSecond_ = arrayListSecond_;
 arrayListSecond_.fsource = [Symbol.for('define'), [Symbol.for('array-list-second_'), Symbol.for('lst')], [Symbol.for('array-second'), Symbol.for('lst')]];
 /**
@@ -1242,6 +1244,7 @@ arrayListSecond_.fsource = [Symbol.for('define'), [Symbol.for('array-list-second
 function arrayListThird_(lst) {
     return lst[2];
 }
+exports.arrayListThird = arrayListThird_;
 exports.arrayListThird_ = arrayListThird_;
 arrayListThird_.fsource = [Symbol.for('define'), [Symbol.for('array-list-third_'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')]];
 /**
@@ -1250,6 +1253,7 @@ arrayListThird_.fsource = [Symbol.for('define'), [Symbol.for('array-list-third_'
 function arrayListFourth_(lst) {
     return lst[3];
 }
+exports.arrayListFourth = arrayListFourth_;
 exports.arrayListFourth_ = arrayListFourth_;
 arrayListFourth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-fourth_'), Symbol.for('lst')], [Symbol.for('array-fourth'), Symbol.for('lst')]];
 /**
@@ -1258,6 +1262,7 @@ arrayListFourth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-fourth
 function arrayListFifth_(lst) {
     return lst[4];
 }
+exports.arrayListFifth = arrayListFifth_;
 exports.arrayListFifth_ = arrayListFifth_;
 arrayListFifth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-fifth_'), Symbol.for('lst')], [Symbol.for('array-fifth'), Symbol.for('lst')]];
 /**
@@ -1266,6 +1271,7 @@ arrayListFifth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-fifth_'
 function arrayListSixth_(lst) {
     return lst[5];
 }
+exports.arrayListSixth = arrayListSixth_;
 exports.arrayListSixth_ = arrayListSixth_;
 arrayListSixth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-sixth_'), Symbol.for('lst')], [Symbol.for('array-sixth'), Symbol.for('lst')]];
 /**
@@ -1274,6 +1280,7 @@ arrayListSixth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-sixth_'
 function arrayListSeventh_(lst) {
     return lst[6];
 }
+exports.arrayListSeventh = arrayListSeventh_;
 exports.arrayListSeventh_ = arrayListSeventh_;
 arrayListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('array-list-seventh_'), Symbol.for('lst')], [Symbol.for('array-seventh'), Symbol.for('lst')]];
 /**
@@ -1282,6 +1289,7 @@ arrayListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('array-list-seven
 function arrayListEighth_(lst) {
     return lst[7];
 }
+exports.arrayListEighth = arrayListEighth_;
 exports.arrayListEighth_ = arrayListEighth_;
 arrayListEighth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-eighth_'), Symbol.for('lst')], [Symbol.for('array-eighth'), Symbol.for('lst')]];
 /**
@@ -1290,6 +1298,7 @@ arrayListEighth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-eighth
 function arrayListNinth_(lst) {
     return lst[8];
 }
+exports.arrayListNinth = arrayListNinth_;
 exports.arrayListNinth_ = arrayListNinth_;
 arrayListNinth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-ninth_'), Symbol.for('lst')], [Symbol.for('array-ninth'), Symbol.for('lst')]];
 /**
@@ -1298,6 +1307,7 @@ arrayListNinth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-ninth_'
 function arrayListTenth_(lst) {
     return lst[9];
 }
+exports.arrayListTenth = arrayListTenth_;
 exports.arrayListTenth_ = arrayListTenth_;
 arrayListTenth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-tenth_'), Symbol.for('lst')], [Symbol.for('array-tenth'), Symbol.for('lst')]];
 /**
@@ -1306,6 +1316,7 @@ arrayListTenth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-tenth_'
 function arrayListLast_(lst) {
     return lst[lst.length - 1];
 }
+exports.arrayListLast = arrayListLast_;
 exports.arrayListLast_ = arrayListLast_;
 arrayListLast_.fsource = [Symbol.for('define'), [Symbol.for('array-list-last_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
 /**
@@ -1314,6 +1325,7 @@ arrayListLast_.fsource = [Symbol.for('define'), [Symbol.for('array-list-last_'),
 function arrayListNth_(n, lst) {
     return lst[n];
 }
+exports.arrayListNth = arrayListNth_;
 exports.arrayListNth_ = arrayListNth_;
 arrayListNth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nth_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), Symbol.for('n')]];
 /**
@@ -1322,6 +1334,7 @@ arrayListNth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nth_'), S
 function arrayListNthcdr_(n, lst) {
     return lst.slice(n);
 }
+exports.arrayListNthcdr = arrayListNthcdr_;
 exports.arrayListNthcdr_ = arrayListNthcdr_;
 arrayListNthcdr_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nthcdr_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
 /**
@@ -1330,6 +1343,7 @@ arrayListNthcdr_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nthcdr
 function arrayListCdr_(lst) {
     return lst.slice(1);
 }
+exports.arrayListCdr = arrayListCdr_;
 exports.arrayListCdr_ = arrayListCdr_;
 arrayListCdr_.fsource = [Symbol.for('define'), [Symbol.for('array-list-cdr_'), Symbol.for('lst')], [Symbol.for('array-rest'), Symbol.for('lst')]];
 /**
@@ -1338,6 +1352,7 @@ arrayListCdr_.fsource = [Symbol.for('define'), [Symbol.for('array-list-cdr_'), S
 function arrayListRest_(lst) {
     return lst.slice(1);
 }
+exports.arrayListRest = arrayListRest_;
 exports.arrayListRest_ = arrayListRest_;
 arrayListRest_.fsource = [Symbol.for('define'), [Symbol.for('array-list-rest_'), Symbol.for('lst')], [Symbol.for('array-list-cdr'), Symbol.for('lst')]];
 /**
@@ -1346,6 +1361,7 @@ arrayListRest_.fsource = [Symbol.for('define'), [Symbol.for('array-list-rest_'),
 function arrayListTake_(lst, n) {
     return lst.slice(0, -(lst.length - n));
 }
+exports.arrayListTake = arrayListTake_;
 exports.arrayListTake_ = arrayListTake_;
 arrayListTake_.fsource = [Symbol.for('define'), [Symbol.for('array-list-take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-take'), Symbol.for('lst'), Symbol.for('n')]];
 /**
@@ -1355,6 +1371,7 @@ arrayListTake_.fsource = [Symbol.for('define'), [Symbol.for('array-list-take_'),
 function arrayListDrop_(lst, n) {
     return lst.slice(n);
 }
+exports.arrayListDrop = arrayListDrop_;
 exports.arrayListDrop_ = arrayListDrop_;
 arrayListDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
 /**
@@ -1364,6 +1381,7 @@ arrayListDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop_'),
 function arrayListDropRight_(lst, n) {
     return lst.slice(0, -n);
 }
+exports.arrayListDropRight = arrayListDropRight_;
 exports.arrayListDropRight_ = arrayListDropRight_;
 arrayListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), Symbol.for('n')]];
 /**
@@ -1373,6 +1391,7 @@ arrayListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-list-dro
 function arrayListReverse_(lst) {
     return lst.reverse();
 }
+exports.arrayListReverse = arrayListReverse_;
 exports.arrayListReverse_ = arrayListReverse_;
 arrayListReverse_.fsource = [Symbol.for('define'), [Symbol.for('array-list-reverse_'), Symbol.for('lst')], [Symbol.for('array-reverse'), Symbol.for('lst')]];
 /**
@@ -1406,6 +1425,7 @@ function linkedListP_(x) {
         return Array.isArray(x1) && (x1.length === 0);
     })();
 }
+exports.linkedListP = linkedListP_;
 exports.linkedListP_ = linkedListP_;
 linkedListP_.fsource = [Symbol.for('define'), [Symbol.for('linked-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 2]]], [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]];
 /**
@@ -1414,6 +1434,7 @@ linkedListP_.fsource = [Symbol.for('define'), [Symbol.for('linked-list?_'), Symb
 function linkedListLinkP_(x) {
     return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'));
 }
+exports.linkedListLinkP = linkedListLinkP_;
 exports.linkedListLinkP_ = linkedListLinkP_;
 linkedListLinkP_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-link?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 2]]]]];
 /**
@@ -1423,6 +1444,7 @@ function linkedPairP_(x) {
     return Array.isArray(x) && (x.length === 3) && (x[1] === Symbol.for('.'));
 }
 exports.dottedPairP_ = linkedPairP_;
+exports.linkedPairP = linkedPairP_;
 exports.linkedPairP_ = linkedPairP_;
 linkedPairP_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('x'), 1]]]];
 /**
@@ -1431,6 +1453,7 @@ linkedPairP_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair?_'), Symb
 function linkedListLinkCar_(x) {
     return x[0];
 }
+exports.linkedListLinkCar = linkedListLinkCar_;
 exports.linkedListLinkCar_ = linkedListLinkCar_;
 linkedListLinkCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-link-car_'), Symbol.for('x')], [Symbol.for('array-first'), Symbol.for('x')]];
 /**
@@ -1439,6 +1462,7 @@ linkedListLinkCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-lin
 function linkedListLinkCdr_(x) {
     return x[x.length - 1];
 }
+exports.linkedListLinkCdr = linkedListLinkCdr_;
 exports.linkedListLinkCdr_ = linkedListLinkCdr_;
 linkedListLinkCdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-link-cdr_'), Symbol.for('x')], [Symbol.for('array-last'), Symbol.for('x')]];
 /**
@@ -1447,6 +1471,7 @@ linkedListLinkCdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-lin
 function linkedPairCar_(x) {
     return x[0];
 }
+exports.linkedPairCar = linkedPairCar_;
 exports.linkedPairCar_ = linkedPairCar_;
 linkedPairCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair-car_'), Symbol.for('x')], [Symbol.for('array-first'), Symbol.for('x')]];
 /**
@@ -1455,6 +1480,7 @@ linkedPairCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair-car_'),
 function linkedPairCdr_(x) {
     return x[2];
 }
+exports.linkedPairCdr = linkedPairCdr_;
 exports.linkedPairCdr_ = linkedPairCdr_;
 linkedPairCdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair-cdr_'), Symbol.for('x')], [Symbol.for('array-third'), Symbol.for('x')]];
 /**
@@ -1469,6 +1495,7 @@ function linkedListLength_(lst) {
     }
     return len;
 }
+exports.linkedListLength = linkedListLength_;
 exports.linkedListLength_ = linkedListLength_;
 linkedListLength_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-length_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('len'), 0], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('len'), [Symbol.for('+'), Symbol.for('len'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]], Symbol.for('len')];
 /**
@@ -1477,6 +1504,7 @@ linkedListLength_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-leng
 function linkedListFirst_(lst) {
     return lst[0];
 }
+exports.linkedListFirst = linkedListFirst_;
 exports.linkedListFirst_ = linkedListFirst_;
 linkedListFirst_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-first_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
 /**
@@ -1499,6 +1527,7 @@ function linkedListSecond_(lst) {
     }
     return result;
 }
+exports.linkedListSecond = linkedListSecond_;
 exports.linkedListSecond_ = linkedListSecond_;
 linkedListSecond_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-second_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 1, Symbol.for('lst')]];
 /**
@@ -1521,6 +1550,7 @@ function linkedListThird_(lst) {
     }
     return result;
 }
+exports.linkedListThird = linkedListThird_;
 exports.linkedListThird_ = linkedListThird_;
 linkedListThird_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-third_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 2, Symbol.for('lst')]];
 /**
@@ -1543,6 +1573,7 @@ function linkedListFourth_(lst) {
     }
     return result;
 }
+exports.linkedListFourth = linkedListFourth_;
 exports.linkedListFourth_ = linkedListFourth_;
 linkedListFourth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-fourth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 3, Symbol.for('lst')]];
 /**
@@ -1565,6 +1596,7 @@ function linkedListFifth_(lst) {
     }
     return result;
 }
+exports.linkedListFifth = linkedListFifth_;
 exports.linkedListFifth_ = linkedListFifth_;
 linkedListFifth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-fifth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 4, Symbol.for('lst')]];
 /**
@@ -1587,6 +1619,7 @@ function linkedListSixth_(lst) {
     }
     return result;
 }
+exports.linkedListSixth = linkedListSixth_;
 exports.linkedListSixth_ = linkedListSixth_;
 linkedListSixth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-sixth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 5, Symbol.for('lst')]];
 /**
@@ -1609,6 +1642,7 @@ function linkedListSeventh_(lst) {
     }
     return result;
 }
+exports.linkedListSeventh = linkedListSeventh_;
 exports.linkedListSeventh_ = linkedListSeventh_;
 linkedListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-seventh_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 6, Symbol.for('lst')]];
 /**
@@ -1631,6 +1665,7 @@ function linkedListEighth_(lst) {
     }
     return result;
 }
+exports.linkedListEighth = linkedListEighth_;
 exports.linkedListEighth_ = linkedListEighth_;
 linkedListEighth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-eighth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 7, Symbol.for('lst')]];
 /**
@@ -1653,6 +1688,7 @@ function linkedListNinth_(lst) {
     }
     return result;
 }
+exports.linkedListNinth = linkedListNinth_;
 exports.linkedListNinth_ = linkedListNinth_;
 linkedListNinth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-ninth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 8, Symbol.for('lst')]];
 /**
@@ -1675,6 +1711,7 @@ function linkedListTenth_(lst) {
     }
     return result;
 }
+exports.linkedListTenth = linkedListTenth_;
 exports.linkedListTenth_ = linkedListTenth_;
 linkedListTenth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-tenth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 9, Symbol.for('lst')]];
 /**
@@ -1694,6 +1731,7 @@ function linkedListLast_(lst) {
     }
     return result;
 }
+exports.linkedListLast = linkedListLast_;
 exports.linkedListLast_ = linkedListLast_;
 linkedListLast_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-last_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]], [Symbol.for('when'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('current'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('current')], 3]]]], Symbol.for('result')];
 /**
@@ -1716,6 +1754,7 @@ function linkedListNth_(n, lst) {
     }
     return result;
 }
+exports.linkedListNth = linkedListNth_;
 exports.linkedListNth_ = linkedListNth_;
 linkedListNth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-nth_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('i'), Symbol.for('n')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('cond'), [[Symbol.for('dotted-pair?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('linked-list-tail'), Symbol.for('lst')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-rest'), Symbol.for('lst')]]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], [Symbol.for('when'), [Symbol.for('array?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-first'), Symbol.for('result')]]], Symbol.for('result')];
 /**
@@ -1724,6 +1763,7 @@ linkedListNth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-nth_'),
 function linkedListNthcdr_(n, lst) {
     return lst[lst.length - 1];
 }
+exports.linkedListNthcdr = linkedListNthcdr_;
 exports.linkedListNthcdr_ = linkedListNthcdr_;
 linkedListNthcdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-nthcdr_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 1]]];
 /**
@@ -1736,6 +1776,7 @@ function linkedListDrop_(lst, pos) {
     // TODO: Linked lists.
     lst.slice(pos));
 }
+exports.linkedListDrop = linkedListDrop_;
 exports.linkedListDrop_ = linkedListDrop_;
 linkedListDrop_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-drop_'), Symbol.for('lst'), Symbol.for('pos')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('pos')]];
 /**
@@ -1748,6 +1789,7 @@ function linkedListDropRight_(lst, n) {
     // TODO: Linked lists.
     lst.slice(0, -(n + 1)));
 }
+exports.linkedListDropRight = linkedListDropRight_;
 exports.linkedListDropRight_ = linkedListDropRight_;
 linkedListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), [Symbol.for('+'), Symbol.for('n'), 1]]];
 /**
@@ -1756,6 +1798,7 @@ linkedListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-d
 function linkedListCar_(lst) {
     return lst[0];
 }
+exports.linkedListCar = linkedListCar_;
 exports.linkedListCar_ = linkedListCar_;
 linkedListCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-car_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
 /**
@@ -1769,6 +1812,7 @@ function linkedListCdr_(lst) {
         return lst.slice(1);
     }
 }
+exports.linkedListCdr = linkedListCdr_;
 exports.linkedListCdr_ = linkedListCdr_;
 linkedListCdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-cdr_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('dotted-pair?'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')]], [Symbol.for('else'), [Symbol.for('array-rest'), Symbol.for('lst')]]]];
 /**
@@ -1778,6 +1822,7 @@ function linkedListHead_(lst) {
     // TODO: Rename to `linked-list-link-head`.
     return lst.slice(0, -2);
 }
+exports.linkedListHead = linkedListHead_;
 exports.linkedListHead_ = linkedListHead_;
 linkedListHead_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-head_'), Symbol.for('lst')], [Symbol.for('drop-right'), Symbol.for('lst'), 2]];
 /**
@@ -1787,6 +1832,7 @@ function linkedListTail_(lst) {
     // TODO: Rename to `linked-list-link-tail`.
     return lst[lst.length - 1];
 }
+exports.linkedListTail = linkedListTail_;
 exports.linkedListTail_ = linkedListTail_;
 linkedListTail_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-tail_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
 /**
@@ -1795,6 +1841,7 @@ linkedListTail_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-tail_'
 function linkedListParse_(lst) {
     return [linkedListHead_(lst), linkedListTail_(lst)];
 }
+exports.linkedListParse = linkedListParse_;
 exports.linkedListParse_ = linkedListParse_;
 linkedListParse_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-parse_'), Symbol.for('lst')], [Symbol.for('values'), [Symbol.for('linked-list-head_'), Symbol.for('lst')], [Symbol.for('linked-list-tail_'), Symbol.for('lst')]]];
 /**
@@ -1804,6 +1851,7 @@ function makeDottedList_(car, cdr) {
     // TODO: Rename to `make-linked-list`.
     return listStar_(car, cdr);
 }
+exports.makeDottedList = makeDottedList_;
 exports.makeDottedList_ = makeDottedList_;
 makeDottedList_.fsource = [Symbol.for('define'), [Symbol.for('make-dotted-list_'), Symbol.for('car'), Symbol.for('cdr')], [Symbol.for('list-star_'), Symbol.for('car'), Symbol.for('cdr')]];
 /**
@@ -1813,6 +1861,7 @@ function makePair_(car, cdr) {
     // TODO: Rename to `make-linked-pair`.
     return [car, Symbol.for('.'), cdr];
 }
+exports.makePair = makePair_;
 exports.makePair_ = makePair_;
 makePair_.fsource = [Symbol.for('define'), [Symbol.for('make-pair_'), Symbol.for('car'), Symbol.for('cdr')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('car')], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), Symbol.for('cdr')]]]];
 /**
@@ -1844,6 +1893,7 @@ function improperListP_(x) {
         return Array.isArray(x1) && (x1.length === 0);
     })();
 }
+exports.improperListP = improperListP_;
 exports.improperListP_ = improperListP_;
 improperListP_.fsource = [Symbol.for('define'), [Symbol.for('improper-list?_'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]];
 /**
@@ -1856,6 +1906,7 @@ improperListP_.fsource = [Symbol.for('define'), [Symbol.for('improper-list?_'), 
 function circularListP_(x) {
     return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x[x.length - 1] === x);
 }
+exports.circularListP = circularListP_;
 exports.circularListP_ = circularListP_;
 circularListP_.fsource = [Symbol.for('define'), [Symbol.for('circular-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('linked-list-tail'), Symbol.for('x')], Symbol.for('x')]]];
 /**
@@ -1864,8 +1915,9 @@ circularListP_.fsource = [Symbol.for('define'), [Symbol.for('circular-list?_'), 
 function arrayListToLinkedList_(x) {
     return [...x.slice(0, -1), Symbol.for('.'), x[x.length - 1]];
 }
-exports.arrayListToLinkedList_ = arrayListToLinkedList_;
+exports.arrayListToLinkedList = arrayListToLinkedList_;
 exports.properListToDottedList_ = arrayListToLinkedList_;
+exports.arrayListToLinkedList_ = arrayListToLinkedList_;
 arrayListToLinkedList_.fsource = [Symbol.for('define'), [Symbol.for('array-list->linked-list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('drop-right'), Symbol.for('x'), 1]], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), [Symbol.for('array-list-last'), Symbol.for('x')]]]]];
 /**
  * Convert a linked list to an array list.
@@ -1873,5 +1925,6 @@ arrayListToLinkedList_.fsource = [Symbol.for('define'), [Symbol.for('array-list-
 function linkedListToArrayList_(x) {
     return [...x.slice(0, -2), x[x.length - 1]];
 }
+exports.linkedListToArrayList = linkedListToArrayList_;
 exports.linkedListToArrayList_ = linkedListToArrayList_;
 linkedListToArrayList_.fsource = [Symbol.for('define'), [Symbol.for('linked-list->array-list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('linked-list-head'), Symbol.for('x')]], [Symbol.for('unquote'), [Symbol.for('linked-list-tail'), Symbol.for('x')]]]]];

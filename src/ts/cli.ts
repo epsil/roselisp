@@ -68,6 +68,15 @@ const cliOptions: any = {
     alias: 'e',
     type: 'string'
   },
+  fcommonjs: {
+    default: false,
+    type: 'boolean'
+  },
+  fesModuleInterop: {
+    alias: 'fes-module-interop',
+    default: false,
+    type: 'boolean'
+  },
   fevalBindings: {
     alias: 'feval-bindings',
     default: false,
@@ -157,23 +166,10 @@ const helpMessage: any = 'Lisp interpreter and transpiler in JavaScript\n' +
  */
 function normalizeCliOptions(options: any): any {
   const languageOption: any = options['language'] || '';
-  const inlineFunctionsOption: any = options['finlineFunctions'];
   const language: any = languageOption.match(new RegExp('^TypeScript$', 'i')) ? 'TypeScript' : 'JavaScript';
   return {
     ...options,
-    language: language,
-    inlineFunctions: inlineFunctionsOption
-  };
-}
-
-/**
- * Normalize compilation options.
- */
-function normalizeCompilationOptions(options: any): any {
-  const evalBindingsOption: any = options['fevalBindings'];
-  return {
-    ...options,
-    eval: evalBindingsOption
+    language: language
   };
 }
 
@@ -199,8 +195,7 @@ function main(): void {
   } else if (decompileFlag) {
     decompileFilesX(input, flags);
   } else if (compileFlag) {
-    const compilationOptions: any = normalizeCompilationOptions(flags);
-    compileFilesX(input, compilationOptions);
+    compileFilesX(input, flags);
   } else {
     interpretFiles(input);
   }

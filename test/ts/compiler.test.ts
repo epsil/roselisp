@@ -4899,11 +4899,11 @@ describe('require', function (): any {
       "import * as foo from 'foo';"
     );
   });
-  it('(compile \'(require "foo") :es-module-interop #t)', function (): any {
+  it('(compile \'(require "foo") :fes-module-interop #t)', function (): any {
     return assertEqual(
       compile(
         [Symbol.for('require'), 'foo'],
-        Symbol.for(':es-module-interop'),
+        Symbol.for(':fes-module-interop'),
         true
       ),
       "import foo from 'foo';"
@@ -4915,21 +4915,21 @@ describe('require', function (): any {
       "import * as foo from 'bar';"
     );
   });
-  it('(compile \'(require foo "bar") :es-module-interop #t)', function (): any {
+  it('(compile \'(require foo "bar") :fes-module-interop #t)', function (): any {
     return assertEqual(
       compile(
         [Symbol.for('require'), Symbol.for('foo'), 'bar'],
-        Symbol.for(':es-module-interop'),
+        Symbol.for(':fes-module-interop'),
         true
       ),
       "import foo from 'bar';"
     );
   });
-  it('(compile \'(require "foo" "bar") :es-module-interop #t)', function (): any {
+  it('(compile \'(require "foo" "bar") :fes-module-interop #t)', function (): any {
     return assertEqual(
       compile(
         [Symbol.for('require'), 'foo', 'bar'],
-        Symbol.for(':es-module-interop'),
+        Symbol.for(':fes-module-interop'),
         true
       ),
       "import foo from 'bar';"
@@ -7091,7 +7091,7 @@ describe('Macros', function (): any {
         'let baz = x;'
     );
   });
-  it("(compile '(module m scheme (define (foo-bar x) (keyword? x)) (defmacro bar (x) (foo-bar x)) (define baz (bar 1))) :inline-functions #t)", function (): any {
+  it("(compile '(module m scheme (define (foo-bar x) (keyword? x)) (defmacro bar (x) (foo-bar x)) (define baz (bar 1))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7111,7 +7111,7 @@ describe('Macros', function (): any {
           ],
           [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [keywordp] = (() => {\n' +
@@ -7446,7 +7446,7 @@ describe('Fexprs', function (): any {
 });
 
 describe('Global environment', function (): any {
-  it("(compile '(module m scheme (define lst `(,symbol? ,boolean?))) :inline-functions #t)", function (): any {
+  it("(compile '(module m scheme (define lst `(,symbol? ,boolean?))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7465,7 +7465,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [symbolp, booleanp] = (() => {\n' +
@@ -7481,7 +7481,7 @@ describe('Global environment', function (): any {
         'let lst = [symbolp, booleanp];'
     );
   });
-  xit('(compile \'(define-values (_ regexp) (rl/sandbox ((js/arrow () (define __ (js/obj "@@functional/placeholder" #t)) (define (js/regexp_ input (flags #u)) (if (eq? (type-of input) "string") (new RegExp input flags) input)) (values __ js/regexp_))))) :inline-functions #t)', function (): any {
+  xit('(compile \'(define-values (_ regexp) (rl/sandbox ((js/arrow () (define __ (js/obj "@@functional/placeholder" #t)) (define (js/regexp_ input (flags #u)) (if (eq? (type-of input) "string") (new RegExp input flags) input)) (values __ js/regexp_))))) :finline-functions #t)', function (): any {
     return assertEqual(
       compile(
         [
@@ -7530,7 +7530,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [, regexp] = (() => {\n' +
@@ -7548,7 +7548,7 @@ describe('Global environment', function (): any {
         '})();'
     );
   });
-  it("(compile '(module m scheme (define one-plus-one (apply + '(1 1)))) :inline-functions #t)", function (): any {
+  it("(compile '(module m scheme (define one-plus-one (apply + '(1 1)))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7565,7 +7565,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [_add] = (() => {\n' +
@@ -7582,7 +7582,7 @@ describe('Global environment', function (): any {
         'let onePlusOne = _add(1, 1);'
     );
   });
-  it("(compile '(module m scheme (define one-minus-one (apply - '(1 1)))) :inline-functions #t)", function (): any {
+  it("(compile '(module m scheme (define one-minus-one (apply - '(1 1)))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7599,7 +7599,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [_sub] = (() => {\n' +
@@ -7642,7 +7642,7 @@ describe('Global environment', function (): any {
         'let oneMinusOne = _sub(1, 1);'
     );
   });
-  it("(compile '(module m scheme (define one-times-one (apply * '(1 1)))) :inline-functions #t)", function (): any {
+  it("(compile '(module m scheme (define one-times-one (apply * '(1 1)))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7659,7 +7659,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [_mul] = (() => {\n' +
@@ -7676,7 +7676,7 @@ describe('Global environment', function (): any {
         'let oneTimesOne = _mul(1, 1);'
     );
   });
-  it("(compile '(module m scheme (define one-divided-by-one (apply / '(1 1)))) :inline-functions #t)", function (): any {
+  it("(compile '(module m scheme (define one-divided-by-one (apply / '(1 1)))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7693,7 +7693,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [_div] = (() => {\n' +
@@ -7715,7 +7715,7 @@ describe('Global environment', function (): any {
         'let oneDividedByOne = _div(1, 1);'
     );
   });
-  it('(compile \'(module m scheme (define foo-bar (apply string-append \'("foo" "bar")))) :inline-functions #t)', function (): any {
+  it('(compile \'(module m scheme (define foo-bar (apply string-append \'("foo" "bar")))) :finline-functions #t)', function (): any {
     return assertEqual(
       compile(
         [
@@ -7732,7 +7732,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [stringAppend] = (() => {\n' +
@@ -7747,7 +7747,7 @@ describe('Global environment', function (): any {
         "let fooBar = stringAppend('foo', 'bar');"
     );
   });
-  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l)) (define bar (my-foldl + 0 '(1 2 3 4)))) :inline-functions #t)", function (): any {
+  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l)) (define bar (my-foldl + 0 '(1 2 3 4)))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7780,7 +7780,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [add] = (function () {\n' +
@@ -7801,7 +7801,7 @@ describe('Global environment', function (): any {
         'let bar = myFoldl(add, 0, [1, 2, 3, 4]);'
     );
   });
-  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l))) :inline-functions #t)", function (): any {
+  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7824,7 +7824,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [foldl] = (function () {\n' +
@@ -7841,7 +7841,7 @@ describe('Global environment', function (): any {
         '}'
     );
   });
-  it("(compile '(module m lisp (define (my-map f x) (map f x)) (define bar (my-map first '((1) (2) (3))))) :inline-functions #t)", function (): any {
+  it("(compile '(module m lisp (define (my-map f x) (map f x)) (define bar (my-map first '((1) (2) (3))))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7863,7 +7863,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [first] = (() => {\n' +
@@ -7882,7 +7882,7 @@ describe('Global environment', function (): any {
         'let bar = myMap(first, [[1], [2], [3]]);'
     );
   });
-  xit("(compile '(module m lisp (define (foo f x y) (f x y)) (define (my-push-4 lst x) (foo push! lst x))) :inline-functions #t)", function (): any {
+  xit("(compile '(module m lisp (define (foo f x y) (f x y)) (define (my-push-4 lst x) (foo push! lst x))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7910,7 +7910,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [pushX] = (function () {\n' +
@@ -7930,7 +7930,7 @@ describe('Global environment', function (): any {
         '}'
     );
   });
-  xit("(compile '(module m lisp (define (get-push-function) push!) (define (my-push-4 lst x) ((get-push-function) lst x))) :inline-functions #t)", function (): any {
+  xit("(compile '(module m lisp (define (get-push-function) push!) (define (my-push-4 lst x) ((get-push-function) lst x))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7952,7 +7952,7 @@ describe('Global environment', function (): any {
             ],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [pushX] = (function () {\n' +
@@ -7972,7 +7972,7 @@ describe('Global environment', function (): any {
         '}'
     );
   });
-  it("(compile '(module m lisp (define (my-cdr x) (cdr x))) :inline-functions #t)", function (): any {
+  it("(compile '(module m lisp (define (my-cdr x) (cdr x))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -7985,7 +7985,7 @@ describe('Global environment', function (): any {
             [Symbol.for('cdr'), Symbol.for('x')],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [cdr] = (() => {\n' +
@@ -8004,7 +8004,7 @@ describe('Global environment', function (): any {
         '}'
     );
   });
-  return it("(compile '(module m lisp (define (my-intersection x y) (intersection x y))) :inline-functions #t)", function (): any {
+  return it("(compile '(module m lisp (define (my-intersection x y) (intersection x y))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
         [
@@ -8017,7 +8017,7 @@ describe('Global environment', function (): any {
             [Symbol.for('intersection'), Symbol.for('x'), Symbol.for('y')],
           ],
         ],
-        Symbol.for(':inline-functions'),
+        Symbol.for(':finline-functions'),
         true
       ),
       'let [intersection] = (() => {\n' +
@@ -9073,7 +9073,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           case: 'camelcase',
-          inlineFunctions: true,
+          finlineFunctions: true,
           language: 'JavaScript',
           optimize: true,
         }
@@ -9110,7 +9110,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           case: 'camelcase',
-          inlineFunctions: true,
+          finlineFunctions: true,
           language: 'JavaScript',
           optimize: true,
         }

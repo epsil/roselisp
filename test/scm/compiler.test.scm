@@ -2305,15 +2305,15 @@ for (let i: any = _start; i < _end; i++) {
  > (compile '(require "foo"))
  "import * as foo from 'foo';"
  it> (compile '(require "foo")
-              :es-module-interop #t)
+              :fes-module-interop #t)
  "import foo from 'foo';"
  > (compile '(require foo "bar"))
  "import * as foo from 'bar';"
  > (compile '(require foo "bar")
-            :es-module-interop #t)
+            :fes-module-interop #t)
  "import foo from 'bar';"
  > (compile '(require "foo" "bar")
-            :es-module-interop #t)
+            :fes-module-interop #t)
  "import foo from 'bar';"
  > (compile '(require (only-in foo
                                bar)))
@@ -3183,7 +3183,7 @@ let baz = x;"
          (foo-bar x))
        (define baz
          (bar 1)))
-    :inline-functions #t)
+    :finline-functions #t)
  "let [keywordp] = (() => {
   function keywordp_(obj) {
     return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
@@ -3412,7 +3412,7 @@ let bar = foo(Symbol.for('x'));"
  > (compile '(module m scheme
                (define lst
                  `(,symbol? ,boolean?)))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [symbolp, booleanp] = (() => {
   function symbolp_(obj) {
     return typeof obj === 'symbol';
@@ -3435,7 +3435,7 @@ let lst = [symbolp, booleanp];"
                     (new RegExp input flags)
                     input))
               (values __ js/regexp_)))))
-       :inline-functions #t)
+       :finline-functions #t)
  "let [, regexp] = (() => {
   let __ = {
     '@@functional/placeholder': true
@@ -3452,7 +3452,7 @@ let lst = [symbolp, booleanp];"
  > (compile '(module m scheme
                (define one-plus-one
                  (apply + '(1 1))))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [_add] = (() => {
   function add_(...args) {
     let result = 0;
@@ -3468,7 +3468,7 @@ let onePlusOne = _add(1, 1);"
  > (compile '(module m scheme
                (define one-minus-one
                  (apply - '(1 1))))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [_sub] = (() => {
   function sub_(...args) {
     let len = args.length;
@@ -3499,7 +3499,7 @@ let oneMinusOne = _sub(1, 1);"
  > (compile '(module m scheme
                (define one-times-one
                  (apply * '(1 1))))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [_mul] = (() => {
   function mul_(...args) {
     let result = 1;
@@ -3515,7 +3515,7 @@ let oneTimesOne = _mul(1, 1);"
  > (compile '(module m scheme
                (define one-divided-by-one
                  (apply / '(1 1))))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [_div] = (() => {
   function div_(...args) {
     if (args.length === 1) {
@@ -3537,7 +3537,7 @@ let oneDividedByOne = _div(1, 1);"
     '(module m scheme
        (define foo-bar
          (apply string-append '("foo" "bar"))))
-    :inline-functions #t)
+    :finline-functions #t)
  "let [stringAppend] = (() => {
   function stringAppend_(...args) {
     return args.reduce(function (acc, x) {
@@ -3553,7 +3553,7 @@ let fooBar = stringAppend('foo', 'bar');"
                     (foldl f v l))
                   (define bar
                     (my-foldl + 0 '(1 2 3 4))))
-               :inline-functions #t)
+               :finline-functions #t)
  "let [add] = (function () {
   function add(...args) {
     return args.reduce(function (y, x) {
@@ -3573,7 +3573,7 @@ let bar = myFoldl(add, 0, [1, 2, 3, 4]);"
  xit> (compile '(module m lisp
                   (define (my-foldl f v l)
                     (foldl f v l)))
-               :inline-functions #t)
+               :finline-functions #t)
  "let [foldl] = (function () {
   function foldl(f, v, lst) {
     return lst.reduce(function (acc, x) {
@@ -3591,7 +3591,7 @@ function myFoldl(f, v, l) {
                  (map f x))
                (define bar
                  (my-map first '((1) (2) (3)))))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [first] = (() => {
   function first_(lst) {
     return lst[0];
@@ -3611,7 +3611,7 @@ let bar = myMap(first, [[1], [2], [3]]);"
                     (f x y))
                   (define (my-push-4 lst x)
                     (foo push! lst x)))
-               :inline-functions #t)
+               :finline-functions #t)
  "let [pushX] = (function () {
   function pushX(lst, x) {
     lst.unshift(x);
@@ -3632,7 +3632,7 @@ function myPush4(lst, x) {
                     push!)
                   (define (my-push-4 lst x)
                     ((get-push-function) lst x)))
-               :inline-functions #t)
+               :finline-functions #t)
  "let [pushX] = (function () {
   function pushX(lst, x) {
     lst.unshift(x);
@@ -3651,7 +3651,7 @@ function myPush4(lst, x) {
  > (compile '(module m lisp
                (define (my-cdr x)
                  (cdr x)))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [cdr] = (() => {
   function cdr_(lst) {
     if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
@@ -3669,7 +3669,7 @@ function myCdr(x) {
  > (compile '(module m lisp
                (define (my-intersection x y)
                  (intersection x y)))
-            :inline-functions #t)
+            :finline-functions #t)
  "let [intersection] = (() => {
   function intersection_(...args) {
     function intersection2(arr1, arr2) {
@@ -4490,7 +4490,7 @@ import * as foo from 'foo';"
     (apply + '(1 1))))")
         compilation-environment
         (js/obj "case" "camelcase"
-                "inlineFunctions" #t
+                "finlineFunctions" #t
                 "language" "JavaScript"
                 "optimize" #t)))
  "/**
@@ -4520,7 +4520,7 @@ const onePlusOne = _add(1, 1);"
     (apply + '(1 1))))")
         compilation-environment
         (js/obj "case" "camelcase"
-                "inlineFunctions" #t
+                "finlineFunctions" #t
                 "language" "JavaScript"
                 "optimize" #t)))
  "/**

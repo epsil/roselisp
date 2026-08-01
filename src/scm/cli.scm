@@ -53,6 +53,12 @@
            "default" ""
            "alias" "e"
            "type" "string")
+   "fcommonjs" (js/obj "default" #f
+                       "type" "boolean")
+   "fesModuleInterop" (js/obj
+                       "alias" "fes-module-interop"
+                       "default" #f
+                       "type" "boolean")
    "fevalBindings" (js/obj
                     "alias" "feval-bindings"
                     "default" #f
@@ -131,8 +137,6 @@ Options:
   (define language-option
     (or (oget options "language")
         ""))
-  (define inline-functions-option
-    (oget options "finlineFunctions"))
   (define language
     (if (regexp-match (regexp "^TypeScript$" "i")
                       language-option)
@@ -140,16 +144,7 @@ Options:
         "JavaScript"))
   (js/obj-append
    options
-   (js/obj "language" language
-           "inlineFunctions" inline-functions-option)))
-
-;;; Normalize compilation options.
-(define (normalize-compilation-options options)
-  (define eval-bindings-option
-    (oget options "fevalBindings"))
-  (js/obj-append
-   options
-   (js/obj "eval" eval-bindings-option)))
+   (js/obj "language" language)))
 
 ;;; `main` function. Invoked when the program is
 ;;; run from the command line.
@@ -185,9 +180,7 @@ Options:
    (decompile-flag
     (decompile-files! input flags))
    (compile-flag
-    (define compilation-options
-      (normalize-compilation-options flags))
-    (compile-files! input compilation-options))
+    (compile-files! input flags))
    (else
     (interpret-files input))))
 

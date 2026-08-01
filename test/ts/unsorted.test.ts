@@ -62,33 +62,33 @@ describe('To do', function (): any {
 });
 
 describe('require', function (): any {
-  xit('(compile \'(require "foo-bar") :es-module-interop #t)', function (): any {
+  xit('(compile \'(require "foo-bar") :fes-module-interop #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
       [
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('require'), 'foo-bar']],
-        Symbol.for(':es-module-interop'),
+        Symbol.for(':fes-module-interop'),
         true,
       ],
       "import fooBar from 'foo-bar';",
     ]);
   });
-  xit('(compile \'(require "foo") :commonjs #t)', function (): any {
+  xit('(compile \'(require "foo") :fcommonjs #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
       [
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('require'), 'foo']],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       "let foo = require('foo');",
     ]);
   });
-  xit('(compile \'(require foo "bar") :commonjs #t)', function (): any {
+  xit('(compile \'(require foo "bar") :fcommonjs #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -98,26 +98,26 @@ describe('require', function (): any {
           Symbol.for('quote'),
           [Symbol.for('require'), Symbol.for('foo'), 'bar'],
         ],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       "let foo = require('bar');",
     ]);
   });
-  xit('(compile \'(require "foo" "bar") :commonjs #t)', function (): any {
+  xit('(compile \'(require "foo" "bar") :fcommonjs #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
       [
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('require'), 'foo', 'bar']],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       "let foo = require('bar');",
     ]);
   });
-  xit('(compile \'(require (only-in "foo" bar)) :commonjs #t)', function (): any {
+  xit('(compile \'(require (only-in "foo" bar)) :fcommonjs #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -130,13 +130,13 @@ describe('require', function (): any {
             [Symbol.for('only-in'), 'foo', Symbol.for('bar')],
           ],
         ],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       "let {bar} = require('foo');",
     ]);
   });
-  return xit('(compile \'(require (only-in "foo" (bar baz))) :commonjs #t)', function (): any {
+  return xit('(compile \'(require (only-in "foo" (bar baz))) :fcommonjs #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -153,7 +153,7 @@ describe('require', function (): any {
             ],
           ],
         ],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       "let {bar: baz} = require('foo');",
@@ -162,20 +162,20 @@ describe('require', function (): any {
 });
 
 describe('provide', function (): any {
-  xit("(compile '(provide x) :commonjs #t)", function (): any {
+  xit("(compile '(provide x) :fcommonjs #t)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
       [
         Symbol.for('compile'),
         [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       'module.exports = {\n' + '  x\n' + '};',
     ]);
   });
-  xit("(compile '(provide x y) :commonjs #t)", function (): any {
+  xit("(compile '(provide x y) :fcommonjs #t)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -185,13 +185,13 @@ describe('provide', function (): any {
           Symbol.for('quote'),
           [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')],
         ],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       'export {\n' + '  x,\n' + '  y\n' + '};',
     ]);
   });
-  return xit("(compile '(provide (rename-out (x y))) :commonjs #t)", function (): any {
+  return xit("(compile '(provide (rename-out (x y))) :fcommonjs #t)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -204,7 +204,7 @@ describe('provide', function (): any {
             [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]],
           ],
         ],
-        Symbol.for(':commonjs'),
+        Symbol.for(':fcommonjs'),
         true,
       ],
       'export {\n' + '  x: y\n' + '};',

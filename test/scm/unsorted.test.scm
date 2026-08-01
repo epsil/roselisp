@@ -35,42 +35,42 @@
  > (describe "require")
  _
  xit> (compile '(require "foo-bar")
-               :es-module-interop #t)
+               :fes-module-interop #t)
  "import fooBar from 'foo-bar';"
  xit> (compile '(require "foo")
-               :commonjs #t)
+               :fcommonjs #t)
  "let foo = require('foo');"
  xit> (compile '(require foo "bar")
-               :commonjs #t)
+               :fcommonjs #t)
  "let foo = require('bar');"
  xit> (compile '(require "foo" "bar")
-               :commonjs #t)
+               :fcommonjs #t)
  "let foo = require('bar');"
  xit> (compile '(require (only-in "foo"
                                   bar))
-               :commonjs #t)
+               :fcommonjs #t)
  "let {bar} = require('foo');"
  xit> (compile '(require (only-in "foo"
                                   (bar baz)))
-               :commonjs #t)
+               :fcommonjs #t)
  "let {bar: baz} = require('foo');"
 
  ;; `provide`
  > (describe "provide")
  _
  xit> (compile '(provide x)
-               :commonjs #t)
+               :fcommonjs #t)
  "module.exports = {
   x
 };"
  xit> (compile '(provide x y)
-               :commonjs #t)
+               :fcommonjs #t)
  "export {
   x,
   y
 };"
  xit> (compile '(provide (rename-out (x y)))
-               :commonjs #t)
+               :fcommonjs #t)
  "export {
   x: y
 };"

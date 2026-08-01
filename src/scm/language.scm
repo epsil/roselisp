@@ -547,9 +547,9 @@
 (define default-options
   (js/obj "comments" #t
           "expressionType" "expression"
-          "eval" #f
+          "fevalBindings" #f
           "shouldInline" #t
-          "inlineFunctions" #f
+          "finlineFunctions" #f
           "compileEnvironment" #t
           "gensymMap" (make-hash)))
 
@@ -1554,7 +1554,7 @@
 ;;; Make a Lisp interpretation environment.
 (define (make-interpretation-environment env (options (js/obj)))
   (define eval-option
-    (oget options "eval"))
+    (oget options "fevalBindings"))
   ;; TODO: Make `#f` the default.
   (when (undefined? eval-option)
     (set! eval-option #t))
@@ -4329,8 +4329,9 @@
   (define body
     (send node drop 1))
   (define compiled-body '())
-  ;; Add defined variables to environment. We have to
-  ;; handle them here since they may refer to each other.
+  ;; Kludge: look ahead and add defined variables to environment.
+  ;; Should replace this with something better (e.g., delayed
+  ;; compilation of `gensym`'ed symbols).
   (for ((i (range 0 (js/length body))))
     (define exp
       (rose->sexp (aget body i)))
@@ -4397,7 +4398,7 @@
   (cond
    ((= (js/length symbols) 0)
     #f)
-   ((oget options "inlineFunctions")
+   ((oget options "finlineFunctions")
     (make-define-values-exp symbols env options))
    (else
     (make-require-exp symbols env options))))
@@ -4405,7 +4406,7 @@
 ;;; Make a `(define-values ...)` form for the global environment.
 (define (make-define-values-exp symbols env options)
   (define inline-functions-option
-    (oget options "inlineFunctions"))
+    (oget options "finlineFunctions"))
   (define env1
     (new LispEnvironment
          '()
@@ -4568,7 +4569,7 @@
      env
      (js/obj-append
       options
-      (js/obj "inlineFunctions" #t))))
+      (js/obj "finlineFunctions" #t))))
   (cond
    ((> (js/length global-environment-exp) 1)
     (define lambda-call
@@ -4760,7 +4761,7 @@
 ;;; Compile a `(require ...)` expression.
 (define (compile-require node env (options (js/obj)))
   (define es-module-interop
-    (oget options "esModuleInterop"))
+    (oget options "fesModuleInterop"))
   (define language-env
     (oget options "languageEnvironment"))
   (define (lang-filter x)
@@ -6151,7 +6152,7 @@
 ;;; Compile a `(js ...)` expression.
 (define (compile-js node env (options (js/obj)))
   (define eval-option
-    (oget options "eval"))
+    (oget options "fevalBindings"))
   (set! eval-option #t)
   (define str
     (send node get 1))
@@ -6173,7 +6174,7 @@
 (define (compile-js/eval node env (options (js/obj)))
   ;; TODO: Disable if `eval-option` is `#f`.
   (define eval-option
-    (oget options "eval"))
+    (oget options "fevalBindings"))
   ;; FIXME: Kludge.
   (define compiling-to-js
     (valid-js-casing-style? (oget options "case")))
@@ -8655,7 +8656,7 @@
           lang-environment
           "compilationMappingEnvironment"
           compilation-mapping-env
-          "inlineFunctions"
+          "finlineFunctions"
           #t
           "gensymMap"
           (make-hash)))

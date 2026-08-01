@@ -8,7 +8,299 @@ import { assertEqual, testRepl, testMacro } from './test-util';
 
 testMacro.ftype = 'macro';
 
-describe('To do', function (): any {});
+describe('To do', function (): any {
+  xit('(let (result) (js/for (() () ()) (set! result 1) (break)) result)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('let'),
+        [Symbol.for('result')],
+        [
+          Symbol.for('js/for'),
+          [[], [], []],
+          [Symbol.for('set!'), Symbol.for('result'), 1],
+          [Symbol.for('break')],
+        ],
+        Symbol.for('result'),
+      ],
+      1,
+    ]);
+  });
+  xit("(compile '(js/for (() () ()) (break)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/for'), [[], [], []], [Symbol.for('break')]],
+        ],
+      ],
+      'for(;;) {\n' + '  break;\n' + '}',
+    ]);
+  });
+  return xit("(compile '(js/for (#u #u #u) (break)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for'),
+            [undefined, undefined, undefined],
+            [Symbol.for('break')],
+          ],
+        ],
+      ],
+      'for(;;) {\n' + '  break;\n' + '}',
+    ]);
+  });
+});
+
+describe('require', function (): any {
+  xit('(compile \'(require "foo-bar") :es-module-interop #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo-bar']],
+        Symbol.for(':es-module-interop'),
+        true,
+      ],
+      "import fooBar from 'foo-bar';",
+    ]);
+  });
+  xit('(compile \'(require "foo") :commonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo']],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      "let foo = require('foo');",
+    ]);
+  });
+  xit('(compile \'(require foo "bar") :commonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('require'), Symbol.for('foo'), 'bar'],
+        ],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      "let foo = require('bar');",
+    ]);
+  });
+  xit('(compile \'(require "foo" "bar") :commonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo', 'bar']],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      "let foo = require('bar');",
+    ]);
+  });
+  xit('(compile \'(require (only-in "foo" bar)) :commonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [Symbol.for('only-in'), 'foo', Symbol.for('bar')],
+          ],
+        ],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      "let {bar} = require('foo');",
+    ]);
+  });
+  return xit('(compile \'(require (only-in "foo" (bar baz))) :commonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [
+              Symbol.for('only-in'),
+              'foo',
+              [Symbol.for('bar'), Symbol.for('baz')],
+            ],
+          ],
+        ],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      "let {bar: baz} = require('foo');",
+    ]);
+  });
+});
+
+describe('provide', function (): any {
+  xit("(compile '(provide x) :commonjs #t)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      'module.exports = {\n' + '  x\n' + '};',
+    ]);
+  });
+  xit("(compile '(provide x y) :commonjs #t)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')],
+        ],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      'export {\n' + '  x,\n' + '  y\n' + '};',
+    ]);
+  });
+  return xit("(compile '(provide (rename-out (x y))) :commonjs #t)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]],
+          ],
+        ],
+        Symbol.for(':commonjs'),
+        true,
+      ],
+      'export {\n' + '  x: y\n' + '};',
+    ]);
+  });
+});
+
+describe('gensym', function (): any {
+  xit('(compile `(begin (define x 1) (define ,(gensym "x") 2) (define x1 3)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              2,
+            ],
+            [Symbol.for('define'), Symbol.for('x1'), 3],
+          ],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'let x2 = 2;\n' + '\n' + 'let x1 = 3;',
+    ]);
+  });
+  xit('(compile `(begin (define x 1) (define ,(gensym "x") 2) (define-values (x1) (list 3))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              2,
+            ],
+            [
+              Symbol.for('define-values'),
+              [Symbol.for('x1')],
+              [Symbol.for('list'), 3],
+            ],
+          ],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'let x2 = 2;\n' + '\n' + 'let [x1] = [3];',
+    ]);
+  });
+  return xit('(compile `(begin (define x 1) (define ,(gensym "x") 2) (define ,(gensym "x") 3) (define x1 4) (define x2 5)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              2,
+            ],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              3,
+            ],
+            [Symbol.for('define'), Symbol.for('x1'), 4],
+            [Symbol.for('define'), Symbol.for('x2'), 5],
+          ],
+        ],
+      ],
+      'let x = 1;\n' +
+        '\n' +
+        'let x3 = 2;\n' +
+        '\n' +
+        'let x4 = 3;\n' +
+        '\n' +
+        'let x1 = 4;\n' +
+        '\n' +
+        'let x2 = 5;',
+    ]);
+  });
+});
 
 describe('Fundamental operators', function (): any {
   xit("(compile '(js/= x y))", function (): any {

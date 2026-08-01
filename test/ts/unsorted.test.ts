@@ -8,73 +8,9 @@ import { assertEqual, testRepl, testMacro } from './test-util';
 
 testMacro.ftype = 'macro';
 
-describe('To do', function (): any {
-  xit('(let (result) (js/for (() () ()) (set! result 1) (break)) result)', function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('let'),
-        [Symbol.for('result')],
-        [
-          Symbol.for('js/for'),
-          [[], [], []],
-          [Symbol.for('set!'), Symbol.for('result'), 1],
-          [Symbol.for('break')],
-        ],
-        Symbol.for('result'),
-      ],
-      1,
-    ]);
-  });
-  xit("(compile '(js/for (() () ()) (break)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [Symbol.for('js/for'), [[], [], []], [Symbol.for('break')]],
-        ],
-      ],
-      'for(;;) {\n' + '  break;\n' + '}',
-    ]);
-  });
-  return xit("(compile '(js/for (#u #u #u) (break)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('js/for'),
-            [undefined, undefined, undefined],
-            [Symbol.for('break')],
-          ],
-        ],
-      ],
-      'for(;;) {\n' + '  break;\n' + '}',
-    ]);
-  });
-});
+describe('To do', function (): any {});
 
 describe('require', function (): any {
-  xit('(compile \'(require "foo-bar") :fes-module-interop #t)', function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('require'), 'foo-bar']],
-        Symbol.for(':fes-module-interop'),
-        true,
-      ],
-      "import fooBar from 'foo-bar';",
-    ]);
-  });
   xit('(compile \'(require "foo") :fcommonjs #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -298,6 +234,59 @@ describe('gensym', function (): any {
         'let x1 = 4;\n' +
         '\n' +
         'let x2 = 5;',
+    ]);
+  });
+});
+
+describe('for', function (): any {
+  xit('(let (result) (js/for (() () ()) (set! result 1) (break)) result)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('let'),
+        [Symbol.for('result')],
+        [
+          Symbol.for('js/for'),
+          [[], [], []],
+          [Symbol.for('set!'), Symbol.for('result'), 1],
+          [Symbol.for('break')],
+        ],
+        Symbol.for('result'),
+      ],
+      1,
+    ]);
+  });
+  xit("(compile '(js/for (() () ()) (break)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/for'), [[], [], []], [Symbol.for('break')]],
+        ],
+      ],
+      'for(;;) {\n' + '  break;\n' + '}',
+    ]);
+  });
+  return xit("(compile '(js/for (#u #u #u) (break)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for'),
+            [undefined, undefined, undefined],
+            [Symbol.for('break')],
+          ],
+        ],
+      ],
+      'for(;;) {\n' + '  break;\n' + '}',
     ]);
   });
 });

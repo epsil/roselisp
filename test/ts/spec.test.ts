@@ -10569,6 +10569,33 @@ describe('Cons dot', function (): any {
   });
 });
 
+describe('require', function (): any {
+  it('(compile \'(require "foo-bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo-bar']],
+      ],
+      "import * as fooBar from 'foo-bar';",
+    ]);
+  });
+  return it('(compile \'(require "foo-bar") :fes-module-interop #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo-bar']],
+        Symbol.for(':fes-module-interop'),
+        true,
+      ],
+      "import fooBar from 'foo-bar';",
+    ]);
+  });
+});
+
 describe('compile', function (): any {
   it('(compile #t)', function (): any {
     return testRepl([

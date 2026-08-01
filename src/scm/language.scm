@@ -4809,6 +4809,8 @@
                             (new Identifier x1-str)))))))
     (set! y-exp (second x-exp)))
    (else
+    (when (string? x-exp)
+      (set! x-exp (string->symbol x-exp)))
     (when (symbol? x-exp)
       (set! x-exp
             (print-estree

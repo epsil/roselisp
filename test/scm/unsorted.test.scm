@@ -14,29 +14,10 @@
 
  > (describe "To do")
  _
- xit> (let (result)
-        (js/for (() () ())
-                (set! result 1)
-                (break))
-        result)
- 1
- xit> (compile '(js/for (() () ())
-                        (break)))
- "for(;;) {
-  break;
-}"
- xit> (compile '(js/for (#u #u #u)
-                        (break)))
- "for(;;) {
-  break;
-}"
 
  ;; `require`
  > (describe "require")
  _
- xit> (compile '(require "foo-bar")
-               :fes-module-interop #t)
- "import fooBar from 'foo-bar';"
  xit> (compile '(require "foo")
                :fcommonjs #t)
  "let foo = require('foo');"
@@ -112,6 +93,26 @@ let x4 = 3;
 let x1 = 4;
 
 let x2 = 5;"
+
+ ;; `for`
+ > (describe "for")
+ _
+ xit> (let (result)
+        (js/for (() () ())
+                (set! result 1)
+                (break))
+        result)
+ 1
+ xit> (compile '(js/for (() () ())
+                        (break)))
+ "for(;;) {
+  break;
+}"
+ xit> (compile '(js/for (#u #u #u)
+                        (break)))
+ "for(;;) {
+  break;
+}"
 
  > (describe "Fundamental operators")
  _

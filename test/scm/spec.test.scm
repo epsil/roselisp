@@ -3049,6 +3049,15 @@ let z = x + y + w + z;"
  > (cons-dot? *cons-dot*)
  #t
 
+ ;; `require`
+ > (describe "require")
+ _
+ > (compile '(require "foo-bar"))
+ "import * as fooBar from 'foo-bar';"
+ > (compile '(require "foo-bar")
+            :fes-module-interop #t)
+ "import fooBar from 'foo-bar';"
+
  ;; `compile`
  > (describe "compile")
  _

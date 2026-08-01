@@ -763,20 +763,19 @@
 (define (print-expression-statement node (options (js/obj)))
   (define expression
     (get-field expression node))
+  (define expression-printed
+    (print-node expression options))
   ;; Object expressions and object destructuring must be
   ;; wrapped in parentheses in order to produce a
   ;; syntactically correct program.
-  (define wrap-in-parentheses
-    (or (estree-type? expression "ObjectExpression")
-        (and (estree-type? expression "AssignmentExpression")
-             (estree-type? (get-field left expression)
-                           "ObjectPattern"))))
-  (define expression-printed
-    (print-node expression options))
+  (when (or (estree-type? expression "ObjectExpression")
+            (and (estree-type? expression "AssignmentExpression")
+                 (estree-type? (get-field left expression)
+                               "ObjectPattern")))
+    (set! expression-printed
+          (doc-wrap expression-printed options)))
   (list
-   (if wrap-in-parentheses
-       (doc-wrap expression-printed options)
-       expression-printed)
+   expression-printed
    ";"))
 
 ;;; Print a `ReturnStatement` ESTree node to a `Doc` object.
@@ -1387,10 +1386,14 @@
     (print-node
      test options))
   (define test-printed-str
-    (if (estree-type? test "AssignmentExpression")
-        (doc-wrap (doc-value-string test-printed)
-                  options)
-        (doc-value-string test-printed)))
+    (doc-value-string test-printed))
+  ;; It is customary to wrap assignment expressions
+  ;; in an extra set of parentheses when used as a
+  ;; condition, as this helps to distinguish them
+  ;; from comparisons (`((x = y))` vs. `(x === y)`).
+  (when (estree-type? test "AssignmentExpression")
+    (set! test-printed-str
+          (doc-wrap test-printed options)))
   (define consequent
     (get-field consequent node))
   (define consequent-printed

@@ -846,15 +846,17 @@ printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symb
  */
 function printExpressionStatement(node: any, options: any = {}): any {
   const expression: any = node.expression;
+  let expressionPrinted: any = printNode(expression, options);
   // Object expressions and object destructuring must be
   // wrapped in parentheses in order to produce a
   // syntactically correct program.
-  const wrapInParentheses: any = estreeTypeP(expression, 'ObjectExpression') || (estreeTypeP(expression, 'AssignmentExpression') && estreeTypeP(expression.left, 'ObjectPattern'));
-  const expressionPrinted: any = printNode(expression, options);
-  return [wrapInParentheses ? docWrap(expressionPrinted, options) : expressionPrinted, ';'];
+  if (estreeTypeP(expression, 'ObjectExpression') || (estreeTypeP(expression, 'AssignmentExpression') && estreeTypeP(expression.left, 'ObjectPattern'))) {
+    expressionPrinted = docWrap(expressionPrinted, options);
+  }
+  return [expressionPrinted, ';'];
 }
 
-printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('wrap-in-parentheses'), [Symbol.for('or'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'ObjectExpression'], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'AssignmentExpression'], [Symbol.for('estree-type?'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('expression')], 'ObjectPattern']]]], [Symbol.for('define'), Symbol.for('expression-printed'), [Symbol.for('print-node'), Symbol.for('expression'), Symbol.for('options')]], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('wrap-in-parentheses'), [Symbol.for('doc-wrap'), Symbol.for('expression-printed'), Symbol.for('options')], Symbol.for('expression-printed')], ';']];
+printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('expression-printed'), [Symbol.for('print-node'), Symbol.for('expression'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'ObjectExpression'], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'AssignmentExpression'], [Symbol.for('estree-type?'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('expression')], 'ObjectPattern']]], [Symbol.for('set!'), Symbol.for('expression-printed'), [Symbol.for('doc-wrap'), Symbol.for('expression-printed'), Symbol.for('options')]]], [Symbol.for('list'), Symbol.for('expression-printed'), ';']];
 
 /**
  * Print a `ReturnStatement` ESTree node to a `Doc` object.
@@ -1343,7 +1345,14 @@ printVariableDeclarator.fsource = [Symbol.for('define'), [Symbol.for('print-vari
 function printIfStatement(node: any, options: any = {}): any {
   const test: any = node.test;
   let testPrinted: any = printNode(test, options);
-  const testPrintedStr: any = estreeTypeP(test, 'AssignmentExpression') ? docWrap(docValueString(testPrinted), options) : docValueString(testPrinted);
+  let testPrintedStr: any = docValueString(testPrinted);
+  // It is customary to wrap assignment expressions
+  // in an extra set of parentheses when used as a
+  // condition, as this helps to distinguish them
+  // from comparisons (`((x = y))` vs. `(x === y)`).
+  if (estreeTypeP(test, 'AssignmentExpression')) {
+    testPrintedStr = docWrap(testPrinted, options);
+  }
   const consequent: any = node.consequent;
   let consequentPrinted: any = printNode(consequent, options);
   const alternate: any = node.alternate;
@@ -1355,7 +1364,7 @@ function printIfStatement(node: any, options: any = {}): any {
   return result;
 }
 
-printIfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-if-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('test-printed-str'), [Symbol.for('if'), [Symbol.for('estree-type?'), Symbol.for('test'), 'AssignmentExpression'], [Symbol.for('doc-wrap'), [Symbol.for('doc-value-string'), Symbol.for('test-printed')], Symbol.for('options')], [Symbol.for('doc-value-string'), Symbol.for('test-printed')]]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-field'), Symbol.for('consequent'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('print-node'), Symbol.for('consequent'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('alternate'), [Symbol.for('get-field'), Symbol.for('alternate'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('string-append'), 'if (', Symbol.for('test-printed-str'), ')', [Symbol.for('if'), [Symbol.for('doc-should-break?'), Symbol.for('consequent-printed')], Symbol.for('line'), Symbol.for('space')], [Symbol.for('doc-value-string'), Symbol.for('consequent-printed')]]], [Symbol.for('when'), Symbol.for('alternate'), [Symbol.for('define'), Symbol.for('alternate-printed'), [Symbol.for('print-node'), Symbol.for('alternate'), Symbol.for('options')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('string-append'), Symbol.for('result'), ' else ', [Symbol.for('doc-value-string'), Symbol.for('alternate-printed')]]]], Symbol.for('result')];
+printIfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-if-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('test-printed-str'), [Symbol.for('doc-value-string'), Symbol.for('test-printed')]], [Symbol.for('when'), [Symbol.for('estree-type?'), Symbol.for('test'), 'AssignmentExpression'], [Symbol.for('set!'), Symbol.for('test-printed-str'), [Symbol.for('doc-wrap'), Symbol.for('test-printed'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-field'), Symbol.for('consequent'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('print-node'), Symbol.for('consequent'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('alternate'), [Symbol.for('get-field'), Symbol.for('alternate'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('string-append'), 'if (', Symbol.for('test-printed-str'), ')', [Symbol.for('if'), [Symbol.for('doc-should-break?'), Symbol.for('consequent-printed')], Symbol.for('line'), Symbol.for('space')], [Symbol.for('doc-value-string'), Symbol.for('consequent-printed')]]], [Symbol.for('when'), Symbol.for('alternate'), [Symbol.for('define'), Symbol.for('alternate-printed'), [Symbol.for('print-node'), Symbol.for('alternate'), Symbol.for('options')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('string-append'), Symbol.for('result'), ' else ', [Symbol.for('doc-value-string'), Symbol.for('alternate-printed')]]]], Symbol.for('result')];
 
 /**
  * Print a `ConditionalExpression` ESTree node to a `Doc` object.
@@ -1824,7 +1833,7 @@ printSwitchCase.fsource = [Symbol.for('define'), [Symbol.for('print-switch-case'
  */
 function printTsAsExpression(node: any, options: any = {}): any {
   const expression: any = node.expression;
-  const expressionPrinted: any = printNode(expression, options);
+  let expressionPrinted: any = printNode(expression, options);
   const typeAnnotation: any = node.typeAnnotation;
   const typeAnnotationPrinted: any = printTsType(typeAnnotation, options);
   return [expressionPrinted, space, 'as', space, typeAnnotationPrinted];

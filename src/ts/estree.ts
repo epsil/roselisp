@@ -1922,7 +1922,9 @@ class XRawJavaScript extends TSNode {
 /**
  * Whether `obj` is an ESTree.
  *
- * This function only works on instantiated objects.
+ * This function only works on instantiated objects!
+ * ESTree objects obtained from an external parser
+ * library are not instances of our `Node` class.
  */
 function estreep(obj: any): any {
   return obj instanceof Node;
@@ -1934,16 +1936,27 @@ estreep.fsource = [Symbol.for('define'), [Symbol.for('estree?'), Symbol.for('obj
  * Get the type of an ESTree node.
  */
 function estreeType(node: any): any {
-  return node.type;
+  if (!node) {
+    // Gracefully handle the case where `node` is `#n`
+    // because it is used by some ESTree classes to
+    // represent optional values.
+    return '';
+  } else {
+    // Otherwise, if `node` is an ESTree node proper,
+    // then its type is stored in the `type` field.
+    return node.type;
+  }
 }
 
-estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]];
+estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], ''], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]]]];
 
 /**
  * Whether the type of the ESTree node `node` is `typ`.
  */
 function estreeTypeP(node: any, typ: any): any {
-  if (Array.isArray(typ)) {
+  if (!node) {
+    return false;
+  } else if (Array.isArray(typ)) {
     return typ.findIndex(function (x: any): any {
       return estreeTypeP(node, x);
     }) >= 0;
@@ -1952,7 +1965,7 @@ function estreeTypeP(node: any, typ: any): any {
   }
 }
 
-estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
+estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], false], [[Symbol.for('array?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
 
 /**
  * Wrap a value in an ESTree node.

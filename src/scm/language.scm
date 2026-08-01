@@ -5187,13 +5187,16 @@
     (rose->sexp init))
   (define test
     (send node get 1 1))
+  (define test-exp
+    (rose->sexp test))
   (define update
     (send node get 1 2))
   (define update-exp
     (rose->sexp update))
   (define sym #u)
   (define (binding? x)
-    (and (= (js/length x) 2)
+    (and x
+         (= (js/length x) 2)
          (symbol? (js/first x))))
   (cond
    ((binding? init-exp)
@@ -5207,7 +5210,10 @@
    ((form? init-exp set!_ env)
     (set! sym (js/second init-exp))))
   (define init-compiled
-    (compile-statement init env options))
+    (if (or (null? init-exp)
+            (undefined? init-exp))
+        #n
+        (compile-statement init env options)))
   (when (estree-type? init-compiled
                       '("Program"
                         "BlockStatement"))
@@ -5216,7 +5222,10 @@
                (map make-expression
                     (get-field body init-compiled)))))
   (define test-compiled
-    (compile-expression test env options))
+    (if (or (null? test-exp)
+            (undefined? test-exp))
+        #n
+        (compile-expression test env options)))
   (define (increment? x)
     (or (form? x add_ env)
         (form? x sub_ env)))
@@ -5233,7 +5242,10 @@
              `(set! ,sym ,update)
              update))))
   (define update-compiled
-    (compile-statement update env options))
+    (if (or (null? update-exp)
+            (undefined? update-exp))
+        #n
+        (compile-statement update env options)))
   (cond
    ((estree-type? update-compiled
                   '("Program"

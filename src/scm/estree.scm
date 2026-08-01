@@ -1400,17 +1400,30 @@
 
 ;;; Whether `obj` is an ESTree.
 ;;;
-;;; This function only works on instantiated objects.
+;;; This function only works on instantiated objects!
+;;; ESTree objects obtained from an external parser
+;;; library are not instances of our `Node` class.
 (define (estree? obj)
   (is-a? obj Node))
 
 ;;; Get the type of an ESTree node.
 (define (estree-type node)
-  (get-field type node))
+  (cond
+   ;; Gracefully handle the case where `node` is `#n`
+   ;; because it is used by some ESTree classes to
+   ;; represent optional values.
+   ((not node)
+    "")
+   ;; Otherwise, if `node` is an ESTree node proper,
+   ;; then its type is stored in the `type` field.
+   (else
+    (get-field type node))))
 
 ;;; Whether the type of the ESTree node `node` is `typ`.
 (define (estree-type? node typ)
   (cond
+   ((not node)
+    #f)
    ((array? typ)
     (memf? (lambda (x)
              (estree-type? node x))

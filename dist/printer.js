@@ -733,16 +733,27 @@ printNode.fsource = [Symbol.for('define'), [Symbol.for('print-node'), Symbol.for
  * Visitor function for printing ESTree nodes.
  */
 function printVisitor(node, options) {
-    const type = (0, estree_1.estreeType)(node);
-    const comments = options['comments'];
-    const printer = printerMap.get(type) || defaultPrinter;
-    let result = printer(node, options);
-    if (comments) {
-        result = attachComments(result, node, options);
+    if (!node) {
+        // Gracefully handle the case where `node` is `#n`
+        // because it is used by some ESTree classes to
+        // represent optional values.
+        return empty;
     }
-    return result;
+    else {
+        // Otherwise, if `node` is an ESTree node proper,
+        // then inspect its type and call the
+        // appropriate visitor.
+        const type = (0, estree_1.estreeType)(node);
+        const comments = options['comments'];
+        const printer = printerMap.get(type) || defaultPrinter;
+        let result = printer(node, options);
+        if (comments) {
+            result = attachComments(result, node, options);
+        }
+        return result;
+    }
 }
-printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symbol.for('node'), Symbol.for('options')], [Symbol.for('define'), Symbol.for('type'), [Symbol.for('estree-type'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('define'), Symbol.for('printer'), [Symbol.for('or'), [Symbol.for('hash-ref'), Symbol.for('printer-map'), Symbol.for('type')], Symbol.for('default-printer')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('printer'), Symbol.for('node'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('attach-comments'), Symbol.for('result'), Symbol.for('node'), Symbol.for('options')]]], Symbol.for('result')];
+printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symbol.for('node'), Symbol.for('options')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], Symbol.for('empty')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('type'), [Symbol.for('estree-type'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('define'), Symbol.for('printer'), [Symbol.for('or'), [Symbol.for('hash-ref'), Symbol.for('printer-map'), Symbol.for('type')], Symbol.for('default-printer')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('printer'), Symbol.for('node'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('attach-comments'), Symbol.for('result'), Symbol.for('node'), Symbol.for('options')]]], Symbol.for('result')]]];
 /**
  * Print an `ExpressionStatement` ESTree node to a `Doc` object.
  */
@@ -1253,9 +1264,9 @@ function printForStatement(node, options = {}) {
     const updatePrinted = printDoc(printNode(update, options), options).replace(new RegExp(';$'), '');
     const body = node.body;
     const bodyPrinted = printNode(body, options);
-    return ['for', space, '(', initPrinted, ';', space, testPrinted, ';', space, updatePrinted, ')', space, bodyPrinted];
+    return ['for', space, '(', initPrinted, ';', (testPrinted === empty) ? empty : space, testPrinted, ';', (updatePrinted === empty) ? empty : space, updatePrinted, ')', space, bodyPrinted];
 }
-printForStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-field'), Symbol.for('init'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('init-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('init'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-doc'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('get-field'), Symbol.for('update'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('update-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('update'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('init-printed'), ';', Symbol.for('space'), Symbol.for('test-printed'), ';', Symbol.for('space'), Symbol.for('update-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
+printForStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-field'), Symbol.for('init'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('init-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('init'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-doc'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('get-field'), Symbol.for('update'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('update-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('update'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('init-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('test-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('test-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('update-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('update-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
 /**
  * Print a `ForOfStatement` ESTree node to a `Doc` object.
  */

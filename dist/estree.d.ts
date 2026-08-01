@@ -1226,7 +1226,9 @@ declare class XRawJavaScript extends TSNode {
 /**
  * Whether `obj` is an ESTree.
  *
- * This function only works on instantiated objects.
+ * This function only works on instantiated objects!
+ * ESTree objects obtained from an external parser
+ * library are not instances of our `Node` class.
  */
 declare function estreep(obj: any): any;
 declare namespace estreep {
@@ -1237,14 +1239,14 @@ declare namespace estreep {
  */
 declare function estreeType(node: any): any;
 declare namespace estreeType {
-    var fsource: (symbol | symbol[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol[])[])[])[];
 }
 /**
  * Whether the type of the ESTree node `node` is `typ`.
  */
 declare function estreeTypeP(node: any, typ: any): any;
 declare namespace estreeTypeP {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol[])[] | (symbol | (symbol | symbol[])[])[][])[])[];
 }
 /**
  * Wrap a value in an ESTree node.

@@ -3493,6 +3493,42 @@ describe('while', function (): any {
 });
 
 describe('for', function (): any {
+  it('(let (result) (js/for (() () ()) (set! result 1) (break)) result)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [Symbol.for('result')],
+        [
+          Symbol.for('js/for'),
+          [[], [], []],
+          [Symbol.for('set!'), Symbol.for('result'), 1],
+          [Symbol.for('break')],
+        ],
+        Symbol.for('result'),
+      ],
+      1,
+    ]);
+  });
+  it('(let (result) (js/for (#u #u #u) (set! result 1) (break)) result)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [Symbol.for('result')],
+        [
+          Symbol.for('js/for'),
+          [undefined, undefined, undefined],
+          [Symbol.for('set!'), Symbol.for('result'), 1],
+          [Symbol.for('break')],
+        ],
+        Symbol.for('result'),
+      ],
+      1,
+    ]);
+  });
   it("(let ((result '())) (for ((x '(1 2 3))) (set! result (cons x result))) result)", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -3574,6 +3610,38 @@ describe('for', function (): any {
         ],
       ],
       [Symbol.for('quote'), []],
+    ]);
+  });
+  it("(compile '(js/for (() () ()) (break)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/for'), [[], [], []], [Symbol.for('break')]],
+        ],
+      ],
+      'for (;;) {\n' + '  break;\n' + '}',
+    ]);
+  });
+  it("(compile '(js/for (#u #u #u) (break)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/for'),
+            [undefined, undefined, undefined],
+            [Symbol.for('break')],
+          ],
+        ],
+      ],
+      'for (;;) {\n' + '  break;\n' + '}',
     ]);
   });
   it("(compile '(for ((i (range 0 10))) (foo)))", function (): any {

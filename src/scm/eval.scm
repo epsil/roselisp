@@ -795,11 +795,15 @@
    (js/arrow ()
      (eval-estree init for-env options)
      (try
-       (while (eval-estree test for-env options)
+       (while (if test
+                  (eval-estree test for-env options)
+                  #t)
          (try
-           (eval-estree body for-env options)
+           (when body
+             (eval-estree body for-env options))
            (catch ContinueException e))
-         (eval-estree update for-env options))
+         (when update
+           (eval-estree update for-env options)))
        (catch BreakException e))
      #u)))
 

@@ -14,6 +14,13 @@
 
  > (describe "To do")
  _
+ xit> (compile '(begin x y z)
+               :fsemicolon #f)
+ "x
+
+y
+
+z"
 
  ;; `require`
  > (describe "require")
@@ -93,26 +100,6 @@ let x4 = 3;
 let x1 = 4;
 
 let x2 = 5;"
-
- ;; `for`
- > (describe "for")
- _
- xit> (let (result)
-        (js/for (() () ())
-                (set! result 1)
-                (break))
-        result)
- 1
- xit> (compile '(js/for (() () ())
-                        (break)))
- "for(;;) {
-  break;
-}"
- xit> (compile '(js/for (#u #u #u)
-                        (break)))
- "for(;;) {
-  break;
-}"
 
  > (describe "Fundamental operators")
  _

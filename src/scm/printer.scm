@@ -745,19 +745,29 @@
 
 ;;; Visitor function for printing ESTree nodes.
 (define (print-visitor node options)
-  (define type
-    (estree-type node))
-  (define comments
-    (oget options "comments"))
-  (define printer
-    (or (hash-ref printer-map type)
-        default-printer))
-  (define result
-    (printer node options))
-  (when comments
-    (set! result
-          (attach-comments result node options)))
-  result)
+  (cond
+   ;; Gracefully handle the case where `node` is `#n`
+   ;; because it is used by some ESTree classes to
+   ;; represent optional values.
+   ((not node)
+    empty)
+   ;; Otherwise, if `node` is an ESTree node proper,
+   ;; then inspect its type and call the
+   ;; appropriate visitor.
+   (else
+    (define type
+      (estree-type node))
+    (define comments
+      (oget options "comments"))
+    (define printer
+      (or (hash-ref printer-map type)
+          default-printer))
+    (define result
+      (printer node options))
+    (when comments
+      (set! result
+            (attach-comments result node options)))
+    result)))
 
 ;;; Print an `ExpressionStatement` ESTree node to a `Doc` object.
 (define (print-expression-statement node (options (js/obj)))
@@ -1511,6 +1521,8 @@
   (define init-printed
     (~> (print-node init options)
         (print-doc options)
+        ;; FIXME: Kludge, replace with option
+        ;; for toggling semicolons.
         (regexp-replace (regexp ";$") _ "")))
   (define test
     (get-field test node))
@@ -1521,6 +1533,8 @@
   (define update-printed
     (~> (print-node update options)
         (print-doc options)
+        ;; FIXME: Kludge, replace with option
+        ;; for toggling semicolons.
         (regexp-replace (regexp ";$") _ "")))
   (define body
     (get-field body node))
@@ -1532,10 +1546,14 @@
    "("
    init-printed
    ";"
-   space
+   (if (eq? test-printed empty)
+       empty
+       space)
    test-printed
    ";"
-   space
+   (if (eq? update-printed empty)
+       empty
+       space)
    update-printed
    ")"
    space
@@ -1550,6 +1568,8 @@
   (define left-printed
     (~> (print-node left options)
         (print-doc options)
+        ;; FIXME: Kludge, replace with option
+        ;; for toggling semicolons.
         (regexp-replace (regexp ";$") _ "")))
   (define right
     (get-field right node))

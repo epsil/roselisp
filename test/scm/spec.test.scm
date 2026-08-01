@@ -1035,6 +1035,18 @@
  ;; `for`
  > (describe "for")
  _
+ > (let (result)
+     (js/for (() () ())
+             (set! result 1)
+             (break))
+     result)
+ 1
+ > (let (result)
+     (js/for (#u #u #u)
+             (set! result 1)
+             (break))
+     result)
+ 1
  > (let ((result '()))
      (for ((x '(1 2 3)))
        (set! result (cons x result)))
@@ -1056,6 +1068,16 @@
         (pop-right! foo))
       foo))
  '()
+ > (compile '(js/for (() () ())
+                     (break)))
+ "for (;;) {
+  break;
+}"
+ > (compile '(js/for (#u #u #u)
+                     (break)))
+ "for (;;) {
+  break;
+}"
  > (compile '(for ((i (range 0 10)))
                (foo)))
  "for (let i = 0; i < 10; i++) {

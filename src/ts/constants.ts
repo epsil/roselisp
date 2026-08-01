@@ -93,7 +93,7 @@ const unquoteSplicingSym_: any = Symbol.for('unquote-splicing');
 /**
  * Default language to compile to.
  */
-const defaultLanguage: any = 'JavaScript';
+const defaultLanguage: any = 'javascript';
 
 /**
  * Roselisp package name.

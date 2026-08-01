@@ -111,7 +111,7 @@ const [lastCdr, cons, findf, listStar]: any[] = ((): any => {
  */
 function decompile(x: any, options: any = {}): any {
   let language: any = options['language'];
-  if (language === 'TypeScript') {
+  if (language === 'typescript') {
     return decompileTs(x, options);
   } else {
     return decompileJs(x, options);
@@ -133,7 +133,7 @@ function decompileFileX(file: any, options: any = {}): any {
   const outFile: any = join(outDir, stem + outExtension);
   let code: any;
   let data: any;
-  language = (language.match(new RegExp('^TypeScript$', 'i')) || (extension === '.ts')) ? 'TypeScript' : 'JavaScript';
+  language = (language.match(new RegExp('^typescript$', 'i')) || (extension === '.ts')) ? 'typescript' : 'javascript';
   options = {
     ...options,
     language: language,

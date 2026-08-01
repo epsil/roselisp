@@ -75,6 +75,7 @@
              "default" 2
              "type" "number")
    "language" (js/obj
+               "default" "javascript"
                "type" "string")
    "optimize" (js/obj
                "default" #t
@@ -111,7 +112,7 @@ Compile a file to JavaScript:
 
 Compile a file to TypeScript:
 
-  roselisp -c --language TypeScript input.scm
+  roselisp -c --language typescript input.scm
 
 Options:
 
@@ -127,21 +128,15 @@ Options:
               Otherwise interprets it (default).
   --indent    The number of spaces to indent
               (default: 2).
-  --language  Language: JavaScript or TypeScript
-              (default: JavaScript).
+  --language  Language: javascript or typescript
+              (default: javascript).
   --out-dir   Output directory for compiled files
               (default: same directory).")
 
 ;;; Normalize CLI options.
 (define (normalize-cli-options options)
-  (define language-option
-    (or (oget options "language")
-        ""))
   (define language
-    (if (regexp-match (regexp "^TypeScript$" "i")
-                      language-option)
-        "TypeScript"
-        "JavaScript"))
+    (string-downcase (oget options "language")))
   (js/obj-append
    options
    (js/obj "language" language)))

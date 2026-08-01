@@ -75,7 +75,7 @@
   (string->symbol "unquote-splicing"))
 
 ;;; Default language to compile to.
-(define default-language "JavaScript")
+(define default-language "javascript")
 
 ;;; Roselisp package name.
 (define package-name "roselisp")

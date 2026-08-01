@@ -3707,7 +3707,7 @@ function myIntersection(x, y) {
                  (define (I x)
                    x)))
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  (list
   "function I(x) {
@@ -3727,7 +3727,7 @@ function myIntersection(x, y) {
             (define (bar x)
               (foo x))))
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  (list
   "function foo(exp, env) {
@@ -3763,7 +3763,7 @@ function bar(x) {
               x)
             (provide bar)))
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  (list
   "import {
@@ -3801,7 +3801,7 @@ export {
               x)
             (provide baz)))
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  (list
   "import {
@@ -3840,7 +3840,7 @@ export {
             (define (bar x)
               (foo1 x))))
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  (list
   "function foo(exp, env) {
@@ -3903,7 +3903,7 @@ function bar(x) {
 (foo)")
         compilation-environment
         (js/obj "expressionType" "statement"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "// comment
 foo();"
@@ -3917,7 +3917,7 @@ foo();"
 (foo)")
         compilation-environment
         (js/obj "expressionType" "statement"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "// multi-line
 // comment
@@ -3934,7 +3934,7 @@ foo();"
 (foo)")
            compilation-environment
            (js/obj "expressionType" "statement"
-                   "language" "JavaScript"
+                   "language" "javascript"
                    "optimize" #t)))
  "// multi-line
 //
@@ -3952,7 +3952,7 @@ foo();"
 (foo)")
         compilation-environment
         (js/obj "expressionType" "statement"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "// multiple
 
@@ -3972,7 +3972,7 @@ foo();"
             bar)")
         compilation-environment
         (js/obj "expressionType" "statement"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "(
  // foo
@@ -3994,7 +3994,7 @@ foo();"
       baz)")
         compilation-environment
         (js/obj "expressionType" "statement"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "[
  foo,
@@ -4017,7 +4017,7 @@ foo();"
             bar)")
         compilation-environment
         (js/obj "expressionType" "statement"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "(
  // foo
@@ -4033,7 +4033,7 @@ foo();"
 (foo)")
         compilation-environment
         (js/obj "expressionType" "statement"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "// comment
 foo();"
@@ -4049,7 +4049,7 @@ foo();"
   (define (K x y)
     x))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * I combinator.
@@ -4074,7 +4074,7 @@ function K(x, y) {
     ;; Apply f to args.
     (apply f args)))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * A combinator.
@@ -4092,7 +4092,7 @@ function A(f, ...args) {
     ;; Apply f to args.
     (apply f args)))")
         compilation-environment
-        (js/obj "language" "TypeScript"
+        (js/obj "language" "typescript"
                 "optimize" #t)))
  "/**
  * A combinator.
@@ -4111,7 +4111,7 @@ function A(f: any, ...args: any[]): any {
           (x (array-list-last args)))
       (foldr A x fs))))")
         compilation-environment
-        (js/obj "language" "TypeScript"
+        (js/obj "language" "typescript"
                 "optimize" #t)))
  "/**
  * B2 combinator.
@@ -4134,7 +4134,7 @@ function B2(...args: any[]): any {
       ;; Return y.
       y)))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * Foo.
@@ -4157,7 +4157,7 @@ function foo(x) {
       ;; If x is falsey, return false.
       #f)))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * Whether x is a truish value.
@@ -4185,7 +4185,7 @@ function truish(x) {
       (else
        #f))))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * Whether x is a truish value.
@@ -4209,7 +4209,7 @@ function truish(x) {
     `(,x)))")
         compilation-environment
         (js/obj "case" "camelcase"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "/**
  * Wrap a value in a list.
@@ -4237,7 +4237,7 @@ function wrapInList(x) {
        (else
         \"baz\")))))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * test function.
@@ -4271,7 +4271,7 @@ function test() {
       ;; Set bar to n.
       (set! (.-this bar) n))))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * Foo class.
@@ -4301,7 +4301,7 @@ class Foo {
       ;; this
       this)))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * Foo class.
@@ -4327,7 +4327,7 @@ class Foo {
         ;; this
         this))))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * Foo class.
@@ -4357,7 +4357,7 @@ class Foo {
         (for ((x (list 1 2 3 4)))
           (yield x))))))")
         compilation-environment
-        (js/obj "language" "TypeScript"
+        (js/obj "language" "typescript"
                 "optimize" #t)))
  "/**
  * Foo class.
@@ -4389,7 +4389,7 @@ class Foo {
     (display \"hello, world\")))")
            compilation-environment
            (js/obj "case" "camelcase"
-                   "language" "JavaScript"
+                   "language" "javascript"
                    "optimize" #t)))
  "/**
  * Hello, world.
@@ -4404,7 +4404,7 @@ function helloWorld() {
 
 (require \"foo\")")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "/**
  * Foo
@@ -4419,7 +4419,7 @@ import * as foo from 'foo';"
 ;;; Bar
 (require \"foo\")")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "// Foo
 
@@ -4435,7 +4435,7 @@ import * as foo from 'foo';"
 
 (require \"foo\")")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "// Foo
 /**
@@ -4450,7 +4450,7 @@ import * as foo from 'foo';"
   ;; bar
   bar)")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "const foo =
   // bar
@@ -4462,7 +4462,7 @@ import * as foo from 'foo';"
   ;; bar
   bar)")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "expressionType" "statement"
                 "optimize" #t)))
  "foo =
@@ -4477,7 +4477,7 @@ import * as foo from 'foo';"
                   "x"
                   1
                   "variable")))
-           (js/obj "language" "JavaScript"
+           (js/obj "language" "javascript"
                    "optimize" #t)))
  "1"
  > (it "(module m scheme ... (apply + '(1 1)) ...), comment"
@@ -4491,7 +4491,7 @@ import * as foo from 'foo';"
         compilation-environment
         (js/obj "case" "camelcase"
                 "finlineFunctions" #t
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "/**
  * Module header.
@@ -4521,7 +4521,7 @@ const onePlusOne = _add(1, 1);"
         compilation-environment
         (js/obj "case" "camelcase"
                 "finlineFunctions" #t
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "/**
  * Module header.
@@ -4552,7 +4552,7 @@ const onePlusOne = _add(1, 1);"
                   (lambda (x)
                     x)
                   "function")))
-           (js/obj "language" "JavaScript"
+           (js/obj "language" "javascript"
                    "optimize" #t)))
  "(function {
    let I = function(x) {
@@ -4565,7 +4565,7 @@ const onePlusOne = _add(1, 1);"
         '(truep x)
         compilation-environment
         (js/obj "case" "camelcase"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "x ? true : false"
  > (it "(falsep x)"
@@ -4573,7 +4573,7 @@ const onePlusOne = _add(1, 1);"
         '(falsep x)
         compilation-environment
         (js/obj "case" "camelcase"
-                "language" "JavaScript"
+                "language" "javascript"
                 "optimize" #t)))
  "x ? false : true"
  > (it "read-rose"
@@ -4583,7 +4583,7 @@ const onePlusOne = _add(1, 1);"
   (define foo
     `(foo)))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "const foo = [Symbol.for('foo')];"
  > (it "read-rose, quasiquote"
@@ -4594,7 +4594,7 @@ const onePlusOne = _add(1, 1);"
   (define bar
     `(,foo)))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "const foo = 1;
 
@@ -4609,7 +4609,7 @@ const bar = [foo];"
     `((\"foo\" . ,foo)
        (\"bar\" . ,bar))))")
         compilation-environment
-        (js/obj "language" "JavaScript"
+        (js/obj "language" "javascript"
                 "optimize" #t)))
  "const foo = 1;
 
@@ -4625,7 +4625,7 @@ const quux = [['foo', Symbol.for('.'), foo], ['bar', Symbol.for('.'), bar]];"
   (define (I x) x))")
            compilation-environment
            (js/obj "case" "camelcase"
-                   "language" "JavaScript"
+                   "language" "javascript"
                    "optimize" #t)))
  "// inline-lisp-sources: true
 
@@ -4645,7 +4645,7 @@ I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.fo
     (lambda (x)
       x)))")
         compilation-environment
-        (js/obj "language" "TypeScript"
+        (js/obj "language" "typescript"
                 "expressionType" "statement"
                 "optimize" #t)))
  "// NN type alias.
@@ -4659,7 +4659,7 @@ const f: NN = function (x: any): any {
        (define (foo x)
          x))
     compilation-environment
-    (js/obj "language" "JavaScript"
+    (js/obj "language" "javascript"
             "inlineLispSources" #t
             "optimize" #t))
  "function foo(x) {
@@ -4673,7 +4673,7 @@ foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbo
             (lambda (x)
               x)))
        compilation-environment
-       (js/obj "language" "JavaScript"
+       (js/obj "language" "javascript"
                "inlineLispSources" #t
                "optimize" #t))
  "const foo = function (x) {
@@ -4688,7 +4688,7 @@ foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
           (lambda (x)
             x))))
     compilation-environment
-    (js/obj "language" "JavaScript"
+    (js/obj "language" "javascript"
             "inlineLispSources" #t
             "optimize" #t))
  "async function foo(x) {

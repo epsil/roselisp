@@ -27,7 +27,7 @@ declare namespace plistp_ {
 /**
  * Copy a property list.
  */
-declare function plistCopy_(plist: any): any;
+declare function plistCopy_(plst: any): any;
 declare namespace plistCopy_ {
     var fsource: (symbol | (symbol | symbol[][])[])[];
 }
@@ -39,14 +39,14 @@ declare namespace plistCopy_ {
  *
  * [el:plist-get]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dget
  */
-declare function plistGet_(plist: any, prop: any): any;
+declare function plistGet_(plst: any, prop: any): any;
 declare namespace plistGet_ {
     var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
 }
 /**
  * Whether a property list contains a given property.
  */
-declare function plistHasP_(plist: any, prop: any): any;
+declare function plistHasP_(plst: any, prop: any): any;
 declare namespace plistHasP_ {
     var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[];
 }
@@ -57,7 +57,7 @@ declare namespace plistHasP_ {
  *
  * [el:plist-put]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dput
  */
-declare function plistSetX_(plist: any, prop: any, val: any): any;
+declare function plistSetX_(plst: any, prop: any, val: any): any;
 declare namespace plistSetX_ {
     var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[] | (boolean | symbol)[])[])[] | undefined)[];
 }
@@ -65,9 +65,16 @@ declare namespace plistSetX_ {
  * Set the value of a property in a property list,
  * returning a new property list.
  */
-declare function plistSet_(plist: any, prop: any, val: any): any;
+declare function plistSet_(plst: any, prop: any, val: any): any;
 declare namespace plistSet_ {
     var fsource: (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[];
+}
+/**
+ * Map a function over a property list.
+ */
+declare function plistMap_(f: any, plst: any): any;
+declare namespace plistMap_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
 /**
  * Convert a plist to an association list.
@@ -79,8 +86,8 @@ declare namespace plistToAlist_ {
 /**
  * Convert a property list to a JavaScript object.
  */
-declare function plistToObject_(plist: any, options?: any): any;
+declare function plistToObject_(plst: any, options?: any): any;
 declare namespace plistToObject_ {
     var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
-export { plistGet_ as plistRef_, plistHasP_ as plistHas_, plistToAlist_, plistCopy_, plistToObject_, plistGet_, plistHasP_, plistSetX_, plistSet_, plistp_ };
+export { plistToAlist_ as plistToAlist, plistMap_ as plistMap, plistToObject_ as plistToObject, plistCopy_ as plistCopy, plistGet_ as plistGet, plistGet_ as plistRef_, plistHasP_ as plistHasP, plistHasP_ as plistHas_, plistSetX_ as plistSetX, plistSet_ as plistSet, plistp_ as plistp, plistToAlist_, plistMap_, plistToObject_, plistCopy_, plistGet_, plistHasP_, plistSetX_, plistSet_, plistp_ };

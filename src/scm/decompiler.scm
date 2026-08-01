@@ -49,7 +49,7 @@
   (define language
     (oget options "language"))
   (cond
-   ((eq? language "TypeScript")
+   ((eq? language "typescript")
     (decompile-ts x options))
    (else
     (decompile-js x options))))
@@ -78,11 +78,11 @@
   (define code)
   (define data)
   (set! language
-        (if (or (regexp-match (regexp "^TypeScript$" "i")
+        (if (or (regexp-match (regexp "^typescript$" "i")
                               language)
                 (eq? extension ".ts"))
-            "TypeScript"
-            "JavaScript"))
+            "typescript"
+            "javascript"))
   (set! options
         (js/obj-append
          options

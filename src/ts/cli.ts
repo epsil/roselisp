@@ -97,6 +97,7 @@ const cliOptions: any = {
     type: 'number'
   },
   language: {
+    default: 'javascript',
     type: 'string'
   },
   optimize: {
@@ -140,7 +141,7 @@ const helpMessage: any = 'Lisp interpreter and transpiler in JavaScript\n' +
   '\n' +
   'Compile a file to TypeScript:\n' +
   '\n' +
-  '  roselisp -c --language TypeScript input.scm\n' +
+  '  roselisp -c --language typescript input.scm\n' +
   '\n' +
   'Options:\n' +
   '\n' +
@@ -156,8 +157,8 @@ const helpMessage: any = 'Lisp interpreter and transpiler in JavaScript\n' +
   '              Otherwise interprets it (default).\n' +
   '  --indent    The number of spaces to indent\n' +
   '              (default: 2).\n' +
-  '  --language  Language: JavaScript or TypeScript\n' +
-  '              (default: JavaScript).\n' +
+  '  --language  Language: javascript or typescript\n' +
+  '              (default: javascript).\n' +
   '  --out-dir   Output directory for compiled files\n' +
   '              (default: same directory).';
 
@@ -165,8 +166,7 @@ const helpMessage: any = 'Lisp interpreter and transpiler in JavaScript\n' +
  * Normalize CLI options.
  */
 function normalizeCliOptions(options: any): any {
-  const languageOption: any = options['language'] || '';
-  const language: any = languageOption.match(new RegExp('^TypeScript$', 'i')) ? 'TypeScript' : 'JavaScript';
+  const language: any = options['language'].toLowerCase();
   return {
     ...options,
     language: language

@@ -861,7 +861,7 @@
     (set! type_ (new TSAnyKeyword)))
   (list
    (get-field name node)
-   (if (and (eq? language "TypeScript")
+   (if (and (eq? language "typescript")
             type_)
        (list
         (if (get-field optional node) "?:" ":")
@@ -1252,7 +1252,7 @@
   (list
    "..."
    argument-printed
-   (if (and (eq? language "TypeScript")
+   (if (and (eq? language "typescript")
             type_)
        (list
         ":"
@@ -1310,7 +1310,7 @@
             _)
        (join (list "," space) _))
    ")"
-   (if (and (eq? language "TypeScript")
+   (if (and (eq? language "typescript")
             (not (eq? return-type-printed "")))
        (list ":" space return-type-printed)
        empty)
@@ -1554,7 +1554,7 @@
   (define body-printed
     (print-node body options))
   (define result-str)
-  (when (eq? language "TypeScript")
+  (when (eq? language "typescript")
     (set! left-printed
           (regexp-replace (regexp ": any$")
                           left-printed
@@ -1599,7 +1599,7 @@
    "in"
    space
    right-printed
-   (if (eq? language "TypeScript")
+   (if (eq? language "typescript")
        " as any[]"
        empty)
    ")"
@@ -1721,13 +1721,13 @@
   (define accessibility
     (get-field accessibility node))
   (list
-   (if (and (eq? language "TypeScript")
+   (if (and (eq? language "typescript")
             (eq? accessibility "private"))
        (list "private" space)
        empty)
    (if static-flag (list "static" space) empty)
    (print-node key options)
-   (if (eq? language "TypeScript")
+   (if (eq? language "typescript")
        (list ":" space "any")
        empty)
    (if value
@@ -1772,7 +1772,7 @@
   (define accessibility
     (get-field accessibility node))
   (list
-   (if (and (eq? language "TypeScript")
+   (if (and (eq? language "typescript")
             (eq? accessibility "private"))
        (list "private" space)
        empty)
@@ -1836,7 +1836,7 @@
     (set! type_
           (new TSArrayType (new TSAnyKeyword))))
   (when (and type_
-             (eq? language "TypeScript"))
+             (eq? language "typescript"))
     (set! result
           (append
            result
@@ -2049,7 +2049,7 @@
           (list
            "["
            key-printed
-           (if (eq? language "TypeScript")
+           (if (eq? language "typescript")
                (list space "as any")
                empty)
            "]")))

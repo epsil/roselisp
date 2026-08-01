@@ -8069,7 +8069,7 @@ describe('compile-modules', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8110,7 +8110,7 @@ describe('compile-modules', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8171,7 +8171,7 @@ describe('compile-modules', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8236,7 +8236,7 @@ describe('compile-modules', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8303,7 +8303,7 @@ describe('compile-modules', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8377,7 +8377,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           expressionType: 'statement',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8391,7 +8391,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           expressionType: 'statement',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8405,7 +8405,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           expressionType: 'statement',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8419,7 +8419,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           expressionType: 'statement',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8439,7 +8439,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           expressionType: 'statement',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8465,7 +8465,7 @@ describe('compile-with-environment', function (): any {
           compilationEnvironment,
           {
             expressionType: 'statement',
-            language: 'JavaScript',
+            language: 'javascript',
             optimize: true,
           }
         ),
@@ -8492,7 +8492,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           expressionType: 'statement',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8506,7 +8506,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           expressionType: 'statement',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8528,7 +8528,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8560,7 +8560,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8585,7 +8585,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'TypeScript',
+          language: 'typescript',
           optimize: true,
         }
       ),
@@ -8611,7 +8611,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'TypeScript',
+          language: 'typescript',
           optimize: true,
         }
       ),
@@ -8641,7 +8641,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8671,7 +8671,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8706,7 +8706,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8737,7 +8737,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           case: 'camelcase',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8772,7 +8772,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8813,7 +8813,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8850,7 +8850,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8883,7 +8883,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8920,7 +8920,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'TypeScript',
+          language: 'typescript',
           optimize: true,
         }
       ),
@@ -8959,7 +8959,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           case: 'camelcase',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8977,7 +8977,7 @@ describe('compile-with-environment', function (): any {
         readRose(';;; Foo\n' + '\n' + '(require "foo")'),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -8990,7 +8990,7 @@ describe('compile-with-environment', function (): any {
         readRose(';; Foo\n' + '\n' + ';;; Bar\n' + '(require "foo")'),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9008,7 +9008,7 @@ describe('compile-with-environment', function (): any {
         readRose(';; Foo\n' + ';;; Bar\n' + '\n' + '(require "foo")'),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9026,7 +9026,7 @@ describe('compile-with-environment', function (): any {
         readRose('(define foo\n' + '  ;; bar\n' + '  bar)'),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9039,7 +9039,7 @@ describe('compile-with-environment', function (): any {
         readRose('(set! foo\n' + '  ;; bar\n' + '  bar)'),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           expressionType: 'statement',
           optimize: true,
         }
@@ -9053,7 +9053,7 @@ describe('compile-with-environment', function (): any {
         Symbol.for('x'),
         new LispEnvironment([['x', 1, 'variable']]),
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9074,7 +9074,7 @@ describe('compile-with-environment', function (): any {
         {
           case: 'camelcase',
           finlineFunctions: true,
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9111,7 +9111,7 @@ describe('compile-with-environment', function (): any {
         {
           case: 'camelcase',
           finlineFunctions: true,
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9150,7 +9150,7 @@ describe('compile-with-environment', function (): any {
           ],
         ]),
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9169,7 +9169,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           case: 'camelcase',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9183,7 +9183,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           case: 'camelcase',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9196,7 +9196,7 @@ describe('compile-with-environment', function (): any {
         readRose('(module m scheme\n' + '  (define foo\n' + '    `(foo)))'),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9214,7 +9214,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9234,7 +9234,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9257,7 +9257,7 @@ describe('compile-with-environment', function (): any {
         compilationEnvironment,
         {
           case: 'camelcase',
-          language: 'JavaScript',
+          language: 'javascript',
           optimize: true,
         }
       ),
@@ -9284,7 +9284,7 @@ describe('compile-with-environment', function (): any {
         ),
         compilationEnvironment,
         {
-          language: 'TypeScript',
+          language: 'typescript',
           expressionType: 'statement',
           optimize: true,
         }
@@ -9297,7 +9297,7 @@ describe('compile-with-environment', function (): any {
         '};'
     );
   });
-  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj "language" "javascript" "inlineLispSources" #t "optimize" #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [
@@ -9312,7 +9312,7 @@ describe('compile-with-environment', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           inlineLispSources: true,
           optimize: true,
         }
@@ -9324,7 +9324,7 @@ describe('compile-with-environment', function (): any {
         "foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
     );
   });
-  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj "language" "javascript" "inlineLispSources" #t "optimize" #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [
@@ -9339,7 +9339,7 @@ describe('compile-with-environment', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           inlineLispSources: true,
           optimize: true,
         }
@@ -9351,7 +9351,7 @@ describe('compile-with-environment', function (): any {
         "foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
     );
   });
-  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj "language" "JavaScript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj "language" "javascript" "inlineLispSources" #t "optimize" #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [
@@ -9369,7 +9369,7 @@ describe('compile-with-environment', function (): any {
         ],
         compilationEnvironment,
         {
-          language: 'JavaScript',
+          language: 'javascript',
           inlineLispSources: true,
           optimize: true,
         }

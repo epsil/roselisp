@@ -49,11 +49,11 @@ plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj
 /**
  * Copy a property list.
  */
-function plistCopy_(plist: any): any {
-  return [...plist];
+function plistCopy_(plst: any): any {
+  return [...plst];
 }
 
-plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plist')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('plist')]]]];
+plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('plst')]]]];
 
 /**
  * Return the value of a property in a property list.
@@ -63,28 +63,28 @@ plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.f
  *
  * [el:plist-get]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dget
  */
-function plistGet_(plist: any, prop: any): any {
+function plistGet_(plst: any, prop: any): any {
   let val: any = undefined;
-  const _end: any = plist.length;
+  const _end: any = plst.length;
   for (let i: any = 0; i < _end; i = i + 2) {
-    if ((plist as any)[i] === prop) {
-      val = plist[i + 1];
+    if ((plst as any)[i] === prop) {
+      val = plst[i + 1];
       break;
     }
   }
   return val;
 }
 
-plistGet_.fsource = [Symbol.for('define'), [Symbol.for('plist-get_'), Symbol.for('plist'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('val'), undefined], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plist')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('break')]]], Symbol.for('val')];
+plistGet_.fsource = [Symbol.for('define'), [Symbol.for('plist-get_'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('val'), undefined], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('break')]]], Symbol.for('val')];
 
 /**
  * Whether a property list contains a given property.
  */
-function plistHasP_(plist: any, prop: any): any {
+function plistHasP_(plst: any, prop: any): any {
   let found: any = false;
-  const _end: any = plist.length;
+  const _end: any = plst.length;
   for (let i: any = 0; i < _end; i = i + 2) {
-    if ((plist as any)[i] === prop) {
+    if ((plst as any)[i] === prop) {
       found = true;
       break;
     }
@@ -92,7 +92,7 @@ function plistHasP_(plist: any, prop: any): any {
   return found;
 }
 
-plistHasP_.fsource = [Symbol.for('define'), [Symbol.for('plist-has?_'), Symbol.for('plist'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plist')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]]], Symbol.for('found')];
+plistHasP_.fsource = [Symbol.for('define'), [Symbol.for('plist-has?_'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]]], Symbol.for('found')];
 
 /**
  * Set the value of a property in a property list.
@@ -101,36 +101,67 @@ plistHasP_.fsource = [Symbol.for('define'), [Symbol.for('plist-has?_'), Symbol.f
  *
  * [el:plist-put]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dput
  */
-function plistSetX_(plist: any, prop: any, val: any): any {
+function plistSetX_(plst: any, prop: any, val: any): any {
   let found: any = false;
-  const _end: any = plist.length;
+  const _end: any = plst.length;
   for (let i: any = 0; i < _end; i = i + 2) {
-    if ((plist as any)[i] === prop) {
-      plist[i + 1] = val;
+    if ((plst as any)[i] === prop) {
+      plst[i + 1] = val;
       found = true;
       break;
     }
     if (!found) {
-      plist.push(prop);
-      plist.push(val);
+      plst.push(prop);
+      plst.push(val);
     }
   }
   return undefined;
 }
 
-plistSetX_.fsource = [Symbol.for('define'), [Symbol.for('plist-set!_'), Symbol.for('plist'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plist')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('aset!'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1], Symbol.for('val')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]], [Symbol.for('unless'), Symbol.for('found'), [Symbol.for('push-right!'), Symbol.for('plist'), Symbol.for('prop')], [Symbol.for('push-right!'), Symbol.for('plist'), Symbol.for('val')]]], undefined];
+plistSetX_.fsource = [Symbol.for('define'), [Symbol.for('plist-set!_'), Symbol.for('plst'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('aset!'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1], Symbol.for('val')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]], [Symbol.for('unless'), Symbol.for('found'), [Symbol.for('push-right!'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('push-right!'), Symbol.for('plst'), Symbol.for('val')]]], undefined];
 
 /**
  * Set the value of a property in a property list,
  * returning a new property list.
  */
-function plistSet_(plist: any, prop: any, val: any): any {
-  const result: any = [...plist];
-  plistSetX_(plist, prop, val);
+function plistSet_(plst: any, prop: any, val: any): any {
+  const result: any = [...plst];
+  plistSetX_(plst, prop, val);
   return result;
 }
 
-plistSet_.fsource = [Symbol.for('define'), [Symbol.for('plist-set_'), Symbol.for('plist'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('plist-copy'), Symbol.for('plist')]]], [Symbol.for('plist-set!_'), Symbol.for('plist'), Symbol.for('prop'), Symbol.for('val')], Symbol.for('result')]];
+plistSet_.fsource = [Symbol.for('define'), [Symbol.for('plist-set_'), Symbol.for('plst'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('plist-copy'), Symbol.for('plst')]]], [Symbol.for('plist-set!_'), Symbol.for('plst'), Symbol.for('prop'), Symbol.for('val')], Symbol.for('result')]];
+
+/**
+ * Iterate over a property list.
+ */
+function plistIterate_(f: any, plst: any): any {
+  const _end: any = plst.length;
+  for (let i: any = 0; i < _end; i = i + 2) {
+    const prop: any = (plst as any)[i];
+    let val: any = plst[i + 1];
+    const entry: any = [prop, val];
+    f(entry);
+  }
+}
+
+plistIterate_.fsource = [Symbol.for('define'), [Symbol.for('plist-iterate_'), Symbol.for('f'), Symbol.for('plst')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('list'), Symbol.for('prop'), Symbol.for('val')]], [Symbol.for('f'), Symbol.for('entry')]]];
+
+/**
+ * Map a function over a property list.
+ */
+function plistMap_(f: any, plst: any): any {
+  const result: any = [];
+  plistIterate_(function (entry: any): any {
+    let [prop, val]: any[] = f(entry);
+    result.push(prop);
+    result.push(val);
+    return result;
+  }, plst);
+  return result;
+}
+
+plistMap_.fsource = [Symbol.for('define'), [Symbol.for('plist-map_'), Symbol.for('f'), Symbol.for('plst')], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('plist-iterate_'), [Symbol.for('lambda'), [Symbol.for('entry')], [Symbol.for('define-values'), [Symbol.for('prop'), Symbol.for('val')], [Symbol.for('f'), Symbol.for('entry')]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('prop')], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('val')]], Symbol.for('plst')], Symbol.for('result')];
 
 /**
  * Convert a plist to an association list.
@@ -149,26 +180,36 @@ plistToAlist_.fsource = [Symbol.for('define'), [Symbol.for('plist->alist_'), Sym
 /**
  * Convert a property list to a JavaScript object.
  */
-function plistToObject_(plist: any, options: any = {}): any {
+function plistToObject_(plst: any, options: any = {}): any {
   const result: any = {};
-  const _end: any = plist.length;
+  const _end: any = plst.length;
   for (let i: any = 0; i < _end; i = i + 2) {
-    const prop: any = (plist as any)[i];
-    let val: any = plist[i + 1];
+    const prop: any = (plst as any)[i];
+    let val: any = plst[i + 1];
     const key: any = makeIdentifierString((prop.description as string).replace(new RegExp('^:'), ''), options);
     (result as any)[key] = val;
   }
   return result;
 }
 
-plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plist'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plist')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plist'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plist'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('_'), ''], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];
+plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plst'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('_'), ''], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];
 
 export {
+  plistToAlist_ as plistToAlist,
+  plistMap_ as plistMap,
+  plistToObject_ as plistToObject,
+  plistCopy_ as plistCopy,
+  plistGet_ as plistGet,
   plistGet_ as plistRef_,
+  plistHasP_ as plistHasP,
   plistHasP_ as plistHas_,
+  plistSetX_ as plistSetX,
+  plistSet_ as plistSet,
+  plistp_ as plistp,
   plistToAlist_,
-  plistCopy_,
+  plistMap_,
   plistToObject_,
+  plistCopy_,
   plistGet_,
   plistHasP_,
   plistSetX_,

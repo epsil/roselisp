@@ -409,6 +409,7 @@
                   plist-copy_
                   plist-get_
                   plist-has?_
+                  plist-map_
                   plist-set!_
                   plist?_))
 (require (only-in "./printer"
@@ -924,8 +925,8 @@
 (define compilation-map
   ;; TODO: Remove.
   (make-hash
-   `(("JavaScript" . ,compilation-mapping-env)
-     ("TypeScript" . ,compilation-mapping-env))))
+   `(("javascript" . ,compilation-mapping-env)
+     ("typescript" . ,compilation-mapping-env))))
 
 ;;; Compile a Lisp expression to JavaScript or TypeScript.
 ;;; Returns a string of JavaScript or TypeScript code.
@@ -935,31 +936,16 @@
 ;;; `args` may be a property list or, if called with
 ;;; two arguments, a JavaScript object.
 (define (compile exp . args)
-  (define (language-symbol->language-string sym)
-    (cond
-     ((eq? sym 'typescript)
-      "TypeScript")
-     ((eq? sym 'javascript)
-      "JavaScript")
-     (else
-      "Roselisp")))
   (define options
-    (if (= (js/length args) 1)
-        (js/first args)
-        (plist->object_ args
-                        (js/obj "case" "camelcase"))))
-  (define from
-    (or (oget options "from")
-        'roselisp))
-  (define to
-    (or (oget options "to")
-        'javascript))
+    (normalize-options args))
   (define from-language
-    (language-symbol->language-string from))
+    (or (oget options "from")
+        "roselisp"))
   (define to-language
-    (language-symbol->language-string to))
+    (or (oget options "to")
+        default-language))
   (cond
-   ((eq? to-language "Roselisp")
+   ((eq? to-language "roselisp")
     (define inherited-options
       (js/obj-append
        options
@@ -967,17 +953,9 @@
                "sexp" #t)))
     (decompile1 exp inherited-options))
    (else
-    (define as
-      (oget options "as"))
     (define expression-type
-      (cond
-       ((eq? as 'expression)
-        "expression")
-       ((memq? as '(return-statement
-                    return))
-        "return")
-       (else
-        "statement")))
+      (or (oget options "as")
+          "statement"))
     (define case-option
       (or (oget options "case")
           "camelcase"))
@@ -1000,20 +978,18 @@
   ;; around `compile` that defaults to Roselisp
   ;; as the target language.
   (define options
-    (if (= (js/length args) 1)
-        (js/first args)
-        (plist->object_ args (js/obj "case" "camelcase"))))
-  (define from
+    (normalize-options args))
+  (define from-language
     (or (oget options "from")
-        'javascript))
-  (define to
+        default-language))
+  (define to-language
     (or (oget options "to")
-        'roselisp))
+        "roselisp"))
   (define inherited-options
     (js/obj-append
      options
-     (js/obj "from" from
-             "to" to)))
+     (js/obj "from" from-language
+             "to" to-language)))
   (compile exp inherited-options))
 
 ;;; Compile a Lisp expression to JavaScript or TypeScript
@@ -1191,11 +1167,8 @@
   (define indent-option
     (oget options "indent"))
   (define language-option
-    (if (regexp-match (regexp "^TypeScript$" "i")
-                      (or (oget options "language")
-                          ""))
-        "TypeScript"
-        "JavaScript"))
+    (or (oget options "language")
+     default-language))
   (define out-dir-option
     (or (oget options "outDir") ""))
   (define comments-option
@@ -1208,7 +1181,7 @@
      (js/obj "expressionType" "statement"
              "language" language-option)))
   (define extension
-    (if (eq? language-option "TypeScript")
+    (if (eq? language-option "typescript")
         ".ts"
         ".js"))
   (define code)
@@ -2078,7 +2051,7 @@
   (define e_
     (send node get 1))
   (cond
-   ((eq? language "TypeScript")
+   ((eq? language "typescript")
     (define t_
       (send node get 2))
     (make-expression-or-statement
@@ -2094,7 +2067,7 @@
   (define language
     (oget options "language"))
   (cond
-   ((eq? language "TypeScript")
+   ((eq? language "typescript")
     (define id
       (compile-expression
        (send node get 1) env options))
@@ -2363,7 +2336,7 @@
          indices))
   ;; Kludge: prevent TypeScript errors with expressions
   ;; like `x[y]`, where `y` is `any`-typed.
-  (when (and (eq? language "TypeScript")
+  (when (and (eq? language "typescript")
              (not (form? variable ann_ env))
              (not (memq? (estree-type
                           (js/first indices-compiled))
@@ -4188,7 +4161,7 @@
     ;; Kludge: prevent TypeScript errors with expressions
     ;; like `x[y]`, where `y` is `any`-typed.
     (when (and computed
-               (eq? language "TypeScript")
+               (eq? language "typescript")
                (not (form? obj ann_ env))
                (not (memq? (estree-type prop-compiled)
                            '("Literal"
@@ -8007,6 +7980,30 @@
     '(fexpr-> Any * Any))
    (else
     x)))
+
+;;; Normalize an options args list.
+(define (normalize-options args)
+  (cond
+   ;; If the args list contains a single object,
+   ;; just use that.
+   ((= (js/length args) 1)
+    (js/first args))
+   (else
+    ;; Otherwise, treat the args list as a property list
+    ;; and convert that to an object.
+    (~> args
+        (plist-map_
+         (lambda (entry)
+           (define-values (prop val)
+             entry)
+           (when (symbol? val)
+             (set! val
+                   (symbol->string val)))
+           (values prop val))
+         _)
+        (plist->object_
+         _
+         (js/obj "case" "camelcase"))))))
 
 ;;; Lisp environment.
 (define lisp-environment

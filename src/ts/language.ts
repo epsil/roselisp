@@ -442,6 +442,7 @@ import {
   plistCopy_,
   plistGet_,
   plistHasP_,
+  plistMap_,
   plistSetX_,
   plistp_
 } from './plist';
@@ -795,7 +796,7 @@ const compilationMappingEnv: any = new EnvironmentStack(compilationMacroMappingE
  */
 const compilationMap: any =
   // TODO: Remove.
-  new Map([['JavaScript', compilationMappingEnv], ['TypeScript', compilationMappingEnv]] as any);
+  new Map([['javascript', compilationMappingEnv], ['typescript', compilationMappingEnv]] as any);
 
 /**
  * Compile a Lisp expression to JavaScript or TypeScript.
@@ -807,24 +808,10 @@ const compilationMap: any =
  * two arguments, a JavaScript object.
  */
 function compile(exp: any, ...args: any[]): any {
-  function languageSymbolToLanguageString(sym: any): any {
-    if (sym === Symbol.for('typescript')) {
-      return 'TypeScript';
-    } else if (sym === Symbol.for('javascript')) {
-      return 'JavaScript';
-    } else {
-      return 'Roselisp';
-    }
-  }
-  languageSymbolToLanguageString.fsource = [Symbol.for('define'), [Symbol.for('language-symbol->language-string'), Symbol.for('sym')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('typescript')]], 'TypeScript'], [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('javascript')]], 'JavaScript'], [Symbol.for('else'), 'Roselisp']]];
-  const options: any = (args.length === 1) ? args[0] : plistToObject_(args, {
-    case: 'camelcase'
-  });
-  const from: any = options['from'] || Symbol.for('roselisp');
-  const to: any = options['to'] || Symbol.for('javascript');
-  const fromLanguage: any = languageSymbolToLanguageString(from);
-  const toLanguage: any = languageSymbolToLanguageString(to);
-  if (toLanguage === 'Roselisp') {
+  const options: any = normalizeOptions(args);
+  const fromLanguage: any = options['from'] || 'roselisp';
+  const toLanguage: any = options['to'] || defaultLanguage;
+  if (toLanguage === 'roselisp') {
     const inheritedOptions: any = {
       ...options,
       language: fromLanguage,
@@ -832,8 +819,7 @@ function compile(exp: any, ...args: any[]): any {
     };
     return decompile1(exp, inheritedOptions);
   } else {
-    const as: any = options['as'];
-    const expressionType: any = (as === Symbol.for('expression')) ? 'expression' : ([Symbol.for('return-statement'), Symbol.for('return')].includes(as) ? 'return' : 'statement');
+    const expressionType: any = options['as'] || 'statement';
     const caseOption: any = options['case'] || 'camelcase';
     const inheritedOptions: any = {
       ...options,
@@ -846,7 +832,7 @@ function compile(exp: any, ...args: any[]): any {
   }
 }
 
-compile.fsource = [Symbol.for('define'), [Symbol.for('compile'), Symbol.for('exp'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('language-symbol->language-string'), Symbol.for('sym')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('typescript')]], 'TypeScript'], [[Symbol.for('eq?'), Symbol.for('sym'), [Symbol.for('quote'), Symbol.for('javascript')]], 'JavaScript'], [Symbol.for('else'), 'Roselisp']]], [Symbol.for('define'), Symbol.for('options'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('js/first'), Symbol.for('args')], [Symbol.for('plist->object_'), Symbol.for('args'), [Symbol.for('js/obj'), 'case', 'camelcase']]]], [Symbol.for('define'), Symbol.for('from'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'from'], [Symbol.for('quote'), Symbol.for('roselisp')]]], [Symbol.for('define'), Symbol.for('to'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'to'], [Symbol.for('quote'), Symbol.for('javascript')]]], [Symbol.for('define'), Symbol.for('from-language'), [Symbol.for('language-symbol->language-string'), Symbol.for('from')]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('language-symbol->language-string'), Symbol.for('to')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('to-language'), 'Roselisp'], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'language', Symbol.for('from-language'), 'sexp', true]]], [Symbol.for('decompile1'), Symbol.for('exp'), Symbol.for('inherited-options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('as'), [Symbol.for('oget'), Symbol.for('options'), 'as']], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('as'), [Symbol.for('quote'), Symbol.for('expression')]], 'expression'], [[Symbol.for('memq?'), Symbol.for('as'), [Symbol.for('quote'), [Symbol.for('return-statement'), Symbol.for('return')]]], 'return'], [Symbol.for('else'), 'statement']]], [Symbol.for('define'), Symbol.for('case-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'case'], 'camelcase']], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'case', Symbol.for('case-option'), 'language', Symbol.for('to-language'), 'expressionType', Symbol.for('expression-type')]]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'environment'], [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('compile-with-environment'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('inherited-options')]]]];
+compile.fsource = [Symbol.for('define'), [Symbol.for('compile'), Symbol.for('exp'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('options'), [Symbol.for('normalize-options'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('from-language'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'from'], 'roselisp']], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'to'], Symbol.for('default-language')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('to-language'), 'roselisp'], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'language', Symbol.for('from-language'), 'sexp', true]]], [Symbol.for('decompile1'), Symbol.for('exp'), Symbol.for('inherited-options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'as'], 'statement']], [Symbol.for('define'), Symbol.for('case-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'case'], 'camelcase']], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'case', Symbol.for('case-option'), 'language', Symbol.for('to-language'), 'expressionType', Symbol.for('expression-type')]]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'environment'], [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('compile-with-environment'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('inherited-options')]]]];
 
 /**
  * Decompile a JavaScript or TypeScript string to
@@ -856,20 +842,18 @@ function decompile(exp: any, ...args: any[]): any {
   // This function is little more than a wrapper
   // around `compile` that defaults to Roselisp
   // as the target language.
-  const options: any = (args.length === 1) ? args[0] : plistToObject_(args, {
-    case: 'camelcase'
-  });
-  const from: any = options['from'] || Symbol.for('javascript');
-  const to: any = options['to'] || Symbol.for('roselisp');
+  const options: any = normalizeOptions(args);
+  const fromLanguage: any = options['from'] || defaultLanguage;
+  const toLanguage: any = options['to'] || 'roselisp';
   const inheritedOptions: any = {
     ...options,
-    from: from,
-    to: to
+    from: fromLanguage,
+    to: toLanguage
   };
   return compile(exp, inheritedOptions);
 }
 
-decompile.fsource = [Symbol.for('define'), [Symbol.for('decompile'), Symbol.for('exp'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('options'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('js/first'), Symbol.for('args')], [Symbol.for('plist->object_'), Symbol.for('args'), [Symbol.for('js/obj'), 'case', 'camelcase']]]], [Symbol.for('define'), Symbol.for('from'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'from'], [Symbol.for('quote'), Symbol.for('javascript')]]], [Symbol.for('define'), Symbol.for('to'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'to'], [Symbol.for('quote'), Symbol.for('roselisp')]]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'from', Symbol.for('from'), 'to', Symbol.for('to')]]], [Symbol.for('compile'), Symbol.for('exp'), Symbol.for('inherited-options')]];
+decompile.fsource = [Symbol.for('define'), [Symbol.for('decompile'), Symbol.for('exp'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('options'), [Symbol.for('normalize-options'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('from-language'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'from'], Symbol.for('default-language')]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'to'], 'roselisp']], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'from', Symbol.for('from-language'), 'to', Symbol.for('to-language')]]], [Symbol.for('compile'), Symbol.for('exp'), Symbol.for('inherited-options')]];
 
 /**
  * Compile a Lisp expression to JavaScript or TypeScript
@@ -1009,7 +993,7 @@ function compileFilesX(files: any, options: any = {}): any {
   const moduleExpressionMap: any = new ThunkedMap();
   const filenameMap: any = new ThunkedMap();
   const indentOption: any = options['indent'];
-  const languageOption: any = (options['language'] || '').match(new RegExp('^TypeScript$', 'i')) ? 'TypeScript' : 'JavaScript';
+  const languageOption: any = options['language'] || defaultLanguage;
   const outDirOption: any = options['outDir'] || '';
   const commentsOption: any = options['comments'];
   const quickOption: any = options['quick'];
@@ -1018,7 +1002,7 @@ function compileFilesX(files: any, options: any = {}): any {
     expressionType: 'statement',
     language: languageOption
   };
-  const extension: any = (languageOption === 'TypeScript') ? '.ts' : '.js';
+  const extension: any = (languageOption === 'typescript') ? '.ts' : '.js';
   let code: any;
   let data: any;
   let module: any;
@@ -1081,7 +1065,7 @@ function compileFilesX(files: any, options: any = {}): any {
   return moduleMap;
 }
 
-compileFilesX.fsource = [Symbol.for('define'), [Symbol.for('compile-files!'), Symbol.for('files'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('module-expression-map'), [Symbol.for('new'), Symbol.for('ThunkedMap')]], [Symbol.for('define'), Symbol.for('filename-map'), [Symbol.for('new'), Symbol.for('ThunkedMap')]], [Symbol.for('define'), Symbol.for('indent-option'), [Symbol.for('oget'), Symbol.for('options'), 'indent']], [Symbol.for('define'), Symbol.for('language-option'), [Symbol.for('if'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^TypeScript$', 'i'], [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'language'], '']], 'TypeScript', 'JavaScript']], [Symbol.for('define'), Symbol.for('out-dir-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'outDir'], '']], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('define'), Symbol.for('quick-option'), [Symbol.for('oget'), Symbol.for('options'), 'quick']], [Symbol.for('define'), Symbol.for('compilation-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'expressionType', 'statement', 'language', Symbol.for('language-option')]]], [Symbol.for('define'), Symbol.for('extension'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language-option'), 'TypeScript'], '.ts', '.js']], [Symbol.for('define'), Symbol.for('code')], [Symbol.for('define'), Symbol.for('data')], [Symbol.for('define'), Symbol.for('module')], [Symbol.for('define'), Symbol.for('module-name')], [Symbol.for('define'), Symbol.for('module-names'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('module-map')], [Symbol.for('define'), Symbol.for('node')], [Symbol.for('define'), Symbol.for('out-file')], [Symbol.for('for'), [[Symbol.for('file'), Symbol.for('files')]], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('basename'), Symbol.for('file'), [Symbol.for('extname'), Symbol.for('file')]]], [Symbol.for('hash-set!'), Symbol.for('filename-map'), Symbol.for('module-name'), Symbol.for('file')], [Symbol.for('hash-set!'), Symbol.for('module-expression-map'), Symbol.for('module-name'), [Symbol.for('thunk'), [Symbol.for('lambda'), [], [Symbol.for('define'), Symbol.for('data'), [Symbol.for('~>'), Symbol.for('file'), [Symbol.for('readFileSync'), Symbol.for('_'), [Symbol.for('js/obj'), 'encoding', 'utf8']], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^#!.*'], Symbol.for('_'), ''], [Symbol.for('string-append'), '(module m scheme\n', Symbol.for('_'), '\n' +
+compileFilesX.fsource = [Symbol.for('define'), [Symbol.for('compile-files!'), Symbol.for('files'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('module-expression-map'), [Symbol.for('new'), Symbol.for('ThunkedMap')]], [Symbol.for('define'), Symbol.for('filename-map'), [Symbol.for('new'), Symbol.for('ThunkedMap')]], [Symbol.for('define'), Symbol.for('indent-option'), [Symbol.for('oget'), Symbol.for('options'), 'indent']], [Symbol.for('define'), Symbol.for('language-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'language'], Symbol.for('default-language')]], [Symbol.for('define'), Symbol.for('out-dir-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), 'outDir'], '']], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), 'comments']], [Symbol.for('define'), Symbol.for('quick-option'), [Symbol.for('oget'), Symbol.for('options'), 'quick']], [Symbol.for('define'), Symbol.for('compilation-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'expressionType', 'statement', 'language', Symbol.for('language-option')]]], [Symbol.for('define'), Symbol.for('extension'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language-option'), 'typescript'], '.ts', '.js']], [Symbol.for('define'), Symbol.for('code')], [Symbol.for('define'), Symbol.for('data')], [Symbol.for('define'), Symbol.for('module')], [Symbol.for('define'), Symbol.for('module-name')], [Symbol.for('define'), Symbol.for('module-names'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('module-map')], [Symbol.for('define'), Symbol.for('node')], [Symbol.for('define'), Symbol.for('out-file')], [Symbol.for('for'), [[Symbol.for('file'), Symbol.for('files')]], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('basename'), Symbol.for('file'), [Symbol.for('extname'), Symbol.for('file')]]], [Symbol.for('hash-set!'), Symbol.for('filename-map'), Symbol.for('module-name'), Symbol.for('file')], [Symbol.for('hash-set!'), Symbol.for('module-expression-map'), Symbol.for('module-name'), [Symbol.for('thunk'), [Symbol.for('lambda'), [], [Symbol.for('define'), Symbol.for('data'), [Symbol.for('~>'), Symbol.for('file'), [Symbol.for('readFileSync'), Symbol.for('_'), [Symbol.for('js/obj'), 'encoding', 'utf8']], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^#!.*'], Symbol.for('_'), ''], [Symbol.for('string-append'), '(module m scheme\n', Symbol.for('_'), '\n' +
   ')']]], [Symbol.for('define'), Symbol.for('node'), [Symbol.for('read-rose'), Symbol.for('data'), [Symbol.for('js/obj'), 'comments', Symbol.for('comments-option')]]], Symbol.for('node')]]], [Symbol.for('cond'), [Symbol.for('quick-option'), [Symbol.for('define'), Symbol.for('should-compile'), false], [Symbol.for('try'), [Symbol.for('define'), Symbol.for('in-file'), Symbol.for('file')], [Symbol.for('define'), Symbol.for('in-stats'), [Symbol.for('fstatSync'), [Symbol.for('openSync'), Symbol.for('in-file'), 'r']]], [Symbol.for('define'), Symbol.for('out-file'), [Symbol.for('join'), Symbol.for('out-dir-option'), [Symbol.for('string-append'), Symbol.for('module-name'), Symbol.for('extension')]]], [Symbol.for('define'), Symbol.for('out-stats'), [Symbol.for('fstatSync'), [Symbol.for('openSync'), Symbol.for('out-file'), 'r']]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('get-field'), Symbol.for('mtimeMs'), Symbol.for('in-stats')], [Symbol.for('get-field'), Symbol.for('mtimeMs'), Symbol.for('out-stats')]], [Symbol.for('set!'), Symbol.for('should-compile'), true]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('err'), [Symbol.for('set!'), Symbol.for('should-compile'), true]]], [Symbol.for('when'), Symbol.for('should-compile'), [Symbol.for('push-right!'), Symbol.for('module-names'), Symbol.for('module-name')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('module-names'), Symbol.for('module-name')]]]], [Symbol.for('set!'), Symbol.for('module-map'), [Symbol.for('make-module-map'), Symbol.for('module-expression-map'), Symbol.for('lang-environment')]], [Symbol.for('for'), [[Symbol.for('module-name'), Symbol.for('module-names')]], [Symbol.for('set!'), Symbol.for('module'), [Symbol.for('send'), Symbol.for('module-map'), Symbol.for('get'), Symbol.for('module-name')]], [Symbol.for('set!'), Symbol.for('code'), [Symbol.for('compile-with-environment'), Symbol.for('module'), Symbol.for('lang-environment'), Symbol.for('compilation-options')]], [Symbol.for('set!'), Symbol.for('out-file'), [Symbol.for('join'), Symbol.for('out-dir-option'), [Symbol.for('string-append'), Symbol.for('module-name'), Symbol.for('extension')]]], [Symbol.for('mkdirSync'), Symbol.for('out-dir-option'), [Symbol.for('js/obj'), 'recursive', true]], [Symbol.for('writeFileSync'), Symbol.for('out-file'), Symbol.for('code'), [Symbol.for('js/obj'), 'encoding', 'utf8']], [Symbol.for('display'), [Symbol.for('string-append'), 'Compiled ', [Symbol.for('hash-ref'), Symbol.for('filename-map'), Symbol.for('module-name')], ' to ', Symbol.for('out-file')]]], Symbol.for('module-map')];
 
 /**
@@ -1963,7 +1947,7 @@ defineToDefineClass.fsource = [Symbol.for('define'), [Symbol.for('define->define
 function compileAnn(node: any, env: any, options: any = {}): any {
   const language: any = options['language'];
   const e_: any = node.get(1);
-  if (language === 'TypeScript') {
+  if (language === 'typescript') {
     const t_: any = node.get(2);
     return makeExpressionOrStatement(new TSAsExpression(compileExpression(e_, env, options), compileType(t_, env, options)), options);
   } else {
@@ -1971,14 +1955,14 @@ function compileAnn(node: any, env: any, options: any = {}): any {
   }
 }
 
-compileAnn.fsource = [Symbol.for('define'), [Symbol.for('compile-ann'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('e_'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('define'), Symbol.for('t_'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('TSAsExpression'), [Symbol.for('compile-expression'), Symbol.for('e_'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-type'), Symbol.for('t_'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('compile-rose'), Symbol.for('e_'), Symbol.for('env'), Symbol.for('options')]]]];
+compileAnn.fsource = [Symbol.for('define'), [Symbol.for('compile-ann'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('e_'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('define'), Symbol.for('t_'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('TSAsExpression'), [Symbol.for('compile-expression'), Symbol.for('e_'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-type'), Symbol.for('t_'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('compile-rose'), Symbol.for('e_'), Symbol.for('env'), Symbol.for('options')]]]];
 
 /**
  * Compile a `(define-type ...)` expression.
  */
 function compileDefineType(node: any, env: any, options: any = {}): any {
   const language: any = options['language'];
-  if (language === 'TypeScript') {
+  if (language === 'typescript') {
     let id: any = compileExpression(node.get(1), env, options);
     let type_: any = compileType(node.get(2), env, options);
     return transferAndCompileComments(node, new TSTypeAliasDeclaration(id, type_), options);
@@ -1987,7 +1971,7 @@ function compileDefineType(node: any, env: any, options: any = {}): any {
   }
 }
 
-compileDefineType.fsource = [Symbol.for('define'), [Symbol.for('compile-define-type'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('compile-expression'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('compile-type'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('transfer-and-compile-comments'), Symbol.for('node'), [Symbol.for('new'), Symbol.for('TSTypeAliasDeclaration'), Symbol.for('id'), Symbol.for('type_')], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('empty-program')]]]];
+compileDefineType.fsource = [Symbol.for('define'), [Symbol.for('compile-define-type'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('compile-expression'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('compile-type'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('transfer-and-compile-comments'), Symbol.for('node'), [Symbol.for('new'), Symbol.for('TSTypeAliasDeclaration'), Symbol.for('id'), Symbol.for('type_')], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('empty-program')]]]];
 
 /**
  * Compile a type expression.
@@ -2274,7 +2258,7 @@ function compileArrayRef(node: any, env: any, options: any = {}): any {
   });
   // Kludge: prevent TypeScript errors with expressions
   // like `x[y]`, where `y` is `any`-typed.
-  if ((language === 'TypeScript') && !formp(variable, ann_, env) && !['Literal', 'UnaryExpression', 'BinaryExpression'].includes(estreeType(indicesCompiled[0]))) {
+  if ((language === 'typescript') && !formp(variable, ann_, env) && !['Literal', 'UnaryExpression', 'BinaryExpression'].includes(estreeType(indicesCompiled[0]))) {
     variable = sexpToRose([Symbol.for('ann'), variable, Symbol.for('Any')], variable);
   }
   const variableCompiled: any = compileExpression(variable, env, options);
@@ -2286,7 +2270,7 @@ function compileArrayRef(node: any, env: any, options: any = {}): any {
   return makeExpressionOrStatement(result, options);
 }
 
-compileArrayRef.fsource = [Symbol.for('define'), [Symbol.for('compile-array-ref'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('variable'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('indices-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-expression'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('indices')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('not'), [Symbol.for('form?'), Symbol.for('variable'), Symbol.for('ann_'), Symbol.for('env')]], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), [Symbol.for('js/first'), Symbol.for('indices-compiled')]], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('variable'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('ann'), [Symbol.for('unquote'), Symbol.for('variable')], Symbol.for('Any')]], Symbol.for('variable')]]], [Symbol.for('define'), Symbol.for('variable-compiled'), [Symbol.for('compile-expression'), Symbol.for('variable'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('computed'), true], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('form?'), Symbol.for('variable'), Symbol.for('js/optional-chaining_'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('idx'), Symbol.for('arr')], [Symbol.for('new'), Symbol.for('MemberExpression'), Symbol.for('arr'), Symbol.for('idx'), Symbol.for('computed'), Symbol.for('optional')]], Symbol.for('variable-compiled'), Symbol.for('indices-compiled')]], [Symbol.for('make-expression-or-statement'), Symbol.for('result'), Symbol.for('options')]];
+compileArrayRef.fsource = [Symbol.for('define'), [Symbol.for('compile-array-ref'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('variable'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('indices-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('compile-expression'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('indices')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('not'), [Symbol.for('form?'), Symbol.for('variable'), Symbol.for('ann_'), Symbol.for('env')]], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), [Symbol.for('js/first'), Symbol.for('indices-compiled')]], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('variable'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('ann'), [Symbol.for('unquote'), Symbol.for('variable')], Symbol.for('Any')]], Symbol.for('variable')]]], [Symbol.for('define'), Symbol.for('variable-compiled'), [Symbol.for('compile-expression'), Symbol.for('variable'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('computed'), true], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('form?'), Symbol.for('variable'), Symbol.for('js/optional-chaining_'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('idx'), Symbol.for('arr')], [Symbol.for('new'), Symbol.for('MemberExpression'), Symbol.for('arr'), Symbol.for('idx'), Symbol.for('computed'), Symbol.for('optional')]], Symbol.for('variable-compiled'), Symbol.for('indices-compiled')]], [Symbol.for('make-expression-or-statement'), Symbol.for('result'), Symbol.for('options')]];
 
 /**
  * Compile an `(array-set! ...)` expression.
@@ -4231,7 +4215,7 @@ function compileJsDot(node: any, env: any, options: any = {}): any {
     const propCompiled: any = computed ? compileExpression(prop, env, options) : compileSymbol(prop, env, options);
     // Kludge: prevent TypeScript errors with expressions
     // like `x[y]`, where `y` is `any`-typed.
-    if (computed && (language === 'TypeScript') && !formp(obj, ann_, env) && !['Literal', 'UnaryExpression', 'BinaryExpression'].includes(estreeType(propCompiled))) {
+    if (computed && (language === 'typescript') && !formp(obj, ann_, env) && !['Literal', 'UnaryExpression', 'BinaryExpression'].includes(estreeType(propCompiled))) {
       obj = sexpToRose([Symbol.for('ann'), obj, Symbol.for('Any')], obj);
     }
     const objCompiled: any = (typeof roseToSexp(obj) === 'symbol') ? compileSymbol(obj, env, makeExpressionOptions(options)) : compileExpression(obj, env, options);
@@ -4239,7 +4223,7 @@ function compileJsDot(node: any, env: any, options: any = {}): any {
   }
 }
 
-compileJsDot.fsource = [Symbol.for('define'), [Symbol.for('compile-js/dot'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('size')], 3], [Symbol.for('compile-js/dot'), [Symbol.for('sexp->rose'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('js/.'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('unquote'), Symbol.for('prop')]]]], [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('not'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('prop')]]]], [Symbol.for('define'), Symbol.for('prop-compiled'), [Symbol.for('if'), Symbol.for('computed'), [Symbol.for('compile-expression'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-symbol'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('computed'), [Symbol.for('eq?'), Symbol.for('language'), 'TypeScript'], [Symbol.for('not'), [Symbol.for('form?'), Symbol.for('obj'), Symbol.for('ann_'), Symbol.for('env')]], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), Symbol.for('prop-compiled')], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('obj'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('ann'), [Symbol.for('unquote'), Symbol.for('obj')], Symbol.for('Any')]], Symbol.for('obj')]]], [Symbol.for('define'), Symbol.for('obj-compiled'), [Symbol.for('if'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('obj')]], [Symbol.for('compile-symbol'), Symbol.for('obj'), Symbol.for('env'), [Symbol.for('make-expression-options'), Symbol.for('options')]], [Symbol.for('compile-expression'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('MemberExpression'), Symbol.for('obj-compiled'), Symbol.for('prop-compiled'), Symbol.for('computed')], Symbol.for('options')]]]];
+compileJsDot.fsource = [Symbol.for('define'), [Symbol.for('compile-js/dot'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('size')], 3], [Symbol.for('compile-js/dot'), [Symbol.for('sexp->rose'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('quasiquote'), [Symbol.for('js/.'), [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('unquote'), Symbol.for('prop')]]]], [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('not'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('prop')]]]], [Symbol.for('define'), Symbol.for('prop-compiled'), [Symbol.for('if'), Symbol.for('computed'), [Symbol.for('compile-expression'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-symbol'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('computed'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('not'), [Symbol.for('form?'), Symbol.for('obj'), Symbol.for('ann_'), Symbol.for('env')]], [Symbol.for('not'), [Symbol.for('memq?'), [Symbol.for('estree-type'), Symbol.for('prop-compiled')], [Symbol.for('quote'), ['Literal', 'UnaryExpression', 'BinaryExpression']]]]], [Symbol.for('set!'), Symbol.for('obj'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('ann'), [Symbol.for('unquote'), Symbol.for('obj')], Symbol.for('Any')]], Symbol.for('obj')]]], [Symbol.for('define'), Symbol.for('obj-compiled'), [Symbol.for('if'), [Symbol.for('symbol?'), [Symbol.for('rose->sexp'), Symbol.for('obj')]], [Symbol.for('compile-symbol'), Symbol.for('obj'), Symbol.for('env'), [Symbol.for('make-expression-options'), Symbol.for('options')]], [Symbol.for('compile-expression'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('MemberExpression'), Symbol.for('obj-compiled'), Symbol.for('prop-compiled'), Symbol.for('computed')], Symbol.for('options')]]]];
 
 /**
  * Compile a `(js/?. ...)` expression.
@@ -9127,6 +9111,31 @@ function parseFtype(x: any): any {
 }
 
 parseFtype.fsource = [Symbol.for('define'), [Symbol.for('parse-ftype'), Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('x'), 'macro'], [Symbol.for('quote'), [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [[Symbol.for('eq?'), Symbol.for('x'), 'fexpr'], [Symbol.for('quote'), [Symbol.for('fexpr->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('else'), Symbol.for('x')]]];
+
+/**
+ * Normalize an options args list.
+ */
+function normalizeOptions(args: any): any {
+  if (args.length === 1) {
+    // If the args list contains a single object,
+    // just use that.
+    return args[0];
+  } else {
+    // Otherwise, treat the args list as a property list
+    // and convert that to an object.
+    return plistToObject_(plistMap_(function (entry: any): any {
+      let [prop, val]: any[] = entry;
+      if (typeof val === 'symbol') {
+        val = val.description as string;
+      }
+      return [prop, val];
+    }, args), {
+      case: 'camelcase'
+    });
+  }
+}
+
+normalizeOptions.fsource = [Symbol.for('define'), [Symbol.for('normalize-options'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('js/first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('~>'), Symbol.for('args'), [Symbol.for('plist-map_'), [Symbol.for('lambda'), [Symbol.for('entry')], [Symbol.for('define-values'), [Symbol.for('prop'), Symbol.for('val')], Symbol.for('entry')], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('val')], [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('symbol->string'), Symbol.for('val')]]], [Symbol.for('values'), Symbol.for('prop'), Symbol.for('val')]], Symbol.for('_')], [Symbol.for('plist->object_'), Symbol.for('_'), [Symbol.for('js/obj'), 'case', 'camelcase']]]]]];
 
 /**
  * Lisp environment.

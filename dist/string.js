@@ -19,12 +19,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.substring_ = exports.stringUpcase_ = exports.stringTrim_ = exports.stringSplit_ = exports.stringReplace_ = exports.stringRepeat_ = exports.stringRef_ = exports.stringLength_ = exports.stringJoin_ = exports.stringDowncase_ = exports.stringAppend_ = exports.indentString = exports.substring = exports.stringp_ = exports.stringp = exports.stringReplace = exports.stringPrimitiveP_ = exports.stringObjectP_ = exports.stringAppend = exports.stringToNumber_ = exports.numberToString_ = void 0;
 const [plistGet] = (() => {
-    function plistGet_(plist, prop) {
+    function plistGet_(plst, prop) {
         let val = undefined;
-        const _end = plist.length;
+        const _end = plst.length;
         for (let i = 0; i < _end; i = i + 2) {
-            if (plist[i] === prop) {
-                val = plist[i + 1];
+            if (plst[i] === prop) {
+                val = plst[i + 1];
                 break;
             }
         }

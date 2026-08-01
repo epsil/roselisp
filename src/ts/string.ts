@@ -17,12 +17,12 @@
  */
 
 const [plistGet]: any[] = ((): any => {
-  function plistGet_(plist: any, prop: any): any {
+  function plistGet_(plst: any, prop: any): any {
     let val: any = undefined;
-    const _end: any = plist.length;
+    const _end: any = plst.length;
     for (let i: any = 0; i < _end; i = i + 2) {
-      if ((plist as any)[i] === prop) {
-        val = plist[i + 1];
+      if ((plst as any)[i] === prop) {
+        val = plst[i + 1];
         break;
       }
     }

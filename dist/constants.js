@@ -95,7 +95,7 @@ exports.unquoteSplicingSym_ = unquoteSplicingSym_;
 /**
  * Default language to compile to.
  */
-const defaultLanguage = 'JavaScript';
+const defaultLanguage = 'javascript';
 exports.defaultLanguage = defaultLanguage;
 /**
  * Roselisp package name.

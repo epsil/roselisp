@@ -29,8 +29,8 @@
        (even? (array-length obj))))
 
 ;;; Copy a property list.
-(define (plist-copy_ plist)
-  `(,@plist))
+(define (plist-copy_ plst)
+  `(,@plst))
 
 ;;; Return the value of a property in a property list.
 ;;; Returns `#u` if not found.
@@ -38,19 +38,19 @@
 ;;; Similar to [`plist-get` in Emacs Lisp][el:plist-get].
 ;;;
 ;;; [el:plist-get]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dget
-(define (plist-get_ plist prop)
+(define (plist-get_ plst prop)
   (define val #u)
-  (for ((i (range 0 (array-length plist) 2)))
-    (when (eq? (aget plist i) prop)
-      (set! val (aget plist (+ i 1)))
+  (for ((i (range 0 (array-length plst) 2)))
+    (when (eq? (aget plst i) prop)
+      (set! val (aget plst (+ i 1)))
       (break)))
   val)
 
 ;;; Whether a property list contains a given property.
-(define (plist-has?_ plist prop)
+(define (plist-has?_ plst prop)
   (define found #f)
-  (for ((i (range 0 (array-length plist) 2)))
-    (when (eq? (aget plist i) prop)
+  (for ((i (range 0 (array-length plst) 2)))
+    (when (eq? (aget plst i) prop)
       (set! found #t)
       (break)))
   found)
@@ -60,25 +60,47 @@
 ;;; Similar to [`plist-put` in Emacs Lisp][el:plist-put].
 ;;;
 ;;; [el:plist-put]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dput
-(define (plist-set!_ plist prop val)
+(define (plist-set!_ plst prop val)
   (define found #f)
-  (for ((i (range 0 (array-length plist) 2)))
-    (when (eq? (aget plist i) prop)
-      (aset! plist (+ i 1) val)
+  (for ((i (range 0 (array-length plst) 2)))
+    (when (eq? (aget plst i) prop)
+      (aset! plst (+ i 1) val)
       (set! found #t)
       (break))
     (unless found
-      (push-right! plist prop)
-      (push-right! plist val)))
+      (push-right! plst prop)
+      (push-right! plst val)))
   #u)
 
 ;;; Set the value of a property in a property list,
 ;;; returning a new property list.
-(define (plist-set_ plist prop val)
-  (let ((result (plist-copy plist)))
-    (plist-set!_ plist prop val)
+(define (plist-set_ plst prop val)
+  (let ((result (plist-copy plst)))
+    (plist-set!_ plst prop val)
     result))
 
+;;; Iterate over a property list.
+(define (plist-iterate_ f plst)
+  (for ((i (range 0 (js/length plst) 2)))
+    (define prop
+      (aget plst i))
+    (define val
+      (aget plst (+ i 1)))
+    (define entry
+      (list prop val))
+    (f entry)))
+
+;;; Map a function over a property list.
+(define (plist-map_ f plst)
+  (define result '())
+  (plist-iterate_
+   (lambda (entry)
+     (define-values (prop val)
+       (f entry))
+     (push-right! result prop)
+     (push-right! result val))
+   plst)
+  result)
 
 ;;; Convert a plist to an association list.
 (define (plist->alist_ plst)
@@ -90,14 +112,14 @@
   alst)
 
 ;;; Convert a property list to a JavaScript object.
-(define (plist->object_ plist (options (js/obj)))
+(define (plist->object_ plst (options (js/obj)))
   (define result
     (js/obj))
-  (for ((i (range 0 (js/length plist) 2)))
+  (for ((i (range 0 (js/length plst) 2)))
     (define prop
-      (aget plist i))
+      (aget plst i))
     (define val
-      (aget plist (+ i 1)))
+      (aget plst (+ i 1)))
     (define key
       (~> prop
           (symbol->string _)
@@ -107,11 +129,21 @@
   result)
 
 (provide
+  (rename-out (plist->alist_ plist->alist))
+  (rename-out (plist-map_ plist-map))
+  (rename-out (plist->object_ plist->object))
+  (rename-out (plist-copy_ plist-copy))
+  (rename-out (plist-get_ plist-get))
   (rename-out (plist-get_ plist-ref_))
+  (rename-out (plist-has?_ plist-has?))
   (rename-out (plist-has?_ plist-has_))
+  (rename-out (plist-set!_ plist-set!))
+  (rename-out (plist-set_ plist-set))
+  (rename-out (plist?_ plist?))
   plist->alist_
-  plist-copy_
+  plist-map_
   plist->object_
+  plist-copy_
   plist-get_
   plist-has?_
   plist-set!_

@@ -89,7 +89,7 @@ const [lastCdr, cons, findf, listStar] = (() => {
  */
 function decompile(x, options = {}) {
     let language = options['language'];
-    if (language === 'TypeScript') {
+    if (language === 'typescript') {
         return decompileTs(x, options);
     }
     else {
@@ -112,7 +112,7 @@ function decompileFileX(file, options = {}) {
     const outFile = (0, path_1.join)(outDir, stem + outExtension);
     let code;
     let data;
-    language = (language.match(new RegExp('^TypeScript$', 'i')) || (extension === '.ts')) ? 'TypeScript' : 'JavaScript';
+    language = (language.match(new RegExp('^typescript$', 'i')) || (extension === '.ts')) ? 'typescript' : 'javascript';
     options = Object.assign(Object.assign({}, options), { language: language, module: true, noModuleForm: true, pretty: true });
     data = (0, fs_1.readFileSync)(file, {
         encoding: 'utf8'

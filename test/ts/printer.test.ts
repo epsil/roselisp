@@ -356,7 +356,7 @@ describe('print-estree', function (): any {
       printEstree(
         new TSTypeAliasDeclaration(new Identifier('X'), new TSNumberKeyword()),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'type X = number;'
@@ -365,7 +365,7 @@ describe('print-estree', function (): any {
   it('1 as number', function (): any {
     return assertEqual(
       printEstree(new TSAsExpression(new Literal(1), new TSNumberKeyword()), {
-        language: 'TypeScript',
+        language: 'typescript',
       }),
       '1 as number'
     );
@@ -373,7 +373,7 @@ describe('print-estree', function (): any {
   it('x as any', function (): any {
     return assertEqual(
       printEstree(new TSAsExpression(new Identifier('x'), new TSAnyKeyword()), {
-        language: 'TypeScript',
+        language: 'typescript',
       }),
       'x as any'
     );
@@ -386,7 +386,7 @@ describe('print-estree', function (): any {
           new TSTypeReference(new Identifier('Foo'))
         ),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'x as Foo'
@@ -403,7 +403,7 @@ describe('print-estree', function (): any {
           )
         ),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'x as Promise<any>'
@@ -422,7 +422,7 @@ describe('print-estree', function (): any {
           'const'
         ),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'const x: number = 1;'
@@ -436,7 +436,7 @@ describe('print-estree', function (): any {
           new BlockStatement([new ReturnStatement(new Identifier('x'))])
         ).setType(new TSNumberKeyword()),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'function (x: number): number {\n' + '  return x;\n' + '}'
@@ -455,7 +455,7 @@ describe('print-estree', function (): any {
           new BlockStatement([new ReturnStatement(new Identifier('x'))])
         ).setType(new TSNumberKeyword()),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'function (x: number = 1): number {\n' + '  return x;\n' + '}'
@@ -474,7 +474,7 @@ describe('print-estree', function (): any {
           new BlockStatement([new ReturnStatement(new Identifier('x'))])
         ).setType(new TSNumberKeyword()),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'function (x: number = y): number {\n' + '  return x;\n' + '}'
@@ -488,7 +488,7 @@ describe('print-estree', function (): any {
           new BlockStatement([new ReturnStatement(new Identifier('x'))])
         ).setType(new TSNumberKeyword()),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       '(x: number): number => {\n' + '  return x;\n' + '}'
@@ -515,7 +515,7 @@ describe('print-estree', function (): any {
           'const'
         ),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'const f: (a: any) => any = (x: any): any => {\n' + '  return x;\n' + '};'
@@ -524,7 +524,7 @@ describe('print-estree', function (): any {
   it('`foo`', function (): any {
     return assertEqual(
       printEstree(new TemplateLiteral([new TemplateElement(true, 'foo')]), {
-        language: 'TypeScript',
+        language: 'typescript',
       }),
       '`foo`'
     );
@@ -534,7 +534,7 @@ describe('print-estree', function (): any {
       printEstree(
         new TemplateLiteral([new TemplateElement(true, 'foo\n' + 'bar')]),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       '`foo\n' + 'bar`'
@@ -545,7 +545,7 @@ describe('print-estree', function (): any {
       printEstree(
         new TemplateLiteral([new TemplateElement(true, 'foo\n' + '`bar')]),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       '`foo\n' + '\\`bar`'
@@ -563,7 +563,7 @@ describe('print-estree', function (): any {
           ])
         ).setType(new TSAnyKeyword()),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'function (): any {\n' + '  return `foo\n' + 'bar`;\n' + '}'
@@ -577,7 +577,7 @@ describe('print-estree', function (): any {
           new TemplateLiteral([new TemplateElement(true, 'bar')])
         ),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'foo`bar`'
@@ -591,7 +591,7 @@ describe('print-estree', function (): any {
           new TemplateLiteral([new TemplateElement(true, 'bar\n' + 'baz')])
         ),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'foo`bar\n' + 'baz`'
@@ -614,7 +614,7 @@ describe('print-estree', function (): any {
           ])
         ).setType(new TSAnyKeyword()),
         {
-          language: 'TypeScript',
+          language: 'typescript',
         }
       ),
       'function (): any {\n' + '  return foo`bar\n' + 'baz`;\n' + '}'
@@ -647,7 +647,7 @@ describe('print-estree', function (): any {
             ])
           ).setType(new TSAnyKeyword()),
           {
-            language: 'TypeScript',
+            language: 'typescript',
           }
         ),
         'function (): any {\n' +
@@ -662,7 +662,7 @@ describe('print-estree', function (): any {
   return it('export * from "foo";', function (): any {
     return assertEqual(
       printEstree(new ExportAllDeclaration(new Literal('foo')), {
-        language: 'JavaScript',
+        language: 'javascript',
       }),
       "export * from 'foo';"
     );

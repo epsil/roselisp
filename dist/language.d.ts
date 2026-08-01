@@ -544,9 +544,11 @@ declare namespace class_ {
 /**
  * Expand a `(define-class ...)` expression.
  *
- * Loosely based on [`class` in Racket][rkt:class] and
+ * Loosely based on [`define-class` in Guile][guile:define-class],
+ * [`class` in Racket][rkt:class] and
  * [`defclass` in CLOS][cl:defclass].
  *
+ * [guile:define-class]: https://doc.guix.gnu.org/guile/latest/en/html_node/Class-Definition.html#index-define_002dclass-1
  * [rkt:class]: https://docs.racket-lang.org/guide/classes.html
  * [cl:defclass]: http://clhs.lisp.se/Body/m_defcla.htm#defclass
  */

@@ -3707,10 +3707,10 @@ function compileSetValues(node: any, env: any, options: any = {}): any {
   declarator = declaration.declarations[0];
   left = declarator.id;
   right = declarator.init;
-  return makeStatement(new AssignmentExpression('=', left, right), inheritedOptions);
+  return makeExpressionOrStatement(new AssignmentExpression('=', left, right), inheritedOptions);
 }
 
-compileSetValues.fsource = [Symbol.for('define'), [Symbol.for('compile-set-values'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('rose->sexp'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('inherited-options'), 'expressionType']], [Symbol.for('define'), Symbol.for('make-block'), true], [Symbol.for('define'), Symbol.for('declaration')], [Symbol.for('define'), Symbol.for('declarator')], [Symbol.for('define'), Symbol.for('left')], [Symbol.for('define'), Symbol.for('right')], [Symbol.for('set!'), Symbol.for('declaration'), [Symbol.for('compile-define-values'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('define-values'), [Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 1]]]], Symbol.for('node')], Symbol.for('env'), Symbol.for('inherited-options')]], [Symbol.for('set!'), Symbol.for('declarator'), [Symbol.for('first'), [Symbol.for('get-field'), Symbol.for('declarations'), Symbol.for('declaration')]]], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('id'), Symbol.for('declarator')]], [Symbol.for('set!'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('init'), Symbol.for('declarator')]], [Symbol.for('make-statement'), [Symbol.for('new'), Symbol.for('AssignmentExpression'), '=', Symbol.for('left'), Symbol.for('right')], Symbol.for('inherited-options')]];
+compileSetValues.fsource = [Symbol.for('define'), [Symbol.for('compile-set-values'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('rose->sexp'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('inherited-options'), [Symbol.for('js/obj-append'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('inherited-options'), 'expressionType']], [Symbol.for('define'), Symbol.for('make-block'), true], [Symbol.for('define'), Symbol.for('declaration')], [Symbol.for('define'), Symbol.for('declarator')], [Symbol.for('define'), Symbol.for('left')], [Symbol.for('define'), Symbol.for('right')], [Symbol.for('set!'), Symbol.for('declaration'), [Symbol.for('compile-define-values'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('define-values'), [Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 1]]]], Symbol.for('node')], Symbol.for('env'), Symbol.for('inherited-options')]], [Symbol.for('set!'), Symbol.for('declarator'), [Symbol.for('first'), [Symbol.for('get-field'), Symbol.for('declarations'), Symbol.for('declaration')]]], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('id'), Symbol.for('declarator')]], [Symbol.for('set!'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('init'), Symbol.for('declarator')]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('AssignmentExpression'), '=', Symbol.for('left'), Symbol.for('right')], Symbol.for('inherited-options')]];
 
 /**
  * Compile a `(let-fields ...)` expression.
@@ -3833,7 +3833,7 @@ compileDefineFields.fsource = [Symbol.for('define'), [Symbol.for('compile-define
  */
 function compileSetFields(node: any, env: any, options: any = {}): any {
   const expressionType: any = options['expressionType'];
-  return makeStatement(new AssignmentExpression('=', new ObjectPattern(node.get(1).drop(0).map(function (x: any): any {
+  return makeExpressionOrStatement(new AssignmentExpression('=', new ObjectPattern(node.get(1).drop(0).map(function (x: any): any {
     let exp: any = roseToSexp(x);
     if (Array.isArray(exp)) {
       return new Property(compileSymbol(x.get(0), env, options), compileSymbol(x.get(1), env, options));
@@ -3844,7 +3844,7 @@ function compileSetFields(node: any, env: any, options: any = {}): any {
   })), compileExpression(node.get(2), env, options)), options);
 }
 
-compileSetFields.fsource = [Symbol.for('define'), [Symbol.for('compile-set-fields'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('make-statement'), [Symbol.for('new'), Symbol.for('AssignmentExpression'), '=', [Symbol.for('new'), Symbol.for('ObjectPattern'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('rose->sexp'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('new'), Symbol.for('Property'), [Symbol.for('compile-symbol'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0], Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-symbol'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1], Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('key'), [Symbol.for('compile-symbol'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('new'), Symbol.for('Property'), Symbol.for('key'), Symbol.for('key')]]]], [Symbol.for('send'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], Symbol.for('drop'), 0]]], [Symbol.for('compile-expression'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('env'), Symbol.for('options')]], Symbol.for('options')]];
+compileSetFields.fsource = [Symbol.for('define'), [Symbol.for('compile-set-fields'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('AssignmentExpression'), '=', [Symbol.for('new'), Symbol.for('ObjectPattern'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('rose->sexp'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('new'), Symbol.for('Property'), [Symbol.for('compile-symbol'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 0], Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-symbol'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1], Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('key'), [Symbol.for('compile-symbol'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('new'), Symbol.for('Property'), Symbol.for('key'), Symbol.for('key')]]]], [Symbol.for('send'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1], Symbol.for('drop'), 0]]], [Symbol.for('compile-expression'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('env'), Symbol.for('options')]], Symbol.for('options')]];
 
 /**
  * Compile a `(list ...)` expression.
@@ -7277,9 +7277,11 @@ class_.ftype = 'macro';
 /**
  * Expand a `(define-class ...)` expression.
  *
- * Loosely based on [`class` in Racket][rkt:class] and
+ * Loosely based on [`define-class` in Guile][guile:define-class],
+ * [`class` in Racket][rkt:class] and
  * [`defclass` in CLOS][cl:defclass].
  *
+ * [guile:define-class]: https://doc.guix.gnu.org/guile/latest/en/html_node/Class-Definition.html#index-define_002dclass-1
  * [rkt:class]: https://docs.racket-lang.org/guide/classes.html
  * [cl:defclass]: http://clhs.lisp.se/Body/m_defcla.htm#defclass
  */

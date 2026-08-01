@@ -3687,7 +3687,7 @@
                           declaration)))
   (set! left (get-field id declarator))
   (set! right (get-field init declarator))
-  (make-statement
+  (make-expression-or-statement
    (new AssignmentExpression
         "="
         left
@@ -3836,27 +3836,26 @@
 (define (compile-set-fields node env (options (js/obj)))
   (define expression-type
     (oget options "expressionType"))
-  (make-statement
+  (make-expression-or-statement
    (new AssignmentExpression
         "="
-        (new
-         ObjectPattern
-         (map (lambda (x)
-                (define exp
-                  (rose->sexp x))
-                (cond
-                 ((array? exp)
-                  (new Property
-                       (compile-symbol
-                        (send x get 0) env options)
-                       (compile-symbol
-                        (send x get 1) env options)))
-                 (else
-                  (define key
-                    (compile-symbol
-                     x env options))
-                  (new Property key key))))
-              (send (send node get 1) drop 0)))
+        (new ObjectPattern
+             (map (lambda (x)
+                    (define exp
+                      (rose->sexp x))
+                    (cond
+                     ((array? exp)
+                      (new Property
+                           (compile-symbol
+                            (send x get 0) env options)
+                           (compile-symbol
+                            (send x get 1) env options)))
+                     (else
+                      (define key
+                        (compile-symbol
+                         x env options))
+                      (new Property key key))))
+                  (send (send node get 1) drop 0)))
         (compile-expression
          (send node get 2) env options))
    options))
@@ -6582,9 +6581,11 @@
 
 ;;; Expand a `(define-class ...)` expression.
 ;;;
-;;; Loosely based on [`class` in Racket][rkt:class] and
+;;; Loosely based on [`define-class` in Guile][guile:define-class],
+;;; [`class` in Racket][rkt:class] and
 ;;; [`defclass` in CLOS][cl:defclass].
 ;;;
+;;; [guile:define-class]: https://doc.guix.gnu.org/guile/latest/en/html_node/Class-Definition.html#index-define_002dclass-1
 ;;; [rkt:class]: https://docs.racket-lang.org/guide/classes.html
 ;;; [cl:defclass]: http://clhs.lisp.se/Body/m_defcla.htm#defclass
 (define-macro (define-class_ &whole exp &environment env)

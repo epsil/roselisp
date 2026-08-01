@@ -906,7 +906,18 @@ describe('if', function (): any {
         '}'
     );
   });
-  return xit("(compile '(if (set! x y) z w) :as 'return)", function (): any {
+  it("(compile '(if (set! x y) z w))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('if'),
+        [Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')],
+        Symbol.for('z'),
+        Symbol.for('w'),
+      ]),
+      'if ((x = y)) {\n' + '  z;\n' + '} else {\n' + '  w;\n' + '}'
+    );
+  });
+  it("(compile '(if (set! x y) z w) :as 'return)", function (): any {
     return assertEqual(
       compile(
         [
@@ -923,6 +934,28 @@ describe('if', function (): any {
         '} else {\n' +
         '  return w;\n' +
         '}'
+    );
+  });
+  it("(compile '(if (set!-values (x) y) z w))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('if'),
+        [Symbol.for('set!-values'), [Symbol.for('x')], Symbol.for('y')],
+        Symbol.for('z'),
+        Symbol.for('w'),
+      ]),
+      'if (([x] = y)) {\n' + '  z;\n' + '} else {\n' + '  w;\n' + '}'
+    );
+  });
+  return it("(compile '(if (set!-fields (x) y) z w))", function (): any {
+    return assertEqual(
+      compile([
+        Symbol.for('if'),
+        [Symbol.for('set!-fields'), [Symbol.for('x')], Symbol.for('y')],
+        Symbol.for('z'),
+        Symbol.for('w'),
+      ]),
+      'if (({x} = y)) {\n' + '  z;\n' + '} else {\n' + '  w;\n' + '}'
     );
   });
 });

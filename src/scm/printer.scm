@@ -763,8 +763,14 @@
 (define (print-expression-statement node (options (js/obj)))
   (define expression
     (get-field expression node))
+  ;; Object expressions and object destructuring must be
+  ;; wrapped in parentheses in order to produce a
+  ;; syntactically correct program.
   (define wrap-in-parentheses
-    (estree-type? expression "ObjectExpression"))
+    (or (estree-type? expression "ObjectExpression")
+        (and (estree-type? expression "AssignmentExpression")
+             (estree-type? (get-field left expression)
+                           "ObjectPattern"))))
   (define expression-printed
     (print-node expression options))
   (list
@@ -1093,9 +1099,6 @@
                (indent right-printed))
          (list space
                right-printed))))
-  (when (estree-type? left "ObjectPattern")
-    (set! result
-          (doc-wrap result options)))
   result)
 
 ;;; Print an `AssignmentPattern` ESTree node to a `Doc` object.

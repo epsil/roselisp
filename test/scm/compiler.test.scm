@@ -436,14 +436,39 @@ and(x, or(y, z));"
 } else {
   return w;
 }"
- xit> (compile '(if (set! x y)
-                    z
-                    w)
-               :as 'return)
+ > (compile '(if (set! x y)
+                 z
+                 w))
+ "if ((x = y)) {
+  z;
+} else {
+  w;
+}"
+ > (compile '(if (set! x y)
+                 z
+                 w)
+            :as 'return)
  "if ((x = y)) {
   return z;
 } else {
   return w;
+}"
+ > (compile '(if (set!-values (x) y)
+                 z
+                 w))
+ "if (([x] = y)) {
+  z;
+} else {
+  w;
+}"
+
+ > (compile '(if (set!-fields (x) y)
+                 z
+                 w))
+ "if (({x} = y)) {
+  z;
+} else {
+  w;
 }"
 
  ;; `when`

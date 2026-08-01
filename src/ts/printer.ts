@@ -846,12 +846,15 @@ printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symb
  */
 function printExpressionStatement(node: any, options: any = {}): any {
   const expression: any = node.expression;
-  const wrapInParentheses: any = estreeTypeP(expression, 'ObjectExpression');
+  // Object expressions and object destructuring must be
+  // wrapped in parentheses in order to produce a
+  // syntactically correct program.
+  const wrapInParentheses: any = estreeTypeP(expression, 'ObjectExpression') || (estreeTypeP(expression, 'AssignmentExpression') && estreeTypeP(expression.left, 'ObjectPattern'));
   const expressionPrinted: any = printNode(expression, options);
   return [wrapInParentheses ? docWrap(expressionPrinted, options) : expressionPrinted, ';'];
 }
 
-printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('wrap-in-parentheses'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'ObjectExpression']], [Symbol.for('define'), Symbol.for('expression-printed'), [Symbol.for('print-node'), Symbol.for('expression'), Symbol.for('options')]], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('wrap-in-parentheses'), [Symbol.for('doc-wrap'), Symbol.for('expression-printed'), Symbol.for('options')], Symbol.for('expression-printed')], ';']];
+printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('wrap-in-parentheses'), [Symbol.for('or'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'ObjectExpression'], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'AssignmentExpression'], [Symbol.for('estree-type?'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('expression')], 'ObjectPattern']]]], [Symbol.for('define'), Symbol.for('expression-printed'), [Symbol.for('print-node'), Symbol.for('expression'), Symbol.for('options')]], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('wrap-in-parentheses'), [Symbol.for('doc-wrap'), Symbol.for('expression-printed'), Symbol.for('options')], Symbol.for('expression-printed')], ';']];
 
 /**
  * Print a `ReturnStatement` ESTree node to a `Doc` object.
@@ -1109,13 +1112,10 @@ function printAssignmentExpression(node: any, options: any = {}): any {
     noImplicitAny: false
   });
   let result: any = [leftPrinted, space, operator, docHasCommentsP(rightPrinted) ? [line, indent(rightPrinted)] : [space, rightPrinted]];
-  if (estreeTypeP(left, 'ObjectPattern')) {
-    result = docWrap(result, options);
-  }
   return result;
 }
 
-printAssignmentExpression.fsource = [Symbol.for('define'), [Symbol.for('print-assignment-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('operator'), [Symbol.for('get-field'), Symbol.for('operator'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('operator-printed'), Symbol.for('operator')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('right'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'noImplicitAny', false]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list'), Symbol.for('left-printed'), Symbol.for('space'), Symbol.for('operator'), [Symbol.for('if'), [Symbol.for('doc-has-comments?'), Symbol.for('right-printed')], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('indent'), Symbol.for('right-printed')]], [Symbol.for('list'), Symbol.for('space'), Symbol.for('right-printed')]]]], [Symbol.for('when'), [Symbol.for('estree-type?'), Symbol.for('left'), 'ObjectPattern'], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('doc-wrap'), Symbol.for('result'), Symbol.for('options')]]], Symbol.for('result')];
+printAssignmentExpression.fsource = [Symbol.for('define'), [Symbol.for('print-assignment-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('operator'), [Symbol.for('get-field'), Symbol.for('operator'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('operator-printed'), Symbol.for('operator')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('right'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'noImplicitAny', false]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list'), Symbol.for('left-printed'), Symbol.for('space'), Symbol.for('operator'), [Symbol.for('if'), [Symbol.for('doc-has-comments?'), Symbol.for('right-printed')], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('indent'), Symbol.for('right-printed')]], [Symbol.for('list'), Symbol.for('space'), Symbol.for('right-printed')]]]], Symbol.for('result')];
 
 /**
  * Print an `AssignmentPattern` ESTree node to a `Doc` object.

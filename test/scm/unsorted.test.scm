@@ -14,13 +14,6 @@
 
  > (describe "To do")
  _
- xit> (compile '(begin x y z)
-               :fsemicolon #f)
- "x
-
-y
-
-z"
 
  ;; `require`
  > (describe "require")

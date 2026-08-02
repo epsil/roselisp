@@ -435,10 +435,10 @@ print.fsource = [Symbol.for('define'), [Symbol.for('print'), Symbol.for('obj'), 
  * Print an ESTree node.
  */
 function printEstree(node, options = {}) {
-    return printToString(node, options);
+    return printToString(node, addDefaultOptions(options));
 }
 exports.printEstree = printEstree;
-printEstree.fsource = [Symbol.for('define'), [Symbol.for('print-estree'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('print-to-string'), Symbol.for('node'), Symbol.for('options')]];
+printEstree.fsource = [Symbol.for('define'), [Symbol.for('print-estree'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('print-to-string'), Symbol.for('node'), [Symbol.for('add-default-options'), Symbol.for('options')]]];
 /**
  * Print a rose tree.
  */
@@ -758,6 +758,7 @@ printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symb
  * Print an `ExpressionStatement` ESTree node to a `Doc` object.
  */
 function printExpressionStatement(node, options = {}) {
+    const fsemicolon = options['fsemicolon'];
     const expression = node.expression;
     let expressionPrinted = printNode(expression, options);
     // Object expressions and object destructuring must be
@@ -766,26 +767,27 @@ function printExpressionStatement(node, options = {}) {
     if ((0, estree_1.estreeTypeP)(expression, 'ObjectExpression') || ((0, estree_1.estreeTypeP)(expression, 'AssignmentExpression') && (0, estree_1.estreeTypeP)(expression.left, 'ObjectPattern'))) {
         expressionPrinted = docWrap(expressionPrinted, options);
     }
-    return [expressionPrinted, ';'];
+    return [expressionPrinted, fsemicolon ? ';' : empty];
 }
-printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('expression-printed'), [Symbol.for('print-node'), Symbol.for('expression'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'ObjectExpression'], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'AssignmentExpression'], [Symbol.for('estree-type?'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('expression')], 'ObjectPattern']]], [Symbol.for('set!'), Symbol.for('expression-printed'), [Symbol.for('doc-wrap'), Symbol.for('expression-printed'), Symbol.for('options')]]], [Symbol.for('list'), Symbol.for('expression-printed'), ';']];
+printExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('print-expression-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-field'), Symbol.for('expression'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('expression-printed'), [Symbol.for('print-node'), Symbol.for('expression'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'ObjectExpression'], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('expression'), 'AssignmentExpression'], [Symbol.for('estree-type?'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('expression')], 'ObjectPattern']]], [Symbol.for('set!'), Symbol.for('expression-printed'), [Symbol.for('doc-wrap'), Symbol.for('expression-printed'), Symbol.for('options')]]], [Symbol.for('list'), Symbol.for('expression-printed'), [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print a `ReturnStatement` ESTree node to a `Doc` object.
  */
 function printReturnStatement(node, options = {}) {
+    const fsemicolon = options['fsemicolon'];
     const argument = node.argument;
     if (argument) {
         let argumentPrinted = printNode(argument, options);
         if (docShouldBreakP(argumentPrinted)) {
             argumentPrinted = ['(', line, indent(argumentPrinted), line, ')'];
         }
-        return ['return', space, argumentPrinted, ';'];
+        return ['return', space, argumentPrinted, fsemicolon ? ';' : empty];
     }
     else {
-        return ['return', ';'];
+        return ['return', fsemicolon ? ';' : empty];
     }
 }
-printReturnStatement.fsource = [Symbol.for('define'), [Symbol.for('print-return-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-field'), Symbol.for('argument'), Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('argument'), [Symbol.for('define'), Symbol.for('argument-printed'), [Symbol.for('print-node'), Symbol.for('argument'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('doc-should-break?'), Symbol.for('argument-printed')], [Symbol.for('set!'), Symbol.for('argument-printed'), [Symbol.for('list'), '(', Symbol.for('line'), [Symbol.for('indent'), Symbol.for('argument-printed')], Symbol.for('line'), ')'], Symbol.for('options')]], [Symbol.for('list'), 'return', Symbol.for('space'), Symbol.for('argument-printed'), ';']], [Symbol.for('else'), [Symbol.for('list'), 'return', ';']]]];
+printReturnStatement.fsource = [Symbol.for('define'), [Symbol.for('print-return-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-field'), Symbol.for('argument'), Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('argument'), [Symbol.for('define'), Symbol.for('argument-printed'), [Symbol.for('print-node'), Symbol.for('argument'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('doc-should-break?'), Symbol.for('argument-printed')], [Symbol.for('set!'), Symbol.for('argument-printed'), [Symbol.for('list'), '(', Symbol.for('line'), [Symbol.for('indent'), Symbol.for('argument-printed')], Symbol.for('line'), ')'], Symbol.for('options')]], [Symbol.for('list'), 'return', Symbol.for('space'), Symbol.for('argument-printed'), [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]], [Symbol.for('else'), [Symbol.for('list'), 'return', [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]]]];
 /**
  * Print a `YieldExpression` ESTree node to a `Doc` object.
  */
@@ -797,9 +799,10 @@ printYieldExpression.fsource = [Symbol.for('define'), [Symbol.for('print-yield-e
  * Print a `ThrowStatement` ESTree node to a `Doc` object.
  */
 function printThrowStatement(node, options = {}) {
-    return ['throw', space, printNode(node.argument, options), ';'];
+    const fsemicolon = options['fsemicolon'];
+    return ['throw', space, printNode(node.argument, options), fsemicolon ? ';' : empty];
 }
-printThrowStatement.fsource = [Symbol.for('define'), [Symbol.for('print-throw-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('list'), 'throw', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('argument'), Symbol.for('node')], Symbol.for('options')], ';']];
+printThrowStatement.fsource = [Symbol.for('define'), [Symbol.for('print-throw-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('list'), 'throw', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('argument'), Symbol.for('node')], Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print an `AwaitExpression` ESTree node to a `Doc` object.
  */
@@ -811,16 +814,18 @@ printAwaitExpression.fsource = [Symbol.for('define'), [Symbol.for('print-await-e
  * Print a `BreakStatement` ESTree node to a `Doc` object.
  */
 function printBreakStatement(node, options = {}) {
-    return ['break', node.label ? [space, printNode(node.label, options)] : empty, ';'];
+    const fsemicolon = options['fsemicolon'];
+    return ['break', node.label ? [space, printNode(node.label, options)] : empty, fsemicolon ? ';' : empty];
 }
-printBreakStatement.fsource = [Symbol.for('define'), [Symbol.for('print-break-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('list'), 'break', [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], [Symbol.for('list'), Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], Symbol.for('options')]], Symbol.for('empty')], ';']];
+printBreakStatement.fsource = [Symbol.for('define'), [Symbol.for('print-break-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('list'), 'break', [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], [Symbol.for('list'), Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], Symbol.for('options')]], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print a `ContinueStatement` ESTree node to a `Doc` object.
  */
 function printContinueStatement(node, options = {}) {
-    return ['continue', node.label ? [space, printNode(node.label, options)] : empty, ';'];
+    const fsemicolon = options['fsemicolon'];
+    return ['continue', node.label ? [space, printNode(node.label, options)] : empty, fsemicolon ? ';' : empty];
 }
-printContinueStatement.fsource = [Symbol.for('define'), [Symbol.for('print-continue-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('list'), 'continue', [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], [Symbol.for('list'), Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], Symbol.for('options')]], Symbol.for('empty')], ';']];
+printContinueStatement.fsource = [Symbol.for('define'), [Symbol.for('print-continue-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('list'), 'continue', [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], [Symbol.for('list'), Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('label'), Symbol.for('node')], Symbol.for('options')]], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print a `ThisExpression` ESTree node to a `Doc` object.
  */
@@ -1154,11 +1159,12 @@ printArrowFunctionExpression.fsource = [Symbol.for('define'), [Symbol.for('print
  * Print a `VariableDeclaration` ESTree node to a `Doc` object.
  */
 function printVariableDeclaration(node, options = {}) {
+    const fsemicolon = options['fsemicolon'];
     return [node.kind, space, join([',', space], node.declarations.map(function (x) {
             return printNode(x, options);
-        })), ';'];
+        })), fsemicolon ? ';' : empty];
 }
-printVariableDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-variable-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('list'), [Symbol.for('get-field'), Symbol.for('kind'), Symbol.for('node')], Symbol.for('space'), [Symbol.for('~>'), [Symbol.for('get-field'), Symbol.for('declarations'), Symbol.for('node')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('space')], Symbol.for('_')]], ';']];
+printVariableDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-variable-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('list'), [Symbol.for('get-field'), Symbol.for('kind'), Symbol.for('node')], Symbol.for('space'), [Symbol.for('~>'), [Symbol.for('get-field'), Symbol.for('declarations'), Symbol.for('node')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('space')], Symbol.for('_')]], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print a `VariableDeclarator` ESTree node to a `Doc` object.
  */
@@ -1242,6 +1248,7 @@ printWhileStatement.fsource = [Symbol.for('define'), [Symbol.for('print-while-st
  * Print a `DoWhileStatement` ESTree node to a `Doc` object.
  */
 function printDoWhileStatement(node, options = {}) {
+    const fsemicolon = options['fsemicolon'];
     const test = node.test;
     let testPrinted = printNode(test, options);
     const body = node.body;
@@ -1249,42 +1256,43 @@ function printDoWhileStatement(node, options = {}) {
     if ((0, estree_1.estreeTypeP)(test, 'AssignmentExpression')) {
         testPrinted = docWrap(testPrinted, options);
     }
-    return ['do', space, bodyPrinted, space, 'while', space, '(', testPrinted, ')', ';'];
+    return ['do', space, bodyPrinted, space, 'while', space, '(', testPrinted, ')', fsemicolon ? ';' : empty];
 }
-printDoWhileStatement.fsource = [Symbol.for('define'), [Symbol.for('print-do-while-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('estree-type?'), Symbol.for('test'), 'AssignmentExpression'], [Symbol.for('set!'), Symbol.for('test-printed'), [Symbol.for('doc-wrap'), Symbol.for('test-printed'), Symbol.for('options')]]], [Symbol.for('list'), 'do', Symbol.for('space'), Symbol.for('body-printed'), Symbol.for('space'), 'while', Symbol.for('space'), '(', Symbol.for('test-printed'), ')', ';']];
+printDoWhileStatement.fsource = [Symbol.for('define'), [Symbol.for('print-do-while-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('estree-type?'), Symbol.for('test'), 'AssignmentExpression'], [Symbol.for('set!'), Symbol.for('test-printed'), [Symbol.for('doc-wrap'), Symbol.for('test-printed'), Symbol.for('options')]]], [Symbol.for('list'), 'do', Symbol.for('space'), Symbol.for('body-printed'), Symbol.for('space'), 'while', Symbol.for('space'), '(', Symbol.for('test-printed'), ')', [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print a `ForStatement` ESTree node to a `Doc` object.
  */
 function printForStatement(node, options = {}) {
     const init = node.init;
-    const initPrinted = printDoc(printNode(init, options), options).replace(new RegExp(';$'), '');
+    const initPrinted = printNode(init, Object.assign(Object.assign({}, options), { fsemicolon: false }));
     const test = node.test;
     let testPrinted = printDoc(printNode(test, options), options);
     const update = node.update;
-    const updatePrinted = printDoc(printNode(update, options), options).replace(new RegExp(';$'), '');
+    const updatePrinted = printNode(update, Object.assign(Object.assign({}, options), { fsemicolon: false }));
     const body = node.body;
     const bodyPrinted = printNode(body, options);
     return ['for', space, '(', initPrinted, ';', (testPrinted === empty) ? empty : space, testPrinted, ';', (updatePrinted === empty) ? empty : space, updatePrinted, ')', space, bodyPrinted];
 }
-printForStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-field'), Symbol.for('init'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('init-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('init'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-doc'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('get-field'), Symbol.for('update'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('update-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('update'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('init-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('test-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('test-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('update-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('update-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
+printForStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-field'), Symbol.for('init'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('init-printed'), [Symbol.for('print-node'), Symbol.for('init'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'fsemicolon', false]]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-field'), Symbol.for('test'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-doc'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('get-field'), Symbol.for('update'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('update-printed'), [Symbol.for('print-node'), Symbol.for('update'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'fsemicolon', false]]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('init-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('test-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('test-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('update-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('update-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
 /**
  * Print a `ForOfStatement` ESTree node to a `Doc` object.
  */
 function printForOfStatement(node, options = {}) {
     const language = options['language'];
     const left = node.left;
-    let leftPrinted = printDoc(printNode(left, options), options).replace(new RegExp(';$'), '');
+    let leftPrinted = printNode(left, Object.assign(Object.assign({}, options), { fsemicolon: false }));
     const right = node.right;
     const rightPrinted = printNode(right, options);
     const body = node.body;
     const bodyPrinted = printNode(body, options);
     let resultStr;
+    // FIXME: Kludge.
     if (language === 'typescript') {
-        leftPrinted = leftPrinted.replace(new RegExp(': any$'), '');
+        leftPrinted = printDoc(leftPrinted).replace(new RegExp(': any$'), '');
     }
     return ['for', space, '(', leftPrinted, space, 'of', space, rightPrinted, ')', space, bodyPrinted];
 }
-printForOfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-of-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('right'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('result-str')], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('set!'), Symbol.for('left-printed'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ': any$'], Symbol.for('left-printed'), '']]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('left-printed'), Symbol.for('space'), 'of', Symbol.for('space'), Symbol.for('right-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
+printForOfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-of-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-field'), Symbol.for('left'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('print-node'), Symbol.for('left'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), 'fsemicolon', false]]]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-field'), Symbol.for('right'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-field'), Symbol.for('body'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('result-str')], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('set!'), Symbol.for('left-printed'), [Symbol.for('~>'), Symbol.for('left-printed'), [Symbol.for('print-doc'), Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ': any$'], Symbol.for('_'), '']]]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('left-printed'), Symbol.for('space'), 'of', Symbol.for('space'), Symbol.for('right-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
 /**
  * Print a `ForInStatement` ESTree node to a `Doc` object.
  */
@@ -1353,14 +1361,15 @@ printClassBody.fsource = [Symbol.for('define'), [Symbol.for('print-class-body'),
  * Print a `PropertyDefinition` ESTree node to a `Doc` object.
  */
 function printPropertyDefinition(node, options = {}) {
+    const fsemicolon = options['fsemicolon'];
     const language = options['language'];
     const key = node.key;
     const value = node.value;
     const staticFlag = node.static;
     const accessibility = node.accessibility;
-    return [((language === 'typescript') && (accessibility === 'private')) ? ['private', space] : empty, staticFlag ? ['static', space] : empty, printNode(key, options), (language === 'typescript') ? [':', space, 'any'] : empty, value ? [space, '=', space, printNode(value, options)] : empty, ';'];
+    return [((language === 'typescript') && (accessibility === 'private')) ? ['private', space] : empty, staticFlag ? ['static', space] : empty, printNode(key, options), (language === 'typescript') ? [':', space, 'any'] : empty, value ? [space, '=', space, printNode(value, options)] : empty, fsemicolon ? ';' : empty];
 }
-printPropertyDefinition.fsource = [Symbol.for('define'), [Symbol.for('print-property-definition'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-field'), Symbol.for('key'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('static-flag'), [Symbol.for('get-field'), Symbol.for('static'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('accessibility'), [Symbol.for('get-field'), Symbol.for('accessibility'), Symbol.for('node')]], [Symbol.for('list'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('eq?'), Symbol.for('accessibility'), 'private']], [Symbol.for('list'), 'private', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('static-flag'), [Symbol.for('list'), 'static', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('print-node'), Symbol.for('key'), Symbol.for('options')], [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('list'), ':', Symbol.for('space'), 'any'], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('value'), [Symbol.for('list'), Symbol.for('space'), '=', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('value'), Symbol.for('options')]], Symbol.for('empty')], ';']];
+printPropertyDefinition.fsource = [Symbol.for('define'), [Symbol.for('print-property-definition'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-field'), Symbol.for('key'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('static-flag'), [Symbol.for('get-field'), Symbol.for('static'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('accessibility'), [Symbol.for('get-field'), Symbol.for('accessibility'), Symbol.for('node')]], [Symbol.for('list'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('eq?'), Symbol.for('accessibility'), 'private']], [Symbol.for('list'), 'private', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('static-flag'), [Symbol.for('list'), 'static', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('print-node'), Symbol.for('key'), Symbol.for('options')], [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('list'), ':', Symbol.for('space'), 'any'], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('value'), [Symbol.for('list'), Symbol.for('space'), '=', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('value'), Symbol.for('options')]], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print a `MethodDefinition` ESTree node to a `Doc` object.
  */
@@ -1443,18 +1452,19 @@ printNewExpression.fsource = [Symbol.for('define'), [Symbol.for('print-new-expre
  * Print an `ImportDeclaration` ESTree node to a `Doc` object.
  */
 function printImportDeclaration(node, options = {}) {
+    const fsemicolon = options['fsemicolon'];
     const specifiers = node.specifiers;
     const source = node.source;
     if ((specifiers.length === 1) && !(0, estree_1.estreeTypeP)(specifiers[0], 'ImportSpecifier')) {
-        return ['import', space, printNode(specifiers[0], options), space, 'from', space, printNode(source, options), ';'];
+        return ['import', space, printNode(specifiers[0], options), space, 'from', space, printNode(source, options), fsemicolon ? ';' : empty];
     }
     else {
         return ['import', space, '{', line, indent(join([',', line], specifiers.map(function (x) {
                 return printNode(x, options);
-            }))), line, '}', space, 'from', space, printNode(source, options), ';'];
+            }))), line, '}', space, 'from', space, printNode(source, options), fsemicolon ? ';' : empty];
     }
 }
-printImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-import-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-field'), Symbol.for('specifiers'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('source'), [Symbol.for('get-field'), Symbol.for('source'), Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('specifiers')], 1], [Symbol.for('not'), [Symbol.for('estree-type?'), [Symbol.for('first'), Symbol.for('specifiers')], 'ImportSpecifier']]], [Symbol.for('list'), 'import', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('first'), Symbol.for('specifiers')], Symbol.for('options')], Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], ';']], [Symbol.for('else'), [Symbol.for('list'), 'import', Symbol.for('space'), '{', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]], Symbol.for('line'), '}', Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], ';']]]];
+printImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-import-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-field'), Symbol.for('specifiers'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('source'), [Symbol.for('get-field'), Symbol.for('source'), Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('specifiers')], 1], [Symbol.for('not'), [Symbol.for('estree-type?'), [Symbol.for('first'), Symbol.for('specifiers')], 'ImportSpecifier']]], [Symbol.for('list'), 'import', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('first'), Symbol.for('specifiers')], Symbol.for('options')], Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]], [Symbol.for('else'), [Symbol.for('list'), 'import', Symbol.for('space'), '{', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]], Symbol.for('line'), '}', Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]]]];
 /**
  * Print an `ImportSpecifier` ESTree node to a `Doc` object.
  */
@@ -1489,13 +1499,14 @@ printImportNamespaceSpecifier.fsource = [Symbol.for('define'), [Symbol.for('prin
  * Print an `ExportNamedDeclaration` ESTree node to a `Doc` object.
  */
 function printExportNamedDeclaration(node, options = {}) {
+    const fsemicolon = options['fsemicolon'];
     const specifiers = node.specifiers;
     const specifiersPrinted = printDoc(indent(join([',', line], specifiers.map(function (x) {
         return printNode(x, options);
     }))), options);
-    return ['export', space, '{', line, specifiersPrinted, (specifiersPrinted === '') ? empty : line, '}', ';'];
+    return ['export', space, '{', line, specifiersPrinted, (specifiersPrinted === '') ? empty : line, '}', fsemicolon ? ';' : empty];
 }
-printExportNamedDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-named-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-field'), Symbol.for('specifiers'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('specifiers-printed'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent')], [Symbol.for('print-doc'), Symbol.for('options')]]], [Symbol.for('list'), 'export', Symbol.for('space'), '{', Symbol.for('line'), Symbol.for('specifiers-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('specifiers-printed'), ''], Symbol.for('empty'), Symbol.for('line')], '}', ';']];
+printExportNamedDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-named-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-field'), Symbol.for('specifiers'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('specifiers-printed'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent')], [Symbol.for('print-doc'), Symbol.for('options')]]], [Symbol.for('list'), 'export', Symbol.for('space'), '{', Symbol.for('line'), Symbol.for('specifiers-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('specifiers-printed'), ''], Symbol.for('empty'), Symbol.for('line')], '}', [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print an `ExportSpecifier` ESTree node to a `Doc` object.
  */
@@ -1507,9 +1518,10 @@ printExportSpecifier.fsource = [Symbol.for('define'), [Symbol.for('print-export-
  * Print an `ExportAllDeclaration` ESTree node to a `Doc` object.
  */
 function printExportAllDeclaration(node, options = {}) {
-    return ['export', space, '*', space, 'from', space, printNode(node.source, options), ';'];
+    const fsemicolon = options['fsemicolon'];
+    return ['export', space, '*', space, 'from', space, printNode(node.source, options), fsemicolon ? ';' : empty];
 }
-printExportAllDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-all-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('list'), 'export', Symbol.for('space'), '*', Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('source'), Symbol.for('node')], Symbol.for('options')], ';']];
+printExportAllDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-all-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('list'), 'export', Symbol.for('space'), '*', Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('source'), Symbol.for('node')], Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print an `ObjectExpression` ESTree node to a `Doc` object.
  */
@@ -1719,9 +1731,10 @@ printTsFunctionType.fsource = [Symbol.for('define'), [Symbol.for('print-ts-funct
  * Print a `TSTypeAliasDeclaration` TSESTree node to a `Doc` object.
  */
 function printTsTypeAliasDeclaration(node, options = {}) {
-    return ['type', space, printNode(node.id, options), space, '=', space, printNode(node.typeAnnotation, options), ';'];
+    const fsemicolon = options['fsemicolon'];
+    return ['type', space, printNode(node.id, options), space, '=', space, printNode(node.typeAnnotation, options), fsemicolon ? ';' : empty];
 }
-printTsTypeAliasDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-ts-type-alias-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('list'), 'type', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('id'), Symbol.for('node')], Symbol.for('options')], Symbol.for('space'), '=', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('typeAnnotation'), Symbol.for('node')], Symbol.for('options')], ';']];
+printTsTypeAliasDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-ts-type-alias-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), 'fsemicolon']], [Symbol.for('list'), 'type', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('id'), Symbol.for('node')], Symbol.for('options')], Symbol.for('space'), '=', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('get-field'), Symbol.for('typeAnnotation'), Symbol.for('node')], Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 /**
  * Print a `TSTypeAnnotation` TSESTree node to a `Doc` object.
  */
@@ -1775,6 +1788,19 @@ function defaultPrinter(node, options = {}) {
     return empty;
 }
 defaultPrinter.fsource = [Symbol.for('define'), [Symbol.for('default-printer'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], Symbol.for('empty')];
+/**
+ * Add `default-options` to an options object.
+ */
+function addDefaultOptions(options) {
+    return Object.assign(Object.assign({}, defaultOptions), options);
+}
+addDefaultOptions.fsource = [Symbol.for('define'), [Symbol.for('add-default-options'), Symbol.for('options')], [Symbol.for('js/obj-append'), Symbol.for('default-options'), Symbol.for('options')]];
+/**
+ * Default printing options.
+ */
+const defaultOptions = {
+    fsemicolon: true
+};
 /**
  * Mapping from node types to printer functions.
  */

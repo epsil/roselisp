@@ -718,12 +718,13 @@ const [lastCdr, cdr, flatten, buildList, keywordp, makeList, cons, findf, length
  */
 const defaultOptions: any = {
   comments: true,
+  compileEnvironment: true,
   expressionType: 'expression',
   fevalBindings: false,
-  shouldInline: true,
   finlineFunctions: false,
-  compileEnvironment: true,
-  gensymMap: new Map()
+  fsemicolon: true,
+  gensymMap: new Map(),
+  shouldInline: true
 };
 
 /**

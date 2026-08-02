@@ -8365,6 +8365,24 @@ describe('compile-modules', function (): any {
   });
 });
 
+describe('--fsemicolon false', function (): any {
+  return it("(compile '(begin x y z) :fsemicolon #f)", function (): any {
+    return assertEqual(
+      compile(
+        [
+          Symbol.for('begin'),
+          Symbol.for('x'),
+          Symbol.for('y'),
+          Symbol.for('z'),
+        ],
+        Symbol.for(':fsemicolon'),
+        false
+      ),
+      'x\n' + '\n' + 'y\n' + '\n' + 'z'
+    );
+  });
+});
+
 describe('compile-with-environment', function (): any {
   it('compiledEnvironment', function (): any {
     return assertEqual(

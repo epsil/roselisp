@@ -547,12 +547,13 @@
 ;;; See also `default-compilation-options`.
 (define default-options
   (js/obj "comments" #t
+          "compileEnvironment" #t
           "expressionType" "expression"
           "fevalBindings" #f
-          "shouldInline" #t
           "finlineFunctions" #f
-          "compileEnvironment" #t
-          "gensymMap" (make-hash)))
+          "fsemicolon" #t
+          "gensymMap" (make-hash)
+          "shouldInline" #t))
 
 ;;; Add `default-options` to an options object.
 ;;; If `modify` is `#t`, the original object

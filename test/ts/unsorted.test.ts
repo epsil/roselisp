@@ -8,29 +8,7 @@ import { assertEqual, testRepl, testMacro } from './test-util';
 
 testMacro.ftype = 'macro';
 
-describe('To do', function (): any {
-  return xit("(compile '(begin x y z) :fsemicolon #f)", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('xit>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('begin'),
-            Symbol.for('x'),
-            Symbol.for('y'),
-            Symbol.for('z'),
-          ],
-        ],
-        Symbol.for(':fsemicolon'),
-        false,
-      ],
-      'x\n' + '\n' + 'y\n' + '\n' + 'z',
-    ]);
-  });
-});
+describe('To do', function (): any {});
 
 describe('require', function (): any {
   xit('(compile \'(require "foo") :fcommonjs #t)', function (): any {

@@ -67,6 +67,9 @@
                        "alias" "finline-functions"
                        "default" #f
                        "type" "boolean")
+   "fsemicolon" (js/obj
+                 "default" #t
+                 "type" "boolean")
    "help" (js/obj
            "default" #f
            "alias" "h"

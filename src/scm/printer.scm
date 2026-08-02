@@ -377,7 +377,8 @@
 
 ;;; Print an ESTree node.
 (define (print-estree node (options (js/obj)))
-  (print-to-string node options))
+  (print-to-string node
+                   (add-default-options options)))
 
 ;;; Print a rose tree.
 (define (print-rose node (options (js/obj)))
@@ -771,6 +772,8 @@
 
 ;;; Print an `ExpressionStatement` ESTree node to a `Doc` object.
 (define (print-expression-statement node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (define expression
     (get-field expression node))
   (define expression-printed
@@ -786,10 +789,14 @@
           (doc-wrap expression-printed options)))
   (list
    expression-printed
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print a `ReturnStatement` ESTree node to a `Doc` object.
 (define (print-return-statement node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (define argument
     (get-field argument node))
   (cond
@@ -809,9 +816,14 @@
      "return"
      space
      argument-printed
-     ";"))
+     (if fsemicolon
+         ";"
+         empty)))
    (else
-    (list "return" ";"))))
+    (list "return"
+          (if fsemicolon
+              ";"
+              empty)))))
 
 ;;; Print a `YieldExpression` ESTree node to a `Doc` object.
 (define (print-yield-expression node (options (js/obj)))
@@ -825,11 +837,15 @@
 
 ;;; Print a `ThrowStatement` ESTree node to a `Doc` object.
 (define (print-throw-statement node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (list
    "throw"
    space
    (print-node (get-field argument node) options)
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print an `AwaitExpression` ESTree node to a `Doc` object.
 (define (print-await-expression node (options (js/obj)))
@@ -840,6 +856,8 @@
 
 ;;; Print a `BreakStatement` ESTree node to a `Doc` object.
 (define (print-break-statement node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (list
    "break"
    (if (get-field label node)
@@ -847,10 +865,14 @@
         space
         (print-node (get-field label node) options))
        empty)
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print a `ContinueStatement` ESTree node to a `Doc` object.
 (define (print-continue-statement node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (list
    "continue"
    (if (get-field label node)
@@ -858,7 +880,9 @@
         space
         (print-node (get-field label node) options))
        empty)
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print a `ThisExpression` ESTree node to a `Doc` object.
 (define (print-this-expression node (options (js/obj)))
@@ -1346,6 +1370,8 @@
 
 ;;; Print a `VariableDeclaration` ESTree node to a `Doc` object.
 (define (print-variable-declaration node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (list
    (get-field kind node)
    space
@@ -1354,7 +1380,9 @@
               (print-node x options))
             _)
        (join (list "," space) _))
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print a `VariableDeclarator` ESTree node to a `Doc` object.
 (define (print-variable-declarator node (options (js/obj)))
@@ -1491,6 +1519,8 @@
 
 ;;; Print a `DoWhileStatement` ESTree node to a `Doc` object.
 (define (print-do-while-statement node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (define test
     (get-field test node))
   (define test-printed
@@ -1512,18 +1542,19 @@
    "("
    test-printed
    ")"
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print a `ForStatement` ESTree node to a `Doc` object.
 (define (print-for-statement node (options (js/obj)))
   (define init
     (get-field init node))
   (define init-printed
-    (~> (print-node init options)
-        (print-doc options)
-        ;; FIXME: Kludge, replace with option
-        ;; for toggling semicolons.
-        (regexp-replace (regexp ";$") _ "")))
+    (print-node init
+                (js/obj-append
+                 options
+                 (js/obj "fsemicolon" #f))))
   (define test
     (get-field test node))
   (define test-printed
@@ -1531,11 +1562,10 @@
   (define update
     (get-field update node))
   (define update-printed
-    (~> (print-node update options)
-        (print-doc options)
-        ;; FIXME: Kludge, replace with option
-        ;; for toggling semicolons.
-        (regexp-replace (regexp ";$") _ "")))
+    (print-node update
+                (js/obj-append
+                 options
+                 (js/obj "fsemicolon" #f))))
   (define body
     (get-field body node))
   (define body-printed
@@ -1566,11 +1596,10 @@
   (define left
     (get-field left node))
   (define left-printed
-    (~> (print-node left options)
-        (print-doc options)
-        ;; FIXME: Kludge, replace with option
-        ;; for toggling semicolons.
-        (regexp-replace (regexp ";$") _ "")))
+    (print-node left
+                (js/obj-append
+                 options
+                 (js/obj "fsemicolon" #f))))
   (define right
     (get-field right node))
   (define right-printed
@@ -1580,11 +1609,14 @@
   (define body-printed
     (print-node body options))
   (define result-str)
+  ;; FIXME: Kludge.
   (when (eq? language "typescript")
     (set! left-printed
-          (regexp-replace (regexp ": any$")
-                          left-printed
-                          "")))
+          (~> left-printed
+              (print-doc _)
+              (regexp-replace (regexp ": any$")
+                              _
+                              ""))))
   (list
    "for"
    space
@@ -1736,6 +1768,8 @@
 
 ;;; Print a `PropertyDefinition` ESTree node to a `Doc` object.
 (define (print-property-definition node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (define language
     (oget options "language"))
   (define key
@@ -1763,7 +1797,9 @@
         space
         (print-node value options))
        empty)
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print a `MethodDefinition` ESTree node to a `Doc` object.
 (define (print-method-definition node (options (js/obj)))
@@ -1891,6 +1927,8 @@
 
 ;;; Print an `ImportDeclaration` ESTree node to a `Doc` object.
 (define (print-import-declaration node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (define specifiers
     (get-field specifiers node))
   (define source
@@ -1907,7 +1945,9 @@
      "from"
      space
      (print-node source options)
-     ";"))
+     (if fsemicolon
+         ";"
+         empty)))
    (else
     (list
      "import"
@@ -1926,7 +1966,9 @@
      "from"
      space
      (print-node source options)
-     ";"))))
+     (if fsemicolon
+         ";"
+         empty)))))
 
 ;;; Print an `ImportSpecifier` ESTree node to a `Doc` object.
 (define (print-import-specifier node (options (js/obj)))
@@ -1964,6 +2006,8 @@
 
 ;;; Print an `ExportNamedDeclaration` ESTree node to a `Doc` object.
 (define (print-export-named-declaration node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (define specifiers
     (get-field specifiers node))
   (define specifiers-printed
@@ -1984,7 +2028,9 @@
        empty
        line)
    "}"
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print an `ExportSpecifier` ESTree node to a `Doc` object.
 (define (print-export-specifier node (options (js/obj)))
@@ -1996,6 +2042,8 @@
 
 ;;; Print an `ExportAllDeclaration` ESTree node to a `Doc` object.
 (define (print-export-all-declaration node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (list
    "export"
    space
@@ -2004,7 +2052,9 @@
    "from"
    space
    (print-node (get-field source node) options)
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print an `ObjectExpression` ESTree node to a `Doc` object.
 (define (print-object-expression node (options (js/obj)))
@@ -2265,6 +2315,8 @@
 
 ;;; Print a `TSTypeAliasDeclaration` TSESTree node to a `Doc` object.
 (define (print-ts-type-alias-declaration node (options (js/obj)))
+  (define fsemicolon
+    (oget options "fsemicolon"))
   (list
    "type"
    space
@@ -2273,7 +2325,9 @@
    "="
    space
    (print-node (get-field typeAnnotation node) options)
-   ";"))
+   (if fsemicolon
+       ";"
+       empty)))
 
 ;;; Print a `TSTypeAnnotation` TSESTree node to a `Doc` object.
 (define (print-ts-type-annotation node (options (js/obj)))
@@ -2334,6 +2388,16 @@
 ;;; Returns the empty string.
 (define (default-printer node (options (js/obj)))
   empty)
+
+;;; Add `default-options` to an options object.
+(define (add-default-options options)
+  (js/obj-append
+   default-options
+   options))
+
+;;; Default printing options.
+(define default-options
+  (js/obj "fsemicolon" #t))
 
 ;;; Mapping from node types to printer functions.
 (define printer-map

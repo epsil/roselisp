@@ -219,12 +219,13 @@ const [lastCdr, cdr, flatten, buildList, keywordp, makeList, cons, findf, length
  */
 const defaultOptions = {
     comments: true,
+    compileEnvironment: true,
     expressionType: 'expression',
     fevalBindings: false,
-    shouldInline: true,
     finlineFunctions: false,
-    compileEnvironment: true,
-    gensymMap: new Map()
+    fsemicolon: true,
+    gensymMap: new Map(),
+    shouldInline: true
 };
 /**
  * Add `default-options` to an options object.

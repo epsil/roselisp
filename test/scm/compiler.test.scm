@@ -3887,6 +3887,17 @@ function bar(x) {
   return x;
 }")
 
+ ;; `--fsemicolon false`
+ > (describe "--fsemicolon false")
+ _
+ > (compile '(begin x y z)
+            :fsemicolon #f)
+ "x
+
+y
+
+z"
+
  ;; `compile-with-environment`
  > (describe "compile-with-environment")
  _

@@ -87,6 +87,10 @@ const cliOptions: any = {
     default: false,
     type: 'boolean'
   },
+  fsemicolon: {
+    default: true,
+    type: 'boolean'
+  },
   help: {
     default: false,
     alias: 'h',

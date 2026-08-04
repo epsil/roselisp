@@ -2415,34 +2415,163 @@ describe('js/if', function (): any {
 });
 
 describe('js/switch', function (): any {
-  return it('((lambda () (define x "foo") (define y "bar") (js/switch x (case "foo" (set! y "baz") (break)) (default (set! y "quux"))) y))', function (): any {
+  it('(let* ((x "foo") (y "bar")) (js/switch x (case "foo" (set! y "baz") (break)) (default (set! y "quux"))) y)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
+        Symbol.for('let*'),
         [
-          Symbol.for('lambda'),
-          [],
-          [Symbol.for('define'), Symbol.for('x'), 'foo'],
-          [Symbol.for('define'), Symbol.for('y'), 'bar'],
+          [Symbol.for('x'), 'foo'],
+          [Symbol.for('y'), 'bar'],
+        ],
+        [
+          Symbol.for('js/switch'),
+          Symbol.for('x'),
+          [
+            Symbol.for('case'),
+            'foo',
+            [Symbol.for('set!'), Symbol.for('y'), 'baz'],
+            [Symbol.for('break')],
+          ],
+          [
+            Symbol.for('default'),
+            [Symbol.for('set!'), Symbol.for('y'), 'quux'],
+          ],
+        ],
+        Symbol.for('y'),
+      ],
+      'baz',
+    ]);
+  });
+  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
           [
             Symbol.for('js/switch'),
             Symbol.for('x'),
             [
               Symbol.for('case'),
               'foo',
-              [Symbol.for('set!'), Symbol.for('y'), 'baz'],
+              [Symbol.for('display'), 'foo'],
               [Symbol.for('break')],
             ],
-            [
-              Symbol.for('default'),
-              [Symbol.for('set!'), Symbol.for('y'), 'quux'],
-            ],
+            [Symbol.for('default'), [Symbol.for('display'), 'bar']],
           ],
-          Symbol.for('y'),
         ],
       ],
-      'baz',
+      'switch (x) {\n' +
+        "  case 'foo': {\n" +
+        "    console.log('foo');\n" +
+        '    break;\n' +
+        '  }\n' +
+        '  default: {\n' +
+        "    console.log('bar');\n" +
+        '  }\n' +
+        '}',
+    ]);
+  });
+  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'return)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/switch'),
+            Symbol.for('x'),
+            [
+              Symbol.for('case'),
+              'foo',
+              [Symbol.for('display'), 'foo'],
+              [Symbol.for('break')],
+            ],
+            [Symbol.for('default'), [Symbol.for('display'), 'bar']],
+          ],
+        ],
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('return')],
+      ],
+      'switch (x) {\n' +
+        "  case 'foo': {\n" +
+        "    return console.log('foo');\n" +
+        '    break;\n' +
+        '  }\n' +
+        '  default: {\n' +
+        "    return console.log('bar');\n" +
+        '  }\n' +
+        '}',
+    ]);
+  });
+  it('(compile \'(js/switch x (case "foo" (display "foo")) (default (display "bar"))) :as \'return)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/switch'),
+            Symbol.for('x'),
+            [Symbol.for('case'), 'foo', [Symbol.for('display'), 'foo']],
+            [Symbol.for('default'), [Symbol.for('display'), 'bar']],
+          ],
+        ],
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('return')],
+      ],
+      'switch (x) {\n' +
+        "  case 'foo': {\n" +
+        "    console.log('foo');\n" +
+        '  }\n' +
+        '  default: {\n' +
+        "    return console.log('bar');\n" +
+        '  }\n' +
+        '}',
+    ]);
+  });
+  return it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'expression)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/switch'),
+            Symbol.for('x'),
+            [
+              Symbol.for('case'),
+              'foo',
+              [Symbol.for('display'), 'foo'],
+              [Symbol.for('break')],
+            ],
+            [Symbol.for('default'), [Symbol.for('display'), 'bar']],
+          ],
+        ],
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('expression')],
+      ],
+      '(() => {\n' +
+        '  switch (x) {\n' +
+        "    case 'foo': {\n" +
+        "      return console.log('foo');\n" +
+        '      break;\n' +
+        '    }\n' +
+        '    default: {\n' +
+        "      return console.log('bar');\n" +
+        '    }\n' +
+        '  }\n' +
+        '})()',
     ]);
   });
 });

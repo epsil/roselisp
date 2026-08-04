@@ -597,7 +597,7 @@ import {
   visit
 } from './visitor';
 
-const [lastCdr, cdr, flatten, buildList, keywordp, makeList, cons, findf, length]: any[] = ((): any => {
+const [lastCdr, cdr, flatten, buildList, keywordp, makeList, cons, last, findf, length]: any[] = ((): any => {
   function lastCdr_(lst: any): any {
     if (!Array.isArray(lst)) {
       return undefined;
@@ -664,6 +664,29 @@ const [lastCdr, cdr, flatten, buildList, keywordp, makeList, cons, findf, length
       return [x, Symbol.for('.'), y];
     }
   }
+  function last_(lst: any): any {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+      return ((): any => {
+        function linkedListLast_(lst: any): any {
+          let current: any = lst;
+          let result: any = undefined;
+          while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((): any => {
+            const x: any = current[current.length - 1];
+            return Array.isArray(x) && (x.length === 0);
+          })()) {
+            current = current[current.length - 1];
+          }
+          if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
+            result = current[current.length - 3];
+          }
+          return result;
+        }
+        return linkedListLast_;
+      })()(lst);
+    } else {
+      return lst[lst.length - 1];
+    }
+  }
   function findf_(proc: any, lst: any, notFound: any = false): any {
     const idx: any = lst.findIndex(proc);
     if (idx >= 0) {
@@ -700,6 +723,20 @@ const [lastCdr, cdr, flatten, buildList, keywordp, makeList, cons, findf, length
     }
     return result;
   }
+  function linkedListLast_(lst: any): any {
+    let current: any = lst;
+    let result: any = undefined;
+    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((): any => {
+      const x: any = current[current.length - 1];
+      return Array.isArray(x) && (x.length === 0);
+    })()) {
+      current = current[current.length - 1];
+    }
+    if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
+      result = current[current.length - 3];
+    }
+    return result;
+  }
   function linkedListLength_(lst: any): any {
     let len: any = 0;
     let current: any = lst;
@@ -709,7 +746,7 @@ const [lastCdr, cdr, flatten, buildList, keywordp, makeList, cons, findf, length
     }
     return len;
   }
-  return [lastCdr_, cdr_, flatten_, buildList_, keywordp_, makeList_, cons_, findf_, length_];
+  return [lastCdr_, cdr_, flatten_, buildList_, keywordp_, makeList_, cons_, last_, findf_, length_];
 })();
 
 /**
@@ -8017,9 +8054,11 @@ function compileJsSwitch(node: any, env: any, options: any = {}): any {
         const test: any = x.get(1);
         testCompiled = compileExpression(test, env, options);
         const consequent: any = x.drop(2);
+        const hasBreak: any = formp(last(consequent), break_, env);
         // It is advisable to wrap cases in a block statement.
         // <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch#lexical_scoping>
-        consequentCompiled = [compileStatementOrReturnStatement(sexpToRose([Symbol.for('js/block'), ...consequent]), env, options)];
+        const consequentBlock: any = sexpToRose([Symbol.for('js/block'), ...consequent], x);
+        consequentCompiled = [hasBreak ? compileStatementOrReturnStatement(consequentBlock, env, options) : compileStatement(consequentBlock, env, options)];
       } else {
         testCompiled = null;
         const consequent: any = x.drop(1);
@@ -8031,7 +8070,7 @@ function compileJsSwitch(node: any, env: any, options: any = {}): any {
   }
 }
 
-compileJsSwitch.fsource = [Symbol.for('define'), [Symbol.for('compile-js/switch'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('discriminant'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('discriminant-compiled'), [Symbol.for('compile-expression'), Symbol.for('discriminant'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('cases'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('cases-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('~>'), Symbol.for('x'), [Symbol.for('send'), Symbol.for('_'), Symbol.for('get'), 0], [Symbol.for('rose->sexp'), Symbol.for('_')]]], [Symbol.for('define'), Symbol.for('test-compiled')], [Symbol.for('define'), Symbol.for('consequent-compiled')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('op'), [Symbol.for('quote'), Symbol.for('case')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]], [Symbol.for('set!'), Symbol.for('test-compiled'), [Symbol.for('compile-expression'), Symbol.for('test'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('drop'), 2]], [Symbol.for('set!'), Symbol.for('consequent-compiled'), [Symbol.for('list'), [Symbol.for('compile-statement-or-return-statement'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('js/block'), [Symbol.for('unquote-splicing'), Symbol.for('consequent')]]]], Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('test-compiled'), null], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('drop'), 1]], [Symbol.for('set!'), Symbol.for('consequent-compiled'), [Symbol.for('list'), [Symbol.for('compile-statement-or-return-statement'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('js/block'), [Symbol.for('unquote-splicing'), Symbol.for('consequent')]]]], Symbol.for('env'), Symbol.for('options')]]]]], [Symbol.for('new'), Symbol.for('SwitchCase'), Symbol.for('test-compiled'), Symbol.for('consequent-compiled')]], Symbol.for('cases')]], [Symbol.for('new'), Symbol.for('SwitchStatement'), Symbol.for('discriminant-compiled'), Symbol.for('cases-compiled')]]]];
+compileJsSwitch.fsource = [Symbol.for('define'), [Symbol.for('compile-js/switch'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression-type'), [Symbol.for('oget'), Symbol.for('options'), 'expressionType']], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('expression-type'), 'expression'], [Symbol.for('compile-expression'), [Symbol.for('wrap-in-arrow-call'), Symbol.for('node')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('discriminant'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('discriminant-compiled'), [Symbol.for('compile-expression'), Symbol.for('discriminant'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('cases'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('cases-compiled'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('~>'), Symbol.for('x'), [Symbol.for('send'), Symbol.for('_'), Symbol.for('get'), 0], [Symbol.for('rose->sexp'), Symbol.for('_')]]], [Symbol.for('define'), Symbol.for('test-compiled')], [Symbol.for('define'), Symbol.for('consequent-compiled')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('op'), [Symbol.for('quote'), Symbol.for('case')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('get'), 1]], [Symbol.for('set!'), Symbol.for('test-compiled'), [Symbol.for('compile-expression'), Symbol.for('test'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('drop'), 2]], [Symbol.for('define'), Symbol.for('has-break'), [Symbol.for('form?'), [Symbol.for('last'), Symbol.for('consequent')], Symbol.for('break_'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('consequent-block'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('js/block'), [Symbol.for('unquote-splicing'), Symbol.for('consequent')]]], Symbol.for('x')]], [Symbol.for('set!'), Symbol.for('consequent-compiled'), [Symbol.for('list'), [Symbol.for('if'), Symbol.for('has-break'), [Symbol.for('compile-statement-or-return-statement'), Symbol.for('consequent-block'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('compile-statement'), Symbol.for('consequent-block'), Symbol.for('env'), Symbol.for('options')]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('test-compiled'), null], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('drop'), 1]], [Symbol.for('set!'), Symbol.for('consequent-compiled'), [Symbol.for('list'), [Symbol.for('compile-statement-or-return-statement'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('js/block'), [Symbol.for('unquote-splicing'), Symbol.for('consequent')]]]], Symbol.for('env'), Symbol.for('options')]]]]], [Symbol.for('new'), Symbol.for('SwitchCase'), Symbol.for('test-compiled'), Symbol.for('consequent-compiled')]], Symbol.for('cases')]], [Symbol.for('new'), Symbol.for('SwitchStatement'), Symbol.for('discriminant-compiled'), Symbol.for('cases-compiled')]]]];
 
 /**
  * Expand a `(js/switch ...)` expression.

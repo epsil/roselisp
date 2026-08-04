@@ -770,17 +770,83 @@
  ;; `js/switch`
  > (describe "js/switch")
  _
- > ((lambda ()
-      (define x "foo")
-      (define y "bar")
-      (js/switch x
-                 (case "foo"
-                   (set! y "baz")
-                   (break))
-                 (default
-                   (set! y "quux")))
-      y))
+ > (let* ((x "foo")
+          (y "bar"))
+     (js/switch x
+                (case "foo"
+                  (set! y "baz")
+                  (break))
+                (default
+                  (set! y "quux")))
+     y)
  "baz"
+ > (compile
+    '(js/switch x
+                (case "foo"
+                  (display "foo")
+                  (break))
+                (default
+                  (display "bar"))))
+ "switch (x) {
+  case 'foo': {
+    console.log('foo');
+    break;
+  }
+  default: {
+    console.log('bar');
+  }
+}"
+ > (compile
+    '(js/switch x
+                (case "foo"
+                  (display "foo")
+                  (break))
+                (default
+                  (display "bar")))
+    :as 'return)
+ "switch (x) {
+  case 'foo': {
+    return console.log('foo');
+    break;
+  }
+  default: {
+    return console.log('bar');
+  }
+}"
+ > (compile
+    '(js/switch x
+                (case "foo"
+                  (display "foo"))
+                (default
+                  (display "bar")))
+    :as 'return)
+ "switch (x) {
+  case 'foo': {
+    console.log('foo');
+  }
+  default: {
+    return console.log('bar');
+  }
+}"
+ > (compile
+    '(js/switch x
+                (case "foo"
+                  (display "foo")
+                  (break))
+                (default
+                  (display "bar")))
+    :as 'expression)
+ "(() => {
+  switch (x) {
+    case 'foo': {
+      return console.log('foo');
+      break;
+    }
+    default: {
+      return console.log('bar');
+    }
+  }
+})()"
 
  ;; `eq?`
  > (describe "eq?")

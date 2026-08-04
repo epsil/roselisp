@@ -2086,63 +2086,6 @@ for (let i: any = _start; i < _end; i++) {
   return compileExpression(arg, env, inheritedOptions);
 }).join(', ');"
 
- ;; `js/switch`
- > (describe "js/switch")
- _
- > (compile
-    '(js/switch x
-                (case "foo"
-                  (display "foo")
-                  (break))
-                (default
-                  (display "bar"))))
- "switch (x) {
-  case 'foo': {
-    console.log('foo');
-    break;
-  }
-  default: {
-    console.log('bar');
-  }
-}"
- > (compile
-    '(js/switch x
-                (case "foo"
-                  (display "foo")
-                  (break))
-                (default
-                  (display "bar")))
-    :as 'return)
- "switch (x) {
-  case 'foo': {
-    return console.log('foo');
-    break;
-  }
-  default: {
-    return console.log('bar');
-  }
-}"
-
- > (compile
-    '(js/switch x
-                (case "foo"
-                  (display "foo")
-                  (break))
-                (default
-                  (display "bar")))
-    :as 'expression)
- "(() => {
-  switch (x) {
-    case 'foo': {
-      return console.log('foo');
-      break;
-    }
-    default: {
-      return console.log('bar');
-    }
-  }
-})()"
-
  ;; `js/try`
  > (describe "js/try")
  _

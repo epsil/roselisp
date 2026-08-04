@@ -7286,14 +7286,21 @@
                       test env options))
                (define consequent
                  (send x drop 2))
+               (define has-break
+                 (form? (last consequent) break_ env))
                ;; It is advisable to wrap cases in a block statement.
                ;; <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch#lexical_scoping>
+               (define consequent-block
+                 (sexp->rose
+                  `(js/block ,@consequent)
+                  x))
                (set! consequent-compiled
                      (list
-                      (compile-statement-or-return-statement
-                       (sexp->rose
-                        `(js/block ,@consequent))
-                       env options))))
+                      (if has-break
+                          (compile-statement-or-return-statement
+                           consequent-block env options)
+                          (compile-statement
+                           consequent-block env options)))))
               (else
                (set! test-compiled #n)
                (define consequent

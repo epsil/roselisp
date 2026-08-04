@@ -14,6 +14,8 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "./procedures"
+                  keyword->string))
 (require (only-in "./util"
                   make-identifier-string))
 
@@ -122,8 +124,7 @@
       (aget plst (+ i 1)))
     (define key
       (~> prop
-          (symbol->string _)
-          (regexp-replace (regexp "^:") _ "")
+          (keyword->string _)
           (make-identifier-string _ options)))
     (oset! result key val))
   result)

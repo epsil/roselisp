@@ -879,12 +879,13 @@ exports.ObjectExpression = ObjectExpression;
  * [estree:property]: https://github.com/estree/estree/blob/master/es5.md#property
  */
 class Property extends TSNode {
-    constructor(key, value, computed = false, kind = 'init') {
+    constructor(key, value, computed = false, shorthand = false, kind = 'init') {
         super();
         this.type = 'Property';
         this.key = key;
         this.value = value;
         this.computed = computed;
+        this.shorthand = shorthand;
         this.kind = kind;
     }
 }
@@ -1199,7 +1200,7 @@ class TemplateElement extends TSNode {
         this.type = 'TemplateElement';
         this.tail = tail;
         this.value = {
-            cooked: cooked,
+            cooked,
             raw: raw || cooked.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('`', 'g'), '\\`')
         };
     }

@@ -18,8 +18,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNinth_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsLast_ = exports.jsKeys_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
-exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsReturn_ = exports.jsRest_ = void 0;
+exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjSpread_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNinth_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsLast_ = exports.jsKeys_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
+exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsReturn_ = exports.jsRest_ = exports.jsRegexp_ = void 0;
 /**
  * JavaScript [strict equality][js:strict-equality],
  * i.e., the [`===`][js:strict-equality-operator] operator.
@@ -194,6 +194,14 @@ function jsObjAppend_(...args) {
 }
 exports.jsObjAppend_ = jsObjAppend_;
 jsObjAppend_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('Object'), Symbol.for('assign'), [Symbol.for('js/obj')], Symbol.for('args')]];
+/**
+ * Spread a JavaScript object into another.
+ */
+function jsObjSpread_(x) {
+    return x;
+}
+exports.jsObjSpread_ = jsObjSpread_;
+jsObjSpread_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-spread_'), Symbol.for('x')], Symbol.for('x')];
 /**
  * Return the keys for a JavaScript object.
  *

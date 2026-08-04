@@ -208,6 +208,15 @@ function jsObjAppend_(...args: any[]): any {
 jsObjAppend_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('Object'), Symbol.for('assign'), [Symbol.for('js/obj')], Symbol.for('args')]];
 
 /**
+ * Spread a JavaScript object into another.
+ */
+function jsObjSpread_(x: any): any {
+  return x;
+}
+
+jsObjSpread_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-spread_'), Symbol.for('x')], Symbol.for('x')];
+
+/**
  * Return the keys for a JavaScript object.
  *
  * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
@@ -804,6 +813,7 @@ export {
   jsNot_,
   jsNullP_,
   jsObjAppend_,
+  jsObjSpread_,
   jsObjP_,
   jsObj_,
   jsObjectTypeP_,

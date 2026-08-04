@@ -18,6 +18,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.plistp_ = exports.plistSet_ = exports.plistSetX_ = exports.plistHasP_ = exports.plistGet_ = exports.plistCopy_ = exports.plistToObject_ = exports.plistMap_ = exports.plistToAlist_ = exports.plistp = exports.plistSet = exports.plistSetX = exports.plistHas_ = exports.plistHasP = exports.plistRef_ = exports.plistGet = exports.plistCopy = exports.plistToObject = exports.plistMap = exports.plistToAlist = void 0;
+const procedures_1 = require("./procedures");
 const util_1 = require("./util");
 const [cons] = (() => {
     function cons_(x, y) {
@@ -185,11 +186,11 @@ function plistToObject_(plst, options = {}) {
     for (let i = 0; i < _end; i = i + 2) {
         const prop = plst[i];
         let val = plst[i + 1];
-        const key = (0, util_1.makeIdentifierString)(prop.description.replace(new RegExp('^:'), ''), options);
+        const key = (0, util_1.makeIdentifierString)((0, procedures_1.keywordToString)(prop), options);
         result[key] = val;
     }
     return result;
 }
 exports.plistToObject = plistToObject_;
 exports.plistToObject_ = plistToObject_;
-plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plst'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('_'), ''], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];
+plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plst'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('keyword->string'), Symbol.for('_')], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];

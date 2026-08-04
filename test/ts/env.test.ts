@@ -47,7 +47,7 @@ describe('Environment', function (): any {
           return false;
         }
         return env.findFrame(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -67,7 +67,7 @@ describe('Environment', function (): any {
           return x !== env2;
         }
         return env.findFrame(Symbol.for('bar'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -84,7 +84,7 @@ describe('Environment', function (): any {
           return x !== env;
         }
         return env.findFrame(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -127,7 +127,7 @@ describe('Environment', function (): any {
           return false;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -144,7 +144,7 @@ describe('Environment', function (): any {
           return x !== env;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -196,7 +196,7 @@ describe('Environment', function (): any {
           return false;
         }
         return env.getLocal(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -239,7 +239,7 @@ describe('Environment', function (): any {
           return false;
         }
         return env.getTuple(Symbol.for('quux'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, false]
@@ -256,7 +256,7 @@ describe('Environment', function (): any {
           return x !== env;
         }
         return env.getTuple(Symbol.for('quux'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, false]
@@ -299,7 +299,7 @@ describe('Environment', function (): any {
           return false;
         }
         return env.getLocalTuple(Symbol.for('quux'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, false]
@@ -331,7 +331,7 @@ describe('Environment', function (): any {
           return false;
         }
         return env.hasp(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -348,7 +348,7 @@ describe('Environment', function (): any {
           return x !== env;
         }
         return env.hasp(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -392,7 +392,7 @@ describe('Environment', function (): any {
           return false;
         }
         return env.hasLocalP(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -484,7 +484,7 @@ describe('TypedEnvironment', function (): any {
           return false;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -501,7 +501,7 @@ describe('TypedEnvironment', function (): any {
           return x !== env;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -552,7 +552,7 @@ describe('TypedEnvironment', function (): any {
           return false;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -569,7 +569,7 @@ describe('TypedEnvironment', function (): any {
           return x !== env;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -620,7 +620,7 @@ describe('TypedEnvironment', function (): any {
           return false;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -637,7 +637,7 @@ describe('TypedEnvironment', function (): any {
           return x !== env;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -688,7 +688,7 @@ describe('TypedEnvironment', function (): any {
           return false;
         }
         return env.getLocal(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -739,7 +739,7 @@ describe('TypedEnvironment', function (): any {
           return false;
         }
         return env.getType(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       Symbol.for('Undefined')
@@ -756,7 +756,7 @@ describe('TypedEnvironment', function (): any {
           return x !== env;
         }
         return env.getType(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       Symbol.for('Undefined')
@@ -794,7 +794,7 @@ describe('TypedEnvironment', function (): any {
           return false;
         }
         return env.hasp(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -811,7 +811,7 @@ describe('TypedEnvironment', function (): any {
           return x !== env;
         }
         return env.hasp(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -849,7 +849,7 @@ describe('TypedEnvironment', function (): any {
           return false;
         }
         return env.hasLocalP(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -944,7 +944,7 @@ describe('LispEnvironment', function (): any {
           return x !== env;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -995,7 +995,7 @@ describe('LispEnvironment', function (): any {
           return false;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1012,7 +1012,7 @@ describe('LispEnvironment', function (): any {
           return x !== env;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1063,7 +1063,7 @@ describe('LispEnvironment', function (): any {
           return false;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -1080,7 +1080,7 @@ describe('LispEnvironment', function (): any {
           return x !== env;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -1131,7 +1131,7 @@ describe('LispEnvironment', function (): any {
           return false;
         }
         return env.getLocal(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1182,7 +1182,7 @@ describe('LispEnvironment', function (): any {
           return false;
         }
         return env.getType(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       Symbol.for('Undefined')
@@ -1199,7 +1199,7 @@ describe('LispEnvironment', function (): any {
           return x !== env;
         }
         return env.getType(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       Symbol.for('Undefined')
@@ -1237,7 +1237,7 @@ describe('LispEnvironment', function (): any {
           return false;
         }
         return env.hasp(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -1254,7 +1254,7 @@ describe('LispEnvironment', function (): any {
           return x !== env;
         }
         return env.hasp(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -1292,7 +1292,7 @@ describe('LispEnvironment', function (): any {
           return false;
         }
         return env.hasLocalP(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -1386,7 +1386,7 @@ describe('EnvironmentStack', function (): any {
           return false;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1406,7 +1406,7 @@ describe('EnvironmentStack', function (): any {
           return x !== env1;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1457,7 +1457,7 @@ describe('EnvironmentStack', function (): any {
           return false;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1477,7 +1477,7 @@ describe('EnvironmentStack', function (): any {
           return x !== env1;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1545,7 +1545,7 @@ describe('EnvironmentStack', function (): any {
           return false;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -1565,7 +1565,7 @@ describe('EnvironmentStack', function (): any {
           return x !== env1;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -1667,7 +1667,7 @@ describe('EnvironmentPipe', function (): any {
           return x !== env1;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1738,7 +1738,7 @@ describe('EnvironmentPipe', function (): any {
           return false;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1808,7 +1808,7 @@ describe('EnvironmentPipe', function (): any {
           return x !== env1;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -1881,7 +1881,7 @@ describe('EnvironmentComposition', function (): any {
           return x !== env1;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -1951,7 +1951,7 @@ describe('EnvironmentComposition', function (): any {
           return x !== env1;
         }
         return env.getValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -2021,7 +2021,7 @@ describe('EnvironmentComposition', function (): any {
           return x !== env1;
         }
         return env.getTypedValue(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       [undefined, Symbol.for('Undefined')]
@@ -2099,7 +2099,7 @@ describe('ThunkedEnvironment', function (): any {
           return false;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -2132,7 +2132,7 @@ describe('ThunkedEnvironment', function (): any {
           return x !== env;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -2297,7 +2297,7 @@ describe('JavaScriptEnvironment', function (): any {
           return false;
         }
         return env.get(Symbol.for('foo'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -2340,7 +2340,7 @@ describe('JavaScriptEnvironment', function (): any {
           return false;
         }
         return env.getLocal(Symbol.for('Map'), {
-          filter: filter,
+          filter,
         });
       })(),
       undefined
@@ -2372,7 +2372,7 @@ describe('JavaScriptEnvironment', function (): any {
           return false;
         }
         return env.hasp(Symbol.for('Map'), {
-          filter: filter,
+          filter,
         });
       })(),
       false
@@ -2404,7 +2404,7 @@ describe('JavaScriptEnvironment', function (): any {
           return false;
         }
         return env.hasLocalP(Symbol.for('Map'), {
-          filter: filter,
+          filter,
         });
       })(),
       false

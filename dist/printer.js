@@ -1568,13 +1568,14 @@ function printProperty(node, options = {}) {
     const key = node.key;
     let keyPrinted = printNode(key, options);
     const value = node.value;
-    const valuePrinted = printNode(value, options);
-    if (node.computed) {
+    const computed = node.computed;
+    const shorthand = node.shorthand;
+    if (computed) {
         keyPrinted = ['[', keyPrinted, (language === 'typescript') ? [space, 'as any'] : empty, ']'];
     }
-    return [keyPrinted, ':', space, valuePrinted];
+    return [keyPrinted, shorthand ? empty : [':', space, printNode(value, options)]];
 }
-printProperty.fsource = [Symbol.for('define'), [Symbol.for('print-property'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-field'), Symbol.for('key'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('key-printed'), [Symbol.for('print-node'), Symbol.for('key'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('value-printed'), [Symbol.for('print-node'), Symbol.for('value'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('get-field'), Symbol.for('computed'), Symbol.for('node')], [Symbol.for('set!'), Symbol.for('key-printed'), [Symbol.for('list'), '[', Symbol.for('key-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('list'), Symbol.for('space'), 'as any'], Symbol.for('empty')], ']']]], [Symbol.for('list'), Symbol.for('key-printed'), ':', Symbol.for('space'), Symbol.for('value-printed')]];
+printProperty.fsource = [Symbol.for('define'), [Symbol.for('print-property'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-field'), Symbol.for('key'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('key-printed'), [Symbol.for('print-node'), Symbol.for('key'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-field'), Symbol.for('computed'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('shorthand'), [Symbol.for('get-field'), Symbol.for('shorthand'), Symbol.for('node')]], [Symbol.for('when'), Symbol.for('computed'), [Symbol.for('set!'), Symbol.for('key-printed'), [Symbol.for('list'), '[', Symbol.for('key-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language'), 'typescript'], [Symbol.for('list'), Symbol.for('space'), 'as any'], Symbol.for('empty')], ']']]], [Symbol.for('list'), Symbol.for('key-printed'), [Symbol.for('if'), Symbol.for('shorthand'), Symbol.for('empty'), [Symbol.for('list'), ':', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('value'), Symbol.for('options')]]]]];
 /**
  * Print a `Program` ESTree node to a `Doc` object.
  */

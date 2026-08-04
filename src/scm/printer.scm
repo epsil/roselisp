@@ -2118,9 +2118,11 @@
     (print-node key options))
   (define value
     (get-field value node))
-  (define value-printed
-    (print-node value options))
-  (when (get-field computed node)
+  (define computed
+    (get-field computed node))
+  (define shorthand
+    (get-field shorthand node))
+  (when computed
     (set! key-printed
           (list
            "["
@@ -2130,9 +2132,12 @@
                empty)
            "]")))
   (list key-printed
-        ":"
-        space
-        value-printed))
+        (if shorthand
+            empty
+            (list
+             ":"
+             space
+             (print-node value options)))))
 
 ;;; Print a `Program` ESTree node to a `Doc` object.
 (define (print-program node (options (js/obj)))

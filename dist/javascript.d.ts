@@ -160,6 +160,13 @@ declare namespace jsObjAppend_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
+ * Spread a JavaScript object into another.
+ */
+declare function jsObjSpread_(x: any): any;
+declare namespace jsObjSpread_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
  * Return the keys for a JavaScript object.
  *
  * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
@@ -542,4 +549,4 @@ declare function jsUnsignedBitwiseShiftRight_(...args: any[]): any;
 declare namespace jsUnsignedBitwiseShiftRight_ {
     var fsource: (symbol | symbol[])[];
 }
-export { jsAbs_, jsAnd_, jsArrayP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceOfP_, jsKeys_, jsLast_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNinth_, jsNot_, jsNullP_, jsObjAppend_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsUnsignedBitwiseShiftRight_, jsYield_ };
+export { jsAbs_, jsAnd_, jsArrayP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEighth_, jsEval_, jsFifth_, jsFindIndex_, jsFirst_, jsFourth_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceOfP_, jsKeys_, jsLast_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNinth_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRest_, jsReturn_, jsReverse_, jsSameValueZeroP_, jsSameValueP_, jsSecond_, jsSeventh_, jsSixth_, jsSlice_, jsStrictlyEqualP_, jsTaggedTemplate_, jsTake_, jsTenth_, jsThird_, jsTypeOf_, jsUnsignedBitwiseShiftRight_, jsYield_ };

@@ -268,6 +268,15 @@
  "[1, 2];"
  > (compile '(aget x 0))
  "x[0];"
+ > (compile '(let ((length 0))
+               (aget x length)))
+ "let length = 0;
+
+x[length];"
+ > (compile '(aget x 'length))
+ "x['length'];"
+ > (compile '(aget x :length))
+ "x['length'];"
  > (compile '(aget (js/?. x) 0))
  "x?.[0];"
 
@@ -1315,6 +1324,16 @@ for (let i = 0; i < _end; i++) {
  "baz"
  > (compile '(js/. obj prop))
  "obj.prop;"
+ > (compile '(js/. obj "prop"))
+ "obj['prop'];"
+ > (compile '(js/. obj :foo))
+ "obj.foo;"
+ > (compile '(js/. obj :foo-bar))
+ "obj.fooBar;"
+ > (compile '(js/. obj 'foo))
+ "obj.foo;"
+ > (compile '(js/. obj 'foo-bar))
+ "obj.fooBar;"
  > (compile '(js/. obj prop1 prop2))
  "obj.prop1.prop2;"
  > (compile '(js/. (js/. obj prop1) prop2))
@@ -1358,16 +1377,30 @@ for (let i = 0; i < _end; i++) {
  "bar"
  > (compile '(get-field foo obj))
  "obj.foo;"
+ > (compile '(get-field foo-bar obj))
+ "obj.fooBar;"
+ > (compile '(get-field "foo" obj))
+ "obj['foo'];"
+ > (compile '(get-field "foo-bar" obj))
+ "obj['foo-bar'];"
 
  ;; `set-field!`
  > (describe "set-field!")
  _
  > (let ((obj (js/obj)))
-     (set-field! foo obj "bar")
-     (get-field foo obj))
- "bar"
- > (compile '(set-field! foo obj "bar"))
- "obj.foo = 'bar';"
+     (set-field! foo-bar obj "baz")
+     (get-field foo-bar obj))
+ "baz"
+ > (compile '(set-field! foo-bar obj "baz"))
+ "obj.fooBar = 'baz';"
+ > (compile '(set-field! 'foo-bar obj "baz"))
+ "obj.fooBar = 'baz';"
+ > (compile '(set-field! :foo-bar obj "baz"))
+ "obj.fooBar = 'baz';"
+ > (compile '(set-field! "foo-bar" obj "baz"))
+ "obj['foo-bar'] = 'baz';"
+ > (compile '(set-field! (foo-bar) obj "baz"))
+ "obj[fooBar()] = 'baz';"
 
  ;; `field-bound?`
  > (describe "field-bound?")
@@ -1384,10 +1417,42 @@ for (let i = 0; i < _end; i++) {
  "foo"
  > (oget _ "@@functional/placeholder")
  #t
- > (compile '(oget obj "prop"))
- "obj['prop'];"
- > (compile '(oget obj x))
- "obj[x];"
+ > (compile '(oget obj foo-bar))
+ "obj[fooBar];"
+ > (compile '(oget obj 'foo-bar))
+ "obj['fooBar'];"
+ > (compile '(oget obj :foo-bar))
+ "obj['fooBar'];"
+ > (compile '(oget obj "foo-bar"))
+ "obj['foo-bar'];"
+ > (compile '(oget obj (foo-bar)))
+ "obj[fooBar()];"
+
+ ;; `oset!`
+ > (describe "oset!")
+ _
+ > (let ((obj (js/obj)))
+     (oset! obj 'foo-bar "baz")
+     (oget obj 'foo-bar))
+ "baz"
+ > (let ((obj (js/obj)))
+     (oset! obj :foo-bar "baz")
+     (oget obj :foo-bar))
+ "baz"
+ > (let ((obj (js/obj)))
+     (oset! obj "foo-bar" "baz")
+     (oget obj "foo-bar"))
+ "baz"
+ > (compile '(oset! obj foo-bar "baz"))
+ "obj[fooBar] = 'baz';"
+ > (compile '(oset! obj 'foo-bar "baz"))
+ "obj['fooBar'] = 'baz';"
+ > (compile '(oset! obj :foo-bar "baz"))
+ "obj['fooBar'] = 'baz';"
+ > (compile '(oset! obj "foo-bar" "baz"))
+ "obj['foo-bar'] = 'baz';"
+ > (compile '(oset! obj (foo-bar) "baz"))
+ "obj[fooBar()] = 'baz';"
 
  ;; `send`
  > (describe "send")
@@ -1567,14 +1632,99 @@ for (let i = 0; i < _end; i++) {
  (js/obj "foo" 1 "bar" 2)
  > (compile '(js/obj))
  "({});"
+ > (compile '(js/obj "foo" foo))
+ "({
+  foo
+});"
  > (compile '(js/obj "foo" "bar"))
  "({
   foo: 'bar'
+});"
+ > (compile '(js/obj foo foo))
+ "({
+  [foo]: foo
+});"
+ > (compile '(js/obj foo "bar"))
+ "({
+  [foo]: 'bar'
+});"
+ > (compile '(js/obj 'foo "bar"))
+ "({
+  foo: 'bar'
+});"
+ > (compile '(js/obj :foo "bar"))
+ "({
+  foo: 'bar'
+});"
+ > (compile '(js/obj "foo-bar" "baz"))
+ "({
+  'foo-bar': 'baz'
+});"
+ > (compile '(js/obj foo-bar "baz"))
+ "({
+  [fooBar]: 'baz'
+});"
+ > (compile '(js/obj 'foo-bar "baz"))
+ "({
+  fooBar: 'baz'
+});"
+ > (compile '(js/obj :foo-bar "baz"))
+ "({
+  fooBar: 'baz'
+});"
+ > (compile '(js/obj "foo bar" "baz"))
+ "({
+  'foo bar': 'baz'
+});"
+ > (compile '(js/obj "foo bar" baz))
+ "({
+  'foo bar': baz
+});"
+ > (compile '(js/obj "foo bar" 'baz))
+ "({
+  'foo bar': Symbol.for('baz')
+});"
+ > (compile '(js/obj "foo bar" :baz))
+ "({
+  'foo bar': Symbol.for(':baz')
 });"
  > (compile '(js/obj "foo" 1 "bar" 2))
  "({
   foo: 1,
   bar: 2
+});"
+ > (compile '(js/obj "foo" foo "bar" bar))
+ "({
+  foo,
+  bar
+});"
+ > (compile '(js/obj "foo" (js/obj "bar" "baz")))
+ "({
+  foo: {
+    bar: 'baz'
+  }
+});"
+ > (compile '(js/obj "foo" (js/obj "foo" "foo")
+                     "bar" (js/obj "bar" "bar")))
+ "({
+  foo: {
+    foo: 'foo'
+  },
+  bar: {
+    bar: 'bar'
+  }
+});"
+ > (compile '(js/obj "foo" (js/obj)
+                     "bar" (js/obj "bar" "bar")
+                     "baz" (js/obj "baz" "baz")))
+ "({
+  foo: {},
+  bar: {
+    bar: 'bar'
+  },
+  baz: {
+    baz: 'baz'
+  }
 });"
  > (compile '(js/obj)
             :as 'expression)
@@ -1590,6 +1740,37 @@ for (let i = 0; i < _end; i++) {
   foo: 1,
   bar: 2
 }"
+ > (compile '(js/obj)
+            :as 'return)
+ "return {};"
+ > (compile '(js/obj "foo" "bar")
+            :as 'return)
+ "return {
+  foo: 'bar'
+};"
+ > (compile '(js/obj "foo" 1 "bar" 2)
+            :as 'return)
+ "return {
+  foo: 1,
+  bar: 2
+};"
+
+ ;; `js/obj?`
+ > (describe "js/obj?")
+ _
+ > (compile '(js/obj? x))
+ "(x !== null) && (typeof x === 'object');"
+
+ ;; `js/obj-append`
+ > (describe "js/obj-append")
+ _
+ > (compile '(js/obj-append
+              obj
+              (js/obj "foo" "bar")))
+ "({
+  ...obj,
+  foo: 'bar'
+});"
 
  ;; `js/keys`
  > (describe "js/keys")
@@ -3140,11 +3321,152 @@ let z = x + y + w + z;"
  ;; `require`
  > (describe "require")
  _
+ > (compile '(require "foo"))
+ "import * as foo from 'foo';"
  > (compile '(require "foo-bar"))
  "import * as fooBar from 'foo-bar';"
+ > (compile '(require foo "bar"))
+ "import * as foo from 'bar';"
+ > (compile '(require (only-in foo
+                               bar)))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require (only-in foo
+                               (bar baz))))
+ "import {
+  bar as baz
+} from 'foo';"
+ > (compile '(require (only-in "foo"
+                               (bar baz))))
+ "import {
+  bar as baz
+} from 'foo';"
+ > (compile '(require (only-in foo bar bar)))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require (only-in foo
+                               bar
+                               (baz bar))))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require "foo")
+            :fes-module-interop #t)
+ "import foo from 'foo';"
  > (compile '(require "foo-bar")
             :fes-module-interop #t)
  "import fooBar from 'foo-bar';"
+ > (compile '(require foo "bar")
+            :fes-module-interop #t)
+ "import foo from 'bar';"
+ > (compile '(require "foo" "bar")
+            :fes-module-interop #t)
+ "import foo from 'bar';"
+ > (compile '(require "foo")
+            :fcommonjs #t)
+ "let foo = require('foo');"
+ > (compile '(require foo "bar")
+            :fcommonjs #t)
+ "let foo = require('bar');"
+ > (compile '(require "foo" "bar")
+            :fcommonjs #t)
+ "let foo = require('bar');"
+ > (compile '(require (only-in "foo"
+                               bar))
+            :fcommonjs #t)
+ "let {bar} = require('foo');"
+ > (compile '(require (only-in "foo"
+                               (bar baz)))
+            :fcommonjs #t)
+ "let {bar: baz} = require('foo');"
+ xit> (compile '(require 'foo "bar"))
+ "import foo from 'bar';"
+ xit> (compile '(require foo :as bar))
+ "import bar from 'foo';"
+ xit> (compile '(require (foo :as bar)))
+ "import bar from 'foo';"
+ xit> (compile '(require ("foo" :as "bar")))
+ "import bar from 'foo';"
+
+ ;; `provide`
+ > (describe "provide")
+ _
+ > (compile '(provide))
+ ""
+ > (compile '(provide x))
+ "export {
+  x
+};"
+ > (compile '(provide x y))
+ "export {
+  x,
+  y
+};"
+ > (compile '(provide (rename-out (x y))))
+ "export {
+  x as y
+};"
+ > (compile '(provide (rename-out (x y) (w z))))
+ "export {
+  x as y,
+  w as z
+};"
+ > (compile '(provide x (rename-out (y z))))
+ "export {
+  x,
+  y as z
+};"
+ > (compile '(provide x x))
+ "export {
+  x
+};"
+ > (compile '(provide x (rename-out (y x))))
+ "export {
+  x
+};"
+ > (compile '(provide (rename-out (x js/undefined))))
+ "export {
+  x as jsUndefined
+};"
+ > (compile '(provide (all-from-out "foo")))
+ "export * from 'foo';"
+ > (compile '(provide
+               (all-from-out "foo")
+               bar))
+ "export * from 'foo';
+
+export {
+  bar
+};"
+ > (compile '(provide x)
+            :fcommonjs #t)
+ "module.exports = {
+  x
+};"
+ > (compile '(provide x y)
+            :fcommonjs #t)
+ "module.exports = {
+  x,
+  y
+};"
+ > (compile '(provide foo-bar)
+            :fcommonjs #t)
+ "module.exports = {
+  fooBar
+};"
+ > (compile '(provide (rename-out (x y)))
+            :fcommonjs #t)
+ "module.exports = {
+  x: y
+};"
+ > (compile '(provide (all-from-out "foo-bar") baz)
+            :fcommonjs #t)
+ "module.exports = {
+  ...fooBar,
+  baz
+};"
 
  ;; `compile`
  > (describe "compile")

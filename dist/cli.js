@@ -157,7 +157,7 @@ const helpMessage = 'Lisp interpreter and transpiler in JavaScript\n' +
  */
 function normalizeCliOptions(options) {
     const language = options['language'].toLowerCase();
-    return Object.assign(Object.assign({}, options), { language: language });
+    return Object.assign(Object.assign({}, options), { language });
 }
 /**
  * `main` function. Invoked when the program is

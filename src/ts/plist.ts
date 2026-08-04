@@ -17,6 +17,10 @@
  */
 
 import {
+  keywordToString
+} from './procedures';
+
+import {
   makeIdentifierString
 } from './util';
 
@@ -186,13 +190,13 @@ function plistToObject_(plst: any, options: any = {}): any {
   for (let i: any = 0; i < _end; i = i + 2) {
     const prop: any = (plst as any)[i];
     let val: any = plst[i + 1];
-    const key: any = makeIdentifierString((prop.description as string).replace(new RegExp('^:'), ''), options);
+    const key: any = makeIdentifierString(keywordToString(prop), options);
     (result as any)[key] = val;
   }
   return result;
 }
 
-plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plst'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('_'), ''], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];
+plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plst'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('keyword->string'), Symbol.for('_')], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];
 
 export {
   plistToAlist_ as plistToAlist,

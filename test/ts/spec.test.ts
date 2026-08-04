@@ -804,6 +804,56 @@ describe('Lists', function (): any {
       'x[0];',
     ]);
   });
+  it("(compile '(let ((length 0)) (aget x length)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('let'),
+            [[Symbol.for('length'), 0]],
+            [Symbol.for('aget'), Symbol.for('x'), Symbol.for('length')],
+          ],
+        ],
+      ],
+      'let length = 0;\n' + '\n' + 'x[length];',
+    ]);
+  });
+  it("(compile '(aget x 'length))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('aget'),
+            Symbol.for('x'),
+            [Symbol.for('quote'), Symbol.for('length')],
+          ],
+        ],
+      ],
+      "x['length'];",
+    ]);
+  });
+  it("(compile '(aget x :length))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('aget'), Symbol.for('x'), Symbol.for(':length')],
+        ],
+      ],
+      "x['length'];",
+    ]);
+  });
   return it("(compile '(aget (js/?. x) 0))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -4341,6 +4391,81 @@ describe('js/.', function (): any {
       'obj.prop;',
     ]);
   });
+  it('(compile \'(js/. obj "prop"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/.'), Symbol.for('obj'), 'prop']],
+      ],
+      "obj['prop'];",
+    ]);
+  });
+  it("(compile '(js/. obj :foo))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for(':foo')],
+        ],
+      ],
+      'obj.foo;',
+    ]);
+  });
+  it("(compile '(js/. obj :foo-bar))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/.'), Symbol.for('obj'), Symbol.for(':foo-bar')],
+        ],
+      ],
+      'obj.fooBar;',
+    ]);
+  });
+  it("(compile '(js/. obj 'foo))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/.'),
+            Symbol.for('obj'),
+            [Symbol.for('quote'), Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'obj.foo;',
+    ]);
+  });
+  it("(compile '(js/. obj 'foo-bar))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/.'),
+            Symbol.for('obj'),
+            [Symbol.for('quote'), Symbol.for('foo-bar')],
+          ],
+        ],
+      ],
+      'obj.fooBar;',
+    ]);
+  });
   it("(compile '(js/. obj prop1 prop2))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -4550,7 +4675,7 @@ describe('get-field', function (): any {
       'bar',
     ]);
   });
-  return it("(compile '(get-field foo obj))", function (): any {
+  it("(compile '(get-field foo obj))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4564,23 +4689,70 @@ describe('get-field', function (): any {
       'obj.foo;',
     ]);
   });
+  it("(compile '(get-field foo-bar obj))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('get-field'), Symbol.for('foo-bar'), Symbol.for('obj')],
+        ],
+      ],
+      'obj.fooBar;',
+    ]);
+  });
+  it('(compile \'(get-field "foo" obj))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('get-field'), 'foo', Symbol.for('obj')],
+        ],
+      ],
+      "obj['foo'];",
+    ]);
+  });
+  return it('(compile \'(get-field "foo-bar" obj))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('get-field'), 'foo-bar', Symbol.for('obj')],
+        ],
+      ],
+      "obj['foo-bar'];",
+    ]);
+  });
 });
 
 describe('set-field!', function (): any {
-  it('(let ((obj (js/obj))) (set-field! foo obj "bar") (get-field foo obj))', function (): any {
+  it('(let ((obj (js/obj))) (set-field! foo-bar obj "baz") (get-field foo-bar obj))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [
         Symbol.for('let'),
         [[Symbol.for('obj'), [Symbol.for('js/obj')]]],
-        [Symbol.for('set-field!'), Symbol.for('foo'), Symbol.for('obj'), 'bar'],
-        [Symbol.for('get-field'), Symbol.for('foo'), Symbol.for('obj')],
+        [
+          Symbol.for('set-field!'),
+          Symbol.for('foo-bar'),
+          Symbol.for('obj'),
+          'baz',
+        ],
+        [Symbol.for('get-field'), Symbol.for('foo-bar'), Symbol.for('obj')],
       ],
-      'bar',
+      'baz',
     ]);
   });
-  return it('(compile \'(set-field! foo obj "bar"))', function (): any {
+  it('(compile \'(set-field! foo-bar obj "baz"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4590,13 +4762,84 @@ describe('set-field!', function (): any {
           Symbol.for('quote'),
           [
             Symbol.for('set-field!'),
-            Symbol.for('foo'),
+            Symbol.for('foo-bar'),
             Symbol.for('obj'),
-            'bar',
+            'baz',
           ],
         ],
       ],
-      "obj.foo = 'bar';",
+      "obj.fooBar = 'baz';",
+    ]);
+  });
+  it('(compile \'(set-field! \'foo-bar obj "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('set-field!'),
+            [Symbol.for('quote'), Symbol.for('foo-bar')],
+            Symbol.for('obj'),
+            'baz',
+          ],
+        ],
+      ],
+      "obj.fooBar = 'baz';",
+    ]);
+  });
+  it('(compile \'(set-field! :foo-bar obj "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('set-field!'),
+            Symbol.for(':foo-bar'),
+            Symbol.for('obj'),
+            'baz',
+          ],
+        ],
+      ],
+      "obj.fooBar = 'baz';",
+    ]);
+  });
+  it('(compile \'(set-field! "foo-bar" obj "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('set-field!'), 'foo-bar', Symbol.for('obj'), 'baz'],
+        ],
+      ],
+      "obj['foo-bar'] = 'baz';",
+    ]);
+  });
+  return it('(compile \'(set-field! (foo-bar) obj "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('set-field!'),
+            [Symbol.for('foo-bar')],
+            Symbol.for('obj'),
+            'baz',
+          ],
+        ],
+      ],
+      "obj[fooBar()] = 'baz';",
     ]);
   });
 });
@@ -4637,18 +4880,7 @@ describe('oget', function (): any {
       true,
     ]);
   });
-  it('(compile \'(oget obj "prop"))', function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [Symbol.for('quote'), [Symbol.for('oget'), Symbol.for('obj'), 'prop']],
-      ],
-      "obj['prop'];",
-    ]);
-  });
-  return it("(compile '(oget obj x))", function (): any {
+  it("(compile '(oget obj foo-bar))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -4656,10 +4888,211 @@ describe('oget', function (): any {
         Symbol.for('compile'),
         [
           Symbol.for('quote'),
-          [Symbol.for('oget'), Symbol.for('obj'), Symbol.for('x')],
+          [Symbol.for('oget'), Symbol.for('obj'), Symbol.for('foo-bar')],
         ],
       ],
-      'obj[x];',
+      'obj[fooBar];',
+    ]);
+  });
+  it("(compile '(oget obj 'foo-bar))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('oget'),
+            Symbol.for('obj'),
+            [Symbol.for('quote'), Symbol.for('foo-bar')],
+          ],
+        ],
+      ],
+      "obj['fooBar'];",
+    ]);
+  });
+  it("(compile '(oget obj :foo-bar))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('oget'), Symbol.for('obj'), Symbol.for(':foo-bar')],
+        ],
+      ],
+      "obj['fooBar'];",
+    ]);
+  });
+  it('(compile \'(oget obj "foo-bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('oget'), Symbol.for('obj'), 'foo-bar'],
+        ],
+      ],
+      "obj['foo-bar'];",
+    ]);
+  });
+  return it("(compile '(oget obj (foo-bar)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('oget'), Symbol.for('obj'), [Symbol.for('foo-bar')]],
+        ],
+      ],
+      'obj[fooBar()];',
+    ]);
+  });
+});
+
+describe('oset!', function (): any {
+  it('(let ((obj (js/obj))) (oset! obj \'foo-bar "baz") (oget obj \'foo-bar))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js/obj')]]],
+        [
+          Symbol.for('oset!'),
+          Symbol.for('obj'),
+          [Symbol.for('quote'), Symbol.for('foo-bar')],
+          'baz',
+        ],
+        [
+          Symbol.for('oget'),
+          Symbol.for('obj'),
+          [Symbol.for('quote'), Symbol.for('foo-bar')],
+        ],
+      ],
+      'baz',
+    ]);
+  });
+  it('(let ((obj (js/obj))) (oset! obj :foo-bar "baz") (oget obj :foo-bar))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js/obj')]]],
+        [Symbol.for('oset!'), Symbol.for('obj'), Symbol.for(':foo-bar'), 'baz'],
+        [Symbol.for('oget'), Symbol.for('obj'), Symbol.for(':foo-bar')],
+      ],
+      'baz',
+    ]);
+  });
+  it('(let ((obj (js/obj))) (oset! obj "foo-bar" "baz") (oget obj "foo-bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('let'),
+        [[Symbol.for('obj'), [Symbol.for('js/obj')]]],
+        [Symbol.for('oset!'), Symbol.for('obj'), 'foo-bar', 'baz'],
+        [Symbol.for('oget'), Symbol.for('obj'), 'foo-bar'],
+      ],
+      'baz',
+    ]);
+  });
+  it('(compile \'(oset! obj foo-bar "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('oset!'),
+            Symbol.for('obj'),
+            Symbol.for('foo-bar'),
+            'baz',
+          ],
+        ],
+      ],
+      "obj[fooBar] = 'baz';",
+    ]);
+  });
+  it('(compile \'(oset! obj \'foo-bar "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('oset!'),
+            Symbol.for('obj'),
+            [Symbol.for('quote'), Symbol.for('foo-bar')],
+            'baz',
+          ],
+        ],
+      ],
+      "obj['fooBar'] = 'baz';",
+    ]);
+  });
+  it('(compile \'(oset! obj :foo-bar "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('oset!'),
+            Symbol.for('obj'),
+            Symbol.for(':foo-bar'),
+            'baz',
+          ],
+        ],
+      ],
+      "obj['fooBar'] = 'baz';",
+    ]);
+  });
+  it('(compile \'(oset! obj "foo-bar" "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('oset!'), Symbol.for('obj'), 'foo-bar', 'baz'],
+        ],
+      ],
+      "obj['foo-bar'] = 'baz';",
+    ]);
+  });
+  return it('(compile \'(oset! obj (foo-bar) "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('oset!'),
+            Symbol.for('obj'),
+            [Symbol.for('foo-bar')],
+            'baz',
+          ],
+        ],
+      ],
+      "obj[fooBar()] = 'baz';",
     ]);
   });
 });
@@ -5260,6 +5693,17 @@ describe('js/obj', function (): any {
       '({});',
     ]);
   });
+  it('(compile \'(js/obj "foo" foo))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', Symbol.for('foo')]],
+      ],
+      '({\n' + '  foo\n' + '});',
+    ]);
+  });
   it('(compile \'(js/obj "foo" "bar"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -5271,6 +5715,177 @@ describe('js/obj', function (): any {
       '({\n' + "  foo: 'bar'\n" + '});',
     ]);
   });
+  it("(compile '(js/obj foo foo))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/obj'), Symbol.for('foo'), Symbol.for('foo')],
+        ],
+      ],
+      '({\n' + '  [foo]: foo\n' + '});',
+    ]);
+  });
+  it('(compile \'(js/obj foo "bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj'), Symbol.for('foo'), 'bar']],
+      ],
+      '({\n' + "  [foo]: 'bar'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj \'foo "bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/obj'),
+            [Symbol.for('quote'), Symbol.for('foo')],
+            'bar',
+          ],
+        ],
+      ],
+      '({\n' + "  foo: 'bar'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj :foo "bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/obj'), Symbol.for(':foo'), 'bar'],
+        ],
+      ],
+      '({\n' + "  foo: 'bar'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo-bar" "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo-bar', 'baz']],
+      ],
+      '({\n' + "  'foo-bar': 'baz'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj foo-bar "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/obj'), Symbol.for('foo-bar'), 'baz'],
+        ],
+      ],
+      '({\n' + "  [fooBar]: 'baz'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj \'foo-bar "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/obj'),
+            [Symbol.for('quote'), Symbol.for('foo-bar')],
+            'baz',
+          ],
+        ],
+      ],
+      '({\n' + "  fooBar: 'baz'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj :foo-bar "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/obj'), Symbol.for(':foo-bar'), 'baz'],
+        ],
+      ],
+      '({\n' + "  fooBar: 'baz'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo bar" "baz"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo bar', 'baz']],
+      ],
+      '({\n' + "  'foo bar': 'baz'\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo bar" baz))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/obj'), 'foo bar', Symbol.for('baz')],
+        ],
+      ],
+      '({\n' + "  'foo bar': baz\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo bar" \'baz))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/obj'),
+            'foo bar',
+            [Symbol.for('quote'), Symbol.for('baz')],
+          ],
+        ],
+      ],
+      '({\n' + "  'foo bar': Symbol.for('baz')\n" + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo bar" :baz))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/obj'), 'foo bar', Symbol.for(':baz')],
+        ],
+      ],
+      '({\n' + "  'foo bar': Symbol.for(':baz')\n" + '});',
+    ]);
+  });
   it('(compile \'(js/obj "foo" 1 "bar" 2))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -5280,6 +5895,97 @@ describe('js/obj', function (): any {
         [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]],
       ],
       '({\n' + '  foo: 1,\n' + '  bar: 2\n' + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo" foo "bar" bar))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/obj'),
+            'foo',
+            Symbol.for('foo'),
+            'bar',
+            Symbol.for('bar'),
+          ],
+        ],
+      ],
+      '({\n' + '  foo,\n' + '  bar\n' + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo" (js/obj "bar" "baz")))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('js/obj'), 'foo', [Symbol.for('js/obj'), 'bar', 'baz']],
+        ],
+      ],
+      '({\n' + '  foo: {\n' + "    bar: 'baz'\n" + '  }\n' + '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo" (js/obj "foo" "foo") "bar" (js/obj "bar" "bar")))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/obj'),
+            'foo',
+            [Symbol.for('js/obj'), 'foo', 'foo'],
+            'bar',
+            [Symbol.for('js/obj'), 'bar', 'bar'],
+          ],
+        ],
+      ],
+      '({\n' +
+        '  foo: {\n' +
+        "    foo: 'foo'\n" +
+        '  },\n' +
+        '  bar: {\n' +
+        "    bar: 'bar'\n" +
+        '  }\n' +
+        '});',
+    ]);
+  });
+  it('(compile \'(js/obj "foo" (js/obj) "bar" (js/obj "bar" "bar") "baz" (js/obj "baz" "baz")))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/obj'),
+            'foo',
+            [Symbol.for('js/obj')],
+            'bar',
+            [Symbol.for('js/obj'), 'bar', 'bar'],
+            'baz',
+            [Symbol.for('js/obj'), 'baz', 'baz'],
+          ],
+        ],
+      ],
+      '({\n' +
+        '  foo: {},\n' +
+        '  bar: {\n' +
+        "    bar: 'bar'\n" +
+        '  },\n' +
+        '  baz: {\n' +
+        "    baz: 'baz'\n" +
+        '  }\n' +
+        '});',
     ]);
   });
   it("(compile '(js/obj) :as 'expression)", function (): any {
@@ -5308,7 +6014,7 @@ describe('js/obj', function (): any {
       '{\n' + "  foo: 'bar'\n" + '}',
     ]);
   });
-  return it('(compile \'(js/obj "foo" 1 "bar" 2) :as \'expression)', function (): any {
+  it('(compile \'(js/obj "foo" 1 "bar" 2) :as \'expression)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -5319,6 +6025,80 @@ describe('js/obj', function (): any {
         [Symbol.for('quote'), Symbol.for('expression')],
       ],
       '{\n' + '  foo: 1,\n' + '  bar: 2\n' + '}',
+    ]);
+  });
+  it("(compile '(js/obj) :as 'return)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj')]],
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('return')],
+      ],
+      'return {};',
+    ]);
+  });
+  it('(compile \'(js/obj "foo" "bar") :as \'return)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 'bar']],
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('return')],
+      ],
+      'return {\n' + "  foo: 'bar'\n" + '};',
+    ]);
+  });
+  return it('(compile \'(js/obj "foo" 1 "bar" 2) :as \'return)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]],
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('return')],
+      ],
+      'return {\n' + '  foo: 1,\n' + '  bar: 2\n' + '};',
+    ]);
+  });
+});
+
+describe('js/obj?', function (): any {
+  return it("(compile '(js/obj? x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/obj?'), Symbol.for('x')]],
+      ],
+      "(x !== null) && (typeof x === 'object');",
+    ]);
+  });
+});
+
+describe('js/obj-append', function (): any {
+  return it('(compile \'(js/obj-append obj (js/obj "foo" "bar")))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/obj-append'),
+            Symbol.for('obj'),
+            [Symbol.for('js/obj'), 'foo', 'bar'],
+          ],
+        ],
+      ],
+      '({\n' + '  ...obj,\n' + "  foo: 'bar'\n" + '});',
     ]);
   });
 });
@@ -10767,6 +11547,17 @@ describe('Cons dot', function (): any {
 });
 
 describe('require', function (): any {
+  it('(compile \'(require "foo"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo']],
+      ],
+      "import * as foo from 'foo';",
+    ]);
+  });
   it('(compile \'(require "foo-bar"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -10778,7 +11569,137 @@ describe('require', function (): any {
       "import * as fooBar from 'foo-bar';",
     ]);
   });
-  return it('(compile \'(require "foo-bar") :fes-module-interop #t)', function (): any {
+  it('(compile \'(require foo "bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('require'), Symbol.for('foo'), 'bar'],
+        ],
+      ],
+      "import * as foo from 'bar';",
+    ]);
+  });
+  it("(compile '(require (only-in foo bar)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar')],
+          ],
+        ],
+      ],
+      'import {\n' + '  bar\n' + "} from 'foo';",
+    ]);
+  });
+  it("(compile '(require (only-in foo (bar baz))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [
+              Symbol.for('only-in'),
+              Symbol.for('foo'),
+              [Symbol.for('bar'), Symbol.for('baz')],
+            ],
+          ],
+        ],
+      ],
+      'import {\n' + '  bar as baz\n' + "} from 'foo';",
+    ]);
+  });
+  it('(compile \'(require (only-in "foo" (bar baz))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [
+              Symbol.for('only-in'),
+              'foo',
+              [Symbol.for('bar'), Symbol.for('baz')],
+            ],
+          ],
+        ],
+      ],
+      'import {\n' + '  bar as baz\n' + "} from 'foo';",
+    ]);
+  });
+  it("(compile '(require (only-in foo bar bar)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [
+              Symbol.for('only-in'),
+              Symbol.for('foo'),
+              Symbol.for('bar'),
+              Symbol.for('bar'),
+            ],
+          ],
+        ],
+      ],
+      'import {\n' + '  bar\n' + "} from 'foo';",
+    ]);
+  });
+  it("(compile '(require (only-in foo bar (baz bar))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [
+              Symbol.for('only-in'),
+              Symbol.for('foo'),
+              Symbol.for('bar'),
+              [Symbol.for('baz'), Symbol.for('bar')],
+            ],
+          ],
+        ],
+      ],
+      'import {\n' + '  bar\n' + "} from 'foo';",
+    ]);
+  });
+  it('(compile \'(require "foo") :fes-module-interop #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo']],
+        Symbol.for(':fes-module-interop'),
+        true,
+      ],
+      "import foo from 'foo';",
+    ]);
+  });
+  it('(compile \'(require "foo-bar") :fes-module-interop #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -10789,6 +11710,444 @@ describe('require', function (): any {
         true,
       ],
       "import fooBar from 'foo-bar';",
+    ]);
+  });
+  it('(compile \'(require foo "bar") :fes-module-interop #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('require'), Symbol.for('foo'), 'bar'],
+        ],
+        Symbol.for(':fes-module-interop'),
+        true,
+      ],
+      "import foo from 'bar';",
+    ]);
+  });
+  it('(compile \'(require "foo" "bar") :fes-module-interop #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo', 'bar']],
+        Symbol.for(':fes-module-interop'),
+        true,
+      ],
+      "import foo from 'bar';",
+    ]);
+  });
+  it('(compile \'(require "foo") :fcommonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo']],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      "let foo = require('foo');",
+    ]);
+  });
+  it('(compile \'(require foo "bar") :fcommonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('require'), Symbol.for('foo'), 'bar'],
+        ],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      "let foo = require('bar');",
+    ]);
+  });
+  it('(compile \'(require "foo" "bar") :fcommonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('require'), 'foo', 'bar']],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      "let foo = require('bar');",
+    ]);
+  });
+  it('(compile \'(require (only-in "foo" bar)) :fcommonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [Symbol.for('only-in'), 'foo', Symbol.for('bar')],
+          ],
+        ],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      "let {bar} = require('foo');",
+    ]);
+  });
+  it('(compile \'(require (only-in "foo" (bar baz))) :fcommonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [
+              Symbol.for('only-in'),
+              'foo',
+              [Symbol.for('bar'), Symbol.for('baz')],
+            ],
+          ],
+        ],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      "let {bar: baz} = require('foo');",
+    ]);
+  });
+  xit('(compile \'(require \'foo "bar"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [Symbol.for('quote'), Symbol.for('foo')],
+            'bar',
+          ],
+        ],
+      ],
+      "import foo from 'bar';",
+    ]);
+  });
+  xit("(compile '(require foo :as bar))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            Symbol.for('foo'),
+            Symbol.for(':as'),
+            Symbol.for('bar'),
+          ],
+        ],
+      ],
+      "import bar from 'foo';",
+    ]);
+  });
+  xit("(compile '(require (foo :as bar)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('require'),
+            [Symbol.for('foo'), Symbol.for(':as'), Symbol.for('bar')],
+          ],
+        ],
+      ],
+      "import bar from 'foo';",
+    ]);
+  });
+  return xit('(compile \'(require ("foo" :as "bar")))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('require'), ['foo', Symbol.for(':as'), 'bar']],
+        ],
+      ],
+      "import bar from 'foo';",
+    ]);
+  });
+});
+
+describe('provide', function (): any {
+  it("(compile '(provide))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide')]]],
+      '',
+    ]);
+  });
+  it("(compile '(provide x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]],
+      ],
+      'export {\n' + '  x\n' + '};',
+    ]);
+  });
+  it("(compile '(provide x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')],
+        ],
+      ],
+      'export {\n' + '  x,\n' + '  y\n' + '};',
+    ]);
+  });
+  it("(compile '(provide (rename-out (x y))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]],
+          ],
+        ],
+      ],
+      'export {\n' + '  x as y\n' + '};',
+    ]);
+  });
+  it("(compile '(provide (rename-out (x y) (w z))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            [
+              Symbol.for('rename-out'),
+              [Symbol.for('x'), Symbol.for('y')],
+              [Symbol.for('w'), Symbol.for('z')],
+            ],
+          ],
+        ],
+      ],
+      'export {\n' + '  x as y,\n' + '  w as z\n' + '};',
+    ]);
+  });
+  it("(compile '(provide x (rename-out (y z))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            Symbol.for('x'),
+            [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('z')]],
+          ],
+        ],
+      ],
+      'export {\n' + '  x,\n' + '  y as z\n' + '};',
+    ]);
+  });
+  it("(compile '(provide x x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('provide'), Symbol.for('x'), Symbol.for('x')],
+        ],
+      ],
+      'export {\n' + '  x\n' + '};',
+    ]);
+  });
+  it("(compile '(provide x (rename-out (y x))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            Symbol.for('x'),
+            [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('x')]],
+          ],
+        ],
+      ],
+      'export {\n' + '  x\n' + '};',
+    ]);
+  });
+  it("(compile '(provide (rename-out (x js/undefined))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            [
+              Symbol.for('rename-out'),
+              [Symbol.for('x'), Symbol.for('js/undefined')],
+            ],
+          ],
+        ],
+      ],
+      'export {\n' + '  x as jsUndefined\n' + '};',
+    ]);
+  });
+  it('(compile \'(provide (all-from-out "foo")))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo']],
+        ],
+      ],
+      "export * from 'foo';",
+    ]);
+  });
+  it('(compile \'(provide (all-from-out "foo") bar))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            [Symbol.for('all-from-out'), 'foo'],
+            Symbol.for('bar'),
+          ],
+        ],
+      ],
+      "export * from 'foo';\n" + '\n' + 'export {\n' + '  bar\n' + '};',
+    ]);
+  });
+  it("(compile '(provide x) :fcommonjs #t)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      'module.exports = {\n' + '  x\n' + '};',
+    ]);
+  });
+  it("(compile '(provide x y) :fcommonjs #t)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')],
+        ],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      'module.exports = {\n' + '  x,\n' + '  y\n' + '};',
+    ]);
+  });
+  it("(compile '(provide foo-bar) :fcommonjs #t)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('foo-bar')]],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      'module.exports = {\n' + '  fooBar\n' + '};',
+    ]);
+  });
+  it("(compile '(provide (rename-out (x y))) :fcommonjs #t)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]],
+          ],
+        ],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      'module.exports = {\n' + '  x: y\n' + '};',
+    ]);
+  });
+  return it('(compile \'(provide (all-from-out "foo-bar") baz) :fcommonjs #t)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('provide'),
+            [Symbol.for('all-from-out'), 'foo-bar'],
+            Symbol.for('baz'),
+          ],
+        ],
+        Symbol.for(':fcommonjs'),
+        true,
+      ],
+      'module.exports = {\n' + '  ...fooBar,\n' + '  baz\n' + '};',
     ]);
   });
 });

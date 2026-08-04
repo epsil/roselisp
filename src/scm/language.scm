@@ -228,6 +228,7 @@
                   js/not_
                   js/null?_
                   js/obj-append_
+                  js/obj-spread_
                   js/obj?_
                   js/obj_
                   js/object-type?_
@@ -447,6 +448,7 @@
                   index-where_
                   intersection_
                   is-a?_
+                  keyword->symbol_
                   keyword?_
                   lt_
                   lte_
@@ -840,6 +842,7 @@
          (,js/new_ ,compile-js/new (compiler-> Any * Any))
          (,js/not_ ,compile-not (compiler-> Any * Any))
          (,js/obj-append_ ,compile-js/obj-append (compiler-> Any * Any))
+         (,js/obj-spread_ ,compile-js/obj-spread (compiler-> Any * Any))
          (,js/obj_ ,compile-js/obj (compiler-> Any * Any))
          (,js/op_ ,compile-js/op (compiler-> Any * Any))
          (,js/optional-chaining_ ,compile-js/optional-chaining (compiler-> Any * Any))
@@ -1169,7 +1172,7 @@
     (oget options "indent"))
   (define language-option
     (or (oget options "language")
-     default-language))
+        default-language))
   (define out-dir-option
     (or (oget options "outDir") ""))
   (define comments-option
@@ -2333,17 +2336,36 @@
     (send node drop 2))
   (define indices-compiled
     (map (lambda (x)
-           (compile-expression x env options))
+           (define x-exp
+             (rose->sexp x))
+           (define is-quoted-symbol #f)
+           (when (and (quoted-expression? x-exp)
+                      (symbol? (js/second x-exp)))
+             (set! x-exp (js/second x-exp))
+             (set! x (sexp->rose x-exp x))
+             (set! is-quoted-symbol #t))
+           (when (keyword? x-exp)
+             (set! x-exp (keyword->symbol_ x-exp))
+             (set! x (sexp->rose x-exp x))
+             (set! is-quoted-symbol #t))
+           (cond
+            (is-quoted-symbol
+             (define identifier
+               (compile-symbol x env options))
+             (define literal
+               (new Literal (get-field name identifier)))
+             literal)
+            (else
+             (compile-expression x env options))))
          indices))
   ;; Kludge: prevent TypeScript errors with expressions
   ;; like `x[y]`, where `y` is `any`-typed.
   (when (and (eq? language "typescript")
              (not (form? variable ann_ env))
-             (not (memq? (estree-type
-                          (js/first indices-compiled))
-                         '("Literal"
-                           "UnaryExpression"
-                           "BinaryExpression"))))
+             (not (estree-type? (js/first indices-compiled)
+                                '("Literal"
+                                  "UnaryExpression"
+                                  "BinaryExpression"))))
     (set! variable
           (sexp->rose
            `(ann ,variable Any)
@@ -2355,7 +2377,11 @@
     (form? variable js/optional-chaining_ env))
   (define result
     (foldl (lambda (idx arr)
-             (new MemberExpression arr idx computed optional))
+             (new MemberExpression
+                  arr
+                  idx
+                  computed
+                  optional))
            variable-compiled
            indices-compiled))
   (make-expression-or-statement result options))
@@ -2382,7 +2408,7 @@
 
 ;;; Compile an `(object-ref ...)` expression.
 (define (compile-object-ref node env (options (js/obj)))
-  (compile-array-ref node env options))
+  (compile-js/get node env options))
 
 ;;; Compile an `(object-set! ...)` expression.
 (define (compile-object-set node env (options (js/obj)))
@@ -4150,23 +4176,32 @@
       (send node get 1))
     (define prop
       (send node get 2))
+    (define prop-exp
+      (rose->sexp prop))
     (define computed
-      (not (symbol? (rose->sexp prop))))
+      (not (symbol? prop-exp)))
+    (when (and (quoted-expression? prop-exp)
+               (symbol? (js/second prop-exp)))
+      (set! prop-exp (js/second prop-exp))
+      (set! prop (sexp->rose prop-exp prop))
+      (set! computed #f))
+    (when (keyword? prop-exp)
+      (set! prop-exp (keyword->symbol_ prop-exp))
+      (set! prop (sexp->rose prop-exp prop))
+      (set! computed #f))
     (define prop-compiled
-      (if computed
-          (compile-expression
-           prop env options)
-          (compile-symbol
-           prop env options)))
+      (if (symbol? (rose->sexp prop))
+          (compile-symbol prop env options)
+          (compile-expression prop env options)))
     ;; Kludge: prevent TypeScript errors with expressions
     ;; like `x[y]`, where `y` is `any`-typed.
     (when (and computed
                (eq? language "typescript")
                (not (form? obj ann_ env))
-               (not (memq? (estree-type prop-compiled)
-                           '("Literal"
-                             "UnaryExpression"
-                             "BinaryExpression"))))
+               (not (estree-type? prop-compiled
+                                  '("Literal"
+                                    "UnaryExpression"
+                                    "BinaryExpression"))))
       (set! obj
             (sexp->rose
              `(ann ,obj Any)
@@ -4572,93 +4607,6 @@
    (else
     global-environment-exp)))
 
-;;; Compile a `(provide ...)` expression.
-(define (compile-provide node env (options (js/obj)))
-  (define expressions
-    (send node drop 1))
-  ;; Sort `all-from-out` expressions from the rest.
-  (define all-from-out-expressions '())
-  (define other-expressions '())
-  (for ((x expressions))
-    (cond
-     ((tagged-list? (rose->sexp x) 'all-from-out)
-      (push-right! all-from-out-expressions x))
-     (else
-      (push-right! other-expressions x))))
-  ;; Compile `all-from-out` expressions.
-  (define results '())
-  (for ((x all-from-out-expressions))
-    (define source
-      (send x get 1))
-    (define result
-      (new ExportAllDeclaration
-           (compile-expression source env options)))
-    (push-right! results result))
-  ;; Compile other expressions.
-  (when (> (js/length other-expressions) 0)
-    (define specifiers '())
-    (define seen '())
-    (for ((x other-expressions))
-      (define exp
-        (rose->sexp x))
-      (cond
-       ((tagged-list? exp 'rename-out)
-        (for ((pair (rest exp)))
-          (define x1
-            (first pair))
-          (define x2
-            (second pair))
-          (when (symbol? x1)
-            (set! x1
-                  (print-estree
-                   (compile-symbol
-                    (sexp->rose x1)
-                    env
-                    options
-                    (js/obj "literalSymbol" #t))
-                   options)))
-          (when (symbol? x2)
-            (set! x2
-                  (print-estree
-                   (compile-symbol
-                    (sexp->rose x2)
-                    env
-                    options
-                    (js/obj "literalSymbol" #t))
-                   options)))
-          (unless (memq? x2 seen)
-            (push-right! seen x2)
-            (push-right! specifiers
-                         (new ExportSpecifier
-                              (new Identifier x1)
-                              (new Identifier x2))))))
-       (else
-        (define x1 exp)
-        (when (symbol? x1)
-          (set! x1
-                (print-estree
-                 (compile-symbol
-                  (sexp->rose x1)
-                  env
-                  options
-                  (js/obj "literalSymbol" #t))
-                 options)))
-        (unless (memq? x1 seen)
-          (push-right! seen x1)
-          (push-right! specifiers
-                       (new ExportSpecifier
-                            (new Identifier x1)))))))
-    (define result
-      (new ExportNamedDeclaration
-           #n
-           specifiers))
-    (push-right! results result))
-  (cond
-   ((= (js/length results) 1)
-    (first results))
-   (else
-    (make-program-fragment results))))
-
 ;;; Compile a `(quote ...)` expression.
 (define (compile-quote node env (options (js/obj)))
   (define exp
@@ -4733,7 +4681,9 @@
 
 ;;; Compile a `(require ...)` expression.
 (define (compile-require node env (options (js/obj)))
-  (define es-module-interop
+  (define fcommonjs
+    (oget options "fcommonjs"))
+  (define fes-module-interop
     (oget options "fesModuleInterop"))
   (define language-env
     (oget options "languageEnvironment"))
@@ -4747,107 +4697,238 @@
     (or (send node get 2) x-node))
   (define y-exp
     (rose->sexp y-node))
-  (define specifiers '())
-  (define seen '())
-  (define src #n)
   (cond
-   ((tagged-list? x-exp 'only-in)
-    (for ((x (send x-node drop 2)))
-      (define exp
-        (rose->sexp x))
-      (cond
-       ((array? exp)
-        (define x1
-          (first exp))
-        (define x1-str x1)
-        (define x2
-          (second exp))
-        (define x2-str x2)
-        (when (symbol? x1)
-          (set! x1-str
-                (print-estree
-                 (compile-symbol
-                  (sexp->rose x1)
-                  env
-                  options
-                  (js/obj "literalSymbol" #t))
-                 options)))
-        (when (symbol? x2)
-          (set! x2-str
-                (print-estree
-                 (compile-symbol
-                  (sexp->rose x2)
-                  env
-                  options
-                  (js/obj "literalSymbol" #t))
-                 options)))
-        (unless (memq? x2-str seen)
-          (unless (send env has? x2 (js/obj "filter" lang-filter))
-            (make-type-binding env x2 'Any lang-filter))
-          (push-right! seen x2)
-          (push-right! specifiers
-                       (new ImportSpecifier
-                            (new Identifier x1-str)
-                            (new Identifier x2-str)))))
-       (else
-        (define x1 exp)
-        (define x1-str x1)
-        (when (symbol? x1)
-          (set! x1-str
-                (print-estree
-                 (compile-symbol
-                  (sexp->rose x1)
-                  env
-                  options
-                  (js/obj "literalSymbol" #t))
-                 options)))
-        (unless (memq? x1-str seen)
-          (unless (send env has? x1 (js/obj "filter" lang-filter))
-            (make-type-binding env x1 'Any lang-filter))
-          (push-right! seen x1-str)
-          (push-right! specifiers
-                       (new ImportSpecifier
-                            (new Identifier x1-str)))))))
-    (set! y-exp (second x-exp)))
+   (fcommonjs
+    (cond
+     ((tagged-list? x-exp 'only-in)
+      (compile-statement
+       (sexp->rose
+        `(define-fields ,(drop x-exp 2)
+           (js/require ,(js/second x-exp))))
+       env options))
+     (else
+      (when (string? x-exp)
+        (set! x-exp (string->symbol x-exp)))
+      (compile-statement
+       (sexp->rose
+        `(define ,x-exp
+           (js/require ,y-node)))
+       env options))))
    (else
-    (when (string? x-exp)
-      (set! x-exp (string->symbol x-exp)))
-    (when (symbol? x-exp)
-      (set! x-exp
+    (define specifiers '())
+    (define seen '())
+    (define src #n)
+    (cond
+     ((tagged-list? x-exp 'only-in)
+      (for ((x (send x-node drop 2)))
+        (define exp
+          (rose->sexp x))
+        (cond
+         ((array? exp)
+          (define x1
+            (first exp))
+          (define x1-str x1)
+          (define x2
+            (second exp))
+          (define x2-str x2)
+          (when (symbol? x1)
+            (set! x1-str
+                  (print-estree
+                   (compile-symbol
+                    (sexp->rose x1)
+                    env
+                    options
+                    (js/obj "literalSymbol" #t))
+                   options)))
+          (when (symbol? x2)
+            (set! x2-str
+                  (print-estree
+                   (compile-symbol
+                    (sexp->rose x2)
+                    env
+                    options
+                    (js/obj "literalSymbol" #t))
+                   options)))
+          (unless (memq? x2-str seen)
+            (unless (send env has? x2 (js/obj "filter" lang-filter))
+              (make-type-binding env x2 'Any lang-filter))
+            (push-right! seen x2)
+            (push-right! specifiers
+                         (new ImportSpecifier
+                              (new Identifier x1-str)
+                              (new Identifier x2-str)))))
+         (else
+          (define x1 exp)
+          (define x1-str x1)
+          (when (symbol? x1)
+            (set! x1-str
+                  (print-estree
+                   (compile-symbol
+                    (sexp->rose x1)
+                    env
+                    options
+                    (js/obj "literalSymbol" #t))
+                   options)))
+          (unless (memq? x1-str seen)
+            (unless (send env has? x1 (js/obj "filter" lang-filter))
+              (make-type-binding env x1 'Any lang-filter))
+            (push-right! seen x1-str)
+            (push-right! specifiers
+                         (new ImportSpecifier
+                              (new Identifier x1-str)))))))
+      (set! y-exp (second x-exp)))
+     (else
+      (when (string? x-exp)
+        (set! x-exp (string->symbol x-exp)))
+      (when (symbol? x-exp)
+        (set! x-exp
+              (print-estree
+               (compile-symbol
+                (sexp->rose x-exp)
+                env
+                options
+                (js/obj "literalSymbol" #t))
+               options)))
+      (set! specifiers
+            (list
+             (if fes-module-interop
+                 (new ImportDefaultSpecifier
+                      (new Identifier x-exp))
+                 (new ImportNamespaceSpecifier
+                      (new Identifier x-exp)))))))
+    (when (symbol? y-exp)
+      (set! y-exp
             (print-estree
              (compile-symbol
-              (sexp->rose x-exp)
+              (sexp->rose y-exp)
               env
               options
               (js/obj "literalSymbol" #t))
              options)))
-    (set! specifiers
-          (list
-           (if es-module-interop
-               (new ImportDefaultSpecifier
-                    (new Identifier x-exp))
-               (new ImportNamespaceSpecifier
-                    (new Identifier x-exp)))))))
-  (when (symbol? y-exp)
-    (set! y-exp
-          (print-estree
-           (compile-symbol
-            (sexp->rose y-exp)
-            env
-            options
-            (js/obj "literalSymbol" #t))
-           options)))
-  (set! src (new Literal y-exp))
-  (when (symbol? x-exp)
-    (unless (send env has? x-exp (js/obj "filter" lang-filter))
-      (make-type-binding env x-exp 'Any lang-filter)))
+    (set! src (new Literal y-exp))
+    (when (symbol? x-exp)
+      (unless (send env has? x-exp (js/obj "filter" lang-filter))
+        (make-type-binding env x-exp 'Any lang-filter)))
+    (cond
+     ((null? specifiers)
+      (empty-program))
+     (else
+      (new ImportDeclaration
+           specifiers
+           src))))))
+
+;;; Compile a `(provide ...)` expression.
+(define (compile-provide node env (options (js/obj)))
+  (define fcommonjs
+    (oget options "fcommonjs"))
+  (define expressions
+    (send node drop 1))
   (cond
-   ((null? specifiers)
-    (empty-program))
+   (fcommonjs
+    (define properties '())
+    (for ((exp expressions))
+      (cond
+       ((tagged-list? exp 'all-from-out)
+        (define name
+          (~> (send exp get 1)
+              (rose->sexp _)
+              (string->symbol _)))
+        (push-right! properties `(js/obj-spread ,name)))
+       ((tagged-list? exp 'rename-out)
+        (push-right! properties `(quote ,(send exp get 1 0)))
+        (push-right! properties (send exp get 1 1)))
+       (else
+        (push-right! properties `(quote ,exp))
+        (push-right! properties exp))))
+    (compile-statement
+     (sexp->rose
+      `(set-field! exports
+                   module
+                   (js/obj ,@properties)))
+     env options))
    (else
-    (new ImportDeclaration
-         specifiers
-         src))))
+    ;; Sort `all-from-out` expressions from the rest.
+    (define all-from-out-expressions '())
+    (define other-expressions '())
+    (for ((x expressions))
+      (cond
+       ((tagged-list? (rose->sexp x) 'all-from-out)
+        (push-right! all-from-out-expressions x))
+       (else
+        (push-right! other-expressions x))))
+    ;; Compile `all-from-out` expressions.
+    (define results '())
+    (for ((x all-from-out-expressions))
+      (define source
+        (send x get 1))
+      (define result
+        (new ExportAllDeclaration
+             (compile-expression source env options)))
+      (push-right! results result))
+    ;; Compile other expressions.
+    (when (> (js/length other-expressions) 0)
+      (define specifiers '())
+      (define seen '())
+      (for ((x other-expressions))
+        (define exp
+          (rose->sexp x))
+        (cond
+         ((tagged-list? exp 'rename-out)
+          (for ((pair (rest exp)))
+            (define x1
+              (first pair))
+            (define x2
+              (second pair))
+            (when (symbol? x1)
+              (set! x1
+                    (print-estree
+                     (compile-symbol
+                      (sexp->rose x1)
+                      env
+                      options
+                      (js/obj "literalSymbol" #t))
+                     options)))
+            (when (symbol? x2)
+              (set! x2
+                    (print-estree
+                     (compile-symbol
+                      (sexp->rose x2)
+                      env
+                      options
+                      (js/obj "literalSymbol" #t))
+                     options)))
+            (unless (memq? x2 seen)
+              (push-right! seen x2)
+              (push-right! specifiers
+                           (new ExportSpecifier
+                                (new Identifier x1)
+                                (new Identifier x2))))))
+         (else
+          (define x1 exp)
+          (when (symbol? x1)
+            (set! x1
+                  (print-estree
+                   (compile-symbol
+                    (sexp->rose x1)
+                    env
+                    options
+                    (js/obj "literalSymbol" #t))
+                   options)))
+          (unless (memq? x1 seen)
+            (push-right! seen x1)
+            (push-right! specifiers
+                         (new ExportSpecifier
+                              (new Identifier x1)))))))
+      (define result
+        (new ExportNamedDeclaration
+             #n
+             specifiers))
+      (push-right! results result))
+    (cond
+     ((= (js/length results) 1)
+      (first results))
+     (else
+      (make-program-fragment results))))))
 
 ;;; Compile a `(set! ...)` expression.
 (define (compile-set node env (options (js/obj)))
@@ -5592,33 +5673,59 @@
   (define exp
     (rose->sexp node))
   (define properties '())
-  (for ((i (range 1 (js/length exp) 2)))
+  (define i 1)
+  (while (< i (js/length exp))
     (define key-node
       (send node get i))
-    (define key-value
-      (rose->sexp key-node))
-    (define compiled-key
-      (compile-expression
-       key-node
-       env options))
-    (define compiled-value
-      (compile-expression
-       (send node get (+ i 1))
-       env
-       options))
-    (define computed
-      (not (string? (rose->sexp key-node))))
-    (define match)
-    (when (and (string? key-value)
-               (regexp-match (regexp "^[a-z]+$" "i")
-                             key-value))
-      (set! compiled-key
-            (new Identifier key-value)))
-    (push-right! properties
-                 (new Property
-                      compiled-key
-                      compiled-value
-                      computed)))
+    (cond
+     ((tagged-list? key-node 'js/obj-spread)
+      (define compiled-key
+        (compile-expression key-node env options))
+      (push-right! properties compiled-key)
+      (set! i (+ i 1)))
+     (else
+      (define key-exp
+        (rose->sexp key-node))
+      (define computed
+        (not (string? key-exp)))
+      (define val-node
+        (send node get (+ i 1)))
+      (define is-quoted-symbol #f)
+      (when (and (quoted-expression? key-exp)
+                 (symbol? (js/second key-exp)))
+        (set! key-exp (js/second key-exp))
+        (set! key-node (sexp->rose key-exp key-node))
+        (set! is-quoted-symbol #t)
+        (set! computed #f))
+      (when (keyword? key-exp)
+        (set! key-exp (keyword->symbol_ key-exp))
+        (set! key-node (sexp->rose key-exp key-node))
+        (set! is-quoted-symbol #t)
+        (set! computed #f))
+      (define compiled-key
+        (if is-quoted-symbol
+            (compile-symbol key-node env options)
+            (compile-expression key-node env options)))
+      (define compiled-value
+        (compile-expression val-node env options))
+      (when (and (string? key-exp)
+                 (regexp-match (regexp "^[a-z]+$" "i")
+                               key-exp))
+        (set! compiled-key
+              (new Identifier key-exp)))
+      (define shorthand
+        (and (not computed)
+             (estree-type? compiled-key "Identifier")
+             (estree-type? compiled-value "Identifier")
+             (eq? (get-field name compiled-key)
+                  (get-field name compiled-value))))
+      (push-right! properties
+                   (new Property
+                        compiled-key
+                        compiled-value
+                        computed
+                        shorthand))
+      (set! i (+ i 2)))))
   (make-expression-or-statement
    (new ObjectExpression properties)
    options))
@@ -5639,6 +5746,15 @@
       (push-right! properties (new SpreadElement exp)))))
   (make-expression-or-statement
    (new ObjectExpression properties)
+   options))
+
+(define (compile-js/obj-spread node env (options (js/obj)))
+  (define arg
+    (send node get 1))
+  (define arg-compiled
+    (compile-expression arg env options))
+  (make-expression-or-statement
+   (new SpreadElement arg-compiled)
    options))
 
 ;;; Compile a `(js/tag ...)` expression.
@@ -8028,6 +8144,11 @@
          _
          (js/obj "case" "camelcase"))))))
 
+;;; Whether `exp` is a quoted expression.
+(define (quoted-expression? exp)
+  (or (tagged-list? exp 'quote)
+      (tagged-list? exp 'quasiquote)))
+
 ;;; Lisp environment.
 (define lisp-environment
   (new LispEnvironment
@@ -8310,6 +8431,7 @@
          (js/null? ,js/null?_ (-> Any * Any))
          (js/obj ,js/obj_ (-> Any * Any))
          (js/obj-append ,js/obj-append_ (-> Any * Any))
+         (js/obj-spread ,js/obj-spread_ (-> Any * Any))
          (js/obj-keys ,js/keys_ (-> Any * Any))
          (js/obj? ,js/obj?_ (-> Any * Any))
          (js/object ,js/obj_ (-> Any * Any))

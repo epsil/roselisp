@@ -825,12 +825,14 @@
   (define/public value)
   (define/public computed)
   (define/public kind)
+  (define/public shorthand)
 
-  (define/public (constructor key value (computed #f) (kind "init"))
+  (define/public (constructor key value (computed #f) (shorthand #f) (kind "init"))
     (super)
     (set-field! key this key)
     (set-field! value this value)
     (set-field! computed this computed)
+    (set-field! shorthand this shorthand)
     (set-field! kind this kind)))
 
 ;;; Function

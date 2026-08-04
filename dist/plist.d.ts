@@ -88,6 +88,6 @@ declare namespace plistToAlist_ {
  */
 declare function plistToObject_(plst: any, options?: any): any;
 declare namespace plistToObject_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 export { plistToAlist_ as plistToAlist, plistMap_ as plistMap, plistToObject_ as plistToObject, plistCopy_ as plistCopy, plistGet_ as plistGet, plistGet_ as plistRef_, plistHasP_ as plistHasP, plistHasP_ as plistHas_, plistSetX_ as plistSetX, plistSet_ as plistSet, plistp_ as plistp, plistToAlist_, plistMap_, plistToObject_, plistCopy_, plistGet_, plistHasP_, plistSetX_, plistSet_, plistp_ };

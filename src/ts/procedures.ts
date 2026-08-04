@@ -695,6 +695,25 @@ function keywordp_(obj: any): any {
 
 keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match?'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]];
 
+/**
+ * Convert a keyword to a string without the `:` prefix.
+ */
+function keywordToString_(exp: any): any {
+  return (exp.description as string).replace(new RegExp('^:'), '');
+}
+
+keywordToString_.fsource = [Symbol.for('define'), [Symbol.for('keyword->string_'), Symbol.for('exp')], [Symbol.for('~>'), Symbol.for('exp'), [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('_'), '']]];
+
+/**
+ * Convert a keyword to a regular symbol
+ * (i.e., strip the `:` prefix).
+ */
+function keywordToSymbol_(exp: any): any {
+  return Symbol.for(keywordToString_(exp));
+}
+
+keywordToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('keyword->symbol_'), Symbol.for('exp')], [Symbol.for('~>'), Symbol.for('exp'), [Symbol.for('keyword->string_'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')]]];
+
 // (define (keyword?-1_ obj)
 //   (true?
 //    (and (symbol? obj)
@@ -1220,6 +1239,8 @@ export {
   isAP_ as instanceOf_,
   isAP_ as instanceofp,
   isAP_ as isAP,
+  keywordToString_ as keywordToString,
+  keywordToSymbol_ as keywordToSymbol,
   keywordp_ as keywordp,
   lt_ as lt,
   lte_ as lte,
@@ -1285,6 +1306,8 @@ export {
   indexWhere_,
   intersection_,
   isAP_,
+  keywordToString_,
+  keywordToSymbol_,
   keywordp_,
   lt_,
   lte_,

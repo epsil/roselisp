@@ -128,6 +128,10 @@
 (define (js/obj-append_ . args)
   (send/apply Object assign (js/obj) args))
 
+;;; Spread a JavaScript object into another.
+(define (js/obj-spread_ x)
+  x)
+
 ;;; Return the keys for a JavaScript object.
 ;;;
 ;;; Similar to [`js-keys` in ClojureScript][cljs:js-keys].
@@ -445,6 +449,7 @@
   js/not_
   js/null?_
   js/obj-append_
+  js/obj-spread_
   js/obj?_
   js/obj_
   js/object-type?_

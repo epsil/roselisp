@@ -383,6 +383,19 @@
        (regexp-match? (regexp "^:")
                       (symbol->string obj))))
 
+;;; Convert a keyword to a string without the `:` prefix.
+(define (keyword->string_ exp)
+  (~> exp
+      (symbol->string _)
+      (regexp-replace (regexp "^:") _ "")))
+
+;;; Convert a keyword to a regular symbol
+;;; (i.e., strip the `:` prefix).
+(define (keyword->symbol_ exp)
+  (~> exp
+      (keyword->string_ _)
+      (string->symbol _)))
+
 ;; (define (keyword?-1_ obj)
 ;;   (true?
 ;;    (and (symbol? obj)
@@ -750,6 +763,8 @@
   (rename-out (is-a?_ instance-of_))
   (rename-out (is-a?_ instanceof?))
   (rename-out (is-a?_ is-a?))
+  (rename-out (keyword->string_ keyword->string))
+  (rename-out (keyword->symbol_ keyword->symbol))
   (rename-out (keyword?_ keyword?))
   (rename-out (lt_ lt))
   (rename-out (lte_ lte))
@@ -819,6 +834,8 @@
   index-where_
   intersection_
   is-a?_
+  keyword->string_
+  keyword->symbol_
   keyword?_
   lt_
   lte_

@@ -136,7 +136,7 @@ function decompileFileX(file: any, options: any = {}): any {
   language = (language.match(new RegExp('^typescript$', 'i')) || (extension === '.ts')) ? 'typescript' : 'javascript';
   options = {
     ...options,
-    language: language,
+    language,
     module: true,
     noModuleForm: true,
     pretty: true

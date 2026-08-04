@@ -719,7 +719,8 @@ declare class Property extends TSNode {
     value: any;
     computed: any;
     kind: any;
-    constructor(key: any, value: any, computed?: any, kind?: any);
+    shorthand: any;
+    constructor(key: any, value: any, computed?: any, shorthand?: any, kind?: any);
 }
 /**
  * Function

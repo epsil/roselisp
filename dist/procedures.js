@@ -18,9 +18,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.procedurep = exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp_ = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.member_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = void 0;
+exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp_ = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
+exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = exports.functionp = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = void 0;
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
         if (x === y) {
@@ -678,6 +678,25 @@ function keywordp_(obj) {
 exports.keywordp = keywordp_;
 exports.keywordp_ = keywordp_;
 keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('regexp-match?'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('obj')]]]];
+/**
+ * Convert a keyword to a string without the `:` prefix.
+ */
+function keywordToString_(exp) {
+    return exp.description.replace(new RegExp('^:'), '');
+}
+exports.keywordToString = keywordToString_;
+exports.keywordToString_ = keywordToString_;
+keywordToString_.fsource = [Symbol.for('define'), [Symbol.for('keyword->string_'), Symbol.for('exp')], [Symbol.for('~>'), Symbol.for('exp'), [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], Symbol.for('_'), '']]];
+/**
+ * Convert a keyword to a regular symbol
+ * (i.e., strip the `:` prefix).
+ */
+function keywordToSymbol_(exp) {
+    return Symbol.for(keywordToString_(exp));
+}
+exports.keywordToSymbol = keywordToSymbol_;
+exports.keywordToSymbol_ = keywordToSymbol_;
+keywordToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('keyword->symbol_'), Symbol.for('exp')], [Symbol.for('~>'), Symbol.for('exp'), [Symbol.for('keyword->string_'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')]]];
 // (define (keyword?-1_ obj)
 //   (true?
 //    (and (symbol? obj)

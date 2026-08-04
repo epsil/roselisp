@@ -15,47 +15,6 @@
  > (describe "To do")
  _
 
- ;; `require`
- > (describe "require")
- _
- xit> (compile '(require "foo")
-               :fcommonjs #t)
- "let foo = require('foo');"
- xit> (compile '(require foo "bar")
-               :fcommonjs #t)
- "let foo = require('bar');"
- xit> (compile '(require "foo" "bar")
-               :fcommonjs #t)
- "let foo = require('bar');"
- xit> (compile '(require (only-in "foo"
-                                  bar))
-               :fcommonjs #t)
- "let {bar} = require('foo');"
- xit> (compile '(require (only-in "foo"
-                                  (bar baz)))
-               :fcommonjs #t)
- "let {bar: baz} = require('foo');"
-
- ;; `provide`
- > (describe "provide")
- _
- xit> (compile '(provide x)
-               :fcommonjs #t)
- "module.exports = {
-  x
-};"
- xit> (compile '(provide x y)
-               :fcommonjs #t)
- "export {
-  x,
-  y
-};"
- xit> (compile '(provide (rename-out (x y)))
-               :fcommonjs #t)
- "export {
-  x: y
-};"
-
  ;; `gensym`
  > (describe "gensym")
  _

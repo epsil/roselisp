@@ -173,7 +173,7 @@ function normalizeCliOptions(options: any): any {
   const language: any = options['language'].toLowerCase();
   return {
     ...options,
-    language: language
+    language
   };
 }
 

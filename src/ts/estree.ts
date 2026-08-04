@@ -1122,11 +1122,14 @@ class Property extends TSNode {
 
   kind: any;
 
-  constructor(key: any, value: any, computed: any = false, kind: any = 'init') {
+  shorthand: any;
+
+  constructor(key: any, value: any, computed: any = false, shorthand: any = false, kind: any = 'init') {
     super();
     this.key = key;
     this.value = value;
     this.computed = computed;
+    this.shorthand = shorthand;
     this.kind = kind;
   }
 }
@@ -1528,7 +1531,7 @@ class TemplateElement extends TSNode {
     super();
     this.tail = tail;
     this.value = {
-      cooked: cooked,
+      cooked,
       raw: raw || cooked.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('`', 'g'), '\\`')
     };
   }

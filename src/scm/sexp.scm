@@ -67,7 +67,7 @@
   (string->symbol
    (if (string? x)
        x
-       (send String raw (js/obj "raw" x) y))))
+       (send String raw (js/obj :raw x) y))))
 
 ;;; Convert the input to an S-expression.
 ;;;

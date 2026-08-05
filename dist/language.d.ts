@@ -31,7 +31,7 @@ import { quotep } from './util';
  */
 declare function compile(exp: any, ...args: any[]): any;
 declare namespace compile {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (string | boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (boolean | symbol)[])[])[])[])[])[];
 }
 /**
  * Decompile a JavaScript or TypeScript string to
@@ -39,7 +39,7 @@ declare namespace compile {
  */
 declare function decompile(exp: any, ...args: any[]): any;
 declare namespace decompile {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | symbol[])[])[])[];
 }
 /**
  * Compile a Lisp expression to JavaScript or TypeScript
@@ -48,7 +48,7 @@ declare namespace decompile {
  */
 declare function compileWithEnvironment(exp: any, env?: any, options?: any): any;
 declare namespace compileWithEnvironment {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (string | symbol)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (boolean | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Compile a set of modules together.
@@ -72,7 +72,7 @@ declare namespace compileModuleMap {
  */
 declare function compileFilesX(files: any, options?: any): any;
 declare namespace compileFilesX {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (string | boolean | symbol)[])[] | (symbol | (string | symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (boolean | symbol)[])[])[])[];
 }
 /**
  * Compile a file.
@@ -92,7 +92,7 @@ declare namespace compileFileX {
  */
 declare function interpret(exp: any, env?: any, options?: any): any;
 declare namespace interpret {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (string | boolean | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (string | boolean | symbol)[])[])[])[];
 }
 /**
  * Interpret a string of Lisp code.

@@ -365,9 +365,9 @@
  _
  > (js/eval "1")
  1
- > (interpret '(js/eval "1") #u (js/obj "eval" #t))
+ > (interpret '(js/eval "1") #u (js/obj :eval #t))
  1
- xit> (interpret 'js/eval #u (js/obj "eval" #f))
+ xit> (interpret 'js/eval #u (js/obj :eval #f))
  #u
 
  ;; `interpret`

@@ -8923,7 +8923,7 @@ describe('compile-with-environment', function (): any {
         '};'
     );
   });
-  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj "language" "javascript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj :language "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [
@@ -8950,7 +8950,7 @@ describe('compile-with-environment', function (): any {
         "foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
     );
   });
-  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj "language" "javascript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj :language "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [
@@ -8977,7 +8977,7 @@ describe('compile-with-environment', function (): any {
         "foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
     );
   });
-  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj "language" "javascript" "inlineLispSources" #t "optimize" #t))', function (): any {
+  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj :language "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
     return assertEqual(
       compileWithEnvironment(
         [

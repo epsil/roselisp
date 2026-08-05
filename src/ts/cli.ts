@@ -54,18 +54,18 @@ const cliOptions: any = {
     type: 'boolean'
   },
   compile: {
-    default: false,
     alias: 'c',
+    default: false,
     type: 'boolean'
   },
   decompile: {
-    default: false,
     alias: 'd',
+    default: false,
     type: 'boolean'
   },
   eval: {
-    default: '',
     alias: 'e',
+    default: '',
     type: 'string'
   },
   fcommonjs: {
@@ -92,8 +92,8 @@ const cliOptions: any = {
     type: 'boolean'
   },
   help: {
-    default: false,
     alias: 'h',
+    default: false,
     type: 'boolean'
   },
   indent: {
@@ -110,17 +110,17 @@ const cliOptions: any = {
   },
   outDir: {
     alias: 'out-dir',
-    type: 'string',
-    default: '.'
+    default: '.',
+    type: 'string'
   },
   quick: {
-    default: false,
     alias: 'q',
+    default: false,
     type: 'boolean'
   },
   repl: {
-    default: false,
     alias: 'i',
+    default: false,
     type: 'boolean'
   }
 };

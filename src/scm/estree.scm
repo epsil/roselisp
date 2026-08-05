@@ -1126,9 +1126,9 @@
     (set-field! value
                 this
                 (js/obj
-                 "cooked"
+                 :cooked
                  cooked
-                 "raw"
+                 :raw
                  (or raw
                      (~> cooked
                          (regexp-replace

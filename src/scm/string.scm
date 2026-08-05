@@ -65,7 +65,7 @@
   (cond
    (sep
     (define repeat-option
-      (plist-get options ':repeat?))
+      (plist-get options :repeat?))
     (define pattern-str
       (string-append
        "("
@@ -155,11 +155,11 @@
 ;;; Indent a string by prepending each line with `n` spaces.
 (define (indent-string str (n 2) (options (js/obj)))
   (define whitespace-option
-    (oget options "whitespace"))
+    (oget options :whitespace))
   (define whitespace
     (or whitespace-option " "))
   (define include-empty-lines-option
-    (oget options "includeEmptyLines"))
+    (oget options :include-empty-lines))
   (define pattern
     (if include-empty-lines-option
         (regexp "^" "gm")

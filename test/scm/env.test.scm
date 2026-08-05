@@ -36,7 +36,7 @@
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env find-frame 'quux (js/obj "notFound" #f)))
+       (send env find-frame 'quux (js/obj :not-found #f)))
  #f
  > (it "find-frame, filter option"
        (define env
@@ -44,7 +44,7 @@
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env find-frame 'foo (js/obj "filter" filter)))
+       (send env find-frame 'foo (js/obj :filter filter)))
  #u
  > (it "find-frame, filter option, parent stack"
        (define env1
@@ -61,7 +61,7 @@
                    env2)))
        (define (filter x)
          (not (eq? x env2)))
-       (send env find-frame 'bar (js/obj "filter" filter)))
+       (send env find-frame 'bar (js/obj :filter filter)))
  #u
  > (it "find-frame, parent environment, filter option"
        (define env
@@ -71,7 +71,7 @@
                    '((foo "baz")))))
        (define (filter x)
          (not (eq? x env)))
-       (send env find-frame 'foo (js/obj "filter" filter)))
+       (send env find-frame 'foo (js/obj :filter filter)))
  #u
  > (it "get"
        (define env
@@ -89,7 +89,7 @@
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env
@@ -97,7 +97,7 @@
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get, parent environment, filter option"
        (define env
@@ -107,7 +107,7 @@
                    '((foo "baz")))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get-value"
        (define env
@@ -131,7 +131,7 @@
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env get-local 'quux (js/obj "notFound" #f)))
+       (send env get-local 'quux (js/obj :not-found #f)))
  #f
  > (it "get-local, filter option"
        (define env
@@ -139,7 +139,7 @@
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env get-local 'foo (js/obj "filter" filter)))
+       (send env get-local 'foo (js/obj :filter filter)))
  #u
  > (it "get-tuple"
        (define env
@@ -157,7 +157,7 @@
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env get-tuple 'quux (js/obj "notFound" #f)))
+       (send env get-tuple 'quux (js/obj :not-found #f)))
  (values #f #f)
  > (it "get-tuple, filter option"
        (define env
@@ -165,7 +165,7 @@
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env get-tuple 'quux (js/obj "filter" filter)))
+       (send env get-tuple 'quux (js/obj :filter filter)))
  (values #u #f)
  > (it "get-tuple, parent environment, filter option"
        (define env
@@ -175,7 +175,7 @@
                    '((foo "baz")))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get-tuple 'quux (js/obj "filter" filter)))
+       (send env get-tuple 'quux (js/obj :filter filter)))
  (values #u #f)
  > (it "get-local-tuple"
        (define env
@@ -193,7 +193,7 @@
        (define env
          (new Environment
               '((foo "bar"))))
-       (send env get-local-tuple 'quux (js/obj "notFound" #f)))
+       (send env get-local-tuple 'quux (js/obj :not-found #f)))
  (values #f #f)
  > (it "get-local-tuple, filter option"
        (define env
@@ -201,7 +201,7 @@
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env get-local-tuple 'quux (js/obj "filter" filter)))
+       (send env get-local-tuple 'quux (js/obj :filter filter)))
  (values #u #f)
  > (it "has?"
        (define env
@@ -221,7 +221,7 @@
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env has? 'foo (js/obj "filter" filter)))
+       (send env has? 'foo (js/obj :filter filter)))
  #f
  > (it "has?, parent environment, filter option"
        (define env
@@ -231,7 +231,7 @@
                    '((foo "baz")))))
        (define (filter x)
          (not (eq? x env)))
-       (send env has? 'foo (js/obj "filter" filter)))
+       (send env has? 'foo (js/obj :filter filter)))
  #f
  > (it "has-local?"
        (define env
@@ -259,7 +259,7 @@
               '((foo "bar"))))
        (define (filter x)
          #f)
-       (send env has-local? 'foo (js/obj "filter" filter)))
+       (send env has-local? 'foo (js/obj :filter filter)))
  #f
  > (it "set!"
        (define env
@@ -318,7 +318,7 @@
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env
@@ -326,7 +326,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get, parent environment, filter option"
        (define env
@@ -336,7 +336,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get-value"
        (define env
@@ -354,7 +354,7 @@
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env get-value 'quux (js/obj "notFound" #f)))
+       (send env get-value 'quux (js/obj :not-found #f)))
  #f
  > (it "get-value, filter option"
        (define env
@@ -362,7 +362,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-value, parent environment, filter option"
        (define env
@@ -372,7 +372,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-typed-value"
        (define env
@@ -390,7 +390,7 @@
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env get-typed-value 'quux (js/obj "notFound" '(#f Undefined))))
+       (send env get-typed-value 'quux (js/obj :not-found '(#f Undefined))))
  '(#f Undefined)
  > (it "get-typed-value, filter option"
        (define env
@@ -398,7 +398,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
  > (it "get-typed-value, parent environment, filter option"
        (define env
@@ -408,7 +408,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
  > (it "get-local"
        (define env
@@ -426,7 +426,7 @@
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env get-local 'quux (js/obj "notFound" #f)))
+       (send env get-local 'quux (js/obj :not-found #f)))
  #f
  > (it "get-local, filter option"
        (define env
@@ -434,7 +434,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-local 'foo (js/obj "filter" filter)))
+       (send env get-local 'foo (js/obj :filter filter)))
  #u
  > (it "get-type"
        (define env
@@ -452,7 +452,7 @@
        (define env
          (new TypedEnvironment
               '((foo "bar" Any))))
-       (send env get-type 'quux (js/obj "notFound" 'Any)))
+       (send env get-type 'quux (js/obj :not-found 'Any)))
  'Any
  > (it "get-type, filter option"
        (define env
@@ -460,7 +460,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-type 'foo (js/obj "filter" filter)))
+       (send env get-type 'foo (js/obj :filter filter)))
  'Undefined
  > (it "get-type, parent environment, filter option"
        (define env
@@ -470,7 +470,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get-type 'foo (js/obj "filter" filter)))
+       (send env get-type 'foo (js/obj :filter filter)))
  'Undefined
  > (it "has?"
        (define env
@@ -490,7 +490,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has? 'foo (js/obj "filter" filter)))
+       (send env has? 'foo (js/obj :filter filter)))
  #f
  > (it "has?, parent environment, filter option"
        (define env
@@ -500,7 +500,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env has? 'foo (js/obj "filter" filter)))
+       (send env has? 'foo (js/obj :filter filter)))
  #f
  > (it "has-local?"
        (define env
@@ -520,7 +520,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has-local? 'foo (js/obj "filter" filter)))
+       (send env has-local? 'foo (js/obj :filter filter)))
  #f
  > (it "set!"
        (define env
@@ -579,7 +579,7 @@
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env
@@ -589,7 +589,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get-value"
        (define env
@@ -607,7 +607,7 @@
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env get-value 'quux (js/obj "notFound" #f)))
+       (send env get-value 'quux (js/obj :not-found #f)))
  #f
  > (it "get-value, filter option"
        (define env
@@ -615,7 +615,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-value, parent environment, filter option"
        (define env
@@ -625,7 +625,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-typed-value"
        (define env
@@ -643,7 +643,7 @@
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env get-typed-value 'quux (js/obj "notFound" '(#f Undefined))))
+       (send env get-typed-value 'quux (js/obj :not-found '(#f Undefined))))
  '(#f Undefined)
  > (it "get-typed-value, filter option"
        (define env
@@ -651,7 +651,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
  > (it "get-typed-value, parent environment, filter option"
        (define env
@@ -661,7 +661,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
  > (it "get-local"
        (define env
@@ -679,7 +679,7 @@
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env get-local 'quux (js/obj "notFound" #f)))
+       (send env get-local 'quux (js/obj :not-found #f)))
  #f
  > (it "get-local, filter option"
        (define env
@@ -687,7 +687,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-local 'foo (js/obj "filter" filter)))
+       (send env get-local 'foo (js/obj :filter filter)))
  #u
  > (it "get-type"
        (define env
@@ -705,7 +705,7 @@
        (define env
          (new LispEnvironment
               '((foo "bar" Any))))
-       (send env get-type 'quux (js/obj "notFound" 'Any)))
+       (send env get-type 'quux (js/obj :not-found 'Any)))
  'Any
  > (it "get-type, filter option"
        (define env
@@ -713,7 +713,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env get-type 'foo (js/obj "filter" filter)))
+       (send env get-type 'foo (js/obj :filter filter)))
  'Undefined
  > (it "get-type, parent environment, filter option"
        (define env
@@ -723,7 +723,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get-type 'foo (js/obj "filter" filter)))
+       (send env get-type 'foo (js/obj :filter filter)))
  'Undefined
  > (it "has?"
        (define env
@@ -743,7 +743,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has? 'foo (js/obj "filter" filter)))
+       (send env has? 'foo (js/obj :filter filter)))
  #f
  > (it "has?, parent environment, filter option"
        (define env
@@ -753,7 +753,7 @@
                    '((foo "baz" Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env has? 'foo (js/obj "filter" filter)))
+       (send env has? 'foo (js/obj :filter filter)))
  #f
  > (it "has-local?"
        (define env
@@ -773,7 +773,7 @@
               '((foo "bar" Any))))
        (define (filter x)
          #f)
-       (send env has-local? 'foo (js/obj "filter" filter)))
+       (send env has-local? 'foo (js/obj :filter filter)))
  #f
  > (it "set!"
        (define env
@@ -835,7 +835,7 @@
          (new EnvironmentStack
               (new LispEnvironment
                    '((foo "bar" Any)))))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env
@@ -844,7 +844,7 @@
                    '((foo "bar" Any)))))
        (define (filter x)
          #f)
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get, multiple environments, filter option"
        (define env1
@@ -859,7 +859,7 @@
               env2))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get-value"
        (define env
@@ -880,7 +880,7 @@
          (new EnvironmentStack
               (new LispEnvironment
                    '((foo "bar" Any)))))
-       (send env get-value 'quux (js/obj "notFound" #f)))
+       (send env get-value 'quux (js/obj :not-found #f)))
  #f
  > (it "get-value, filter option"
        (define env
@@ -889,7 +889,7 @@
                    '((foo "bar" Any)))))
        (define (filter x)
          #f)
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-value, multiple environments, filter option"
        (define env1
@@ -904,7 +904,7 @@
               env2))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-typed-value"
        (define env
@@ -936,7 +936,7 @@
          (new EnvironmentStack
               (new LispEnvironment
                    '((foo "bar" Any)))))
-       (send env get-typed-value 'quux (js/obj "notFound" '(#f Undefined))))
+       (send env get-typed-value 'quux (js/obj :not-found '(#f Undefined))))
  '(#f Undefined)
  > (it "get-typed-value, filter option"
        (define env
@@ -945,7 +945,7 @@
                    '((foo "bar" Any)))))
        (define (filter x)
          #f)
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
  > (it "get-typed-value, multiple environments, filter option"
        (define env1
@@ -960,7 +960,7 @@
               env2))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
  > (it "set!, one environment"
        (define env1
@@ -1047,7 +1047,7 @@
                    '((foo bar Any)))
               (new LispEnvironment
                    '((bar baz Any)))))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env1
@@ -1062,7 +1062,7 @@
               env2))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get-value"
        (define env
@@ -1089,7 +1089,7 @@
                    '((foo bar Any)))
               (new LispEnvironment
                    '((bar baz Any)))))
-       (send env get-value 'quux (js/obj "notFound" #f)))
+       (send env get-value 'quux (js/obj :not-found #f)))
  #f
  > (it "get-value, filter option"
        (define env
@@ -1100,7 +1100,7 @@
                    '((bar baz Any)))))
        (define (filter x)
          #f)
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-typed-value"
        (define env
@@ -1127,7 +1127,7 @@
                    '((foo bar Any)))
               (new LispEnvironment
                    '((bar baz Any)))))
-       (send env get-typed-value 'quux (js/obj "notFound" '(#f Undefined))))
+       (send env get-typed-value 'quux (js/obj :not-found '(#f Undefined))))
  '(#f Undefined)
  > (it "get-typed-value, filter option"
        (define env1
@@ -1142,7 +1142,7 @@
               env2))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
 
  ;; `EnvironmentComposition`
@@ -1173,7 +1173,7 @@
                    '((bar baz Any)))
               (new LispEnvironment
                    '((foo bar Any)))))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env1
@@ -1188,7 +1188,7 @@
               env1))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get-value"
        (define env
@@ -1215,7 +1215,7 @@
                    '((bar baz Any)))
               (new LispEnvironment
                    '((foo bar Any)))))
-       (send env get-value 'quux (js/obj "notFound" #f)))
+       (send env get-value 'quux (js/obj :not-found #f)))
  #f
  > (it "get-value, filter option"
        (define env1
@@ -1230,7 +1230,7 @@
               env1))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get-value 'foo (js/obj "filter" filter)))
+       (send env get-value 'foo (js/obj :filter filter)))
  #u
  > (it "get-typed-value"
        (define env
@@ -1257,7 +1257,7 @@
                    '((bar baz Any)))
               (new LispEnvironment
                    '((foo bar Any)))))
-       (send env get-typed-value 'quux (js/obj "notFound" '(#f Undefined))))
+       (send env get-typed-value 'quux (js/obj :not-found '(#f Undefined))))
  '(#f Undefined)
  > (it "get-typed-value, filter option"
        (define env1
@@ -1272,7 +1272,7 @@
               env1))
        (define (filter x)
          (not (eq? x env1)))
-       (send env get-typed-value 'foo (js/obj "filter" filter)))
+       (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
 
  ;; `ThunkedEnvironment`
@@ -1300,7 +1300,7 @@
               `((foo
                  ,(thunk (lambda () "bar"))
                  Any))))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env
@@ -1310,7 +1310,7 @@
                  Any))))
        (define (filter x)
          #f)
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get, parent environment, filter option"
        (define env
@@ -1324,7 +1324,7 @@
                       Any)))))
        (define (filter x)
          (not (eq? x env)))
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "has-thunk?, true"
        (define env
@@ -1396,14 +1396,14 @@
  > (it "get, nonexistant binding, notFound option"
        (define env
          (new JavaScriptEnvironment))
-       (send env get 'quux (js/obj "notFound" #f)))
+       (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env
          (new JavaScriptEnvironment))
        (define (filter x)
          #f)
-       (send env get 'foo (js/obj "filter" filter)))
+       (send env get 'foo (js/obj :filter filter)))
  #u
  > (it "get-local"
        (define env
@@ -1418,14 +1418,14 @@
  > (it "get-local, nonexistant binding, notFound option"
        (define env
          (new JavaScriptEnvironment))
-       (send env get-local 'quux (js/obj "notFound" #f)))
+       (send env get-local 'quux (js/obj :not-found #f)))
  #f
  > (it "get-local, filter option"
        (define env
          (new JavaScriptEnvironment))
        (define (filter x)
          #f)
-       (send env get-local 'Map (js/obj "filter" filter)))
+       (send env get-local 'Map (js/obj :filter filter)))
  #u
  > (it "has?"
        (define env
@@ -1442,7 +1442,7 @@
          (new JavaScriptEnvironment))
        (define (filter x)
          #f)
-       (send env has? 'Map (js/obj "filter" filter)))
+       (send env has? 'Map (js/obj :filter filter)))
  #f
  > (it "has-local?"
        (define env
@@ -1459,5 +1459,5 @@
          (new JavaScriptEnvironment))
        (define (filter x)
          #f)
-       (send env has-local? 'Map (js/obj "filter" filter)))
+       (send env has-local? 'Map (js/obj :filter filter)))
  #f)

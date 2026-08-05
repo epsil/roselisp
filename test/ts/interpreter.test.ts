@@ -1184,7 +1184,7 @@ describe('js/eval', function (): any {
       1,
     ]);
   });
-  it('(interpret \'(js/eval "1") #u (js/obj "eval" #t))', function (): any {
+  it('(interpret \'(js/eval "1") #u (js/obj :eval #t))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -1192,12 +1192,12 @@ describe('js/eval', function (): any {
         Symbol.for('interpret'),
         [Symbol.for('quote'), [Symbol.for('js/eval'), '1']],
         undefined,
-        [Symbol.for('js/obj'), 'eval', true],
+        [Symbol.for('js/obj'), Symbol.for(':eval'), true],
       ],
       1,
     ]);
   });
-  return xit('(interpret \'js/eval #u (js/obj "eval" #f))', function (): any {
+  return xit("(interpret 'js/eval #u (js/obj :eval #f))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('xit>'),
@@ -1205,7 +1205,7 @@ describe('js/eval', function (): any {
         Symbol.for('interpret'),
         [Symbol.for('quote'), Symbol.for('js/eval')],
         undefined,
-        [Symbol.for('js/obj'), 'eval', false],
+        [Symbol.for('js/obj'), Symbol.for(':eval'), false],
       ],
       undefined,
     ]);

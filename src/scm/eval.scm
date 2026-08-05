@@ -85,7 +85,7 @@
   (dashify
    (lambda (exp (env #u) (options (js/obj)))
      (define evaluator
-       (or (oget options "evaluator")
+       (or (oget options :evaluator)
            default-evaluator))
      (call-evaluator evaluator exp env options))))
 
@@ -524,7 +524,7 @@
    assignment
    env
    options
-   (js/obj "local" #t)))
+   (js/obj :local #t)))
 
 ;;; Evaluate an ESTree [`AssignmentExpression`][estree:assignmentexpression] node.
 ;;;
@@ -603,7 +603,7 @@
    node
    env
    options
-   (js/obj "arrow" #t)))
+   (js/obj :arrow #t)))
 
 ;;; Evaluate an ESTree [`UnaryExpression`][estree:unaryexpression] node.
 ;;;
@@ -946,10 +946,10 @@
       (eval-estree super-class env options))
     ;; <https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Inheritance#setting_teachers_prototype_and_constructor_reference>
     (oset! constructor-f
-           "prototype"
+           :prototype
            (send Object
                  create
-                 (oget super-class-val "prototype"))))
+                 (oget super-class-val :prototype))))
   constructor-f)
 
 ;;; Evaluate an ESTree [`SwitchStatement`][estree:switchstatement] node.
@@ -1028,7 +1028,7 @@
 ;;; Helper function for `eval-estree-assignment-expression`.
 (define (eval-estree-assignment-expression-helper node env (options (js/obj)) (settings (js/obj)))
   (define local-setting
-    (oget settings "local"))
+    (oget settings :local))
   (define left
     (get-field left node))
   (define left-type
@@ -1146,7 +1146,7 @@
 ;;; Helper function for `eval-estree-function-expression`.
 (define (eval-estree-function-expression-helper node env (options (js/obj)) (settings (js/obj)))
   (define arrow-setting
-    (oget settings "arrow"))
+    (oget settings :arrow))
   (define params
     (get-field params node))
   (define body

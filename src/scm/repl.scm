@@ -61,8 +61,8 @@ Type ,q to quit.")
   (define rl
     (send readline
           createInterface
-          (js/obj "input" stdin
-                  "output" stdout)))
+          (js/obj :input stdin
+                  :output stdout)))
   (define quit-flag #f)
   (define (quit)
     (unless quit-flag

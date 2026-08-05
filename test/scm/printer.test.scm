@@ -57,7 +57,7 @@
             (send add-comment
                   (new LeadingComment
                        "comment")))
-        (js/obj "comments" #t)))
+        (js/obj :comments #t)))
  "// comment
 foo"
  > (it "foo, multi-line comment"
@@ -67,7 +67,7 @@ foo"
                   (new LeadingComment
                        "multi-line
 comment")))
-        (js/obj "comments" #t)))
+        (js/obj :comments #t)))
  "// multi-line
 // comment
 foo"
@@ -135,7 +135,7 @@ foo"
                        (new LeadingComment
                             "comment")))
              (new Identifier "b"))
-        (js/obj "comments" #t)))
+        (js/obj :comments #t)))
  "(
  // comment
  a +
@@ -153,7 +153,7 @@ foo"
                        (new LeadingComment
                             "comment")))
              (new Identifier "c"))
-        (js/obj "comments" #t)))
+        (js/obj :comments #t)))
  "(
  // comment
  a + b +
@@ -171,7 +171,7 @@ foo"
                        (new TrailingComment
                             "comment")))
              (new Identifier "c"))
-        (js/obj "comments" #t)))
+        (js/obj :comments #t)))
  "(
  a + b // comment
  +
@@ -332,7 +332,7 @@ foo"
                  (send add-comment
                        (new LeadingComment
                             "comment"))))
-        (js/obj "comments" #t)))
+        (js/obj :comments #t)))
  "return (
   // comment
   0
@@ -342,21 +342,21 @@ foo"
         (new TSTypeAliasDeclaration
              (new Identifier "X")
              (new TSNumberKeyword))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "type X = number;"
  > (it "1 as number"
        (print-estree
         (new TSAsExpression
              (new Literal 1)
              (new TSNumberKeyword))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "1 as number"
  > (it "x as any"
        (print-estree
         (new TSAsExpression
              (new Identifier "x")
              (new TSAnyKeyword))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "x as any"
  > (it "x as Foo"
        (print-estree
@@ -364,7 +364,7 @@ foo"
              (new Identifier "x")
              (new TSTypeReference
                   (new Identifier "Foo")))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "x as Foo"
  > (it "x as Promise<any>"
        (print-estree
@@ -375,7 +375,7 @@ foo"
                   (new TSTypeParameterInstantiation
                        (list
                         (new TSAnyKeyword)))))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "x as Promise<any>"
  > (it "const x: number = 1;"
        (print-estree
@@ -387,7 +387,7 @@ foo"
                              (new TSNumberKeyword)))
                    (new Literal 1)))
              "const")
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "const x: number = 1;"
  > (it "function (x: number): number { return x; }"
        (print-estree
@@ -402,7 +402,7 @@ foo"
                             (new Identifier "x")))))
             (send set-type
                   (new TSNumberKeyword)))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "function (x: number): number {
   return x;
 }"
@@ -421,7 +421,7 @@ foo"
                             (new Identifier "x")))))
             (send set-type
                   (new TSNumberKeyword)))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "function (x: number = 1): number {
   return x;
 }"
@@ -441,7 +441,7 @@ foo"
                             (new Identifier "x")))))
             (send set-type
                   (new TSNumberKeyword)))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "function (x: number = y): number {
   return x;
 }"
@@ -458,7 +458,7 @@ foo"
                             (new Identifier "x")))))
             (send set-type
                   (new TSNumberKeyword)))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "(x: number): number => {
   return x;
 }"
@@ -484,7 +484,7 @@ foo"
                               (new ReturnStatement
                                    (new Identifier "x")))))))
              "const")
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "const f: (a: any) => any = (x: any): any => {
   return x;
 };"
@@ -493,7 +493,7 @@ foo"
         (new TemplateLiteral
              (list
               (new TemplateElement #t "foo")))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "`foo`"
  > (it "`foo
 bar`"
@@ -502,7 +502,7 @@ bar`"
              (list
               (new TemplateElement #t "foo
 bar")))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "`foo
 bar`"
  > (it "`foo
@@ -512,7 +512,7 @@ bar`"
              (list
               (new TemplateElement #t "foo
 `bar")))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "`foo
 \\`bar`"
  > (it "function (): any { return `foo
@@ -531,7 +531,7 @@ bar`; }"
 bar")))))))
             (send set-type
                   (new TSAnyKeyword)))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "function (): any {
   return `foo
 bar`;
@@ -545,7 +545,7 @@ bar`;
                    (new TemplateElement
                         #t
                         "bar"))))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "foo`bar`"
  > (it "foo`bar
 baz`"
@@ -558,7 +558,7 @@ baz`"
                         #t
                         "bar
 baz"))))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "foo`bar
 baz`"
  > (it "function (): any { return foo`bar
@@ -579,7 +579,7 @@ baz`; }"
 baz"))))))))
             (send set-type
                   (new TSAnyKeyword)))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "function (): any {
   return foo`bar
 baz`;
@@ -613,7 +613,7 @@ baz"))))))))
                                       (new TSAnyKeyword)))))))
             (send set-type
                   (new TSAnyKeyword)))
-        (js/obj "language" "typescript")))
+        (js/obj :language "typescript")))
  "function (): any {
   return function (): any {
     return foo`bar
@@ -624,7 +624,7 @@ baz`;
        (print-estree
         (new ExportAllDeclaration
              (new Literal "foo"))
-        (js/obj "language" "javascript")))
+        (js/obj :language "javascript")))
  "export * from 'foo';"
 
  ;; `write-to-string`
@@ -652,14 +652,14 @@ baz`;
     '(begin
        "foo
 bar")
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(begin
   \"foo
 bar\")"
  > (write-to-string
     '(begin
        "\"foo bar\"")
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(begin
   \"\\\"foo bar\\\"\")"
  > (write-to-string 1)
@@ -691,7 +691,7 @@ bar\")"
     '(begin
        (foo)
        (bar))
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(begin
   (foo)
   (bar))"
@@ -699,7 +699,7 @@ bar\")"
     '(begin
        (foo (bar))
        (bar (baz)))
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(begin
   (foo (bar))
   (bar (baz)))"
@@ -709,7 +709,7 @@ bar\")"
        (bar))
       (bar
        (baz)))
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(cond
  (foo
   (bar))
@@ -719,26 +719,26 @@ bar\")"
     '(if foo
          bar
          baz)
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(if foo
     bar
     baz)"
  > (write-to-string
     '(when foo
        bar)
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(when foo
   bar)"
  > (write-to-string
     '(unless foo
        bar)
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(unless foo
   bar)"
  > (write-to-string
     '(define (foo x)
        x)
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(define (foo x)
   x)"
  > (write-to-string
@@ -748,7 +748,7 @@ bar\")"
 
        (define (bar y)
          y))
-    (js/obj "pretty" #t))
+    (js/obj :pretty #t))
  "(module m scheme
   (define (foo x)
     x)
@@ -762,7 +762,8 @@ bar\")"
 
        (define (bar y)
          y))
-    (js/obj "noModuleForm" #t "pretty" #t))
+    (js/obj :no-module-form #t
+            :pretty #t))
  "(define (foo x)
   x)
 

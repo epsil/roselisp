@@ -220,8 +220,8 @@
         '(roselisp
           > (+ 1 1)
           2)
-        (js/obj "from" "roselisp"
-                "to" "node")))
+        (js/obj :from "roselisp"
+                :to "node")))
  '(node
    > "(function () {
   return 1 + 1;
@@ -234,8 +234,8 @@
         '(roselisp
           > (+ 1 1)
           _)
-        (js/obj "from" "roselisp"
-                "to" "node")))
+        (js/obj :from "roselisp"
+                :to "node")))
  '(node
    > "(function () {
   return 1 + 1;

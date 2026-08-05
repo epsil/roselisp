@@ -316,7 +316,7 @@ declare namespace setFieldSpecial_ {
  */
 declare function defineClassSpecial_(exp: any, env: any): any;
 declare namespace defineClassSpecial_ {
-    var fsource: (symbol | (symbol | (symbol | (string | symbol)[] | (symbol | (string | symbol)[])[])[])[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(try ...)` form.

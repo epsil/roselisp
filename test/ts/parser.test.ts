@@ -102,7 +102,7 @@ describe('tokenize', function (): any {
       new SymbolToken(')'),
     ]);
   });
-  it('(tokenize "(foo) ; bar" (js/obj "comments" #f))', function (): any {
+  it('(tokenize "(foo) ; bar" (js/obj :comments #f))', function (): any {
     return assertEqual(
       tokenize('(foo) ; bar', {
         comments: false,
@@ -110,7 +110,7 @@ describe('tokenize', function (): any {
       [new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')]
     );
   });
-  xit('(tokenize "\'(foo) ; bar" (js/obj "comments" #f))', function (): any {
+  xit('(tokenize "\'(foo) ; bar" (js/obj :comments #f))', function (): any {
     return assertEqual(
       tokenize("'(foo) ; bar", {
         comments: false,
@@ -132,7 +132,7 @@ describe('tokenize', function (): any {
     ]);
   });
   xit(
-    '(tokenize "(foo ; baz\n' + 'bar)" (js/obj "comments" #t))',
+    '(tokenize "(foo ; baz\n' + 'bar)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize('(foo ; baz\n' + 'bar)', {
@@ -149,7 +149,7 @@ describe('tokenize', function (): any {
     }
   );
   it(
-    '(tokenize ";; baz\n' + '(foo bar)" (js/obj "comments" #t))',
+    '(tokenize ";; baz\n' + '(foo bar)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize(';; baz\n' + '(foo bar)', {
@@ -166,7 +166,7 @@ describe('tokenize', function (): any {
     }
   );
   it(
-    '(tokenize "  ;; baz\n' + '  (foo bar)" (js/obj "comments" #t))',
+    '(tokenize "  ;; baz\n' + '  (foo bar)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize('  ;; baz\n' + '  (foo bar)', {
@@ -183,7 +183,7 @@ describe('tokenize', function (): any {
     }
   );
   it(
-    '(tokenize ";; baz\n' + ';; quux\n' + '(foo bar)" (js/obj "comments" #t))',
+    '(tokenize ";; baz\n' + ';; quux\n' + '(foo bar)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize(';; baz\n' + ';; quux\n' + '(foo bar)', {
@@ -203,7 +203,7 @@ describe('tokenize', function (): any {
     '(tokenize ";; baz\n' +
       ';;\n' +
       ';; quux\n' +
-      '(foo bar)" (js/obj "comments" #t))',
+      '(foo bar)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize(';; baz\n' + ';;\n' + ';; quux\n' + '(foo bar)', {
@@ -223,7 +223,7 @@ describe('tokenize', function (): any {
     '(tokenize ";; baz\n' +
       '\n' +
       ';; quux\n' +
-      '(foo bar)" (js/obj "comments" #t))',
+      '(foo bar)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize(';; baz\n' + '\n' + ';; quux\n' + '(foo bar)', {
@@ -240,7 +240,7 @@ describe('tokenize', function (): any {
     }
   );
   it(
-    '(tokenize ";; foo\n' + '`(foo)" (js/obj "comments" #t))',
+    '(tokenize ";; foo\n' + '`(foo)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize(';; foo\n' + '`(foo)', {
@@ -284,7 +284,7 @@ describe('tokenize', function (): any {
   return it(
     '(tokenize "(define (foo)\n' +
       '  ;; this\n' +
-      '  this)" (js/obj "comments" #t))',
+      '  this)" (js/obj :comments #t))',
     function (): any {
       return assertEqual(
         tokenize('(define (foo)\n' + '  ;; this\n' + '  this)', {

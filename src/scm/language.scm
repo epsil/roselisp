@@ -548,14 +548,14 @@
 ;;; Default options for interpretation and compilation.
 ;;; See also `default-compilation-options`.
 (define default-options
-  (js/obj "comments" #t
-          "compileEnvironment" #t
-          "expressionType" "expression"
-          "fevalBindings" #f
-          "finlineFunctions" #f
-          "fsemicolon" #t
-          "gensymMap" (make-hash)
-          "shouldInline" #t))
+  (js/obj :comments #t
+          :compile-environment #t
+          :expression-type "expression"
+          :feval-bindings #f
+          :finline-functions #f
+          :fsemicolon #t
+          :gensym-map (make-hash)
+          :should-inline #t))
 
 ;;; Add `default-options` to an options object.
 ;;; If `modify` is `#t`, the original object
@@ -943,34 +943,34 @@
   (define options
     (normalize-options args))
   (define from-language
-    (or (oget options "from")
+    (or (oget options :from)
         "roselisp"))
   (define to-language
-    (or (oget options "to")
+    (or (oget options :to)
         default-language))
   (cond
    ((eq? to-language "roselisp")
     (define inherited-options
       (js/obj-append
        options
-       (js/obj "language" from-language
-               "sexp" #t)))
+       (js/obj :language from-language
+               :sexp #t)))
     (decompile1 exp inherited-options))
    (else
     (define expression-type
-      (or (oget options "as")
+      (or (oget options :as)
           "statement"))
     (define case-option
-      (or (oget options "case")
+      (or (oget options :case)
           "camelcase"))
     (define inherited-options
       (js/obj-append
        options
-       (js/obj "case" case-option
-               "language" to-language
-               "expressionType" expression-type)))
+       (js/obj :case case-option
+               :language to-language
+               :expression-type expression-type)))
     (define env
-      (or (oget options "environment")
+      (or (oget options :environment)
           (new LispEnvironment)))
     (compile-with-environment
      exp env inherited-options))))
@@ -984,16 +984,16 @@
   (define options
     (normalize-options args))
   (define from-language
-    (or (oget options "from")
+    (or (oget options :from)
         default-language))
   (define to-language
-    (or (oget options "to")
+    (or (oget options :to)
         "roselisp"))
   (define inherited-options
     (js/obj-append
      options
-     (js/obj "from" from-language
-             "to" to-language)))
+     (js/obj :from from-language
+             :to to-language)))
   (compile exp inherited-options))
 
 ;;; Compile a Lisp expression to JavaScript or TypeScript
@@ -1003,12 +1003,12 @@
                                   (env (new LispEnvironment))
                                   (options (js/obj)))
   (define language-option
-    (or (oget options "language")
+    (or (oget options :language)
         default-language))
   (define estree-option
-    (oget options "estree"))
+    (oget options :estree))
   (define optimize-option
-    (oget options "optimize"))
+    (oget options :optimize))
   (define lang-env
     (if (extends-lisp-environment? env)
         env
@@ -1025,12 +1025,12 @@
   (define continuation-env
     (new LispEnvironment
          '()
-         lang-env))
-  (oset! compilation-options "languageEnvironment" lang-env)
+          lang-env))
+  (oset! compilation-options :language-environment lang-env)
   (oset! compilation-options
-         "compilationMappingEnvironment"
+         :compilation-mapping-environment
          mapping-env)
-  (oset! compilation-options "compiledEnvironment" compiled-env)
+  (oset! compilation-options :compiled-environment compiled-env)
   (set! compilation-options
         (js/obj-append
          default-compilation-options
@@ -1106,7 +1106,7 @@
   (define compilation-options
     (js/obj-append
      options
-     (js/obj "currentModule" module)))
+     (js/obj :current-module module)))
   (compile-module-object module env compilation-options))
 
 ;;; Compile a `Module` object.
@@ -1117,11 +1117,11 @@
     (send module get-environment))
   (define module-options
     (js/obj-append
-     (js/obj "currentModule"
+     (js/obj :current-module
              module
-             "referencedSymbols"
+             :referenced-symbols
              '()
-             "inlineLispSources"
+             :inline-lisp-sources
              (send module get-inline-lisp-sources-flag))
      options))
   (define header-statements
@@ -1150,7 +1150,7 @@
      module-options))
   (define global-environment
     (build-global-environment
-     (oget module-options "referencedSymbols")
+     (oget module-options :referenced-symbols)
      module-environment options))
   (define program
     (make-program
@@ -1169,21 +1169,21 @@
   (define filename-map
     (new ThunkedMap))
   (define indent-option
-    (oget options "indent"))
+    (oget options :indent))
   (define language-option
-    (or (oget options "language")
+    (or (oget options :language)
         default-language))
   (define out-dir-option
-    (or (oget options "outDir") ""))
+    (or (oget options :out-dir) ""))
   (define comments-option
-    (oget options "comments"))
+    (oget options :comments))
   (define quick-option
-    (oget options "quick"))
+    (oget options :quick))
   (define compilation-options
     (js/obj-append
      options
-     (js/obj "expressionType" "statement"
-             "language" language-option)))
+     (js/obj :expression-type "statement"
+             :language language-option)))
   (define extension
     (if (eq? language-option "typescript")
         ".ts"
@@ -1208,7 +1208,7 @@
                 (lambda ()
                   (define data
                     (~> file
-                        (readFileSync _ (js/obj "encoding" "utf8"))
+                        (readFileSync _ (js/obj :encoding "utf8"))
                         (regexp-replace (regexp "^#!.*") _ "")
                         (string-append
                          "(module m scheme\n"
@@ -1216,7 +1216,7 @@
                          "\n)")))
                   (define node
                     (read-rose data
-                               (js/obj "comments"
+                               (js/obj :comments
                                        comments-option)))
                   node)))
     (cond
@@ -1256,10 +1256,10 @@
                 (string-append module-name
                                extension)))
     (mkdirSync out-dir-option
-               (js/obj "recursive" #t))
+               (js/obj :recursive #t))
     (writeFileSync out-file
                    code
-                   (js/obj "encoding" "utf8"))
+                   (js/obj :encoding "utf8"))
     (display
      (string-append "Compiled "
                     (hash-ref filename-map module-name)
@@ -1277,11 +1277,11 @@
 ;;; Compile a S-expression wrapped in a rose tree.
 (define (compile-rose node env (options (js/obj)))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define comments-option
-    (oget options "comments"))
+    (oget options :comments))
   (define node1
     (optimize-rose node env))
   (define exp
@@ -1299,9 +1299,9 @@
         (first exp))
       (cond
        ((and (symbol? op)
-             (send env has? op (js/obj "filter" lang-filter))
+             (send env has? op (js/obj :filter lang-filter))
              (simple-type?
-              (send env get-type op (js/obj "filter" lang-filter))))
+              (send env get-type op (js/obj :filter lang-filter))))
         (set! result
               (compile-function-call
                node1 env options)))
@@ -1328,7 +1328,7 @@
                 (compile-rose inlined-node env options)))
          (else
           (define compilation-mapping-environment
-            (oget options "compilationMappingEnvironment"))
+            (oget options :compilation-mapping-environment))
           (define-values (compilation-f compilation-type)
             (send compilation-mapping-environment get-typed-value f))
           (cond
@@ -1412,7 +1412,7 @@
 ;;; depending on the value of the `expressionType` option.
 (define (compile-statement-or-return-statement node env (options (js/obj)))
   (cond
-   ((eq? (oget options "expressionType") "return")
+   ((eq? (oget options :expression-type) "return")
     (compile-return-statement node env options))
    (else
     (compile-statement node env options))))
@@ -1422,7 +1422,7 @@
 ;;; if the `expressionType` option is `"return"`.
 (define (compile-statements statements env options)
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (define result '())
   (define return-idx -1)
   (when (eq? expression-type "return")
@@ -1460,16 +1460,16 @@
 ;;; as `(if ...)`, `(cond ...)`, and so on.
 (define (interpret exp (env (default-environment)) (options (js/obj)))
   (define expression-type
-    (or (oget options "expressionType")
+    (or (oget options :expression-type)
         "statement"))
   (define inherited-options
     (js/obj-append
      options
      (js/obj
-      "case" "none"
-      "expressionType" expression-type
-      "estree" #t
-      "shouldInline" #f)))
+      :case "none"
+      :expression-type expression-type
+      :estree #t
+      :should-inline #f)))
   (define environment
     (make-interpretation-environment env inherited-options))
   ;; TODO: Memoize compilation?
@@ -1489,7 +1489,7 @@
   (dashify
    (lambda (exp (env (default-environment)) (options (js/obj)))
      (define evaluator
-       (or (oget options "evaluator")
+       (or (oget options :evaluator)
            eval_
            default-evaluator))
      (define environment
@@ -1508,7 +1508,7 @@
   (map (lambda (file)
          (define str
            (~> file
-               (readFileSync _ (js/obj "encoding" "utf8"))
+               (readFileSync _ (js/obj :encoding "utf8"))
                (regexp-replace (regexp "^#!.*") _ "")
                (string-append "(begin\n" _ "\n)")))
          (define result
@@ -1531,7 +1531,7 @@
 ;;; Make a Lisp interpretation environment.
 (define (make-interpretation-environment env (options (js/obj)))
   (define eval-option
-    (oget options "fevalBindings"))
+    (oget options :feval-bindings))
   ;; TODO: Make `#f` the default.
   (when (undefined? eval-option)
     (set! eval-option #t))
@@ -1561,21 +1561,21 @@
 (define (make-expression-options options)
   (js/obj-append
    options
-   (js/obj "expressionType" "expression")))
+   (js/obj :expression-type "expression")))
 
 ;;; Make compilation options for compiling a form as
 ;;; a statement.
 (define (make-statement-options options)
   (js/obj-append
    options
-   (js/obj "expressionType" "statement")))
+   (js/obj :expression-type "statement")))
 
 ;;; Make compilation options for compiling a form as
 ;;; a return statement.
 (define (make-return-statement-options options)
   (js/obj-append
    options
-   (js/obj "expressionType" "return")))
+   (js/obj :expression-type "return")))
 
 ;;; Convert an ESTree node to an expression.
 (define (make-expression node (options (js/obj)))
@@ -1591,7 +1591,7 @@
 ;;; or `ReturnStatement` node is returned, conditional on options.
 (define (make-statement node (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((not (is-a? node Expression))
     node)
@@ -1612,7 +1612,7 @@
 ;;; conditional on options.
 (define (make-expression-or-statement node (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((or (eq? expression-type "statement")
         (eq? expression-type "return"))
@@ -1719,7 +1719,7 @@
 ;;; compiling them in the process.
 (define (transfer-and-compile-comments node1 node2 (options (js/obj)))
   (define comments-option
-    (oget options "comments"))
+    (oget options :comments))
   (define comments
     (if (is-a? node1 Rose)
         (send node1 get-property "comments")
@@ -1849,7 +1849,7 @@
 ;;; a `(lambda (...) ...)` form.
 (define (define->lambda node (options (js/obj)))
   (define curried-option
-    (oget options "curried"))
+    (oget options :curried))
   (define exp
     (rose->sexp node))
   (define name-and-params
@@ -2035,7 +2035,7 @@
                    object
                    Object))
           '()
-          (list superclass)))
+           (list superclass)))
     (transfer-comments
      node
      (sexp->rose
@@ -2051,7 +2051,7 @@
 ;;; Compile an `(ann ...)` expression.
 (define (compile-ann node env (options (js/obj)))
   (define language
-    (oget options "language"))
+    (oget options :language))
   (define e_
     (send node get 1))
   (cond
@@ -2069,7 +2069,7 @@
 ;;; Compile a `(define-type ...)` expression.
 (define (compile-define-type node env (options (js/obj)))
   (define language
-    (oget options "language"))
+    (oget options :language))
   (cond
    ((eq? language "typescript")
     (define id
@@ -2185,8 +2185,8 @@
     (define pos 0)
     (define (compile-param param
                            (options
-                            (js/obj "optional" #f
-                                    "rest" #f)))
+                            (js/obj :optional #f
+                                    :rest #f)))
       (define-fields (optional rest)
         options)
       (define var-name
@@ -2207,13 +2207,13 @@
     (define optional-params-compiled
       (map (lambda (param)
              (compile-param param
-                            (js/obj "optional" #t)))
+                            (js/obj :optional #t)))
            optional-params))
     (define rest-params-compiled
       (if rest-param
           (list
            (compile-param rest-param
-                          (js/obj "rest" #t)))
+                          (js/obj :rest #t)))
           '()))
     (define return-value-compiled
       (compile-type-exp return-value env options))
@@ -2255,8 +2255,8 @@
 (define (compile-add node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js/obj "identity" 0
-           "operator" "+")))
+   (js/obj :identity 0
+           :operator "+")))
 
 ;;; Compile an `(apply ...)` expression.
 (define (compile-apply node env (options (js/obj)))
@@ -2329,7 +2329,7 @@
 ;;; Compile an `(array-ref ...)` expression.
 (define (compile-array-ref node env (options (js/obj)))
   (define language
-    (oget options "language"))
+    (oget options :language))
   (define variable
     (send node get 1))
   (define indices
@@ -2436,7 +2436,7 @@
 ;;; Compile a `(cond ...)` expression.
 (define (compile-cond node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (define (wrap exps)
     (if (= (js/length exps) 1)
         (js/first exps)
@@ -2453,7 +2453,7 @@
         (sexp->rose
          `(,(if (eq? expression-type "expression")
                 'begin
-                'js/block)
+                 'js/block)
            ,@(send final-clause drop 1)))
         (sexp->rose
          `(if ,(send final-clause get 0)
@@ -2483,7 +2483,7 @@
 ;;; Compile an `(if ...)` expression.
 (define (compile-if node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-js/ternary-operator node env options))
@@ -2493,7 +2493,7 @@
 ;;; Compile a `(js/if ...)` expression.
 (define (compile-js/if node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
@@ -2556,13 +2556,13 @@
 ;;; Compile a `(define ...)` expression.
 (define (compile-define node env (options (js/obj)))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define language
-    (oget options "language"))
+    (oget options :language))
   (define inline-lisp-sources
-    (oget options "inlineLispSources"))
+    (oget options :inline-lisp-sources))
   (define exp
     (rose->sexp node))
   (define type_ 'Any)
@@ -2664,8 +2664,8 @@
              env
              (make-expression-options
               options)
-             (js/obj "functionName" function-name
-                     "returnType" return-type)))
+             (js/obj :function-name function-name
+                     :return-type return-type)))
       (when (is-a? compiled-type TSFunctionType)
         (for ((i (range 0 (js/length (get-field params result)))))
           (define param
@@ -2740,7 +2740,7 @@
           (send env
                 get-local-type
                 sym
-                (js/obj "notFound" 'Any)))
+                (js/obj :not-found 'Any)))
     (send env
           set-local!
           sym
@@ -2770,7 +2770,7 @@
 ;;; Compile a `(define/async ...)` expression.
 (define (compile-define-async node env (options (js/obj)))
   (define inline-lisp-sources
-    (oget options "inlineLispSources"))
+    (oget options :inline-lisp-sources))
   (define result
     (compile-define node env options))
   (define result-f
@@ -2815,8 +2815,8 @@
    (else
     (compile-binary-expression
      node env options
-     (js/obj "identity" 1
-             "operator" "/")))))
+     (js/obj :identity 1
+             :operator "/")))))
 
 ;;; Compile a `(send ...)` expression.
 (define (compile-send node env (options (js/obj)))
@@ -2867,15 +2867,15 @@
 (define (compile-js/strictly-equal node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js/obj "identity" #t
-           "operator" "===")))
+   (js/obj :identity #t
+           :operator "===")))
 
 ;;; Compile a `(js/== ...)` expression.
 (define (compile-js/loosely-equal node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js/obj "identity" #t
-           "operator" "==")))
+   (js/obj :identity #t
+           :operator "==")))
 
 ;;; Compiler macro for `(foldl ...)` expressions.
 (define-macro (compile-foldl-macro f v lst &environment env)
@@ -2934,11 +2934,11 @@
 ;;; Compile a function call.
 (define (compile-function-call node env (options (js/obj)))
   (define referenced-symbols
-    (oget options "referencedSymbols"))
+    (oget options :referenced-symbols))
   (define current-module
-    (oget options "currentModule"))
+    (oget options :current-module))
   (define compilation-mapping-environment
-    (oget options "compilationMappingEnvironment"))
+    (oget options :compilation-mapping-environment))
   (define callee
     (send node get 0))
   (define op
@@ -2966,7 +2966,7 @@
          ;; compilation macro defined for it.
          (js/obj-append
           options
-          (js/obj "shouldInline" #f))
+          (js/obj :should-inline #f))
          options)))
   (define args-exps
     (map (lambda (x)
@@ -2981,7 +2981,7 @@
 ;;; not defined in the current module.
 (define (add-referenced-symbol sym env (options (js/obj)))
   (define referenced-symbols
-    (oget options "referencedSymbols"))
+    (oget options :referenced-symbols))
   (when (and referenced-symbols
              ;; Do not add if already added.
              (not (memq? sym referenced-symbols))
@@ -2993,26 +2993,26 @@
 (define (should-inline? sym env (options (js/obj)))
   ;; This may be disabled with the `shouldInline` option.
   (define should-inline-option
-    (oget options "shouldInline"))
+    (oget options :should-inline))
   (unless should-inline-option
     (return #f))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define (js-filter x)
     (not (eq? x js-environment)))
   (define compilation-mapping-environment
-    (oget options "compilationMappingEnvironment"))
+    (oget options :compilation-mapping-environment))
   (define current-module
-    (oget options "currentModule"))
+    (oget options :current-module))
   (and (symbol? sym)
        ;; Do not inline if the symbol is listed in
        ;; `compilation-variables-env`.
        (not (send compilation-variables-env has? sym))
        ;; Do not inline if there is a local binding for the
        ;; value (e.g., a `let` variable).
-       (not (send env has? sym (js/obj "filter" lang-filter)))
+       (not (send env has? sym (js/obj :filter lang-filter)))
        ;; Do not inline if the current module defines the
        ;; value.
        (not (and current-module
@@ -3021,7 +3021,7 @@
        ;; However, do not inline if the value is a JavaScript
        ;; value, i.e., if it is provided by the very language
        ;; compiled to.
-       (send language-env has? sym (js/obj "filter" js-filter))))
+       (send language-env has? sym (js/obj :filter js-filter))))
 
 ;;; Compile a `(> ...)` expression.
 (define (compile-greater-than node env (options (js/obj)))
@@ -3035,8 +3035,8 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js/obj "identity" #t
-             "operator" ">")))
+     (js/obj :identity #t
+             :operator ">")))
    (else
     ;; Create `(and ...)` expression.
     (define and-exp
@@ -3061,8 +3061,8 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js/obj "identity" #t
-             "operator" ">=")))
+     (js/obj :identity #t
+             :operator ">=")))
    (else
     ;; Create `(and ...)` expression.
     (define and-exp
@@ -3083,15 +3083,15 @@
          (options (js/obj))
          (settings (js/obj)))
   (define operator
-    (oget settings "operator"))
+    (oget settings :operator))
   (define logical
-    (oget settings "logical"))
+    (oget settings :logical))
   (define operands
     (send node drop 1))
   (cond
    ((= (js/length operands) 0)
     (define identity
-      (oget settings "identity"))
+      (oget settings :identity))
     (make-expression-or-statement
      (compile-rose
       (sexp->rose identity)
@@ -3139,7 +3139,7 @@
    node env options
    (js/obj-append
     settings
-    (js/obj "logical" #t))))
+    (js/obj :logical #t))))
 
 ;;; Compile an unary expression.
 ;;; Returns an `UnaryExpression`.
@@ -3149,7 +3149,7 @@
          (options (js/obj))
          (settings (js/obj)))
   (define op
-    (oget settings "operator"))
+    (oget settings :operator))
   (define arg
     (send node get 1))
   (define arg-compiled
@@ -3178,15 +3178,15 @@
    ((= (send node size) 3)
     (compile-unary-expression
      node1 env options
-     (js/obj "operator" op)))
+     (js/obj :operator op)))
    (logical
     (compile-logical-expression
      node1 env options
-     (js/obj "operator" op)))
+     (js/obj :operator op)))
    (else
     (compile-binary-expression
      node1 env options
-     (js/obj "operator" op)))))
+     (js/obj :operator op)))))
 
 ;;; Compile a `(lambda ...)` expression.
 (define (compile-lambda node env (options (js/obj)))
@@ -3199,16 +3199,16 @@
   (define exp
     (rose->sexp node))
   (define function-name
-    (oget settings "functionName"))
+    (oget settings :function-name))
   (define generator
-    (oget settings "generator"))
+    (oget settings :generator))
   (define return-type
-    (oget settings "returnType"))
+    (oget settings :return-type))
   (define language
-    (oget inherited-options "language"))
+    (oget inherited-options :language))
   (define params '())
   (define language-env
-    (oget inherited-options "languageEnvironment"))
+    (oget inherited-options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define env1
@@ -3305,7 +3305,7 @@
       env1
       (js/obj-append
        inherited-options
-       (js/obj "expressionType"
+       (js/obj :expression-type
                (if (eq? return-type "void")
                    "statement"
                    "return"))))))
@@ -3352,8 +3352,8 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js/obj "identity" #t
-             "operator" "<")))
+     (js/obj :identity #t
+             :operator "<")))
    (else
     ;; Create `(and ...)` expression.
     (define and-exp
@@ -3378,8 +3378,8 @@
    ((= (js/length exp) 3)
     (compile-binary-expression
      node env options
-     (js/obj "identity" #t
-             "operator" "<=")))
+     (js/obj :identity #t
+             :operator "<=")))
    (else
     ;; Create `(and ...)` expression.
     (define and-exp
@@ -3401,7 +3401,7 @@
 ;;; Compile a `(let* ...)` expression.
 (define (compile-let-star node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
@@ -3409,7 +3409,7 @@
      env options))
    (else
     (define language-env
-      (oget options "languageEnvironment"))
+      (oget options :language-environment))
     (define (lang-filter x)
       (not (eq? x language-env)))
     (define inherited-options
@@ -3433,7 +3433,7 @@
                           (send env
                                 has?
                                 sym
-                                (js/obj "filter" lang-filter)))
+                                (js/obj :filter lang-filter)))
                  (set! make-block #t))
                (sexp->rose
                 `(define ,(send x get 0)
@@ -3445,7 +3445,7 @@
                           (send env
                                 has?
                                 sym
-                                (js/obj "filter" lang-filter)))
+                                (js/obj :filter lang-filter)))
                  (set! make-block #t))
                (sexp->rose
                 `(define ,x)
@@ -3461,7 +3461,7 @@
        (sexp->rose
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@define-nodes
           ,@body-nodes)
         node)
@@ -3471,7 +3471,7 @@
 ;;; Compile a `(let-values ...)` expression.
 (define (compile-let-values node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
@@ -3479,7 +3479,7 @@
      env options))
    (else
     (define language-env
-      (oget options "languageEnvironment"))
+      (oget options :language-environment))
     (define (lang-filter x)
       (not (eq? x language-env)))
     (define inherited-options
@@ -3502,7 +3502,7 @@
                           (send env
                                 has?
                                 sym
-                                (js/obj "filter" lang-filter)))
+                                (js/obj :filter lang-filter)))
                  (set! make-block #t))
                (sexp->rose
                 `(define ,x)))
@@ -3518,7 +3518,7 @@
                             (send env
                                   has?
                                   sym
-                                  (js/obj "filter" lang-filter)))
+                                  (js/obj :filter lang-filter)))
                    (set! make-block #t)))
                 (else
                  (define syms
@@ -3528,7 +3528,7 @@
                      (when (send env
                                  has?
                                  sym
-                                 (js/obj "filter" lang-filter))
+                                 (js/obj :filter lang-filter))
                        (set! make-block #t)
                        (break))))))
                (define expression
@@ -3548,7 +3548,7 @@
        (sexp->rose
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@define-nodes
           ,@body-nodes)
         node)
@@ -3562,10 +3562,9 @@
   (define inherited-options
     (js/obj-append options))
   (define expression-type
-    (oget inherited-options
-          "expressionType"))
+    (oget inherited-options :expression-type))
   (define language-env
-    (oget inherited-options "languageEnvironment"))
+    (oget inherited-options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define make-block #t)
@@ -3696,8 +3695,7 @@
   (define inherited-options
     (js/obj-append options))
   (define expression-type
-    (oget inherited-options
-          "expressionType"))
+    (oget inherited-options :expression-type))
   (define make-block #t)
   (define declaration)
   (define declarator)
@@ -3724,7 +3722,7 @@
 ;;; Compile a `(let-fields ...)` expression.
 (define (compile-let-fields node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
@@ -3732,7 +3730,7 @@
      env options))
    (else
     (define language-env
-      (oget options "languageEnvironment"))
+      (oget options :language-environment))
     (define (lang-filter x)
       (not (eq? x language-env)))
     (define inherited-options
@@ -3761,7 +3759,7 @@
                           (send env
                                 has?
                                 sym
-                                (js/obj "filter" lang-filter)))
+                                (js/obj :filter lang-filter)))
                  (set! make-block #t)))
              (sexp->rose
               `(define-fields ,fields
@@ -3778,7 +3776,7 @@
        (sexp->rose
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@define-nodes
           ,@body-nodes)
         node)
@@ -3788,9 +3786,9 @@
 ;;; Compile a `(define-fields ...)` expression.
 (define (compile-define-fields node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
@@ -3862,7 +3860,7 @@
 ;;; Compile a `(set!-fields! ...)` expression.
 (define (compile-set-fields node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (make-expression-or-statement
    (new AssignmentExpression
         "="
@@ -4171,7 +4169,7 @@
      env options))
    (else
     (define language
-      (oget options "language"))
+      (oget options :language))
     (define obj
       (send node get 1))
     (define prop
@@ -4274,15 +4272,15 @@
 (define (compile-modulo node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js/obj "identity" 1
-           "operator" "%")))
+   (js/obj :identity 1
+           :operator "%")))
 
 ;;; Compile a `(* ...)` expression.
 (define (compile-mul node env (options (js/obj)))
   (compile-binary-expression
    node env options
-   (js/obj "identity" 1
-           "operator" "*")))
+   (js/obj :identity 1
+           :operator "*")))
 
 ;;; "NO-OP" compilation operation.
 ;;; Creates an empty program fragment and does nothing else.
@@ -4327,11 +4325,11 @@
 ;;; Compile a `(begin ...)` expression.
 (define (compile-begin node env (options (js/obj)))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (define exp
     (rose->sexp node))
   (define body
@@ -4383,7 +4381,7 @@
 ;;; Compile a `(js/block ...)` expression.
 (define (compile-js/block node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-begin node env options))
@@ -4406,7 +4404,7 @@
   (cond
    ((= (js/length symbols) 0)
     #f)
-   ((oget options "finlineFunctions")
+   ((oget options :finline-functions)
     (make-define-values-exp symbols env options))
    (else
     (make-require-exp symbols env options))))
@@ -4414,11 +4412,11 @@
 ;;; Make a `(define-values ...)` form for the global environment.
 (define (make-define-values-exp symbols env options)
   (define inline-functions-option
-    (oget options "finlineFunctions"))
+    (oget options :finline-functions))
   (define env1
     (new LispEnvironment
          '()
-         env))
+          env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4455,9 +4453,9 @@
              env2
              (js/obj-append
               options
-              (js/obj "currentModule"
+              (js/obj :current-module
                       current-module
-                      "referencedSymbols"
+                      :referenced-symbols
                       referenced-symbols-1))))
           (for ((symbol-1 referenced-symbols-1))
             (unless (or (memq? symbol-1 seen)
@@ -4534,7 +4532,7 @@
     (define env1
       (new LispEnvironment
            '()
-           env))
+            env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -4548,8 +4546,10 @@
          env1
          (js/obj-append
           options
-          (js/obj "continuationEnvironment" (new LispEnvironment)
-                  "expressionType" "expression"))))
+          (js/obj :continuation-environment
+                  (new LispEnvironment)
+                  :expression-type
+                  "expression"))))
       (define var-decl
         (compile-sexp define-values-form env1 options))
       (set-field! init
@@ -4577,7 +4577,7 @@
      env
      (js/obj-append
       options
-      (js/obj "finlineFunctions" #t))))
+      (js/obj :finline-functions #t))))
   (cond
    ((> (js/length global-environment-exp) 1)
     (define lambda-call
@@ -4629,7 +4629,7 @@
            (send node get 1)
            env
            options
-           (js/obj "quotedSymbol" #t))))
+           (js/obj :quoted-symbol #t))))
    (else
     (set! result
           (compile-expression
@@ -4682,11 +4682,11 @@
 ;;; Compile a `(require ...)` expression.
 (define (compile-require node env (options (js/obj)))
   (define fcommonjs
-    (oget options "fcommonjs"))
+    (oget options :fcommonjs))
   (define fes-module-interop
-    (oget options "fesModuleInterop"))
+    (oget options :fes-module-interop))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define x-node
@@ -4738,7 +4738,7 @@
                     (sexp->rose x1)
                     env
                     options
-                    (js/obj "literalSymbol" #t))
+                    (js/obj :literal-symbol #t))
                    options)))
           (when (symbol? x2)
             (set! x2-str
@@ -4747,10 +4747,10 @@
                     (sexp->rose x2)
                     env
                     options
-                    (js/obj "literalSymbol" #t))
+                    (js/obj :literal-symbol #t))
                    options)))
           (unless (memq? x2-str seen)
-            (unless (send env has? x2 (js/obj "filter" lang-filter))
+            (unless (send env has? x2 (js/obj :filter lang-filter))
               (make-type-binding env x2 'Any lang-filter))
             (push-right! seen x2)
             (push-right! specifiers
@@ -4767,10 +4767,10 @@
                     (sexp->rose x1)
                     env
                     options
-                    (js/obj "literalSymbol" #t))
+                    (js/obj :literal-symbol #t))
                    options)))
           (unless (memq? x1-str seen)
-            (unless (send env has? x1 (js/obj "filter" lang-filter))
+            (unless (send env has? x1 (js/obj :filter lang-filter))
               (make-type-binding env x1 'Any lang-filter))
             (push-right! seen x1-str)
             (push-right! specifiers
@@ -4787,7 +4787,7 @@
                 (sexp->rose x-exp)
                 env
                 options
-                (js/obj "literalSymbol" #t))
+                (js/obj :literal-symbol #t))
                options)))
       (set! specifiers
             (list
@@ -4803,11 +4803,11 @@
               (sexp->rose y-exp)
               env
               options
-              (js/obj "literalSymbol" #t))
+              (js/obj :literal-symbol #t))
              options)))
     (set! src (new Literal y-exp))
     (when (symbol? x-exp)
-      (unless (send env has? x-exp (js/obj "filter" lang-filter))
+      (unless (send env has? x-exp (js/obj :filter lang-filter))
         (make-type-binding env x-exp 'Any lang-filter)))
     (cond
      ((null? specifiers)
@@ -4820,7 +4820,7 @@
 ;;; Compile a `(provide ...)` expression.
 (define (compile-provide node env (options (js/obj)))
   (define fcommonjs
-    (oget options "fcommonjs"))
+    (oget options :fcommonjs))
   (define expressions
     (send node drop 1))
   (cond
@@ -4886,7 +4886,7 @@
                       (sexp->rose x1)
                       env
                       options
-                      (js/obj "literalSymbol" #t))
+                      (js/obj :literal-symbol #t))
                      options)))
             (when (symbol? x2)
               (set! x2
@@ -4895,7 +4895,7 @@
                       (sexp->rose x2)
                       env
                       options
-                      (js/obj "literalSymbol" #t))
+                      (js/obj :literal-symbol #t))
                      options)))
             (unless (memq? x2 seen)
               (push-right! seen x2)
@@ -4912,7 +4912,7 @@
                     (sexp->rose x1)
                     env
                     options
-                    (js/obj "literalSymbol" #t))
+                    (js/obj :literal-symbol #t))
                    options)))
           (unless (memq? x1 seen)
             (push-right! seen x1)
@@ -4933,7 +4933,7 @@
 ;;; Compile a `(set! ...)` expression.
 (define (compile-set node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (define sym-node
     (send node get 1))
   (define sym-exp
@@ -5035,19 +5035,19 @@
    (else
     (compile-binary-expression
      node env options
-     (js/obj "identity" 0
-             "operator" "-")))))
+     (js/obj :identity 0
+             :operator "-")))))
 
 ;;; Compile a variable expression.
 (define (compile-variable node env (options (js/obj)))
   (define compilation-mapping-environment
-    (oget options "compilationMappingEnvironment"))
+    (oget options :compilation-mapping-environment))
   (define literal-symbol
-    (oget options "literalSymbol"))
+    (oget options :literal-symbol))
   (define quoted-symbol
-    (oget options "quotedSymbol"))
+    (oget options :quoted-symbol))
   (define current-module
-    (oget options "currentModule"))
+    (oget options :current-module))
   (define exp (rose->sexp node))
   (unless (or quoted-symbol
               literal-symbol)
@@ -5076,13 +5076,13 @@
 (define (compile-symbol node env (options (js/obj)) (settings (js/obj)))
   ;; TODO: Better handling of gensym'ed symbols.
   (define literal-symbol-option
-    (or (oget settings "literalSymbol") #f))
+    (or (oget settings :literal-symbol) #f))
   (define quoted-symbol-option
-    (oget settings "quotedSymbol"))
+    (oget settings :quoted-symbol))
   (define compile-environment-option
-    (oget options "compileEnvironment"))
+    (oget options :compile-environment))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
@@ -5111,10 +5111,10 @@
     (new ThisExpression))
    (gensymed-symbol
     (define gensym-map
-      (oget options "gensymMap"))
+      (oget options :gensym-map))
     (unless gensym-map
       (set! gensym-map (make-hash))
-      (oset! options "gensymMap" gensym-map))
+      (oset! options :gensym-map gensym-map))
     (cond
      ((hash-has-key? gensym-map exp)
       (define-values (gensym-name name i)
@@ -5132,7 +5132,7 @@
       (while (send env
                    has?
                    regular-sym
-                   (js/obj "filter" lang-filter))
+                   (js/obj :filter lang-filter))
         (set! gensym-name
               (string-append name (number->string i)))
         (set! regular-sym
@@ -5474,8 +5474,8 @@
    (else
     (compile-binary-expression
      node env options
-     (js/obj "identity" ""
-             "operator" "+")))))
+     (js/obj :identity ""
+             :operator "+")))))
 
 ;;; Compile a `(class ...)` expression.
 (define (compile-class node env (options (js/obj)))
@@ -5594,12 +5594,12 @@
           #u)
          (is-method
           (compile-js/function
-           (define->lambda x (js/obj "curried"  #f))
+           (define->lambda x (js/obj :curried  #f))
            env1
            (make-expression-options
             inherited-options)
-           (js/obj "generator" is-generator
-                   "returnType" return-type)))
+           (js/obj :generator is-generator
+                   :return-type return-type)))
          (else
           (compile-expression
            (send x get 2)
@@ -5900,7 +5900,7 @@
                              env
                              (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ;; When compiled as a return statement, create a program fragment
    ;; if the list expression is a symbol. Otherwise, reuse the
@@ -5944,7 +5944,7 @@
 ;;; Compile a `(declare ...)` expression.
 (define (compile-declare node env (options (js/obj)))
   (define language-env
-    (oget options "languageEnvironment"))
+    (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
@@ -6047,7 +6047,7 @@
          (if (send ht has key)
              (send ht get key)
              failure-result))
-      (list ht key failure-result)))))
+       (list ht key failure-result)))))
 
 ;;; Compiler macro for `(map ...)` expressions.
 (define-macro (compile-map-macro f x)
@@ -6113,14 +6113,14 @@
          (memf? (lambda (x)
                   (equal? v x))
                 lst))
-      (list v lst)))
+       (list v lst)))
    (else
     (definition->macro
       '(define (member?_ v lst is-equal)
          (memf? (lambda (x)
                   (is-equal v x))
                 lst))
-      (list v lst is-equal)))))
+       (list v lst is-equal)))))
 
 ;;; Compiler macro for `(substring ...)` expressions.
 (define-macro (compile-substring-macro str &rest args)
@@ -6226,7 +6226,7 @@
     (gensym "_str"))
   (define identifier-regexp
     '(regexp "^\\w+$"))
-  `(js/obj "get"
+  `(js/obj :get
            (js/arrow (,arg-sym)
              (try
                (define ,str-sym
@@ -6238,7 +6238,7 @@
                  (return #u)))
                (catch Error e
                  (return #u))))
-           "has"
+           :has
            (js/arrow (,arg-sym)
              (try
                (define ,str-sym
@@ -6255,7 +6255,7 @@
 ;;; Compile a `(js ...)` expression.
 (define (compile-js node env (options (js/obj)))
   (define eval-option
-    (oget options "fevalBindings"))
+    (oget options :feval-bindings))
   (set! eval-option #t)
   (define str
     (send node get 1))
@@ -6277,10 +6277,10 @@
 (define (compile-js/eval node env (options (js/obj)))
   ;; TODO: Disable if `eval-option` is `#f`.
   (define eval-option
-    (oget options "fevalBindings"))
+    (oget options :feval-bindings))
   ;; FIXME: Kludge.
   (define compiling-to-js
-    (valid-js-casing-style? (oget options "case")))
+    (valid-js-casing-style? (oget options :case)))
   (define eval-f
     (if compiling-to-js
         "eval"
@@ -7371,7 +7371,7 @@
 ;;; Compile a `(js/switch ...)` form.
 (define (compile-js/switch node env (options (js/obj)))
   (define expression-type
-    (oget options "expressionType"))
+    (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
@@ -7669,7 +7669,7 @@
   (define/public (get-continuation-env)
     (new LispEnvironment
          '()
-         (send this get-environment)))
+          (send this get-environment)))
 
   (define/public (get-expressions)
     (get-field expressions this))
@@ -7948,7 +7948,7 @@
         (define typ
           (if (macro-definition? exp)
               '(macro-> Any * Any)
-              '(-> Any * Any)))
+               '(-> Any * Any)))
         (send module-env
               set-local!
               name
@@ -8099,7 +8099,7 @@
 ;;; which should be a typed environment.
 (define (make-type-binding env sym typ (filter #u))
   (cond
-   ((send env has? sym (js/obj "filter" filter))
+   ((send env has? sym (js/obj :filter filter))
     (send env set-type! sym typ))
    (else
     (send env set-local! sym #u typ))))
@@ -8142,7 +8142,7 @@
          _)
         (plist->object_
          _
-         (js/obj "case" "camelcase"))))))
+         (js/obj :case "camelcase"))))))
 
 ;;; Whether `exp` is a quoted expression.
 (define (quoted-expression? exp)
@@ -8794,13 +8794,13 @@
 
 ;;; Default options used when compiling.
 (define default-compilation-options
-  (js/obj "languageEnvironment"
+  (js/obj :language-environment
           lang-environment
-          "compilationMappingEnvironment"
+          :compilation-mapping-environment
           compilation-mapping-env
-          "finlineFunctions"
+          :finline-functions
           #t
-          "gensymMap"
+          :gensym-map
           (make-hash)))
 
 ;;; Pointer to the current compilation options.

@@ -130,7 +130,7 @@
 (define (make-identifier-string str (options (js/obj)))
   (define result str)
   (define case-option
-    (or (oget options "case")
+    (or (oget options :case)
         "none"))
   (when (valid-js-casing-style? case-option)
     (set! result

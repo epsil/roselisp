@@ -61,7 +61,7 @@
 ;;; The output of this function is passed to `parse-rose`.
 (define (tokenize str (options (js/obj)))
   (define comments
-    (oget options "comments"))
+    (oget options :comments))
   (when (undefined? comments)
     (set! comments #t))
   (define pos 0)
@@ -435,7 +435,7 @@
 ;;; Returns the resulting node and an empty list of comments.
 (define (attach-comments node comments (options (js/obj)))
   (define comments-option
-    (oget options "comments"))
+    (oget options :comments))
   (when (undefined? comments-option)
     (set! comments-option #t))
   (define result

@@ -99,7 +99,7 @@
   (define compilation-options
     (js/obj-append
      evaluation-options
-     (js/obj "case" "camelcase")))
+     (js/obj :case "camelcase")))
   (set! interpret-flag
         (if (eq? interpret-flag #u)
             #t
@@ -185,7 +185,7 @@
                   (verbose verbose-option)
                   env)
     (js/obj-append
-     (js/obj "compile" #f ; #t
+     (js/obj :compile #f ; #t
              )
      options))
   (when verbose-option
@@ -207,8 +207,8 @@
     (define node-repl-form
       (compile-repl-form
        (simplify-repl-form exp)
-       (js/obj "from" "roselisp"
-               "to" "node")))
+       (js/obj :from "roselisp"
+               :to "node")))
     (when verbose-option
       (display "Node REPL form: " node-repl-form))
     (test-repl node-repl-form test-env options)))
@@ -269,9 +269,9 @@
 ;;; to another.
 (define (compile-repl-form exp (options (js/obj)))
   (define from-option
-    (oget options "from"))
+    (oget options :from))
   (define to-option
-    (oget options "to"))
+    (oget options :to))
   (cond
    ((eq? from-option "roselisp")
     (cond
@@ -368,7 +368,7 @@
       (set! body-exps (drop body i))
       (break))))
   (define repl-option
-    (oget options "repl"))
+    (oget options :repl))
   ;; Create tests.
   (define group '())
   (define groups '())

@@ -896,8 +896,8 @@
       (set! base-class (eval_ (first super-classes) env))))
   (when base-class
     ;; <https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Inheritance#setting_teachers_prototype_and_constructor_reference>
-    (set! (oget constructor "prototype")
-          (send Object create (oget base-class "prototype"))))
+    (set! (oget constructor :prototype)
+          (send Object create (oget base-class :prototype))))
   ;; Sort field definitions from method definitions.
   (for ((definition definitions))
     (if (symbol? (second definition))

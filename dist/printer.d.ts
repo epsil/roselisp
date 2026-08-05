@@ -83,14 +83,14 @@ declare namespace printSexp {
  */
 declare function printSexpAsExpression(exp: any, options?: any): any;
 declare namespace printSexpAsExpression {
-    var fsource: (symbol | (symbol | (symbol | (string | boolean | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (boolean | symbol)[])[])[])[];
 }
 /**
  * Print an S-expression to a string.
  */
 declare function writeToString(obj: any, options?: any): any;
 declare namespace writeToString {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Print an ESTree node to a `Doc` object.

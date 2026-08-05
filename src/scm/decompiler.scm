@@ -47,7 +47,7 @@
 ;;; Decompile a JavaScript or TypeScript program.
 (define (decompile x (options (js/obj)))
   (define language
-    (oget options "language"))
+    (oget options :language))
   (cond
    ((eq? language "typescript")
     (decompile-ts x options))
@@ -63,11 +63,11 @@
   (define stem
     (basename file extension))
   (define language
-    (oget options "language"))
+    (oget options :language))
   (define in-dir
     (dirname file))
   (define out-dir
-    (or (oget options "outDir")
+    (or (oget options :out-dir)
         in-dir))
   (define out-extension ".scm")
   (define out-file
@@ -86,18 +86,18 @@
   (set! options
         (js/obj-append
          options
-         (js/obj "language" language
-                 "module" #t
-                 "noModuleForm" #t
-                 "pretty" #t)))
+         (js/obj :language language
+                 :module #t
+                 :no-module-form #t
+                 :pretty #t)))
   (set! data
         (readFileSync file
-                      (js/obj "encoding" "utf8")))
+                      (js/obj :encoding "utf8")))
   (set! code (decompile data options))
-  (mkdirSync out-dir (js/obj "recursive" #t))
+  (mkdirSync out-dir (js/obj :recursive #t))
   (writeFileSync out-file
                  code
-                 (js/obj "encoding" "utf8"))
+                 (js/obj :encoding "utf8"))
   (display
    (string-append "Decompiled " file " to " out-file))
   file)
@@ -136,7 +136,7 @@
     (decompile-estree ast options))
   (define result
     (rose->sexp result-node))
-  (unless (oget options "sexp")
+  (unless (oget options :sexp)
     (set! result (write-to-string result options)))
   result)
 
@@ -159,7 +159,7 @@
 ;;; [estree:program]: https://github.com/estree/estree/blob/master/es5.md#programs
 (define (decompile-program node (options (js/obj)))
   (define module-option
-    (oget options "module"))
+    (oget options :module))
   (define result
     (sexp->rose
      `(module

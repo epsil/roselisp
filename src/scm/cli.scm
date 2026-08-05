@@ -35,66 +35,67 @@
 ;;; [npm:minimist-options]: https://www.npmjs.com/package/minimist-options
 (define cli-options
   (js/obj
-   "case" (js/obj
-           "default" "camelcase"
-           "type" "string")
-   "comments" (js/obj
-               "default" #t
-               "type" "boolean")
-   "compile" (js/obj
-              "default" #f
-              "alias" "c"
-              "type" "boolean")
-   "decompile" (js/obj
-                "default" #f
-                "alias" "d"
-                "type" "boolean")
-   "eval" (js/obj
-           "default" ""
-           "alias" "e"
-           "type" "string")
-   "fcommonjs" (js/obj "default" #f
-                       "type" "boolean")
-   "fesModuleInterop" (js/obj
-                       "alias" "fes-module-interop"
-                       "default" #f
-                       "type" "boolean")
-   "fevalBindings" (js/obj
-                    "alias" "feval-bindings"
-                    "default" #f
-                    "type" "boolean")
-   "finlineFunctions" (js/obj
-                       "alias" "finline-functions"
-                       "default" #f
-                       "type" "boolean")
-   "fsemicolon" (js/obj
-                 "default" #t
-                 "type" "boolean")
-   "help" (js/obj
-           "default" #f
-           "alias" "h"
-           "type" "boolean")
-   "indent" (js/obj
-             "default" 2
-             "type" "number")
-   "language" (js/obj
-               "default" "javascript"
-               "type" "string")
-   "optimize" (js/obj
-               "default" #t
-               "type" "boolean")
-   "outDir" (js/obj
-             "alias" "out-dir"
-             "type" "string"
-             "default" ".")
-   "quick" (js/obj
-            "default" #f
-            "alias" "q"
-            "type" "boolean")
-   "repl" (js/obj
-           "default" #f
-           "alias" "i"
-           "type" "boolean")))
+   :case (js/obj
+          :default "camelcase"
+          :type "string")
+   :comments (js/obj
+              :default #t
+              :type "boolean")
+   :compile (js/obj
+             :alias "c"
+             :default #f
+             :type "boolean")
+   :decompile (js/obj
+               :alias "d"
+               :default #f
+               :type "boolean")
+   :eval (js/obj
+          :alias "e"
+          :default ""
+          :type "string")
+   :fcommonjs (js/obj
+               :default #f
+               :type "boolean")
+   :fes-module-interop (js/obj
+                        :alias "fes-module-interop"
+                        :default #f
+                        :type "boolean")
+   :feval-bindings (js/obj
+                    :alias "feval-bindings"
+                    :default #f
+                    :type "boolean")
+   :finline-functions (js/obj
+                       :alias "finline-functions"
+                       :default #f
+                       :type "boolean")
+   :fsemicolon (js/obj
+                :default #t
+                :type "boolean")
+   :help (js/obj
+          :alias "h"
+          :default #f
+          :type "boolean")
+   :indent (js/obj
+            :default 2
+            :type "number")
+   :language (js/obj
+              :default "javascript"
+              :type "string")
+   :optimize (js/obj
+              :default #t
+              :type "boolean")
+   :out-dir (js/obj
+             :alias "out-dir"
+             :default "."
+             :type "string")
+   :quick (js/obj
+           :alias "q"
+           :default #f
+           :type "boolean")
+   :repl (js/obj
+          :alias "i"
+          :default #f
+          :type "boolean")))
 
 ;;; Help message. Displayed when the program
 ;;; is invoked with `-h` or `--help`.
@@ -139,10 +140,10 @@ Options:
 ;;; Normalize CLI options.
 (define (normalize-cli-options options)
   (define language
-    (string-downcase (oget options "language")))
+    (string-downcase (oget options :language)))
   (js/obj-append
    options
-   (js/obj "language" language)))
+   (js/obj :language language)))
 
 ;;; `main` function. Invoked when the program is
 ;;; run from the command line.

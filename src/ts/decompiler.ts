@@ -51,7 +51,8 @@ import {
 } from './rose';
 
 import {
-  writeToString
+  printEstree,
+  printRose
 } from './printer';
 
 import {
@@ -110,11 +111,14 @@ const [lastCdr, cons, findf, listStar]: any[] = ((): any => {
  * Decompile a JavaScript or TypeScript program.
  */
 function decompile(x: any, options: any = {}): any {
-  let language: any = options['language'];
-  if (language === 'typescript') {
-    return decompileTs(x, options);
-  } else {
-    return decompileJs(x, options);
+  switch (options['language']) {
+    case 'typescript': {
+      return decompileTs(x, options);
+      break;
+    }
+    default: {
+      return decompileJs(x, options);
+    }
   }
 }
 
@@ -171,7 +175,7 @@ function decompileFilesX(files: any, options: any = {}): any {
  */
 function decompileModule(m: any, options: any = {}): any {
   // TODO
-  return m;
+  return defaultDecompiler(m, options);
 }
 
 /**
@@ -196,12 +200,12 @@ function decompileJs(x: any, options: any = {}): any {
  */
 function decompileTs(x: any, options: any = {}): any {
   const ast: any = parseTs(x);
-  const resultNode: any = decompileEstree(ast, options);
-  let result: any = roseToSexp(resultNode);
+  let result: any = decompileEstree(ast, options);
   if (!options['sexp']) {
-    result = writeToString(result, options);
+    return printRose(result, options);
+  } else {
+    return roseToSexp(result);
   }
-  return result;
 }
 
 /**
@@ -285,14 +289,15 @@ function decompileCallExpression(node: any, options: any = {}): any {
  * [estree:assignmentexpression]: https://github.com/estree/estree/blob/master/es5.md#assignmentexpression
  */
 function decompileAssignmentExpression(node: any, options: any = {}): any {
-  let op: any = node.operator;
+  let op: any = node.operator || '=';
   let left: any = node.left;
   const leftDecompiled: any = decompileEstree(left);
   let leftExp: any = roseToSexp(leftDecompiled);
   const right: any = node.right;
   let rightDecompiled: any = decompileEstree(right);
-  if (op === '+=') {
-    rightDecompiled = sexpToRose([Symbol.for('+'), leftDecompiled, rightDecompiled]);
+  const assignmentMap: any = new Map([['+=', Symbol.for('+')], ['-=', Symbol.for('-')], ['*=', Symbol.for('*')], ['/=', Symbol.for('/')]] as any);
+  if (assignmentMap.has(op)) {
+    rightDecompiled = sexpToRose([assignmentMap.get(op), leftDecompiled, rightDecompiled]);
   }
   if (taggedListP(leftExp, Symbol.for('get-field'))) {
     return sexpToRose([Symbol.for('set-field!'), leftDecompiled.get(1), leftDecompiled.get(2), rightDecompiled]);
@@ -304,8 +309,10 @@ function decompileAssignmentExpression(node: any, options: any = {}): any {
     return sexpToRose([Symbol.for('set!-values'), leftDecompiled, rightDecompiled]);
   } else if (estreeTypeP(left, 'ObjectPattern')) {
     return sexpToRose([Symbol.for('set!-fields'), leftDecompiled, rightDecompiled]);
-  } else {
+  } else if ((op === '=') || assignmentMap.has(op)) {
     return sexpToRose([Symbol.for('set!'), leftDecompiled, rightDecompiled]);
+  } else {
+    return sexpToRose([Symbol.for('js/op'), Symbol.for(op), leftDecompiled, rightDecompiled]);
   }
 }
 
@@ -1377,7 +1384,11 @@ function removeReturnTailCall(node: any): any {
  * Default decompiler function.
  */
 function defaultDecompiler(node: any, options: any = {}): any {
-  return sexpToRose((node && estreeType(node)) + ' not supported yet');
+  let language: any = options['language'];
+  const raw: any = (language === 'typescript') ? Symbol.for('ts/raw') : Symbol.for('js/raw');
+  const nodePrinted: any = printEstree(node, options);
+  const comment: any = ';; ' + estreeType(node) + ' not supported yet';
+  return sexpToRose([raw, nodePrinted]).setProperty('comments', [comment]);
 }
 
 /**

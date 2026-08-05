@@ -847,6 +847,7 @@
          (,js/op_ ,compile-js/op (compiler-> Any * Any))
          (,js/optional-chaining_ ,compile-js/optional-chaining (compiler-> Any * Any))
          (,js/plus_ ,compile-add (compiler-> Any * Any))
+         (,js/raw_ ,compile-js/raw (compiler-> Any * Any))
          (,js/return_ ,compile-return (compiler-> Any * Any))
          (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
          (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
@@ -856,7 +857,6 @@
          (,js/type-of_ ,compile-js/type-of (compiler-> Any * Any))
          (,js/while_ ,compile-js/while (compiler-> Any * Any))
          (,js/yield_ ,compile-yield (compiler-> Any * Any))
-         (,js_ ,compile-js (compiler-> Any * Any))
          (,lambda_ ,compile-lambda (compiler-> Any * Any))
          (,let-fields_ ,compile-let-fields (compiler-> Any * Any))
          (,let-star_ ,compile-let (compiler-> Any * Any))
@@ -952,9 +952,9 @@
    ((eq? to-language "roselisp")
     (define inherited-options
       (js/obj-append
-       options
        (js/obj :language from-language
-               :sexp #t)))
+               :sexp #t)
+       options))
     (decompile1 exp inherited-options))
    (else
     (define expression-type
@@ -965,10 +965,10 @@
           "camelcase"))
     (define inherited-options
       (js/obj-append
-       options
        (js/obj :case case-option
                :language to-language
-               :expression-type expression-type)))
+               :expression-type expression-type)
+       options))
     (define env
       (or (oget options :environment)
           (new LispEnvironment)))
@@ -4475,19 +4475,19 @@
            (match
                (set! internal-symbol
                      (string->symbol (second match)))
-             (set! exp `(js ,js-string)))
+             (set! exp `(js/raw ,js-string)))
            (else
             (set! internal-symbol symbol)
             (set! exp
                   `(define ,internal-symbol
-                     (js ,js-string))))))
+                     (js/raw ,js-string))))))
          ((js/obj? value)
           (define js-string
             (send JSON stringify value #n 2))
           (set! internal-symbol symbol)
           (set! exp
                 `(define ,internal-symbol
-                   (js ,js-string))))
+                   (js/raw ,js-string))))
          ((symbol? value)
           (define str
             (symbol->string value))
@@ -4501,7 +4501,7 @@
           (set! internal-symbol symbol)
           (set! exp
                 `(define ,internal-symbol
-                   (js ,js-string)))))))
+                   (js/raw ,js-string)))))))
       (unless (memq? internal-symbol internal-symbols)
         ;; Do not push the same `define` form more than once.
         (push-right! define-forms exp))
@@ -6252,8 +6252,8 @@
                (catch Error e
                  (return #f))))))
 
-;;; Compile a `(js ...)` expression.
-(define (compile-js node env (options (js/obj)))
+;;; Compile a `(js/raw ...)` expression.
+(define (compile-js/raw node env (options (js/obj)))
   (define eval-option
     (oget options :feval-bindings))
   (set! eval-option #t)
@@ -6747,7 +6747,7 @@
    (current-compilation-options)))
 
 ;;; Evaluate a JavaScript string.
-(define (js_ str)
+(define (js/raw_ str)
   (js/eval str))
 
 ;;; Get the Lisp source of a function.
@@ -8363,7 +8363,7 @@
          (intern ,string->symbol_ (-> Any * Any))
          (intersection ,intersection_ (-> Any * Any))
          (is-a? ,is-a?_ (-> Any * Any))
-         (js ,js_ (-> Any * Any))
+         (js ,js/raw_ (-> Any * Any))
          (js-field ,array-ref_ (-> Any * Any))
          (js-keys ,js/keys_ (-> Any * Any))
          (js-obj ,js/obj_ (-> Any * Any))
@@ -8431,12 +8431,13 @@
          (js/null? ,js/null?_ (-> Any * Any))
          (js/obj ,js/obj_ (-> Any * Any))
          (js/obj-append ,js/obj-append_ (-> Any * Any))
-         (js/obj-spread ,js/obj-spread_ (-> Any * Any))
          (js/obj-keys ,js/keys_ (-> Any * Any))
+         (js/obj-spread ,js/obj-spread_ (-> Any * Any))
          (js/obj? ,js/obj?_ (-> Any * Any))
          (js/object ,js/obj_ (-> Any * Any))
          (js/object-type? ,js/object-type?_ (-> Any * Any))
          (js/object? ,js/object-type?_ (-> Any * Any))
+         (js/raw ,js/raw_ (-> Any * Any))
          (js/reduce ,js/reduce_ (-> Any * Any))
          (js/reduce-right ,js/reduce-right_ (-> Any * Any))
          (js/regexp ,js/regexp_ (-> Any * Any))
@@ -8632,6 +8633,7 @@
          (third ,third_ (-> Any * Any))
          (true? ,true?_ (-> Any * Any))
          (truep ,true?_ (-> Any * Any))
+         (ts/raw ,js/raw_ (-> Any * Any))
          (type-of ,type-of_ (-> Any * Any))
          (typeof ,type-of_ (-> Any * Any))
          (undefined? ,undefined?_ (-> Any * Any))
@@ -8860,7 +8862,9 @@
   (rename-out (js/await_ await))
   (rename-out (js/await_ await_))
   (rename-out (js/await_ js-await))
-  (rename-out (js_ js))
+  (rename-out (js/raw_ js))
+  (rename-out (js/raw_ js/raw))
+  (rename-out (js/raw_ js_))
   (rename-out (lambda_ compile-function))
   (rename-out (lambda_ fn))
   (rename-out (lambda_ lambda))
@@ -8942,7 +8946,7 @@
   iterate-rose
   js/async_
   js/await_
-  js_
+  js/raw_
   lambda_
   lang-environment
   let-fields_

@@ -421,6 +421,51 @@ describe('decompile', function (): any {
       [Symbol.for('+'), Symbol.for('x'), 1],
     ]);
   });
+  it('(decompile "x -= 1;")', function (): any {
+    return assertEqual(decompile('x -= 1;'), [
+      Symbol.for('set!'),
+      Symbol.for('x'),
+      [Symbol.for('-'), Symbol.for('x'), 1],
+    ]);
+  });
+  it('(decompile "x *= 1;")', function (): any {
+    return assertEqual(decompile('x *= 1;'), [
+      Symbol.for('set!'),
+      Symbol.for('x'),
+      [Symbol.for('*'), Symbol.for('x'), 1],
+    ]);
+  });
+  it('(decompile "x /= 1;")', function (): any {
+    return assertEqual(decompile('x /= 1;'), [
+      Symbol.for('set!'),
+      Symbol.for('x'),
+      [Symbol.for('/'), Symbol.for('x'), 1],
+    ]);
+  });
+  it('(decompile "x ||= y;")', function (): any {
+    return assertEqual(decompile('x ||= y;'), [
+      Symbol.for('js/op'),
+      Symbol.for('||='),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x &&= y;")', function (): any {
+    return assertEqual(decompile('x &&= y;'), [
+      Symbol.for('js/op'),
+      Symbol.for('&&='),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
+  it('(decompile "x ??= y;")', function (): any {
+    return assertEqual(decompile('x ??= y;'), [
+      Symbol.for('js/op'),
+      Symbol.for('??='),
+      Symbol.for('x'),
+      Symbol.for('y'),
+    ]);
+  });
   it('(decompile "let x = 1;")', function (): any {
     return assertEqual(decompile('let x = 1;'), [
       Symbol.for('define'),
@@ -1539,6 +1584,23 @@ describe('decompile', function (): any {
     return assertEqual(decompile("export * from 'foo';"), [
       Symbol.for('provide'),
       [Symbol.for('all-from-out'), 'foo'],
+    ]);
+  });
+  it('(decompile "({});")', function (): any {
+    return assertEqual(decompile('({});'), [Symbol.for('js/obj')]);
+  });
+  it('(decompile "({ foo: bar });")', function (): any {
+    return assertEqual(decompile('({ foo: bar });'), [
+      Symbol.for('js/obj'),
+      'foo',
+      Symbol.for('bar'),
+    ]);
+  });
+  xit('(decompile "({ [foo]: bar });")', function (): any {
+    return assertEqual(decompile('({ [foo]: bar });'), [
+      Symbol.for('js/obj'),
+      Symbol.for('foo'),
+      Symbol.for('bar'),
     ]);
   });
   it('(decompile "const foo = {};")', function (): any {

@@ -39,20 +39,19 @@
                   rose->sexp
                   sexp->rose))
 (require (only-in "./printer"
-                  write-to-string))
+                  print-estree
+                  print-rose))
 (require (only-in "./util"
                   make-unique-symbol
                   tagged-list?))
 
 ;;; Decompile a JavaScript or TypeScript program.
 (define (decompile x (options (js/obj)))
-  (define language
-    (oget options :language))
-  (cond
-   ((eq? language "typescript")
-    (decompile-ts x options))
-   (else
-    (decompile-js x options))))
+  (case (oget options :language)
+    (("typescript")
+     (decompile-ts x options))
+    (else
+     (decompile-js x options))))
 
 ;;; Read a JavaScript or TypeScript program from disk
 ;;; and decompile it. The result is written to disk.
@@ -112,7 +111,7 @@
 ;;; Decompile a JavaScript or TypeScript module.
 (define (decompile-module m (options (js/obj)))
   ;; TODO
-  m)
+  (default-decompiler m options))
 
 ;;; Decompile a JavaScript program
 ;;; (i.e., an [ESTree][github:estree]
@@ -132,13 +131,13 @@
 (define (decompile-ts x (options (js/obj)))
   (define ast
     (parse-ts x))
-  (define result-node
-    (decompile-estree ast options))
   (define result
-    (rose->sexp result-node))
-  (unless (oget options :sexp)
-    (set! result (write-to-string result options)))
-  result)
+    (decompile-estree ast options))
+  (cond
+   ((not (oget options :sexp))
+    (print-rose result options))
+   (else
+    (rose->sexp result))))
 
 ;;; Decompile an [ESTree][github:estree] node
 ;;; (i.e., a JavaScript [AST][w:Abstract syntax tree]).
@@ -248,7 +247,8 @@
 ;;; [estree:assignmentexpression]: https://github.com/estree/estree/blob/master/es5.md#assignmentexpression
 (define (decompile-assignment-expression node (options (js/obj)))
   (define op
-    (get-field operator node))
+    (or (get-field operator node)
+        "="))
   (define left
     (get-field left node))
   (define left-decompiled
@@ -259,10 +259,18 @@
     (get-field right node))
   (define right-decompiled
     (decompile-estree right))
-  (when (eq? op "+=")
+  (define assignment-map
+    (make-hash
+     '(("+=" . +)
+       ("-=" . -)
+       ("*=" . *)
+       ("/=" . /))))
+  (when (hash-has-key? assignment-map op)
     (set! right-decompiled
           (sexp->rose
-           `(+ ,left-decompiled ,right-decompiled))))
+           `(,(hash-ref assignment-map op)
+             ,left-decompiled
+             ,right-decompiled))))
   (cond
    ((tagged-list? left-exp 'get-field)
     (sexp->rose
@@ -283,9 +291,13 @@
    ((estree-type? left "ObjectPattern")
     (sexp->rose
      `(set!-fields ,left-decompiled ,right-decompiled)))
+   ((or (eq? op "=")
+        (hash-has-key? assignment-map op))
+    (sexp->rose
+     `(set! ,left-decompiled ,right-decompiled)))
    (else
     (sexp->rose
-     `(set! ,left-decompiled ,right-decompiled)))))
+     `(js/op ,(string->symbol op) ,left-decompiled ,right-decompiled)))))
 
 ;;; Decompile an ESTree [`AssignmentPattern`][estree:assignmentpattern] node.
 ;;;
@@ -1637,10 +1649,22 @@
 
 ;;; Default decompiler function.
 (define (default-decompiler node (options (js/obj)))
-  (sexp->rose
-   (string-append
-    (and node (estree-type node))
-    " not supported yet")))
+  (define language
+    (oget options :language))
+  (define raw
+    (if (eq? language "typescript")
+        'ts/raw
+        'js/raw))
+  (define node-printed
+    (print-estree node options))
+  (define comment
+    (string-append
+     ";; "
+     (estree-type node)
+     " not supported yet"))
+  (~> `(,raw ,node-printed)
+      (sexp->rose _)
+      (send _ set-property "comments" (list comment))))
 
 ;;; Mapping from ESTree node types to decompiler functions.
 (define decompiler-map

@@ -4,12 +4,12 @@
                   StringToken
                   SymbolToken
                   TrailingCommentToken
-                  parse-rose
+                  parse-syntax
                   read
-                  read-rose
+                  read-syntax
                   tokenize))
 (require (only-in "../../src/ts/rose"
-                  rose->sexp))
+                  syntax->datum))
 (require (only-in "../../src/ts/sexp"
                   s
                   sexp))
@@ -186,124 +186,124 @@ bar)"
        (new SymbolToken "this")
        (new SymbolToken ")"))
 
- ;; `parse-rose`
- > (describe "parse-rose")
+ ;; `parse-syntax`
+ > (describe "parse-syntax")
  _
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "exp"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "exp"))))
  'exp
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken ")"))))
  '()
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "(")
-                      (new SymbolToken ")")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "(")
+                        (new SymbolToken ")")
+                        (new SymbolToken ")"))))
  '(())
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")"))))
  '(foo)
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "(")
-                      (new SymbolToken "lambda")
-                      (new SymbolToken "(")
-                      (new SymbolToken "x")
-                      (new SymbolToken ")")
-                      (new SymbolToken "x")
-                      (new SymbolToken ")")
-                      (new StringToken "Lisp")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "(")
+                        (new SymbolToken "lambda")
+                        (new SymbolToken "(")
+                        (new SymbolToken "x")
+                        (new SymbolToken ")")
+                        (new SymbolToken "x")
+                        (new SymbolToken ")")
+                        (new StringToken "Lisp")
+                        (new SymbolToken ")"))))
  '((lambda (x) x) "Lisp")
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "'")
-                      (new SymbolToken "foo"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "'")
+                        (new SymbolToken "foo"))))
  '(quote foo)
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "'")
-                      (new SymbolToken "(")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "'")
+                        (new SymbolToken "(")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")"))))
  '(quote (foo))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "'")
-                      (new SymbolToken "(")
-                      (new SymbolToken "(")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "'")
+                        (new SymbolToken "(")
+                        (new SymbolToken "(")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")")
+                        (new SymbolToken ")"))))
  '(quote ((foo)))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "'")
-                      (new SymbolToken "(")
-                      (new SymbolToken "(")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")")
-                      (new SymbolToken "(")
-                      (new SymbolToken "bar")
-                      (new SymbolToken ")")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "'")
+                        (new SymbolToken "(")
+                        (new SymbolToken "(")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")")
+                        (new SymbolToken "(")
+                        (new SymbolToken "bar")
+                        (new SymbolToken ")")
+                        (new SymbolToken ")"))))
  '(quote ((foo) (bar)))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "quote")
-                      (new SymbolToken "(")
-                      (new SymbolToken "(")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")")
-                      (new SymbolToken "(")
-                      (new SymbolToken "bar")
-                      (new SymbolToken ")")
-                      (new SymbolToken ")")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "quote")
+                        (new SymbolToken "(")
+                        (new SymbolToken "(")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")")
+                        (new SymbolToken "(")
+                        (new SymbolToken "bar")
+                        (new SymbolToken ")")
+                        (new SymbolToken ")")
+                        (new SymbolToken ")"))))
  '(quote ((foo) (bar)))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "truep")
-                      (new SymbolToken "'")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "truep")
+                        (new SymbolToken "'")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")"))))
  '(truep (quote foo))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "truep")
-                      (new SymbolToken "'")
-                      (new SymbolToken "(")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "truep")
+                        (new SymbolToken "'")
+                        (new SymbolToken "(")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")")
+                        (new SymbolToken ")"))))
  '(truep (quote (foo)))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "truep")
-                      (new SymbolToken "`")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "truep")
+                        (new SymbolToken "`")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")"))))
  '(truep (quasiquote foo))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "(")
-                      (new SymbolToken "truep")
-                      (new SymbolToken "`")
-                      (new SymbolToken "(")
-                      (new SymbolToken "foo")
-                      (new SymbolToken ")")
-                      (new SymbolToken ")"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "(")
+                        (new SymbolToken "truep")
+                        (new SymbolToken "`")
+                        (new SymbolToken "(")
+                        (new SymbolToken "foo")
+                        (new SymbolToken ")")
+                        (new SymbolToken ")"))))
  '(truep (quasiquote (foo)))
- > (rose->sexp
-    (parse-rose (list (new SymbolToken "`")
-                      (new SymbolToken "foo"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken "`")
+                        (new SymbolToken "foo"))))
  '(quasiquote foo)
- > (rose->sexp
-    (parse-rose (list (new SymbolToken ",")
-                      (new SymbolToken "foo"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken ",")
+                        (new SymbolToken "foo"))))
  '(unquote foo)
- > (rose->sexp
-    (parse-rose (list (new SymbolToken ",@")
-                      (new SymbolToken "foo"))))
+ > (syntax->datum
+    (parse-syntax (list (new SymbolToken ",@")
+                        (new SymbolToken "foo"))))
  '(unquote-splicing foo)
 
  ;; `read`
@@ -351,19 +351,19 @@ test"
  > (read "(define foo `(,bar))")
  '(define foo (quasiquote ((unquote bar))))
 
- ;; `read-rose`
- > (describe "read-rose")
+ ;; `read-syntax`
+ > (describe "read-syntax")
  _
- > (rose->sexp
-    (read-rose ";; comment
+ > (syntax->datum
+    (read-syntax ";; comment
 (foo)"))
  (list 'foo)
  > (it ";; comment
 (foo), comments"
        (define actual
-         (read-rose ";; comment
+         (read-syntax ";; comment
 (foo)"
-                    (js/obj :comments #t)))
+                      (js/obj :comments #t)))
        (assert-equal
         (send actual get-value)
         (list 'foo))
@@ -375,9 +375,9 @@ test"
  > (it ";; comment
 `(foo), comments"
        (define actual
-         (read-rose ";; comment
+         (read-syntax ";; comment
 `(foo)"
-                    (js/obj :comments #t)))
+                      (js/obj :comments #t)))
        (assert-equal
         (send actual get-value)
         (list 'quasiquote
@@ -387,8 +387,8 @@ test"
         (list (new LeadingCommentToken
                    ";; comment\n"))))
  _
- > (rose->sexp
-    (read-rose "(foo) ;comment"))
+ > (syntax->datum
+    (read-syntax "(foo) ;comment"))
  (list 'foo)
 
  ;; `sexp`

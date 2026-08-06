@@ -43,7 +43,7 @@
 (require (only-in "../../src/ts/eval"
                   eval_
                   eval-estree
-                  eval-rose))
+                  eval-syntax))
 (require (only-in "../../src/ts/language"
                   __
                   LispEnvironment
@@ -51,7 +51,7 @@
                   lisp-1-environment
                   eval-lisp))
 (require (only-in "../../src/ts/rose"
-                  wrap-sexp-in-rose))
+                  datum->syntax))
 (require (only-in "../../src/ts/sexp"
                   sexp))
 (require (only-in "./test-util"
@@ -79,14 +79,14 @@
  > (eval_ (js/tag sexp "#f") lisp-1-environment)
  #f
 
- ;; `eval-rose`
- > (describe "eval-rose")
+ ;; `eval-syntax`
+ > (describe "eval-syntax")
  _
- > (eval-rose (wrap-sexp-in-rose #t)
-              lisp-1-environment)
+ > (eval-syntax (datum->syntax #f #t)
+                lisp-1-environment)
  #t
- > (eval-rose (wrap-sexp-in-rose #f)
-              lisp-1-environment)
+ > (eval-syntax (datum->syntax #f #f)
+                lisp-1-environment)
  #f
 
  ;; `eval-estree`

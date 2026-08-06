@@ -71,6 +71,23 @@
        ,@macro-body)
      (declare-macro ,name)))
 
+;;; Expand a `(syntax ...)` expression.
+(define-macro (syntax_ v)
+  `(datum->syntax #f (quote ,v)))
+
+;;; Expand a `(quasisyntax ...)` expression.
+(define-macro (quasisyntax_ v)
+  `(datum->syntax #f (quasiquote ,v)))
+
+;;; Expand a `(define-syntax ...)` expression.
+(define-macro (define-syntax_ name-and-args &rest body)
+  (define name
+    (car name-and-args))
+  `(begin
+     (define ,name-and-args
+       ,@body)
+     (declare ,name (ftype (macro-> Syntax Syntax)))))
+
 ;;; Create a macro function on the basis of a
 ;;; `(define-macro ...)` expression.
 (define (define-macro->function exp env)
@@ -160,7 +177,7 @@
      ,@(map (lambda (spec)
               `(set-field! ,(js/first spec)
                            ,name
-                           ,(js/second spec)))
+                           (quote ,(js/second spec))))
             specs)))
 
 ;;; Expand a `(declare-macro ...)` expression.
@@ -740,6 +757,7 @@
   define-macro_
   define-private_
   define-public_
+  define-syntax_
   defmacro_
   defun_
   do_
@@ -748,8 +766,10 @@
   multiple-value-bind_
   new/apply_
   or_
+  quasisyntax_
   rkt/new_
   set_
+  syntax_
   thread-as_
   thread-first_
   thread-last_

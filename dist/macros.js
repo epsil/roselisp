@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.set_ = exports.rktNew_ = exports.or_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.and_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.set_ = exports.rktNew_ = exports.quasisyntax_ = exports.or_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.and_ = void 0;
 const eval_1 = require("./eval");
 const util_1 = require("./util");
 const [lastCdr, cdr, listStar, cons, take] = (() => {
@@ -146,6 +146,37 @@ exports.defineMacro_ = defineMacro_;
 defineMacro_.fsource = [Symbol.for('define'), [Symbol.for('define-macro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('macro-fn-form'), [Symbol.for('define-macro->lambda-form'), [Symbol.for('quasiquote'), [Symbol.for('define-macro'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('js/second'), Symbol.for('macro-fn-form')]], [Symbol.for('define'), Symbol.for('macro-body'), [Symbol.for('drop'), Symbol.for('macro-fn-form'), 2]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote-splicing'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), Symbol.for('macro-body')]], [Symbol.for('declare-macro'), [Symbol.for('unquote'), Symbol.for('name')]]]]];
 defineMacro_.ftype = 'macro';
 /**
+ * Expand a `(syntax ...)` expression.
+ */
+function syntax_(exp, env) {
+    const [v] = exp.slice(1);
+    return [Symbol.for('datum->syntax'), false, [Symbol.for('quote'), v]];
+}
+exports.syntax_ = syntax_;
+syntax_.fsource = [Symbol.for('define'), [Symbol.for('syntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('v')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('datum->syntax'), false, [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('v')]]]]];
+syntax_.ftype = 'macro';
+/**
+ * Expand a `(quasisyntax ...)` expression.
+ */
+function quasisyntax_(exp, env) {
+    const [v] = exp.slice(1);
+    return [Symbol.for('datum->syntax'), false, [Symbol.for('quasiquote'), [Symbol.for('unquote'), Symbol.for('v')]]];
+}
+exports.quasisyntax_ = quasisyntax_;
+quasisyntax_.fsource = [Symbol.for('define'), [Symbol.for('quasisyntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('v')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('datum->syntax'), false, [Symbol.for('quasiquote'), [Symbol.for('unquote'), Symbol.for('v')]]]]];
+quasisyntax_.ftype = 'macro';
+/**
+ * Expand a `(define-syntax ...)` expression.
+ */
+function defineSyntax_(exp, env) {
+    const [nameAndArgs, ...body] = exp.slice(1);
+    const name = nameAndArgs[0];
+    return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('declare'), name, [Symbol.for('ftype'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]];
+}
+exports.defineSyntax_ = defineSyntax_;
+defineSyntax_.fsource = [Symbol.for('define'), [Symbol.for('define-syntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare'), [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('ftype'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]]]];
+defineSyntax_.ftype = 'macro';
+/**
  * Create a macro function on the basis of a
  * `(define-macro ...)` expression.
  */
@@ -265,11 +296,11 @@ defineFexpr_.ftype = 'macro';
 function declare_(exp, env) {
     const [name, ...specs] = exp.slice(1);
     return [Symbol.for('begin'), ...specs.map(function (spec) {
-            return [Symbol.for('set-field!'), spec[0], name, spec[1]];
+            return [Symbol.for('set-field!'), spec[0], name, [Symbol.for('quote'), spec[1]]];
         })];
 }
 exports.declare_ = declare_;
-declare_.fsource = [Symbol.for('define'), [Symbol.for('declare_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('.'), Symbol.for('specs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('spec')], [Symbol.for('quasiquote'), [Symbol.for('set-field!'), [Symbol.for('unquote'), [Symbol.for('js/first'), Symbol.for('spec')]], [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('spec')]]]]], Symbol.for('specs')]]]]];
+declare_.fsource = [Symbol.for('define'), [Symbol.for('declare_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('.'), Symbol.for('specs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('spec')], [Symbol.for('quasiquote'), [Symbol.for('set-field!'), [Symbol.for('unquote'), [Symbol.for('js/first'), Symbol.for('spec')]], [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('spec')]]]]]], Symbol.for('specs')]]]]];
 declare_.ftype = 'macro';
 /**
  * Expand a `(declare-macro ...)` expression.

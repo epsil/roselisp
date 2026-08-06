@@ -374,6 +374,7 @@
                   define-macro_
                   define-private_
                   define-public_
+                  define-syntax_
                   defmacro_
                   defun_
                   do_
@@ -384,6 +385,8 @@
                   or_
                   rkt/new_
                   set_
+                  syntax_
+                  quasisyntax_
                   thread-as_
                   thread-first_
                   thread-last_
@@ -454,6 +457,8 @@
                   lte_
                   macro-type?
                   macro?_
+                  syntax-transformer?_
+                  syntax-transformer-type?_
                   map_
                   member?_
                   member_
@@ -490,15 +495,17 @@
                   regexp?_
                   regexp_))
 (require (only-in "./rose"
-                  Rose
+                  Syntax
                   begin-wrap-rose
                   begin-wrap-rose-smart
                   begin-wrap-rose-smart-1
+                  datum->syntax
                   insert-sexp-into-rose
-                  rose->sexp
-                  rose?
-                  sexp->rose
                   slice-rose
+                  syntax->datum
+                  syntax->list
+                  syntax-e
+                  syntax?
                   transfer-comments))
 (require (only-in "./sexp"
                   s
@@ -1025,7 +1032,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-          lang-env))
+         lang-env))
   (oset! compilation-options :language-environment lang-env)
   (oset! compilation-options
          :compilation-mapping-environment
@@ -1042,8 +1049,8 @@
        (cond
         ((is-a? exp Module)
          (compile-module exp continuation-env compilation-options))
-        ((is-a? exp Rose)
-         (compile-rose exp continuation-env compilation-options))
+        ((syntax? exp)
+         (compile-syntax exp continuation-env compilation-options))
         (else
          (compile-sexp exp continuation-env compilation-options))))
      (when optimize-option
@@ -1060,11 +1067,11 @@
   (define compiled-module-map)
   (define module-name)
   (for ((module modules))
-    (unless (is-a? module Rose)
-      (set! module (sexp->rose module)))
+    (unless (syntax? module)
+      (set! module (datum->syntax #f module)))
     (set! module-name
           (~> (send module get 1)
-              (rose->sexp _)))
+              (syntax->datum _)))
     (when (symbol? module-name)
       (set! module-name
             (symbol->string module-name)))
@@ -1274,8 +1281,8 @@
   ;; `outFileMap` option to `compile-files!`?
   (compile-files! (list infile) options))
 
-;;; Compile a S-expression wrapped in a rose tree.
-(define (compile-rose node env (options (js/obj)))
+;;; Compile a syntax object.
+(define (compile-syntax node env (options (js/obj)))
   (define language-env
     (oget options :language-environment))
   (define (lang-filter x)
@@ -1283,9 +1290,9 @@
   (define comments-option
     (oget options :comments))
   (define node1
-    (optimize-rose node env))
+    (optimize-syntax node env))
   (define exp
-    (rose->sexp node1))
+    (syntax->datum node1))
   (define result)
   (cond
    ((array? exp)
@@ -1323,9 +1330,9 @@
           (define inlined-exp
             (definition->macro (source f) (rest exp)))
           (define inlined-node
-            (sexp->rose inlined-exp node))
+            (datum->syntax node inlined-exp))
           (set! result
-                (compile-rose inlined-node env options)))
+                (compile-syntax inlined-node env options)))
          (else
           (define compilation-mapping-environment
             (oget options :compilation-mapping-environment))
@@ -1341,7 +1348,7 @@
            ;; Compilation macro.
            ((macro-type? compilation-type)
             (set! result
-                  (compile-rose
+                  (compile-syntax
                    (insert-sexp-into-rose
                     (compilation-f exp env)
                     node1
@@ -1393,20 +1400,20 @@
 ;;; Compile a S-expression.
 (define (compile-sexp exp env (options (js/obj)))
   (~> exp
-      (sexp->rose _)
-      (compile-rose _ env options)))
+      (datum->syntax #f _)
+      (compile-syntax _ env options)))
 
 ;;; Compile `node` as an expression.
 (define (compile-expression node env (options (js/obj)))
-  (compile-rose node env (make-expression-options options)))
+  (compile-syntax node env (make-expression-options options)))
 
 ;;; Compile `node` as a regular statement.
 (define (compile-statement node env (options (js/obj)))
-  (compile-rose node env (make-statement-options options)))
+  (compile-syntax node env (make-statement-options options)))
 
 ;;; Compile `node` as a return statement.
 (define (compile-return-statement node env (options (js/obj)))
-  (compile-rose node env (make-return-statement-options options)))
+  (compile-syntax node env (make-return-statement-options options)))
 
 ;;; Compile `node` as a regular statement or as a return statement,
 ;;; depending on the value of the `expressionType` option.
@@ -1636,13 +1643,19 @@
 
 ;;; Wrap `exp` in a `lambda` call.
 (define (wrap-in-lambda-call exp)
-  (sexp->rose
+  (datum->syntax
+   #f
    `((lambda () ,exp))))
 
 ;;; Wrap `exp` in a `js/arrow` call.
 (define (wrap-in-arrow-call exp)
-  (sexp->rose
+  (datum->syntax
+   #f
    `((js/arrow () ,exp))))
+
+;;; Make an immediately invoked function expression (IIFE).
+(define (make-iife exp)
+  (wrap-in-arrow-call exp))
 
 ;;; Make a `BlockStatement`.
 ;;; Handles `Program` fragments.
@@ -1721,12 +1734,12 @@
   (define comments-option
     (oget options :comments))
   (define comments
-    (if (is-a? node1 Rose)
+    (if (syntax? node1)
         (send node1 get-property "comments")
         (get-field comments node1)))
   (when (and comments-option comments)
     (cond
-     ((is-a? node2 Rose)
+     ((syntax? node2)
       (send node2
             set-property
             "comments"
@@ -1812,8 +1825,8 @@
 ;;; Whether `exp` is a function call, given `env`.
 (define (function-call? exp env)
   (cond
-   ((is-a? exp Rose)
-    (macro-call? (rose->sexp exp) env))
+   ((syntax? exp)
+    (macro-call? (syntax->datum exp) env))
    (else
     (and (array? exp)
          (> (js/length exp) 1)
@@ -1824,8 +1837,8 @@
 ;;; Whether `exp` is a macro call, given `env`.
 (define (macro-call? exp env)
   (cond
-   ((is-a? exp Rose)
-    (macro-call? (rose->sexp exp) env))
+   ((syntax? exp)
+    (macro-call? (syntax->datum exp) env))
    (else
     (and (array? exp)
          (> (js/length exp) 1)
@@ -1836,8 +1849,8 @@
 ;;; Whether `exp` is a special form, given `env`.
 (define (special-form? exp env)
   (cond
-   ((is-a? exp Rose)
-    (macro-call? (rose->sexp exp) env))
+   ((syntax? exp)
+    (macro-call? (syntax->datum exp) env))
    (else
     (and (array? exp)
          (> (js/length exp) 1)
@@ -1851,7 +1864,7 @@
   (define curried-option
     (oget options :curried))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define name-and-params
     (second exp))
   (define name
@@ -1867,7 +1880,8 @@
     (when (and (dotted-list? name-and-params)
                (= (js/length params) 1))
       (set! params (first params))))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(lambda ,params
       ,@(send node drop 2))))
 
@@ -2024,29 +2038,30 @@
 ;;; a `(define-class ...)` expression.
 (define (define->define-class node)
   (cond
-   ((is-a? node Rose)
+   ((syntax? node)
     (define superclass
       (send (send node get 2) get 1))
     (define superclass-exp
-      (rose->sexp superclass))
+      (syntax->datum superclass))
     (define superclass-list
       (if (memq? superclass-exp
                  '(object%
                    object
                    Object))
           '()
-           (list superclass)))
+          (list superclass)))
     (transfer-comments
      node
-     (sexp->rose
+     (datum->syntax
+      #f
       `(define-class ,(send node get 1)
-         ,(sexp->rose superclass-list)
+         ,(datum->syntax #f superclass-list)
          ,@(send (send node get 2) drop 2)))))
    (else
     (~> node
-        (sexp->rose _)
+        (datum->syntax #f _)
         (define->define-class _)
-        (rose->sexp _)))))
+        (syntax->datum _)))))
 
 ;;; Compile an `(ann ...)` expression.
 (define (compile-ann node env (options (js/obj)))
@@ -2064,7 +2079,7 @@
           (compile-type t_ env options))
      options))
    (else
-    (compile-rose e_ env options))))
+    (compile-syntax e_ env options))))
 
 ;;; Compile a `(define-type ...)` expression.
 (define (compile-define-type node env (options (js/obj)))
@@ -2088,8 +2103,8 @@
 ;;; Compile a type expression.
 (define (compile-type node env (options (js/obj)))
   (define exp
-    (if (is-a? node Rose)
-        (rose->sexp node)
+    (if (syntax? node)
+        (syntax->datum node)
         node))
   (compile-type-exp exp env options))
 
@@ -2261,7 +2276,7 @@
 ;;; Compile an `(apply ...)` expression.
 (define (compile-apply node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define f
     (second exp))
   (define is-new
@@ -2276,7 +2291,7 @@
         (drop exp 2)))
   (define callee-compiled
     (compile-expression
-     (sexp->rose callee)
+     (datum->syntax #f callee)
      env options))
   (define args-compiled '())
   (when (> (js/length args) 0)
@@ -2285,12 +2300,12 @@
     (for ((arg regular-args))
       (push-right! args-compiled
                    (compile-expression
-                    (sexp->rose arg)
+                    (datum->syntax #f arg)
                     env options)))
     (define rest-arg
       (js/last args))
     (define rest-arg-compiled
-      (compile-expression (sexp->rose rest-arg) env options))
+      (compile-expression (datum->syntax #f rest-arg) env options))
     (define spread-element
       (new SpreadElement rest-arg-compiled))
     ;; Simplify the expression if the rest argument
@@ -2337,16 +2352,16 @@
   (define indices-compiled
     (map (lambda (x)
            (define x-exp
-             (rose->sexp x))
+             (syntax->datum x))
            (define is-quoted-symbol #f)
            (when (and (quoted-expression? x-exp)
                       (symbol? (js/second x-exp)))
              (set! x-exp (js/second x-exp))
-             (set! x (sexp->rose x-exp x))
+             (set! x (datum->syntax x x-exp))
              (set! is-quoted-symbol #t))
            (when (keyword? x-exp)
              (set! x-exp (keyword->symbol_ x-exp))
-             (set! x (sexp->rose x-exp x))
+             (set! x (datum->syntax x x-exp))
              (set! is-quoted-symbol #t))
            (cond
             (is-quoted-symbol
@@ -2367,9 +2382,9 @@
                                   "UnaryExpression"
                                   "BinaryExpression"))))
     (set! variable
-          (sexp->rose
-           `(ann ,variable Any)
-           variable)))
+          (datum->syntax
+           variable
+           `(ann ,variable Any))))
   (define variable-compiled
     (compile-expression variable env options))
   (define computed #t)
@@ -2389,14 +2404,14 @@
 ;;; Compile an `(array-set! ...)` expression.
 (define (compile-array-set node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define arr
     (second exp))
   (define indices
     (drop-right (drop exp 2) 1))
   (define value
     (aget exp (- (js/length exp) 1)))
-  (compile-rose
+  (compile-syntax
    (insert-sexp-into-rose
     `(set! (array-ref ,arr ,@indices) ,value)
     node)
@@ -2417,7 +2432,7 @@
 ;;; Compile an atomic expression, such as `foo`.
 (define (compile-atom node env (options (js/obj)))
   (make-expression-or-statement
-   (new Literal (rose->sexp node))
+   (new Literal (syntax->datum node))
    options))
 
 ;;; Compile a `(: ...)` expression.
@@ -2425,11 +2440,11 @@
   (define sym
     (send node get 1))
   (define sym-exp
-    (rose->sexp sym))
+    (syntax->datum sym))
   (define type_
     (send node get 2))
   (define type-exp
-    (rose->sexp type_))
+    (syntax->datum type_))
   (send env set-local-type! sym-exp type-exp)
   (compile-nop node env options))
 
@@ -2440,7 +2455,8 @@
   (define (wrap exps)
     (if (= (js/length exps) 1)
         (js/first exps)
-        (sexp->rose
+        (datum->syntax
+         #f
          `(begin ,@exps))))
   (define clauses
     (~> node
@@ -2450,24 +2466,27 @@
     (send node last))
   (define final-exp
     (if (tagged-list? final-clause 'else)
-        (sexp->rose
+        (datum->syntax
+         #f
          `(,(if (eq? expression-type "expression")
                 'begin
-                 'js/block)
+                'js/block)
            ,@(send final-clause drop 1)))
-        (sexp->rose
+        (datum->syntax
+         #f
          `(if ,(send final-clause get 0)
               ,(wrap (send final-clause drop 1))))))
   (define final-exp-compiled
     (transfer-and-compile-comments
      final-clause
-     (compile-rose final-exp env options)
+     (compile-syntax final-exp env options)
      options))
   (define result
     (foldr (lambda (clause alternate)
              (define conditional
-               (compile-rose
-                (sexp->rose
+               (compile-syntax
+                (datum->syntax
+                 #f
                  `(if ,(send clause get 0)
                       ,(transfer-comments
                         clause
@@ -2503,14 +2522,16 @@
     (define condition
       (send node get 1))
     (define then-exp
-      (sexp->rose
+      (datum->syntax
+       #f
        `(js/block ,(send node get 2))))
     (define else-exp
       (send node get 3))
     (when (and else-exp
                (not (form? else-exp js/if_ env)))
       (set! else-exp
-            (sexp->rose
+            (datum->syntax
+             #f
              `(js/block ,else-exp))))
     (define condition-compiled
       (compile-expression
@@ -2539,7 +2560,7 @@
     (send node get 2))
   (define else-exp
     (or (send node get 3)
-        (sexp->rose #u)))
+        (datum->syntax #f #u)))
   (transfer-and-compile-comments
    node
    (make-expression-or-statement
@@ -2564,7 +2585,7 @@
   (define inline-lisp-sources
     (oget options :inline-lisp-sources))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define type_ 'Any)
   (cond
    ;; Function definition.
@@ -2580,7 +2601,7 @@
     (define function-name
       (print-estree
        (compile-symbol
-        (sexp->rose name-sym)
+        (datum->syntax #f name-sym)
         env
         (make-expression-options
          options))
@@ -2591,17 +2612,17 @@
       (cond
        ((eq? (~> node
                  (send _ get 2)
-                 (rose->sexp _))
+                 (syntax->datum _))
              ':)
         (~> node
             (send _ get 3)
-            (rose->sexp _)))
+            (syntax->datum _)))
        (else
         'Any)))
     (define params
       (~> lambda-exp
           (send _ get 1)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define declared-type
       (send env get-local-type sym))
     (cond
@@ -2643,10 +2664,10 @@
      (should-curry
       (set! result
             (compile-define
-             (sexp->rose
+             (datum->syntax
+              node
               `(define ,name-sym
-                 ,lambda-exp)
-              node)
+                 ,lambda-exp))
              env
              options)))
      (else
@@ -2688,7 +2709,7 @@
         (string->symbol function-name))
       (define lisp-code-exp
         (compile-sexp
-         `(declare ,sym (fsource ',exp))
+         `(declare ,sym (fsource ,exp))
          env options))
       (new Program (list result lisp-code-exp)))
      (else
@@ -2711,11 +2732,12 @@
     (define name
       (send node get 1))
     (define args
-      (send (send lambda-node get 1) drop 0))
+      (syntax->list (send lambda-node get 1)))
     (define da-form
       (transfer-comments
        node
-       (sexp->rose
+       (datum->syntax
+        #f
         `(define/async
            (,name ,@args)
            ,@(send lambda-node drop 2)))))
@@ -2800,17 +2822,17 @@
 ;;; Compile a `(/ ...)` expression.
 (define (compile-div node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((= (js/length exp) 1)
     (compile-expression
-     (sexp->rose #u node)
+     (datum->syntax node #u)
      env options))
    ((= (js/length exp) 2)
     (compile-div
-     (sexp->rose
-      `(/ 1 ,(send node get 1))
-      node)
+     (datum->syntax
+      node
+      `(/ 1 ,(send node get 1)))
      env options))
    (else
     (compile-binary-expression
@@ -2829,7 +2851,7 @@
   (make-expression-or-statement
    (new CallExpression
         (new MemberExpression
-             (if (symbol? (rose->sexp obj))
+             (if (symbol? (syntax->datum obj))
                  (compile-symbol
                   obj env
                   (make-expression-options
@@ -2857,9 +2879,9 @@
     (send node drop 3))
   (make-expression-or-statement
    (compile-expression
-    (sexp->rose
-     `(apply (get-field ,method ,obj) ,@args)
-     node)
+    (datum->syntax
+     node
+     `(apply (get-field ,method ,obj) ,@args))
     env options)
    options))
 
@@ -2942,7 +2964,7 @@
   (define callee
     (send node get 0))
   (define op
-    (rose->sexp callee))
+    (syntax->datum callee))
   (define symbolic-op
     (symbol? op))
   (define should-inline-op
@@ -3026,11 +3048,11 @@
 ;;; Compile a `(> ...)` expression.
 (define (compile-greater-than node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((< (js/length exp) 3)
-    (compile-rose
-     (sexp->rose #t)
+    (compile-syntax
+     (datum->syntax #f #t)
      env options))
    ((= (js/length exp) 3)
     (compile-binary-expression
@@ -3045,18 +3067,18 @@
       (push-right! and-exp
                    `(> ,(aget exp (- i 1))
                        ,(aget exp i))))
-    (compile-rose
-     (sexp->rose and-exp)
+    (compile-syntax
+     (datum->syntax #f and-exp)
      env options))))
 
 ;;; Compile a `(>= ...)` expression.
 (define (compile-greater-than-or-equal node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((< (js/length exp) 3)
-    (compile-rose
-     (sexp->rose #t)
+    (compile-syntax
+     (datum->syntax #f #t)
      env options))
    ((= (js/length exp) 3)
     (compile-binary-expression
@@ -3071,8 +3093,8 @@
       (push-right! and-exp
                    `(>= ,(aget exp (- i 1))
                         ,(aget exp i))))
-    (compile-rose
-     (sexp->rose and-exp)
+    (compile-syntax
+     (datum->syntax #f and-exp)
      env options))))
 
 ;;; Compile a binary expression.
@@ -3093,13 +3115,13 @@
     (define identity
       (oget settings :identity))
     (make-expression-or-statement
-     (compile-rose
-      (sexp->rose identity)
+     (compile-syntax
+      (datum->syntax #f identity)
       env options)
      options))
    ((= (js/length operands) 1)
     (make-expression-or-statement
-     (compile-rose
+     (compile-syntax
       (first operands)
       env
       options)
@@ -3165,15 +3187,15 @@
 (define (compile-js/op node env (options (js/obj)))
   (define op
     (~> (send node get 1)
-        (rose->sexp _)))
+        (syntax->datum _)))
   (when (symbol? op)
     (set! op (symbol->string op)))
   (define logical
     (memq? op '("&&" "||")))
   (define node1
-    (sexp->rose
-     (send node drop 1)
-     node))
+    (datum->syntax
+     node
+     (send node drop 1)))
   (cond
    ((= (send node size) 3)
     (compile-unary-expression
@@ -3197,7 +3219,7 @@
   (define inherited-options
     (js/obj-append options))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define function-name
     (oget settings :function-name))
   (define generator
@@ -3244,16 +3266,16 @@
                        (new Identifier
                             (print-estree
                              (compile-expression
-                              (sexp->rose sym)
+                              (datum->syntax #f sym)
                               env1 inherited-options)
                              inherited-options))
                        (compile-expression
-                        (sexp->rose (fourth arg))
+                        (datum->syntax #f (fourth arg))
                         env1 inherited-options))
                   (new Identifier
                        (print-estree
                         (compile-expression
-                         (sexp->rose sym)
+                         (datum->syntax #f sym)
                          env1 inherited-options)
                         inherited-options)))
               (send set-type
@@ -3266,12 +3288,14 @@
                           (new Identifier
                                (print-estree
                                 (compile-expression
-                                 (sexp->rose
+                                 (datum->syntax
+                                  #f
                                   (first arg))
                                  env1 inherited-options)
                                 inherited-options))
                           (compile-expression
-                           (sexp->rose
+                           (datum->syntax
+                            #f
                             (second arg))
                            env1 inherited-options))))
        (else
@@ -3280,7 +3304,7 @@
                      (new Identifier
                           (print-estree
                            (compile-expression
-                            (sexp->rose arg)
+                            (datum->syntax #f arg)
                             env1 inherited-options)
                            inherited-options)))))))
   (when rest-arg
@@ -3288,12 +3312,12 @@
     (push-right! params
                  (new RestElement
                       (compile-expression
-                       (sexp->rose rest-arg)
+                       (datum->syntax #f rest-arg)
                        env1 inherited-options))))
   (define body-statements
     (send node drop 2))
   (when (and (> (js/length body-statements) 0)
-             (eq? (rose->sexp (first body-statements))
+             (eq? (syntax->datum (first body-statements))
                   ':))
     (set! body-statements (drop body-statements 2)))
   (define body
@@ -3343,11 +3367,11 @@
 ;;; Compile a `(< ...)` expression.
 (define (compile-less-than node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((< (js/length exp) 3)
-    (compile-rose
-     (sexp->rose #t)
+    (compile-syntax
+     (datum->syntax #f #t)
      env options))
    ((= (js/length exp) 3)
     (compile-binary-expression
@@ -3362,18 +3386,18 @@
       (push-right! and-exp
                    `(< ,(aget exp (- i 1))
                        ,(aget exp i))))
-    (compile-rose
-     (sexp->rose and-exp)
+    (compile-syntax
+     (datum->syntax #f and-exp)
      env options))))
 
 ;;; Compile a `(<= ...)` expression.
 (define (compile-less-than-or-equal node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((< (js/length exp) 3)
-    (compile-rose
-     (sexp->rose #t)
+    (compile-syntax
+     (datum->syntax #f #t)
      env options))
    ((= (js/length exp) 3)
     (compile-binary-expression
@@ -3388,8 +3412,8 @@
       (push-right! and-exp
                    `(<= ,(aget exp (- i 1))
                         ,(aget exp i))))
-    (compile-rose
-     (sexp->rose and-exp)
+    (compile-syntax
+     (datum->syntax #f and-exp)
      env options))))
 
 ;;; Compile a `(let ...)` expression.
@@ -3417,14 +3441,14 @@
     (define make-block #f)
     (define let-nodes
       (~> node
-          (send get 1)
-          (send get-nodes)))
+          (send _ get 1)
+          (syntax->list _)))
     (define body-nodes
       (send node drop 2))
     (define define-nodes
       (map (lambda (x)
              (define exp
-               (rose->sexp x))
+               (syntax->datum x))
              (cond
               ((array? exp)
                (define sym
@@ -3435,10 +3459,10 @@
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t))
-               (sexp->rose
+               (datum->syntax
+                x
                 `(define ,(send x get 0)
-                   ,(send x get 1))
-                x))
+                   ,(send x get 1))))
               (else
                (define sym exp)
                (when (and (not make-block)
@@ -3447,9 +3471,9 @@
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t))
-               (sexp->rose
-                `(define ,x)
-                x))))
+               (datum->syntax
+                x
+                `(define ,x)))))
            let-nodes))
     (define env1
       (if make-block
@@ -3457,14 +3481,14 @@
                               env)
           env))
     (define result
-      (compile-rose
-       (sexp->rose
+      (compile-syntax
+       (datum->syntax
+        node
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@define-nodes
-          ,@body-nodes)
-        node)
+          ,@body-nodes))
        env1 inherited-options))
     result)))
 
@@ -3487,14 +3511,14 @@
     (define make-block #f)
     (define let-nodes
       (~> node
-          (send get 1)
-          (send get-nodes)))
+          (send _ get 1)
+          (syntax->list _)))
     (define body-nodes
       (send node drop 2))
     (define define-nodes
       (map (lambda (x)
              (define exp
-               (rose->sexp x))
+               (syntax->datum x))
              (cond
               ((symbol? exp)
                (define sym exp)
@@ -3504,13 +3528,14 @@
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t))
-               (sexp->rose
+               (datum->syntax
+                #f
                 `(define ,x)))
               (else
                (define variables
                  (~> x
                      (send _ get 0)
-                     (rose->sexp _)))
+                     (syntax->datum _)))
                (cond
                 ((symbol? variables)
                  (define sym variables)
@@ -3533,10 +3558,10 @@
                        (break))))))
                (define expression
                  (send x get 1))
-               (sexp->rose
+               (datum->syntax
+                x
                 `(define-values ,(send x get 0)
-                   ,(send x get 1))
-                x))))
+                   ,(send x get 1))))))
            let-nodes))
     (define env1
       (if make-block
@@ -3544,21 +3569,21 @@
                               env)
           env))
     (define result
-      (compile-rose
-       (sexp->rose
+      (compile-syntax
+       (datum->syntax
+        node
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@define-nodes
-          ,@body-nodes)
-        node)
+          ,@body-nodes))
        env1 inherited-options))
     result)))
 
 ;;; Compile a `(define-values ...)` expression.
 (define (compile-define-values node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define inherited-options
     (js/obj-append options))
   (define expression-type
@@ -3572,7 +3597,7 @@
   (define variables
     (~> node
         (send _ get 1)
-        (rose->sexp _)))
+        (syntax->datum _)))
   (define expression
     (~> node
         (send get 2)))
@@ -3581,12 +3606,12 @@
   (define var-decls '())
   (define declarator-id)
   (define declarator-init)
-  (when (eq? (rose->sexp expression)
+  (when (eq? (syntax->datum expression)
              ':hole-marker)
     (set! hole-marker
           (~> node
               (send _ get 3)
-              (rose->sexp _)))
+              (syntax->datum _)))
     (set! expression
           (~> node
               (send _ get 4))))
@@ -3608,7 +3633,7 @@
           (new Identifier
                (print-estree
                 (compile-symbol
-                 (sexp->rose variables)
+                 (datum->syntax #f variables)
                  env inherited-options)
                 inherited-options)))
     (send env set-local! variables expression-thunk 'Any))
@@ -3647,7 +3672,7 @@
                    (new Identifier
                         (print-estree
                          (compile-symbol
-                          (sexp->rose x)
+                          (datum->syntax #f x)
                           env inherited-options)
                          inherited-options)))))
                regular-vars))
@@ -3671,7 +3696,8 @@
                         (new Identifier
                              (print-estree
                               (compile-symbol
-                               (sexp->rose
+                               (datum->syntax
+                                #f
                                 rest-var)
                                env
                                inherited-options)
@@ -3691,7 +3717,7 @@
 ;;; Compile a `(set!-values ...)` expression.
 (define (compile-set-values node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define inherited-options
     (js/obj-append options))
   (define expression-type
@@ -3703,9 +3729,9 @@
   (define right)
   (set! declaration
         (compile-define-values
-         (sexp->rose
-          `(define-values ,@(send node drop 1))
-          node)
+         (datum->syntax
+          node
+          `(define-values ,@(send node drop 1)))
          env inherited-options))
   (set! declarator
         (first (get-field declarations
@@ -3738,8 +3764,8 @@
     (define make-block #f)
     (define let-nodes
       (~> node
-          (send get 1)
-          (send get-nodes)))
+          (send _ get 1)
+          (syntax->list _)))
     (define body-nodes
       (send node drop 2))
     (define define-nodes
@@ -3747,7 +3773,7 @@
              (define fields
                (send x get 0))
              (define fields-exp
-               (rose->sexp fields))
+               (syntax->datum fields))
              (define obj
                (send x get 1))
              (for ((f fields-exp))
@@ -3761,10 +3787,10 @@
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t)))
-             (sexp->rose
+             (datum->syntax
+              x
               `(define-fields ,fields
-                 ,obj)
-              x))
+                 ,obj)))
            let-nodes))
     (define env1
       (if make-block
@@ -3772,14 +3798,14 @@
                               env)
           env))
     (define result
-      (compile-rose
-       (sexp->rose
+      (compile-syntax
+       (datum->syntax
+        node
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@define-nodes
-          ,@body-nodes)
-        node)
+          ,@body-nodes))
        env1 inherited-options))
     result)))
 
@@ -3792,15 +3818,15 @@
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define fields
     (send node get 1))
   (define fields-exp
-    (rose->sexp fields))
+    (syntax->datum fields))
   (define obj
     (send node get 2))
   (define obj-exp
-    (rose->sexp obj))
+    (syntax->datum obj))
   (define obj-thunk
     (thunk
      (lambda ()
@@ -3839,9 +3865,9 @@
     (send env set-local! sym prop-thunk 'Any))
   (define expression-statement
     (compile-set-fields
-     (sexp->rose
-      `(set!-fields ,fields ,obj)
-      node)
+     (datum->syntax
+      node
+      `(set!-fields ,fields ,obj))
      env
      (make-statement-options options)))
   (define assignment-expression
@@ -3867,7 +3893,7 @@
         (new ObjectPattern
              (map (lambda (x)
                     (define exp
-                      (rose->sexp x))
+                      (syntax->datum x))
                     (cond
                      ((array? exp)
                       (new Property
@@ -3880,7 +3906,7 @@
                         (compile-symbol
                          x env options))
                       (new Property key key))))
-                  (send (send node get 1) drop 0)))
+                  (syntax->list (send node get 1))))
         (compile-expression
          (send node get 2) env options))
    options))
@@ -3903,10 +3929,10 @@
     (send node drop 1))
   (define quoted-args
     (map (lambda (arg)
-           (sexp->rose `(quote ,arg) arg))
+           (datum->syntax arg `(quote ,arg)))
          args))
   (define call
-    (sexp->rose `(,op ,@quoted-args) node))
+    (datum->syntax node `(,op ,@quoted-args)))
   (compile-function-call call env options))
 
 ;;; Compile a macro call.
@@ -3915,7 +3941,7 @@
   ;; compilers defined for the immediate expansion.
   (define expansion
     (macroexpand-1 node env))
-  (compile-rose expansion env options))
+  (compile-syntax expansion env options))
 
 ;;; Expand the macro call `exp` in `env`, and keep
 ;;; expanding the result until something that is not
@@ -3968,39 +3994,52 @@
 ;;;
 ;;; [cl:macroexpand-1]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand-1
 (define (macroexpand*-1 exp (env #u))
-  (define node exp)
+  (define exp1
+    (if (syntax? exp)
+        (syntax->datum exp)
+        exp))
+  (define env1
+    (or env
+        (current-environment_)
+        (empty-environment)))
   (define expansion exp)
   (define expanded #f)
-  (set! exp
-        (if (is-a? node Rose)
-            (rose->sexp node)
-            node))
-  (set! env
-        (or env
-            (current-environment_)
-            (empty-environment)))
   (cond
-   ((not (list? exp))
-    (set! expansion exp))
-   ((null? exp)
-    (set! expansion exp))
-   ((quote? exp)
+   ((not (list? exp1))
+    (set! expansion exp1))
+   ((null? exp1)
+    (set! expansion exp1))
+   ((quote? exp1)
     (set! expansion
-          (text-of-quotation exp)))
+          (text-of-quotation exp1)))
    (else
     (define op
-      (first exp))
+      (js/first exp1))
     (define-values (macro-f typ)
-      (send env get-typed-value op))
+      (send env1 get-typed-value op))
     (when (or (macro?_ macro-f)
               (macro-type? typ))
-      (set! expansion (macro-f exp env))
+      (cond
+       ((or (syntax-transformer?_ macro-f)
+            (syntax-transformer-type?_ typ))
+        (define node
+          (if (syntax? exp)
+              exp
+              (datum->syntax #f exp)))
+        (set! expansion
+              (funcall macro-f node)))
+       (else
+        (set! expansion
+              (funcall macro-f exp1 env1))))
       (set! expanded #t))))
-  (values
-   (if (is-a? node Rose)
-       (sexp->rose expansion node)
-       expansion)
-   expanded))
+  (cond
+   ((and (syntax? exp)
+         (not (syntax? expansion)))
+    (set! expansion (datum->syntax exp expansion)))
+   ((and (not (syntax? exp))
+         (syntax? expansion))
+    (set! expansion (syntax->datum expansion))))
+  (values expansion expanded))
 
 ;;; Expand the macro call `exp` in `env`, and keep
 ;;; expanding the result for a total number of `n`
@@ -4100,7 +4139,7 @@
 ;;; Also handles `(.method obj ...)` calls.
 (define (compile-dot node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define match
     (regexp-match (regexp "^\\.(.*)$")
                   (symbol->string (first exp))))
@@ -4122,7 +4161,8 @@
       (define obj
         (send node get 1))
       (compile-js/dot
-       (sexp->rose
+       (datum->syntax
+        #f
         `(js/. ,obj ,field-sym))
        env
        options))
@@ -4140,19 +4180,19 @@
       (define field
         (second match))
       (compile-js/dot
-       (sexp->rose
-        `(js/. ,obj ,(string->symbol field))
-        node)
+       (datum->syntax
+        node
+        `(js/. ,obj ,(string->symbol field)))
        env options))
      ;; Method call:
      ;; `(.foo bar ...)` = `(send bar foo ...)`.
      (else
       (compile-send
-       (sexp->rose
+       (datum->syntax
+        node
         `(send ,obj
                ,(string->symbol method)
-               ,@(send node drop 2))
-        node)
+               ,@(send node drop 2)))
        env options))))))
 
 ;;; Compile a `(js/. ...)` expression.
@@ -4160,12 +4200,12 @@
   (cond
    ((> (send node size) 3)
     (compile-js/dot
-     (sexp->rose
+     (datum->syntax
+      node
       (foldl (lambda (prop obj)
                `(js/. ,obj ,prop))
              (send node get 1)
-             (send node drop 2))
-      node)
+             (send node drop 2)))
      env options))
    (else
     (define language
@@ -4175,20 +4215,20 @@
     (define prop
       (send node get 2))
     (define prop-exp
-      (rose->sexp prop))
+      (syntax->datum prop))
     (define computed
       (not (symbol? prop-exp)))
     (when (and (quoted-expression? prop-exp)
                (symbol? (js/second prop-exp)))
       (set! prop-exp (js/second prop-exp))
-      (set! prop (sexp->rose prop-exp prop))
+      (set! prop (datum->syntax prop prop-exp))
       (set! computed #f))
     (when (keyword? prop-exp)
       (set! prop-exp (keyword->symbol_ prop-exp))
-      (set! prop (sexp->rose prop-exp prop))
+      (set! prop (datum->syntax prop prop-exp))
       (set! computed #f))
     (define prop-compiled
-      (if (symbol? (rose->sexp prop))
+      (if (symbol? (syntax->datum prop))
           (compile-symbol prop env options)
           (compile-expression prop env options)))
     ;; Kludge: prevent TypeScript errors with expressions
@@ -4201,11 +4241,11 @@
                                     "UnaryExpression"
                                     "BinaryExpression"))))
       (set! obj
-            (sexp->rose
-             `(ann ,obj Any)
-             obj)))
+            (datum->syntax
+             obj
+             `(ann ,obj Any))))
     (define obj-compiled
-      (if (symbol? (rose->sexp obj))
+      (if (symbol? (syntax->datum obj))
           (compile-symbol
            obj env
            (make-expression-options
@@ -4224,31 +4264,31 @@
   (cond
    ((> (send node size) 3)
     (compile-js/optional-chaining
-     (sexp->rose
+     (datum->syntax
+      node
       (foldl (lambda (prop obj)
                `(js/?. ,obj ,prop))
              (send node get 1)
-             (send node drop 2))
-      node)
+             (send node drop 2)))
      env options))
    ((= (send node size) 2)
-    (compile-rose (send node get 1) env options))
+    (compile-syntax (send node get 1) env options))
    (else
     (define obj
       (send node get 1))
     (define field
       (send node get 2))
     (define result
-      (if (array? (rose->sexp field))
+      (if (array? (syntax->datum field))
           (compile-expression
-           (sexp->rose
-            `(,obj ,@(send field drop 0))
-            node)
+           (datum->syntax
+            node
+            `(,obj ,@(syntax->list field)))
            env options)
           (compile-expression
-           (sexp->rose
-            `(js/. ,obj ,field)
-            node)
+           (datum->syntax
+            node
+            `(js/. ,obj ,field))
            env options)))
     (set-field! optional result #t)
     (make-expression-or-statement
@@ -4262,10 +4302,10 @@
     (send node get 2))
   (define val
     (send node get 3))
-  (compile-rose
-   (sexp->rose
-    `(set! (get-field ,field ,obj) ,val)
-    node)
+  (compile-syntax
+   (datum->syntax
+    node
+    `(set! (get-field ,field ,obj) ,val))
    env options))
 
 ;;; Compile a `(modulo ...)` expression.
@@ -4331,7 +4371,7 @@
   (define expression-type
     (oget options :expression-type))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define body
     (send node drop 1))
   (define compiled-body '())
@@ -4340,7 +4380,7 @@
   ;; compilation of `gensym`'ed symbols).
   (for ((i (range 0 (js/length body))))
     (define exp
-      (rose->sexp (aget body i)))
+      (syntax->datum (aget body i)))
     (cond
      ((form? exp define_ env)
       (define sym
@@ -4416,7 +4456,7 @@
   (define env1
     (new LispEnvironment
          '()
-          env))
+         env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4448,8 +4488,8 @@
           (define env2
             (send env1 clone))
           (define compiled-expression
-            (compile-rose
-             (sexp->rose exp)
+            (compile-syntax
+             (datum->syntax #f exp)
              env2
              (js/obj-append
               options
@@ -4532,7 +4572,7 @@
     (define env1
       (new LispEnvironment
            '()
-            env))
+           env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -4610,13 +4650,14 @@
 ;;; Compile a `(quote ...)` expression.
 (define (compile-quote node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define result)
   (cond
    ((array? (second exp))
     (set! result
           (compile-expression
-           (sexp->rose
+           (datum->syntax
+            #f
             `(list
               ,@(send (second exp)
                       map
@@ -4649,22 +4690,23 @@
 ;;; Helper function for `compile-quasiquote`.
 (define (compile-quasiquote-helper node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((not (array? exp))
     (compile-expression
-     (sexp->rose
+     (datum->syntax
+      #f
       `(quote ,exp))
      env options))
    (else
     (new ArrayExpression
          (map (lambda (x)
                 (define exp
-                  (rose->sexp x))
+                  (syntax->datum x))
                 (cond
                  ((tagged-list? exp 'quasiquote)
                   (compile-quote
-                   (sexp->rose `(quote ,exp))
+                   (datum->syntax #f `(quote ,exp))
                    env
                    (make-expression-options options)))
                  ((tagged-list? exp 'unquote)
@@ -4677,7 +4719,7 @@
                  (else
                   (compile-quasiquote-helper
                    x env options))))
-              (send node get-nodes))))))
+              (syntax->list node))))))
 
 ;;; Compile a `(require ...)` expression.
 (define (compile-require node env (options (js/obj)))
@@ -4692,17 +4734,18 @@
   (define x-node
     (send node get 1))
   (define x-exp
-    (rose->sexp x-node))
+    (syntax->datum x-node))
   (define y-node
     (or (send node get 2) x-node))
   (define y-exp
-    (rose->sexp y-node))
+    (syntax->datum y-node))
   (cond
    (fcommonjs
     (cond
      ((tagged-list? x-exp 'only-in)
       (compile-statement
-       (sexp->rose
+       (datum->syntax
+        #f
         `(define-fields ,(drop x-exp 2)
            (js/require ,(js/second x-exp))))
        env options))
@@ -4710,7 +4753,8 @@
       (when (string? x-exp)
         (set! x-exp (string->symbol x-exp)))
       (compile-statement
-       (sexp->rose
+       (datum->syntax
+        #f
         `(define ,x-exp
            (js/require ,y-node)))
        env options))))
@@ -4722,7 +4766,7 @@
      ((tagged-list? x-exp 'only-in)
       (for ((x (send x-node drop 2)))
         (define exp
-          (rose->sexp x))
+          (syntax->datum x))
         (cond
          ((array? exp)
           (define x1
@@ -4735,7 +4779,7 @@
             (set! x1-str
                   (print-estree
                    (compile-symbol
-                    (sexp->rose x1)
+                    (datum->syntax #f x1)
                     env
                     options
                     (js/obj :literal-symbol #t))
@@ -4744,7 +4788,7 @@
             (set! x2-str
                   (print-estree
                    (compile-symbol
-                    (sexp->rose x2)
+                    (datum->syntax #f x2)
                     env
                     options
                     (js/obj :literal-symbol #t))
@@ -4764,7 +4808,7 @@
             (set! x1-str
                   (print-estree
                    (compile-symbol
-                    (sexp->rose x1)
+                    (datum->syntax #f x1)
                     env
                     options
                     (js/obj :literal-symbol #t))
@@ -4784,7 +4828,7 @@
         (set! x-exp
               (print-estree
                (compile-symbol
-                (sexp->rose x-exp)
+                (datum->syntax #f x-exp)
                 env
                 options
                 (js/obj :literal-symbol #t))
@@ -4800,7 +4844,7 @@
       (set! y-exp
             (print-estree
              (compile-symbol
-              (sexp->rose y-exp)
+              (datum->syntax #f y-exp)
               env
               options
               (js/obj :literal-symbol #t))
@@ -4831,7 +4875,7 @@
        ((tagged-list? exp 'all-from-out)
         (define name
           (~> (send exp get 1)
-              (rose->sexp _)
+              (syntax->datum _)
               (string->symbol _)))
         (push-right! properties `(js/obj-spread ,name)))
        ((tagged-list? exp 'rename-out)
@@ -4841,7 +4885,8 @@
         (push-right! properties `(quote ,exp))
         (push-right! properties exp))))
     (compile-statement
-     (sexp->rose
+     (datum->syntax
+      #f
       `(set-field! exports
                    module
                    (js/obj ,@properties)))
@@ -4852,7 +4897,7 @@
     (define other-expressions '())
     (for ((x expressions))
       (cond
-       ((tagged-list? (rose->sexp x) 'all-from-out)
+       ((tagged-list? (syntax->datum x) 'all-from-out)
         (push-right! all-from-out-expressions x))
        (else
         (push-right! other-expressions x))))
@@ -4871,7 +4916,7 @@
       (define seen '())
       (for ((x other-expressions))
         (define exp
-          (rose->sexp x))
+          (syntax->datum x))
         (cond
          ((tagged-list? exp 'rename-out)
           (for ((pair (rest exp)))
@@ -4883,7 +4928,7 @@
               (set! x1
                     (print-estree
                      (compile-symbol
-                      (sexp->rose x1)
+                      (datum->syntax #f x1)
                       env
                       options
                       (js/obj :literal-symbol #t))
@@ -4892,7 +4937,7 @@
               (set! x2
                     (print-estree
                      (compile-symbol
-                      (sexp->rose x2)
+                      (datum->syntax #f x2)
                       env
                       options
                       (js/obj :literal-symbol #t))
@@ -4909,7 +4954,7 @@
             (set! x1
                   (print-estree
                    (compile-symbol
-                    (sexp->rose x1)
+                    (datum->syntax #f x1)
                     env
                     options
                     (js/obj :literal-symbol #t))
@@ -4937,11 +4982,11 @@
   (define sym-node
     (send node get 1))
   (define sym-exp
-    (rose->sexp sym-node))
+    (syntax->datum sym-node))
   (define val-node
     (send node get 2))
   (define val-exp
-    (rose->sexp val-node))
+    (syntax->datum val-node))
   (cond
    ((and (form? val-exp add_ env)
          (or (and (eq? (second val-exp) sym-exp)
@@ -4949,14 +4994,14 @@
              (and (eq? (third val-exp) sym-exp)
                   (eq? (second val-exp) 1))))
     (set! val-exp `(add1 ,sym-exp))
-    (set! val-node (sexp->rose val-exp)))
+    (set! val-node (datum->syntax #f val-exp)))
    ((and (form? val-exp sub_ env)
          (or (and (eq? (second val-exp) sym-exp)
                   (eq? (third val-exp) 1))
              (and (eq? (third val-exp) sym-exp)
                   (eq? (second val-exp) 1))))
     (set! val-exp `(sub1 ,sym-exp))
-    (set! val-node (sexp->rose val-exp))))
+    (set! val-node (datum->syntax #f val-exp))))
   (define result "")
   (cond
    ((and (form? val-exp add1_ env)
@@ -4983,7 +5028,7 @@
     (set! result
           (new AssignmentExpression
                "="
-               (if (symbol? (rose->sexp sym-node))
+               (if (symbol? (syntax->datum sym-node))
                    (compile-symbol
                     sym-node env
                     (make-expression-options
@@ -4997,7 +5042,7 @@
 ;;; Compile a string expression.
 (define (compile-string node env (options (js/obj)))
   (define str
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((regexp-match (regexp "\\n") str)
     (define lines
@@ -5008,12 +5053,12 @@
      (else
       ;; TODO: We could compile to a template literal instead.
       ;; We just have to take care to escape it properly.
-      (compile-rose
+      (compile-syntax
        (transfer-comments
         node
-        (sexp->rose
-         `(string-append ,@lines)
-         node))
+        (datum->syntax
+         node
+         `(string-append ,@lines)))
        env options))))
    (else
     (compile-atom node env options))))
@@ -5021,7 +5066,7 @@
 ;;; Compile a `(- ...)` expression.
 (define (compile-sub node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((= (js/length exp) 2)
     (define num
@@ -5048,7 +5093,7 @@
     (oget options :quoted-symbol))
   (define current-module
     (oget options :current-module))
-  (define exp (rose->sexp node))
+  (define exp (syntax->datum node))
   (unless (or quoted-symbol
               literal-symbol)
     (when (should-inline? exp env options)
@@ -5063,7 +5108,8 @@
         (return
          (make-expression-or-statement
           (compile-expression
-           (sexp->rose
+           (datum->syntax
+            #f
             (make-inlined-value
              exp env options))
            env options)
@@ -5086,7 +5132,7 @@
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define gensymed-symbol
     (gensym? exp))
   (define str
@@ -5098,7 +5144,8 @@
   (cond
    (quoted-symbol-option
     (compile-expression
-     (sexp->rose
+     (datum->syntax
+      #f
       `(string->symbol ,str))
      env options))
    (literal-symbol-option
@@ -5233,9 +5280,9 @@
   (define body
     (send node get 1))
   (define body-exp
-    (sexp->rose
-     `(js/block ,@(send body drop 0))
-     node))
+    (datum->syntax
+     node
+     `(js/block ,@(syntax->list body))))
   (define test
     (send node get 2))
   (new DoWhileStatement
@@ -5260,21 +5307,21 @@
 ;;; Compile a `(js/for ...)` expression.
 (define (compile-js/for node env (options (js/obj)))
   (define body
-    (sexp->rose
-     `(js/block ,@(send node drop 2))
-     node))
+    (datum->syntax
+     node
+     `(js/block ,@(send node drop 2))))
   (define init
     (send node get 1 0))
   (define init-exp
-    (rose->sexp init))
+    (syntax->datum init))
   (define test
     (send node get 1 1))
   (define test-exp
-    (rose->sexp test))
+    (syntax->datum test))
   (define update
     (send node get 1 2))
   (define update-exp
-    (rose->sexp update))
+    (syntax->datum update))
   (define sym #u)
   (define (binding? x)
     (and x
@@ -5284,9 +5331,9 @@
    ((binding? init-exp)
     (set! sym (js/first init-exp))
     (set! init
-          (sexp->rose
-           `(define ,@(send init drop 0))
-           init)))
+          (datum->syntax
+           init
+           `(define ,@(syntax->list init)))))
    ((form? init-exp define_ env)
     (set! sym (js/second init-exp)))
    ((form? init-exp set!_ env)
@@ -5320,9 +5367,9 @@
         (set! sym (js/third update-exp)))))
     (when sym
       (set! update
-            (sexp->rose
-             `(set! ,sym ,update)
-             update))))
+            (datum->syntax
+             update
+             `(set! ,sym ,update)))))
   (define update-compiled
     (if (or (null? update-exp)
             (undefined? update-exp))
@@ -5351,15 +5398,15 @@
 ;;; Compile a `(js/for-in ...)` expression.
 (define (compile-js/for-in node env (options (js/obj)))
   (define left
-    (sexp->rose
-     `(define ,(send node get 1 0 0))
-     node))
+    (datum->syntax
+     node
+     `(define ,(send node get 1 0 0))))
   (define right
     (send node get 1 0 1))
   (define body
-    (sexp->rose
-     `(js/block ,@(send node drop 2))
-     node))
+    (datum->syntax
+     node
+     `(js/block ,@(send node drop 2))))
   (define left-compiled
     (compile-statement left env options))
   (define right-compiled
@@ -5374,15 +5421,15 @@
 ;;; Compile a `(js/for-of ...)` expression.
 (define (compile-js/for-of node env (options (js/obj)))
   (define left
-    (sexp->rose
-     `(define ,(send node get 1 0 0))
-     node))
+    (datum->syntax
+     node
+     `(define ,(send node get 1 0 0))))
   (define right
     (send node get 1 0 1))
   (define body
-    (sexp->rose
-     `(js/block ,@(send node drop 2))
-     node))
+    (datum->syntax
+     node
+     `(js/block ,@(send node drop 2))))
   (define left-compiled
     (compile-statement left env options))
   (define right-compiled
@@ -5464,12 +5511,12 @@
 ;;; Compile a `(string-append ...)` expression.
 (define (compile-string-append node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((<= (js/length exp) 0)
-    (compile-rose "" env options))
+    (compile-syntax "" env options))
    ((= (js/length exp) 2)
-    (compile-rose
+    (compile-syntax
      (send node get 1) env options))
    (else
     (compile-binary-expression
@@ -5490,11 +5537,11 @@
   (define inherited-options
     (js/obj-append options))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define class-name-node
     (send node get 1))
   (define class-name
-    (rose->sexp class-name-node))
+    (syntax->datum class-name-node))
   (define has-name
     (symbol? class-name))
   (define super-class
@@ -5512,7 +5559,7 @@
         (slice-rose node 1)
         (slice-rose node 2)))
   (define body-exp
-    (rose->sexp body-node))
+    (syntax->datum body-node))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
@@ -5522,24 +5569,25 @@
     (define super-classes-node
       (send body-node get 0))
     (define super-classes
-      (rose->sexp super-classes-node))
+      (syntax->datum super-classes-node))
     (set! body-node (slice-rose body-node 1))
-    (set! body-exp (rose->sexp body-node))
+    (set! body-exp (syntax->datum body-node))
     (when (> (js/length super-classes) 0)
       (set! super-class
             (new Identifier
                  (print-estree
                   (compile-expression
-                   (sexp->rose
+                   (datum->syntax
+                    #f
                     (first super-classes))
                    env1 inherited-options)
                   inherited-options)))))
   (define body-declarations '())
   (define accessibilities
     (make-hash))
-  (for ((x (send body-node get-nodes)))
+  (for ((x (syntax->list body-node)))
     (define exp
-      (rose->sexp x))
+      (syntax->datum x))
     (cond
      ((tagged-list? exp 'public)
       (hash-set! accessibilities (second exp) "public"))
@@ -5671,7 +5719,7 @@
 ;;; Compile a `(js/obj ...)` expression.
 (define (compile-js/obj node env (options (js/obj)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define properties '())
   (define i 1)
   (while (< i (js/length exp))
@@ -5685,7 +5733,7 @@
       (set! i (+ i 1)))
      (else
       (define key-exp
-        (rose->sexp key-node))
+        (syntax->datum key-node))
       (define computed
         (not (string? key-exp)))
       (define val-node
@@ -5694,12 +5742,12 @@
       (when (and (quoted-expression? key-exp)
                  (symbol? (js/second key-exp)))
         (set! key-exp (js/second key-exp))
-        (set! key-node (sexp->rose key-exp key-node))
+        (set! key-node (datum->syntax key-node key-exp))
         (set! is-quoted-symbol #t)
         (set! computed #f))
       (when (keyword? key-exp)
         (set! key-exp (keyword->symbol_ key-exp))
-        (set! key-node (sexp->rose key-exp key-node))
+        (set! key-node (datum->syntax key-node key-exp))
         (set! is-quoted-symbol #t)
         (set! computed #f))
       (define compiled-key
@@ -5766,7 +5814,7 @@
   (define str
     (send node get 2))
   (define str-exp
-    (rose->sexp str))
+    (syntax->datum str))
   (make-expression-or-statement
    (new TaggedTemplateExpression
         tag-compiled
@@ -5817,7 +5865,8 @@
   (define block
     (wrap-in-block-statement-smart
      (compile-statement-or-return-statement
-      (sexp->rose
+      (datum->syntax
+       #f
        `(begin ,@body-exps))
       env options)))
   (define handler #n)
@@ -5826,14 +5875,15 @@
     (define param
       (send catch-clause get 1))
     (define param-exp
-      (rose->sexp param))
+      (syntax->datum param))
     (define param-compiled
       (if (eq? param-exp '_)
           #n
           (compile-expression
            param env options)))
     (define body
-      (sexp->rose
+      (datum->syntax
+       #f
        `(begin ,@(send catch-clause drop 2))))
     (define body-compiled
       (wrap-in-block-statement-smart
@@ -5847,7 +5897,8 @@
     (if finally-clause
         (wrap-in-block-statement-smart
          (compile-statement
-          (sexp->rose
+          (datum->syntax
+           #f
            `(begin ,@(send finally-clause drop 1)))
           env options))
         #n))
@@ -5863,11 +5914,13 @@
   ;; `.unshift()` returns the length of the array, while `push!()`
   ;; returns the list.
   (compile-push-helper
-   (sexp->rose
+   (datum->syntax
+    #f
     `(send ,(send node get 1)
            unshift
            ,(send node get 2)))
-   (sexp->rose
+   (datum->syntax
+    #f
     `((lambda (lst x)
         (send lst unshift x)
         lst)
@@ -5880,11 +5933,13 @@
   ;; `.push()` returns the length of the array, while `push-right!()`
   ;; returns the list.
   (compile-push-helper
-   (sexp->rose
+   (datum->syntax
+    #f
     `(send ,(send node get 1)
            push
            ,(send node get 2)))
-   (sexp->rose
+   (datum->syntax
+    #f
     `((lambda (lst x)
         (send lst push x)
         lst)
@@ -5907,7 +5962,7 @@
    ;; expression logic and wrap in `(return ...)`.
    ((eq? expression-type "return")
     (cond
-     ((symbol? (rose->sexp (send node get 1)))
+     ((symbol? (syntax->datum (send node get 1)))
       (new Program
            (list
             (compile-statement
@@ -5916,8 +5971,9 @@
              (send node get 1)
              env options))))
      (else
-      (compile-rose
-       (sexp->rose
+      (compile-syntax
+       (datum->syntax
+        #f
         `(return ,node))
        env options))))
    ;; When compiled as a statement, the return
@@ -5927,7 +5983,7 @@
      statement-exp env options))
    ;; When compiled as an expression, we can use the comma
    ;; operator if the list expression is a symbol.
-   ((symbol? (rose->sexp (send node get 1)))
+   ((symbol? (syntax->datum (send node get 1)))
     (new SequenceExpression
          (list
           (compile-expression
@@ -5948,7 +6004,7 @@
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (define name
     (js/second exp))
   (define specs
@@ -6047,7 +6103,7 @@
          (if (send ht has key)
              (send ht get key)
              failure-result))
-       (list ht key failure-result)))))
+      (list ht key failure-result)))))
 
 ;;; Compiler macro for `(map ...)` expressions.
 (define-macro (compile-map-macro f x)
@@ -6113,14 +6169,14 @@
          (memf? (lambda (x)
                   (equal? v x))
                 lst))
-       (list v lst)))
+      (list v lst)))
    (else
     (definition->macro
       '(define (member?_ v lst is-equal)
          (memf? (lambda (x)
                   (is-equal v x))
                 lst))
-       (list v lst is-equal)))))
+      (list v lst is-equal)))))
 
 ;;; Compiler macro for `(substring ...)` expressions.
 (define-macro (compile-substring-macro str &rest args)
@@ -6260,7 +6316,7 @@
   (define str
     (send node get 1))
   (define str-exp
-    (rose->sexp str))
+    (syntax->datum str))
   (cond
    ((not eval-option)
     (make-expression-or-statement
@@ -6290,7 +6346,7 @@
   (define str
     (send node get 1))
   (define str-exp
-    (rose->sexp str))
+    (syntax->datum str))
   (cond
    ((not eval-option)
     (make-expression-or-statement
@@ -6768,7 +6824,7 @@
                   (stack '())
                   (bindings (new LispEnvironment)))
   (cond
-   ((not (is-a? node Rose))
+   ((not (syntax? node))
     (map-sexp f node env stack bindings))
    (else
     (map-visit-rose f node env stack bindings))))
@@ -6790,27 +6846,27 @@
     (f result stack bindings))
   ;; Macro call.
   (define (visit-macro-call-p node)
-    (let ((exp (rose->sexp node)))
+    (let ((exp (syntax->datum node)))
       (macro-call? exp env)))
   (define visit-macro-call visit-node)
   ;; Special form.
   (define (visit-special-form-p node)
-    (let ((exp (rose->sexp node)))
+    (let ((exp (syntax->datum node)))
       (special-form? exp env)))
   (define visit-special-form visit-node)
   ;; Function call.
   (define (visit-function-call-p node)
-    (let ((exp (rose->sexp node)))
+    (let ((exp (syntax->datum node)))
       (function-call? exp env)))
   (define visit-function-call visit-nonatomic)
   (define (visit-else-p node)
     #t)
   (define (visit-forms-node-with visitor node stack bindings (skip 0))
-    (define exp (rose->sexp node))
+    (define exp (syntax->datum node))
     (unless (array? exp)
       ;; `node` is not a list expression; early return.
       (return (visit visitor node stack bindings)))
-    (define nodes (send node get-nodes))
+    (define nodes (syntax->list node))
     (define result-nodes
       (visit-forms-list-with visitor nodes stack bindings skip))
     (cond
@@ -6819,9 +6875,9 @@
      (else
       (define exp '())
       (define result
-        (transfer-comments node (new Rose exp)))
+        (transfer-comments node (datum->syntax #f exp)))
       (for ((node result-nodes))
-        (push-right! exp (rose->sexp node))
+        (push-right! exp (syntax->datum node))
         (send result insert node))
       result)))
   (define (visit-forms-list-with visitor nodes stack bindings (skip 0))
@@ -6883,10 +6939,10 @@
     (define sym
       (~> node
           (send _ get 0)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define let-bindings-env (send node get 1))
     (define body (send node drop 2))
-    (for ((let-binding (rose->sexp let-bindings-env)))
+    (for ((let-binding (syntax->datum let-bindings-env)))
       (define binding-sym
         (if (array? let-binding)
             (first let-binding)
@@ -6900,7 +6956,8 @@
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
-                    (sexp->rose
+                    (datum->syntax
+                     #f
                      `(,sym ,visited-let-bindings-env
                             ,@visited-body)))))
     (f result stack bindings))
@@ -6913,7 +6970,7 @@
     (define sym
       (~> node
           (send _ get 0)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define let-bindings-env (send node get 1))
     (define body (send node drop 2))
     (define visited-let-bindings-env
@@ -6922,7 +6979,7 @@
          (define x-result x)
          (define ids (send x get 0))
          (define val (send x get 1))
-         (define ids-exp (rose->sexp ids))
+         (define ids-exp (syntax->datum ids))
          (cond
           ((symbol? ids-exp)
            (make-type-binding bindings-2 ids-exp 'Any))
@@ -6938,7 +6995,8 @@
                       (eq? visited-val val))
            (set! x-result (transfer-comments
                            x
-                           (sexp->rose
+                           (datum->syntax
+                            #f
                             `(,visited-ids
                               ,visited-val)))))
          x-result)
@@ -6951,7 +7009,8 @@
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
-                    (sexp->rose
+                    (datum->syntax
+                     #f
                      `(,sym ,visited-let-bindings-env
                             ,@visited-body)))))
     (f result stack bindings))
@@ -6971,14 +7030,15 @@
     (define sym
       (~> node
           (send _ get 0)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define clauses (send node drop 1))
     (define visited-clauses
       (visit-clauses-list clauses `(,@stack ,node) bindings))
     (unless (eq? visited-clauses clauses)
       (set! result (transfer-comments
                     node
-                    (sexp->rose
+                    (datum->syntax
+                     #f
                      `(,sym ,@visited-clauses)))))
     (f result stack bindings))
   ;; `(lambda ...)` form.
@@ -6994,9 +7054,9 @@
     (define sym
       (~> node
           (send _ get 0)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define params (send node get 1))
-    (define params-exp (rose->sexp params))
+    (define params-exp (syntax->datum params))
     (define body (send node drop 2))
     (cond
      ((symbol? params-exp)
@@ -7014,7 +7074,8 @@
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
-                    (sexp->rose
+                    (datum->syntax
+                     #f
                      `(,sym ,visited-params
                             ,@visited-body)))))
     (f result stack bindings))
@@ -7026,9 +7087,9 @@
     (define define-sym
       (~> node
           (send _ get 0)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define id (send node get 1))
-    (define id-exp (rose->sexp id))
+    (define id-exp (syntax->datum id))
     (define id-sym
       (if (array? id-exp)
           (first id-exp)
@@ -7057,7 +7118,8 @@
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
-                    (sexp->rose
+                    (datum->syntax
+                     #f
                      `(,define-sym
                         ,visited-id
                         ,@visited-body)))))
@@ -7075,11 +7137,11 @@
     (define defmacro-sym
       (~> node
           (send _ get 0)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define id (send node get 1))
-    (define id-sym (rose->sexp id))
+    (define id-sym (syntax->datum id))
     (define params (send node get 2))
-    (define params-exp (rose->sexp params))
+    (define params-exp (syntax->datum params))
     (define body (send node drop 3))
     (make-type-binding bindings id-sym '(macro-> Any * Any))
     (define bindings-2
@@ -7101,7 +7163,8 @@
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
-                    (sexp->rose
+                    (datum->syntax
+                     #f
                      `(,defmacro-sym
                         ,visited-id
                         ,visited-params
@@ -7117,13 +7180,13 @@
     (define define-macro-sym
       (~> node
           (send _ get 0)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (define name-and-args (send node get 1))
-    (define name-and-args-exp (rose->sexp name-and-args))
+    (define name-and-args-exp (syntax->datum name-and-args))
     (define id-sym (car name-and-args-exp))
-    (define id (sexp->rose id-sym name-and-args))
+    (define id (datum->syntax name-and-args id-sym))
     (define params-exp (cdr name-and-args-exp))
-    (define params (sexp->rose params-exp name-and-args))
+    (define params (datum->syntax name-and-args params-exp))
     (define body (send node drop 2))
     (make-type-binding bindings id-sym '(macro-> Any * Any))
     (define bindings-2
@@ -7145,7 +7208,8 @@
                  (eq? body visited-body))
       (set! result (transfer-comments
                     node
-                    (sexp->rose
+                    (datum->syntax
+                     #f
                      `(,define-macro-sym
                         ,(cons visited-id visited-params)
                         ,@visited-body)))))
@@ -7221,7 +7285,8 @@
       (unless (eq? val visited-val)
         (set! result (transfer-comments
                       node
-                      (sexp->rose
+                      (datum->syntax
+                       #f
                        `(,sym ,visited-val)))))
       ;; Visit the `unquote` expression.
       (f result stack bindings))
@@ -7245,7 +7310,7 @@
     (visit-quasiquote-form node `(,@stack ,node) bindings))
   ;; List.
   (define (visit-nonatomic-p node)
-    (let ((exp (rose->sexp node)))
+    (let ((exp (syntax->datum node)))
       (array? exp)))
   ;; Atomic value.
   (define visit-atom-p visit-else-p)
@@ -7296,26 +7361,26 @@
                   (stack '())
                   (bindings (new LispEnvironment)))
   (let* ((f1 (lambda (x stack bindings)
-               (let* ((exp (rose->sexp x))
+               (let* ((exp (syntax->datum x))
                       (stack1 (map (lambda (x)
-                                     (if (is-a? x Rose)
-                                         (rose->sexp x)
+                                     (if (syntax? x)
+                                         (syntax->datum x)
                                          x))
                                    stack))
                       (result (f exp stack1 bindings)))
                  (if (eq? result exp)
                      x
-                     (sexp->rose result x)))))
-         (is-rose (is-a? exp Rose))
+                     (datum->syntax x result)))))
+         (is-rose (syntax? exp))
          (node (if is-rose
                    exp
-                   (sexp->rose exp)))
+                   (datum->syntax #f exp)))
          (result (map-rose f1 node env stack bindings)))
     ;; If the input is a rose tree node,
     ;; return a rose tree node as output too.
     (if is-rose
         result
-        (rose->sexp result))))
+        (syntax->datum result))))
 
 ;;; Call the function `f` on each node of a rose tree,
 ;;; but do not create a new rose tree in the process.
@@ -7390,7 +7455,7 @@
              (define op
                (~> x
                    (send _ get 0)
-                   (rose->sexp _)))
+                   (syntax->datum _)))
              (define test-compiled)
              (define consequent-compiled)
              (cond
@@ -7407,9 +7472,9 @@
                ;; It is advisable to wrap cases in a block statement.
                ;; <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch#lexical_scoping>
                (define consequent-block
-                 (sexp->rose
-                  `(js/block ,@consequent)
-                  x))
+                 (datum->syntax
+                  x
+                  `(js/block ,@consequent)))
                (set! consequent-compiled
                      (list
                       (if has-break
@@ -7424,7 +7489,8 @@
                (set! consequent-compiled
                      (list
                       (compile-statement-or-return-statement
-                       (sexp->rose
+                       (datum->syntax
+                        #f
                         `(js/block ,@consequent))
                        env options)))))
              (new SwitchCase
@@ -7528,16 +7594,16 @@
 ;;; Optimize an S-expression.
 (define (optimize-sexp exp env)
   (cond
-   ((rose? exp)
-    (optimize-rose exp env))
+   ((syntax? exp)
+    (optimize-syntax exp env))
    (else
     (~> exp
-        (sexp->rose _)
-        (optimize-rose _ env)
-        (rose->sexp _)))))
+        (datum->syntax #f _)
+        (optimize-syntax _ env)
+        (syntax->datum _)))))
 
 ;;; Optimize a rose tree-wrapped S-expression.
-(define (optimize-rose exp env)
+(define (optimize-syntax exp env)
   (apply-optimizations exp env))
 
 ;;; Optimize a module.
@@ -7669,7 +7735,7 @@
   (define/public (get-continuation-env)
     (new LispEnvironment
          '()
-          (send this get-environment)))
+         (send this get-environment)))
 
   (define/public (get-expressions)
     (get-field expressions this))
@@ -7740,7 +7806,7 @@
         (define header-exp
           '(begin))
         (define header-node
-          (sexp->rose header-exp))
+          (datum->syntax #f header-exp))
         (set! header-comments
               (map (lambda (x)
                      (new LeadingCommentToken x))
@@ -7786,8 +7852,8 @@
       ;; In the future, we might want to simplify this to only
       ;; rose tree values.
       (cond
-       ((is-a? node Rose)
-        (set! exp (rose->sexp node))
+       ((syntax? node)
+        (set! exp (syntax->datum node))
         (define comments
           (send node get-property "comments"))
         (when comments
@@ -7795,7 +7861,7 @@
           (send this find-inline-lisp-sources-comment comments)))
        (else
         (set! exp node)
-        (set! node (sexp->rose exp))))
+        (set! node (datum->syntax #f exp))))
       (cond
        ((tagged-list? exp 'require)
         (push-right! (get-field require-expressions this) exp)
@@ -7808,7 +7874,7 @@
         (push-right! (get-field main-nodes this) node))))
     ;; Iterate over `require-expressions`.
     (for ((node (get-field require-nodes this)))
-      (set! exp (rose->sexp node))
+      (set! exp (syntax->datum node))
       (cond
        ((and (tagged-list? exp 'require)
              (> (js/length exp) 1)
@@ -7854,7 +7920,7 @@
                 #t)))))
     ;; Iterate over `main-expressions`.
     (for ((node (get-field main-nodes this)))
-      (set! exp (rose->sexp node))
+      (set! exp (syntax->datum node))
       (when (or (tagged-list? exp 'define)
                 (tagged-list? exp 'define-class))
         (define name
@@ -7896,7 +7962,7 @@
     ;; from other modules.
     (for ((node (get-field require-nodes this)))
       (define exp
-        (rose->sexp node))
+        (syntax->datum node))
       (cond
        ((and (tagged-list? exp 'require)
              (> (js/length exp) 1)
@@ -7934,7 +8000,7 @@
     ;; in the module environment.
     (for ((node (get-field main-nodes this)))
       (define exp
-        (rose->sexp node))
+        (syntax->datum node))
       (cond
        ((or (definition? exp)
             (macro-definition? exp))
@@ -7948,7 +8014,7 @@
         (define typ
           (if (macro-definition? exp)
               '(macro-> Any * Any)
-               '(-> Any * Any)))
+              '(-> Any * Any)))
         (send module-env
               set-local!
               name
@@ -7977,7 +8043,7 @@
     (set-field! main-expressions
                 this
                 (map (lambda (x)
-                       (rose->sexp x))
+                       (syntax->datum x))
                      nodes))
     this)
 
@@ -8018,7 +8084,7 @@
   (define name
     (~> node
         (send _ get 1)
-        (rose->sexp _)))
+        (syntax->datum _)))
   (when (symbol? name)
     (set! name
           (symbol->string name)))
@@ -8172,6 +8238,8 @@
          (undefined ,undefined_ Any)
          (,(string->symbol "*cons-dot*") ,cons-dot_ Any)
          (license ,license Any)
+         (Rose ,Syntax Any)
+         (Syntax ,Syntax Any)
          ;; Procedures.
          ($ ,funcall_ (-> Any * Any))
          (% ,modulo_ (-> Any * Any))
@@ -8277,6 +8345,7 @@
          (current-environment ,current-environment_ (-> Any * Any))
          (curry ,curry (-> Any * Any))
          (curry-n ,curry-n (-> Any * Any))
+         (datum->syntax ,datum->syntax (-> Any * Any))
          (decompile ,decompile (-> Any * Any))
          (delete ,js/delete_ (-> Any * Any))
          (display ,display_ (-> Any * Any))
@@ -8627,6 +8696,10 @@
          (symbol-to-string ,symbol->string_ (-> Any * Any))
          (symbol? ,symbol?_ (-> Any * Any))
          (symbolp ,symbol?_ (-> Any * Any))
+         (syntax->datum ,syntax->datum (-> Any * Any))
+         (syntax->list ,syntax->list (-> Any * Any))
+         (syntax-e ,syntax-e (-> Any * Any))
+         (syntax? ,syntax? (-> Any * Any))
          (tail ,cdr_ (-> Any * Any))
          (take ,take_ (-> Any * Any))
          (tenth ,tenth_ (-> Any * Any))
@@ -8684,6 +8757,7 @@
          (define-fields ,define-fields_ (macro-> Any * Any))
          (define-js/obj ,define-fields_ (macro-> Any * Any))
          (define-macro ,define-macro_ (macro-> Any * Any))
+         (define-syntax ,define-syntax_ (macro-> Any * Any))
          (define-type ,define-type_ (macro-> Any * Any))
          (define-values ,define-values_ (macro-> Any * Any))
          (define/async ,define-async_ (macro-> Any * Any))
@@ -8748,6 +8822,8 @@
          (set!-values ,set-values_ (macro-> Any * Any))
          (set-field! ,set-field_ (macro-> Any * Any))
          (setq ,set!_ (macro-> Any * Any))
+         (syntax ,syntax_ (macro-> Any * Any))
+         (quasisyntax ,quasisyntax_ (macro-> Any * Any))
          (throw ,throw_ (macro-> Any * Any))
          (try ,try_ (macro-> Any * Any))
          (unless ,unless_ (macro-> Any * Any))
@@ -8838,6 +8914,7 @@
   ;; (rename-out (clj/try_ try))
   ;; (rename-out (clj/try_ try_))
   (rename-out (colon_ colon))
+  (rename-out (compile-syntax compile-rose))
   (rename-out (compile-with-environment compile-lisp))
   (rename-out (compile-with-environment compile-lisp-to-javascript))
   (rename-out (cond_ cond))
@@ -8886,6 +8963,7 @@
   (rename-out (new_ rkt/make-object))
   (rename-out (new_ scm/new))
   (rename-out (nop_ nop))
+  (rename-out (optimize-syntax optimize-rose))
   (rename-out (or_ or))
   (rename-out (provide_ provide))
   (rename-out (quasiquote_ quasiquote))
@@ -8976,8 +9054,8 @@
   optimizations
   optimize-estree
   optimize-module
-  optimize-rose
   optimize-sexp
+  optimize-syntax
   or_
   provide_
   quasiquote_

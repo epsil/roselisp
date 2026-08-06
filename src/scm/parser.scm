@@ -7,8 +7,8 @@
 ;;; ## Description
 ;;;
 ;;; A simple S-expression parser that returns an S-expression wrapped
-;;; in a rose tree. Metadata that is not part of the S-expression,
-;;; such as comments, is stored in the rose tree wrapper instead.
+;;; in a rose tree, i.e., a syntax object. Metadata that is not part of
+;;; the S-expression, such as comments, is stored in the wrapper instead.
 ;;;
 ;;; ## License
 ;;;
@@ -22,9 +22,9 @@
                   unquote-sym_
                   unquote-splicing-sym_))
 (require (only-in "./rose"
-                  Rose
-                  rose->sexp
-                  sexp->rose))
+                  datum->syntax
+                  syntax->datum
+                  syntax?))
 
 ;;; Parse a string of Lisp code and return an S-expression.
 (define (read input)
@@ -33,21 +33,20 @@
 ;;; Parse a string of Lisp code and return an S-expression.
 (define (read-sexp str (options (js/obj)))
   (~> str
-      (read-rose _ options)
-      (rose->sexp _)))
+      (read-syntax _ options)
+      (syntax->datum _)))
 
-;;; Parse a string of Lisp code and return an S-expression
-;;; wrapped in a rose tree.
-(define (read-rose str (options (js/obj)))
+;;; Parse a string of Lisp code and return a syntax object.
+(define (read-syntax str (options (js/obj)))
   ;; Parsing is implemented in two stages: a lexical analysis stage
-  ;; (`tokenize`) and a syntax analysis stage (`parse-rose`).
+  ;; (`tokenize`) and a syntax analysis stage (`parse-syntax`).
   ;; The lexical analysis stage converts a string to a stream of
   ;; tokens, which is represented as an array of Lisp symbols.
-  ;; The syntax analysis stage converts the token stream to a rose
-  ;; tree, which contains an S-expression that can be evaluated.
+  ;; The syntax analysis stage converts the token stream to a syntax
+  ;; object, which contains an S-expression that can be evaluated.
   (~> str
       (tokenize _ options)
-      (parse-rose _ options)))
+      (parse-syntax _ options)))
 
 ;;; Convert a string of Lisp code to an array of tokens.
 ;;; For example, the string:
@@ -58,7 +57,7 @@
 ;;;
 ;;;     [s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]
 ;;;
-;;; The output of this function is passed to `parse-rose`.
+;;; The output of this function is passed to `parse-syntax`.
 (define (tokenize str (options (js/obj)))
   (define comments
     (oget options :comments))
@@ -207,13 +206,13 @@
   result)
 
 ;;; Take the array of tokens produced by `tokenize` and make a
-;;; rose tree that corresponds to the structure of the Lisp code.
+;;; syntax object that corresponds to the structure of the Lisp code.
 ;;;
 ;;; For example,
 ;;;
 ;;;     [s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]
 ;;;
-;;; is transformed into a rose tree containing the value:
+;;; is transformed into a syntax object containing the value:
 ;;;
 ;;;     [[s`lambda`, [s`x`], s`x`], 'Lisp']
 ;;;
@@ -222,16 +221,16 @@
 ;;;     ((lambda (x) x) "Lisp")
 ;;;
 ;;; The output of this function is a S-expression wrapped in a
-;;; rose tree.
-(define (parse-rose tokens (options (js/obj)))
+;;; syntax object.
+(define (parse-syntax tokens (options (js/obj)))
   ;; In order to implement this function in a non-recursive way, a
   ;; stack is needed to keep track of expressions and their
   ;; subexpressions. Each stack entry is a list
   ;;`(expression value expression-node value-node)`, where
   ;; `expression` is an expression and `value` is the value-part
   ;; of the expression, i.e., the part to insert subexpressions
-  ;; into. The other two values are the corresponding rose tree
-  ;; nodes. In most cases, the value and the expression are one
+  ;; into. The other two values are the corresponding syntax
+  ;; objects. In most cases, the value and the expression are one
   ;; and the same, but for some expressions, like
   ;; `(quote (1 2))`, the value is a subexpression. When `3` is
   ;; added to this expression, the result should be
@@ -239,28 +238,28 @@
   (define stack '())
   ;; Currently parsed expression.
   (define exp #u)
-  ;; Rose tree node for `exp`.
+  ;; Syntax object for `exp`.
   (define node #u)
   ;; Comments for the currently parsed expression.
   (define comments '())
   ;; The current expression. The final value
   ;; of this variable is the return value.
   (define current-exp #u)
-  ;; Rose tree node for `current-exp`.
+  ;; Syntax object for `current-exp`.
   (define current-exp-node #u)
   ;; The insertion point of the current expression.
   ;; For a quoted expression like `(quote ())`,
   ;; it points to the inner `()`.
   (define current-val #u)
-  ;; Rose tree node for `current-val`.
+  ;; Syntax object for `current-val`.
   (define current-val-node #u)
   ;; The parent expression.
   (define parent-exp)
-  ;; Rose tree node for `parent-exp`.
+  ;; Syntax object for `parent-exp`.
   (define parent-exp-node)
   ;; Parent expression insertion point.
   (define parent-val)
-  ;; Rose tree node for `parent-val`.
+  ;; Syntax object for `parent-val`.
   (define parent-val-node)
   ;; Helper function for inserting an expression
   ;; into another.
@@ -396,8 +395,8 @@
 ;;; can be evaluated in a Lisp environment.
 (define (parse-sexp tokens (options (js/obj)))
   (~> tokens
-      (parse-rose _ options)
-      (rose->sexp _)))
+      (parse-syntax _ options)
+      (syntax->datum _)))
 
 ;;; Remove indentation from a multi-line string.
 (define (remove-indentation str)
@@ -431,7 +430,7 @@
 (define (comment? char)
   (eq? char ";"))
 
-;;; Attach comments to a rose tree node, conditional on options.
+;;; Attach comments to a syntax object, conditional on options.
 ;;; Returns the resulting node and an empty list of comments.
 (define (attach-comments node comments (options (js/obj)))
   (define comments-option
@@ -439,9 +438,9 @@
   (when (undefined? comments-option)
     (set! comments-option #t))
   (define result
-    (if (is-a? node Rose)
+    (if (syntax? node)
         node
-        (sexp->rose node)))
+        (datum->syntax #f node)))
   (when (and comments-option
              comments
              (> (js/length comments) 0))
@@ -468,7 +467,7 @@
   (= (get-comment-level comment) level))
 
 ;;; Map of operator symbols.
-;;; Used by `parse-rose`.
+;;; Used by `parse-syntax`.
 (define operator-symbols
   (make-hash
    `(("'" . ,quote-sym_)
@@ -477,7 +476,7 @@
      (",@" . ,unquote-splicing-sym_))))
 
 ;;; Map of literal symbols.
-;;; Used by `parse-rose`.
+;;; Used by `parse-syntax`.
 (define literal-values
   (make-hash
    `(("#f" . ,#f)
@@ -547,6 +546,8 @@
     (super value "symbol")))
 
 (provide
+  (rename-out (parse-syntax parse-rose))
+  (rename-out (read-syntax read-rose))
   CommentToken
   LeadingCommentToken
   NumberToken
@@ -556,9 +557,9 @@
   TrailingCommentToken
   comment-level?
   get-comment-level
-  parse-rose
   parse-sexp
+  parse-syntax
   read
-  read-rose
   read-sexp
+  read-syntax
   tokenize)

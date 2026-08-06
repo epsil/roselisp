@@ -241,8 +241,8 @@ exports.kebabCaseToSnakeCase = kebabCaseToSnakeCase;
  * [sicp:tagged-list-p]: https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-26.html#%_idx_4290
  */
 function taggedListP(exp, tag, len = undefined) {
-    if (exp instanceof rose_1.Rose) {
-        return taggedListP((0, rose_1.roseToSexp)(exp), tag, len);
+    if ((0, rose_1.syntaxp)(exp)) {
+        return taggedListP((0, rose_1.syntaxToDatum)(exp), tag, len);
     }
     else if (Number.isFinite(len)) {
         return taggedListP(exp, tag) && (exp.length === len);
@@ -285,8 +285,8 @@ exports.textOfQuotation = textOfQuotation;
  * Whether `exp` is a form referencing `f` in `env`.
  */
 function formp(exp, f, env) {
-    if (exp instanceof rose_1.Rose) {
-        return formp((0, rose_1.roseToSexp)(exp), f, env);
+    if ((0, rose_1.syntaxp)(exp)) {
+        return formp((0, rose_1.syntaxToDatum)(exp), f, env);
     }
     else {
         if (Array.isArray(exp) && (exp.length > 0)) {
@@ -314,8 +314,8 @@ exports.formp = formp;
  * Whether `exp` is a `(: ...)` expression.
  */
 function colonFormP(exp) {
-    if (exp instanceof rose_1.Rose) {
-        return colonFormP((0, rose_1.roseToSexp)(exp));
+    if ((0, rose_1.syntaxp)(exp)) {
+        return colonFormP((0, rose_1.syntaxToDatum)(exp));
     }
     else {
         return Array.isArray(exp) && (exp.length >= 3) && (exp[1] === Symbol.for(':'));

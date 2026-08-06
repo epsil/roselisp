@@ -12,7 +12,7 @@ import {
 
 import { defineMacroToLambdaForm } from '../../src/ts/macros';
 
-import { readRose } from '../../src/ts/parser';
+import { readSyntax } from '../../src/ts/parser';
 
 import { sexp } from '../../src/ts/sexp';
 
@@ -7999,7 +7999,7 @@ describe('compile-with-environment', function (): any {
   it(';; comment\n' + '(foo)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';; comment\n' + '(foo)'),
+        readSyntax(';; comment\n' + '(foo)'),
         compilationEnvironment,
         {
           expressionType: 'statement',
@@ -8013,7 +8013,7 @@ describe('compile-with-environment', function (): any {
   it(';; multi-line\n' + ';; comment\n' + '(foo)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';; multi-line\n' + ';; comment\n' + '(foo)'),
+        readSyntax(';; multi-line\n' + ';; comment\n' + '(foo)'),
         compilationEnvironment,
         {
           expressionType: 'statement',
@@ -8027,7 +8027,7 @@ describe('compile-with-environment', function (): any {
   xit(';; multi-line\n' + ';;\n' + ';; comment\n' + '(foo)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';; multi-line\n' + ';;\n' + ';; comment\n' + '(foo)'),
+        readSyntax(';; multi-line\n' + ';;\n' + ';; comment\n' + '(foo)'),
         compilationEnvironment,
         {
           expressionType: 'statement',
@@ -8041,7 +8041,7 @@ describe('compile-with-environment', function (): any {
   it(';; multiple\n' + '\n' + ';; comments\n' + '(foo)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';; multiple\n' + '\n' + ';; comments\n' + '(foo)'),
+        readSyntax(';; multiple\n' + '\n' + ';; comments\n' + '(foo)'),
         compilationEnvironment,
         {
           expressionType: 'statement',
@@ -8055,7 +8055,7 @@ describe('compile-with-environment', function (): any {
   it('(+\n' + ' ;; foo\n' + ' foo\n' + ' ;; bar\n' + ' bar)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(+\n' +
             '            ;; foo\n' +
             '            foo\n' +
@@ -8081,7 +8081,7 @@ describe('compile-with-environment', function (): any {
     function (): any {
       return assertEqual(
         compileWithEnvironment(
-          readRose(
+          readSyntax(
             '(list foo\n' +
               '      ;; bar\n' +
               '      bar\n' +
@@ -8108,7 +8108,7 @@ describe('compile-with-environment', function (): any {
   it('(+\n' + ' ;; foo\n' + ' foo\n' + ' ;; bar\n' + ' bar)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(+\n' +
             '            ;; foo\n' +
             '            foo\n' +
@@ -8128,7 +8128,7 @@ describe('compile-with-environment', function (): any {
   it(';; comment\n' + '(foo)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';; comment\n' + '(foo)'),
+        readSyntax(';; comment\n' + '(foo)'),
         compilationEnvironment,
         {
           expressionType: 'statement',
@@ -8142,7 +8142,7 @@ describe('compile-with-environment', function (): any {
   it('I & K', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; I combinator.\n' +
             '  (define (I x)\n' +
@@ -8177,7 +8177,7 @@ describe('compile-with-environment', function (): any {
   it('A, JS', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; A combinator.\n' +
             '  (define (A f . args)\n' +
@@ -8202,7 +8202,7 @@ describe('compile-with-environment', function (): any {
   it('A, TS', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; A combinator.\n' +
             '  (define (A f . args)\n' +
@@ -8227,7 +8227,7 @@ describe('compile-with-environment', function (): any {
   it('B2, TS', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; B2 combinator.\n' +
             '  (define (B2 . args)\n' +
@@ -8256,7 +8256,7 @@ describe('compile-with-environment', function (): any {
   it('(define ... (let ...))', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Foo.\n' +
             '  (define (foo x)\n' +
@@ -8285,7 +8285,7 @@ describe('compile-with-environment', function (): any {
   it('(define ... (if ...))', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Whether x is a truish value.\n' +
             '  (define (truish x)\n' +
@@ -8318,7 +8318,7 @@ describe('compile-with-environment', function (): any {
   it('(define ... (cond ...))', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Whether x is a truish value.\n' +
             '  (define (truish x)\n' +
@@ -8353,7 +8353,7 @@ describe('compile-with-environment', function (): any {
   it('(define ... (let ...))', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Wrap a value in a list.\n' +
             '  (define (wrap-in-list x)\n' +
@@ -8379,7 +8379,7 @@ describe('compile-with-environment', function (): any {
   it('while...if', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; test function.\n' +
             '  (define (test)\n' +
@@ -8425,7 +8425,7 @@ describe('compile-with-environment', function (): any {
   it('(define-class Foo ...)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Foo class.\n' +
             '  (define-class Foo ()\n' +
@@ -8465,7 +8465,7 @@ describe('compile-with-environment', function (): any {
   it('(define-class Foo ...)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Foo class.\n' +
             '  (define-class Foo ()\n' +
@@ -8497,7 +8497,7 @@ describe('compile-with-environment', function (): any {
   it('(define Foo (class ...))', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Foo class.\n' +
             '  (define Foo\n' +
@@ -8530,7 +8530,7 @@ describe('compile-with-environment', function (): any {
   it('(define Foo (class ...))', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Foo class.\n' +
             '  (define Foo\n' +
@@ -8575,7 +8575,7 @@ describe('compile-with-environment', function (): any {
   xit('(define (hello-world) ...)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Hello, world.\n' +
             '  (: hello-world (-> Void))\n' +
@@ -8600,7 +8600,7 @@ describe('compile-with-environment', function (): any {
   it(';;; Foo, blank line, (define (hello-world) ...)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';;; Foo\n' + '\n' + '(require "foo")'),
+        readSyntax(';;; Foo\n' + '\n' + '(require "foo")'),
         compilationEnvironment,
         {
           language: 'javascript',
@@ -8613,7 +8613,7 @@ describe('compile-with-environment', function (): any {
   it(';; Foo, blank line, ;;; Bar, (define (hello-world) ...)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';; Foo\n' + '\n' + ';;; Bar\n' + '(require "foo")'),
+        readSyntax(';; Foo\n' + '\n' + ';;; Bar\n' + '(require "foo")'),
         compilationEnvironment,
         {
           language: 'javascript',
@@ -8631,7 +8631,7 @@ describe('compile-with-environment', function (): any {
   it('(define (hello-world) ...)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(';; Foo\n' + ';;; Bar\n' + '\n' + '(require "foo")'),
+        readSyntax(';; Foo\n' + ';;; Bar\n' + '\n' + '(require "foo")'),
         compilationEnvironment,
         {
           language: 'javascript',
@@ -8649,7 +8649,7 @@ describe('compile-with-environment', function (): any {
   it('(define foo\n' + '  ;; bar\n' + '  bar)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose('(define foo\n' + '  ;; bar\n' + '  bar)'),
+        readSyntax('(define foo\n' + '  ;; bar\n' + '  bar)'),
         compilationEnvironment,
         {
           language: 'javascript',
@@ -8662,7 +8662,7 @@ describe('compile-with-environment', function (): any {
   it('(set! foo\n' + '  ;; bar\n' + '  bar)', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose('(set! foo\n' + '  ;; bar\n' + '  bar)'),
+        readSyntax('(set! foo\n' + '  ;; bar\n' + '  bar)'),
         compilationEnvironment,
         {
           language: 'javascript',
@@ -8689,7 +8689,7 @@ describe('compile-with-environment', function (): any {
   it("(module m scheme ... (apply + '(1 1)) ...), comment", function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Module header.\n' +
             '\n' +
@@ -8725,7 +8725,7 @@ describe('compile-with-environment', function (): any {
   it("(module m scheme ... (apply + '(1 1)) ...), comments", function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  ;;; Module header.\n' +
             '\n' +
@@ -8816,10 +8816,10 @@ describe('compile-with-environment', function (): any {
       'x ? false : true'
     );
   });
-  it('read-rose', function (): any {
+  it('read-syntax', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose('(module m scheme\n' + '  (define foo\n' + '    `(foo)))'),
+        readSyntax('(module m scheme\n' + '  (define foo\n' + '    `(foo)))'),
         compilationEnvironment,
         {
           language: 'javascript',
@@ -8829,10 +8829,10 @@ describe('compile-with-environment', function (): any {
       "const foo = [Symbol.for('foo')];"
     );
   });
-  it('read-rose, quasiquote', function (): any {
+  it('read-syntax, quasiquote', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  (define foo 1)\n' +
             '  (define bar\n' +
@@ -8847,10 +8847,10 @@ describe('compile-with-environment', function (): any {
       'const foo = 1;\n' + '\n' + 'const bar = [foo];'
     );
   });
-  it('read-rose, quasiquoted list of pairs', function (): any {
+  it('read-syntax, quasiquoted list of pairs', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m scheme\n' +
             '  (define foo 1)\n' +
             '  (define bar 2)\n' +
@@ -8874,7 +8874,7 @@ describe('compile-with-environment', function (): any {
   xit("(module m lisp ... (define *lisp-map* '()))", function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(module m lisp\n' +
             '  ;; inline-lisp-sources: true\n' +
             '\n' +
@@ -8899,7 +8899,7 @@ describe('compile-with-environment', function (): any {
   it('(: f (-> Number Number)), lambda, comments, TS', function (): any {
     return assertEqual(
       compileWithEnvironment(
-        readRose(
+        readSyntax(
           '(begin\n' +
             '  ;; NN type alias.\n' +
             '  (define-type NN (-> Number Number))\n' +

@@ -63,8 +63,8 @@
                   undefined-type?
                   variable-type?))
 (require (only-in "./rose"
-                  Rose
-                  rose->sexp))
+                  syntax->datum
+                  syntax?))
 (require (only-in "./util"
                   tagged-list?))
 
@@ -117,8 +117,8 @@
 ;;; Lisp-1 evaluator function.
 (define (eval1 exp env (options (js/obj)))
   (cond
-   ((is-a? exp Rose)
-    (eval-rose exp env options))
+   ((syntax? exp)
+    (eval-syntax exp env options))
    (else
     (eval-sexp exp env options))))
 
@@ -255,10 +255,10 @@
        ;; Self-evaluating value
        exp)))))
 
-;;; Evaluate an S-expression wrapped in a rose tree.
-(define (eval-rose node env (options (js/obj)))
+;;; Evaluate a syntax object.
+(define (eval-syntax node env (options (js/obj)))
   (~> node
-      (rose->sexp _)
+      (syntax->datum _)
       (eval-sexp _ env options)))
 
 ;;; Evaluate an [ESTree][github:estree] node
@@ -1247,13 +1247,14 @@
      ("YieldExpression" . ,eval-estree-yield-expression))))
 
 (provide
+  (rename-out (eval-syntax eval-rose))
   (rename-out (eval_ seval))
   Evaluator
   call-evaluator
   default-evaluator
   eval-estree
-  eval-rose
   eval-sexp
+  eval-syntax
   eval1
   eval_
   evaluator?

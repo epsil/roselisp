@@ -73,10 +73,10 @@ declare namespace evalSexp {
     var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][])[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[][] | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[][])[][])[])[])[])[];
 }
 /**
- * Evaluate an S-expression wrapped in a rose tree.
+ * Evaluate a syntax object.
  */
-declare function evalRose(node: any, env: any, options?: any): any;
-declare namespace evalRose {
+declare function evalSyntax(node: any, env: any, options?: any): any;
+declare namespace evalSyntax {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -90,4 +90,4 @@ declare function evalEstree(node: any, env: any, options?: any): any;
 declare namespace evalEstree {
     var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | undefined)[])[])[];
 }
-export { eval_ as seval, Evaluator, callEvaluator, defaultEvaluator, evalEstree, evalRose, evalSexp, eval1, eval_, evaluatorp, jsEval_ };
+export { evalSyntax as evalRose, eval_ as seval, Evaluator, callEvaluator, defaultEvaluator, evalEstree, evalSexp, evalSyntax, eval1, eval_, evaluatorp, jsEval_ };

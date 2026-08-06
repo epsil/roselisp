@@ -851,7 +851,57 @@
 (define (rose->sexp node)
   (send node get-value))
 
+;;; Whether something is a syntax object.
+;;;
+;;; Similar to [`syntax?` in Racket][rkt:syntaxp].
+;;;
+;;; [rkt:syntaxp]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax~3f%29%29
+(define syntax? rose?)
+
+;;; Convert a syntax object to an S-expression.
+;;;
+;;; Similar to [`syntax->datum` in Racket][rkt:syntax-to-datum].
+;;;
+;;; [rkt:syntax-to-datum]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3edatum%29%29
+(define syntax->datum rose->sexp)
+
+;;; Convert an S-expression to a syntax object.
+;;;
+;;; Similar to [`datum->syntax` in Racket][rkt:datum-to-syntax].
+;;;
+;;; [rkt:datum-to-syntax]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._datum-~3esyntax%29%29
+(define (datum->syntax ctxt v (srcloc #u))
+  (sexp->rose v (or ctxt srcloc)))
+
+;;; Convert a syntax object to a list of syntax objects.
+;;;
+;;; Similar to [`syntax->list` in Racket][rkt:syntax-to-list].
+;;;
+;;; [rkt:syntax-to-list]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3elist%29%29
+(define (syntax->list stx)
+  (cond
+   ((array? (syntax->datum stx))
+    (send stx get-nodes))
+   (else
+    #f)))
+
+;;; Unwrap a syntax object one level deep.
+;;;
+;;; Similar to [`syntax-e` in Racket][rkt:syntax-e].
+;;;
+;;; [rkt:syntax-e]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-e%29%29
+(define (syntax-e stx)
+  (define v
+    (syntax->datum stx))
+  (cond
+   ((array? v)
+    (syntax->list stx))
+   (else
+    v)))
+
 (provide
+  (rename-out (Rose Syntax))
+  (rename-out (RoseSplice SyntaxSplice))
   (rename-out (rose->map make-rose-map))
   (rename-out (sexp->rose make-rose))
   Forest
@@ -860,6 +910,7 @@
   begin-wrap-rose
   begin-wrap-rose-smart
   begin-wrap-rose-smart-1
+  datum->syntax
   forest?
   insert-sexp-into-rose
   make-list-rose
@@ -871,5 +922,9 @@
   rose?
   sexp->rose
   slice-rose
+  syntax->datum
+  syntax->list
+  syntax-e
+  syntax?
   transfer-comments
   wrap-sexp-in-rose)

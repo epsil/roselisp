@@ -44,7 +44,7 @@ import {
   WhileStatement,
 } from '../../src/ts/estree';
 
-import { eval_, evalEstree, evalRose } from '../../src/ts/eval';
+import { eval_, evalEstree, evalSyntax } from '../../src/ts/eval';
 
 import {
   __,
@@ -54,7 +54,7 @@ import {
   evalLisp,
 } from '../../src/ts/language';
 
-import { wrapSexpInRose } from '../../src/ts/rose';
+import { datumToSyntax } from '../../src/ts/rose';
 
 import { sexp } from '../../src/ts/sexp';
 
@@ -86,13 +86,16 @@ describe('eval_', function (): any {
   });
 });
 
-describe('eval-rose', function (): any {
-  it('(eval-rose (wrap-sexp-in-rose #t) lisp-1-environment)', function (): any {
-    return assertEqual(evalRose(wrapSexpInRose(true), lisp1Environment), true);
-  });
-  return it('(eval-rose (wrap-sexp-in-rose #f) lisp-1-environment)', function (): any {
+describe('eval-syntax', function (): any {
+  it('(eval-syntax (datum->syntax #f #t) lisp-1-environment)', function (): any {
     return assertEqual(
-      evalRose(wrapSexpInRose(false), lisp1Environment),
+      evalSyntax(datumToSyntax(false, true), lisp1Environment),
+      true
+    );
+  });
+  return it('(eval-syntax (datum->syntax #f #f) lisp-1-environment)', function (): any {
+    return assertEqual(
+      evalSyntax(datumToSyntax(false, false), lisp1Environment),
       false
     );
   });

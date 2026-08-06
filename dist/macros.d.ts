@@ -70,6 +70,30 @@ declare namespace defineMacro_ {
     var ftype: string;
 }
 /**
+ * Expand a `(syntax ...)` expression.
+ */
+declare function syntax_(exp: any, env: any): any;
+declare namespace syntax_ {
+    var fsource: (symbol | (symbol | (boolean | symbol | (symbol | symbol[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Expand a `(quasisyntax ...)` expression.
+ */
+declare function quasisyntax_(exp: any, env: any): any;
+declare namespace quasisyntax_ {
+    var fsource: (symbol | (symbol | (boolean | symbol | (symbol | symbol[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Expand a `(define-syntax ...)` expression.
+ */
+declare function defineSyntax_(exp: any, env: any): any;
+declare namespace defineSyntax_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
  * Create a macro function on the basis of a
  * `(define-macro ...)` expression.
  */
@@ -118,7 +142,7 @@ declare namespace defineFexpr_ {
  */
 declare function declare_(exp: any, env: any): any;
 declare namespace declare_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -404,4 +428,4 @@ declare namespace cljTry_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
-export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defmacro_, defun_, do_, for_, letEnv_, multipleValueBind_, newApply_, or_, rktNew_, set_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };
+export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, for_, letEnv_, multipleValueBind_, newApply_, or_, quasisyntax_, rktNew_, set_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };

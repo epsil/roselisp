@@ -67,8 +67,8 @@
                   estree-type?
                   estree-type))
 (require (only-in "./rose"
-                  rose->sexp
-                  rose?))
+                  syntax->datum
+                  syntax?))
 (require (only-in "./visitor"
                   make-visitor
                   visit))
@@ -380,9 +380,11 @@
   (print-to-string node
                    (add-default-options options)))
 
-;;; Print a rose tree.
-(define (print-rose node (options (js/obj)))
-  (print-sexp (rose->sexp node) options))
+;;; Print a syntax object.
+(define (print-syntax node (options (js/obj)))
+  ;; TODO: Print comments.
+  (~> (syntax->datum node)
+      (print-sexp _ options)))
 
 ;;; Print an S-expression.
 (define (print-sexp exp (options (js/obj)))
@@ -415,10 +417,10 @@
   (define visitor
     (make-visitor
      `(
-       ;; Rose tree.
-       (,rose?
+       ;; Syntax object.
+       (,syntax?
         ,(lambda (obj)
-           (write-to-doc (rose->sexp obj) options)))
+           (write-to-doc (syntax->datum obj) options)))
        ;; Symbol.
        (,symbol?
         ,(lambda (obj)
@@ -2485,12 +2487,13 @@
      ("XRawJavaScript" . ,print-x-raw-javascript))))
 
 (provide
+  (rename-out (print-syntax print-rose))
   (rename-out (print-node print-estree-node))
   (rename-out (print-sexp-as-expression print-as-expression))
   print
   print-estree
   print-node
-  print-rose
+  print-syntax
   print-sexp
   print-sexp-as-expression
   write-to-string)

@@ -60,6 +60,11 @@
   (and (function? f)
        (macro-type?_ (get-field ftype f))))
 
+;;; Whether `f` is a syntax transformer.
+(define (syntax-transformer?_ f)
+  (and (function? f)
+       (syntax-transformer-type?_ (get-field ftype f))))
+
 ;;; Whether `x` is the type of a variable.
 (define (variable-type?_ x)
   (or (eq? x 'Any)
@@ -80,6 +85,14 @@
       ;; FIXME: Legacy code, remove.
       (tagged-list?_ x '->macro)
       (eq? x "macro")))
+
+;;; Whether `x` is the type of a syntax transformer.
+(define (syntax-transformer-type?_ x)
+  ;; FIXME: Or just call `equal?`.
+  (and (tagged-list?_ x 'macro->)
+       (= (js/length x) 3)
+       (eq? (js/second x) 'Syntax)
+       (eq? (js/third x) 'Syntax)))
 
 ;;; Whether `x` is the type of a fexpr.
 (define (fexpr-type?_ x)
@@ -797,6 +810,8 @@
   (rename-out (sub_ minus))
   (rename-out (sub_ sub))
   (rename-out (sub_ subtract))
+  (rename-out (syntax-transformer-type?_ syntax-transformer-type?))
+  (rename-out (syntax-transformer?_ syntax-transformer?))
   (rename-out (tagged-list?_ tagged-list?))
   (rename-out (true?_ true?))
   (rename-out (type-of_ type-of))
@@ -862,6 +877,8 @@
   special-type?_
   sub1_
   sub_
+  syntax-transformer-type?_
+  syntax-transformer?_
   tagged-list?_
   true?_
   type-of_

@@ -71,8 +71,8 @@ import {
 } from './estree';
 
 import {
-  roseToSexp,
-  rosep
+  syntaxToDatum,
+  syntaxp
 } from './rose';
 
 import {
@@ -512,13 +512,14 @@ function printEstree(node: any, options: any = {}): any {
 printEstree.fsource = [Symbol.for('define'), [Symbol.for('print-estree'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('print-to-string'), Symbol.for('node'), [Symbol.for('add-default-options'), Symbol.for('options')]]];
 
 /**
- * Print a rose tree.
+ * Print a syntax object.
  */
-function printRose(node: any, options: any = {}): any {
-  return printSexp(roseToSexp(node), options);
+function printSyntax(node: any, options: any = {}): any {
+  // TODO: Print comments.
+  return printSexp(syntaxToDatum(node), options);
 }
 
-printRose.fsource = [Symbol.for('define'), [Symbol.for('print-rose'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('print-sexp'), [Symbol.for('rose->sexp'), Symbol.for('node')], Symbol.for('options')]];
+printSyntax.fsource = [Symbol.for('define'), [Symbol.for('print-syntax'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('~>'), [Symbol.for('syntax->datum'), Symbol.for('node')], [Symbol.for('print-sexp'), Symbol.for('_'), Symbol.for('options')]]];
 
 /**
  * Print an S-expression.
@@ -562,8 +563,8 @@ function writeToDoc(obj: any, options: any = {}): any {
   const docOption: any = options['doc'];
   const prettyOption: any = options['pretty'];
   const quoteToplevelOption: any = options['quoteToplevel'];
-  const visitor: any = makeVisitor([[rosep, function (obj: any): any {
-    return writeToDoc(roseToSexp(obj), options);
+  const visitor: any = makeVisitor([[syntaxp, function (obj: any): any {
+    return writeToDoc(syntaxToDatum(obj), options);
   }], [symbolp, function (obj: any): any {
     return [quoteToplevelOption ? '\'' : empty, (obj === Symbol.for('.')) ? '.' : (obj.description as string)];
   }], [booleanp, function (obj: any): any {
@@ -597,7 +598,7 @@ function writeToDoc(obj: any, options: any = {}): any {
   return result;
 }
 
-writeToDoc.fsource = [Symbol.for('define'), [Symbol.for('write-to-doc'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('doc-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':doc')]], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('define'), Symbol.for('quote-toplevel-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':quote-toplevel')]], [Symbol.for('define'), Symbol.for('visitor'), [Symbol.for('make-visitor'), [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), Symbol.for('rose?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('write-to-doc'), [Symbol.for('rose->sexp'), Symbol.for('obj')], Symbol.for('options')]]]], [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('quote-toplevel-option'), '\'', Symbol.for('empty')], [Symbol.for('if'), [Symbol.for('cons-dot?'), Symbol.for('obj')], '.', [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]], [[Symbol.for('unquote'), Symbol.for('boolean?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('if'), Symbol.for('obj'), '#t', '#f']]]], [[Symbol.for('unquote'), Symbol.for('undefined?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#u']]], [[Symbol.for('unquote'), Symbol.for('js/null?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#n']]], [[Symbol.for('unquote'), Symbol.for('string?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), '"', [Symbol.for('~>'), Symbol.for('obj'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\\\', 'g'], Symbol.for('_'), '\\\\'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '"', 'g'], Symbol.for('_'), '\\"'], [Symbol.for('string-split'), Symbol.for('line')], [Symbol.for('join'), Symbol.for('literalline'), Symbol.for('_')]], '"']]]], [[Symbol.for('unquote'), Symbol.for('procedure?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#<procedure>']]], [[Symbol.for('unquote'), Symbol.for('array?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('obj')]], [Symbol.for('define'), Symbol.for('spec'), [Symbol.for('and'), Symbol.for('pretty-option'), [Symbol.for('send'), Symbol.for('pretty-print-map'), Symbol.for('get'), Symbol.for('op')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('spec')], [Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [[Symbol.for('number?'), Symbol.for('spec')], [Symbol.for('pretty-print-with-offset'), Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('pretty-print-form'), Symbol.for('obj'), Symbol.for('options')]]]], [Symbol.for('when'), Symbol.for('quote-toplevel-option'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '\'', Symbol.for('result')]]], Symbol.for('result')]]], [[Symbol.for('unquote'), [Symbol.for('const'), true]], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('string-append'), Symbol.for('obj'), '']]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('obj')]], Symbol.for('result')];
+writeToDoc.fsource = [Symbol.for('define'), [Symbol.for('write-to-doc'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('doc-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':doc')]], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('define'), Symbol.for('quote-toplevel-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':quote-toplevel')]], [Symbol.for('define'), Symbol.for('visitor'), [Symbol.for('make-visitor'), [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), Symbol.for('syntax?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('write-to-doc'), [Symbol.for('syntax->datum'), Symbol.for('obj')], Symbol.for('options')]]]], [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('quote-toplevel-option'), '\'', Symbol.for('empty')], [Symbol.for('if'), [Symbol.for('cons-dot?'), Symbol.for('obj')], '.', [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]], [[Symbol.for('unquote'), Symbol.for('boolean?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('if'), Symbol.for('obj'), '#t', '#f']]]], [[Symbol.for('unquote'), Symbol.for('undefined?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#u']]], [[Symbol.for('unquote'), Symbol.for('js/null?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#n']]], [[Symbol.for('unquote'), Symbol.for('string?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), '"', [Symbol.for('~>'), Symbol.for('obj'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\\\', 'g'], Symbol.for('_'), '\\\\'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '"', 'g'], Symbol.for('_'), '\\"'], [Symbol.for('string-split'), Symbol.for('line')], [Symbol.for('join'), Symbol.for('literalline'), Symbol.for('_')]], '"']]]], [[Symbol.for('unquote'), Symbol.for('procedure?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#<procedure>']]], [[Symbol.for('unquote'), Symbol.for('array?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('obj')]], [Symbol.for('define'), Symbol.for('spec'), [Symbol.for('and'), Symbol.for('pretty-option'), [Symbol.for('send'), Symbol.for('pretty-print-map'), Symbol.for('get'), Symbol.for('op')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('spec')], [Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [[Symbol.for('number?'), Symbol.for('spec')], [Symbol.for('pretty-print-with-offset'), Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('pretty-print-form'), Symbol.for('obj'), Symbol.for('options')]]]], [Symbol.for('when'), Symbol.for('quote-toplevel-option'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '\'', Symbol.for('result')]]], Symbol.for('result')]]], [[Symbol.for('unquote'), [Symbol.for('const'), true]], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('string-append'), Symbol.for('obj'), '']]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('obj')]], Symbol.for('result')];
 
 /**
  * Pretty-print a list expression.
@@ -2105,12 +2106,13 @@ const defaultOptions: any = {
 const printerMap: any = new Map([['ArrayExpression', printArrayExpression], ['ArrayPattern', printArrayPattern], ['ArrowFunctionExpression', printArrowFunctionExpression], ['AssignmentExpression', printAssignmentExpression], ['AssignmentPattern', printAssignmentPattern], ['AwaitExpression', printAwaitExpression], ['BinaryExpression', printBinaryExpression], ['BlockStatement', printBlockStatement], ['BreakStatement', printBreakStatement], ['CallExpression', printCallExpression], ['ClassBody', printClassBody], ['ClassDeclaration', printClassDeclaration], ['ClassExpression', printClassExpression], ['ConditionalExpression', printConditionalExpression], ['ContinueStatement', printContinueStatement], ['DoWhileStatement', printDoWhileStatement], ['ExportAllDeclaration', printExportAllDeclaration], ['ExportNamedDeclaration', printExportNamedDeclaration], ['ExportSpecifier', printExportSpecifier], ['ExpressionStatement', printExpressionStatement], ['ForInStatement', printForInStatement], ['ForOfStatement', printForOfStatement], ['ForStatement', printForStatement], ['FunctionDeclaration', printFunctionDeclaration], ['FunctionExpression', printFunctionExpression], ['Identifier', printIdentifier], ['IfStatement', printIfStatement], ['ImportDeclaration', printImportDeclaration], ['ImportDefaultSpecifier', printImportDefaultSpecifier], ['ImportNamespaceSpecifier', printImportNamespaceSpecifier], ['ImportSpecifier', printImportSpecifier], ['Literal', printLiteral], ['LogicalExpression', printLogicalExpression], ['MemberExpression', printMemberExpression], ['MethodDefinition', printMethodDefinition], ['NewExpression', printNewExpression], ['ObjectExpression', printObjectExpression], ['ObjectPattern', printObjectPattern], ['Program', printProgram], ['Property', printProperty], ['PropertyDefinition', printPropertyDefinition], ['RestElement', printRestElement], ['ReturnStatement', printReturnStatement], ['SequenceExpression', printSequenceExpression], ['SpreadElement', printSpreadElement], ['SwitchStatement', printSwitchStatement], ['SwitchCase', printSwitchCase], ['TSAnyKeyword', printTsAnyKeyword], ['TSArrayType', printTsArrayType], ['TSAsExpression', printTsAsExpression], ['TSBooleanKeyword', printTsBooleanKeyword], ['TSFunctionType', printTsFunctionType], ['TSLiteralType', printTsLiteralType], ['TSNumberKeyword', printTsNumberKeyword], ['TSStringKeyword', printTsStringKeyword], ['TSTupleType', printTsTupleType], ['TSTypeAliasDeclaration', printTsTypeAliasDeclaration], ['TSTypeAnnotation', printTsTypeAnnotation], ['TSTypeParameterInstantiation', printTsTypeParameterInstantiation], ['TSTypeReference', printTsTypeReference], ['TSUndefinedKeyword', printTsUndefinedKeyword], ['TSUnionType', printTsUnionType], ['TSVoidKeyword', printTsVoidKeyword], ['TaggedTemplateExpression', printTaggedTemplateExpression], ['TemplateElement', printTemplateElement], ['TemplateLiteral', printTemplateLiteral], ['ThisExpression', printThisExpression], ['ThrowStatement', printThrowStatement], ['TryStatement', printTryStatement], ['UnaryExpression', printUnaryExpression], ['UpdateExpression', printUpdateExpression], ['VariableDeclaration', printVariableDeclaration], ['VariableDeclarator', printVariableDeclarator], ['WhileStatement', printWhileStatement], ['YieldExpression', printYieldExpression], ['XRawJavaScript', printXRawJavascript]] as any);
 
 export {
+  printSyntax as printRose,
   printNode as printEstreeNode,
   printSexpAsExpression as printAsExpression,
   print,
   printEstree,
   printNode,
-  printRose,
+  printSyntax,
   printSexp,
   printSexpAsExpression,
   writeToString

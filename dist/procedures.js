@@ -19,8 +19,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp_ = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = exports.functionp = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = void 0;
+exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = exports.functionp = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = void 0;
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
         if (x === y) {
@@ -173,6 +173,15 @@ exports.macrop = macrop_;
 exports.macrop_ = macrop_;
 macrop_.fsource = [Symbol.for('define'), [Symbol.for('macro?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('macro-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
 /**
+ * Whether `f` is a syntax transformer.
+ */
+function syntaxTransformerP_(f) {
+    return (f instanceof Function) && syntaxTransformerTypeP_(f.ftype);
+}
+exports.syntaxTransformerP = syntaxTransformerP_;
+exports.syntaxTransformerP_ = syntaxTransformerP_;
+syntaxTransformerP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('syntax-transformer-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
+/**
  * Whether `x` is the type of a variable.
  */
 function variableTypeP_(x) {
@@ -209,6 +218,16 @@ function macroTypeP_(x) {
 exports.macroTypeP = macroTypeP_;
 exports.macroTypeP_ = macroTypeP_;
 macroTypeP_.fsource = [Symbol.for('define'), [Symbol.for('macro-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('macro->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->macro')]], [Symbol.for('eq?'), Symbol.for('x'), 'macro']]];
+/**
+ * Whether `x` is the type of a syntax transformer.
+ */
+function syntaxTransformerTypeP_(x) {
+    // FIXME: Or just call `equal?`.
+    return taggedListP_(x, Symbol.for('macro->')) && (x.length === 3) && (x[1] === Symbol.for('Syntax')) && (x[2] === Symbol.for('Syntax'));
+}
+exports.syntaxTransformerTypeP = syntaxTransformerTypeP_;
+exports.syntaxTransformerTypeP_ = syntaxTransformerTypeP_;
+syntaxTransformerTypeP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer-type?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('macro->')]], [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('js/second'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]], [Symbol.for('eq?'), [Symbol.for('js/third'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]]]];
 /**
  * Whether `x` is the type of a fexpr.
  */

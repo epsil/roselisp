@@ -14,8 +14,6 @@
                   lisp-environment
                   optimize-sexp
                   sexp))
-(require (only-in "../../src/ts/rose"
-                  make-rose))
 (require (only-in "./test-util"
                   assert-equal
                   test-macro))

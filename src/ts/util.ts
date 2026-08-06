@@ -23,8 +23,8 @@ import {
 } from './constants';
 
 import {
-  Rose,
-  roseToSexp
+  syntaxp,
+  syntaxToDatum
 } from './rose';
 
 const [lastCdr]: any[] = ((): any => {
@@ -245,8 +245,8 @@ function kebabCaseToSnakeCase(str: any): any {
  * [sicp:tagged-list-p]: https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-26.html#%_idx_4290
  */
 function taggedListP(exp: any, tag: any, len: any = undefined): any {
-  if (exp instanceof Rose) {
-    return taggedListP(roseToSexp(exp), tag, len);
+  if (syntaxp(exp)) {
+    return taggedListP(syntaxToDatum(exp), tag, len);
   } else if (Number.isFinite(len)) {
     return taggedListP(exp, tag) && (exp.length === len);
   } else {
@@ -285,8 +285,8 @@ function textOfQuotation(exp: any): any {
  * Whether `exp` is a form referencing `f` in `env`.
  */
 function formp(exp: any, f: any, env: any): any {
-  if (exp instanceof Rose) {
-    return formp(roseToSexp(exp), f, env);
+  if (syntaxp(exp)) {
+    return formp(syntaxToDatum(exp), f, env);
   } else {
     if (Array.isArray(exp) && (exp.length > 0)) {
       const op: any = exp[0];
@@ -310,8 +310,8 @@ function formp(exp: any, f: any, env: any): any {
  * Whether `exp` is a `(: ...)` expression.
  */
 function colonFormP(exp: any): any {
-  if (exp instanceof Rose) {
-    return colonFormP(roseToSexp(exp));
+  if (syntaxp(exp)) {
+    return colonFormP(syntaxToDatum(exp));
   } else {
     return Array.isArray(exp) && (exp.length >= 3) && (exp[1] === Symbol.for(':'));
   }

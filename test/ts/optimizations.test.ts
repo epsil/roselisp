@@ -18,8 +18,6 @@ import {
   sexp,
 } from '../../src/ts/language';
 
-import { makeRose } from '../../src/ts/rose';
-
 import { assertEqual, testMacro } from './test-util';
 
 testMacro.ftype = 'macro';

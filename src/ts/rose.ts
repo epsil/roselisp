@@ -1057,7 +1057,69 @@ function roseToSexp(node: any): any {
   return node.getValue();
 }
 
+/**
+ * Whether something is a syntax object.
+ *
+ * Similar to [`syntax?` in Racket][rkt:syntaxp].
+ *
+ * [rkt:syntaxp]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax~3f%29%29
+ */
+const syntaxp: any = rosep;
+
+/**
+ * Convert a syntax object to an S-expression.
+ *
+ * Similar to [`syntax->datum` in Racket][rkt:syntax-to-datum].
+ *
+ * [rkt:syntax-to-datum]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3edatum%29%29
+ */
+const syntaxToDatum: any = roseToSexp;
+
+/**
+ * Convert an S-expression to a syntax object.
+ *
+ * Similar to [`datum->syntax` in Racket][rkt:datum-to-syntax].
+ *
+ * [rkt:datum-to-syntax]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._datum-~3esyntax%29%29
+ */
+function datumToSyntax(ctxt: any, v: any, srcloc: any = undefined): any {
+  return sexpToRose(v, ctxt || srcloc);
+}
+
+/**
+ * Convert a syntax object to a list of syntax objects.
+ *
+ * Similar to [`syntax->list` in Racket][rkt:syntax-to-list].
+ *
+ * [rkt:syntax-to-list]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3elist%29%29
+ */
+function syntaxToList(stx: any): any {
+  if (Array.isArray(syntaxToDatum(stx))) {
+    return stx.getNodes();
+  } else {
+    return false;
+  }
+}
+
+/**
+ * Unwrap a syntax object one level deep.
+ *
+ * Similar to [`syntax-e` in Racket][rkt:syntax-e].
+ *
+ * [rkt:syntax-e]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-e%29%29
+ */
+function syntaxE(stx: any): any {
+  const v: any = syntaxToDatum(stx);
+  if (Array.isArray(v)) {
+    return syntaxToList(stx);
+  } else {
+    return v;
+  }
+}
+
 export {
+  Rose as Syntax,
+  RoseSplice as SyntaxSplice,
   roseToMap as makeRoseMap,
   sexpToRose as makeRose,
   Forest,
@@ -1066,6 +1128,7 @@ export {
   beginWrapRose,
   beginWrapRoseSmart,
   beginWrapRoseSmart1,
+  datumToSyntax,
   forestp,
   insertSexpIntoRose,
   makeListRose,
@@ -1077,6 +1140,10 @@ export {
   rosep,
   sexpToRose,
   sliceRose,
+  syntaxToDatum,
+  syntaxToList,
+  syntaxE,
+  syntaxp,
   transferComments,
   wrapSexpInRose
 };

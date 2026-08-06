@@ -156,6 +156,43 @@ defineMacro_.fsource = [Symbol.for('define'), [Symbol.for('define-macro_'), Symb
 defineMacro_.ftype = 'macro';
 
 /**
+ * Expand a `(syntax ...)` expression.
+ */
+function syntax_(exp: any, env: any): any {
+  const [v]: any[] = exp.slice(1);
+  return [Symbol.for('datum->syntax'), false, [Symbol.for('quote'), v]];
+}
+
+syntax_.fsource = [Symbol.for('define'), [Symbol.for('syntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('v')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('datum->syntax'), false, [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('v')]]]]];
+
+syntax_.ftype = 'macro';
+
+/**
+ * Expand a `(quasisyntax ...)` expression.
+ */
+function quasisyntax_(exp: any, env: any): any {
+  const [v]: any[] = exp.slice(1);
+  return [Symbol.for('datum->syntax'), false, [Symbol.for('quasiquote'), [Symbol.for('unquote'), Symbol.for('v')]]];
+}
+
+quasisyntax_.fsource = [Symbol.for('define'), [Symbol.for('quasisyntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('v')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('datum->syntax'), false, [Symbol.for('quasiquote'), [Symbol.for('unquote'), Symbol.for('v')]]]]];
+
+quasisyntax_.ftype = 'macro';
+
+/**
+ * Expand a `(define-syntax ...)` expression.
+ */
+function defineSyntax_(exp: any, env: any): any {
+  const [nameAndArgs, ...body]: any[] = exp.slice(1);
+  const name: any = nameAndArgs[0];
+  return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('declare'), name, [Symbol.for('ftype'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]];
+}
+
+defineSyntax_.fsource = [Symbol.for('define'), [Symbol.for('define-syntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare'), [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('ftype'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]]]];
+
+defineSyntax_.ftype = 'macro';
+
+/**
  * Create a macro function on the basis of a
  * `(define-macro ...)` expression.
  */
@@ -275,11 +312,11 @@ defineFexpr_.ftype = 'macro';
 function declare_(exp: any, env: any): any {
   const [name, ...specs]: any[] = exp.slice(1);
   return [Symbol.for('begin'), ...specs.map(function (spec: any): any {
-    return [Symbol.for('set-field!'), spec[0], name, spec[1]];
+    return [Symbol.for('set-field!'), spec[0], name, [Symbol.for('quote'), spec[1]]];
   })];
 }
 
-declare_.fsource = [Symbol.for('define'), [Symbol.for('declare_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('.'), Symbol.for('specs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('spec')], [Symbol.for('quasiquote'), [Symbol.for('set-field!'), [Symbol.for('unquote'), [Symbol.for('js/first'), Symbol.for('spec')]], [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('spec')]]]]], Symbol.for('specs')]]]]];
+declare_.fsource = [Symbol.for('define'), [Symbol.for('declare_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('.'), Symbol.for('specs')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('spec')], [Symbol.for('quasiquote'), [Symbol.for('set-field!'), [Symbol.for('unquote'), [Symbol.for('js/first'), Symbol.for('spec')]], [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('spec')]]]]]], Symbol.for('specs')]]]]];
 
 declare_.ftype = 'macro';
 
@@ -1001,6 +1038,7 @@ export {
   defineMacro_,
   definePrivate_,
   definePublic_,
+  defineSyntax_,
   defmacro_,
   defun_,
   do_,
@@ -1009,8 +1047,10 @@ export {
   multipleValueBind_,
   newApply_,
   or_,
+  quasisyntax_,
   rktNew_,
   set_,
+  syntax_,
   threadAs_,
   threadFirst_,
   threadLast_,

@@ -6,8 +6,8 @@
  * ## Description
  *
  * A simple S-expression parser that returns an S-expression wrapped
- * in a rose tree. Metadata that is not part of the S-expression,
- * such as comments, is stored in the rose tree wrapper instead.
+ * in a rose tree, i.e., a syntax object. Metadata that is not part of
+ * the S-expression, such as comments, is stored in the wrapper instead.
  *
  * ## License
  *
@@ -30,11 +30,10 @@ declare namespace readSexp {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
- * Parse a string of Lisp code and return an S-expression
- * wrapped in a rose tree.
+ * Parse a string of Lisp code and return a syntax object.
  */
-declare function readRose(str: any, options?: any): any;
-declare namespace readRose {
+declare function readSyntax(str: any, options?: any): any;
+declare namespace readSyntax {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -47,7 +46,7 @@ declare namespace readRose {
  *
  *     [s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]
  *
- * The output of this function is passed to `parse-rose`.
+ * The output of this function is passed to `parse-syntax`.
  */
 declare function tokenize(str: any, options?: any): any;
 declare namespace tokenize {
@@ -55,13 +54,13 @@ declare namespace tokenize {
 }
 /**
  * Take the array of tokens produced by `tokenize` and make a
- * rose tree that corresponds to the structure of the Lisp code.
+ * syntax object that corresponds to the structure of the Lisp code.
  *
  * For example,
  *
  *     [s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]
  *
- * is transformed into a rose tree containing the value:
+ * is transformed into a syntax object containing the value:
  *
  *     [[s`lambda`, [s`x`], s`x`], 'Lisp']
  *
@@ -70,10 +69,10 @@ declare namespace tokenize {
  *     ((lambda (x) x) "Lisp")
  *
  * The output of this function is a S-expression wrapped in a
- * rose tree.
+ * syntax object.
  */
-declare function parseRose(tokens: any, options?: any): any;
-declare namespace parseRose {
+declare function parseSyntax(tokens: any, options?: any): any;
+declare namespace parseSyntax {
     var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
 }
 /**
@@ -174,4 +173,4 @@ declare class StringToken extends Token {
 declare class SymbolToken extends Token {
     constructor(value: any);
 }
-export { CommentToken, LeadingCommentToken, NumberToken, StringToken, SymbolToken, Token, TrailingCommentToken, commentLevelP, getCommentLevel, parseRose, parseSexp, read, readRose, readSexp, tokenize };
+export { parseSyntax as parseRose, readSyntax as readRose, CommentToken, LeadingCommentToken, NumberToken, StringToken, SymbolToken, Token, TrailingCommentToken, commentLevelP, getCommentLevel, parseSexp, parseSyntax, read, readSexp, readSyntax, tokenize };

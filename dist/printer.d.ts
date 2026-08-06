@@ -64,10 +64,10 @@ declare namespace printEstree {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
- * Print a rose tree.
+ * Print a syntax object.
  */
-declare function printRose(node: any, options?: any): any;
-declare namespace printRose {
+declare function printSyntax(node: any, options?: any): any;
+declare namespace printSyntax {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -99,4 +99,4 @@ declare function printNode(node: any, options?: any): any;
 declare namespace printNode {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
-export { printNode as printEstreeNode, printSexpAsExpression as printAsExpression, print, printEstree, printNode, printRose, printSexp, printSexpAsExpression, writeToString };
+export { printSyntax as printRose, printNode as printEstreeNode, printSexpAsExpression as printAsExpression, print, printEstree, printNode, printSyntax, printSexp, printSexpAsExpression, writeToString };

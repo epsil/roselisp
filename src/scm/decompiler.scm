@@ -35,12 +35,12 @@
                   estree-type?
                   estree-type))
 (require (only-in "./rose"
-                  RoseSplice
-                  rose->sexp
-                  sexp->rose))
+                  SyntaxSplice
+                  datum->syntax
+                  syntax->datum))
 (require (only-in "./printer"
                   print-estree
-                  print-rose))
+                  print-syntax))
 (require (only-in "./util"
                   make-unique-symbol
                   tagged-list?))
@@ -135,9 +135,9 @@
     (decompile-estree ast options))
   (cond
    ((not (oget options :sexp))
-    (print-rose result options))
+    (print-syntax result options))
    (else
-    (rose->sexp result))))
+    (syntax->datum result))))
 
 ;;; Decompile an [ESTree][github:estree] node
 ;;; (i.e., a JavaScript [AST][w:Abstract syntax tree]).
@@ -160,7 +160,8 @@
   (define module-option
     (oget options :module))
   (define result
-    (sexp->rose
+    (datum->syntax
+     #f
      `(module
           m
           scheme
@@ -169,9 +170,10 @@
                (get-field body node)))))
   (unless module-option
     (set! result
-          (sexp->rose
+          (datum->syntax
+           #f
            `(begin ,@(send result drop 3))))
-    (when (= (js/length (rose->sexp result)) 2)
+    (when (= (js/length (syntax->datum result)) 2)
       (set! result (send result get 1))))
   result)
 
@@ -194,7 +196,7 @@
   (define callee-decompiled
     (decompile-estree callee options))
   (define callee-decompiled-exp
-    (rose->sexp callee-decompiled))
+    (syntax->datum callee-decompiled))
   (define args
     (get-field arguments node))
   (define spread-idx
@@ -227,7 +229,8 @@
            args))))
   (cond
    ((tagged-list? callee-decompiled-exp 'get-field)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,(if is-spread
             'send/apply
             'send)
@@ -235,7 +238,8 @@
        ,(send callee-decompiled get 1)
        ,@args-decompiled)))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,@(if is-spread
              '(apply)
              '())
@@ -254,7 +258,7 @@
   (define left-decompiled
     (decompile-estree left))
   (define left-exp
-    (rose->sexp left-decompiled))
+    (syntax->datum left-decompiled))
   (define right
     (get-field right node))
   (define right-decompiled
@@ -267,36 +271,44 @@
        ("/=" . /))))
   (when (hash-has-key? assignment-map op)
     (set! right-decompiled
-          (sexp->rose
+          (datum->syntax
+           #f
            `(,(hash-ref assignment-map op)
              ,left-decompiled
              ,right-decompiled))))
   (cond
    ((tagged-list? left-exp 'get-field)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(set-field! ,(send left-decompiled get 1)
                   ,(send left-decompiled get 2)
                   ,right-decompiled)))
    ((tagged-list? left-exp 'aget)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(aset! ,@(send left-decompiled drop 1)
              ,right-decompiled)))
    ((tagged-list? left-exp 'oget)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(oset! ,@(send left-decompiled drop 1)
              ,right-decompiled)))
    ((estree-type? left "ArrayPattern")
-    (sexp->rose
+    (datum->syntax
+     #f
      `(set!-values ,left-decompiled ,right-decompiled)))
    ((estree-type? left "ObjectPattern")
-    (sexp->rose
+    (datum->syntax
+     #f
      `(set!-fields ,left-decompiled ,right-decompiled)))
    ((or (eq? op "=")
         (hash-has-key? assignment-map op))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(set! ,left-decompiled ,right-decompiled)))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(js/op ,(string->symbol op) ,left-decompiled ,right-decompiled)))))
 
 ;;; Decompile an ESTree [`AssignmentPattern`][estree:assignmentpattern] node.
@@ -311,13 +323,15 @@
     (get-field typeAnnotation left))
   (cond
    (typ
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,(send assignment get 1)
        :
        ,(decompile-estree typ options)
        ,(send assignment get 2))))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      (send assignment drop 1)))))
 
 ;;; Decompile an ESTree [`UnaryExpression`][estree:unaryexpression] node.
@@ -339,17 +353,20 @@
   (define argument-decompiled
     (decompile-estree argument options))
   (define argument-decompiled-exp
-    (rose->sexp argument-decompiled))
+    (syntax->datum argument-decompiled))
   (cond
    ((eq? op "!")
-    (sexp->rose
+    (datum->syntax
+     #f
      `(not ,argument-decompiled)))
    ((and (eq? op "-")
          (number? argument-decompiled-exp))
-    (sexp->rose
+    (datum->syntax
+     #f
      (- argument-decompiled-exp)))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,op-decompiled
        ,argument-decompiled)))))
 
@@ -374,7 +391,7 @@
           `(set! ,argument (- ,argument 1)))))
   (unless prefix
     (set! result `(begin0 ,argument ,result)))
-  (sexp->rose result))
+  (datum->syntax #f result))
 
 ;;; Decompile an ESTree [`BinaryExpression`][estree:binaryexpression] node.
 ;;;
@@ -408,13 +425,13 @@
   (define left-decompiled
     (decompile-estree left))
   (define left-decompiled-exp
-    (rose->sexp left-decompiled))
+    (syntax->datum left-decompiled))
   (define right
     (get-field right node))
   (define right-decompiled
     (decompile-estree right))
   (define right-decompiled-exp
-    (rose->sexp right-decompiled))
+    (syntax->datum right-decompiled))
   (when (and (eq? op '+)
              (or (is-string-expression left-decompiled-exp)
                  (is-string-expression right-decompiled-exp)))
@@ -436,10 +453,12 @@
   (cond
    ((or (eq? operator "!==")
         (eq? operator "!="))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(not (,op ,@left-operands ,@right-operands))))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,op ,@left-operands ,@right-operands)))))
 
 ;;; Decompile an ESTree [`LogicalExpression`][estree:logicalexpression] node.
@@ -457,8 +476,8 @@
            (decompile-estree x options))
          (get-field declarations node)))
   (define result
-    (~> (sexp->rose decls)
-        (send set-value (new RoseSplice))))
+    (~> (datum->syntax #f decls)
+        (send set-value (new SyntaxSplice))))
   (when (= (js/length decls) 1)
     (set! result (send result get 0)))
   result)
@@ -481,7 +500,8 @@
       'define-fields)
      (else
       'define)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(,define-sym
       ,(decompile-estree id options)
       ,@(if (or (eq? init js/undefined)
@@ -495,7 +515,7 @@
 (define (decompile-identifier node (options (js/obj)))
   (define name
     (string->symbol (get-field name node)))
-  (sexp->rose name))
+  (datum->syntax #f name))
 
 ;;; Decompile an ESTree [`Literal`][estree:literal] node.
 ;;;
@@ -505,9 +525,10 @@
     (get-field value node))
   (cond
    ((js/null? value)
-    (sexp->rose 'js/null))
+    (datum->syntax #f 'js/null))
    ((boolean? value)
-    (sexp->rose
+    (datum->syntax
+     #f
      (if value
          #t
          #f)))
@@ -524,14 +545,15 @@
     ;; provided it is not the name of a local variable.
     ;; To do that, we need an environment in which to
     ;; keep track of bindings.
-    (sexp->rose
+    (datum->syntax
+     #f
      `(js/regexp
        ,pattern
        ,@(if flags
              (list flags)
              '()))))
    (else
-    (sexp->rose value))))
+    (datum->syntax #f value))))
 
 ;;; Decompile an ESTree [`MemberExpression`][estree:memberexpression] node.
 ;;;
@@ -541,11 +563,11 @@
     (decompile-estree (get-field property node)
                       options))
   (define property-exp
-    (rose->sexp property))
+    (syntax->datum property))
   (define object
     (decompile-estree (get-field object node) options))
   (define object-exp
-    (rose->sexp object))
+    (syntax->datum object))
   (define computed
     (get-field computed node))
   (define optional
@@ -556,23 +578,28 @@
       (set! object `(js/?. ,object)))
     (cond
      ((number? property-exp)
-      (sexp->rose
+      (datum->syntax
+       #f
        `(aget
          ,@(if (tagged-list? object-exp 'aget)
                (send object drop 1)
                (list object))
          ,property)))
      (else
-      (sexp->rose
+      (datum->syntax
+       #f
        `(oget ,object ,property)))))
    (optional
-    (sexp->rose
+    (datum->syntax
+     #f
      `(js/?. ,object ,property)))
    ((eq? property-exp 'length)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(js/length ,object)))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(get-field ,property ,object)))))
 
 ;;; Decompile an ESTree [`ChainExpression`][estree:chainexpression] node.
@@ -584,18 +611,20 @@
   (define expression-decompiled
     (decompile-estree expression options))
   (define expression-decompiled-exp
-    (rose->sexp expression-decompiled))
+    (syntax->datum expression-decompiled))
   (cond
    ((tagged-list? expression-decompiled-exp 'get-field)
     (cond
      ((symbol? (aget expression-decompiled-exp 2))
-      (sexp->rose
+      (datum->syntax
+       #f
        `(and (field-bound?
               ,(send expression-decompiled get 1)
               ,(send expression-decompiled get 2))
              ,expression-decompiled)))
      (else
-      (sexp->rose
+      (datum->syntax
+       #f
        `(~> ,(send expression-decompiled get 2)
             (and (field-bound?
                   ,(send expression-decompiled get 1)
@@ -606,13 +635,15 @@
    ((tagged-list? expression-decompiled-exp 'send)
     (cond
      ((symbol? (aget expression-decompiled-exp 1))
-      (sexp->rose
+      (datum->syntax
+       #f
        `(and (field-bound?
               ,(send expression-decompiled get 2)
               ,(send expression-decompiled get 1))
              ,expression-decompiled)))
      (else
-      (sexp->rose
+      (datum->syntax
+       #f
        `(~> ,(send expression-decompiled get 1)
             (and (field-bound?
                   ,(send expression-decompiled get 2)
@@ -651,7 +682,8 @@
 ;;;
 ;;; [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
 (define (decompile-block-statement node (options (js/obj)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(js/block
      ,@(map (lambda (x)
               (decompile-estree x options))
@@ -661,7 +693,8 @@
 ;;;
 ;;; [estree:sequenceexpression]: https://github.com/estree/estree/blob/master/es5.md#sequenceexpression
 (define (decompile-sequence-expression node (options (js/obj)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(begin
       ,@(map (lambda (x)
                (decompile-estree x options))
@@ -675,10 +708,12 @@
     (get-field argument node))
   (cond
    (argument
-    (sexp->rose
+    (datum->syntax
+     #f
      `(return ,(decompile-estree argument options))))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(return)))))
 
 ;;; Decompile an ESTree [`IfStatement`][estree:ifstatement] node.
@@ -688,28 +723,29 @@
   (define test
     (decompile-estree (get-field test node) options))
   (define test-exp
-    (rose->sexp test))
+    (syntax->datum test))
   (define consequent
     (decompile-estree (get-field consequent node) options))
   (define consequent-exp
-    (rose->sexp consequent))
+    (syntax->datum consequent))
   (define alternate
     (if (get-field alternate node)
         (decompile-estree (get-field alternate node) options)
         #f))
   (define alternate-exp
-    (and alternate (rose->sexp alternate)))
+    (and alternate (syntax->datum alternate)))
   (when (and (tagged-list? consequent-exp 'js/block)
              (= (js/length consequent-exp) 2))
     (set! consequent (send consequent get 1))
-    (set! consequent-exp (rose->sexp consequent)))
+    (set! consequent-exp (syntax->datum consequent)))
   (when (and (tagged-list? alternate-exp 'js/block)
              (= (js/length alternate-exp) 2))
     (set! alternate (send alternate get 1))
-    (set! alternate-exp (rose->sexp alternate)))
+    (set! alternate-exp (syntax->datum alternate)))
   (cond
    ((tagged-list? alternate-exp 'when)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(cond
        (,test
         ,@(if (tagged-list? consequent-exp 'js/block)
@@ -717,7 +753,8 @@
               (list consequent)))
        (,@(send alternate drop 1)))))
    ((tagged-list? alternate-exp 'unless)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(cond
        (,test
         ,@(if (tagged-list? consequent-exp 'js/block)
@@ -731,8 +768,9 @@
     (define alternate-consequent
       (send alternate get 2))
     (define alternate-consequent-exp
-      (rose->sexp alternate-consequent))
-    (sexp->rose
+      (syntax->datum alternate-consequent))
+    (datum->syntax
+     #f
      `(cond
        (,test
         ,@(if (tagged-list? consequent-exp 'js/block)
@@ -746,7 +784,8 @@
              (list `(else ,@(send alternate drop 3)))
              '()))))
    ((tagged-list? alternate-exp 'cond)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(cond
        (,test
         ,@(if (tagged-list? consequent-exp 'js/block)
@@ -756,20 +795,23 @@
    ((not alternate)
     (cond
      ((tagged-list? test-exp 'not)
-      (sexp->rose
+      (datum->syntax
+       #f
        `(unless ,(send test get 1)
           ,@(if (tagged-list? consequent-exp 'js/block)
                 (send consequent drop 1)
                 (list consequent)))))
      (else
-      (sexp->rose
+      (datum->syntax
+       #f
        `(when ,test
           ,@(if (tagged-list? consequent-exp 'js/block)
                 (send consequent drop 1)
                 (list consequent)))))))
    ((or (tagged-list? consequent-exp 'js/block)
         (tagged-list? alternate-exp 'js/block))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(cond
        (,test
         ,@(if (tagged-list? consequent-exp 'js/block)
@@ -780,7 +822,8 @@
               (send alternate drop 1)
               (list alternate))))))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(if ,test
           ,consequent
           ,alternate)))))
@@ -794,9 +837,10 @@
   (define body
     (decompile-estree (get-field body node) options))
   (define body-exp
-    (rose->sexp body))
+    (syntax->datum body))
   (define result
-    (sexp->rose
+    (datum->syntax
+     #f
      `(do ()
           ((not ,test))
         ,@(if (tagged-list? body-exp 'js/block)
@@ -813,7 +857,8 @@
   (define body
     (decompile-estree (get-field body node) options))
   (define result
-    (sexp->rose
+    (datum->syntax
+     #f
      `(js/do-while
        ,(send body drop 1)
        ,test)))
@@ -826,7 +871,7 @@
   (define init
     (decompile-estree (get-field init node) options))
   (define inits
-    (if (is-a? (rose->sexp init) RoseSplice)
+    (if (is-a? (syntax->datum init) SyntaxSplice)
         (send init drop 0)
         (list init)))
   (define test
@@ -834,7 +879,7 @@
   (define update
     (decompile-estree (get-field update node) options))
   (define updates
-    (if (tagged-list? (rose->sexp update) 'begin)
+    (if (tagged-list? (syntax->datum update) 'begin)
         (send update drop 1)
         (list update)))
   (define bindings '())
@@ -842,29 +887,29 @@
     (define current-init
       (aget inits i))
     (define current-init-exp
-      (rose->sexp current-init))
+      (syntax->datum current-init))
     (when (or (tagged-list? current-init-exp 'define)
               (tagged-list? current-init-exp 'set!))
       (set! current-init
-            (sexp->rose
-             `(,@(send current-init drop 1))
-             current-init))
+            (datum->syntax
+             current-init
+             `(,@(send current-init drop 1))))
       (set! current-init-exp
-            (rose->sexp current-init)))
+            (syntax->datum current-init)))
     (define current-update
       (aget updates i))
     (define current-update-exp
-      (rose->sexp current-update))
+      (syntax->datum current-update))
     (when (tagged-list? current-update-exp 'begin0)
       (set! current-update
             (send current-update last))
       (set! current-update-exp
-            (rose->sexp current-update)))
+            (syntax->datum current-update)))
     (when (tagged-list? current-update-exp 'set!)
       (set! current-update
             (send current-update third))
       (set! current-update-exp
-            (rose->sexp current-update)))
+            (syntax->datum current-update)))
     (push-right! bindings
                  `(,@(send current-init drop 0)
                    ,current-update)))
@@ -887,10 +932,11 @@
     (define step
       (~> update
           (send _ get 2)
-          (rose->sexp _)))
+          (syntax->datum _)))
     (when (tagged-list? update '-)
       (set! step (- step)))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(for ((,i (range
                  ,start
                  ,end
@@ -899,7 +945,8 @@
                        (list step)))))
         ,@(send body drop 1))))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(do ,bindings
           ((not ,test))
         ,@(send body drop 1))))))
@@ -911,14 +958,14 @@
   (define left
     (decompile-estree (get-field left node) options))
   (define left-exp
-    (rose->sexp left))
+    (syntax->datum left))
   (when (tagged-list? left-exp 'define)
     (set! left (send left get 1))
-    (set! left-exp (rose->sexp left)))
+    (set! left-exp (syntax->datum left)))
   (define right
     (decompile-estree (get-field right node) options))
   (define right-exp
-    (rose->sexp right))
+    (syntax->datum right))
   (define body
     (decompile-estree (get-field body node) options))
   (define body-nodes
@@ -928,12 +975,14 @@
       (make-unique-symbol
        (cons right-exp (second left-exp))))
     (push-left! body-nodes
-                (sexp->rose
+                (datum->syntax
+                 #f
                  `(,(send left get 0)
                    ,(send left get 1)
                    ,sym)))
-    (set! left (sexp->rose sym)))
-  (sexp->rose
+    (set! left (datum->syntax #f sym)))
+  (datum->syntax
+   #f
    `(for ((,left ,right))
       ,@body-nodes)))
 
@@ -944,15 +993,16 @@
   (define left
     (decompile-estree (get-field left node) options))
   (define left-exp
-    (rose->sexp left))
+    (syntax->datum left))
   (when (tagged-list? left-exp 'define)
     (set! left (send left get 1))
-    (set! left-exp (rose->sexp left)))
+    (set! left-exp (syntax->datum left)))
   (define right
     (decompile-estree (get-field right node) options))
   (define body
     (decompile-estree (get-field body node) options))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(for ((,left (js/keys ,right)))
       ,@(send body drop 1))))
 
@@ -960,7 +1010,8 @@
 ;;;
 ;;; [estree:breakstatement]: https://github.com/estree/estree/blob/master/es5.md#breakstatement
 (define (decompile-break-statement node (options (js/obj)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(break
      ,@(if (get-field label node)
            (list (decompile-estree (get-field label node)
@@ -971,7 +1022,8 @@
 ;;;
 ;;; [estree:continuestatement]: https://github.com/estree/estree/blob/master/es5.md#continuestatement
 (define (decompile-continue-statement node (options (js/obj)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(continue
      ,@(if (get-field label node)
            (list (decompile-estree (get-field label node)
@@ -982,7 +1034,8 @@
 ;;;
 ;;; [estree:throwstatement]: https://github.com/estree/estree/blob/master/es5.md#throwstatement
 (define (decompile-throw-statement node (options (js/obj)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(throw
      ,(decompile-estree (get-field argument node)
                         options))))
@@ -998,7 +1051,8 @@
   (define finalizer
     (get-field finalizer node))
   (define result
-    (sexp->rose
+    (datum->syntax
+     #f
      `(try
         ,@(send (decompile-estree block options) drop 1)
         ,@(if handler
@@ -1024,7 +1078,8 @@
 ;;;
 ;;; [estree:yieldexpression]: https://github.com/estree/estree/blob/master/es2015.md#yieldexpression
 (define (decompile-yield-expression node (options (js/obj)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(yield
      ,(decompile-estree (get-field argument node)
                         options))))
@@ -1038,7 +1093,8 @@
   (define is-spread
     (and (> (js/length arguments_) 0)
          (estree-type? (js/last arguments_) "SpreadElement")))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(,@(if is-spread
            '(apply)
            '())
@@ -1067,12 +1123,14 @@
     (get-field specifiers node))
   (cond
    ((= (js/length specifiers) 0)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(require ,source-decompiled)))
    ((and (= (js/length specifiers) 1)
          (estree-type? (first specifiers)
                        "ImportNamespaceSpecifier"))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(require
        ,(decompile-estree
          (get-field local (first specifiers))
@@ -1087,12 +1145,13 @@
              (define local
                (decompile-estree
                 (get-field local x) options))
-             (if (eq? (rose->sexp imported)
-                      (rose->sexp local))
+             (if (eq? (syntax->datum imported)
+                      (syntax->datum local))
                  imported
                  `(,imported ,local)))
            specifiers))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(require
        (only-in ,source-decompiled
                 ,@specifiers-decompiled))))))
@@ -1111,12 +1170,13 @@
            (define local
              (decompile-estree
               (get-field local x) options))
-           (if (eq? (rose->sexp exported)
-                    (rose->sexp local))
+           (if (eq? (syntax->datum exported)
+                    (syntax->datum local))
                exported
                `(rename-out (,local ,exported))))
          specifiers))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(provide ,@specifiers-decompiled)))
 
 ;;; Decompile an ESTree [`ExportAllDeclaration`][estree:exportalldeclaration] node.
@@ -1127,7 +1187,8 @@
     (get-field source node))
   (define source-decompiled
     (decompile-estree source options))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(provide (all-from-out ,source-decompiled))))
 
 ;;; Decompile an ESTree [`ObjectExpression`][estree:objectexpression] node.
@@ -1146,17 +1207,19 @@
       (push-right! properties
                    (~> (get-field key prop)
                        (decompile-estree _ options)
-                       (rose->sexp _)
+                       (syntax->datum _)
                        (symbol->string _)))
       (push-right! properties
                    (decompile-estree (get-field value prop)
                                      options)))))
   (cond
    ((= (js/length spreads) 0)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(js/obj ,@properties)))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(js/obj-append
        ,@spreads
        ,@(if (> (js/length properties) 0)
@@ -1175,11 +1238,11 @@
     (define value
       (decompile-estree (get-field value prop)
                         options))
-    (if (eq? (rose->sexp key)
-             (rose->sexp value))
+    (if (eq? (syntax->datum key)
+             (syntax->datum value))
         (push-right! properties key)
         (push-right! properties (list key value))))
-  (sexp->rose properties))
+  (datum->syntax #f properties))
 
 ;;; Decompile an ESTree [`TemplateLiteral`][estree:templateliteral] node.
 ;;;
@@ -1193,7 +1256,7 @@
           (~> (first quasis)
               (get-field value _)
               (get-field cooked _))))
-  (sexp->rose str))
+  (datum->syntax #f str))
 
 ;;; Decompile an ESTree [`TaggedTemplateExpression`][estree:taggedtemplateexpression] node.
 ;;;
@@ -1207,7 +1270,8 @@
     (get-field quasi node))
   (define quasi-decompiled
     (decompile-estree quasi options))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(js/tag ,tag-decompiled ,quasi-decompiled)))
 
 ;;; Decompile an ESTree [`ArrayExpression`][estree:arrayexpression] node.
@@ -1229,7 +1293,8 @@
            (drop-right elements 1)))
     (define rest-element
       (decompile-element (js/last elements)))
-    (sexp->rose
+    (datum->syntax
+     #f
      (apply list*
             `(,@regular-elements ,rest-element))))
    ((findf (lambda (x)
@@ -1243,15 +1308,18 @@
              (if (and x
                       (estree-type? x "SpreadElement"))
                  result
-                 (sexp->rose
+                 (datum->syntax
+                  #f
                   `(list ,result))))
            elements))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(append ,@elements-decompiled)))
    (else
     (define elements-decompiled
       (map decompile-element elements))
-    (sexp->rose
+    (datum->syntax
+     #f
      `(list ,@elements-decompiled)))))
 
 ;;; Decompile an ESTree [`ArrayPattern`][estree:arraypattern] node.
@@ -1260,8 +1328,9 @@
 (define (decompile-array-pattern node (options (js/obj)))
   (define array-expression
     (decompile-array-expression node options))
-  (sexp->rose
-   (if (tagged-list? (rose->sexp array-expression)
+  (datum->syntax
+   #f
+   (if (tagged-list? (syntax->datum array-expression)
                      'list)
        (send array-expression drop 1)
        array-expression)))
@@ -1278,13 +1347,13 @@
 ;;;
 ;;; [estree:super]: https://github.com/estree/estree/blob/master/es2015.md#expressions
 (define (decompile-super node (options (js/obj)))
-  (sexp->rose 'super))
+  (datum->syntax #f 'super))
 
 ;;; Decompile an ESTree [`ThisExpression`][estree:thisexpression] node.
 ;;;
 ;;; [estree:thisexpression]: https://github.com/estree/estree/blob/master/es5.md#thisexpression
 (define (decompile-this-expression node (options (js/obj)))
-  (sexp->rose 'this))
+  (datum->syntax #f 'this))
 
 ;;; Decompile an ESTree [`ClassDeclaration`][estree:classdeclaration] node.
 ;;;
@@ -1313,7 +1382,8 @@
   (for ((x (get-field body body)))
     (push-right! body-decompiled
                  (decompile-estree x options)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(define-class ,id-decompiled ,super-class-decompiled-exp
       ,@body-decompiled)))
 
@@ -1334,7 +1404,8 @@
              "private")
         'define
         'define/public))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(,define-symbol
       ,key-decompiled
       ,@(if (eq? value #n)
@@ -1350,7 +1421,7 @@
   (define key-decompiled
     (decompile-estree key options))
   (define key-decompiled-exp
-    (rose->sexp key-decompiled))
+    (syntax->datum key-decompiled))
   (define value
     (get-field value node))
   (define value-decompiled
@@ -1366,10 +1437,11 @@
       'define)
      (else
       'define/public)))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(,define-symbol
       ,(cons key-decompiled-exp
-             (aget (rose->sexp value-decompiled) 1))
+             (aget (syntax->datum value-decompiled) 1))
       ,@(send value-decompiled drop 2))))
 
 ;;; Decompile a TSESTree `TSAsExpression` node.
@@ -1382,33 +1454,34 @@
     (get-field typeAnnotation node))
   (define type-annotation-decompiled
     (decompile-estree type-annotation options))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(ann ,expression-decompiled
          ,type-annotation-decompiled)))
 
 ;;; Decompile a TSESTree `TSAnyKeyword` node.
 (define (decompile-ts-any-keyword node (options (js/obj)))
-  (sexp->rose 'Any))
+  (datum->syntax #f 'Any))
 
 ;;; Decompile a TSESTree `TSBooleanKeyword` node.
 (define (decompile-ts-boolean-keyword node (options (js/obj)))
-  (sexp->rose 'Boolean))
+  (datum->syntax #f 'Boolean))
 
 ;;; Decompile a TSESTree `TSNumberKeyword` node.
 (define (decompile-ts-number-keyword node (options (js/obj)))
-  (sexp->rose 'Number))
+  (datum->syntax #f 'Number))
 
 ;;; Decompile a TSESTree `TSStringKeyword` node.
 (define (decompile-ts-string-keyword node (options (js/obj)))
-  (sexp->rose 'String))
+  (datum->syntax #f 'String))
 
 ;;; Decompile a TSESTree `TSUndefinedKeyword` node.
 (define (decompile-ts-undefined-keyword node (options (js/obj)))
-  (sexp->rose 'Undefined))
+  (datum->syntax #f 'Undefined))
 
 ;;; Decompile a TSESTree `TSVoidKeyword` node.
 (define (decompile-ts-void-keyword node (options (js/obj)))
-  (sexp->rose 'Void))
+  (datum->syntax #f 'Void))
 
 ;;; Decompile a TSESTree `TSLiteralType` node.
 (define (decompile-ts-literal-type node (options (js/obj)))
@@ -1418,7 +1491,7 @@
     (if literal
         'True
         'False))
-  (sexp->rose literal-decompiled))
+  (datum->syntax #f literal-decompiled))
 
 ;;; Decompile a TSESTree `TSArrayType` node.
 (define (decompile-ts-array-type node (options (js/obj)))
@@ -1426,7 +1499,8 @@
     (get-field elementType node))
   (define element-type-decompiled
     (decompile-estree element-type options))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(Listof ,element-type-decompiled)))
 
 ;;; Decompile a TSESTree `TSTupleType` node.
@@ -1437,7 +1511,8 @@
     (map (lambda (x)
            (decompile-estree x options))
          element-types))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(List ,@element-types-decompiled)))
 
 ;;; Decompile a TSESTree `TSNamedTupleMember` node.
@@ -1456,7 +1531,8 @@
     (map (lambda (x)
            (decompile-estree x options))
          types))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(U ,@types-decompiled)))
 
 ;;; Decompile a TSESTree `TSFunctionType` node.
@@ -1473,7 +1549,8 @@
     (get-field returnType node))
   (define return-type-decompiled
     (decompile-estree return-type options))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(-> ,@params-decompiled
         ,return-type-decompiled)))
 
@@ -1491,9 +1568,10 @@
         '()))
   (cond
    ((= (js/length params-decompiled) 0)
-    (sexp->rose name-decompiled))
+    (datum->syntax #f name-decompiled))
    (else
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,name-decompiled
        ,@params-decompiled)))))
 
@@ -1515,7 +1593,8 @@
     (get-field typeAnnotation node))
   (define type-annotation-decompiled
     (decompile-estree type-annotation options))
-  (sexp->rose
+  (datum->syntax
+   #f
    `(define-type ,id-decompiled
       ,type-annotation-decompiled)))
 
@@ -1550,7 +1629,7 @@
   (define body
     (remove-return-tail-call
      (decompile-estree (get-field body node) options)))
-  (define body-exp (rose->sexp body))
+  (define body-exp (syntax->datum body))
   (define body-forms
     (if (tagged-list? body-exp 'js/block)
         (send body drop 1)
@@ -1561,24 +1640,28 @@
    (id
     (cond
      (async-field
-      (sexp->rose
+      (datum->syntax
+       #f
        `(define ,id
           (async
            (,lambda-sym ,params
                         ,@body-forms)))))
      (else
-      (sexp->rose
+      (datum->syntax
+       #f
        `(define ,(cons id params)
           ,@body-forms)))))
    (else
     (cond
      (async-field
-      (sexp->rose
+      (datum->syntax
+       #f
        `(async
          (,lambda-sym ,params
                       ,@body-forms))))
      (else
-      (sexp->rose
+      (datum->syntax
+       #f
        `(,lambda-sym ,params
                      ,@body-forms)))))))
 
@@ -1595,16 +1678,18 @@
       (string->symbol (get-field name node)))
     (cond
      (optional
-      (sexp->rose
+      (datum->syntax
+       #f
        `(,name undefined)))
      (type-annotation
-      (sexp->rose
+      (datum->syntax
+       #f
        `(,name
          :
          ,(decompile-ts-type-annotation
            type-annotation options))))
      (else
-      (sexp->rose name))))
+      (datum->syntax #f name))))
    (else
     (decompile-estree node options))))
 
@@ -1612,34 +1697,38 @@
 ;;; a form that occurs in tail call position.
 (define (remove-return-tail-call node)
   (define exp
-    (rose->sexp node))
+    (syntax->datum node))
   (cond
    ((and (tagged-list? exp 'return)
          (= (js/length exp) 2))
     (send node get 1))
    ((tagged-list? exp 'js/block)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,@(send node drop-right 1)
        ,(remove-return-tail-call
          (send node get (- (js/length exp) 1))))
      node))
    ((tagged-list? exp 'if)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,(send node get 0)
        ,(send node get 1)
        ,@(map remove-return-tail-call
               (send node drop 2)))
      node))
    ((tagged-list? exp 'cond)
-    (sexp->rose
+    (datum->syntax
+     #f
      `(,(send node get 0)
        ,@(map (lambda (x)
-                (sexp->rose
+                (datum->syntax
+                 #f
                  `(,@(send x drop-right 1)
                    ,(remove-return-tail-call
                      (send x
                            get
-                           (- (js/length (rose->sexp x))
+                           (- (js/length (syntax->datum x))
                               1))))
                  node))
               (send node drop 1)))
@@ -1663,7 +1752,7 @@
      (estree-type node)
      " not supported yet"))
   (~> `(,raw ,node-printed)
-      (sexp->rose _)
+      (datum->syntax #f _)
       (send _ set-property "comments" (list comment))))
 
 ;;; Mapping from ESTree node types to decompiler functions.

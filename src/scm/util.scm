@@ -19,8 +19,8 @@
                   unquote-sym_
                   unquote-splicing-sym_))
 (require (only-in "./rose"
-                  Rose
-                  rose->sexp))
+                  syntax?
+                  syntax->datum))
 
 ;;; Get the value stored under `path` in the map `map`.
 (define (map-get map path)
@@ -225,8 +225,8 @@
 ;;; [sicp:tagged-list-p]: https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-26.html#%_idx_4290
 (define (tagged-list? exp tag (len #u))
   (cond
-   ((is-a? exp Rose)
-    (tagged-list? (rose->sexp exp) tag len))
+   ((syntax? exp)
+    (tagged-list? (syntax->datum exp) tag len))
    ((number? len)
     (and (tagged-list? exp tag)
          (= (array-length exp) len)))
@@ -242,8 +242,8 @@
 ;;; Whether `exp` is a form referencing `f` in `env`.
 (define (form? exp f env)
   (cond
-   ((is-a? exp Rose)
-    (form? (rose->sexp exp) f env))
+   ((syntax? exp)
+    (form? (syntax->datum exp) f env))
    (else
     (cond
      ((and (array? exp)
@@ -267,8 +267,8 @@
 ;;; Whether `exp` is a `(: ...)` expression.
 (define (colon-form? exp)
   (cond
-   ((is-a? exp Rose)
-    (colon-form? (rose->sexp exp)))
+   ((syntax? exp)
+    (colon-form? (syntax->datum exp)))
    (else
     (and (array? exp)
          (>= (js/length exp) 3)

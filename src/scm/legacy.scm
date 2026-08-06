@@ -55,10 +55,9 @@
                   ContinueException
                   ReturnException))
 (require (only-in "./rose"
-                  Rose
-                  rose->sexp
-                  rose?
-                  sexp->rose
+                  datum->syntax
+                  syntax->datum
+                  syntax?
                   transfer-comments))
 (require (only-in "./util"
                   begin-wrap
@@ -401,11 +400,11 @@
 ;;; a `(define-class ...)` form.
 (define (define->define-class node)
   (cond
-   ((is-a? node Rose)
+   ((syntax? node)
     (define superclass
       (send (send node get 2) get 1))
     (define superclass-exp
-      (rose->sexp superclass))
+      (syntax->datum superclass))
     (define superclass-list
       (if (or (eq? superclass-exp 'object%)
               (eq? superclass-exp 'object)
@@ -414,15 +413,16 @@
           (list superclass)))
     (transfer-comments
      node
-     (sexp->rose
+     (datum->syntax
+      #f
       `(define-class ,(send node get 1)
-         ,(sexp->rose superclass-list)
+         ,(datum->syntax #f superclass-list)
          ,@(send (send node get 2) drop 2)))))
    (else
     (~> node
-        (sexp->rose _)
+        (datum->syntax #f _)
         (define->define-class _)
-        (rose->sexp _)))))
+        (syntax->datum _)))))
 
 ;;; Evaluate a `(define/public ...)` form.
 (define (define-public-special_ exp env)

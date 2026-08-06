@@ -11,7 +11,7 @@
 (require (only-in "../../src/ts/macros"
                   define-macro->lambda-form))
 (require (only-in "../../src/ts/parser"
-                  read-rose))
+                  read-syntax))
 (require (only-in "../../src/ts/sexp"
                   sexp))
 (require (only-in "./test-util"
@@ -3707,7 +3707,7 @@ z"
  > (it ";; comment
 (foo)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          ";; comment
 (foo)")
         compilation-environment
@@ -3720,7 +3720,7 @@ foo();"
 ;; comment
 (foo)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          ";; multi-line
 ;; comment
 (foo)")
@@ -3736,7 +3736,7 @@ foo();"
 ;; comment
 (foo)"
           (compile-with-environment
-           (read-rose
+           (read-syntax
             ";; multi-line
 ;;
 ;; comment
@@ -3754,7 +3754,7 @@ foo();"
 ;; comments
 (foo)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          ";; multiple
 
 ;; comments
@@ -3773,7 +3773,7 @@ foo();"
  ;; bar
  bar)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(+
             ;; foo
             foo
@@ -3795,7 +3795,7 @@ foo();"
       ;; baz
       baz)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(list foo
       ;; bar
       bar
@@ -3818,7 +3818,7 @@ foo();"
  ;; bar
  bar)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(+
             ;; foo
             foo
@@ -3837,7 +3837,7 @@ foo();"
  > (it ";; comment
 (foo)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          ";; comment
 (foo)")
         compilation-environment
@@ -3848,7 +3848,7 @@ foo();"
 foo();"
  > (it "I & K"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; I combinator.
   (define (I x)
@@ -3876,7 +3876,7 @@ function K(x, y) {
 }"
  > (it "A, JS"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; A combinator.
   (define (A f . args)
@@ -3894,7 +3894,7 @@ function A(f, ...args) {
 }"
  > (it "A, TS"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; A combinator.
   (define (A f . args)
@@ -3912,7 +3912,7 @@ function A(f: any, ...args: any[]): any {
 }"
  > (it "B2, TS"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; B2 combinator.
   (define (B2 . args)
@@ -3934,7 +3934,7 @@ function B2(...args: any[]): any {
 }"
  > (it "(define ... (let ...))"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Foo.
   (define (foo x)
@@ -3956,7 +3956,7 @@ function foo(x) {
 }"
  > (it "(define ... (if ...))"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Whether x is a truish value.
   (define (truish x)
@@ -3982,7 +3982,7 @@ function truish(x) {
 }"
  > (it "(define ... (cond ...))"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Whether x is a truish value.
   (define (truish x)
@@ -4010,7 +4010,7 @@ function truish(x) {
 }"
  > (it "(define ... (let ...))"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Wrap a value in a list.
   (define (wrap-in-list x)
@@ -4029,7 +4029,7 @@ function wrapInList(x) {
 }"
  > (it "while...if"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; test function.
   (define (test)
@@ -4068,7 +4068,7 @@ function test() {
 }"
  > (it "(define-class Foo ...)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Foo class.
   (define-class Foo ()
@@ -4101,7 +4101,7 @@ class Foo {
 }"
  > (it "(define-class Foo ...)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Foo class.
   (define-class Foo ()
@@ -4126,7 +4126,7 @@ class Foo {
 }"
  > (it "(define Foo (class ...))"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Foo class.
   (define Foo
@@ -4152,7 +4152,7 @@ class Foo {
 }"
  > (it "(define Foo (class ...))"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Foo class.
   (define Foo
@@ -4190,7 +4190,7 @@ class Foo {
 }"
  xit> (it "(define (hello-world) ...)"
           (compile-with-environment
-           (read-rose
+           (read-syntax
             "(module m scheme
   ;;; Hello, world.
   (: hello-world (-> Void))
@@ -4208,7 +4208,7 @@ function helloWorld() {
 }"
  > (it ";;; Foo, blank line, (define (hello-world) ...)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          ";;; Foo
 
 (require \"foo\")")
@@ -4222,7 +4222,7 @@ function helloWorld() {
 import * as foo from 'foo';"
  > (it ";; Foo, blank line, ;;; Bar, (define (hello-world) ...)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          ";; Foo
 
 ;;; Bar
@@ -4238,7 +4238,7 @@ import * as foo from 'foo';"
 import * as foo from 'foo';"
  > (it "(define (hello-world) ...)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          ";; Foo
 ;;; Bar
 
@@ -4254,7 +4254,7 @@ import * as foo from 'foo';"
 import * as foo from 'foo';"
  > (it "(define foo\n  ;; bar\n  bar)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(define foo
   ;; bar
   bar)")
@@ -4266,7 +4266,7 @@ import * as foo from 'foo';"
   bar;"
  > (it "(set! foo\n  ;; bar\n  bar)"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(set! foo
   ;; bar
   bar)")
@@ -4291,7 +4291,7 @@ import * as foo from 'foo';"
  "1"
  > (it "(module m scheme ... (apply + '(1 1)) ...), comment"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Module header.
 
@@ -4320,7 +4320,7 @@ const [_add] = (() => {
 const onePlusOne = _add(1, 1);"
  > (it "(module m scheme ... (apply + '(1 1)) ...), comments"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   ;;; Module header.
 
@@ -4385,9 +4385,9 @@ const onePlusOne = _add(1, 1);"
                 :language "javascript"
                 :optimize #t)))
  "x ? false : true"
- > (it "read-rose"
+ > (it "read-syntax"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   (define foo
     `(foo)))")
@@ -4395,9 +4395,9 @@ const onePlusOne = _add(1, 1);"
         (js/obj :language "javascript"
                 :optimize #t)))
  "const foo = [Symbol.for('foo')];"
- > (it "read-rose, quasiquote"
+ > (it "read-syntax, quasiquote"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   (define foo 1)
   (define bar
@@ -4408,9 +4408,9 @@ const onePlusOne = _add(1, 1);"
  "const foo = 1;
 
 const bar = [foo];"
- > (it "read-rose, quasiquoted list of pairs"
+ > (it "read-syntax, quasiquoted list of pairs"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(module m scheme
   (define foo 1)
   (define bar 2)
@@ -4427,7 +4427,7 @@ const bar = 2;
 const quux = [['foo', Symbol.for('.'), foo], ['bar', Symbol.for('.'), bar]];"
  xit> (it "(module m lisp ... (define *lisp-map* '()))"
           (compile-with-environment
-           (read-rose
+           (read-syntax
             "(module m lisp
   ;; inline-lisp-sources: true
 
@@ -4445,7 +4445,7 @@ function I(x) {
 I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];"
  > (it "(: f (-> Number Number)), lambda, comments, TS"
        (compile-with-environment
-        (read-rose
+        (read-syntax
          "(begin
   ;; NN type alias.
   (define-type NN (-> Number Number))

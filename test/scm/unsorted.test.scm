@@ -15,6 +15,40 @@
  > (describe "To do")
  _
 
+ > (describe "define-syntax")
+ _
+ > (compile '(module m scheme
+               (define-syntax (foo x)
+                 (syntax test))
+               (foo 1)))
+ "import {
+  datumToSyntax
+} from 'roselisp';
+
+function foo(x) {
+  return datumToSyntax(false, Symbol.for('test'));
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+test;"
+
+ > (compile '(module m scheme
+               (define-syntax (foo x)
+                 (js/second (syntax-e x)))
+               (foo 1)))
+ "import {
+  syntaxE
+} from 'roselisp';
+
+function foo(x) {
+  return syntaxE(x)[1];
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+1;"
+
  ;; `gensym`
  > (describe "gensym")
  _

@@ -524,4 +524,44 @@ declare function transferComments(from: any, to: any): any;
  * Convert a rose tree to an S-expression.
  */
 declare function roseToSexp(node: any): any;
-export { roseToMap as makeRoseMap, sexpToRose as makeRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, forestp, insertSexpIntoRose, makeListRose, makeRoseNonrecursive, makeSexpRose, makeSimpleRoseMap, roseToMap, roseToSexp, rosep, sexpToRose, sliceRose, transferComments, wrapSexpInRose };
+/**
+ * Whether something is a syntax object.
+ *
+ * Similar to [`syntax?` in Racket][rkt:syntaxp].
+ *
+ * [rkt:syntaxp]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax~3f%29%29
+ */
+declare const syntaxp: any;
+/**
+ * Convert a syntax object to an S-expression.
+ *
+ * Similar to [`syntax->datum` in Racket][rkt:syntax-to-datum].
+ *
+ * [rkt:syntax-to-datum]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3edatum%29%29
+ */
+declare const syntaxToDatum: any;
+/**
+ * Convert an S-expression to a syntax object.
+ *
+ * Similar to [`datum->syntax` in Racket][rkt:datum-to-syntax].
+ *
+ * [rkt:datum-to-syntax]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._datum-~3esyntax%29%29
+ */
+declare function datumToSyntax(ctxt: any, v: any, srcloc?: any): any;
+/**
+ * Convert a syntax object to a list of syntax objects.
+ *
+ * Similar to [`syntax->list` in Racket][rkt:syntax-to-list].
+ *
+ * [rkt:syntax-to-list]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3elist%29%29
+ */
+declare function syntaxToList(stx: any): any;
+/**
+ * Unwrap a syntax object one level deep.
+ *
+ * Similar to [`syntax-e` in Racket][rkt:syntax-e].
+ *
+ * [rkt:syntax-e]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-e%29%29
+ */
+declare function syntaxE(stx: any): any;
+export { Rose as Syntax, RoseSplice as SyntaxSplice, roseToMap as makeRoseMap, sexpToRose as makeRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, datumToSyntax, forestp, insertSexpIntoRose, makeListRose, makeRoseNonrecursive, makeSexpRose, makeSimpleRoseMap, roseToMap, roseToSexp, rosep, sexpToRose, sliceRose, syntaxToDatum, syntaxToList, syntaxE, syntaxp, transferComments, wrapSexpInRose };

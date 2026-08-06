@@ -44,7 +44,7 @@
  * [w:Rose tree]: https://en.wikipedia.org/wiki/Rose_tree
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapSexpInRose = exports.transferComments = exports.sliceRose = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSimpleRoseMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.insertSexpIntoRose = exports.forestp = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.makeRose = exports.makeRoseMap = void 0;
+exports.wrapSexpInRose = exports.transferComments = exports.syntaxp = exports.syntaxE = exports.syntaxToList = exports.syntaxToDatum = exports.sliceRose = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSimpleRoseMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.insertSexpIntoRose = exports.forestp = exports.datumToSyntax = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.makeRose = exports.makeRoseMap = exports.SyntaxSplice = exports.Syntax = void 0;
 const visitor_1 = require("./visitor");
 /**
  * Rose tree node class.
@@ -448,6 +448,7 @@ class Rose {
         return this.nextSibling() || this.firstChild();
     }
 }
+exports.Syntax = Rose;
 exports.Rose = Rose;
 /**
  * Rose tree forest class.
@@ -695,6 +696,7 @@ exports.Forest = Forest;
  */
 class RoseSplice {
 }
+exports.SyntaxSplice = RoseSplice;
 exports.RoseSplice = RoseSplice;
 /**
  * Whether something is a rose tree node.
@@ -990,3 +992,65 @@ function roseToSexp(node) {
     return node.getValue();
 }
 exports.roseToSexp = roseToSexp;
+/**
+ * Whether something is a syntax object.
+ *
+ * Similar to [`syntax?` in Racket][rkt:syntaxp].
+ *
+ * [rkt:syntaxp]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax~3f%29%29
+ */
+const syntaxp = rosep;
+exports.syntaxp = syntaxp;
+/**
+ * Convert a syntax object to an S-expression.
+ *
+ * Similar to [`syntax->datum` in Racket][rkt:syntax-to-datum].
+ *
+ * [rkt:syntax-to-datum]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3edatum%29%29
+ */
+const syntaxToDatum = roseToSexp;
+exports.syntaxToDatum = syntaxToDatum;
+/**
+ * Convert an S-expression to a syntax object.
+ *
+ * Similar to [`datum->syntax` in Racket][rkt:datum-to-syntax].
+ *
+ * [rkt:datum-to-syntax]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._datum-~3esyntax%29%29
+ */
+function datumToSyntax(ctxt, v, srcloc = undefined) {
+    return sexpToRose(v, ctxt || srcloc);
+}
+exports.datumToSyntax = datumToSyntax;
+/**
+ * Convert a syntax object to a list of syntax objects.
+ *
+ * Similar to [`syntax->list` in Racket][rkt:syntax-to-list].
+ *
+ * [rkt:syntax-to-list]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3elist%29%29
+ */
+function syntaxToList(stx) {
+    if (Array.isArray(syntaxToDatum(stx))) {
+        return stx.getNodes();
+    }
+    else {
+        return false;
+    }
+}
+exports.syntaxToList = syntaxToList;
+/**
+ * Unwrap a syntax object one level deep.
+ *
+ * Similar to [`syntax-e` in Racket][rkt:syntax-e].
+ *
+ * [rkt:syntax-e]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-e%29%29
+ */
+function syntaxE(stx) {
+    const v = syntaxToDatum(stx);
+    if (Array.isArray(v)) {
+        return syntaxToList(stx);
+    }
+    else {
+        return v;
+    }
+}
+exports.syntaxE = syntaxE;

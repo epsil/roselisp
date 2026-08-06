@@ -159,6 +159,15 @@ function macrop_(f: any): any {
 macrop_.fsource = [Symbol.for('define'), [Symbol.for('macro?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('macro-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
 
 /**
+ * Whether `f` is a syntax transformer.
+ */
+function syntaxTransformerP_(f: any): any {
+  return (f instanceof Function) && syntaxTransformerTypeP_(f.ftype);
+}
+
+syntaxTransformerP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('syntax-transformer-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
+
+/**
  * Whether `x` is the type of a variable.
  */
 function variableTypeP_(x: any): any {
@@ -212,6 +221,16 @@ function macroTypeP_(x: any): any {
 }
 
 macroTypeP_.fsource = [Symbol.for('define'), [Symbol.for('macro-type?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('macro->')]], [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('->macro')]], [Symbol.for('eq?'), Symbol.for('x'), 'macro']]];
+
+/**
+ * Whether `x` is the type of a syntax transformer.
+ */
+function syntaxTransformerTypeP_(x: any): any {
+  // FIXME: Or just call `equal?`.
+  return taggedListP_(x, Symbol.for('macro->')) && (x.length === 3) && (x[1] === Symbol.for('Syntax')) && (x[2] === Symbol.for('Syntax'));
+}
+
+syntaxTransformerTypeP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer-type?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('macro->')]], [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('js/second'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]], [Symbol.for('eq?'), [Symbol.for('js/third'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]]]];
 
 /**
  * Whether `x` is the type of a fexpr.
@@ -1270,6 +1289,8 @@ export {
   sub_ as minus,
   sub_ as sub,
   sub_ as subtract,
+  syntaxTransformerTypeP_ as syntaxTransformerTypeP,
+  syntaxTransformerP_ as syntaxTransformerP,
   taggedListP_ as taggedListP,
   truep_ as truep,
   typeOf_ as typeOf,
@@ -1333,6 +1354,8 @@ export {
   specialTypeP_,
   sub1_,
   sub_,
+  syntaxTransformerTypeP_,
+  syntaxTransformerP_,
   taggedListP_,
   truep_,
   typeOf_,

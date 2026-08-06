@@ -4,13 +4,13 @@ import {
   StringToken,
   SymbolToken,
   TrailingCommentToken,
-  parseRose,
+  parseSyntax,
   read,
-  readRose,
+  readSyntax,
   tokenize,
 } from '../../src/ts/parser';
 
-import { roseToSexp } from '../../src/ts/rose';
+import { syntaxToDatum } from '../../src/ts/rose';
 
 import { s, sexp } from '../../src/ts/sexp';
 
@@ -305,23 +305,23 @@ describe('tokenize', function (): any {
   );
 });
 
-describe('parse-rose', function (): any {
-  it('(rose->sexp (parse-rose (list (new SymbolToken "exp"))))', function (): any {
+describe('parse-syntax', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "exp"))))', function (): any {
     return assertEqual(
-      roseToSexp(parseRose([new SymbolToken('exp')])),
+      syntaxToDatum(parseSyntax([new SymbolToken('exp')])),
       Symbol.for('exp')
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(parseRose([new SymbolToken('('), new SymbolToken(')')])),
+      syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken(')')])),
       []
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('('),
           new SymbolToken(')'),
@@ -331,10 +331,10 @@ describe('parse-rose', function (): any {
       [[]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('foo'),
           new SymbolToken(')'),
@@ -343,10 +343,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('foo')]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "lambda") (new SymbolToken "(") (new SymbolToken "x") (new SymbolToken ")") (new SymbolToken "x") (new SymbolToken ")") (new StringToken "Lisp") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "lambda") (new SymbolToken "(") (new SymbolToken "x") (new SymbolToken ")") (new SymbolToken "x") (new SymbolToken ")") (new StringToken "Lisp") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('('),
           new SymbolToken('lambda'),
@@ -362,16 +362,18 @@ describe('parse-rose', function (): any {
       [[Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], 'Lisp']
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "\'") (new SymbolToken "foo"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "foo"))))', function (): any {
     return assertEqual(
-      roseToSexp(parseRose([new SymbolToken("'"), new SymbolToken('foo')])),
+      syntaxToDatum(
+        parseSyntax([new SymbolToken("'"), new SymbolToken('foo')])
+      ),
       [Symbol.for('quote'), Symbol.for('foo')]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken("'"),
           new SymbolToken('('),
           new SymbolToken('foo'),
@@ -381,10 +383,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('quote'), [Symbol.for('foo')]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken("'"),
           new SymbolToken('('),
           new SymbolToken('('),
@@ -396,10 +398,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('quote'), [[Symbol.for('foo')]]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken("'"),
           new SymbolToken('('),
           new SymbolToken('('),
@@ -414,10 +416,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('quote'), [[Symbol.for('foo')], [Symbol.for('bar')]]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "quote") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "quote") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('quote'),
           new SymbolToken('('),
@@ -434,10 +436,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('quote'), [[Symbol.for('foo')], [Symbol.for('bar')]]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('truep'),
           new SymbolToken("'"),
@@ -448,10 +450,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('truep'), [Symbol.for('quote'), Symbol.for('foo')]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('truep'),
           new SymbolToken("'"),
@@ -464,10 +466,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('truep'), [Symbol.for('quote'), [Symbol.for('foo')]]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('truep'),
           new SymbolToken('`'),
@@ -478,10 +480,10 @@ describe('parse-rose', function (): any {
       [Symbol.for('truep'), [Symbol.for('quasiquote'), Symbol.for('foo')]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
     return assertEqual(
-      roseToSexp(
-        parseRose([
+      syntaxToDatum(
+        parseSyntax([
           new SymbolToken('('),
           new SymbolToken('truep'),
           new SymbolToken('`'),
@@ -494,21 +496,27 @@ describe('parse-rose', function (): any {
       [Symbol.for('truep'), [Symbol.for('quasiquote'), [Symbol.for('foo')]]]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken "`") (new SymbolToken "foo"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken "`") (new SymbolToken "foo"))))', function (): any {
     return assertEqual(
-      roseToSexp(parseRose([new SymbolToken('`'), new SymbolToken('foo')])),
+      syntaxToDatum(
+        parseSyntax([new SymbolToken('`'), new SymbolToken('foo')])
+      ),
       [Symbol.for('quasiquote'), Symbol.for('foo')]
     );
   });
-  it('(rose->sexp (parse-rose (list (new SymbolToken ",") (new SymbolToken "foo"))))', function (): any {
+  it('(syntax->datum (parse-syntax (list (new SymbolToken ",") (new SymbolToken "foo"))))', function (): any {
     return assertEqual(
-      roseToSexp(parseRose([new SymbolToken(','), new SymbolToken('foo')])),
+      syntaxToDatum(
+        parseSyntax([new SymbolToken(','), new SymbolToken('foo')])
+      ),
       [Symbol.for('unquote'), Symbol.for('foo')]
     );
   });
-  return it('(rose->sexp (parse-rose (list (new SymbolToken ",@") (new SymbolToken "foo"))))', function (): any {
+  return it('(syntax->datum (parse-syntax (list (new SymbolToken ",@") (new SymbolToken "foo"))))', function (): any {
     return assertEqual(
-      roseToSexp(parseRose([new SymbolToken(',@'), new SymbolToken('foo')])),
+      syntaxToDatum(
+        parseSyntax([new SymbolToken(',@'), new SymbolToken('foo')])
+      ),
       [Symbol.for('unquote-splicing'), Symbol.for('foo')]
     );
   });
@@ -616,14 +624,17 @@ describe('read', function (): any {
   });
 });
 
-describe('read-rose', function (): any {
-  it('(rose->sexp (read-rose ";; comment\n' + '(foo)"))', function (): any {
-    return assertEqual(roseToSexp(readRose(';; comment\n' + '(foo)')), [
-      Symbol.for('foo'),
-    ]);
-  });
+describe('read-syntax', function (): any {
+  it(
+    '(syntax->datum (read-syntax ";; comment\n' + '(foo)"))',
+    function (): any {
+      return assertEqual(syntaxToDatum(readSyntax(';; comment\n' + '(foo)')), [
+        Symbol.for('foo'),
+      ]);
+    }
+  );
   it(';; comment\n' + '(foo), comments', function (): any {
-    const actual: any = readRose(';; comment\n' + '(foo)', {
+    const actual: any = readSyntax(';; comment\n' + '(foo)', {
       comments: true,
     });
     assertEqual(actual.getValue(), [Symbol.for('foo')]);
@@ -632,7 +643,7 @@ describe('read-rose', function (): any {
     ]);
   });
   it(';; comment\n' + '`(foo), comments', function (): any {
-    const actual: any = readRose(';; comment\n' + '`(foo)', {
+    const actual: any = readSyntax(';; comment\n' + '`(foo)', {
       comments: true,
     });
     assertEqual(actual.getValue(), [
@@ -643,8 +654,8 @@ describe('read-rose', function (): any {
       new LeadingCommentToken(';; comment\n'),
     ]);
   });
-  return it('(rose->sexp (read-rose "(foo) ;comment"))', function (): any {
-    return assertEqual(roseToSexp(readRose('(foo) ;comment')), [
+  return it('(syntax->datum (read-syntax "(foo) ;comment"))', function (): any {
+    return assertEqual(syntaxToDatum(readSyntax('(foo) ;comment')), [
       Symbol.for('foo'),
     ]);
   });

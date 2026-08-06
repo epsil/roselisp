@@ -774,17 +774,17 @@ defineSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-special_'), 
  * a `(define-class ...)` form.
  */
 function defineToDefineClass(node) {
-    if (node instanceof rose_1.Rose) {
+    if ((0, rose_1.syntaxp)(node)) {
         const superclass = node.get(2).get(1);
-        const superclassExp = (0, rose_1.roseToSexp)(superclass);
+        const superclassExp = (0, rose_1.syntaxToDatum)(superclass);
         const superclassList = ((superclassExp === Symbol.for('object%')) || (superclassExp === Symbol.for('object')) || (superclassExp === Symbol.for('Object'))) ? [] : [superclass];
-        return (0, rose_1.transferComments)(node, (0, rose_1.sexpToRose)([Symbol.for('define-class'), node.get(1), (0, rose_1.sexpToRose)(superclassList), ...node.get(2).drop(2)]));
+        return (0, rose_1.transferComments)(node, (0, rose_1.datumToSyntax)(false, [Symbol.for('define-class'), node.get(1), (0, rose_1.datumToSyntax)(false, superclassList), ...node.get(2).drop(2)]));
     }
     else {
-        return (0, rose_1.roseToSexp)(defineToDefineClass((0, rose_1.sexpToRose)(node)));
+        return (0, rose_1.syntaxToDatum)(defineToDefineClass((0, rose_1.datumToSyntax)(false, node)));
     }
 }
-defineToDefineClass.fsource = [Symbol.for('define'), [Symbol.for('define->define-class'), Symbol.for('node')], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('Rose')], [Symbol.for('define'), Symbol.for('superclass'), [Symbol.for('send'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('superclass-exp'), [Symbol.for('rose->sexp'), Symbol.for('superclass')]], [Symbol.for('define'), Symbol.for('superclass-list'), [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('superclass-exp'), [Symbol.for('quote'), Symbol.for('object%')]], [Symbol.for('eq?'), Symbol.for('superclass-exp'), [Symbol.for('quote'), Symbol.for('object')]], [Symbol.for('eq?'), Symbol.for('superclass-exp'), [Symbol.for('quote'), Symbol.for('Object')]]], [Symbol.for('quote'), []], [Symbol.for('list'), Symbol.for('superclass')]]], [Symbol.for('transfer-comments'), Symbol.for('node'), [Symbol.for('sexp->rose'), [Symbol.for('quasiquote'), [Symbol.for('define-class'), [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('unquote'), [Symbol.for('sexp->rose'), Symbol.for('superclass-list')]], [Symbol.for('unquote-splicing'), [Symbol.for('send'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('drop'), 2]]]]]]], [Symbol.for('else'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('sexp->rose'), Symbol.for('_')], [Symbol.for('define->define-class'), Symbol.for('_')], [Symbol.for('rose->sexp'), Symbol.for('_')]]]]];
+defineToDefineClass.fsource = [Symbol.for('define'), [Symbol.for('define->define-class'), Symbol.for('node')], [Symbol.for('cond'), [[Symbol.for('syntax?'), Symbol.for('node')], [Symbol.for('define'), Symbol.for('superclass'), [Symbol.for('send'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('get'), 1]], [Symbol.for('define'), Symbol.for('superclass-exp'), [Symbol.for('syntax->datum'), Symbol.for('superclass')]], [Symbol.for('define'), Symbol.for('superclass-list'), [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('superclass-exp'), [Symbol.for('quote'), Symbol.for('object%')]], [Symbol.for('eq?'), Symbol.for('superclass-exp'), [Symbol.for('quote'), Symbol.for('object')]], [Symbol.for('eq?'), Symbol.for('superclass-exp'), [Symbol.for('quote'), Symbol.for('Object')]]], [Symbol.for('quote'), []], [Symbol.for('list'), Symbol.for('superclass')]]], [Symbol.for('transfer-comments'), Symbol.for('node'), [Symbol.for('datum->syntax'), false, [Symbol.for('quasiquote'), [Symbol.for('define-class'), [Symbol.for('unquote'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 1]], [Symbol.for('unquote'), [Symbol.for('datum->syntax'), false, Symbol.for('superclass-list')]], [Symbol.for('unquote-splicing'), [Symbol.for('send'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('get'), 2], Symbol.for('drop'), 2]]]]]]], [Symbol.for('else'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('datum->syntax'), false, Symbol.for('_')], [Symbol.for('define->define-class'), Symbol.for('_')], [Symbol.for('syntax->datum'), Symbol.for('_')]]]]];
 /**
  * Evaluate a `(define/public ...)` form.
  */

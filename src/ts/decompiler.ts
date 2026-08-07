@@ -60,7 +60,7 @@ import {
   taggedListP
 } from './util';
 
-const [lastCdr, cons, findf, listStar]: any[] = ((): any => {
+const [lastCdr, cons, listStar, findf]: any[] = ((): any => {
   function lastCdr_(lst: any): any {
     if (!Array.isArray(lst)) {
       return undefined;
@@ -81,14 +81,6 @@ const [lastCdr, cons, findf, listStar]: any[] = ((): any => {
       return [x, Symbol.for('.'), y];
     }
   }
-  function findf_(proc: any, lst: any, notFound: any = false): any {
-    const idx: any = lst.findIndex(proc);
-    if (idx >= 0) {
-      return (lst as any)[idx];
-    } else {
-      return notFound;
-    }
-  }
   function listStar_(...args: any[]): any {
     if (args.length === 0) {
       return undefined;
@@ -104,7 +96,15 @@ const [lastCdr, cons, findf, listStar]: any[] = ((): any => {
       }
     }
   }
-  return [lastCdr_, cons_, findf_, listStar_];
+  function findf_(proc: any, lst: any, notFound: any = false): any {
+    const idx: any = lst.findIndex(proc);
+    if (idx >= 0) {
+      return (lst as any)[idx];
+    } else {
+      return notFound;
+    }
+  }
+  return [lastCdr_, cons_, listStar_, findf_];
 })();
 
 /**

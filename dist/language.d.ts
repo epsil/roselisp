@@ -472,10 +472,10 @@ declare namespace lambda_ {
  * [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
  * [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
  */
-declare function cond_(exp: any, env: any): any;
+declare function cond_(stx: any): any;
 declare namespace cond_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-    var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[];
+    var ftype: symbol[];
 }
 /**
  * Call a method on an object.

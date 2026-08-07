@@ -808,7 +808,6 @@
          (,break_ ,compile-break (compiler-> Any * Any))
          (,class_ ,compile-class (compiler-> Any * Any))
          (,colon_ ,compile-colon (compiler-> Any * Any))
-         (,cond_ ,compile-cond (compiler-> Any * Any))
          (,continue_ ,compile-continue (compiler-> Any * Any))
          (,declare_ ,compile-declare (compiler-> Any * Any))
          (,define-async_ ,compile-define-async (compiler-> Any * Any))
@@ -2448,57 +2447,6 @@
   (send env set-local-type! sym-exp type-exp)
   (compile-nop node env options))
 
-;;; Compile a `(cond ...)` expression.
-(define (compile-cond node env (options (js/obj)))
-  (define expression-type
-    (oget options :expression-type))
-  (define (wrap exps)
-    (if (= (js/length exps) 1)
-        (js/first exps)
-        (datum->syntax
-         #f
-         `(begin ,@exps))))
-  (define clauses
-    (~> node
-        (send _ drop 1)
-        (drop-right _ 1)))
-  (define final-clause
-    (send node last))
-  (define final-exp
-    (if (tagged-list? final-clause 'else)
-        (datum->syntax
-         #f
-         `(,(if (eq? expression-type "expression")
-                'begin
-                'js/block)
-           ,@(send final-clause drop 1)))
-        (datum->syntax
-         #f
-         `(if ,(send final-clause get 0)
-              ,(wrap (send final-clause drop 1))))))
-  (define final-exp-compiled
-    (transfer-and-compile-comments
-     final-clause
-     (compile-syntax final-exp env options)
-     options))
-  (define result
-    (foldr (lambda (clause alternate)
-             (define conditional
-               (compile-syntax
-                (datum->syntax
-                 #f
-                 `(if ,(send clause get 0)
-                      ,(transfer-comments
-                        clause
-                        (wrap (send clause drop 1)))))
-                env options))
-             (set-field! alternate conditional alternate)
-             conditional)
-           final-exp-compiled
-           clauses))
-  (transfer-and-compile-comments
-   node result options))
-
 ;;; Compile an `(if ...)` expression.
 (define (compile-if node env (options (js/obj)))
   (define expression-type
@@ -2528,7 +2476,8 @@
     (define else-exp
       (send node get 3))
     (when (and else-exp
-               (not (form? else-exp js/if_ env)))
+               (not (form? else-exp js/if_ env))
+               (not (form? else-exp if_ env)))
       (set! else-exp
             (datum->syntax
              #f
@@ -6690,11 +6639,37 @@
 ;;;
 ;;; [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
 ;;; [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
-(define-macro (cond_ &whole exp &environment env)
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
+(define-syntax (cond_ stx)
+  (define clauses
+    (~> (send stx drop 1)
+        (drop-right _ 1)))
+  (define last-clause
+    (send stx last))
+  (define (wrap-clause-body x)
+    (if (= (send x size) 2)
+        (transfer-comments
+         x
+         (send x get 1))
+        (datum->syntax
+         x
+         `(begin ,@(send x drop 1)))))
+  (define (transform-clause x (acc #u))
+    (datum->syntax
+     #f
+     `(if ,(send x get 0)
+          ,(wrap-clause-body x)
+          ,@(if acc
+                (list acc)
+                '()))))
+  (define (transform-last-clause x)
+    (if (tagged-list? x 'else)
+        (wrap-clause-body x)
+        (transform-clause x)))
+  (define result
+    (foldr transform-clause
+           (transform-last-clause last-clause)
+           clauses))
+  (transfer-comments stx result))
 
 ;;; Call a method on an object.
 (define (send-method . args)
@@ -8745,7 +8720,7 @@
          (case/eq ,case-eq_ (macro-> Any * Any))
          (class ,class_ (macro-> Any * Any))
          (clj/try ,clj/try_ (macro-> Any * Any))
-         (cond ,cond_ (macro-> Any * Any))
+         (cond ,cond_ (macro-> Syntax Syntax))
          (continue ,continue_ (macro-> Any * Any))
          (declare ,declare_ (macro-> Any * Any))
          (declare-fexpr ,declare-fexpr_ (macro-> Any * Any))

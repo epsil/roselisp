@@ -639,8 +639,8 @@ function printDocToDocList(doc, options = {}) {
         const args = doc.args;
         const offset = args[0];
         const contents = (Array.isArray(args) && (args.length >= 3) && (args[args.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(args);
-            return Array.isArray(x) && (x.length === 0);
+            const x1 = lastCdr(args);
+            return Array.isArray(x1) && (x1.length === 0);
         })()) ? (() => {
             let i = 1;
             let result = args;

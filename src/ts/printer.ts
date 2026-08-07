@@ -735,8 +735,8 @@ function printDocToDocList(doc: any, options: any = {}): any {
     const args: any = doc.args;
     const offset: any = args[0];
     const contents: any = (Array.isArray(args) && (args.length >= 3) && (args[args.length - 2] === Symbol.for('.')) && ((): any => {
-      const x: any = lastCdr(args);
-      return Array.isArray(x) && (x.length === 0);
+      const x1: any = lastCdr(args);
+      return Array.isArray(x1) && (x1.length === 0);
     })()) ? ((): any => {
       let i: any = 1;
       let result: any = args;

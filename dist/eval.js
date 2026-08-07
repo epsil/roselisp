@@ -27,10 +27,7 @@ const javascript_1 = require("./javascript");
 Object.defineProperty(exports, "jsEval_", { enumerable: true, get: function () { return javascript_1.jsEval_; } });
 const procedures_1 = require("./procedures");
 const rose_1 = require("./rose");
-const [keywordp, lastCdr, cons] = (() => {
-    function keywordp_(obj) {
-        return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
-    }
+const [lastCdr, cons, keywordp] = (() => {
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
             return undefined;
@@ -54,7 +51,10 @@ const [keywordp, lastCdr, cons] = (() => {
             return [x, Symbol.for('.'), y];
         }
     }
-    return [keywordp_, lastCdr_, cons_];
+    function keywordp_(obj) {
+        return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+    }
+    return [lastCdr_, cons_, keywordp_];
 })();
 /**
  * The default evaluator.

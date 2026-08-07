@@ -2085,12 +2085,12 @@ describe('cond', function (): any {
       2,
     ]);
   });
-  xit("(macroexpand '(cond (#f (foo)) (else (bar))))", function (): any {
+  it("(macroexpand-1 '(cond (#f (foo)) (else (bar))))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      Symbol.for('xit>'),
+      Symbol.for('>'),
       [
-        Symbol.for('macroexpand'),
+        Symbol.for('macroexpand-1'),
         [
           Symbol.for('quote'),
           [
@@ -2106,12 +2106,64 @@ describe('cond', function (): any {
       ],
     ]);
   });
-  xit("(macroexpand '(cond (x (foo)) (y (bar)) (else (baz))))", function (): any {
+  it("(macroexpand-1 '(cond (#f (foo) (bar)) (else (baz))))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
-      Symbol.for('xit>'),
+      Symbol.for('>'),
       [
-        Symbol.for('macroexpand'),
+        Symbol.for('macroexpand-1'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('cond'),
+            [false, [Symbol.for('foo')], [Symbol.for('bar')]],
+            [Symbol.for('else'), [Symbol.for('baz')]],
+          ],
+        ],
+      ],
+      [
+        Symbol.for('quote'),
+        [
+          Symbol.for('if'),
+          false,
+          [Symbol.for('begin'), [Symbol.for('foo')], [Symbol.for('bar')]],
+          [Symbol.for('baz')],
+        ],
+      ],
+    ]);
+  });
+  it("(macroexpand-1 '(cond (#f (foo) (bar)) (else (baz) (quux))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('macroexpand-1'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('cond'),
+            [false, [Symbol.for('foo')], [Symbol.for('bar')]],
+            [Symbol.for('else'), [Symbol.for('baz')], [Symbol.for('quux')]],
+          ],
+        ],
+      ],
+      [
+        Symbol.for('quote'),
+        [
+          Symbol.for('if'),
+          false,
+          [Symbol.for('begin'), [Symbol.for('foo')], [Symbol.for('bar')]],
+          [Symbol.for('begin'), [Symbol.for('baz')], [Symbol.for('quux')]],
+        ],
+      ],
+    ]);
+  });
+  it("(macroexpand-1 '(cond (x (foo)) (y (bar)) (else (baz))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('macroexpand-1'),
         [
           Symbol.for('quote'),
           [
@@ -2154,6 +2206,31 @@ describe('cond', function (): any {
         ],
       ],
       'if (false) {\n' + '  foo();\n' + '} else {\n' + '  bar();\n' + '}',
+    ]);
+  });
+  it("(compile '(cond (x (foo)) (y (bar)) (else (baz))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('cond'),
+            [Symbol.for('x'), [Symbol.for('foo')]],
+            [Symbol.for('y'), [Symbol.for('bar')]],
+            [Symbol.for('else'), [Symbol.for('baz')]],
+          ],
+        ],
+      ],
+      'if (x) {\n' +
+        '  foo();\n' +
+        '} else if (y) {\n' +
+        '  bar();\n' +
+        '} else {\n' +
+        '  baz();\n' +
+        '}',
     ]);
   });
   it("(compile '(cond (#f (foo)) (else (bar))) :as 'statement)", function (): any {

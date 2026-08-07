@@ -87,10 +87,7 @@ import {
   taggedListP
 } from './util';
 
-const [keywordp, lastCdr, cons]: any[] = ((): any => {
-  function keywordp_(obj: any): any {
-    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
-  }
+const [lastCdr, cons, keywordp]: any[] = ((): any => {
   function lastCdr_(lst: any): any {
     if (!Array.isArray(lst)) {
       return undefined;
@@ -111,7 +108,10 @@ const [keywordp, lastCdr, cons]: any[] = ((): any => {
       return [x, Symbol.for('.'), y];
     }
   }
-  return [keywordp_, lastCdr_, cons_];
+  function keywordp_(obj: any): any {
+    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+  }
+  return [lastCdr_, cons_, keywordp_];
 })();
 
 /**

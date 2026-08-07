@@ -31,7 +31,7 @@ const estree_1 = require("./estree");
 const rose_1 = require("./rose");
 const printer_1 = require("./printer");
 const util_1 = require("./util");
-const [lastCdr, cons, findf, listStar] = (() => {
+const [lastCdr, cons, listStar, findf] = (() => {
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
             return undefined;
@@ -55,15 +55,6 @@ const [lastCdr, cons, findf, listStar] = (() => {
             return [x, Symbol.for('.'), y];
         }
     }
-    function findf_(proc, lst, notFound = false) {
-        const idx = lst.findIndex(proc);
-        if (idx >= 0) {
-            return lst[idx];
-        }
-        else {
-            return notFound;
-        }
-    }
     function listStar_(...args) {
         if (args.length === 0) {
             return undefined;
@@ -82,7 +73,16 @@ const [lastCdr, cons, findf, listStar] = (() => {
             }
         }
     }
-    return [lastCdr_, cons_, findf_, listStar_];
+    function findf_(proc, lst, notFound = false) {
+        const idx = lst.findIndex(proc);
+        if (idx >= 0) {
+            return lst[idx];
+        }
+        else {
+            return notFound;
+        }
+    }
+    return [lastCdr_, cons_, listStar_, findf_];
 })();
 /**
  * Decompile a JavaScript or TypeScript program.

@@ -654,21 +654,46 @@ x[length];"
     (#t
      2))
  2
- xit> (macroexpand '(cond
-                     (#f
-                      (foo))
-                     (else
-                      (bar))))
+ > (macroexpand-1 '(cond
+                    (#f
+                     (foo))
+                    (else
+                     (bar))))
  '(if #f
       (foo)
       (bar))
- xit> (macroexpand '(cond
-                     (x
-                      (foo))
-                     (y
-                      (bar))
-                     (else
-                      (baz))))
+ > (macroexpand-1 '(cond
+                    (#f
+                     (foo)
+                     (bar))
+                    (else
+                     (baz))))
+ '(if #f
+      (begin
+        (foo)
+        (bar))
+      (baz))
+ > (macroexpand-1 '(cond
+                    (#f
+                     (foo)
+                     (bar))
+                    (else
+                     (baz)
+                     (quux))))
+ '(if #f
+      (begin
+        (foo)
+        (bar))
+      (begin
+        (baz)
+        (quux)))
+ > (macroexpand-1 '(cond
+                    (x
+                     (foo))
+                    (y
+                     (bar))
+                    (else
+                     (baz))))
  '(if x
       (foo)
       (if y
@@ -683,6 +708,20 @@ x[length];"
   foo();
 } else {
   bar();
+}"
+ > (compile '(cond
+              (x
+               (foo))
+              (y
+               (bar))
+              (else
+               (baz))))
+ "if (x) {
+  foo();
+} else if (y) {
+  bar();
+} else {
+  baz();
 }"
  > (compile '(cond
               (#f

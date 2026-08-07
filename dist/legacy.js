@@ -141,8 +141,8 @@ quasiquoteSpecial_.fsource = [Symbol.for('define'), [Symbol.for('quasiquote-spec
  */
 function quasiquoteHelper(exp, env) {
     if (!(() => {
-        const x1 = lastCdr(exp);
-        return Array.isArray(x1) && (x1.length === 0);
+        const x = lastCdr(exp);
+        return Array.isArray(x) && (x.length === 0);
     })()) {
         return exp;
     }

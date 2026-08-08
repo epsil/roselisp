@@ -1672,9 +1672,12 @@
    #f
    `((js/arrow () ,exp))))
 
-;;; Make an immediately invoked function expression (IIFE).
-(define (make-iife exp)
-  (wrap-in-arrow-call exp))
+;;; Make an immediately invoked function expression
+;;; (IIFE). Defaults to using an arrow function.
+(define (make-iife exp (arrow #t))
+  (if arrow
+      (wrap-in-arrow-call exp)
+      (wrap-in-lambda-call exp)))
 
 ;;; Make a `BlockStatement`.
 ;;; Handles `Program` fragments.
@@ -2484,7 +2487,7 @@
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (wrap-in-arrow-call node)
+     (make-iife node)
      env options))
    (else
     (define condition
@@ -3398,7 +3401,7 @@
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (wrap-in-arrow-call node)
+     (make-iife node)
      env options))
    (else
     (define language-env
@@ -3468,7 +3471,7 @@
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (wrap-in-arrow-call node)
+     (make-iife node)
      env options))
    (else
     (define language-env
@@ -3721,7 +3724,7 @@
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (wrap-in-arrow-call node)
+     (make-iife node)
      env options))
    (else
     (define language-env
@@ -4367,7 +4370,6 @@
       (make-type-binding env sym '(macro-> Any * Any) lang-filter))))
   (cond
    ((eq? expression-type "expression")
-    ;; Wrap in an arrow function.
     (cond
      ((= (js/length exp) 2)
       (compile-expression
@@ -4375,7 +4377,7 @@
        env options))
      (else
       (compile-expression
-       (wrap-in-arrow-call node)
+       (make-iife node)
        env options))))
    (else
     (define body-statements
@@ -7435,7 +7437,7 @@
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (wrap-in-arrow-call node)
+     (make-iife node)
      env options))
    (else
     (define discriminant

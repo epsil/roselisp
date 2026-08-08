@@ -1344,14 +1344,10 @@
           (set! result
                 (compile-function-call
                  node1 env options)))
-         ((memq? f inlined-functions)
-          ;; TODO: Move this into its own function.
-          (define inlined-exp
-            (definition->macro (source f) (rest exp)))
-          (define inlined-node
-            (datum->syntax node inlined-exp))
+         ((inlined-function? f)
           (set! result
-                (compile-syntax inlined-node env options)))
+                (compile-inlined-function-call
+                 node env options)))
          (else
           (define compilation-mapping-environment
             (oget options :compilation-mapping-environment))
@@ -2970,6 +2966,24 @@
   (make-expression-or-statement
    (new CallExpression callee-exp args-exps)
    options))
+
+;;; Compile an inlined function call.
+(define (compile-inlined-function-call node env (options (js/obj)))
+  (define exp
+    (syntax->datum node))
+  (define op
+    (js/first exp))
+  (define f
+    (send env get op))
+  (define inlined-exp
+    (definition->macro (source f) (rest exp)))
+  (define inlined-node
+    (datum->syntax node inlined-exp))
+  (compile-syntax inlined-node env options))
+
+;;; Whether a function should be inlined.
+(define (inlined-function? f)
+  (memq? f inlined-functions))
 
 ;;; Add symbol `sym` to `referencedSymbols` if it references a value
 ;;; not defined in the current module.

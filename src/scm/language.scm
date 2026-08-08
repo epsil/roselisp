@@ -1304,16 +1304,35 @@
       (define op
         (first exp))
       (cond
-       ((and (symbol? op)
-             (send env has? op (js/obj :filter lang-filter))
-             (simple-type?
-              (send env get-type op (js/obj :filter lang-filter))))
+       ((not (symbol? op))
         (set! result
               (compile-function-call
-               node1 env options)))
-       ((and (symbol? op)
-             (regexp-match (regexp "^\\.")
-                           (symbol->string op)))
+               node1 env
+               options)))
+       ((send env has-thunk? op (js/obj :filter lang-filter))
+        (define op-type
+          (send env get-type op))
+        (cond
+         ;; Call to locally defined macro.
+         ((macro-type? op-type)
+          (set! result
+                (compile-macro-call
+                 node1 env
+                 options)))
+         ;; Call to locally defined fexpr.
+         ((fexpr-type? op-type)
+          (set! result
+                (compile-fexpr-call
+                 node1 env
+                 options)))
+         ;; Call to locally defined function.
+         (else
+          (set! result
+                (compile-function-call
+                 node1 env
+                 options)))))
+       ((regexp-match (regexp "^\\.")
+                      (symbol->string op))
         (set! result
               (compile-dot
                node1 env options)))
@@ -1326,6 +1345,7 @@
                 (compile-function-call
                  node1 env options)))
          ((memq? f inlined-functions)
+          ;; TODO: Move this into its own function.
           (define inlined-exp
             (definition->macro (source f) (rest exp)))
           (define inlined-node

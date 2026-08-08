@@ -87,7 +87,7 @@ declare namespace compileFileX {
  */
 declare function compileSyntax(node: any, env: any, options?: any): any;
 declare namespace compileSyntax {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[][])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[][])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[])[];
 }
 /**
  * Evaluate a Lisp expression `exp` with environment `env`.

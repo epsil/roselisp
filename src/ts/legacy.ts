@@ -408,7 +408,7 @@ fsetSpecial_.fsource = [Symbol.for('define'), [Symbol.for('fset-special_'), Symb
  * Evaluate a `(module ...)` form.
  */
 function moduleSpecial_(exp: any, env: any): any {
-  return tcall(evalT, [Symbol.for('begin'), ...exp.slice(3)], env);
+  return evalT([Symbol.for('begin'), ...exp.slice(3)], env);
 }
 
 moduleSpecial_.fsource = [Symbol.for('define'), [Symbol.for('module-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('exp'), 3]]]], Symbol.for('env')]];
@@ -429,7 +429,7 @@ function beginHelper(expressions: any, env: any, val: any): any {
   if (expressions.length === 0) {
     return val;
   } else {
-    return tcall(beginHelper, expressions.slice(1), env, tcall(evalT, expressions[0], env));
+    return beginHelper(expressions.slice(1), env, evalT(expressions[0], env));
   }
 }
 
@@ -456,7 +456,7 @@ function letStarSpecial_(exp: any, env: any): any {
   const letEnv: any = new LispEnvironment(bindings);
   const combinedEnv: any = new EnvironmentStack(letEnv, env);
   const beginExp: any = [Symbol.for('begin'), ...initExps, ...body];
-  return tcall(evalT, beginExp, combinedEnv);
+  return evalT(beginExp, combinedEnv);
 }
 
 letStarSpecial_.fsource = [Symbol.for('define'), [Symbol.for('let-star-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('var-exps'), [Symbol.for('first'), Symbol.for('params')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('params')]], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('init-exps'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('var-exp'), Symbol.for('var-exps')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('var-exp')], [Symbol.for('push-right!'), Symbol.for('bindings'), [Symbol.for('list'), Symbol.for('var-exp'), undefined, [Symbol.for('quote'), Symbol.for('Any')]]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('bindings'), [Symbol.for('list'), [Symbol.for('first'), Symbol.for('var-exp')], undefined, [Symbol.for('quote'), Symbol.for('Any')]]], [Symbol.for('define'), Symbol.for('init-exp'), [Symbol.for('quasiquote'), [Symbol.for('setq'), [Symbol.for('unquote-splicing'), Symbol.for('var-exp')]]]], [Symbol.for('push-right!'), Symbol.for('init-exps'), Symbol.for('init-exp')]]]], [Symbol.for('define'), Symbol.for('let-env'), [Symbol.for('new'), Symbol.for('LispEnvironment'), Symbol.for('bindings')]], [Symbol.for('define'), Symbol.for('combined-env'), [Symbol.for('new'), Symbol.for('EnvironmentStack'), Symbol.for('let-env'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('begin-exp'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('init-exps')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('tcall'), Symbol.for('eval-t'), Symbol.for('begin-exp'), Symbol.for('combined-env')]];
@@ -1440,7 +1440,7 @@ function condSpecial_(exp: any, env: any): any {
     const clauses: any = exp.slice(2);
     const condition: any = clause[0];
     const thenExpr: any = beginWrap(clause.slice(1));
-    return tcall(condHelper, (condition === Symbol.for('else')) || tcall(evalT, [Symbol.for('truep'), condition], env), thenExpr, clauses, env);
+    return condHelper((condition === Symbol.for('else')) || evalT([Symbol.for('truep'), condition], env), thenExpr, clauses, env);
   }
 }
 
@@ -1451,7 +1451,7 @@ condSpecial_.fsource = [Symbol.for('define'), [Symbol.for('cond-special_'), Symb
  */
 function condHelper(condition: any, thenExpr: any, clauses: any, env: any): any {
   if (condition) {
-    return tcall(evalT, thenExpr, env);
+    return evalT(thenExpr, env);
   } else if (clauses.length === 0) {
     return undefined;
   } else {
@@ -1459,7 +1459,7 @@ function condHelper(condition: any, thenExpr: any, clauses: any, env: any): any 
     const clauses1: any = clauses.slice(1);
     const condition1: any = clause1[0];
     const thenExpr1: any = beginWrap(clause1.slice(1));
-    return tcall(condHelper, (condition1 === Symbol.for('else')) || tcall(evalT, [Symbol.for('truep'), condition1], env), thenExpr1, clauses1, env);
+    return condHelper((condition1 === Symbol.for('else')) || evalT([Symbol.for('truep'), condition1], env), thenExpr1, clauses1, env);
   }
 }
 

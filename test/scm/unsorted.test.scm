@@ -15,40 +15,6 @@
  > (describe "To do")
  _
 
- > (describe "define-syntax")
- _
- > (compile '(module m scheme
-               (define-syntax (foo x)
-                 (syntax test))
-               (foo 1)))
- "import {
-  datumToSyntax
-} from 'roselisp';
-
-function foo(x) {
-  return datumToSyntax(false, Symbol.for('test'));
-}
-
-foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
-
-test;"
-
- > (compile '(module m scheme
-               (define-syntax (foo x)
-                 (js/second (syntax-e x)))
-               (foo 1)))
- "import {
-  syntaxE
-} from 'roselisp';
-
-function foo(x) {
-  return syntaxE(x)[1];
-}
-
-foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
-
-1;"
-
  ;; `gensym`
  > (describe "gensym")
  _
@@ -86,6 +52,64 @@ let x4 = 3;
 let x1 = 4;
 
 let x2 = 5;"
+
+ > (describe "define-syntax")
+ _
+ > (compile '(module m scheme
+               (define-syntax (foo x)
+                 (syntax test))
+               (foo 1)))
+ "import {
+  datumToSyntax
+} from 'roselisp';
+
+function foo(x) {
+  return datumToSyntax(false, Symbol.for('test'));
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+test;"
+
+ > (compile '(module m scheme
+               (define-syntax (foo x)
+                 (js/second (syntax-e x)))
+               (foo 1)))
+ "import {
+  syntaxE
+} from 'roselisp';
+
+function foo(x) {
+  return syntaxE(x)[1];
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+1;"
+
+ xit> (compile '(module m scheme
+                  (define x 1)
+                  (define-syntax (foo x)
+                    (syntax
+                     (begin
+                       (define x 2)
+                       x)))
+                  (foo)))
+ "import {
+  datumToSyntax
+} from 'roselisp';
+
+let x = 1;
+
+function foo(x) {
+  return datumToSyntax(false, [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 2], Symbol.for('x')]);
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+let x1 = 2;
+
+x1;"
 
  > (describe "Fundamental operators")
  _

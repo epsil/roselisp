@@ -10,80 +10,6 @@ testMacro.ftype = 'macro';
 
 describe('To do', function (): any {});
 
-describe('define-syntax', function (): any {
-  it("(compile '(module m scheme (define-syntax (foo x) (syntax test)) (foo 1)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('module'),
-            Symbol.for('m'),
-            Symbol.for('scheme'),
-            [
-              Symbol.for('define-syntax'),
-              [Symbol.for('foo'), Symbol.for('x')],
-              [Symbol.for('syntax'), Symbol.for('test')],
-            ],
-            [Symbol.for('foo'), 1],
-          ],
-        ],
-      ],
-      'import {\n' +
-        '  datumToSyntax\n' +
-        "} from 'roselisp';\n" +
-        '\n' +
-        'function foo(x) {\n' +
-        "  return datumToSyntax(false, Symbol.for('test'));\n" +
-        '}\n' +
-        '\n' +
-        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
-        '\n' +
-        'test;',
-    ]);
-  });
-  return it("(compile '(module m scheme (define-syntax (foo x) (js/second (syntax-e x))) (foo 1)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('module'),
-            Symbol.for('m'),
-            Symbol.for('scheme'),
-            [
-              Symbol.for('define-syntax'),
-              [Symbol.for('foo'), Symbol.for('x')],
-              [
-                Symbol.for('js/second'),
-                [Symbol.for('syntax-e'), Symbol.for('x')],
-              ],
-            ],
-            [Symbol.for('foo'), 1],
-          ],
-        ],
-      ],
-      'import {\n' +
-        '  syntaxE\n' +
-        "} from 'roselisp';\n" +
-        '\n' +
-        'function foo(x) {\n' +
-        '  return syntaxE(x)[1];\n' +
-        '}\n' +
-        '\n' +
-        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
-        '\n' +
-        '1;',
-    ]);
-  });
-});
-
 describe('gensym', function (): any {
   xit('(compile `(begin (define x 1) (define ,(gensym "x") 2) (define x1 3)))', function (): any {
     return testRepl([
@@ -170,6 +96,126 @@ describe('gensym', function (): any {
         'let x1 = 4;\n' +
         '\n' +
         'let x2 = 5;',
+    ]);
+  });
+});
+
+describe('define-syntax', function (): any {
+  it("(compile '(module m scheme (define-syntax (foo x) (syntax test)) (foo 1)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('define-syntax'),
+              [Symbol.for('foo'), Symbol.for('x')],
+              [Symbol.for('syntax'), Symbol.for('test')],
+            ],
+            [Symbol.for('foo'), 1],
+          ],
+        ],
+      ],
+      'import {\n' +
+        '  datumToSyntax\n' +
+        "} from 'roselisp';\n" +
+        '\n' +
+        'function foo(x) {\n' +
+        "  return datumToSyntax(false, Symbol.for('test'));\n" +
+        '}\n' +
+        '\n' +
+        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
+        '\n' +
+        'test;',
+    ]);
+  });
+  it("(compile '(module m scheme (define-syntax (foo x) (js/second (syntax-e x))) (foo 1)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('define-syntax'),
+              [Symbol.for('foo'), Symbol.for('x')],
+              [
+                Symbol.for('js/second'),
+                [Symbol.for('syntax-e'), Symbol.for('x')],
+              ],
+            ],
+            [Symbol.for('foo'), 1],
+          ],
+        ],
+      ],
+      'import {\n' +
+        '  syntaxE\n' +
+        "} from 'roselisp';\n" +
+        '\n' +
+        'function foo(x) {\n' +
+        '  return syntaxE(x)[1];\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
+        '\n' +
+        '1;',
+    ]);
+  });
+  return xit("(compile '(module m scheme (define x 1) (define-syntax (foo x) (syntax (begin (define x 2) x))) (foo)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define-syntax'),
+              [Symbol.for('foo'), Symbol.for('x')],
+              [
+                Symbol.for('syntax'),
+                [
+                  Symbol.for('begin'),
+                  [Symbol.for('define'), Symbol.for('x'), 2],
+                  Symbol.for('x'),
+                ],
+              ],
+            ],
+            [Symbol.for('foo')],
+          ],
+        ],
+      ],
+      'import {\n' +
+        '  datumToSyntax\n' +
+        "} from 'roselisp';\n" +
+        '\n' +
+        'let x = 1;\n' +
+        '\n' +
+        'function foo(x) {\n' +
+        "  return datumToSyntax(false, [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 2], Symbol.for('x')]);\n" +
+        '}\n' +
+        '\n' +
+        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
+        '\n' +
+        'let x1 = 2;\n' +
+        '\n' +
+        'x1;',
     ]);
   });
 });

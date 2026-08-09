@@ -534,9 +534,10 @@
                   symbol->string_
                   symbol?_))
 (require (only-in "./thunk"
+                  ThunkedMap
                   force
                   thunk
-                  ThunkedMap))
+                  thunk?))
 (require (only-in "./util"
                   begin-wrap
                   colon-form?
@@ -2001,7 +2002,7 @@
     (cond
      (should-make-let
       (define let-bindings-env '())
-      (define gensym-map
+      (define gensym-param-map
         (make-hash))
       (for ((i (range 0 (js/length params-list))))
         (define arg-exp
@@ -2024,18 +2025,18 @@
               param-exp))
         (cond
          ((symbol? arg-exp)
-          (hash-set! gensym-map param arg-exp))
+          (hash-set! gensym-param-map param arg-exp))
          (else
           (define param-gensym
             (gensym (symbol->string param)))
-          (hash-set! gensym-map param param-gensym)
+          (hash-set! gensym-param-map param param-gensym)
           (push-right! let-bindings-env
                        (list param-gensym arg-exp)))))
       (define let-body
         (map-tree (lambda (x)
                     (cond
-                     ((hash-has-key? gensym-map x)
-                      (hash-ref gensym-map x))
+                     ((hash-has-key? gensym-param-map x)
+                      (hash-ref gensym-param-map x))
                      (else
                       x)))
                   body))
@@ -2232,7 +2233,7 @@
               (new RestElement identifier)))
       (define type_
         (compile-type-exp param env options))
-      (send identifier set-type type_))
+      (set-type identifier type_))
     (define mandatory-params-compiled
       (map (lambda (param)
              (compile-param param))
@@ -2566,14 +2567,6 @@
       (if should-curry
           (first (flatten sym))
           sym))
-    (define function-name
-      (print-estree
-       (compile-symbol
-        (datum->syntax #f name-sym)
-        env
-        (make-expression-options
-         options))
-       options))
     (define lambda-exp
       (define->lambda node))
     (define return-type
@@ -2653,7 +2646,7 @@
              env
              (make-expression-options
               options)
-             (js/obj :function-name function-name
+             (js/obj :function-name name-sym
                      :return-type return-type)))
       (when (is-a? compiled-type TSFunctionType)
         (for ((i (range 0 (js/length (get-field params result)))))
@@ -2666,18 +2659,16 @@
                 (get-field typeAnnotation type-param)
                 (new TSAnyKeyword)))
           (unless (send param has-type)
-            (send param set-type type-param-annotation)))
+            (set-type param type-param-annotation)))
         (set-field! returnType
                     result
                     (get-field returnType
                                compiledType)))))
     (cond
      (inline-lisp-sources
-      (define sym
-        (string->symbol function-name))
       (define lisp-code-exp
         (compile-sexp
-         `(declare ,sym (fsource ,exp))
+         `(declare ,name-sym (fsource ,exp))
          env options))
       (new Program (list result lisp-code-exp)))
      (else
@@ -2748,9 +2739,10 @@
     (new VariableDeclaration
          (list (new VariableDeclarator
                     (~> sym-compiled
-                        (send set-type
-                              (compile-type
-                               type_ env options)))
+                        (set-type
+                         _
+                         (compile-type
+                          type_ env options)))
                     (compile-expression
                      (send node get 2)
                      env
@@ -3249,36 +3241,30 @@
         (define result
           (~> (if (= (js/length arg) 4)
                   (new AssignmentPattern
-                       (new Identifier
-                            (print-estree
-                             (compile-expression
-                              (datum->syntax #f sym)
-                              env1 inherited-options)
-                             inherited-options))
+                       (compile-symbol
+                        (datum->syntax #f sym)
+                        env1 inherited-options)
                        (compile-expression
                         (datum->syntax #f (fourth arg))
                         env1 inherited-options))
-                  (new Identifier
-                       (print-estree
-                        (compile-expression
-                         (datum->syntax #f sym)
-                         env1 inherited-options)
-                        inherited-options)))
-              (send set-type
-                    (compile-type typ env1 options))))
+                  (compile-symbol
+                   (datum->syntax #f sym)
+                   env1 inherited-options))
+              (set-type
+               _
+               (compile-type typ env1 options))))
         (push-right! params result))
        ((array? arg)
         (make-type-binding env1 (first arg) 'Any lang-filter)
         (push-right! params
                      (new AssignmentPattern
-                          (new Identifier
-                               (print-estree
-                                (compile-expression
-                                 (datum->syntax
-                                  #f
-                                  (first arg))
-                                 env1 inherited-options)
-                                inherited-options))
+                          (compile-symbol
+                           (datum->syntax
+                            #f
+                            (first arg))
+                           env1
+                           inherited-options
+                           (js/obj :literal-symbol #t))
                           (compile-expression
                            (datum->syntax
                             #f
@@ -3287,12 +3273,11 @@
        (else
         (make-type-binding env1 arg 'Any lang-filter)
         (push-right! params
-                     (new Identifier
-                          (print-estree
-                           (compile-expression
-                            (datum->syntax #f arg)
-                            env1 inherited-options)
-                           inherited-options)))))))
+                     (compile-symbol
+                      (datum->syntax #f arg)
+                      env1
+                      inherited-options
+                      (js/obj :literal-symbol #t)))))))
   (when rest-arg
     (make-type-binding env1 rest-arg 'Any lang-filter)
     (push-right! params
@@ -3307,7 +3292,7 @@
                   ':))
     (set! body-statements (drop body-statements 2)))
   (define body
-    (wrap-in-block-statement ; wrap-in-block-statement-smart
+    (wrap-in-block-statement
      (compile-statement-or-return-statement
       (~> (begin-wrap-rose-smart-1
            body-statements)
@@ -3323,9 +3308,15 @@
   (cond
    ((and function-name
          (not (eq? function-name "")))
+    (when (string? function-name)
+      (set! function-name
+            (string->symbol function-name)))
     (set! result
           (new FunctionDeclaration
-               (new Identifier function-name)
+               (compile-symbol
+                (datum->syntax #f function-name)
+                env
+                (make-expression-options options))
                params
                body)))
    (else
@@ -3616,12 +3607,9 @@
   (cond
    ((symbol? variables)
     (set! declarator-id
-          (new Identifier
-               (print-estree
-                (compile-symbol
-                 (datum->syntax #f variables)
-                 env inherited-options)
-                inherited-options)))
+          (compile-symbol
+           (datum->syntax #f variables)
+           env inherited-options))
     (send env set-local! variables expression-thunk 'Any))
    (else
     (cond
@@ -3655,12 +3643,9 @@
                         result)))
                    (set! i (+ i 1))
                    (send env set-local! x var-thunk 'Any)
-                   (new Identifier
-                        (print-estree
-                         (compile-symbol
-                          (datum->syntax #f x)
-                          env inherited-options)
-                         inherited-options)))))
+                   (compile-symbol
+                    (datum->syntax #f x)
+                    env inherited-options))))
                regular-vars))
     (when rest-var
       (define idx i)
@@ -3679,15 +3664,12 @@
       (send env set-local! rest-var rest-var-thunk 'Any)
       (push-right! var-decls
                    (new RestElement
-                        (new Identifier
-                             (print-estree
-                              (compile-symbol
-                               (datum->syntax
-                                #f
-                                rest-var)
-                               env
-                               inherited-options)
-                              inherited-options)))))
+                        (compile-symbol
+                         (datum->syntax
+                          #f
+                          rest-var)
+                         env
+                         inherited-options))))
     (set! declarator-id
           (new ArrayPattern var-decls))))
   (set! declarator-init
@@ -4756,85 +4738,63 @@
          ((array? exp)
           (define x1
             (first exp))
-          (define x1-str x1)
           (define x2
             (second exp))
-          (define x2-str x2)
-          (when (symbol? x1)
-            (set! x1-str
-                  (print-estree
-                   (compile-symbol
-                    (datum->syntax #f x1)
-                    env
-                    options
-                    (js/obj :literal-symbol #t))
-                   options)))
-          (when (symbol? x2)
-            (set! x2-str
-                  (print-estree
-                   (compile-symbol
-                    (datum->syntax #f x2)
-                    env
-                    options
-                    (js/obj :literal-symbol #t))
-                   options)))
-          (unless (memq? x2-str seen)
+          (unless (memq? x2 seen)
             (unless (send env has? x2 (js/obj :filter lang-filter))
               (make-type-binding env x2 'Any lang-filter))
             (push-right! seen x2)
             (push-right! specifiers
                          (new ImportSpecifier
-                              (new Identifier x1-str)
-                              (new Identifier x2-str)))))
+                              (compile-symbol
+                               (datum->syntax #f x1)
+                               env
+                               options
+                               (js/obj :literal-symbol #t))
+                              (compile-symbol
+                               (datum->syntax #f x2)
+                               env
+                               options
+                               (js/obj :literal-symbol #t))))))
          (else
           (define x1 exp)
-          (define x1-str x1)
-          (when (symbol? x1)
-            (set! x1-str
-                  (print-estree
-                   (compile-symbol
-                    (datum->syntax #f x1)
-                    env
-                    options
-                    (js/obj :literal-symbol #t))
-                   options)))
-          (unless (memq? x1-str seen)
+          (unless (memq? x1 seen)
             (unless (send env has? x1 (js/obj :filter lang-filter))
               (make-type-binding env x1 'Any lang-filter))
-            (push-right! seen x1-str)
+            (push-right! seen x1)
             (push-right! specifiers
                          (new ImportSpecifier
-                              (new Identifier x1-str)))))))
+                              (compile-symbol
+                               (datum->syntax #f x1)
+                               env
+                               options
+                               (js/obj :literal-symbol #t))))))))
       (set! y-exp (second x-exp)))
      (else
       (when (string? x-exp)
         (set! x-exp (string->symbol x-exp)))
-      (when (symbol? x-exp)
-        (set! x-exp
-              (print-estree
-               (compile-symbol
-                (datum->syntax #f x-exp)
-                env
-                options
-                (js/obj :literal-symbol #t))
-               options)))
       (set! specifiers
             (list
              (if fes-module-interop
                  (new ImportDefaultSpecifier
-                      (new Identifier x-exp))
+                      (compile-symbol
+                       (datum->syntax #f x-exp)
+                       env
+                       options
+                       (js/obj :literal-symbol #t)))
                  (new ImportNamespaceSpecifier
-                      (new Identifier x-exp)))))))
+                      (compile-symbol
+                       (datum->syntax #f x-exp)
+                       env
+                       options
+                       (js/obj :literal-symbol #t))))))))
     (when (symbol? y-exp)
-      (set! y-exp
-            (print-estree
-             (compile-symbol
-              (datum->syntax #f y-exp)
-              env
-              options
-              (js/obj :literal-symbol #t))
-             options)))
-    (set! src (new Literal y-exp))
+      (set! y-exp (symbol->string y-exp)))
+    (set! src
+          (compile-expression
+           (datum->syntax #f y-exp)
+           env
+           options))
     (when (symbol? x-exp)
       (unless (send env has? x-exp (js/obj :filter lang-filter))
         (make-type-binding env x-exp 'Any lang-filter)))
@@ -4909,46 +4869,31 @@
               (first pair))
             (define x2
               (second pair))
-            (when (symbol? x1)
-              (set! x1
-                    (print-estree
-                     (compile-symbol
-                      (datum->syntax #f x1)
-                      env
-                      options
-                      (js/obj :literal-symbol #t))
-                     options)))
-            (when (symbol? x2)
-              (set! x2
-                    (print-estree
-                     (compile-symbol
-                      (datum->syntax #f x2)
-                      env
-                      options
-                      (js/obj :literal-symbol #t))
-                     options)))
             (unless (memq? x2 seen)
               (push-right! seen x2)
               (push-right! specifiers
                            (new ExportSpecifier
-                                (new Identifier x1)
-                                (new Identifier x2))))))
+                                (compile-symbol
+                                 (datum->syntax #f x1)
+                                 env
+                                 options
+                                 (js/obj :literal-symbol #t))
+                                (compile-symbol
+                                 (datum->syntax #f x2)
+                                 env
+                                 options
+                                 (js/obj :literal-symbol #t)))))))
          (else
           (define x1 exp)
-          (when (symbol? x1)
-            (set! x1
-                  (print-estree
-                   (compile-symbol
-                    (datum->syntax #f x1)
-                    env
-                    options
-                    (js/obj :literal-symbol #t))
-                   options)))
           (unless (memq? x1 seen)
             (push-right! seen x1)
             (push-right! specifiers
                          (new ExportSpecifier
-                              (new Identifier x1)))))))
+                              (compile-symbol
+                               (datum->syntax #f x1)
+                               env
+                               options
+                               (js/obj :literal-symbol #t))))))))
       (define result
         (new ExportNamedDeclaration
              #n
@@ -5149,34 +5094,43 @@
       (oset! options :gensym-map gensym-map))
     (cond
      ((hash-has-key? gensym-map exp)
-      (define-values (gensym-name name i)
+      (define gensym-name-thunk
         (hash-ref gensym-map exp))
-      (define identifier
-        (new Identifier gensym-name))
-      identifier)
+      (define identifier-thunk
+        (thunk
+         (lambda ()
+           (new Identifier (force gensym-name-thunk)))))
+      identifier-thunk)
      (else
-      (define name
-        (make-identifier-string str options))
-      (define gensym-name name)
-      (define i 1)
-      (define regular-sym
-        (string->symbol gensym-name))
-      (while (send env
-                   has?
-                   regular-sym
-                   (js/obj :filter lang-filter))
-        (set! gensym-name
-              (string-append name (number->string i)))
-        (set! regular-sym
-              (string->symbol gensym-name))
-        (set! i (+ i 1)))
-      (define identifier
-        (new Identifier gensym-name))
-      (define entry
-        (list gensym-name name i))
-      (hash-set! gensym-map exp entry)
-      (send env set-local! regular-sym #u 'Any)
-      identifier)))
+      ;; In order to prevent naming conflicts, use a thunk
+      ;; to delay the task of translating a `gensym`'ed
+      ;; symbol to a JavaScript identifier.
+      (define gensym-name-thunk
+        (thunk
+         (lambda ()
+           (define name
+             (make-identifier-string str options))
+           (define gensym-name name)
+           (define i 1)
+           (define regular-sym
+             (string->symbol gensym-name))
+           (while (send env
+                        has?
+                        regular-sym
+                        (js/obj :filter lang-filter))
+             (set! gensym-name
+                   (string-append name (number->string i)))
+             (set! regular-sym
+                   (string->symbol gensym-name))
+             (set! i (+ i 1)))
+           (send env set-local! regular-sym #u 'Any)
+           gensym-name)))
+      (hash-set! gensym-map exp gensym-name-thunk)
+      (define identifier-thunk
+        (thunk
+         (lambda ()
+           (new Identifier (force gensym-name-thunk)))))
+      identifier-thunk)))
    (else
     (define name
       (make-identifier-string str options))
@@ -5262,6 +5216,9 @@
 
 ;;; Compile a `(js/do-while ...)` expression.
 (define (compile-js/do-while node env (options (js/obj)))
+  (define env1
+    (extend-environment (new LispEnvironment)
+                        env))
   (define body
     (send node get 1))
   (define body-exp
@@ -5272,25 +5229,31 @@
     (send node get 2))
   (new DoWhileStatement
        (compile-expression
-        test env options)
+        test env1 options)
        (compile-statement-or-return-statement
-        body-exp env options)))
+        body-exp env1 options)))
 
 ;;; Compile a `(js/while ...)` expression.
 (define (compile-js/while node env (options (js/obj)))
+  (define env1
+    (extend-environment (new LispEnvironment)
+                        env))
   (define test
     (send node get 1))
   (define body
     (begin-wrap-rose (send node drop 2)))
   (new WhileStatement
        (compile-expression
-        test env options)
+        test env1 options)
        (wrap-in-block-statement-smart
         (compile-statement-or-return-statement
-         body env options))))
+         body env1 options))))
 
 ;;; Compile a `(js/for ...)` expression.
 (define (compile-js/for node env (options (js/obj)))
+  (define env1
+    (extend-environment (new LispEnvironment)
+                        env))
   (define body
     (datum->syntax
      node
@@ -5319,15 +5282,15 @@
           (datum->syntax
            init
            `(define ,@(syntax->list init)))))
-   ((form? init-exp define_ env)
+   ((form? init-exp define_ env1)
     (set! sym (js/second init-exp)))
-   ((form? init-exp set!_ env)
+   ((form? init-exp set!_ env1)
     (set! sym (js/second init-exp))))
   (define init-compiled
     (if (or (null? init-exp)
             (undefined? init-exp))
         #n
-        (compile-statement init env options)))
+        (compile-statement init env1 options)))
   (when (estree-type? init-compiled
                       '("Program"
                         "BlockStatement"))
@@ -5339,10 +5302,10 @@
     (if (or (null? test-exp)
             (undefined? test-exp))
         #n
-        (compile-expression test env options)))
+        (compile-expression test env1 options)))
   (define (increment? x)
-    (or (form? x add_ env)
-        (form? x sub_ env)))
+    (or (form? x add_ env1)
+        (form? x sub_ env1)))
   (when (increment? update-exp)
     (unless sym
       (cond
@@ -5359,7 +5322,7 @@
     (if (or (null? update-exp)
             (undefined? update-exp))
         #n
-        (compile-statement update env options)))
+        (compile-statement update env1 options)))
   (cond
    ((estree-type? update-compiled
                   '("Program"
@@ -5373,7 +5336,7 @@
     (set! update-compiled
           (get-field expression update-compiled))))
   (define body-compiled
-    (compile-statement body env options))
+    (compile-statement body env1 options))
   (new ForStatement
        init-compiled
        test-compiled
@@ -5382,6 +5345,9 @@
 
 ;;; Compile a `(js/for-in ...)` expression.
 (define (compile-js/for-in node env (options (js/obj)))
+  (define env1
+    (extend-environment (new LispEnvironment)
+                        env))
   (define left
     (datum->syntax
      node
@@ -5393,11 +5359,11 @@
      node
      `(js/block ,@(send node drop 2))))
   (define left-compiled
-    (compile-statement left env options))
+    (compile-statement left env1 options))
   (define right-compiled
-    (compile-expression right env options))
+    (compile-expression right env1 options))
   (define body-compiled
-    (compile-statement body env options))
+    (compile-statement body env1 options))
   (new ForInStatement
        left-compiled
        right-compiled
@@ -5405,6 +5371,9 @@
 
 ;;; Compile a `(js/for-of ...)` expression.
 (define (compile-js/for-of node env (options (js/obj)))
+  (define env1
+    (extend-environment (new LispEnvironment)
+                        env))
   (define left
     (datum->syntax
      node
@@ -5416,11 +5385,11 @@
      node
      `(js/block ,@(send node drop 2))))
   (define left-compiled
-    (compile-statement left env options))
+    (compile-statement left env1 options))
   (define right-compiled
-    (compile-expression right env options))
+    (compile-expression right env1 options))
   (define body-compiled
-    (compile-statement body env options))
+    (compile-statement body env1 options))
   (new ForOfStatement
        left-compiled
        right-compiled
@@ -5533,11 +5502,8 @@
     #n)
   (define id
     (if has-name
-        (new Identifier
-             (print-estree
-              (compile-expression
-               class-name-node env inherited-options)
-              inherited-options))
+        (compile-symbol
+         class-name-node env inherited-options)
         #n))
   (define body-node
     (if (eq? id #n)
@@ -5559,14 +5525,11 @@
     (set! body-exp (syntax->datum body-node))
     (when (> (js/length super-classes) 0)
       (set! super-class
-            (new Identifier
-                 (print-estree
-                  (compile-expression
-                   (datum->syntax
-                    #f
-                    (first super-classes))
-                   env1 inherited-options)
-                  inherited-options)))))
+            (compile-expression
+             (datum->syntax
+              #f
+              (first super-classes))
+             env1 inherited-options))))
   (define body-declarations '())
   (define accessibilities
     (make-hash))
@@ -6612,7 +6575,6 @@
      ((= (js/length args1) 0)
       identity)
      ((= (js/length args1) 1)
-      ;; `(js/op ,op ,identity ,(js/first args1))
       (js/first args1))
      (else
       (foldl (lambda (right left)
@@ -8226,6 +8188,17 @@
   (or (tagged-list? exp 'quote)
       (tagged-list? exp 'quasiquote)))
 
+;;; Set the type of the ESTree node `node` to `typ`.
+(define (set-type node typ)
+  (cond
+   ((thunk? node)
+    (thunk
+     (lambda ()
+       (set-type (force node) typ))))
+   (else
+    (send node set-type typ)
+    node)))
+
 ;;; Lisp environment.
 (define lisp-environment
   (new LispEnvironment
@@ -8929,15 +8902,12 @@
   (rename-out (compile-with-environment compile-lisp))
   (rename-out (compile-with-environment compile-lisp-to-javascript))
   (rename-out (cond_ cond))
-  (rename-out (define-async_ define-async))
   (rename-out (define-async_ define/async))
   (rename-out (define-class_ define-class))
-  (rename-out (define-generator_ define-generator))
   (rename-out (define-generator_ define/generator))
   (rename-out (define-fields_ define-fields))
   (rename-out (define-fields_ define-js/obj))
   (rename-out (define-macro_ define-macro))
-  (rename-out (define-public_ define-public))
   (rename-out (define-public_ define/public))
   (rename-out (define-type_ define-type))
   (rename-out (define-values_ define-values))
@@ -8959,7 +8929,6 @@
   (rename-out (let-fields_ let-fields))
   (rename-out (let-fields_ let-js/obj))
   (rename-out (let-star_ let*))
-  (rename-out (let-star_ let-star))
   (rename-out (let-star_ let_))
   (rename-out (let-star_ letrec))
   (rename-out (let-values_ let*-values))

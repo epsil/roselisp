@@ -1084,7 +1084,6 @@
   (rename-out (linked-pair?_ dotted-pair-p_))
   (rename-out (linked-pair?_ linked-pair?))
   (rename-out (list-star_ list*))
-  (rename-out (list-star_ list-star))
   (rename-out (list?_ list?))
   (rename-out (list?_ proper-list?))
   (rename-out (list_ list))

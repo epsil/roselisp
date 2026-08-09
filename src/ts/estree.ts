@@ -41,6 +41,11 @@
  * [npm:typescript-estree] https://www.npmjs.com/package/@typescript-eslint/typescript-estree
  */
 
+import {
+  force,
+  thunkp
+} from './thunk';
+
 /**
  * Node
  *
@@ -1944,6 +1949,9 @@ function estreeType(node: any): any {
     // because it is used by some ESTree classes to
     // represent optional values.
     return '';
+  } else if (thunkp(node)) {
+    // Do not force thunks.
+    return '';
   } else {
     // Otherwise, if `node` is an ESTree node proper,
     // then its type is stored in the `type` field.
@@ -1951,13 +1959,15 @@ function estreeType(node: any): any {
   }
 }
 
-estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], ''], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]]]];
+estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], ''], [[Symbol.for('thunk?'), Symbol.for('node')], ''], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]]]];
 
 /**
  * Whether the type of the ESTree node `node` is `typ`.
  */
 function estreeTypeP(node: any, typ: any): any {
   if (!node) {
+    return false;
+  } else if (thunkp(node)) {
     return false;
   } else if (Array.isArray(typ)) {
     return typ.findIndex(function (x: any): any {
@@ -1968,7 +1978,7 @@ function estreeTypeP(node: any, typ: any): any {
   }
 }
 
-estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], false], [[Symbol.for('array?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
+estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], false], [[Symbol.for('thunk?'), Symbol.for('node')], false], [[Symbol.for('array?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
 
 /**
  * Wrap a value in an ESTree node.
@@ -1986,6 +1996,19 @@ function wrapInEstree(x: any): any {
 }
 
 wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), Symbol.for('wrap-in-estree'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]]]];
+
+/**
+ * Get a field on an ESTree node, forcing it if it is a thunk.
+ */
+function getEstreeField(field: any, node: any): any {
+  let fieldVal: any = (node as any)[field];
+  if (thunkp(fieldVal)) {
+    fieldVal = force(fieldVal);
+  }
+  return fieldVal;
+}
+
+getEstreeField.fsource = [Symbol.for('define'), [Symbol.for('get-estree-field'), Symbol.for('field'), Symbol.for('node')], [Symbol.for('define'), Symbol.for('field-val'), [Symbol.for('oget'), Symbol.for('node'), Symbol.for('field')]], [Symbol.for('when'), [Symbol.for('thunk?'), Symbol.for('field-val')], [Symbol.for('set!'), Symbol.for('field-val'), [Symbol.for('force'), Symbol.for('field-val')]]], Symbol.for('field-val')];
 
 export {
   Expression as ESTreeExpression,
@@ -2086,5 +2109,6 @@ export {
   estreeType,
   estreeTypeP,
   estreep,
+  getEstreeField,
   wrapInEstree
 };

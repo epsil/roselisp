@@ -65,13 +65,17 @@
                   VariableDeclarator
                   estree?
                   estree-type?
-                  estree-type))
+                  estree-type
+                  get-estree-field))
 (require (only-in "./rose"
                   syntax->datum
                   syntax?))
 (require (only-in "./visitor"
                   make-visitor
                   visit))
+(require (only-in "./thunk"
+                  force
+                  thunk?))
 
 ;;; `Doc` type.
 ;;;
@@ -210,7 +214,7 @@
   (define comments-option
     (oget options :comments))
   (define comments
-    (get-field comments node))
+    (get-estree-field "comments" node))
   (define code
     (doc-value-string result))
   (define leading-comments "")
@@ -343,29 +347,29 @@
 ;;; Whether an expression is a string literal.
 (define (estree-string-literal? exp)
   (and (estree-type? exp "Literal")
-       (string? (get-field value exp))))
+       (string? (get-estree-field "value" exp))))
 
 ;;; Whether an ESTree node has any comments.
 (define (estree-has-comments? node)
-  (> (js/length (get-field comments node)) 0))
+  (> (js/length (get-estree-field "comments" node)) 0))
 
 ;;; Whether an ESTree node has any block comments.
 (define (estree-has-block-comment? node)
   (findf (lambda (comment)
            (is-a? comment BlockComment))
-         (get-field comments node)))
+         (get-estree-field "comments" node)))
 
 ;;; Whether an ESTree node has any leading comments.
 (define (estree-has-leading-comment? node)
   (findf (lambda (comment)
            (is-a? comment LeadingComment))
-         (get-field comments node)))
+         (get-estree-field "comments" node)))
 
 ;;; Whether an ESTree node has any trailing comments.
 (define (estree-has-trailing-comment? node)
   (findf (lambda (comment)
            (is-a? comment TrailingComment))
-         (get-field comments node)))
+         (get-estree-field "comments" node)))
 
 ;;; Print an ESTree node or an S-expression.
 (define (print obj (options (js/obj)))
@@ -754,6 +758,9 @@
    ;; represent optional values.
    ((not node)
     empty)
+   ;; Handle thunks within ESTree trees.
+   ((thunk? node)
+    (print-visitor (force node) options))
    ;; Otherwise, if `node` is an ESTree node proper,
    ;; then inspect its type and call the
    ;; appropriate visitor.
@@ -777,7 +784,7 @@
   (define fsemicolon
     (oget options :fsemicolon))
   (define expression
-    (get-field expression node))
+    (get-estree-field "expression" node))
   (define expression-printed
     (print-node expression options))
   ;; Object expressions and object destructuring must be
@@ -785,7 +792,7 @@
   ;; syntactically correct program.
   (when (or (estree-type? expression "ObjectExpression")
             (and (estree-type? expression "AssignmentExpression")
-                 (estree-type? (get-field left expression)
+                 (estree-type? (get-estree-field "left" expression)
                                "ObjectPattern")))
     (set! expression-printed
           (doc-wrap expression-printed options)))
@@ -800,7 +807,7 @@
   (define fsemicolon
     (oget options :fsemicolon))
   (define argument
-    (get-field argument node))
+    (get-estree-field "argument" node))
   (cond
    (argument
     (define argument-printed
@@ -831,10 +838,10 @@
 (define (print-yield-expression node (options (js/obj)))
   (list
    "yield"
-   (if (get-field argument node)
+   (if (get-estree-field "argument" node)
        (list
         space
-        (print-node (get-field argument node) options))
+        (print-node (get-estree-field "argument" node) options))
        empty)))
 
 ;;; Print a `ThrowStatement` ESTree node to a `Doc` object.
@@ -844,7 +851,7 @@
   (list
    "throw"
    space
-   (print-node (get-field argument node) options)
+   (print-node (get-estree-field "argument" node) options)
    (if fsemicolon
        ";"
        empty)))
@@ -854,7 +861,7 @@
   (list
    "await"
    space
-   (print-node (get-field argument node) options)))
+   (print-node (get-estree-field "argument" node) options)))
 
 ;;; Print a `BreakStatement` ESTree node to a `Doc` object.
 (define (print-break-statement node (options (js/obj)))
@@ -862,10 +869,10 @@
     (oget options :fsemicolon))
   (list
    "break"
-   (if (get-field label node)
+   (if (get-estree-field "label" node)
        (list
         space
-        (print-node (get-field label node) options))
+        (print-node (get-estree-field "label" node) options))
        empty)
    (if fsemicolon
        ";"
@@ -877,10 +884,10 @@
     (oget options :fsemicolon))
   (list
    "continue"
-   (if (get-field label node)
+   (if (get-estree-field "label" node)
        (list
         space
-        (print-node (get-field label node) options))
+        (print-node (get-estree-field "label" node) options))
        empty)
    (if fsemicolon
        ";"
@@ -897,15 +904,15 @@
   (define no-implicit-any
     (oget options :no-implicit-any))
   (define type_
-    (get-field typeAnnotation node))
+    (get-estree-field "typeAnnotation" node))
   (when (and no-implicit-any (not type_))
     (set! type_ (new TSAnyKeyword)))
   (list
-   (get-field name node)
+   (get-estree-field "name" node)
    (if (and (eq? language "typescript")
             type_)
        (list
-        (if (get-field optional node) "?:" ":")
+        (if (get-estree-field "optional" node) "?:" ":")
         space
         (print-node type_ options))
        empty)))
@@ -913,7 +920,7 @@
 ;;; Print a `Literal` ESTree node to a `Doc` object.
 (define (print-literal node (options (js/obj)))
   (define value
-    (get-field value node))
+    (get-estree-field "value" node))
   (cond
    ((string? value)
     (print-string-literal node options))
@@ -934,7 +941,7 @@
 (define (print-string-literal node (options (js/obj)))
   (define str
     (~> node
-        (get-field value _)
+        (get-estree-field "value" _)
         (regexp-replace (regexp "\\\\" "g") _ "\\\\")
         (regexp-replace (regexp "'" "g") _ "\\'")
         (regexp-replace (regexp "\\n" "g") _ "\\n")))
@@ -955,26 +962,27 @@
 ;;; Print a `TemplateElement` ESTree node to a `Doc` object.
 (define (print-template-element node (options (js/obj)))
   (define str
-    (get-field raw (get-field value node)))
+    (get-estree-field "raw" (get-estree-field "value" node)))
   (print-template-string str))
 
 ;;; Print a `TemplateLiteral` ESTree node to a `Doc` object.
 (define (print-template-literal node (options (js/obj)))
   (define str
-    (get-field raw
-               (get-field value
-                          (first
-                           (get-field quasis node)))))
+    (~> node
+        (get-estree-field "quasis" _)
+        (first _)
+        (get-estree-field "value" _)
+        (get-estree-field "raw" _)))
   (print-template-string str))
 
 ;;; Print a `TaggedTemplateExpression` ESTree node to a `Doc` object.
 (define (print-tagged-template-expression node (options (js/obj)))
   (define tag
-    (get-field tag node))
+    (get-estree-field "tag" node))
   (define tag-printed
     (print-node tag options))
   (define quasi
-    (get-field quasi node))
+    (get-estree-field "quasi" node))
   (define quasi-printed
     (print-node quasi options))
   (list tag-printed quasi-printed))
@@ -982,12 +990,12 @@
 ;;; Print a `UnaryExpression` ESTree node to a `Doc` object.
 (define (print-unary-expression node (options (js/obj)))
   (define prefix
-    (get-field prefix node))
+    (get-estree-field "prefix" node))
   (define operator
-    (get-field operator node))
+    (get-estree-field "operator" node))
   (define operator-printed operator)
   (define argument
-    (get-field argument node))
+    (get-estree-field "argument" node))
   (define argument-printed
     (print-node argument options))
   (unless (estree-simple? argument)
@@ -1012,18 +1020,18 @@
   (define type_
     (estree-type node))
   (define operator
-    (get-field operator node))
+    (get-estree-field "operator" node))
   (define operator-printed
     operator)
   (define left
-    (get-field left node))
+    (get-estree-field "left" node))
   (define left-printed
     (print-node
      left options))
   (define left-printed-str
     (doc-value-string left-printed))
   (define right
-    (get-field right node))
+    (get-estree-field "right" node))
   (define right-printed
     (print-node
      right options))
@@ -1034,22 +1042,22 @@
         (doc-should-break? right-printed)))
   (define is-multiline-string-literal
     (and (estree-string-literal? left)
-         (regexp-match "\\n$" (get-field value left))))
+         (regexp-match "\\n$" (get-estree-field "value" left))))
   (define is-multiline-binary-expression
     (and (not is-multiline-string-literal)
          (estree-type? left "BinaryExpression")
-         (estree-string-literal? (get-field right left))
+         (estree-string-literal? (get-estree-field "right" left))
          (regexp-match (regexp "\\n$")
                        (~> left
-                           (get-field right _)
-                           (get-field value _)))))
+                           (get-estree-field "right" _)
+                           (get-estree-field "value" _)))))
   (define is-multiline-string
     (or is-multiline-string-literal
         is-multiline-binary-expression))
   (define result)
   (unless (or (estree-simple? left)
               (and (estree-type? left type_)
-                   (eq? (get-field operator left) operator)))
+                   (eq? (get-estree-field "operator" left) operator)))
     (set! left-printed-str
           (doc-wrap left-printed-str
                     (js/obj-append
@@ -1059,7 +1067,7 @@
                               left-printed))))))
   (unless (or (estree-simple? right)
               (and (estree-type? right type_)
-                   (eq? (get-field operator right) operator)
+                   (eq? (get-estree-field "operator" right) operator)
                    (memq? operator '("+" "*" "&&" "||"))))
     (set! right-printed-str
           (doc-wrap right-printed-str
@@ -1110,15 +1118,15 @@
   (define language
     (oget options :language))
   (define operator
-    (get-field operator node))
+    (get-estree-field "operator" node))
   (define operator-printed operator)
   (define left
-    (get-field left node))
+    (get-estree-field "left" node))
   (define left-printed
     (print-node left
                 options))
   (define right
-    (get-field right node))
+    (get-estree-field "right" node))
   (define right-printed
     (print-node right
                 (js/obj-append
@@ -1140,26 +1148,26 @@
 (define (print-assignment-pattern node (options (js/obj)))
   (print-node
    (new VariableDeclarator
-        (get-field left node)
-        (get-field right node))
+        (get-estree-field "left" node)
+        (get-estree-field "right" node))
    options))
 
 ;;; Print a `CallExpression` ESTree node to a `Doc` object.
 (define (print-call-expression node (options (js/obj)))
   (define callee
-    (get-field callee node))
+    (get-estree-field "callee" node))
   (define callee-type
     (estree-type callee))
   (define callee-printed
     (print-node callee options))
   (define args
-    (get-field arguments node))
+    (get-estree-field "arguments" node))
   (define args-printed
     (map (lambda (x)
            (print-node x options))
          args))
   (define optional
-    (get-field optional node))
+    (get-estree-field "optional" node))
   (when (estree-complex? callee)
     (set! callee-printed
           (doc-wrap callee-printed options)))
@@ -1175,7 +1183,7 @@
 ;;; Print a `SequenceExpression` ESTree node to a `Doc` object.
 (define (print-sequence-expression node (options (js/obj)))
   (define expressions
-    (get-field expressions node))
+    (get-estree-field "expressions" node))
   (define expressions-printed
     (map (lambda (x)
            (print-node x options))
@@ -1192,19 +1200,19 @@
 ;;; Print a `BlockStatement` ESTree node to a `Doc` object.
 (define (print-block-statement node (options (js/obj)))
   (define body
-    (get-field body node))
+    (get-estree-field "body" node))
   ;; FIXME: Kludge, this code belongs in the compiler.
   (define body-modified
     (begin
-      (when (and (get-field comments node)
+      (when (and (get-estree-field "comments" node)
                  (> (js/length body) 0))
         (set-field! comments
                     (first body)
-                    (append (get-field comments node)
-                            (or (get-field comments (first body))
+                    (append (get-estree-field "comments" node)
+                            (or (get-estree-field "comments" (first body))
                                 '())))
-        (set! (get-field comments node) '()))
-      (get-field body node)))
+        (set-field! comments node '()))
+      (get-estree-field "body" node)))
   (define body-indented
     (indent
      (~> body-modified
@@ -1228,17 +1236,17 @@
   (define language
     (oget options :language))
   (define object
-    (get-field object node))
+    (get-estree-field "object" node))
   (define object-printed
     (print-node object options))
   (define property
-    (get-field property node))
+    (get-estree-field "property" node))
   (define property-printed
     (print-node property options))
   (define computed
-    (get-field computed node))
+    (get-estree-field "computed" node))
   (define optional
-    (get-field optional node))
+    (get-estree-field "optional" node))
   (when (or (not (estree-simple? object))
             (estree-type? object "ObjectExpression"))
     ;; If the object expression is complicated, wrap it in
@@ -1274,14 +1282,14 @@
   (define no-implicit-any
     (oget options :no-implicit-any))
   (define argument
-    (get-field argument node))
+    (get-estree-field "argument" node))
   (define argument-printed
     (print-node argument
                 (js/obj-append
                  options
                  (js/obj :no-implicit-any #f))))
   (define type_
-    (get-field typeAnnotation node))
+    (get-estree-field "typeAnnotation" node))
   (when (and no-implicit-any (not type_))
     (set! type_ (new TSArrayType (new TSAnyKeyword))))
   (unless (estree-simple? argument)
@@ -1310,13 +1318,13 @@
   (define arrow
     (oget settings :arrow))
   (define async_
-    (get-field async node))
+    (get-estree-field "async" node))
   (define return-type-setting
     (oget settings :return-type))
   (define return-type
     (if (string? return-type-setting)
         return-type-setting
-        (get-field returnType node)))
+        (get-estree-field "returnType" node)))
   (define return-type-printed
     (cond
      ((string? return-type)
@@ -1334,12 +1342,12 @@
    (if arrow
        empty
        (list "function" space))
-   (if (get-field id node)
-       (print-node (get-field id node)
+   (if (get-estree-field "id" node)
+       (print-node (get-estree-field "id" node)
                    options)
        empty)
    "("
-   (~> (get-field params node)
+   (~> (get-estree-field "params" node)
        (map (lambda (x)
               (print-node x
                           (js/obj-append
@@ -1355,7 +1363,7 @@
    (if arrow
        (list space "=>" space)
        space)
-   (print-node (get-field body node)
+   (print-node (get-estree-field "body" node)
                options)))
 
 ;;; Print a `FunctionDeclaration` ESTree node to a `Doc` object.
@@ -1375,9 +1383,9 @@
   (define fsemicolon
     (oget options :fsemicolon))
   (list
-   (get-field kind node)
+   (get-estree-field "kind" node)
    space
-   (~> (get-field declarations node)
+   (~> (get-estree-field "declarations" node)
        (map (lambda (x)
               (print-node x options))
             _)
@@ -1391,16 +1399,16 @@
   (define language
     (oget options :language))
   (define id
-    (get-field id node))
+    (get-estree-field "id" node))
   (define id-printed
     (print-node id
                 (js/obj-append
                  options
                  (js/obj :no-implicit-any #t))))
   (cond
-   ((get-field init node)
+   ((get-estree-field "init" node)
     (define init
-      (get-field init node))
+      (get-estree-field "init" node))
     (define init-printed
       (print-node init
                   (js/obj-append
@@ -1421,7 +1429,7 @@
 ;;; Print an `IfStatement` ESTree node to a `Doc` object.
 (define (print-if-statement node (options (js/obj)))
   (define test
-    (get-field test node))
+    (get-estree-field "test" node))
   (define test-printed
     (print-node
      test options))
@@ -1435,12 +1443,12 @@
     (set! test-printed-str
           (doc-wrap test-printed options)))
   (define consequent
-    (get-field consequent node))
+    (get-estree-field "consequent" node))
   (define consequent-printed
     (print-node
      consequent options))
   (define alternate
-    (get-field alternate node))
+    (get-estree-field "alternate" node))
   (define result
     (string-append
      "if ("
@@ -1464,15 +1472,15 @@
 ;;; Print a `ConditionalExpression` ESTree node to a `Doc` object.
 (define (print-conditional-expression node (options (js/obj)))
   (define test
-    (get-field test node))
+    (get-estree-field "test" node))
   (define test-printed
     (print-node test options))
   (define consequent
-    (get-field consequent node))
+    (get-estree-field "consequent" node))
   (define consequent-printed
     (print-node consequent options))
   (define alternate
-    (get-field alternate node))
+    (get-estree-field "alternate" node))
   (define alternate-printed
     (print-node alternate options))
   (define result)
@@ -1500,11 +1508,11 @@
 ;;; Print a `WhileStatement` ESTree node to a `Doc` object.
 (define (print-while-statement node (options (js/obj)))
   (define test
-    (get-field test node))
+    (get-estree-field "test" node))
   (define test-printed
     (print-node test options))
   (define body
-    (get-field body node))
+    (get-estree-field "body" node))
   (define body-printed
     (print-node body options))
   (when (estree-type? test "AssignmentExpression")
@@ -1524,11 +1532,11 @@
   (define fsemicolon
     (oget options :fsemicolon))
   (define test
-    (get-field test node))
+    (get-estree-field "test" node))
   (define test-printed
     (print-node test options))
   (define body
-    (get-field body node))
+    (get-estree-field "body" node))
   (define body-printed
     (print-node body options))
   (when (estree-type? test "AssignmentExpression")
@@ -1551,25 +1559,25 @@
 ;;; Print a `ForStatement` ESTree node to a `Doc` object.
 (define (print-for-statement node (options (js/obj)))
   (define init
-    (get-field init node))
+    (get-estree-field "init" node))
   (define init-printed
     (print-node init
                 (js/obj-append
                  options
                  (js/obj :fsemicolon #f))))
   (define test
-    (get-field test node))
+    (get-estree-field "test" node))
   (define test-printed
     (print-doc (print-node test options) options))
   (define update
-    (get-field update node))
+    (get-estree-field "update" node))
   (define update-printed
     (print-node update
                 (js/obj-append
                  options
                  (js/obj :fsemicolon #f))))
   (define body
-    (get-field body node))
+    (get-estree-field "body" node))
   (define body-printed
     (print-node body options))
   (list
@@ -1596,18 +1604,18 @@
   (define language
     (oget options :language))
   (define left
-    (get-field left node))
+    (get-estree-field "left" node))
   (define left-printed
     (print-node left
                 (js/obj-append
                  options
                  (js/obj :fsemicolon #f))))
   (define right
-    (get-field right node))
+    (get-estree-field "right" node))
   (define right-printed
     (print-node right options))
   (define body
-    (get-field body node))
+    (get-estree-field "body" node))
   (define body-printed
     (print-node body options))
   (define result-str)
@@ -1637,17 +1645,17 @@
   (define language
     (oget options :language))
   (define left
-    (get-field left node))
+    (get-estree-field "left" node))
   (define left-printed
     (~> (print-node left options)
         (print-doc options)
         (regexp-replace (regexp ";$") _ "")))
   (define right
-    (get-field right node))
+    (get-estree-field "right" node))
   (define right-printed
     (print-node right options))
   (define body
-    (get-field body node))
+    (get-estree-field "body" node))
   (define body-printed
     (print-node body options))
   (list
@@ -1669,24 +1677,24 @@
 ;;; Print a `TryStatement` ESTree node to a `Doc` object.
 (define (print-try-statement node (options (js/obj)))
   (define block
-    (get-field block node))
+    (get-estree-field "block" node))
   (define block-printed
     (print-node block options))
   (define handler
-    (get-field handler node))
+    (get-estree-field "handler" node))
   (define finalizer
-    (get-field finalizer node))
+    (get-estree-field "finalizer" node))
   (define result
     (list "try" space block-printed))
   (when handler
     (define handler-param
-      (get-field param handler))
+      (get-estree-field "param" handler))
     (define handler-param-printed
       (if handler-param
           (print-node handler-param options)
           #f))
     (define handler-body-printed
-      (print-node (get-field body handler) options))
+      (print-node (get-estree-field "body" handler) options))
     (set! result
           (append
            result
@@ -1718,15 +1726,15 @@
 ;;; Print a `ClassDeclaration` ESTree node to a `Doc` object.
 (define (print-class-declaration node (options (js/obj)))
   (define id
-    (get-field id node))
+    (get-estree-field "id" node))
   (define body
-    (get-field body node))
+    (get-estree-field "body" node))
   (define body-indented
     (indent (print-node body options)))
   (define body-printed
     (print-doc body-indented options))
   (define super-class
-    (get-field superClass node))
+    (get-estree-field "superClass" node))
   (list
    "class"
    space
@@ -1755,14 +1763,14 @@
   (print-class-declaration
    (new ClassDeclaration
         #n
-        (get-field body node)
-        (get-field superClass node))
+        (get-estree-field "body" node)
+        (get-estree-field "superClass" node))
    options))
 
 ;;; Print a `ClassBody` ESTree node to a `Doc` object.
 (define (print-class-body node (options (js/obj)))
   (~> node
-      (get-field body _)
+      (get-estree-field "body" _)
       (map (lambda (x)
              (print-node x options))
            _)
@@ -1775,13 +1783,13 @@
   (define language
     (oget options :language))
   (define key
-    (get-field key node))
+    (get-estree-field "key" node))
   (define value
-    (get-field value node))
+    (get-estree-field "value" node))
   (define static-flag
-    (get-field static node))
+    (get-estree-field "static" node))
   (define accessibility
-    (get-field accessibility node))
+    (get-estree-field "accessibility" node))
   (list
    (if (and (eq? language "typescript")
             (eq? accessibility "private"))
@@ -1808,13 +1816,13 @@
   (define language
     (oget options :language))
   (define key
-    (get-field key node))
+    (get-estree-field "key" node))
   (define key-printed
     (print-node key options))
   (define key-printed-str
     (print-doc key-printed options))
   (define value
-    (get-field value node))
+    (get-estree-field "value" node))
   (define value-printed
     (~> value
         (print-function
@@ -1828,13 +1836,13 @@
         (print-doc _ options)
         (regexp-replace (regexp "^function ") _ "")))
   (define static-flag
-    (get-field static node))
+    (get-estree-field "static" node))
   (define computed-flag
-    (get-field computed node))
+    (get-estree-field "computed" node))
   (define generator-flag
-    (get-field generator value))
+    (get-estree-field "generator" value))
   (define accessibility
-    (get-field accessibility node))
+    (get-estree-field "accessibility" node))
   (list
    (if (and (eq? language "typescript")
             (eq? accessibility "private"))
@@ -1858,12 +1866,12 @@
   (define no-implicit-any
     (oget options :no-implicit-any))
   (define type_
-    (get-field typeAnnotation node))
+    (get-estree-field "typeAnnotation" node))
   (define printed-expressions '())
   (define should-break #f)
   (define printed-exp)
   (define result)
-  (for ((exp (get-field elements node)))
+  (for ((exp (get-estree-field "elements" node)))
     (if exp
         (set! printed-exp
               (print-node exp
@@ -1923,8 +1931,8 @@
    "new"
    space
    (print-node (new CallExpression
-                    (get-field callee node)
-                    (get-field arguments node))
+                    (get-estree-field "callee" node)
+                    (get-estree-field "arguments" node))
                options)))
 
 ;;; Print an `ImportDeclaration` ESTree node to a `Doc` object.
@@ -1932,9 +1940,9 @@
   (define fsemicolon
     (oget options :fsemicolon))
   (define specifiers
-    (get-field specifiers node))
+    (get-estree-field "specifiers" node))
   (define source
-    (get-field source node))
+    (get-estree-field "source" node))
   (cond
    ((and (= (js/length specifiers) 1)
          (not (estree-type? (first specifiers)
@@ -1975,11 +1983,11 @@
 ;;; Print an `ImportSpecifier` ESTree node to a `Doc` object.
 (define (print-import-specifier node (options (js/obj)))
   (define local
-    (get-field local node))
+    (get-estree-field "local" node))
   (define local-printed
     (print-doc (print-node local options) options))
   (define imported
-    (get-field imported node))
+    (get-estree-field "imported" node))
   (define imported-printed
     (print-doc (print-node imported options) options))
   (cond
@@ -1995,7 +2003,7 @@
 
 ;;; Print an `ImportDefaultSpecifier` ESTree node to a `Doc` object.
 (define (print-import-default-specifier node (options (js/obj)))
-  (print-node (get-field local node) options))
+  (print-node (get-estree-field "local" node) options))
 
 ;;; Print an `ImportNamespaceSpecifier` ESTree node to a `Doc` object.
 (define (print-import-namespace-specifier node (options (js/obj)))
@@ -2004,14 +2012,14 @@
    space
    "as"
    space
-   (print-node (get-field local node) options)))
+   (print-node (get-estree-field "local" node) options)))
 
 ;;; Print an `ExportNamedDeclaration` ESTree node to a `Doc` object.
 (define (print-export-named-declaration node (options (js/obj)))
   (define fsemicolon
     (oget options :fsemicolon))
   (define specifiers
-    (get-field specifiers node))
+    (get-estree-field "specifiers" node))
   (define specifiers-printed
     (~> specifiers
         (map (lambda (x)
@@ -2038,8 +2046,8 @@
 (define (print-export-specifier node (options (js/obj)))
   (print-import-specifier
    (new ImportSpecifier
-        (get-field local node)
-        (get-field exported node))
+        (get-estree-field "local" node)
+        (get-estree-field "exported" node))
    options))
 
 ;;; Print an `ExportAllDeclaration` ESTree node to a `Doc` object.
@@ -2053,7 +2061,7 @@
    space
    "from"
    space
-   (print-node (get-field source node) options)
+   (print-node (get-estree-field "source" node) options)
    (if fsemicolon
        ";"
        empty)))
@@ -2061,7 +2069,7 @@
 ;;; Print an `ObjectExpression` ESTree node to a `Doc` object.
 (define (print-object-expression node (options (js/obj)))
   (define properties
-    (get-field properties node))
+    (get-estree-field "properties" node))
   (list
    "{"
    (if (= (js/length properties) 0)
@@ -2081,7 +2089,7 @@
 (define (print-object-pattern node (options (js/obj)))
   (list
    "{"
-   (~> (get-field properties node)
+   (~> (get-estree-field "properties" node)
        (map (lambda (prop)
               (print-assignment-property prop options))
             _)
@@ -2095,13 +2103,13 @@
      options
      (js/obj :no-implicit-any #f)))
   (define key
-    (get-field key node))
+    (get-estree-field "key" node))
   (define key-printed
     (print-node key options1))
   (define key-printed-str
     (print-doc key-printed options1))
   (define value
-    (get-field value node))
+    (get-estree-field "value" node))
   (define value-printed
     (print-node value options1))
   (define value-printed-str
@@ -2115,15 +2123,15 @@
   (define language
     (oget options :language))
   (define key
-    (get-field key node))
+    (get-estree-field "key" node))
   (define key-printed
     (print-node key options))
   (define value
-    (get-field value node))
+    (get-estree-field "value" node))
   (define computed
-    (get-field computed node))
+    (get-estree-field "computed" node))
   (define shorthand
-    (get-field shorthand node))
+    (get-estree-field "shorthand" node))
   (when computed
     (set! key-printed
           (list
@@ -2143,7 +2151,7 @@
 
 ;;; Print a `Program` ESTree node to a `Doc` object.
 (define (print-program node (options (js/obj)))
-  (~> (get-field body node)
+  (~> (get-estree-field "body" node)
       (map (lambda (x)
              (print-node x options))
            _)
@@ -2152,11 +2160,11 @@
 ;;; Print a `SwitchStatement` ESTree node to a `Doc` object.
 (define (print-switch-statement node (options (js/obj)))
   (define discriminant
-    (get-field discriminant node))
+    (get-estree-field "discriminant" node))
   (define discriminant-printed
     (print-node discriminant options))
   (define cases
-    (get-field cases node))
+    (get-estree-field "cases" node))
   (define cases-printed
     (~> cases
         (map (lambda (x)
@@ -2180,7 +2188,7 @@
 ;;; Print a `SwitchCase` ESTree node to a `Doc` object.
 (define (print-switch-case node (options (js/obj)))
   (define test
-    (get-field test node))
+    (get-estree-field "test" node))
   (define test-printed
     (cond
      (test
@@ -2191,7 +2199,7 @@
      (else
       "default")))
   (define consequent
-    (get-field consequent node))
+    (get-estree-field "consequent" node))
   (define is-block-statement
     (and (= (js/length consequent) 1)
          (first consequent)
@@ -2221,11 +2229,11 @@
 ;;; Print a `TSAsExpression` TSESTree node to a `Doc` object.
 (define (print-ts-as-expression node (options (js/obj)))
   (define expression
-    (get-field expression node))
+    (get-estree-field "expression" node))
   (define expression-printed
     (print-node expression options))
   (define type-annotation
-    (get-field typeAnnotation node))
+    (get-estree-field "typeAnnotation" node))
   (define type-annotation-printed
     (print-ts-type type-annotation options))
   (list
@@ -2272,7 +2280,7 @@
 ;;; Print a `TSArrayType` TSESTree node to a `Doc` object.
 (define (print-ts-array-type node (options (js/obj)))
   (define element-type
-    (get-field elementType node))
+    (get-estree-field "elementType" node))
   (define result
     (print-node element-type options))
   (when (estree-type? element-type "TSUnionType")
@@ -2283,7 +2291,7 @@
 ;;; Print a `TSTupleType` TSESTree node to a `Doc` object.
 (define (print-ts-tuple-type node (options (js/obj)))
   (define element-types
-    (get-field elementTypes node))
+    (get-estree-field "elementTypes" node))
   (list
    "["
    (join (list "," space)
@@ -2294,7 +2302,7 @@
 
 ;;; Print a `TSUnionType` TSESTree node to a `Doc` object.
 (define (print-ts-union-type node (options (js/obj)))
-  (~> (get-field types node)
+  (~> (get-estree-field "types" node)
       (map (lambda (x)
              (define result
                (print-node x options))
@@ -2309,7 +2317,7 @@
 (define (print-ts-function-type node (options (js/obj)))
   (list
    "("
-   (~> (get-field params node)
+   (~> (get-estree-field "params" node)
        (map (lambda (x)
               (print-node x options))
             _)
@@ -2318,7 +2326,7 @@
    space
    "=>"
    space
-   (print-node (get-field returnType node) options)))
+   (print-node (get-estree-field "returnType" node) options)))
 
 ;;; Print a `TSTypeAliasDeclaration` TSESTree node to a `Doc` object.
 (define (print-ts-type-alias-declaration node (options (js/obj)))
@@ -2327,22 +2335,22 @@
   (list
    "type"
    space
-   (print-node (get-field id node) options)
+   (print-node (get-estree-field "id" node) options)
    space
    "="
    space
-   (print-node (get-field typeAnnotation node) options)
+   (print-node (get-estree-field "typeAnnotation" node) options)
    (if fsemicolon
        ";"
        empty)))
 
 ;;; Print a `TSTypeAnnotation` TSESTree node to a `Doc` object.
 (define (print-ts-type-annotation node (options (js/obj)))
-  (print-node (get-field typeAnnotation node) options))
+  (print-node (get-estree-field "typeAnnotation" node) options))
 
 ;;; Print a `TSLiteralType` TSESTree node to a `Doc` object.
 (define (print-ts-literal-type node (options (js/obj)))
-  (print-node (get-field literal node)
+  (print-node (get-estree-field "literal" node)
               (js/obj-append
                options
                (js/obj :no-implicit-any #f))))
@@ -2350,9 +2358,9 @@
 ;;; Print a `TSTypeReference` TSESTree node to a `Doc` object.
 (define (print-ts-type-reference node (options (js/obj)))
   (define name
-    (get-field typeName node))
+    (get-estree-field "typeName" node))
   (define params
-    (get-field typeParameters node))
+    (get-estree-field "typeParameters" node))
   (list
    (print-node name
                (js/obj-append
@@ -2368,7 +2376,7 @@
 ;;; Print a `TSTypeParameterInstantiation` TSESTree node to a `Doc` object.
 (define (print-ts-type-parameter-instantiation node (options (js/obj)))
   (define params
-    (get-field params node))
+    (get-estree-field "params" node))
   (list
    "<"
    (~> params
@@ -2385,7 +2393,7 @@
 ;;; Print an `XRawJavaScript` ESTree extension node to a `Doc` object.
 (define (print-x-raw-javascript node (options (js/obj)))
   (define str
-    (get-field js node))
+    (get-estree-field "js" node))
   (when (regexp-match (regexp "^function \\(") str)
     (set! str (doc-wrap str)))
   str)

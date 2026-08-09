@@ -138,13 +138,7 @@ describe('gensym', function (): any {
         [Symbol.for('define'), Symbol('x'), 1],
         [Symbol.for('let'), [[Symbol.for('x1'), 0]]],
       ]),
-      'let x = 0;\n' +
-        '\n' +
-        'let x1 = 1;\n' +
-        '\n' +
-        '{\n' +
-        '  let x1 = 0;\n' +
-        '}'
+      'let x = 0;\n' + '\n' + 'let x2 = 1;\n' + '\n' + 'let x1 = 0;'
     );
   });
   xit('(compile (let ((gensym-x (gensym "x"))) `(let ((x 0)) (define ,gensym-x 1) (let ((x1 0)) (define ,gensym-x 1)))))', function (): any {

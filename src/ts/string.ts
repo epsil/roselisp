@@ -248,25 +248,28 @@ function indentString(str: any, n: any = 2, options: any = {}): any {
 indentString.fsource = [Symbol.for('define'), [Symbol.for('indent-string'), Symbol.for('str'), [Symbol.for('n'), 2], [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('whitespace-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':whitespace')]], [Symbol.for('define'), Symbol.for('whitespace'), [Symbol.for('or'), Symbol.for('whitespace-option'), ' ']], [Symbol.for('define'), Symbol.for('include-empty-lines-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':include-empty-lines')]], [Symbol.for('define'), Symbol.for('pattern'), [Symbol.for('if'), Symbol.for('include-empty-lines-option'), [Symbol.for('regexp'), '^', 'gm'], [Symbol.for('regexp'), '^(?!s*$)', 'gm']]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), Symbol.for('whitespace'), Symbol.for('n')]], [Symbol.for('regexp-replace'), Symbol.for('pattern'), Symbol.for('str'), Symbol.for('indentation')]];
 
 export {
-  numberToString_,
-  stringToNumber_,
+  numberToString_ as numberToString,
+  stringToNumber_ as stringToNumber,
   stringAppend_ as stringAppend,
-  stringObjectP_,
-  stringPrimitiveP_,
+  stringPrimitiveP_ as stringPrimitiveP,
   stringReplace_ as stringReplace,
   stringp_ as stringp,
-  stringp_,
   substring_ as substring,
   indentString,
+  numberToString_,
   stringAppend_,
   stringDowncase_,
   stringJoin_,
   stringLength_,
+  stringObjectP_,
+  stringPrimitiveP_,
   stringRef_,
   stringRepeat_,
   stringReplace_,
   stringSplit_,
+  stringToNumber_,
   stringTrim_,
   stringUpcase_,
+  stringp_,
   substring_
 };

@@ -508,7 +508,31 @@ describe('gensym', function (): any {
       true,
     ]);
   });
-  return it('(compile \'(gensym "foo"))', function (): any {
+  it('(eq? (gensym "foo") \'foo)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('eq?'),
+        [Symbol.for('gensym'), 'foo'],
+        [Symbol.for('quote'), Symbol.for('foo')],
+      ],
+      false,
+    ]);
+  });
+  it('(eq? (gensym "foo") (gensym "foo"))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('eq?'),
+        [Symbol.for('gensym'), 'foo'],
+        [Symbol.for('gensym'), 'foo'],
+      ],
+      false,
+    ]);
+  });
+  it('(compile \'(gensym "foo"))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -517,6 +541,189 @@ describe('gensym', function (): any {
         [Symbol.for('quote'), [Symbol.for('gensym'), 'foo']],
       ],
       "Symbol('foo');",
+    ]);
+  });
+  it('(compile `(define ,(gensym "x") 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('define'),
+            [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+            1,
+          ],
+        ],
+      ],
+      'let x = 1;',
+    ]);
+  });
+  it('(compile `(begin (define x 1) (define ,(gensym "x") 2)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              2,
+            ],
+          ],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'let x1 = 2;',
+    ]);
+  });
+  it('(compile `(begin (define x 1) (define x1 2) (define ,(gensym "x") 3)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [Symbol.for('define'), Symbol.for('x1'), 2],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              3,
+            ],
+          ],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'let x1 = 2;\n' + '\n' + 'let x2 = 3;',
+    ]);
+  });
+  it('(compile `(begin (define x 1) (define ,(gensym "x") 2) (define x1 3)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              2,
+            ],
+            [Symbol.for('define'), Symbol.for('x1'), 3],
+          ],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'let x2 = 2;\n' + '\n' + 'let x1 = 3;',
+    ]);
+  });
+  it('(compile `(begin (define x 1) (define ,(gensym "x") 2) (define-values (x1) (list 3))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              2,
+            ],
+            [
+              Symbol.for('define-values'),
+              [Symbol.for('x1')],
+              [Symbol.for('list'), 3],
+            ],
+          ],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'let x2 = 2;\n' + '\n' + 'let [x1] = [3];',
+    ]);
+  });
+  it('(compile `(begin (define x 1) (define (,(gensym "x")) 2) (define-values (x1) (list 3))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [[Symbol.for('unquote'), [Symbol.for('gensym'), 'x']]],
+              2,
+            ],
+            [
+              Symbol.for('define-values'),
+              [Symbol.for('x1')],
+              [Symbol.for('list'), 3],
+            ],
+          ],
+        ],
+      ],
+      'let x = 1;\n' +
+        '\n' +
+        'function x2() {\n' +
+        '  return 2;\n' +
+        '}\n' +
+        '\n' +
+        'let [x1] = [3];',
+    ]);
+  });
+  return it('(compile `(begin (define x 1) (define ,(gensym "x") 2) (define ,(gensym "x") 3) (define x1 4) (define x2 5)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quasiquote'),
+          [
+            Symbol.for('begin'),
+            [Symbol.for('define'), Symbol.for('x'), 1],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              2,
+            ],
+            [
+              Symbol.for('define'),
+              [Symbol.for('unquote'), [Symbol.for('gensym'), 'x']],
+              3,
+            ],
+            [Symbol.for('define'), Symbol.for('x1'), 4],
+            [Symbol.for('define'), Symbol.for('x2'), 5],
+          ],
+        ],
+      ],
+      'let x = 1;\n' +
+        '\n' +
+        'let x3 = 2;\n' +
+        '\n' +
+        'let x4 = 3;\n' +
+        '\n' +
+        'let x1 = 4;\n' +
+        '\n' +
+        'let x2 = 5;',
     ]);
   });
 });
@@ -1497,6 +1704,80 @@ describe('defun', function (): any {
         ],
       ],
       6,
+    ]);
+  });
+});
+
+describe('define-syntax', function (): any {
+  it("(compile '(module m scheme (define-syntax (foo x) (syntax test)) (foo 1)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('define-syntax'),
+              [Symbol.for('foo'), Symbol.for('x')],
+              [Symbol.for('syntax'), Symbol.for('test')],
+            ],
+            [Symbol.for('foo'), 1],
+          ],
+        ],
+      ],
+      'import {\n' +
+        '  datumToSyntax\n' +
+        "} from 'roselisp';\n" +
+        '\n' +
+        'function foo(x) {\n' +
+        "  return datumToSyntax(false, Symbol.for('test'));\n" +
+        '}\n' +
+        '\n' +
+        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
+        '\n' +
+        'test;',
+    ]);
+  });
+  return it("(compile '(module m scheme (define-syntax (foo x) (js/second (syntax-e x))) (foo 1)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('define-syntax'),
+              [Symbol.for('foo'), Symbol.for('x')],
+              [
+                Symbol.for('js/second'),
+                [Symbol.for('syntax-e'), Symbol.for('x')],
+              ],
+            ],
+            [Symbol.for('foo'), 1],
+          ],
+        ],
+      ],
+      'import {\n' +
+        '  syntaxE\n' +
+        "} from 'roselisp';\n" +
+        '\n' +
+        'function foo(x) {\n' +
+        '  return syntaxE(x)[1];\n' +
+        '}\n' +
+        '\n' +
+        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
+        '\n' +
+        '1;',
     ]);
   });
 });

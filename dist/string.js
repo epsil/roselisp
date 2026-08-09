@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.substring_ = exports.stringUpcase_ = exports.stringTrim_ = exports.stringSplit_ = exports.stringReplace_ = exports.stringRepeat_ = exports.stringRef_ = exports.stringLength_ = exports.stringJoin_ = exports.stringDowncase_ = exports.stringAppend_ = exports.indentString = exports.substring = exports.stringp_ = exports.stringp = exports.stringReplace = exports.stringPrimitiveP_ = exports.stringObjectP_ = exports.stringAppend = exports.stringToNumber_ = exports.numberToString_ = void 0;
+exports.substring_ = exports.stringp_ = exports.stringUpcase_ = exports.stringTrim_ = exports.stringToNumber_ = exports.stringSplit_ = exports.stringReplace_ = exports.stringRepeat_ = exports.stringRef_ = exports.stringPrimitiveP_ = exports.stringObjectP_ = exports.stringLength_ = exports.stringJoin_ = exports.stringDowncase_ = exports.stringAppend_ = exports.numberToString_ = exports.indentString = exports.substring = exports.stringp = exports.stringReplace = exports.stringPrimitiveP = exports.stringAppend = exports.stringToNumber = exports.numberToString = void 0;
 const [plistGet] = (() => {
     function plistGet_(plst, prop) {
         let val = undefined;
@@ -53,6 +53,7 @@ stringp_.fsource = [Symbol.for('define'), [Symbol.for('string?_'), Symbol.for('o
 function stringPrimitiveP_(obj) {
     return typeof obj === 'string';
 }
+exports.stringPrimitiveP = stringPrimitiveP_;
 exports.stringPrimitiveP_ = stringPrimitiveP_;
 stringPrimitiveP_.fsource = [Symbol.for('define'), [Symbol.for('string-primitive?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'string']];
 /**
@@ -209,6 +210,7 @@ substring_.fsource = [Symbol.for('define'), [Symbol.for('substring_'), Symbol.fo
 function stringToNumber_(str) {
     return parseFloat(str);
 }
+exports.stringToNumber = stringToNumber_;
 exports.stringToNumber_ = stringToNumber_;
 stringToNumber_.fsource = [Symbol.for('define'), [Symbol.for('string->number_'), Symbol.for('str')], [Symbol.for('parseFloat'), Symbol.for('str')]];
 /**
@@ -221,6 +223,7 @@ stringToNumber_.fsource = [Symbol.for('define'), [Symbol.for('string->number_'),
 function numberToString_(n) {
     return n + '';
 }
+exports.numberToString = numberToString_;
 exports.numberToString_ = numberToString_;
 numberToString_.fsource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('string-append'), Symbol.for('n'), '']];
 /**

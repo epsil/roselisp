@@ -169,15 +169,12 @@
   (regexp-replace pattern str indentation))
 
 (provide
-  (rename-out (number->string_ number-to-string_))
-  (rename-out (string->number_ string-to-number_))
+  (rename-out (number->string_ number->string))
+  (rename-out (string->number_ string->number))
   (rename-out (string-append_ string-append))
-  (rename-out (string-object?_ string-object-p_))
-  (rename-out (string-primitive?_ string-primitive-p_))
+  (rename-out (string-primitive?_ string-primitive?))
   (rename-out (string-replace_ string-replace))
   (rename-out (string?_ string?))
-  (rename-out (string?_ stringp))
-  (rename-out (string?_ stringp_))
   (rename-out (substring_ substring))
   indent-string
   number->string_

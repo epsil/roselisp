@@ -182,4 +182,4 @@ declare function indentString(str: any, n?: any, options?: any): any;
 declare namespace indentString {
     var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
 }
-export { numberToString_, stringToNumber_, stringAppend_ as stringAppend, stringObjectP_, stringPrimitiveP_, stringReplace_ as stringReplace, stringp_ as stringp, stringp_, substring_ as substring, indentString, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringTrim_, stringUpcase_, substring_ };
+export { numberToString_ as numberToString, stringToNumber_ as stringToNumber, stringAppend_ as stringAppend, stringPrimitiveP_ as stringPrimitiveP, stringReplace_ as stringReplace, stringp_ as stringp, substring_ as substring, indentString, numberToString_, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringObjectP_, stringPrimitiveP_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringToNumber_, stringTrim_, stringUpcase_, stringp_, substring_ };

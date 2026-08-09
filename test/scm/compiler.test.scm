@@ -87,11 +87,9 @@ let x1 = 1;"
                (let ((x1 0)))))
  "let x = 0;
 
-let x1 = 1;
+let x2 = 1;
 
-{
-  let x1 = 0;
-}"
+let x1 = 0;"
  xit> (compile (let ((gensym-x (gensym "x")))
                  `(let ((x 0))
                     (define ,gensym-x 1)

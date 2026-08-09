@@ -196,8 +196,76 @@
  _
  > (symbol? (gensym "foo"))
  #t
+ > (eq? (gensym "foo") 'foo)
+ #f
+ > (eq? (gensym "foo") (gensym "foo"))
+ #f
  > (compile '(gensym "foo"))
  "Symbol('foo');"
+ > (compile `(define ,(gensym "x") 1))
+ "let x = 1;"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)))
+ "let x = 1;
+
+let x1 = 2;"
+ > (compile `(begin
+               (define x 1)
+               (define x1 2)
+               (define ,(gensym "x") 3)))
+ "let x = 1;
+
+let x1 = 2;
+
+let x2 = 3;"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)
+               (define x1 3)))
+ "let x = 1;
+
+let x2 = 2;
+
+let x1 = 3;"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)
+               (define-values (x1)
+                 (list 3))))
+ "let x = 1;
+
+let x2 = 2;
+
+let [x1] = [3];"
+ > (compile `(begin
+               (define x 1)
+               (define (,(gensym "x"))
+                 2)
+               (define-values (x1)
+                 (list 3))))
+ "let x = 1;
+
+function x2() {
+  return 2;
+}
+
+let [x1] = [3];"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)
+               (define ,(gensym "x") 3)
+               (define x1 4)
+               (define x2 5)))
+ "let x = 1;
+
+let x3 = 2;
+
+let x4 = 3;
+
+let x1 = 4;
+
+let x2 = 5;"
 
  ;; Cons cells
  > (describe "Cons cells")
@@ -427,6 +495,41 @@ x[length];"
           (my-add x y z))
         (my-add-2 1 2 3))))
  6
+
+ ;; `define-syntax`
+ > (describe "define-syntax")
+ _
+ > (compile '(module m scheme
+               (define-syntax (foo x)
+                 (syntax test))
+               (foo 1)))
+ "import {
+  datumToSyntax
+} from 'roselisp';
+
+function foo(x) {
+  return datumToSyntax(false, Symbol.for('test'));
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+test;"
+
+ > (compile '(module m scheme
+               (define-syntax (foo x)
+                 (js/second (syntax-e x)))
+               (foo 1)))
+ "import {
+  syntaxE
+} from 'roselisp';
+
+function foo(x) {
+  return syntaxE(x)[1];
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+1;"
 
  ;; `define-macro`
  > (describe "define-macro")

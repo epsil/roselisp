@@ -2048,8 +2048,8 @@ function trySpecial_(exp: any, env: any): any {
   } catch (err) {
     for (let clause of catchClauses) {
       if (err instanceof eval_((Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && ((): any => {
-        const x1: any = lastCdr(clause);
-        return Array.isArray(x1) && (x1.length === 0);
+        const x: any = lastCdr(clause);
+        return Array.isArray(x) && (x.length === 0);
       })()) ? ((): any => {
         let i: any = 1;
         let result: any = clause;
@@ -2067,8 +2067,8 @@ function trySpecial_(exp: any, env: any): any {
         return result;
       })() : clause[1], env)) {
         result = eval_([Symbol.for('let'), [[(Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && ((): any => {
-          const x1: any = lastCdr(clause);
-          return Array.isArray(x1) && (x1.length === 0);
+          const x: any = lastCdr(clause);
+          return Array.isArray(x) && (x.length === 0);
         })()) ? ((): any => {
           let i: any = 2;
           let result: any = clause;

@@ -39,6 +39,10 @@
 ;;; [github:estree-types]: https://github.com/estree/estree/blob/master/extensions/type-annotations.md
 ;;; [npm:typescript-estree] https://www.npmjs.com/package/@typescript-eslint/typescript-estree
 
+(require (only-in "./thunk"
+                  force
+                  thunk?))
+
 ;;; Node
 ;;;
 ;;; Creates an ESTree [`Node`][estree:node] node.
@@ -1416,6 +1420,9 @@
    ;; represent optional values.
    ((not node)
     "")
+   ;; Do not force thunks.
+   ((thunk? node)
+    "")
    ;; Otherwise, if `node` is an ESTree node proper,
    ;; then its type is stored in the `type` field.
    (else
@@ -1425,6 +1432,8 @@
 (define (estree-type? node typ)
   (cond
    ((not node)
+    #f)
+   ((thunk? node)
     #f)
    ((array? typ)
     (memf? (lambda (x)
@@ -1443,6 +1452,14 @@
          (map wrap-in-estree x)))
    (else
     (new Literal x))))
+
+;;; Get a field on an ESTree node, forcing it if it is a thunk.
+(define (get-estree-field field node)
+  (define field-val
+    (oget node field))
+  (when (thunk? field-val)
+    (set! field-val (force field-val)))
+  field-val)
 
 (provide
   (rename-out (Expression ESTreeExpression))
@@ -1543,4 +1560,5 @@
   estree-type
   estree-type?
   estree?
+  get-estree-field
   wrap-in-estree)

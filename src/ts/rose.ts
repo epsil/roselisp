@@ -47,6 +47,23 @@ import {
   visit
 } from './visitor';
 
+const [lastCdr]: any[] = ((): any => {
+  function lastCdr_(lst: any): any {
+    if (!Array.isArray(lst)) {
+      return undefined;
+    } else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+      let result: any = lst;
+      while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
+        result = result[result.length - 1];
+      }
+      return result;
+    } else {
+      return [];
+    }
+  }
+  return [lastCdr_];
+})();
+
 /**
  * Rose tree node class.
  */
@@ -894,25 +911,6 @@ function sexpToRose(exp: any, node: any = undefined): any {
 }
 
 /**
- * Insert an S-expression into a rose tree node.
- */
-function insertSexpIntoRose(exp: any, node: any, cache: any = new Map()): any {
-  const cacheMap: any = (cache instanceof Rose) ? makeSimpleRoseMap(cache) : cache;
-  node.clearForest();
-  node.setValue(exp);
-  if (Array.isArray(exp)) {
-    for (let x of exp) {
-      if (cacheMap.has(x)) {
-        node.insert(cacheMap.get(x));
-      } else {
-        node.insert(insertSexpIntoRose(x, new Rose(), cacheMap));
-      }
-    }
-  }
-  return node;
-}
-
-/**
  * Make a map mapping values to rose tree nodes,
  * but only one level down.
  */
@@ -1094,7 +1092,11 @@ function datumToSyntax(ctxt: any, v: any, srcloc: any = undefined): any {
  * [rkt:syntax-to-list]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3elist%29%29
  */
 function syntaxToList(stx: any): any {
-  if (Array.isArray(syntaxToDatum(stx))) {
+  const exp: any = syntaxToDatum(stx);
+  if (((): any => {
+    const x: any = lastCdr(exp);
+    return Array.isArray(x) && (x.length === 0);
+  })()) {
     return stx.getNodes();
   } else {
     return false;
@@ -1111,7 +1113,19 @@ function syntaxToList(stx: any): any {
 function syntaxE(stx: any): any {
   const v: any = syntaxToDatum(stx);
   if (Array.isArray(v)) {
-    return syntaxToList(stx);
+    const nodes: any = stx.getNodes();
+    if ((nodes.length >= 3) && (syntaxToDatum(nodes[nodes.length - 2]) === Symbol.for('.'))) {
+      // Dotted list.
+      let tail: any = nodes[nodes.length - 1];
+      const tailE: any = syntaxE(tail);
+      if (Array.isArray(tailE)) {
+        tail = tailE;
+      }
+      return [...nodes.slice(0, -2), Symbol.for('.'), tail];
+    } else {
+      // Regular list.
+      return nodes;
+    }
   } else {
     return v;
   }
@@ -1130,7 +1144,6 @@ export {
   beginWrapRoseSmart1,
   datumToSyntax,
   forestp,
-  insertSexpIntoRose,
   makeListRose,
   makeRoseNonrecursive,
   makeSexpRose,

@@ -531,6 +531,24 @@ foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
 
 1;"
 
+ ;; `syntax->list`
+ > (describe "syntax->list")
+ _
+ > (syntax->list (syntax ()))
+ '()
+ > (syntax->list (syntax (1 . 2)))
+ #f
+
+ ;; `syntax-e`
+ > (describe "syntax-e")
+ _
+ > (syntax-e (syntax ()))
+ '()
+ > (dotted-list? (syntax-e (syntax (1 . 2))))
+ #t
+ > (dotted-list? (cdr (syntax-e (syntax (1 . (2 . 3))))))
+ #t
+
  ;; `define-macro`
  > (describe "define-macro")
  _

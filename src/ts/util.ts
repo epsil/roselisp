@@ -247,6 +247,13 @@ function kebabCaseToSnakeCase(str: any): any {
 function taggedListP(exp: any, tag: any, len: any = undefined): any {
   if (syntaxp(exp)) {
     return taggedListP(syntaxToDatum(exp), tag, len);
+  } else if (Array.isArray(tag)) {
+    for (let x of tag) {
+      if (taggedListP(exp, x, len)) {
+        return true;
+      }
+    }
+    return false;
   } else if (Number.isFinite(len)) {
     return taggedListP(exp, tag) && (exp.length === len);
   } else {

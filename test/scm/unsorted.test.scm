@@ -15,17 +15,65 @@
  > (describe "To do")
  _
 
+ ;; `js/=`
+ > (describe "js/=")
+ _
+ > (compile '(js/= x y))
+ "x = y;"
+ > (compile '(js/= (aget x i) y))
+ "x[i] = y;"
+ > (compile '(js/= (list x y) z))
+ "[x, y] = z;"
+ > (compile '(js/= (list #f y) z))
+ "[, y] = z;"
+ > (compile '(js/= (list* x) y))
+ "x = y;"
+ > (compile '(js/= (list* x y) z))
+ "[x, ...y] = z;"
+ > (compile '(js/= (list* #f x y) z))
+ "[, x, ...y] = z;"
+ > (compile '(js/= (values x y) z))
+ "[x, y] = z;"
+ > (compile '(js/= (js/obj x x) y))
+ "({x} = y);"
+ > (compile '(js/= (js/obj x y) z))
+ "({x: y} = z);"
+ > (compile '(js/= (set! x) y))
+ "x = y;"
+ > (compile '(js/= (aset! x i) y))
+ "x[i] = y;"
+ > (compile '(js/= (oset! x "y") z))
+ "x['y'] = z;"
+ > (compile '(js/= (set!-values (x)) y))
+ "[x] = y;"
+ > (compile '(js/= (set!-fields (x)) y))
+ "({x} = y);"
+ > (compile '(js/= (define x) y))
+ "let x = y;"
+ > (compile '(js/= (define-values (x)) y))
+ "let [x] = y;"
+ > (compile '(js/= (define-values (_ x)) y))
+ "let [, x] = y;"
+ > (compile '(js/= (define-values (_ __ x)
+                     :hole-marker __)
+                   y))
+ "let [_, , x] = y;"
+ > (compile '(js/= (define-fields (x)) y))
+ "let {x} = y;"
+
  > (describe "Fundamental operators")
  _
- xit> (compile '(js/= x y))
- "x = y;"
  xit> (compile '(js/, x y))
  "x, y;"
  xit> (compile '(js/\; x y))
  "x;
 y;"
  xit> (compile '(js/\(\) x))
- "(x)"
+ "x()"
+ xit> (compile '(js/\(\) x y))
+ "x(y)"
+ xit> (compile '(js/\(\) x y z))
+ "x(y, z)"
  xit> (compile '(js/\[\] x y))
  "x[y]"
  xit> (compile '(js/\{\} x))

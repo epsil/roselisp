@@ -500,7 +500,6 @@
                   begin-wrap-rose-smart
                   begin-wrap-rose-smart-1
                   datum->syntax
-                  insert-sexp-into-rose
                   slice-rose
                   syntax->datum
                   syntax->list
@@ -825,6 +824,7 @@
          (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
          (,if_ ,compile-if (compiler-> Any * Any))
          (,js/arrow_ ,compile-js/arrow (compiler-> Any * Any))
+         (,js/assignment_ ,compile-js/assignment (compiler-> Any * Any))
          (,js/async_ ,compile-js/async (compiler-> Any * Any))
          (,js/await_ ,compile-js/await (compiler-> Any * Any))
          (,js/block_ ,compile-js/block (compiler-> Any * Any))
@@ -1365,10 +1365,9 @@
            ((macro-type? compilation-type)
             (set! result
                   (compile-syntax
-                   (insert-sexp-into-rose
-                    (compilation-f exp env)
+                   (datum->syntax
                     node1
-                    node1)
+                    (compilation-f exp env))
                    env
                    options)))
            ;; Macro call.
@@ -2431,10 +2430,120 @@
   (define value
     (aget exp (- (js/length exp) 1)))
   (compile-syntax
-   (insert-sexp-into-rose
-    `(set! (array-ref ,arr ,@indices) ,value)
-    node)
+   (datum->syntax
+    node
+    `(js/= (aget ,arr ,@indices) ,value))
    env options))
+
+;;; Compile a `(js/= ...)` expression.
+(define (compile-js/assignment node env (options (js/obj)))
+  (define left
+    (send node get 1))
+  (define right
+    (send node get 2))
+  (cond
+   ((tagged-list? left
+                  '(aset!
+                    define
+                    define-fields
+                    define-values
+                    oset!
+                    set!
+                    set!-fields
+                    set!-values))
+    (compile-syntax
+     (datum->syntax
+      node
+      `(,@(syntax->list left) ,right))
+     env options))
+   (else
+    (define left-compiled #u)
+    (cond
+     ((tagged-list? left
+                    '(list
+                      values))
+      (set! left-compiled
+            (new ArrayPattern
+                 (map (lambda (x)
+                        (if (syntax->datum x)
+                            (compile-symbol
+                             x env options
+                             (js/obj :literal-symbol #t))
+                            #n))
+                      (send left drop 1)))))
+     ((tagged-list? left 'list*)
+      (define var-list
+        (send left drop 1))
+      (define regular-vars
+        (drop-right var-list 1))
+      (define rest-var
+        (js/last var-list))
+      (cond
+       ((zero? (js/length regular-vars))
+        (set! left-compiled
+              (if (syntax->datum rest-var)
+                  (compile-symbol
+                   rest-var env options
+                   (js/obj :literal-symbol #t))
+                  #n)))
+       (else
+        (set! left-compiled
+              (new ArrayPattern
+                   `(,@(map (lambda (x)
+                              (if (syntax->datum x)
+                                  (compile-symbol
+                                   x env options
+                                   (js/obj :literal-symbol #t))
+                                  #n))
+                            regular-vars)
+                     ,(new RestElement
+                           (if (syntax->datum rest-var)
+                               (compile-symbol
+                                rest-var env options
+                                (js/obj :literal-symbol #t))
+                               #n))))))))
+     ((tagged-list? left 'js/obj)
+      (define fields
+        (send left drop 1))
+      (define properties '())
+      (for ((i (range 0 (js/length fields) 2)))
+        (push-right! properties
+                     (new Property
+                          (compile-symbol
+                           (aget fields i)
+                           env options)
+                          (compile-symbol
+                           (aget fields (+ i 1))
+                           env options))))
+      (set! left-compiled
+            (new ObjectPattern properties)))
+     (else
+      (set! left-compiled
+            (if (symbol? (syntax->datum left))
+                (compile-symbol left env options)
+                (compile-expression left env options)))))
+    (define right-compiled
+      (compile-expression right env options))
+    (make-expression-or-statement
+     (new AssignmentExpression
+          "="
+          left-compiled
+          right-compiled)
+     options))))
+
+;;; Convert an assignment expression to a
+;;; variable declaration.
+(define (assignment-expression->variable-declaration exp)
+  (define assignment-expression exp)
+  (when (estree-type? assignment-expression
+                      "ExpressionStatement")
+    (set! assignment-expression
+          (get-field expression assignment-expression)))
+  (new VariableDeclaration
+       (list (new VariableDeclarator
+                  (get-field left assignment-expression)
+                  (get-field right assignment-expression)))
+       "let"))
 
 ;;; Compile a `(js/get ...)` expression.
 (define (compile-js/get node env (options (js/obj)))
@@ -2675,14 +2784,18 @@
       result)))
    ;; Uninitialized variable.
    ((= (js/length exp) 2)
+    (define result
+      (assignment-expression->variable-declaration
+       (compile-js/assignment
+        (datum->syntax
+         node
+         `(js/= ,(send node get 1) #u))
+        env options)))
+    (define declarator
+      (js/first (get-field declarations result)))
+    (set-field! init declarator #n)
     (send env set-local! (js/second exp) #u 'Any)
-    (new VariableDeclaration
-         (list (new VariableDeclarator
-                    (compile-expression
-                     (send node get 1)
-                     env
-                     options)))
-         "let"))
+    result)
    ;; Asynchronous function definition.
    ((and (form? (third exp) js/async_ env)
          (form? (second (third exp)) lambda_ env))
@@ -2712,42 +2825,32 @@
       (js/second exp))
     (define val
       (js/third exp))
-    (define sym-compiled
-      (compile-symbol
-       (send node get 1)
-       env
-       options))
     (set! type_
           (send env
                 get-local-type
                 sym
                 (js/obj :not-found 'Any)))
-    (send env
-          set-local!
-          sym
-          (thunk
-           (lambda ()
-             (define result #u)
-             (try
-               (set! result
-                     (interpret val env))
-               (catch Error e
-                 ;; Do nothing
-                 ))
-             result))
-          type_)
-    (new VariableDeclaration
-         (list (new VariableDeclarator
-                    (~> sym-compiled
-                        (set-type
-                         _
-                         (compile-type
-                          type_ env options)))
-                    (compile-expression
-                     (send node get 2)
-                     env
-                     options)))
-         "let"))))
+    (define val-thunk
+      (thunk
+       (lambda ()
+         (define result #u)
+         (try
+           (set! result
+                 (interpret val env))
+           (catch Error e
+             ;; Do nothing
+             ))
+         result)))
+    (send env set-local! sym val-thunk type_)
+    (define result
+      (assignment-expression->variable-declaration
+       (compile-js/assignment node env options)))
+    (~> result
+        (get-field declarations _)
+        (js/first _)
+        (get-field id _)
+        (set-type _ (compile-type type_ env options)))
+    result)))
 
 ;;; Compile a `(define/async ...)` expression.
 (define (compile-define-async node env (options (js/obj)))
@@ -3559,17 +3662,6 @@
 
 ;;; Compile a `(define-values ...)` expression.
 (define (compile-define-values node env (options (js/obj)))
-  (define exp
-    (syntax->datum node))
-  (define inherited-options
-    (js/obj-append options))
-  (define expression-type
-    (oget inherited-options :expression-type))
-  (define language-env
-    (oget inherited-options :language-environment))
-  (define (lang-filter x)
-    (not (eq? x language-env)))
-  (define make-block #t)
   (define hole-marker '_)
   (define variables
     (~> node
@@ -3580,9 +3672,6 @@
         (send get 2)))
   (define regular-vars '())
   (define rest-var #u)
-  (define var-decls '())
-  (define declarator-id)
-  (define declarator-init)
   (when (eq? (syntax->datum expression)
              ':hole-marker)
     (set! hole-marker
@@ -3606,10 +3695,6 @@
   (define i 0)
   (cond
    ((symbol? variables)
-    (set! declarator-id
-          (compile-symbol
-           (datum->syntax #f variables)
-           env inherited-options))
     (send env set-local! variables expression-thunk 'Any))
    (else
     (cond
@@ -3622,31 +3707,23 @@
             (js/last var-list)))
      (else
       (set! regular-vars variables)))
-    (set! var-decls
-          (map (lambda (x)
-                 (cond
-                  ((eq? x hole-marker)
-                   #n)
-                  (else
-                   (define idx i)
-                   (define var-thunk
-                     (thunk
-                      (lambda ()
-                        (define result '())
-                        (try
-                          (set! result
-                                (aget (force expression-thunk)
-                                      idx))
-                          (catch Error e
-                            ;; Do nothing
-                            ))
-                        result)))
-                   (set! i (+ i 1))
-                   (send env set-local! x var-thunk 'Any)
-                   (compile-symbol
-                    (datum->syntax #f x)
-                    env inherited-options))))
-               regular-vars))
+    (for ((x regular-vars))
+      (unless (eq? x hole-marker)
+        (define idx i)
+        (define var-thunk
+          (thunk
+           (lambda ()
+             (define result '())
+             (try
+               (set! result
+                     (aget (force expression-thunk)
+                           idx))
+               (catch Error e
+                 ;; Do nothing
+                 ))
+             result)))
+        (send env set-local! x var-thunk 'Any))
+      (set! i (+ i 1)))
     (when rest-var
       (define idx i)
       (define rest-var-thunk
@@ -3660,58 +3737,62 @@
                ;; Do nothing
                ))
            result)))
-      (set! i (+ i 1))
-      (send env set-local! rest-var rest-var-thunk 'Any)
-      (push-right! var-decls
-                   (new RestElement
-                        (compile-symbol
-                         (datum->syntax
-                          #f
-                          rest-var)
-                         env
-                         inherited-options))))
-    (set! declarator-id
-          (new ArrayPattern var-decls))))
-  (set! declarator-init
-        (compile-expression
-         expression env inherited-options))
-  (new VariableDeclaration
-       (list
-        (new VariableDeclarator
-             declarator-id
-             declarator-init))
-       "let"))
+      (send env set-local! rest-var rest-var-thunk 'Any))))
+  (assignment-expression->variable-declaration
+   (compile-set-values
+    node env options)))
 
 ;;; Compile a `(set!-values ...)` expression.
 (define (compile-set-values node env (options (js/obj)))
-  (define exp
-    (syntax->datum node))
-  (define inherited-options
-    (js/obj-append options))
-  (define expression-type
-    (oget inherited-options :expression-type))
-  (define make-block #t)
-  (define declaration)
-  (define declarator)
-  (define left)
-  (define right)
-  (set! declaration
-        (compile-define-values
-         (datum->syntax
-          node
-          `(define-values ,@(send node drop 1)))
-         env inherited-options))
-  (set! declarator
-        (first (get-field declarations
-                          declaration)))
-  (set! left (get-field id declarator))
-  (set! right (get-field init declarator))
-  (make-expression-or-statement
-   (new AssignmentExpression
-        "="
-        left
-        right)
-   inherited-options))
+  (define variables
+    (~> node
+        (send _ get 1)))
+  (define variables-exp
+    (syntax-e variables))
+  (define left #u)
+  (define right
+    (~> node
+        (send get 2)))
+  (define hole-marker '_)
+  (when (eq? (syntax->datum right)
+             ':hole-marker)
+    (set! hole-marker
+          (~> node
+              (send _ get 3)
+              (syntax->datum _)))
+    (set! right
+          (~> node
+              (send _ get 4))))
+  (define regular-vars '())
+  (define rest-var #u)
+  (cond
+   ((symbol? variables-exp)
+    (set! left variables))
+   (else
+    (cond
+     ((dotted-list? variables-exp)
+      (define var-list
+        (flatten variables-exp))
+      (set! regular-vars (drop-right var-list 1))
+      (set! rest-var (js/last var-list)))
+     (else
+      (set! regular-vars variables-exp)))
+    (define var-patterns
+      (map (lambda (x)
+             (if (eq? (syntax->datum x) hole-marker)
+                 (datum->syntax x #f)
+                 x))
+           regular-vars))
+    (cond
+     (rest-var
+      (set! left `(list* ,@var-patterns ,rest-var)))
+     (else
+      (set! left `(list ,@var-patterns))))))
+  (compile-js/assignment
+   (datum->syntax
+    node
+    `(js/= ,left ,right))
+   env options))
 
 ;;; Compile a `(let-fields ...)` expression.
 (define (compile-let-fields node env (options (js/obj)))
@@ -3831,53 +3912,35 @@
              ))
          result)))
     (send env set-local! sym prop-thunk 'Any))
-  (define expression-statement
-    (compile-set-fields
-     (datum->syntax
-      node
-      `(set!-fields ,fields ,obj))
-     env
-     (make-statement-options options)))
-  (define assignment-expression
-    (get-field expression expression-statement))
-  (define left
-    (get-field left assignment-expression))
-  (define right
-    (get-field right assignment-expression))
-  (new VariableDeclaration
-       (list
-        (new VariableDeclarator
-             left
-             right))
-       "let"))
+  (assignment-expression->variable-declaration
+   (compile-set-fields
+    (datum->syntax
+     node
+     `(set!-fields ,fields ,obj))
+    env
+    (make-statement-options options))))
 
-;;; Compile a `(set!-fields! ...)` expression.
+;;; Compile a `(set!-fields ...)` expression.
 (define (compile-set-fields node env (options (js/obj)))
-  (define expression-type
-    (oget options :expression-type))
-  (make-expression-or-statement
-   (new AssignmentExpression
-        "="
-        (new ObjectPattern
-             (map (lambda (x)
-                    (define exp
-                      (syntax->datum x))
-                    (cond
-                     ((array? exp)
-                      (new Property
-                           (compile-symbol
-                            (send x get 0) env options)
-                           (compile-symbol
-                            (send x get 1) env options)))
-                     (else
-                      (define key
-                        (compile-symbol
-                         x env options))
-                      (new Property key key))))
-                  (syntax->list (send node get 1))))
-        (compile-expression
-         (send node get 2) env options))
-   options))
+  (define fields
+    (~> (send node get 1)
+        (syntax->list _)))
+  (define expression
+    (send node get 2))
+  (define properties '())
+  (for ((x fields))
+    (cond
+     ((array? (syntax->datum x))
+      (push-right! properties (send x get 0))
+      (push-right! properties (send x get 1)))
+     (else
+      (push-right! properties x)
+      (push-right! properties x))))
+  (compile-js/assignment
+   (datum->syntax
+    node
+    `(js/= (js/obj ,@properties) ,expression))
+   env options))
 
 ;;; Compile a `(list ...)` expression.
 (define (compile-list node env (options (js/obj)))
@@ -4686,7 +4749,7 @@
                  (else
                   (compile-quasiquote-helper
                    x env options))))
-              (syntax->list node))))))
+              (send node get-nodes))))))
 
 ;;; Compile a `(require ...)` expression.
 (define (compile-require node env (options (js/obj)))
@@ -4956,17 +5019,7 @@
                              "statement"))))))
    (else
     (set! result
-          (new AssignmentExpression
-               "="
-               (if (symbol? (syntax->datum sym-node))
-                   (compile-symbol
-                    sym-node env
-                    (make-expression-options
-                     options))
-                   (compile-expression
-                    sym-node env options))
-               (compile-expression
-                val-node env options)))))
+          (compile-js/assignment node env options))))
   (make-expression-or-statement result options))
 
 ;;; Compile a string expression.
@@ -6532,6 +6585,13 @@
 ;;;
 ;;; Creates a JavaScript arrow function.
 (define-macro (js/arrow_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(js/= ...)` expression.
+(define-macro (js/assignment_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -8758,6 +8818,7 @@
          (fset ,set_ (macro-> Any * Any))
          (get-field ,get-field_ (macro-> Any * Any))
          (if ,if_ (macro-> Any * Any))
+         (js/= ,js/assignment_ (macro-> Any * Any))
          (js/? ,js/ternary-operator_ (macro-> Any * Any))
          (js/arrow ,js/arrow_ (macro-> Any * Any))
          (js/async ,js/async_ (macro-> Any * Any))

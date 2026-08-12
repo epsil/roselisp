@@ -244,6 +244,14 @@ function taggedListP(exp, tag, len = undefined) {
     if ((0, rose_1.syntaxp)(exp)) {
         return taggedListP((0, rose_1.syntaxToDatum)(exp), tag, len);
     }
+    else if (Array.isArray(tag)) {
+        for (let x of tag) {
+            if (taggedListP(exp, x, len)) {
+                return true;
+            }
+        }
+        return false;
+    }
     else if (Number.isFinite(len)) {
         return taggedListP(exp, tag) && (exp.length === len);
     }

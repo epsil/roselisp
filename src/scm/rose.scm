@@ -702,28 +702,6 @@
       result)))
   (sexp->rose-helper exp node cache indices))
 
-;;; Insert an S-expression into a rose tree node.
-(define (insert-sexp-into-rose exp node (cache (make-hash)))
-  (define cache-map
-    (if (is-a? cache Rose)
-        (make-simple-rose-map cache)
-        cache))
-  (send node clear-forest)
-  (send node set-value exp)
-  (when (array? exp)
-    (for ((x exp))
-      (cond
-       ((hash-has-key? cache-map x)
-        (send node
-              insert
-              (hash-ref cache-map x)))
-       (else
-        (send node
-              insert
-              (insert-sexp-into-rose
-               x (new Rose) cache-map))))))
-  node)
-
 ;;; Make a map mapping values to rose tree nodes,
 ;;; but only one level down.
 (define (make-simple-rose-map node)
@@ -879,8 +857,10 @@
 ;;;
 ;;; [rkt:syntax-to-list]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-~3elist%29%29
 (define (syntax->list stx)
+  (define exp
+    (syntax->datum stx))
   (cond
-   ((array? (syntax->datum stx))
+   ((list? exp)
     (send stx get-nodes))
    (else
     #f)))
@@ -895,7 +875,24 @@
     (syntax->datum stx))
   (cond
    ((array? v)
-    (syntax->list stx))
+    (define nodes
+      (send stx get-nodes))
+    (cond
+     ;; Dotted list.
+     ((and (>= (js/length nodes) 3)
+           (cons-dot?
+            (syntax->datum
+             (aget nodes (- (js/length nodes) 2)))))
+      (define tail
+        (js/last nodes))
+      (define tail-e
+        (syntax-e tail))
+      (when (array? tail-e)
+        (set! tail tail-e))
+      `(,@(drop-right nodes 2) . ,tail))
+     ;; Regular list.
+     (else
+      nodes)))
    (else
     v)))
 
@@ -912,7 +909,6 @@
   begin-wrap-rose-smart-1
   datum->syntax
   forest?
-  insert-sexp-into-rose
   make-list-rose
   make-rose-nonrecursive
   make-sexp-rose

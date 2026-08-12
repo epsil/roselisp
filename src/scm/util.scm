@@ -227,6 +227,11 @@
   (cond
    ((syntax? exp)
     (tagged-list? (syntax->datum exp) tag len))
+   ((array? tag)
+    (for ((x tag))
+      (when (tagged-list? exp x len)
+        (return #t)))
+    #f)
    ((number? len)
     (and (tagged-list? exp tag)
          (= (array-length exp) len)))

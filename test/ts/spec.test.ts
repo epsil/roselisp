@@ -1782,6 +1782,73 @@ describe('define-syntax', function (): any {
   });
 });
 
+describe('syntax->list', function (): any {
+  it('(syntax->list (syntax ()))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('syntax->list'), [Symbol.for('syntax'), []]],
+      [Symbol.for('quote'), []],
+    ]);
+  });
+  return it('(syntax->list (syntax (1 . 2)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('syntax->list'),
+        [Symbol.for('syntax'), [1, Symbol.for('.'), 2]],
+      ],
+      false,
+    ]);
+  });
+});
+
+describe('syntax-e', function (): any {
+  it('(syntax-e (syntax ()))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('syntax-e'), [Symbol.for('syntax'), []]],
+      [Symbol.for('quote'), []],
+    ]);
+  });
+  it('(dotted-list? (syntax-e (syntax (1 . 2))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('dotted-list?'),
+        [
+          Symbol.for('syntax-e'),
+          [Symbol.for('syntax'), [1, Symbol.for('.'), 2]],
+        ],
+      ],
+      true,
+    ]);
+  });
+  return it('(dotted-list? (cdr (syntax-e (syntax (1 . (2 . 3))))))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('dotted-list?'),
+        [
+          Symbol.for('cdr'),
+          [
+            Symbol.for('syntax-e'),
+            [
+              Symbol.for('syntax'),
+              [1, Symbol.for('.'), [2, Symbol.for('.'), 3]],
+            ],
+          ],
+        ],
+      ],
+      true,
+    ]);
+  });
+});
+
 describe('define-macro', function (): any {
   return it('((lambda () (define-macro (my-macro x) x) (my-macro 1)))', function (): any {
     return testRepl([

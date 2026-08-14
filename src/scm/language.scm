@@ -1877,8 +1877,11 @@
           (send env get-type (first exp)))))))
 
 ;;; Convert a `(define (...) ...)` form to
-;;; a `(lambda (...) ...)` form.
-(define (define->lambda node (options (js/obj)))
+;;; a `(js/function (...) ...)` form.
+(define (define->function node (options (js/obj)))
+  (define function-type
+    (or (oget options :function-type)
+        'js/function))
   (define curried-option
     (oget options :curried))
   (define exp
@@ -1894,14 +1897,30 @@
         (and (undefined? curried-option)
              (array? name))))
   (when should-curry
+    (set! name (first (flatten name-and-params)))
     (set! params (rest (flatten name-and-params)))
     (when (and (dotted-list? name-and-params)
                (= (js/length params) 1))
       (set! params (first params))))
+  (define body
+    (send node drop 2))
+  (define return-type '())
+  (when (and (>= (js/length body) 2)
+             (eq? (syntax->datum (js/first body)) ':))
+    (set! return-type (take body 2))
+    (set! body (drop body 2)))
+  (define plist
+    (if (and name
+             (eq? function-type 'js/function))
+        `(:name ,name)
+        '()))
   (datum->syntax
    #f
-   `(lambda ,params
-      ,@(send node drop 2))))
+   `(,function-type
+     ,params
+     ,@return-type
+     ,@plist
+     ,@body)))
 
 ;;; Convert a function to a macro on the basis
 ;;; of its `(define ...)` form.
@@ -2669,15 +2688,11 @@
    ;; Function definition.
    ((array? (second exp))
     (define sym
-      (first (second exp)))
-    (define should-curry
-      (array? sym))
-    (define name-sym
-      (if should-curry
-          (first (flatten sym))
-          sym))
-    (define lambda-exp
-      (define->lambda node))
+      (js/first (js/second exp)))
+    (when (array? sym)
+      (set! sym (js/first (flatten sym))))
+    (define function-exp
+      (define->function node))
     (define return-type
       (cond
        ((eq? (~> node
@@ -2690,7 +2705,7 @@
        (else
         'Any)))
     (define params
-      (~> lambda-exp
+      (~> function-exp
           (send _ get 1)
           (syntax->datum _)))
     (define declared-type
@@ -2712,89 +2727,52 @@
               ,return-type)))
      (else
       (set! type_ declared-type)))
-    (define compiled-type
-      (compile-type-exp type_ env options))
     (send env
           set-local!
-          name-sym
+          sym
           (thunk
            (lambda ()
              (define result #u)
              (try
                (set! result
-                     (interpret `(begin ,exp ,name-sym)
+                     (interpret `(begin ,exp ,sym)
                                 env))
                (catch Error e
                  ;; Do nothing
                  ))
              result))
           type_)
-    (define result)
-    (cond
-     (should-curry
-      (set! result
-            (compile-define
-             (datum->syntax
-              node
-              `(define ,name-sym
-                 ,lambda-exp))
-             env
-             options)))
-     (else
-      (define return-type
-        (if (and (is-a? compiled-type
-                        TSFunctionType)
-                 (is-a? (get-field returnType
-                                   compiled-type)
-                        TSVoidKeyword))
-            "void"
-            #u))
-      (set! result
-            (compile-js/function
-             lambda-exp
-             env
-             (make-expression-options
-              options)
-             (js/obj :function-name name-sym
-                     :return-type return-type)))
-      (when (is-a? compiled-type TSFunctionType)
-        (for ((i (range 0 (js/length (get-field params result)))))
-          (define param
-            (aget (get-field params result) i))
-          (define type-param
-            (aget (get-field params compiled-type) i))
-          (define type-param-annotation
-            (if type-param
-                (get-field typeAnnotation type-param)
-                (new TSAnyKeyword)))
-          (unless (send param has-type)
-            (set-type param type-param-annotation)))
-        (set-field! returnType
-                    result
-                    (get-field returnType
-                               compiledType)))))
+    (define result
+      (compile-js/function
+       function-exp
+       env
+       (make-expression-options
+        options)
+       (js/obj :type type_)))
     (cond
      (inline-lisp-sources
       (define lisp-code-exp
         (compile-sexp
-         `(declare ,name-sym (fsource ,exp))
+         `(declare ,sym (fsource ,exp))
          env options))
       (new Program (list result lisp-code-exp)))
      (else
       result)))
    ;; Uninitialized variable.
    ((= (js/length exp) 2)
+    (define sym
+      (send node get 1))
     (define result
       (assignment-expression->variable-declaration
        (compile-js/assignment
         (datum->syntax
          node
-         `(js/= ,(send node get 1) #u))
+         `(js/= ,sym #u))
         env options)))
     (define declarator
       (js/first (get-field declarations result)))
     (set-field! init declarator #n)
-    (send env set-local! (js/second exp) #u 'Any)
+    (send env set-local! (syntax->datum sym) #u 'Any)
     result)
    ;; Asynchronous function definition.
    ((and (form? (third exp) js/async_ env)
@@ -3295,18 +3273,28 @@
 (define (compile-lambda node env (options (js/obj)))
   (compile-js/function node env options))
 
-;;; Compile a `(js/function ...)` expression.
-(define (compile-js/function node env (options (js/obj)) (settings (js/obj)))
+;;; Compile a function definition or function expression,
+;;; producing a `FunctionDeclaration`, a `FunctionExpression`
+;;; or an `ArrowFunctionExpression`.
+(define (compile-function node env (options (js/obj)) (settings (js/obj)))
   (define inherited-options
     (js/obj-append options))
   (define exp
     (syntax->datum node))
-  (define function-name
-    (oget settings :function-name))
+  (define name
+    (oget settings :name))
+  (define function-type
+    (or (oget settings :function-type)
+        'js/function))
+  (define type_
+    (oget settings :type))
+  (define return-type
+    (or (oget settings :return-type)
+        (if (tagged-list? type_ '->)
+            (js/last type_)
+            #u)))
   (define generator
     (oget settings :generator))
-  (define return-type
-    (oget settings :return-type))
   (define language
     (oget inherited-options :language))
   (define params '())
@@ -3390,9 +3378,17 @@
                        env1 inherited-options))))
   (define body-statements
     (send node drop 2))
-  (when (and (> (js/length body-statements) 0)
-             (eq? (syntax->datum (first body-statements))
+  (when (and (>= (js/length body-statements) 2)
+             (eq? (syntax->datum (js/first body-statements))
                   ':))
+    (set! return-type
+          (syntax->datum (js/second body-statements)))
+    (set! body-statements (drop body-statements 2)))
+  (when (and (>= (js/length body-statements) 2)
+             (eq? (syntax->datum (js/first body-statements))
+                  ':name))
+    (set! name
+          (syntax->datum (js/second body-statements)))
     (set! body-statements (drop body-statements 2)))
   (define body
     (wrap-in-block-statement
@@ -3404,45 +3400,99 @@
       (js/obj-append
        inherited-options
        (js/obj :expression-type
-               (if (eq? return-type "void")
+               (if (eq? return-type 'Void)
                    "statement"
                    "return"))))))
-  (define result)
+  (define result #u)
+  (define result-f #u)
   (cond
-   ((and function-name
-         (not (eq? function-name "")))
-    (when (string? function-name)
-      (set! function-name
-            (string->symbol function-name)))
-    (set! result
-          (new FunctionDeclaration
-               (compile-symbol
-                (datum->syntax #f function-name)
-                env
-                (make-expression-options options))
-               params
-               body)))
+   ((and name
+         (not (eq? name "")))
+    (when (string? name)
+      (set! name
+            (string->symbol name)))
+    (define name-compiled
+      (compile-symbol
+       (datum->syntax #f name)
+       env
+       (make-expression-options options)))
+    (cond
+     ((eq? function-type 'js/arrow)
+      (set! result-f
+            (new ArrowFunctionExpression
+                 params
+                 body))
+      (set! result
+            (new VariableDeclaration
+                 (list (new VariableDeclarator
+                            name-compiled
+                            result-f))
+                 "let")))
+     (else
+      (set! result-f
+            (new FunctionDeclaration
+                 name-compiled
+                 params
+                 body))
+      (set! result result-f))))
    (else
-    (set! result
-          (new FunctionExpression
-               params
-               body))))
+    (cond
+     ((eq? function-type 'js/arrow)
+      (set! result-f
+            (new ArrowFunctionExpression
+                 params
+                 body))
+      (set! result result-f))
+     (else
+      (set! result-f
+            (new FunctionExpression
+                 params
+                 body))
+      (set! result result-f)))))
   (when generator
-    (set-field! generator result #t))
-  (make-expression-or-statement
-   result inherited-options))
+    (set-field! generator result-f #t))
+  (define type-compiled
+    (if type_
+        (compile-type type_ env options)
+        #u))
+  (when (is-a? type-compiled TSFunctionType)
+    (for ((i (range 0 (js/length (get-field params result-f)))))
+      (define param
+        (aget (get-field params result-f) i))
+      (define type-param
+        (aget (get-field params type-compiled) i))
+      (define type-param-annotation
+        (if type-param
+            (get-field typeAnnotation type-param)
+            (new TSAnyKeyword)))
+      (unless (send param has-type)
+        (set-type param type-param-annotation)))
+    (set-field! returnType
+                result-f
+                (get-field returnType type-compiled)))
+  (when return-type
+    (set-field! returnType
+                result-f
+                (compile-type return-type env options)))
+  (make-expression-or-statement result inherited-options))
+
+;;; Compile a `(js/function ...)` expression.
+(define (compile-js/function node env (options (js/obj)) (settings (js/obj)))
+  (compile-function node
+                    env
+                    options
+                    (js/obj-append
+                     settings
+                     (js/obj :function-type 'js/function))))
 
 ;;; Compile a `(js/arrow ...)` expression.
-(define (compile-js/arrow node env (options (js/obj)))
-  (define f
-    (compile-js/function node env options))
-  (cond
-   ((is-a? f FunctionExpression)
-    (new ArrowFunctionExpression
-         (get-field params f)
-         (get-field body f)))
-   (else
-    f)))
+(define (compile-js/arrow node env (options (js/obj)) (settings (js/obj)))
+  (compile-function node
+                    env
+                    options
+                    (js/obj-append
+                     settings
+                     (js/obj :function-type 'js/arrow))))
 
 ;;; Compile a `(< ...)` expression.
 (define (compile-less-than node env (options (js/obj)))
@@ -5625,7 +5675,7 @@
         (set! accessibility "public"))
       (define return-type
         (if is-constructor
-            "void"
+            'Void
             #u))
       (define is-computed
         (not (symbol? id)))
@@ -5643,7 +5693,10 @@
           #u)
          (is-method
           (compile-js/function
-           (define->lambda x (js/obj :curried  #f))
+           (define->function
+             x
+             (js/obj :function-type 'lambda
+                     :curried #f))
            env1
            (make-expression-options
             inherited-options)
@@ -8819,6 +8872,7 @@
          (get-field ,get-field_ (macro-> Any * Any))
          (if ,if_ (macro-> Any * Any))
          (js/= ,js/assignment_ (macro-> Any * Any))
+         (js/=> ,js/arrow_ (macro-> Any * Any))
          (js/? ,js/ternary-operator_ (macro-> Any * Any))
          (js/arrow ,js/arrow_ (macro-> Any * Any))
          (js/async ,js/async_ (macro-> Any * Any))

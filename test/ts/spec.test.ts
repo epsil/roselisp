@@ -2085,12 +2085,473 @@ describe('lambda', function (): any {
       1,
     ]);
   });
-  return it('((λ (x) x) 1)', function (): any {
+  it('((λ (x) x) 1)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [[Symbol.for('λ'), [Symbol.for('x')], Symbol.for('x')], 1],
       1,
+    ]);
+  });
+  it("(compile '(lambda (x) x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+        ],
+      ],
+      'function (x) {\n' + '  return x;\n' + '};',
+    ]);
+  });
+  it("(compile '(lambda (x) x) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function (x: any): any {\n' + '  return x;\n' + '};',
+    ]);
+  });
+  it("(compile '(lambda args args))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('args')],
+        ],
+      ],
+      'function (...args) {\n' + '  return args;\n' + '};',
+    ]);
+  });
+  it("(compile '(lambda (x . args) args))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('x'), Symbol.for('.'), Symbol.for('args')],
+            Symbol.for('args'),
+          ],
+        ],
+      ],
+      'function (x, ...args) {\n' + '  return args;\n' + '};',
+    ]);
+  });
+  it("(compile '(lambda (x y . args) args))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [
+              Symbol.for('x'),
+              Symbol.for('y'),
+              Symbol.for('.'),
+              Symbol.for('args'),
+            ],
+            Symbol.for('args'),
+          ],
+        ],
+      ],
+      'function (x, y, ...args) {\n' + '  return args;\n' + '};',
+    ]);
+  });
+  it("(compile '(lambda (x) (let ((x 1)) x)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('x')],
+            [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')],
+          ],
+        ],
+      ],
+      'function (x) {\n' +
+        '  {\n' +
+        '    let x = 1;\n' +
+        '    return x;\n' +
+        '  }\n' +
+        '};',
+    ]);
+  });
+  it("(compile '(lambda (x) (let ((y 1)) y)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('x')],
+            [Symbol.for('let'), [[Symbol.for('y'), 1]], Symbol.for('y')],
+          ],
+        ],
+      ],
+      'function (x) {\n' + '  let y = 1;\n' + '  return y;\n' + '};',
+    ]);
+  });
+  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('given'), [Symbol.for('surname'), 'Smith']],
+            [
+              Symbol.for('string-append'),
+              'Hello, ',
+              Symbol.for('given'),
+              ' ',
+              Symbol.for('surname'),
+            ],
+          ],
+        ],
+      ],
+      "function (given, surname = 'Smith') {\n" +
+        "  return 'Hello, ' + given + ' ' + surname;\n" +
+        '};',
+    ]);
+  });
+  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)) :to \'typescript)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('given'), [Symbol.for('surname'), 'Smith']],
+            [
+              Symbol.for('string-append'),
+              'Hello, ',
+              Symbol.for('given'),
+              ' ',
+              Symbol.for('surname'),
+            ],
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      "function (given: any, surname: any = 'Smith'): any {\n" +
+        "  return 'Hello, ' + given + ' ' + surname;\n" +
+        '};',
+    ]);
+  });
+  it("(compile '(lambda (arg (options (js/obj))) arg) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [
+              Symbol.for('arg'),
+              [Symbol.for('options'), [Symbol.for('js/obj')]],
+            ],
+            Symbol.for('arg'),
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function (arg: any, options: any = {}): any {\n' +
+        '  return arg;\n' +
+        '};',
+    ]);
+  });
+  xit("(compile '(lambda (this arg) arg) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('this'), Symbol.for('arg')],
+            Symbol.for('arg'),
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function (arg: any): any {\n' + '  return arg;\n' + '};',
+    ]);
+  });
+  xit("(compile '(lambda (this . args) args) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')],
+            Symbol.for('args'),
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function (...args: any[]): any {\n' + '  return args;\n' + '};',
+    ]);
+  });
+  xit("(compile '(lambda (this arg) arg) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('this'), Symbol.for('arg')],
+            Symbol.for('arg'),
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function (this: any, arg: any): any {\n' + '  return arg;\n' + '};',
+    ]);
+  });
+  return xit("(compile '(lambda (this . args) args) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('xit>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('lambda'),
+            [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')],
+            Symbol.for('args'),
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function (this: any, ...args: any[]): any {\n' +
+        '  return args;\n' +
+        '};',
+    ]);
+  });
+});
+
+describe('js/function', function (): any {
+  it("(compile '(js/function () 0))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/function'), [], 0]],
+      ],
+      'function () {\n' + '  return 0;\n' + '};',
+    ]);
+  });
+  it("(compile '(js/function () : Number 0) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/function'),
+            [],
+            Symbol.for(':'),
+            Symbol.for('Number'),
+            0,
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function (): number {\n' + '  return 0;\n' + '};',
+    ]);
+  });
+  it("(compile '(js/function () :name foo 0))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/function'),
+            [],
+            Symbol.for(':name'),
+            Symbol.for('foo'),
+            0,
+          ],
+        ],
+      ],
+      'function foo() {\n' + '  return 0;\n' + '}',
+    ]);
+  });
+  return it("(compile '(js/function () : Number :name foo 0) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/function'),
+            [],
+            Symbol.for(':'),
+            Symbol.for('Number'),
+            Symbol.for(':name'),
+            Symbol.for('foo'),
+            0,
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'function foo(): number {\n' + '  return 0;\n' + '}',
+    ]);
+  });
+});
+
+describe('js/arrow', function (): any {
+  it("(compile '(js/arrow () 0))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/arrow'), [], 0]],
+      ],
+      '() => {\n' + '  return 0;\n' + '};',
+    ]);
+  });
+  it("(compile '(js/arrow () : Number 0) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/arrow'),
+            [],
+            Symbol.for(':'),
+            Symbol.for('Number'),
+            0,
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      '(): number => {\n' + '  return 0;\n' + '};',
+    ]);
+  });
+  it("(compile '(js/arrow () :name foo 0))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/arrow'),
+            [],
+            Symbol.for(':name'),
+            Symbol.for('foo'),
+            0,
+          ],
+        ],
+      ],
+      'let foo = () => {\n' + '  return 0;\n' + '};',
+    ]);
+  });
+  return it("(compile '(js/arrow () : Number :name foo 0) :to 'typescript)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/arrow'),
+            [],
+            Symbol.for(':'),
+            Symbol.for('Number'),
+            Symbol.for(':name'),
+            Symbol.for('foo'),
+            0,
+          ],
+        ],
+        Symbol.for(':to'),
+        [Symbol.for('quote'), Symbol.for('typescript')],
+      ],
+      'let foo: any = (): number => {\n' + '  return 0;\n' + '};',
+    ]);
+  });
+});
+
+describe('js/=>', function (): any {
+  return it("(compile '(js/=> () 0))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('js/=>'), [], 0]],
+      ],
+      '() => {\n' + '  return 0;\n' + '};',
     ]);
   });
 });

@@ -632,6 +632,161 @@ foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
       x)
     1)
  1
+ > (compile '(lambda (x)
+               x))
+ "function (x) {
+  return x;
+};"
+ > (compile '(lambda (x)
+               x)
+            :to 'typescript)
+ "function (x: any): any {
+  return x;
+};"
+ > (compile '(lambda args
+               args))
+ "function (...args) {
+  return args;
+};"
+ > (compile '(lambda (x . args)
+               args))
+ "function (x, ...args) {
+  return args;
+};"
+ > (compile '(lambda (x y . args)
+               args))
+ "function (x, y, ...args) {
+  return args;
+};"
+ > (compile '(lambda (x)
+               (let ((x 1))
+                 x)))
+ "function (x) {
+  {
+    let x = 1;
+    return x;
+  }
+};"
+ > (compile '(lambda (x)
+               (let ((y 1))
+                 y)))
+ "function (x) {
+  let y = 1;
+  return y;
+};"
+ > (compile '(lambda (given (surname "Smith"))
+               (string-append
+                "Hello, "
+                given
+                " "
+                surname)))
+ "function (given, surname = 'Smith') {
+  return 'Hello, ' + given + ' ' + surname;
+};"
+ > (compile '(lambda (given (surname "Smith"))
+               (string-append
+                "Hello, "
+                given
+                " "
+                surname))
+            :to 'typescript)
+ "function (given: any, surname: any = 'Smith'): any {
+  return 'Hello, ' + given + ' ' + surname;
+};"
+ > (compile '(lambda (arg (options (js/obj)))
+               arg)
+            :to 'typescript)
+ "function (arg: any, options: any = {}): any {
+  return arg;
+};"
+ xit> (compile '(lambda (this arg)
+                  arg)
+               :to 'typescript)
+ "function (arg: any): any {
+  return arg;
+};"
+ xit> (compile '(lambda (this . args)
+                  args)
+               :to 'typescript)
+ "function (...args: any[]): any {
+  return args;
+};"
+ xit> (compile '(lambda (this arg)
+                  arg)
+               :to 'typescript)
+ "function (this: any, arg: any): any {
+  return arg;
+};"
+ xit> (compile '(lambda (this . args)
+                  args)
+               :to 'typescript)
+ "function (this: any, ...args: any[]): any {
+  return args;
+};"
+
+ ;; `js/function`
+ > (describe "js/function")
+ _
+ > (compile '(js/function ()
+               0))
+ "function () {
+  return 0;
+};"
+ > (compile '(js/function () : Number
+                          0)
+            :to 'typescript)
+ "function (): number {
+  return 0;
+};"
+ > (compile '(js/function ()
+               :name foo
+               0))
+ "function foo() {
+  return 0;
+}"
+ > (compile '(js/function () : Number
+                          :name foo
+                          0)
+            :to 'typescript)
+ "function foo(): number {
+  return 0;
+}"
+
+ ;; `js/arrow`
+ > (describe "js/arrow")
+ _
+ > (compile '(js/arrow ()
+               0))
+ "() => {
+  return 0;
+};"
+ > (compile '(js/arrow () : Number
+                       0)
+            :to 'typescript)
+ "(): number => {
+  return 0;
+};"
+ > (compile '(js/arrow ()
+               :name foo
+               0))
+ "let foo = () => {
+  return 0;
+};"
+ > (compile '(js/arrow () : Number
+                       :name foo
+                       0)
+            :to 'typescript)
+ "let foo: any = (): number => {
+  return 0;
+};"
+
+ ;; `js/=>`
+ > (describe "js/=>")
+ _
+ > (compile '(js/=> () 0))
+ "() => {
+  return 0;
+};"
 
  ;; Lexical scope
  > (describe "lexical scope")

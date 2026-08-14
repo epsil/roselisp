@@ -5390,8 +5390,8 @@
    ((form? init-exp set!_ env1)
     (set! sym (js/second init-exp))))
   (define init-compiled
-    (if (or (null? init-exp)
-            (undefined? init-exp))
+    (if (or (not init-exp)
+            (null? init-exp))
         #n
         (compile-statement init env1 options)))
   (when (estree-type? init-compiled
@@ -5402,8 +5402,8 @@
                (map make-expression
                     (get-field body init-compiled)))))
   (define test-compiled
-    (if (or (null? test-exp)
-            (undefined? test-exp))
+    (if (or (not test-exp)
+            (null? test-exp))
         #n
         (compile-expression test env1 options)))
   (define (increment? x)
@@ -5422,8 +5422,8 @@
              update
              `(set! ,sym ,update)))))
   (define update-compiled
-    (if (or (null? update-exp)
-            (undefined? update-exp))
+    (if (or (not update-exp)
+            (null? update-exp))
         #n
         (compile-statement update env1 options)))
   (cond

@@ -304,4 +304,10 @@
  > (case 'foo
      ((foo)
       1))
- 1)
+ 1
+
+ ;; `setq`
+ > (describe "setq")
+ _
+ > (compile '(setq x 1))
+ "x = 1;")

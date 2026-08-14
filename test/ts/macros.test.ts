@@ -667,3 +667,17 @@ describe('case', function (): any {
     ]);
   });
 });
+
+describe('setq', function (): any {
+  return it("(compile '(setq x 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('setq'), Symbol.for('x'), 1]],
+      ],
+      'x = 1;',
+    ]);
+  });
+});

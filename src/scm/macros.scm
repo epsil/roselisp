@@ -82,7 +82,9 @@
 ;;; Expand a `(define-syntax ...)` expression.
 (define-macro (define-syntax_ name-and-args &rest body)
   (define name
-    (car name-and-args))
+    (if (symbol? name-and-args)
+        name-and-args
+        (car name-and-args)))
   `(begin
      (define ,name-and-args
        ,@body)

@@ -890,6 +890,22 @@ x[length];"
  > (describe "define-syntax")
  _
  > (compile '(module m scheme
+               (define-syntax foo
+                 (lambda (x)
+                   (syntax test)))
+               (foo 1)))
+ "import {
+  datumToSyntax
+} from 'roselisp';
+
+let foo = function (x) {
+  return datumToSyntax(false, Symbol.for('test'));
+};
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+test;"
+ > (compile '(module m scheme
                (define-syntax (foo x)
                  (syntax test))
                (foo 1)))

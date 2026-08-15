@@ -170,11 +170,11 @@ quasisyntax_.ftype = 'macro';
  */
 function defineSyntax_(exp, env) {
     const [nameAndArgs, ...body] = exp.slice(1);
-    const name = nameAndArgs[0];
+    const name = (typeof nameAndArgs === 'symbol') ? nameAndArgs : nameAndArgs[0];
     return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('declare'), name, [Symbol.for('ftype'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]];
 }
 exports.defineSyntax_ = defineSyntax_;
-defineSyntax_.fsource = [Symbol.for('define'), [Symbol.for('define-syntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare'), [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('ftype'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]]]];
+defineSyntax_.fsource = [Symbol.for('define'), [Symbol.for('define-syntax_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('if'), [Symbol.for('symbol?'), Symbol.for('name-and-args')], Symbol.for('name-and-args'), [Symbol.for('car'), Symbol.for('name-and-args')]]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('declare'), [Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('ftype'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]]]];
 defineSyntax_.ftype = 'macro';
 /**
  * Create a macro function on the basis of a

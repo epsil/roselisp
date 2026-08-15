@@ -3390,6 +3390,44 @@ describe('defun', function (): any {
 });
 
 describe('define-syntax', function (): any {
+  it("(compile '(module m scheme (define-syntax foo (lambda (x) (syntax test))) (foo 1)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('define-syntax'),
+              Symbol.for('foo'),
+              [
+                Symbol.for('lambda'),
+                [Symbol.for('x')],
+                [Symbol.for('syntax'), Symbol.for('test')],
+              ],
+            ],
+            [Symbol.for('foo'), 1],
+          ],
+        ],
+      ],
+      'import {\n' +
+        '  datumToSyntax\n' +
+        "} from 'roselisp';\n" +
+        '\n' +
+        'let foo = function (x) {\n' +
+        "  return datumToSyntax(false, Symbol.for('test'));\n" +
+        '};\n' +
+        '\n' +
+        "foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];\n" +
+        '\n' +
+        'test;',
+    ]);
+  });
   it("(compile '(module m scheme (define-syntax (foo x) (syntax test)) (foo 1)))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),

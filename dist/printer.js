@@ -1198,8 +1198,8 @@ function printIfStatement(node, options = {}) {
     let testPrintedStr = docValueString(testPrinted);
     // It is customary to wrap assignment expressions
     // in an extra set of parentheses when used as a
-    // condition, as this helps to distinguish them
-    // from comparisons (`((x = y))` vs. `(x === y)`).
+    // condition, so as to distinguish them from
+    // comparisons (`((x = y))` vs. `(x === y)`).
     if ((0, estree_1.estreeTypeP)(test, 'AssignmentExpression')) {
         testPrintedStr = docWrap(testPrinted, options);
     }

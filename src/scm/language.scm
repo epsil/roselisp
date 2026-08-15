@@ -378,6 +378,7 @@
                   defmacro_
                   defun_
                   do_
+                  el/if_
                   for_
                   let-env_
                   multiple-value-bind_
@@ -385,6 +386,7 @@
                   or_
                   rkt/new_
                   set_
+                  setq_
                   syntax_
                   quasisyntax_
                   thread-as_
@@ -856,6 +858,7 @@
          (,js/plus_ ,compile-add (compiler-> Any * Any))
          (,js/raw_ ,compile-js/raw (compiler-> Any * Any))
          (,js/return_ ,compile-return (compiler-> Any * Any))
+         (,js/sequence_ ,compile-js/sequence (compiler-> Any * Any))
          (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
          (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
          (,js/tagged-template_ ,compile-js/tagged-template (compiler-> Any * Any))
@@ -4509,6 +4512,17 @@
     (wrap-in-block-statement
      (compile-begin node env options)))))
 
+;;; Compile a `(js/sequence ...)` expression.
+(define (compile-js/sequence node env (options (js/obj)))
+  (define expressions
+    (send node drop 1))
+  (make-expression-or-statement
+   (new SequenceExpression
+        (map (lambda (x)
+               (compile-expression x env options))
+             expressions))
+   options))
+
 ;;; Make and compile a `(require ...)` or `(define-values ...)` form
 ;;; that defines referenced values from the language environment.
 ;;; `symbols` is a list of symbols bound in the language environment.
@@ -6445,10 +6459,10 @@
 ;;; Expand a `(set! ...)` expression.
 ;;;
 ;;; Similar to [`set!` in Racket][rkt:setx] and
-;;; [`setq` in Common Lisp][cl:setq].
+;;; [`set!` in Guile][guile:setx].
 ;;;
 ;;; [rkt:setx]: https://docs.racket-lang.org/reference/set_.html#%28form._%28%28quote._~23~25kernel%29._set%21%29%29
-;;; [cl:setq]: http://clhs.lisp.se/Body/s_setq.htm#setq
+;;; [guile:setx]: https://doc.guix.gnu.org/guile/latest/en/html_node/Definition.html
 (define-macro (set!_ &whole exp &environment env)
   (compile-sexp
    exp
@@ -6464,6 +6478,13 @@
 
 ;;; Expand a `(js/block ...)` expression.
 (define-macro (js/block_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(js/sequence ...)` expression.
+(define-macro (js/sequence_ &whole exp &environment env)
   (compile-sexp
    exp
    env
@@ -8558,6 +8579,8 @@
          (js/>> ,js/bitwise-shift-right_ (-> Any * Any))
          (js/>>> ,js/unsigned-bitwise-shift-right_ (-> Any * Any))
          (js/?. ,js/optional-chaining_ (-> Any * Any))
+         (js/\(\) ,funcall_ (-> Any * Any))
+         (js/\[\] ,array-ref_ (-> Any * Any))
          (js/\| ,js/bitwise-or_ (-> Any * Any))
          (js/\|\| ,js/or_ (-> Any * Any))
          (js/^ ,js/bitwise-xor_ (-> Any * Any))
@@ -8865,6 +8888,7 @@
          (defun ,defun_ (macro-> Any * Any))
          (destructuring-bind ,multiple-value-bind_ (macro-> Any * Any))
          (do ,do_ (macro-> Any * Any))
+         (el/if ,el/if_ (macro-> Any * Any))
          (field-bound? ,field-bound?_ (macro-> Any * Any))
          (fn ,lambda_ (macro-> Any * Any))
          (for ,for_ (macro-> Any * Any))
@@ -8874,6 +8898,9 @@
          (js/= ,js/assignment_ (macro-> Any * Any))
          (js/=> ,js/arrow_ (macro-> Any * Any))
          (js/? ,js/ternary-operator_ (macro-> Any * Any))
+         (js/\, ,js/sequence_ (macro-> Any * Any))
+         (js/\; ,begin_ (macro-> Any * Any))
+         (js/\{\} ,js/block_ (macro-> Any * Any))
          (js/arrow ,js/arrow_ (macro-> Any * Any))
          (js/async ,js/async_ (macro-> Any * Any))
          (js/await ,js/await_ (macro-> Any * Any))
@@ -8887,6 +8914,7 @@
          (js/op ,js/op_ (macro-> Any * Any))
          (js/op/apply ,js/op/apply_ (macro-> Any * Any))
          (js/operator ,js/op_ (macro-> Any * Any))
+         (js/sequence ,js/sequence_ (macro-> Any * Any))
          (js/switch ,js/switch_ (macro-> Any * Any))
          (js/try ,js/try_ (macro-> Any * Any))
          (js/while ,js/while_ (macro-> Any * Any))
@@ -8920,7 +8948,7 @@
          (set!-js/obj ,set-fields_ (macro-> Any * Any))
          (set!-values ,set-values_ (macro-> Any * Any))
          (set-field! ,set-field_ (macro-> Any * Any))
-         (setq ,set!_ (macro-> Any * Any))
+         (setq ,setq_ (macro-> Any * Any))
          (syntax ,syntax_ (macro-> Any * Any))
          (quasisyntax ,quasisyntax_ (macro-> Any * Any))
          (throw ,throw_ (macro-> Any * Any))
@@ -9068,8 +9096,7 @@
   (rename-out (send_ call-method))
   (rename-out (send_ send))
   (rename-out (set!_ set!))
-  (rename-out (set!_ setq))
-  (rename-out (set!_ setq_))
+  (rename-out (setq_ setq))
   (rename-out (set-field_ set-field!))
   (rename-out (set-field_ set-field))
   (rename-out (set-fields_ set!-fields))
@@ -9167,6 +9194,7 @@
   send_
   set!_
   set-field_
+  setq_
   set-fields_
   set-values_
   sexp

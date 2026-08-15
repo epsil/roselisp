@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.set_ = exports.rktNew_ = exports.quasisyntax_ = exports.or_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.for_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.and_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.setq_ = exports.set_ = exports.rktNew_ = exports.quasisyntax_ = exports.or_ = exports.newApply_ = exports.multipleValueBind_ = exports.letEnv_ = exports.for_ = exports.elIf_ = exports.do_ = exports.defun_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineFexpr_ = exports.defclass_ = exports.declare_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cljTry_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.and_ = void 0;
 const eval_1 = require("./eval");
 const util_1 = require("./util");
 const [lastCdr, cdr, listStar, cons, take] = (() => {
@@ -453,6 +453,21 @@ exports.unless_ = unless_;
 unless_.fsource = [Symbol.for('define'), [Symbol.for('unless_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('condition'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('if'), [Symbol.for('not'), [Symbol.for('unquote'), Symbol.for('condition')]], [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
 unless_.ftype = 'macro';
 /**
+ * Expand an `(el/if ...)` expression.
+ *
+ * Similar to [`if` in Emacs Lisp][el:if].
+ *
+ * [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
+ */
+function elIf_(exp, env) {
+    const [condExp, thenExp, ...elseExps] = exp.slice(1);
+    // Emacs Lisp's `if` accepts more than three arguments.
+    return [Symbol.for('if'), condExp, thenExp, ...((elseExps.length === 0) ? [] : ((elseExps.length === 1) ? [elseExps[0]] : [[Symbol.for('begin'), ...elseExps]]))];
+}
+exports.elIf_ = elIf_;
+elIf_.fsource = [Symbol.for('define'), [Symbol.for('el/if_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('cond-exp'), Symbol.for('then-exp'), Symbol.for('.'), Symbol.for('else-exps')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('if'), [Symbol.for('unquote'), Symbol.for('cond-exp')], [Symbol.for('unquote'), Symbol.for('then-exp')], [Symbol.for('unquote-splicing'), [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('else-exps')], 0], [Symbol.for('quote'), []]], [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('else-exps')], 1], [Symbol.for('list'), [Symbol.for('js/first'), Symbol.for('else-exps')]]], [Symbol.for('else'), [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('else-exps')]]]]]]]]]];
+elIf_.ftype = 'macro';
+/**
  * Expand an `(as~> ...)` expression.
  *
  * Similar to the [`as->` macro][clj:thread-as] in Clojure.
@@ -845,6 +860,34 @@ function set_(exp, env) {
 exports.set_ = set_;
 set_.fsource = [Symbol.for('define'), [Symbol.for('set_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('sym'), Symbol.for('val')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('sym')]], [Symbol.for('unquote'), Symbol.for('val')]]]];
 set_.ftype = 'macro';
+/**
+ * Expand a `(setq ...)` expression.
+ *
+ * Similar to [`setq` in Common Lisp][cl:setq]
+ * and [`setq` in Emacs Lisp][el:setq].
+ *
+ * [cl:setq]: http://clhs.lisp.se/Body/s_setq.htm#setq
+ * [el:setq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-setq
+ */
+function setq_(exp, env) {
+    const bindings = exp.slice(1);
+    const bindings1 = [];
+    const _end = bindings.length;
+    for (let i = 0; i < _end; i = i + 2) {
+        const sym = bindings[i];
+        const val = bindings[i + 1];
+        bindings1.push([Symbol.for('set!'), sym, val]);
+    }
+    if (bindings1.length === 1) {
+        return bindings1[0];
+    }
+    else {
+        return [Symbol.for('begin'), ...bindings1];
+    }
+}
+exports.setq_ = setq_;
+setq_.fsource = [Symbol.for('define'), [Symbol.for('setq_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('bindings'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('bindings1'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('bindings')], 2]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('aget'), Symbol.for('bindings'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('bindings'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('push-right!'), Symbol.for('bindings1'), [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('val')]]]]], [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('bindings1')], 1], [Symbol.for('js/first'), Symbol.for('bindings1')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('bindings1')]]]]];
+setq_.ftype = 'macro';
 /**
  * Expand a `(new/apply ...)` expression.
  */

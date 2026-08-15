@@ -488,6 +488,23 @@ unless_.fsource = [Symbol.for('define'), [Symbol.for('unless_'), Symbol.for('exp
 unless_.ftype = 'macro';
 
 /**
+ * Expand an `(el/if ...)` expression.
+ *
+ * Similar to [`if` in Emacs Lisp][el:if].
+ *
+ * [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
+ */
+function elIf_(exp: any, env: any): any {
+  const [condExp, thenExp, ...elseExps]: any[] = exp.slice(1);
+  // Emacs Lisp's `if` accepts more than three arguments.
+  return [Symbol.for('if'), condExp, thenExp, ...((elseExps.length === 0) ? [] : ((elseExps.length === 1) ? [elseExps[0]] : [[Symbol.for('begin'), ...elseExps]]))];
+}
+
+elIf_.fsource = [Symbol.for('define'), [Symbol.for('el/if_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('cond-exp'), Symbol.for('then-exp'), Symbol.for('.'), Symbol.for('else-exps')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('if'), [Symbol.for('unquote'), Symbol.for('cond-exp')], [Symbol.for('unquote'), Symbol.for('then-exp')], [Symbol.for('unquote-splicing'), [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('else-exps')], 0], [Symbol.for('quote'), []]], [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('else-exps')], 1], [Symbol.for('list'), [Symbol.for('js/first'), Symbol.for('else-exps')]]], [Symbol.for('else'), [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('else-exps')]]]]]]]]]];
+
+elIf_.ftype = 'macro';
+
+/**
  * Expand an `(as~> ...)` expression.
  *
  * Similar to the [`as->` macro][clj:thread-as] in Clojure.
@@ -887,6 +904,35 @@ set_.fsource = [Symbol.for('define'), [Symbol.for('set_'), Symbol.for('exp'), Sy
 set_.ftype = 'macro';
 
 /**
+ * Expand a `(setq ...)` expression.
+ *
+ * Similar to [`setq` in Common Lisp][cl:setq]
+ * and [`setq` in Emacs Lisp][el:setq].
+ *
+ * [cl:setq]: http://clhs.lisp.se/Body/s_setq.htm#setq
+ * [el:setq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-setq
+ */
+function setq_(exp: any, env: any): any {
+  const bindings: any = exp.slice(1);
+  const bindings1: any = [];
+  const _end: any = bindings.length;
+  for (let i: any = 0; i < _end; i = i + 2) {
+    const sym: any = (bindings as any)[i];
+    const val: any = bindings[i + 1];
+    bindings1.push([Symbol.for('set!'), sym, val]);
+  }
+  if (bindings1.length === 1) {
+    return bindings1[0];
+  } else {
+    return [Symbol.for('begin'), ...bindings1];
+  }
+}
+
+setq_.fsource = [Symbol.for('define'), [Symbol.for('setq_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('bindings'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('bindings1'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('bindings')], 2]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('aget'), Symbol.for('bindings'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('bindings'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('push-right!'), Symbol.for('bindings1'), [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('val')]]]]], [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('bindings1')], 1], [Symbol.for('js/first'), Symbol.for('bindings1')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('bindings1')]]]]];
+
+setq_.ftype = 'macro';
+
+/**
  * Expand a `(new/apply ...)` expression.
  */
 function newApply_(exp: any, env: any): any {
@@ -1042,6 +1088,7 @@ export {
   defmacro_,
   defun_,
   do_,
+  elIf_,
   for_,
   letEnv_,
   multipleValueBind_,
@@ -1050,6 +1097,7 @@ export {
   quasisyntax_,
   rktNew_,
   set_,
+  setq_,
   syntax_,
   threadAs_,
   threadFirst_,

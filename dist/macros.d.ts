@@ -265,6 +265,18 @@ declare namespace unless_ {
     var ftype: string;
 }
 /**
+ * Expand an `(el/if ...)` expression.
+ *
+ * Similar to [`if` in Emacs Lisp][el:if].
+ *
+ * [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
+ */
+declare function elIf_(exp: any, env: any): any;
+declare namespace elIf_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
  * Expand an `(as~> ...)` expression.
  *
  * Similar to the [`as->` macro][clj:thread-as] in Clojure.
@@ -397,6 +409,20 @@ declare namespace set_ {
     var ftype: string;
 }
 /**
+ * Expand a `(setq ...)` expression.
+ *
+ * Similar to [`setq` in Common Lisp][cl:setq]
+ * and [`setq` in Emacs Lisp][el:setq].
+ *
+ * [cl:setq]: http://clhs.lisp.se/Body/s_setq.htm#setq
+ * [el:setq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-setq
+ */
+declare function setq_(exp: any, env: any): any;
+declare namespace setq_ {
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
+    var ftype: string;
+}
+/**
  * Expand a `(new/apply ...)` expression.
  */
 declare function newApply_(exp: any, env: any): any;
@@ -428,4 +454,4 @@ declare namespace cljTry_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
-export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, for_, letEnv_, multipleValueBind_, newApply_, or_, quasisyntax_, rktNew_, set_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };
+export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, elIf_, for_, letEnv_, multipleValueBind_, newApply_, or_, quasisyntax_, rktNew_, set_, setq_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };

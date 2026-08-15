@@ -1437,8 +1437,8 @@
     (doc-value-string test-printed))
   ;; It is customary to wrap assignment expressions
   ;; in an extra set of parentheses when used as a
-  ;; condition, as this helps to distinguish them
-  ;; from comparisons (`((x = y))` vs. `(x === y)`).
+  ;; condition, so as to distinguish them from
+  ;; comparisons (`((x = y))` vs. `(x === y)`).
   (when (estree-type? test "AssignmentExpression")
     (set! test-printed-str
           (doc-wrap test-printed options)))

@@ -281,6 +281,23 @@
   `(if (not ,condition)
        (begin ,@body)))
 
+;;; Expand an `(el/if ...)` expression.
+;;;
+;;; Similar to [`if` in Emacs Lisp][el:if].
+;;;
+;;; [el:if]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-if
+(define-macro (el/if_ cond-exp then-exp &rest else-exps)
+  ;; Emacs Lisp's `if` accepts more than three arguments.
+  `(if ,cond-exp
+       ,then-exp
+       ,@(cond
+          ((= (js/length else-exps) 0)
+           '())
+          ((= (js/length else-exps) 1)
+           (list (js/first else-exps)))
+          (else
+           (list `(begin ,@else-exps))))))
+
 ;;; Expand an `(as~> ...)` expression.
 ;;;
 ;;; Similar to the [`as->` macro][clj:thread-as] in Clojure.
@@ -675,6 +692,25 @@
 (define-macro (set_ sym val)
   `(set! ,(js/second sym) ,val))
 
+;;; Expand a `(setq ...)` expression.
+;;;
+;;; Similar to [`setq` in Common Lisp][cl:setq]
+;;; and [`setq` in Emacs Lisp][el:setq].
+;;;
+;;; [cl:setq]: http://clhs.lisp.se/Body/s_setq.htm#setq
+;;; [el:setq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-setq
+(define-macro (setq_ &rest bindings)
+  (define bindings1 '())
+  (for ((i (range 0 (js/length bindings) 2)))
+    (define sym
+      (aget bindings i))
+    (define val
+      (aget bindings (+ i 1)))
+    (push-right! bindings1 `(set! ,sym ,val)))
+  (if (= (js/length bindings1) 1)
+      (js/first bindings1)
+      `(begin ,@bindings1)))
+
 ;;; Expand a `(new/apply ...)` expression.
 (define-macro (new/apply_ &rest args)
   `(apply new ,@args))
@@ -763,6 +799,7 @@
   defmacro_
   defun_
   do_
+  el/if_
   for_
   let-env_
   multiple-value-bind_
@@ -771,6 +808,7 @@
   quasisyntax_
   rkt/new_
   set_
+  setq_
   syntax_
   thread-as_
   thread-first_

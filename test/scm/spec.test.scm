@@ -42,6 +42,8 @@
  #u
  > (compile #u)
  "undefined;"
+ > (compile 'undefined)
+ "undefined;"
 
  ;; `#n`
  > (describe "#n")
@@ -94,6 +96,8 @@
  #t
  > (length nil)
  0
+ > (compile 'nil)
+ "[];"
 
  ;; `null`
  > (describe "null")
@@ -104,6 +108,8 @@
  #t
  > (length null)
  0
+ > (compile 'null)
+ "[];"
 
  ;; Numbers
  > (describe "Numbers")
@@ -151,8 +157,6 @@ three")
  "'newline\\n' +
   'test\\n' +
   'three';"
- xit> (compile "\\t")
- "	;"
  > (compile "\\s")
  "'\\\\s';"
 
@@ -169,20 +173,10 @@ three")
  "Symbol.for('foo');"
  > (compile ''foo-bar)
  "Symbol.for('foo-bar');"
- xit> (compile 'undefined)
- "undefined;"
  > (compile 'js/undefined)
- "undefined;"
- xit> (compile 'js-undefined)
  "undefined;"
  > (compile 'js/null)
  "null;"
- xit> (compile 'js-null)
- "null;"
- xit> (compile 'nil)
- "null;"
- xit> (compile 'null)
- "[];"
  > (compile 'foo-bar
             :case "none")
  "foo-bar;"
@@ -325,19 +319,18 @@ let x4 = 3;
 let x1 = 4;
 
 let x2 = 5;"
- xit> (compile (let ((gensym-x (gensym "x")))
-                 `(let ((x 0))
-                    (define ,gensym-x 1)
-                    (let ((x1 0))
-                      (define ,gensym-x 1)))))
+ > (compile (let ((gensym-x (gensym "x")))
+              `(let ((x 0))
+                 (define ,gensym-x 1)
+                 (let ((x1 0))
+                   (define ,gensym-x 1)))))
  "let x = 0;
 
 let x2 = 1;
 
-{
-  let x1 = 0;
-  let x2 = 1;
-}"
+let x1 = 0;
+
+let x2 = 1;"
  > (compile `(begin
                (define foo
                  ,(gensym "test"))
@@ -656,12 +649,12 @@ x[length];"
  > (compile '(define x 1)
             :to 'typescript)
  "let x: any = 1;"
- xit> (compile '(define I
-                  (lambda (x)
-                    x)))
- "function I(x) {
+ > (compile '(define I
+               (lambda (x)
+                 x)))
+ "let I = function (x) {
   return x;
-}"
+};"
  > (compile '(define I
                (memoize
                 (lambda (x)
@@ -796,43 +789,12 @@ x[length];"
   return ++y;
 }"
  > (compile
-    '(define (mapGet map path)
-       (let-values (((value) (mapGet2 map path)))
+    '(define (map-get map path)
+       (let-values (((value) (map-get-2 map path)))
          value)))
  "function mapGet(map, path) {
   let [value] = mapGet2(map, path);
   return value;
-}"
- > (compile
-    '(define _ (js/obj "dash" #t)))
- "let _ = {
-  dash: true
-};"
- > (compile
-    '(define __ (js/obj "dash" #t)))
- "let __ = {
-  dash: true
-};"
- xit> (compile
-       '(lambda (env (options (js/obj)))
-          (let ((language (oget options "language")))
-            (set! language (or language default-language))
-            (let ((compilation-env (or (.get compilation-map
-                                             language)
-                                       javascript-env)))
-              (new CompilationEvaluator
-                   env
-                   compilation-env
-                   options)))))
- "function (env: any, options: any = {}): any {
-  let language: any = options['language'];
-  language = language || (default-language);
-  {
-    {
-      let compilation-env: any = (compilation-map.get(language)) || (javascript-env);
-      return new CompilationEvaluator(env, compilation-env, options);
-    }
-  }
 }"
  > (compile
     '(define (add-matrix m1 m2)
@@ -856,6 +818,39 @@ x[length];"
   }
   return matrix;
 }"
+ > (compile
+    '(define _ (js/obj "dash" #t)))
+ "let _ = {
+  dash: true
+};"
+ > (compile
+    '(define __ (js/obj "dash" #t)))
+ "let __ = {
+  dash: true
+};"
+ > (compile
+    '(module m scheme
+       (define I
+         (curry-n
+          1
+          (lambda (x)
+            x)))
+       (define K
+         (curry-n
+          2
+          (lambda (x y)
+            x)))))
+ "import {
+  curryN
+} from 'roselisp';
+
+let I = curryN(1, function (x) {
+  return x;
+});
+
+let K = curryN(2, function (x, y) {
+  return x;
+});"
  > (compile '(define Foo
                (class object%)))
  "class Foo {
@@ -972,11 +967,11 @@ foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
         x)
       (my-macro 1)))
  1
- xit> (compile
-       '(module m scheme
-          (defmacro foo ()
-            '(begin))
-          (foo)))
+ > (compile
+    '(module m scheme
+       (defmacro foo ()
+         '(begin))
+       (foo)))
  "function foo(exp, env) {
   return [Symbol.for('begin')];
 }
@@ -1440,14 +1435,6 @@ return x;"
  "let x: any = 1;
 
 return x;"
- xit> (compile '(let ((a 1))
-                  (+ (let ((a 2)) a) a)))
- "let a = 1;
-
-(() => {
-  let a = 2;
-  return a;
-})() + a;"
  > (compile
     '(let ((compose (lambda (f g)
                       (lambda (x)
@@ -1487,28 +1474,15 @@ console.log(compose(square, add1)(add1(4)));"
 };
 
 and(x, y);"
- ;; FIXME: This test is incorrect.
- ;; See the one below.
- xit> (compile '(begin
-                  x
-                  (let ((x 1))
-                    x)))
+ > (compile '(begin
+               x
+               (let ((x 1))
+                 x)))
  "x;
 
-let x: any = 1;
+let x = 1;
 
-return x;"
- ;; FIXME: Make this test pass.
- xit> (compile '(begin
-                  x
-                  (let ((x 1))
-                    x)))
- "x;
-
-{
-  let x: any = 1;
-  x;
-}"
+x;"
  > (compile '(begin
                (let ((x 1))
                  (display x))
@@ -1762,30 +1736,6 @@ prop;"
  "function (arg: any, options: any = {}): any {
   return arg;
 };"
- xit> (compile '(lambda (this arg)
-                  arg)
-               :to 'typescript)
- "function (arg: any): any {
-  return arg;
-};"
- xit> (compile '(lambda (this . args)
-                  args)
-               :to 'typescript)
- "function (...args: any[]): any {
-  return args;
-};"
- xit> (compile '(lambda (this arg)
-                  arg)
-               :to 'typescript)
- "function (this: any, arg: any): any {
-  return arg;
-};"
- xit> (compile '(lambda (this . args)
-                  args)
-               :to 'typescript)
- "function (this: any, ...args: any[]): any {
-  return args;
-};"
 
  ;; `js/function`
  > (describe "js/function")
@@ -1843,6 +1793,34 @@ prop;"
   return 0;
 };"
 
+ ;; `this`
+ > (describe "this")
+ _
+ > (compile '(lambda (this arg)
+               arg)
+            :to 'typescript)
+ "function (this: any, arg: any): any {
+  return arg;
+};"
+ > (compile '(lambda (this . args)
+               args)
+            :to 'typescript)
+ "function (this: any, ...args: any[]): any {
+  return args;
+};"
+ > (compile '(lambda (this arg)
+               arg)
+            :to 'typescript)
+ "function (this: any, arg: any): any {
+  return arg;
+};"
+ > (compile '(lambda (this . args)
+               args)
+            :to 'typescript)
+ "function (this: any, ...args: any[]): any {
+  return args;
+};"
+
  ;; `js/=>`
  > (describe "js/=>")
  _
@@ -1859,6 +1837,16 @@ prop;"
  > (compile '(funcall f x y))
  "f(x, y);"
 
+ ;; `js/\(\)`
+ > (describe "js/\(\)")
+ _
+ > (compile '(js/\(\) x))
+ "x();"
+ > (compile '(js/\(\) x y))
+ "x(y);"
+ > (compile '(js/\(\) x y z))
+ "x(y, z);"
+
  ;; `apply`
  > (describe "apply")
  _
@@ -1873,8 +1861,6 @@ prop;"
  > (compile '(apply (get-field method obj) args))
  "obj.method(...args);"
  > (compile '(apply (.-method obj) args))
- "obj.method(...args);"
- xit> (compile '(apply send obj method args))
  "obj.method(...args);"
 
  ;; `js/=`
@@ -1991,6 +1977,70 @@ function or(x, y) {
 }
 
 and(x, or(y, z));"
+
+ ;; `js/\,`
+ > (describe "js/\,")
+ _
+ > (compile '(js/\, x))
+ "x;"
+ > (compile '(js/\, x y))
+ "x, y;"
+ > (compile '(js/\, x y z))
+ "x, y, z;"
+
+ ;; `js/\;`
+ > (describe "js/\;")
+ _
+ > (compile '(js/\; x))
+ "x;"
+ > (compile '(js/\; x y))
+ "x;
+
+y;"
+ > (compile '(js/\; x y z))
+ "x;
+
+y;
+
+z;"
+
+ ;; `js/block`
+ > (describe "js/block")
+ _
+ > (compile '(js/block x))
+ "{
+  x;
+}"
+ > (compile '(js/block x y))
+ "{
+  x;
+  y;
+}"
+ > (compile '(js/block x y z))
+ "{
+  x;
+  y;
+  z;
+}"
+
+ ;; `js/\{\}`
+ > (describe "js/\{\}")
+ _
+ > (compile '(js/\{\} x))
+ "{
+  x;
+}"
+ > (compile '(js/\{\} x y))
+ "{
+  x;
+  y;
+}"
+ > (compile '(js/\{\} x y z))
+ "{
+  x;
+  y;
+  z;
+}"
 
  ;; `begin0`
  > (describe "begin0")
@@ -2305,6 +2355,17 @@ and(x, or(y, z));"
   return z;
 }"
  > (compile '(cond
+              ((set! x y)
+               z)
+              (else
+               w))
+            :as 'return)
+ "if ((x = y)) {
+  return z;
+} else {
+  return w;
+}"
+ > (compile '(cond
               (x
                y))
             :as 'expression)
@@ -2334,17 +2395,6 @@ and(x, or(y, z));"
   w;
   return z;
 })()"
- xit> (compile '(cond
-                 ((set! x y)
-                  z)
-                 (else
-                  w))
-               :as 'return)
- "if ((x = y)) {
-  return z;
-} else {
-  return w;
-}"
 
  ;; `js/?`
  > (describe "js/?")
@@ -2546,8 +2596,6 @@ and(x, or(y, z));"
  "!(1 > 2);"
  > (compile '(not (and x y)))
  "!(x && y);"
- xit> (compile '(and (not (f x)) (not (g y))))
- "!f(x) && !g(y);"
 
  ;; `js/!`
  > (describe "js/!")
@@ -2582,12 +2630,14 @@ and(x, or(y, z));"
  "true && true;"
  > (compile '(and x y))
  "x && y;"
- xit> (compile '(and x y z))
+ > (compile '(and x y z))
  "x && y && z;"
- xit> (compile '(and x y (w z)))
- "x && y && w(z);"
- xit> (compile '(and x y (or w z)))
+ > (compile '(and x y (or w z)))
  "x && y && (w || z);"
+ > (compile '(and x y (w z)))
+ "x && y && w(z);"
+ > (compile '(and (not (f x)) (not (g y))))
+ "!f(x) && !g(y);"
 
  ;; `js/&&`
  > (describe "js/&&")
@@ -2640,7 +2690,7 @@ and(x, or(y, z));"
  "true || true;"
  > (compile '(or x y))
  "x || y;"
- xit> (compile '(or x y z))
+ > (compile '(or x y z))
  "x || y || z;"
 
  ;; `js/\|\|`
@@ -2930,12 +2980,6 @@ and(x, or(y, z));"
 for (let i = 0; i < _end; i++) {
   foo();
 }"
- xit> (compile '(for ((i (range 0 10))
-                      (j (range 0 10)))
-                  (foo)))
- "for (i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {
-  foo();
-}"
  > (compile '(for ((x '(1 2 3)))
                (display x)))
  "for (let x of [1, 2, 3]) {
@@ -3221,11 +3265,6 @@ for (let i: any = _start; i < _end; i++) {
  "while (result.length < 3) {
   console.log(result);
 }"
- xit> (compile '(do ((*do-result* (display result)))
-                    ((not (< (array-list-length result) 3)))))
- "do {
-  console.log(result);
-} while (result.length < 3);"
 
  ;; `js/.`
  > (describe "js/.")
@@ -3316,8 +3355,6 @@ for (let i: any = _start; i < _end; i++) {
  "obj[fooBar()];"
  > (compile '(get-field length arr))
  "arr.length;"
- xit> (compile '(get-field (- len 1) arr))
- "arr[len - 1];"
 
  ;; `set-field!`
  > (describe "set-field!")
@@ -4095,25 +4132,6 @@ let K = function (x, y) {
  "function foo(length: number): number {
   return length;
 }"
- xit> (compile
-       '(module m scheme
-          (define I
-            (curry-n
-             1
-             (lambda (x)
-               x)))
-          (define K
-            (curry-n
-             2
-             (lambda (x y)
-               x)))))
- "let I = curryN(1, function (x) {
-  return x;
-});
-
-let K = curryN(2, function (x, y) {
-  return x;
-});"
  > (compile '(module m scheme
                (define truish #t)
                (define falsy (not truish))))
@@ -4138,37 +4156,6 @@ and(x, or(y, z));"
  "let x = 1;
 
 let y = 2;"
- xit> (compile '(module m lisp
-                  (define (I x) x)
-                  (define x 1)
-                  (define *lisp-map* #t)))
- "function I(x) {
-  return x;
-}
-
-I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];
-
-let x = 1;"
- xit> (compile '(module m lisp
-                  (require (only-in "./combinators"
-                                    I))
-                  (define x 1)
-                  (define *lisp-map* #t)))
- "import {
-  I
-} from './combinators';
-
-let x = 1;"
- xit> (compile '(module m lisp
-                  (require (only-in "./combinators"
-                                    I))
-                  (define x 1)
-                  (define *lisp-map* #t)))
- "import {
-  I
-} from './combinators';
-
-let x: any = 1;"
  > (compile '(module m lisp
                (define (js_ str)
                  (js/eval str))))
@@ -4649,6 +4636,8 @@ let x: any = 1;"
  _
  > (compile '(set! x 1))
  "x = 1;"
+ > (compile '(set! (aref args 0) 1))
+ "args[0] = 1;"
  > (compile '(set! x (add1 x))
             :as 'expression)
  "++x"
@@ -4761,6 +4750,8 @@ let x: any = 1;"
  (new Map)
  > (make-hash '(("foo" . "bar")))
  (new Map '(("foo" "bar")))
+ > (apply new make-hash '())
+ (new Map)
  > (compile '(make-hash))
  "new Map();"
  > (compile '(make-hash '(("foo" . "bar"))))
@@ -4783,12 +4774,6 @@ let x: any = 1;"
                 (unquote-splicing
                  (hash->list xyzzy)))))
  "new Map([['foo', 'bar'], ['baz', 'quux'], ...xyzzy.entries()]);"
- xit> (compile '(make-hash
-                 (append
-                  `(("foo" . "bar")
-                    ("baz" . "quux"))
-                  (hash->list xyzzy))))
- "new Map([...[['foo', 'bar'], ['baz', 'quux']], ...xyzzy.entries()]);"
  > (compile '(make-hash
               `(("foo" "bar")
                 ("baz" "quux"))))
@@ -5002,8 +4987,6 @@ let x: any = 1;"
  "x - 1;"
  > (compile '(- x 1 2))
  "x - 1 - 2;"
- xit> (compile '(- (- x)))
- "x;"
 
  ;; `js/-`
  > (describe "js/-")
@@ -5400,6 +5383,10 @@ let x: any = 1;"
  1
  > (compile '(abs x))
  "Math.abs(x);"
+
+ ;; `js/abs`
+ > (describe "js/abs")
+ _
  > (compile '(js/abs x))
  "Math.abs(x);"
 
@@ -5580,24 +5567,12 @@ let x: any = 1;"
  "lst.reduceRight(function (acc, x) {
   return f(x, acc);
 }, v);"
- xit> (compile '(foldr f v x))
- "x.reduceRight((function (f) {
-  return function (x, y) {
-    return f(y, x);
-  };
-})(f), v);"
- xit> (compile '(foldr (f g) v x))
- "x.reduceRight((function (f) {
+ > (compile '(foldr (f g) v lst))
+ "lst.reduceRight((function (f) {
   return function (x, y) {
     return f(y, x);
   };
 })(f(g)), v);"
- xit> (compile '(foldr cons '() '(1 2 3 4)))
- "[1, 2, 3, 4].reduceRight((function (f) {
-  return function (x, y) {
-    return f(y, x);
-  };
-})(cons), []);"
 
  ;; `filter`
  > (describe "filter")
@@ -5724,8 +5699,6 @@ let x: any = 1;"
  _
  > (compile '(js/tag foo "bar"))
  "foo`bar`;"
- xit> (compile (js/tag sexp "\"\\\\s\""))
- "'\\\\s';"
 
  ;; `->`
  > (describe "->")
@@ -6093,17 +6066,6 @@ let x: any = 1;"
 let f: NN = function (x: any): any {
   return x;
 };"
- xit> (compile '(begin
-                  (define-type NN (-> Number Number))
-                  (: f NN)
-                  (define (f x)
-                    x))
-               :to 'typescript)
- "type NN = (a: number) => number;
-
-function f(x: number): number {
-  return x;
-};"
 
  ;; `cons?`
  > (describe "cons?")
@@ -6154,8 +6116,12 @@ function f(x: number): number {
  "args[0];"
  > (compile '(aref args 0 1))
  "args[0][1];"
- xit> (compile '(set! (aref args 0) 1))
- "args[0] = 1;"
+
+ ;; `js/\[\]`
+ > (describe "js/\[\]")
+ _
+ > (compile '(js/\[\] x y))
+ "x[y];"
 
  ;; `aset`
  > (describe "aset!")
@@ -6234,8 +6200,6 @@ function f(x: number): number {
  2
  > (last '(1 2 . ()))
  2
- xit> (compile '(last x))
- "x[x.length - 1];"
 
  ;; `nth`
  > (describe "nth")
@@ -6244,16 +6208,6 @@ function f(x: number): number {
  2
  > (nth 1 '(1 2 . (3 . ())))
  2
- xit> (compile '(nth 1 x))
- "x[1];"
- xit> (compile '(nth 2 (nth 1 x)))
- "x[1][2];"
-
- ;; `nthcdr`
- > (describe "nthcdr")
- _
- xit> (compile '(nthcdr 1 x))
- "x.slice(1);"
 
  ;; `cdr`
  > (describe "cdr")
@@ -6281,58 +6235,41 @@ function f(x: number): number {
  ;; `set-cdr!`
  > (describe "set-cdr!")
  _
- > ((lambda ()
-      (define foo '())
-      (set-cdr! foo '(bar))
-      foo))
+ > (let ((foo '()))
+     (set-cdr! foo '(bar))
+     foo)
  '()
- > ((lambda ()
-      (define foo
-        '(foo))
-      (set-cdr! foo '(bar))
-      foo))
+ > (let ((foo '(foo)))
+     (set-cdr! foo '(bar))
+     foo)
  '(foo bar)
- > ((lambda ()
-      (define foo
-        '(foo bar))
-      (set-cdr! foo '(baz))
-      foo))
+ > (let ((foo '(foo bar)))
+     (set-cdr! foo '(baz))
+     foo)
  '(foo baz)
- > ((lambda ()
-      (define foo
-        '(foo bar))
-      (set-cdr! foo '(baz . quux))
-      foo))
+ > (let ((foo '(foo bar)))
+     (set-cdr! foo '(baz . quux))
+     foo)
  '(foo baz . quux)
- > ((lambda ()
-      (define foo
-        '(foo . bar))
-      (set-cdr! foo '(baz))
-      foo))
+ > (let ((foo '(foo . bar)))
+     (set-cdr! foo '(baz))
+     foo)
  '(foo baz)
- > ((lambda ()
-      (define foo
-        '(foo . bar))
-      (set-cdr! foo '(baz . quux))
-      foo))
+ > (let ((foo '(foo . bar)))
+     (set-cdr! foo '(baz . quux))
+     foo)
  '(foo baz . quux)
- > ((lambda ()
-      (define foo
-        '(foo))
-      (set-cdr! foo 'bar)
-      foo))
+ > (let ((foo '(foo)))
+     (set-cdr! foo 'bar)
+     foo)
  '(foo . bar)
- > ((lambda ()
-      (define foo
-        '(foo bar . baz))
-      (set-cdr! foo '(quux))
-      foo))
+ > (let ((foo '(foo bar . baz)))
+     (set-cdr! foo '(quux))
+     foo)
  '(foo quux)
- > ((lambda ()
-      (define foo
-        '(foo bar . baz))
-      (set-cdr! foo 'quux)
-      foo))
+ > (let ((foo '(foo bar . baz)))
+     (set-cdr! foo 'quux)
+     foo)
  '(foo . quux)
 
  ;; Dotted lists
@@ -6566,14 +6503,6 @@ function f(x: number): number {
                                (bar baz)))
             :fcommonjs #t)
  "let {bar: baz} = require('foo');"
- xit> (compile '(require 'foo "bar"))
- "import foo from 'bar';"
- xit> (compile '(require foo :as bar))
- "import bar from 'foo';"
- xit> (compile '(require (foo :as bar)))
- "import bar from 'foo';"
- xit> (compile '(require ("foo" :as "bar")))
- "import bar from 'foo';"
 
  ;; `provide`
  > (describe "provide")

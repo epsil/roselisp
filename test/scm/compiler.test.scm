@@ -39,31 +39,6 @@
 })();
 
 let lst = [symbolp, booleanp];"
- xit> (compile
-       '(define-values (_ regexp)
-          (rl/sandbox
-           ((js/arrow ()
-              (define __
-                (js/obj "@@functional/placeholder" #t))
-              (define (js/regexp_ input (flags #u))
-                (if (eq? (type-of input) "string")
-                    (new RegExp input flags)
-                    input))
-              (values __ js/regexp_)))))
-       :finline-functions #t)
- "let [, regexp] = (() => {
-  let __ = {
-    '@@functional/placeholder': true
-  };
-  function jsRegexp_(input, flags = undefined) {
-    if (typeof input === 'string') {
-      return new RegExp(input, flags);
-    } else {
-      return input;
-    }
-  }
-  return [__, jsRegexp_];
-})();"
  > (compile '(module m scheme
                (define one-plus-one
                  (apply + '(1 1))))
@@ -163,44 +138,6 @@ let oneDividedByOne = _div(1, 1);"
 })();
 
 let fooBar = stringAppend('foo', 'bar');"
- xit> (compile '(module m lisp
-                  (define (my-foldl f v l)
-                    (foldl f v l))
-                  (define bar
-                    (my-foldl + 0 '(1 2 3 4))))
-               :finline-functions #t)
- "let [add] = (function () {
-  function add(...args) {
-    return args.reduce(function (y, x) {
-      return y + x;
-    }, 0);
-  }
-  return [add];
-})();
-
-function myFoldl(f, v, l) {
-  return l.reduce(function (acc, x) {
-    return f(x, acc);
-  }, v);
-}
-
-let bar = myFoldl(add, 0, [1, 2, 3, 4]);"
- xit> (compile '(module m lisp
-                  (define (my-foldl f v l)
-                    (foldl f v l)))
-               :finline-functions #t)
- "let [foldl] = (function () {
-  function foldl(f, v, lst) {
-    return lst.reduce(function (acc, x) {
-      return f(x, acc);
-    }, v);
-  }
-  return [foldl];
-})();
-
-function myFoldl(f, v, l) {
-  return foldl(f, v, l);
-}"
  > (compile '(module m lisp
                (define (my-map f x)
                  (map f x))
@@ -221,48 +158,6 @@ function myMap(f, x) {
 }
 
 let bar = myMap(first, [[1], [2], [3]]);"
- xit> (compile '(module m lisp
-                  (define (foo f x y)
-                    (f x y))
-                  (define (my-push-4 lst x)
-                    (foo push! lst x)))
-               :finline-functions #t)
- "let [pushX] = (function () {
-  function pushX(lst, x) {
-    lst.unshift(x);
-    return lst;
-  }
-  return [pushX];
-})();
-
-function foo(f, x, y) {
-  return f(x, y);
-}
-
-function myPush4(lst, x) {
-  return foo(pushX, lst, x);
-}"
- xit> (compile '(module m lisp
-                  (define (get-push-function)
-                    push!)
-                  (define (my-push-4 lst x)
-                    ((get-push-function) lst x)))
-               :finline-functions #t)
- "let [pushX] = (function () {
-  function pushX(lst, x) {
-    lst.unshift(x);
-    return lst;
-  }
-  return [pushX];
-})();
-
-function getPushFunction() {
-  return pushX;
-}
-
-function myPush4(lst, x) {
-  return getPushFunction()(lst, x);
-}"
  > (compile '(module m lisp
                (define (my-cdr x)
                  (cdr x)))
@@ -1406,10 +1301,10 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
  ;; `split-comments`
  > (describe "split-comments")
  _
- xit> (split-comments ";;; Foo")
- '(";;; Foo")
  > (split-comments ";;; Foo\n")
  '(";;; Foo\n")
+ xit> (split-comments ";;; Foo")
+ '(";;; Foo")
  xit> (split-comments ";; Foo\n;;; Bar")
  '(";; Foo\n" ";;; Bar")
  xit> (split-comments ";; Foo\n;;; Bar\n")

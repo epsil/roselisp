@@ -54,38 +54,6 @@
  > (falsep undefined)
  #t
 
- ;; Variables
- > (describe "Variables")
- _
- xit> '(begin
-         (setq a 1 b 2 c 3)
-         (list a b c))
- '(1 2 3)
-
- ;; Function calls
- > (describe "Function calls")
- _
- xit> (begin
-        (define ((((my-add) x) y) z)
-          (+ x y z))
-        ((my-add _ 2 3) 1))
- 6
- xit> (begin
-        (define ((((my-add) x) y) z)
-          (+ x y z))
-        ((my-add _ _ _) 1 2 3))
- 6
- xit> (begin
-        (define ((((my-add) x) y) z)
-          (+ x y z))
-        (((my-add _ _ 3) 1) 2))
- 6
- xit> (begin
-        (define ((((my-add) x) y) z)
-          (+ x y z))
-        ((my-add _ _ 3) 1 2))
- 6
-
  ;; `define`
  > (describe "define")
  _
@@ -94,64 +62,6 @@
        (+ x y))
      (my-add 2 3))
  5
- xit> (begin
-        (define ((my-add x) y)
-          (+ x y))
-        ((my-add 2) 3))
- 5
- xit> (begin
-        (define (((my-add) x) y)
-          (+ x y))
-        (((my-add) 2) 3))
- 5
- xit> (begin
-        (define ((my-add x y) z)
-          (+ x y z))
-        (my-add 1 2 3))
- 6
-
- ;; `define-macro`
- > (describe "define-macro")
- _
- xit> ((lambda ()
-         (define-macro (foo x)
-           x)
-         (foo '(foo 1))))
- '(foo 1)
- xit> ((lambda ()
-         (define-macro (foo x)
-           `(+ ,x ,x))
-         (foo 1)))
- 2
- xit> ((lambda ()
-         (define-macro my-macro (x)
-           `(begin ,x))
-         (my-macro 1)))
- 1
-
- ;; `defmacro`
- > (describe "defmacro")
- _
- xit> ((lambda ()
-         (defmacro foo (x)
-           x)
-         (foo '(foo 1))))
- '(foo 1)
- xit> ((lambda ()
-         (defmacro my-macro (&environment env)
-           (send env has '+))
-         (my-macro)))
- #t
- xit> ((lambda ()
-         (defmacro my-macro (&environment env-arg)
-           (send env-arg has '+))
-         (my-macro)))
- #t
- xit> ((lambda ()
-         (defmacro (my-macro x)
-           `(begin ,x))
-         (my-macro 1)))
- 1
 
  ;; `lambda`
  > (describe "lambda")
@@ -162,27 +72,6 @@
     1)
  2
 
- ;; `nlambda`
- > (describe "nlambda")
- _
- xit> (begin
-        (setq a 1 b 2 c 3)
-        (define f
-          (nlambda (x y z)
-                   (list x y z)))
-        (f a b c))
- '(a b c)
- xit> (begin
-        (setq a 1 b 2 c 3)
-        ((nlambda (x y z) (list x y z)) a b c))
- '(a b c)
-
- ;; `if`
- > (describe "if")
- _
- xit> (if "" 1 2)
- 1
-
  ;; `eq?`
  > (describe "eq?")
  _
@@ -191,27 +80,10 @@
        x)
      (my-unit 'foo))
  'foo
- xit> (begin
-        (define ((my-curried-unit) x) x)
-        (my-curried-unit '_))
- '_
-
- ;; `for`
- > (describe "for")
- _
- xit> (let ((result '()))
-        (for ((x '(1 2 3))
-              (y '(4 5 6)))
-          (set! result (cons x result))
-          (set! result (cons y result)))
-        result)
- '(6 3 5 2 4 1)
 
  ;; `send`
  > (describe "send")
  _
- xit> (send obj 'add 1 1)
- 2
  > (send (make-hash
           '(("foo" . "foo")))
          has
@@ -267,17 +139,6 @@
          (set! quux (new Foo "xyzzy"))
          (.bar quux)))
  "xyzzy"
- xit> (it "(defclass Foo ...) with no arguments"
-          (let (quux)
-            (defclass Foo ()
-              (define x "wobble")
-              (define (constructor x)
-                (set! (.-x this) x))
-              (define (bar)
-                (.-x this)))
-            (set! quux (new Foo))
-            (.bar quux)))
- "wobble"
 
  ;; `clj/try`
  > (describe "clj/try")
@@ -306,8 +167,6 @@
  _
  > (string-split "foo bar baz" " ")
  '("foo" "bar" "baz")
- xit> (string-split "  foo bar  baz \r\n\t")
- '("foo" "bar" "baz")
  > (string-trim "_foo bar  baz_" "_")
  "foo bar  baz"
  > (string-trim "__foo bar  baz__" "_" :repeat? #t)
@@ -320,12 +179,6 @@
  _
  > (apply new make-hash '())
  (new Map)
- xit> (apply new make-hash '())
- (new Map)
- xit> (apply send (make-hash) 'has '("foo"))
- #f
- xit> (apply send (make-hash) '(has "foo"))
- #f
 
  ;; Y combinator
  > (describe "Y combinator")
@@ -346,12 +199,6 @@
       6))
  720
 
- ;; `ann`
- > (describe "ann")
- _
- xit> ((ann #u Any))
- #u
-
  ;; `current-environment`
  > (describe "current-environment")
  _
@@ -367,8 +214,6 @@
  1
  > (interpret '(js/eval "1") #u (js/obj :eval #t))
  1
- xit> (interpret 'js/eval #u (js/obj :eval #f))
- #u
 
  ;; `interpret`
  > (describe "interpret")

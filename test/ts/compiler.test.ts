@@ -58,73 +58,6 @@ describe('Global environment', function (): any {
         'let lst = [symbolp, booleanp];'
     );
   });
-  xit('(compile \'(define-values (_ regexp) (rl/sandbox ((js/arrow () (define __ (js/obj "@@functional/placeholder" #t)) (define (js/regexp_ input (flags #u)) (if (eq? (type-of input) "string") (new RegExp input flags) input)) (values __ js/regexp_))))) :finline-functions #t)', function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('define-values'),
-          [Symbol.for('_'), Symbol.for('regexp')],
-          [
-            Symbol.for('rl/sandbox'),
-            [
-              [
-                Symbol.for('js/arrow'),
-                [],
-                [
-                  Symbol.for('define'),
-                  Symbol.for('__'),
-                  [Symbol.for('js/obj'), '@@functional/placeholder', true],
-                ],
-                [
-                  Symbol.for('define'),
-                  [
-                    Symbol.for('js/regexp_'),
-                    Symbol.for('input'),
-                    [Symbol.for('flags'), undefined],
-                  ],
-                  [
-                    Symbol.for('if'),
-                    [
-                      Symbol.for('eq?'),
-                      [Symbol.for('type-of'), Symbol.for('input')],
-                      'string',
-                    ],
-                    [
-                      Symbol.for('new'),
-                      Symbol.for('RegExp'),
-                      Symbol.for('input'),
-                      Symbol.for('flags'),
-                    ],
-                    Symbol.for('input'),
-                  ],
-                ],
-                [
-                  Symbol.for('values'),
-                  Symbol.for('__'),
-                  Symbol.for('js/regexp_'),
-                ],
-              ],
-            ],
-          ],
-        ],
-        Symbol.for(':finline-functions'),
-        true
-      ),
-      'let [, regexp] = (() => {\n' +
-        '  let __ = {\n' +
-        "    '@@functional/placeholder': true\n" +
-        '  };\n' +
-        '  function jsRegexp_(input, flags = undefined) {\n' +
-        "    if (typeof input === 'string') {\n" +
-        '      return new RegExp(input, flags);\n' +
-        '    } else {\n' +
-        '      return input;\n' +
-        '    }\n' +
-        '  }\n' +
-        '  return [__, jsRegexp_];\n' +
-        '})();'
-    );
-  });
   it("(compile '(module m scheme (define one-plus-one (apply + '(1 1)))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
@@ -324,100 +257,6 @@ describe('Global environment', function (): any {
         "let fooBar = stringAppend('foo', 'bar');"
     );
   });
-  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l)) (define bar (my-foldl + 0 '(1 2 3 4)))) :finline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [
-              Symbol.for('my-foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-            [
-              Symbol.for('foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-          ],
-          [
-            Symbol.for('define'),
-            Symbol.for('bar'),
-            [
-              Symbol.for('my-foldl'),
-              Symbol.for('+'),
-              0,
-              [Symbol.for('quote'), [1, 2, 3, 4]],
-            ],
-          ],
-        ],
-        Symbol.for(':finline-functions'),
-        true
-      ),
-      'let [add] = (function () {\n' +
-        '  function add(...args) {\n' +
-        '    return args.reduce(function (y, x) {\n' +
-        '      return y + x;\n' +
-        '    }, 0);\n' +
-        '  }\n' +
-        '  return [add];\n' +
-        '})();\n' +
-        '\n' +
-        'function myFoldl(f, v, l) {\n' +
-        '  return l.reduce(function (acc, x) {\n' +
-        '    return f(x, acc);\n' +
-        '  }, v);\n' +
-        '}\n' +
-        '\n' +
-        'let bar = myFoldl(add, 0, [1, 2, 3, 4]);'
-    );
-  });
-  xit("(compile '(module m lisp (define (my-foldl f v l) (foldl f v l))) :finline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [
-              Symbol.for('my-foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-            [
-              Symbol.for('foldl'),
-              Symbol.for('f'),
-              Symbol.for('v'),
-              Symbol.for('l'),
-            ],
-          ],
-        ],
-        Symbol.for(':finline-functions'),
-        true
-      ),
-      'let [foldl] = (function () {\n' +
-        '  function foldl(f, v, lst) {\n' +
-        '    return lst.reduce(function (acc, x) {\n' +
-        '      return f(x, acc);\n' +
-        '    }, v);\n' +
-        '  }\n' +
-        '  return [foldl];\n' +
-        '})();\n' +
-        '\n' +
-        'function myFoldl(f, v, l) {\n' +
-        '  return foldl(f, v, l);\n' +
-        '}'
-    );
-  });
   it("(compile '(module m lisp (define (my-map f x) (map f x)) (define bar (my-map first '((1) (2) (3))))) :finline-functions #t)", function (): any {
     return assertEqual(
       compile(
@@ -457,96 +296,6 @@ describe('Global environment', function (): any {
         '}\n' +
         '\n' +
         'let bar = myMap(first, [[1], [2], [3]]);'
-    );
-  });
-  xit("(compile '(module m lisp (define (foo f x y) (f x y)) (define (my-push-4 lst x) (foo push! lst x))) :finline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [
-              Symbol.for('foo'),
-              Symbol.for('f'),
-              Symbol.for('x'),
-              Symbol.for('y'),
-            ],
-            [Symbol.for('f'), Symbol.for('x'), Symbol.for('y')],
-          ],
-          [
-            Symbol.for('define'),
-            [Symbol.for('my-push-4'), Symbol.for('lst'), Symbol.for('x')],
-            [
-              Symbol.for('foo'),
-              Symbol.for('push!'),
-              Symbol.for('lst'),
-              Symbol.for('x'),
-            ],
-          ],
-        ],
-        Symbol.for(':finline-functions'),
-        true
-      ),
-      'let [pushX] = (function () {\n' +
-        '  function pushX(lst, x) {\n' +
-        '    lst.unshift(x);\n' +
-        '    return lst;\n' +
-        '  }\n' +
-        '  return [pushX];\n' +
-        '})();\n' +
-        '\n' +
-        'function foo(f, x, y) {\n' +
-        '  return f(x, y);\n' +
-        '}\n' +
-        '\n' +
-        'function myPush4(lst, x) {\n' +
-        '  return foo(pushX, lst, x);\n' +
-        '}'
-    );
-  });
-  xit("(compile '(module m lisp (define (get-push-function) push!) (define (my-push-4 lst x) ((get-push-function) lst x))) :finline-functions #t)", function (): any {
-    return assertEqual(
-      compile(
-        [
-          Symbol.for('module'),
-          Symbol.for('m'),
-          Symbol.for('lisp'),
-          [
-            Symbol.for('define'),
-            [Symbol.for('get-push-function')],
-            Symbol.for('push!'),
-          ],
-          [
-            Symbol.for('define'),
-            [Symbol.for('my-push-4'), Symbol.for('lst'), Symbol.for('x')],
-            [
-              [Symbol.for('get-push-function')],
-              Symbol.for('lst'),
-              Symbol.for('x'),
-            ],
-          ],
-        ],
-        Symbol.for(':finline-functions'),
-        true
-      ),
-      'let [pushX] = (function () {\n' +
-        '  function pushX(lst, x) {\n' +
-        '    lst.unshift(x);\n' +
-        '    return lst;\n' +
-        '  }\n' +
-        '  return [pushX];\n' +
-        '})();\n' +
-        '\n' +
-        'function getPushFunction() {\n' +
-        '  return pushX;\n' +
-        '}\n' +
-        '\n' +
-        'function myPush4(lst, x) {\n' +
-        '  return getPushFunction()(lst, x);\n' +
-        '}'
     );
   });
   it("(compile '(module m lisp (define (my-cdr x) (cdr x))) :finline-functions #t)", function (): any {
@@ -2202,11 +1951,11 @@ describe('define-macro->lambda-form', function (): any {
 });
 
 describe('split-comments', function (): any {
-  xit('(split-comments ";;; Foo")', function (): any {
-    return assertEqual(splitComments(';;; Foo'), [';;; Foo']);
-  });
   it('(split-comments ";;; Foo\n' + '")', function (): any {
     return assertEqual(splitComments(';;; Foo\n'), [';;; Foo\n']);
+  });
+  xit('(split-comments ";;; Foo")', function (): any {
+    return assertEqual(splitComments(';;; Foo'), [';;; Foo']);
   });
   xit('(split-comments ";; Foo\n' + ';;; Bar")', function (): any {
     return assertEqual(splitComments(';; Foo\n' + ';;; Bar'), [

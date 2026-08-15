@@ -668,8 +668,60 @@ describe('case', function (): any {
   });
 });
 
+describe('el/if', function (): any {
+  it('(el/if #t 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('el/if'), true, 1, 2],
+      1,
+    ]);
+  });
+  it('(el/if #f 1 2)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('el/if'), false, 1, 2],
+      2,
+    ]);
+  });
+  it('(el/if #f 1 2 3)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('el/if'), false, 1, 2, 3],
+      3,
+    ]);
+  });
+  return it('(el/if #f 1 2 3 4)', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('el/if'), false, 1, 2, 3, 4],
+      4,
+    ]);
+  });
+});
+
+describe('set', function (): any {
+  return it("(compile '(set 'x 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('set'), [Symbol.for('quote'), Symbol.for('x')], 1],
+        ],
+      ],
+      'x = 1;',
+    ]);
+  });
+});
+
 describe('setq', function (): any {
-  return it("(compile '(setq x 1))", function (): any {
+  it("(compile '(setq x 1))", function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -678,6 +730,20 @@ describe('setq', function (): any {
         [Symbol.for('quote'), [Symbol.for('setq'), Symbol.for('x'), 1]],
       ],
       'x = 1;',
+    ]);
+  });
+  return it("(compile '(setq x 1 y 2))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('setq'), Symbol.for('x'), 1, Symbol.for('y'), 2],
+        ],
+      ],
+      'x = 1;\n' + '\n' + 'y = 2;',
     ]);
   });
 });

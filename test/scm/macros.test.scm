@@ -306,8 +306,31 @@
       1))
  1
 
+ ;; `el/if`
+ > (describe "el/if")
+ _
+ > (el/if #t 1 2)
+ 1
+ > (el/if #f 1 2)
+ 2
+ > (el/if #f 1 2 3)
+ 3
+ > (el/if #f 1 2 3 4)
+ 4
+
+ ;; `set`
+ > (describe "set")
+ _
+ > (compile '(set 'x 1))
+ "x = 1;"
+
  ;; `setq`
  > (describe "setq")
  _
  > (compile '(setq x 1))
- "x = 1;")
+ "x = 1;"
+ > (compile '(setq x 1
+                   y 2))
+ "x = 1;
+
+y = 2;")

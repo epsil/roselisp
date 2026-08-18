@@ -20,6 +20,18 @@
  * [node:readline]: https://nodejs.org/api/readline.html
  */
 /**
+ * Read utility.
+ */
+declare function r(input: any): any;
+/**
+ * Read--Eval utility.
+ */
+declare function re(input: any, env?: any): any;
+/**
+ * Read--Eval--Print utility.
+ */
+declare function rep(input: any, env?: any): any;
+/**
  * Start a simple REPL.
  *
  * The REPL reads from standard input using Node's
@@ -28,4 +40,4 @@
  * [node:readline]: https://nodejs.org/api/readline.html
  */
 declare function repl(): void;
-export { repl };
+export { r, re, rep, repl };

@@ -22,10 +22,11 @@
  * [node:readline]: https://nodejs.org/api/readline.html
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.repl = void 0;
+exports.repl = exports.rep = exports.re = exports.r = void 0;
 const process_1 = require("process");
 const readline = require("readline");
 const constants_1 = require("./constants");
+const equal_1 = require("./equal");
 const env_1 = require("./env");
 const language_1 = require("./language");
 const parser_1 = require("./parser");
@@ -46,6 +47,55 @@ const replHelpMessage = 'Enter an S-expression to evaluate it.\n' +
     '\n' +
     'Type ,q to quit.';
 /**
+ * Read utility.
+ */
+function r(input) {
+    return (0, parser_1.read)('(' + input + ')');
+}
+exports.r = r;
+/**
+ * Eval utility.
+ */
+function e(input, env = makeReplEnvironment()) {
+    return input.map(function (exp) {
+        let result = undefined;
+        try {
+            result = (0, language_1.interpret)(exp, env);
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                console.log(err);
+            }
+            else {
+                throw err;
+            }
+        }
+        return result;
+    });
+}
+/**
+ * Read--Eval utility.
+ */
+function re(input, env = makeReplEnvironment()) {
+    return e(r(input), env);
+}
+exports.re = re;
+/**
+ * Print utility.
+ */
+function p(input) {
+    return input.map(function (x) {
+        return (0, language_1.printSexpAsExpression)(x);
+    }).join('\n');
+}
+/**
+ * Read--Eval--Print utility.
+ */
+function rep(input, env = makeReplEnvironment()) {
+    return p(re(input, env));
+}
+exports.rep = rep;
+/**
  * Start a simple REPL.
  *
  * The REPL reads from standard input using Node's
@@ -59,42 +109,29 @@ function repl() {
         output: process_1.stdout
     });
     let quitFlag = false;
-    function quit() {
+    function quitx() {
         if (!quitFlag) {
             quitFlag = true;
             return rl.close();
         }
     }
-    const env = makeReplEnvironment([[Symbol.for('exit'), quit, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]], [Symbol.for('help'), help, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]], [Symbol.for('quit'), quit, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]]]);
+    const env = makeReplEnvironment([[Symbol.for('exit'), quitx, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quitx, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]]);
     // Read-eval-print loop
     function loopF(...args) {
         function callback(x) {
-            if (quitFlag || isQuitCmdP(x)) {
-                return quit();
+            const exp = r(x);
+            if (quitFlag || quitCmdP(exp)) {
+                return quitx();
             }
-            else if (isHelpCmdP(x)) {
+            else if (helpCmdP(exp)) {
                 help();
                 return loopF();
             }
             else {
-                let result = undefined;
-                // Read (R).
-                const exp = (0, parser_1.read)(x);
-                // Evaluate (E).
-                try {
-                    result = (0, language_1.interpret)(exp, env);
-                    // Print (P).
-                    printValue(result);
-                }
-                catch (e) {
-                    if (e instanceof Error) {
-                        console.log(e);
-                    }
-                    else {
-                        throw e;
-                    }
-                }
-                // Loop (L).
+                (0, env_1.withEnvironment)(env, function () {
+                    // Read (R), Evaluate (E), Print (P).
+                    return console.log(p(e(exp, env)));
+                });
                 return loopF();
             }
         }
@@ -107,20 +144,20 @@ exports.repl = repl;
 /**
  * Make an environment for the REPL.
  */
-function makeReplEnvironment(bindings) {
+function makeReplEnvironment(bindings = []) {
     return new env_1.LispEnvironment(bindings, language_1.langEnvironment);
 }
 /**
- * Whether `str` is a command for quitting the REPL.
+ * Whether `exp` is a command for quitting the REPL.
  */
-function isHelpCmdP(str) {
-    return [',h', ',help', '(help)'].includes(str);
+function helpCmdP(exp) {
+    return (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('h')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('help')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('help')]]);
 }
 /**
- * Whether `str` is a command for quitting the REPL.
+ * Whether `exp` is a command for quitting the REPL.
  */
-function isQuitCmdP(str) {
-    return [',q', ',quit', '(quit)', ',exit', '(exit)'].includes(str);
+function quitCmdP(exp) {
+    return (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('q')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('quit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('quit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('exit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('exit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('x')]]);
 }
 /**
  * Print a value.

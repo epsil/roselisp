@@ -18,7 +18,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withEnvironment = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.TypedEnvironment = exports.ThunkedEnvironment = exports.LispEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.currentEnvironment = void 0;
+exports.withEnvironmentMacro = exports.withEnvironment = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.TypedEnvironment = exports.ThunkedEnvironment = exports.LispEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = void 0;
 const lookup_1 = require("./lookup");
 const thunk_1 = require("./thunk");
 /**
@@ -1010,8 +1010,6 @@ defaultEnvironment.fsource = [Symbol.for('define'), [Symbol.for('default-environ
  * of `currentEnvironmentPointer` is restored afterwards.
  */
 function withEnvironment(env, f) {
-    // TODO: It would be much faster to implement this as
-    // a macro.
     let result = undefined;
     const tmp = currentEnvironmentPointer;
     try {
@@ -1023,8 +1021,19 @@ function withEnvironment(env, f) {
     }
     return result;
 }
+exports.withCurrentEnvironment = withEnvironment;
 exports.withEnvironment = withEnvironment;
 withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('env'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-environment-pointer')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('tmp')]]], Symbol.for('result')];
+/**
+ * Macro for `with-environment`.
+ */
+function withEnvironmentMacro(exp, env) {
+    const [environment, ...body] = exp.slice(1);
+    return [Symbol.for('with-environment'), environment, [Symbol.for('lambda'), [], ...body]];
+}
+exports.withEnvironmentMacro = withEnvironmentMacro;
+withEnvironmentMacro.fsource = [Symbol.for('define'), [Symbol.for('with-environment-macro'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+withEnvironmentMacro.ftype = 'macro';
 /**
  * Make an environment.
  */

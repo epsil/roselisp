@@ -33,7 +33,12 @@ import {
 } from './constants';
 
 import {
-  LispEnvironment
+  equalp_
+} from './equal';
+
+import {
+  LispEnvironment,
+  withEnvironment
 } from './env';
 
 import {
@@ -66,6 +71,55 @@ const replHelpMessage: any = 'Enter an S-expression to evaluate it.\n' +
   'Type ,q to quit.';
 
 /**
+ * Read utility.
+ */
+function r(input: any): any {
+  return read('(' + input + ')');
+}
+
+/**
+ * Eval utility.
+ */
+function e(input: any, env: any = makeReplEnvironment()): any {
+  return input.map(function (exp: any): any {
+    let result: any = undefined;
+    try {
+      result = eval_(exp, env);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log(err);
+      } else {
+        throw err;
+      }
+    }
+    return result;
+  });
+}
+
+/**
+ * Read--Eval utility.
+ */
+function re(input: any, env: any = makeReplEnvironment()): any {
+  return e(r(input), env);
+}
+
+/**
+ * Print utility.
+ */
+function p(input: any): any {
+  return input.map(function (x: any): any {
+    return printSexpAsExpression(x);
+  }).join('\n');
+}
+
+/**
+ * Read--Eval--Print utility.
+ */
+function rep(input: any, env: any = makeReplEnvironment()): any {
+  return p(re(input, env));
+}
+
+/**
  * Start a simple REPL.
  *
  * The REPL reads from standard input using Node's
@@ -80,38 +134,27 @@ function repl(): void {
     output: stdout
   });
   let quitFlag: any = false;
-  function quit(): any {
+  function quitx(): any {
     if (!quitFlag) {
       quitFlag = true;
       return rl.close();
     }
   }
-  const env: any = makeReplEnvironment([[Symbol.for('exit'), quit, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]], [Symbol.for('help'), help, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]], [Symbol.for('quit'), quit, [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]]]);
+  const env: any = makeReplEnvironment([[Symbol.for('exit'), quitx, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quitx, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]]);
   // Read-eval-print loop
   function loopF(...args: any[]): any {
     function callback(x: any): any {
-      if (quitFlag || isQuitCmdP(x)) {
-        return quit();
-      } else if (isHelpCmdP(x)) {
+      const exp: any = r(x);
+      if (quitFlag || quitCmdP(exp)) {
+        return quitx();
+      } else if (helpCmdP(exp)) {
         help();
         return loopF();
       } else {
-        let result: any = undefined;
-        // Read (R).
-        const exp: any = read(x);
-        // Evaluate (E).
-        try {
-          result = eval_(exp, env);
-          // Print (P).
-          printValue(result);
-        } catch (e) {
-          if (e instanceof Error) {
-            console.log(e);
-          } else {
-            throw e;
-          }
-        }
-        // Loop (L).
+        withEnvironment(env, function (): any {
+          // Read (R), Evaluate (E), Print (P).
+          return console.log(p(e(exp, env)));
+        });
         return loopF();
       }
     }
@@ -124,22 +167,22 @@ function repl(): void {
 /**
  * Make an environment for the REPL.
  */
-function makeReplEnvironment(bindings: any): any {
+function makeReplEnvironment(bindings: any = []): any {
   return new LispEnvironment(bindings, langEnvironment);
 }
 
 /**
- * Whether `str` is a command for quitting the REPL.
+ * Whether `exp` is a command for quitting the REPL.
  */
-function isHelpCmdP(str: any): any {
-  return [',h', ',help', '(help)'].includes(str);
+function helpCmdP(exp: any): any {
+  return equalp_(exp, [[Symbol.for('unquote'), Symbol.for('h')]]) || equalp_(exp, [[Symbol.for('unquote'), Symbol.for('help')]]) || equalp_(exp, [[Symbol.for('help')]]);
 }
 
 /**
- * Whether `str` is a command for quitting the REPL.
+ * Whether `exp` is a command for quitting the REPL.
  */
-function isQuitCmdP(str: any): any {
-  return [',q', ',quit', '(quit)', ',exit', '(exit)'].includes(str);
+function quitCmdP(exp: any): any {
+  return equalp_(exp, [[Symbol.for('unquote'), Symbol.for('q')]]) || equalp_(exp, [[Symbol.for('unquote'), Symbol.for('quit')]]) || equalp_(exp, [[Symbol.for('quit')]]) || equalp_(exp, [[Symbol.for('unquote'), Symbol.for('exit')]]) || equalp_(exp, [[Symbol.for('exit')]]) || equalp_(exp, [[Symbol.for('unquote'), Symbol.for('x')]]);
 }
 
 /**
@@ -157,5 +200,8 @@ function help(): any {
 }
 
 export {
+  r,
+  re,
+  rep,
   repl
 };

@@ -25,8 +25,11 @@
 (require readline "readline")
 (require (only-in "./constants"
                   version))
+(require (only-in "./equal"
+                  equal?_))
 (require (only-in "./env"
-                  LispEnvironment))
+                  LispEnvironment
+                  with-environment))
 (require (only-in "./language"
                   (interpret eval_)
                   lang-environment
@@ -50,6 +53,43 @@ Use the up and down keys to access previous expressions.
 
 Type ,q to quit.")
 
+;;; Read utility.
+(define (r input)
+  (~> input
+      (string-append "(" _ ")")
+      (read _)))
+
+;;; Eval utility.
+(define (e input (env (make-repl-environment)))
+  (~> input
+      (map (lambda (exp)
+             (let ((result #u))
+               (try
+                 (set! result
+                       (eval_ exp env))
+                 (catch Error err
+                   (display err)))
+               result))
+           _)))
+
+;;; Read--Eval utility.
+(define (re input (env (make-repl-environment)))
+  (~> input
+      (r _)
+      (e _ env)))
+
+;;; Print utility.
+(define (p input)
+  (~> input
+      (map print-sexp-as-expression _)
+      (string-join _ "\n")))
+
+;;; Read--Eval--Print utility.
+(define (rep input (env (make-repl-environment)))
+  (~> input
+      (re _ env)
+      (p _)))
+
 ;;; Start a simple REPL.
 ;;;
 ;;; The REPL reads from standard input using Node's
@@ -64,74 +104,74 @@ Type ,q to quit.")
           (js/obj :input stdin
                   :output stdout)))
   (define quit-flag #f)
-  (define (quit)
+  (define (quit!)
     (unless quit-flag
       (set! quit-flag #t)
       (send rl close)))
   (define env
     (make-repl-environment
-     `((exit ,quit '(->* :rest Any Any))
-       (help ,help '(->* :rest Any Any))
-       (quit ,quit '(->* :rest Any Any)))))
+     `((exit ,quit! '(-> Any * Any))
+       (help ,help '(-> Any * Any))
+       (quit ,quit! '(-> Any * Any)))))
   ;; Read-eval-print loop
   (define (loop-f . args)
     (define (callback x)
+      (define exp
+        (r x))
       (cond
        ((or quit-flag
-            (is-quit-cmd? x))
-        (quit))
-       ((is-help-cmd? x)
+            (quit-cmd? exp))
+        (quit!))
+       ((help-cmd? exp)
         (help)
         (loop-f))
        (else
-        (define result #u)
-        ;; Read (R).
-        (define exp
-          (read x))
-        ;; Evaluate (E).
-        (try
-          (set! result
-                (eval_ exp env))
-          ;; Print (P).
-          (print-value result)
-          (catch Error e
-            (display e)))
-        ;; Loop (L).
+        (with-environment
+         env
+         (lambda ()
+           ;; Read (R), Evaluate (E), Print (P).
+           (~> exp
+               (e _ env)
+               (p _)
+               (display _))))
         (loop-f))))
     (send rl question repl-prompt callback))
   (display initial-repl-message)
   (loop-f))
 
 ;;; Make an environment for the REPL.
-(define (make-repl-environment bindings)
+(define (make-repl-environment (bindings '()))
   (new LispEnvironment
        bindings
        lang-environment))
 
-;;; Whether `str` is a command for quitting the REPL.
-(define (is-help-cmd? str)
-  (memq? str
-         '(",h"
-           ",help"
-           "(help)")))
+;;; Whether `exp` is a command for quitting the REPL.
+(define (help-cmd? exp)
+  (or (equal?_ exp '((unquote h)))
+      (equal?_ exp '((unquote help)))
+      (equal?_ exp '((help)))))
 
-;;; Whether `str` is a command for quitting the REPL.
-(define (is-quit-cmd? str)
-  (memq? str
-         '(",q"
-           ",quit"
-           "(quit)"
-           ",exit"
-           "(exit)")))
+;;; Whether `exp` is a command for quitting the REPL.
+(define (quit-cmd? exp)
+  (or (equal?_ exp '((unquote q)))
+      (equal?_ exp '((unquote quit)))
+      (equal?_ exp '((quit)))
+      (equal?_ exp '((unquote exit)))
+      (equal?_ exp '((exit)))
+      (equal?_ exp '((unquote x)))))
 
 ;;; Print a value.
 (define (print-value x (options (js/obj)))
-  (display
-   (print-sexp-as-expression x options)))
+  (~> x
+      (print-sexp-as-expression _ options)
+      (display _)))
 
 ;;; Display help message.
 (define (help)
   (display repl-help-message))
 
 (provide
+  r
+  re
+  rep
   repl)

@@ -406,7 +406,7 @@
                   TrailingCommentToken
                   get-comment-level
                   read
-                  read-rose
+                  read-syntax
                   read-sexp
                   tokenize))
 (require (only-in "./plist"
@@ -1225,7 +1225,7 @@
                          _
                          "\n)")))
                   (define node
-                    (read-rose data
+                    (read-syntax data
                                (js/obj :comments
                                        comments-option)))
                   node)))
@@ -8333,6 +8333,21 @@
     (send node set-type typ)
     node)))
 
+;;; Interactive definition of `load`.
+(define (load_ file)
+  (define file-path
+    (if (symbol? file)
+        (symbol->string file)
+        file))
+  (define file-contents
+    (readFileSync file-path
+                  (js/obj :encoding "utf8")))
+  (define exp
+    (~> file-contents
+        (string-append "(module m scheme\n" _ "\n)")
+        (read-syntax _)))
+  (interpret exp))
+
 ;;; Lisp environment.
 (define lisp-environment
   (new LispEnvironment
@@ -8771,6 +8786,8 @@
          (range ,range_ (-> Any * Any))
          (re ,js/regexp_ (-> Any * Any))
          (re-pattern ,js/regexp_ (-> Any * Any))
+         (read ,read (-> Any * Any))
+         (read-syntax ,read-syntax (-> Any * Any))
          (regexp ,js/regexp_ (-> Any * Any))
          (regexp-match ,regexp-match_ (-> Any * Any))
          (regexp-match? ,regexp-match?_ (-> Any * Any))
@@ -8839,6 +8856,7 @@
          (vector-set ,array-set_ (-> Any * Any))
          (vector-set! ,array-set_ (-> Any * Any))
          (vector? ,array?_ (-> Any * Any))
+         (write-to-string ,write-to-string (-> Any * Any))
          (zero? ,zero?_ (-> Any * Any))
          (zerop ,zero?_ (-> Any * Any))
          ;; Macros.
@@ -9091,6 +9109,7 @@
   (rename-out (provide_ provide))
   (rename-out (quasiquote_ quasiquote))
   (rename-out (quote_ quote))
+  (rename-out (read-syntax read-rose))
   (rename-out (require_ require))
   (rename-out (send/apply_ send/apply))
   (rename-out (send_ call-method))
@@ -9155,6 +9174,7 @@
   let-vars-to-const-vars
   lisp
   lisp-environment
+  load_
   macroexpand
   macroexpand*
   macroexpand*-1
@@ -9184,8 +9204,8 @@
   quote?
   quote_
   read
-  read-rose
   read-sexp
+  read-syntax
   require_
   return_
   s

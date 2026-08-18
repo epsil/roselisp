@@ -972,8 +972,6 @@
 ;;; function {@link currentEnvironment}. The original value
 ;;; of `currentEnvironmentPointer` is restored afterwards.
 (define (with-environment env f)
-  ;; TODO: It would be much faster to implement this as
-  ;; a macro.
   (define result #u)
   (define tmp current-environment-pointer)
   (try
@@ -982,6 +980,12 @@
     (finally
       (set! current-environment-pointer tmp)))
   result)
+
+;;; Macro for `with-environment`.
+(define-macro (with-environment-macro environment &rest body)
+  `(with-environment
+    ,environment
+    (lambda () ,@body)))
 
 ;;; Make an environment.
 (define (make-environment (variables #u)
@@ -1047,6 +1051,7 @@
 
 (provide
   (rename-out (current-environment_ current-environment))
+  (rename-out (with-environment with-current-environment))
   DynamicEnvironment
   Environment
   EnvironmentComposition
@@ -1065,4 +1070,5 @@
   link-environment-frames
   make-environment
   prefix-bindings
-  with-environment)
+  with-environment
+  with-environment-macro)

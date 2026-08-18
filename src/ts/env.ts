@@ -1116,8 +1116,6 @@ defaultEnvironment.fsource = [Symbol.for('define'), [Symbol.for('default-environ
  * of `currentEnvironmentPointer` is restored afterwards.
  */
 function withEnvironment(env: any, f: any): any {
-  // TODO: It would be much faster to implement this as
-  // a macro.
   let result: any = undefined;
   const tmp: any = currentEnvironmentPointer;
   try {
@@ -1130,6 +1128,18 @@ function withEnvironment(env: any, f: any): any {
 }
 
 withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('env'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-environment-pointer')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('tmp')]]], Symbol.for('result')];
+
+/**
+ * Macro for `with-environment`.
+ */
+function withEnvironmentMacro(exp: any, env: any): any {
+  const [environment, ...body]: any[] = exp.slice(1);
+  return [Symbol.for('with-environment'), environment, [Symbol.for('lambda'), [], ...body]];
+}
+
+withEnvironmentMacro.fsource = [Symbol.for('define'), [Symbol.for('with-environment-macro'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+
+withEnvironmentMacro.ftype = 'macro';
 
 /**
  * Make an environment.
@@ -1222,6 +1232,7 @@ prefixBindings.fsource = [Symbol.for('define'), [Symbol.for('prefix-bindings'), 
 
 export {
   currentEnvironment_ as currentEnvironment,
+  withEnvironment as withCurrentEnvironment,
   DynamicEnvironment,
   Environment,
   EnvironmentComposition,
@@ -1240,5 +1251,6 @@ export {
   linkEnvironmentFrames,
   makeEnvironment,
   prefixBindings,
-  withEnvironment
+  withEnvironment,
+  withEnvironmentMacro
 };

@@ -472,6 +472,14 @@ declare namespace withEnvironment {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
 }
 /**
+ * Macro for `with-environment`.
+ */
+declare function withEnvironmentMacro(exp: any, env: any): any;
+declare namespace withEnvironmentMacro {
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var ftype: string;
+}
+/**
  * Make an environment.
  */
 declare function makeEnvironment(variables?: any, parent?: any, isLisp2?: any): any;
@@ -516,4 +524,4 @@ declare function prefixBindings(prefix: any, bindings: any): any;
 declare namespace prefixBindings {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
-export { currentEnvironment_ as currentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, ThunkedEnvironment, TypedEnvironment, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withEnvironment };
+export { currentEnvironment_ as currentEnvironment, withEnvironment as withCurrentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, ThunkedEnvironment, TypedEnvironment, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withEnvironment, withEnvironmentMacro };

@@ -43,7 +43,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Node = exports.NewExpression = exports.MethodDefinition = exports.MemberExpression = exports.LogicalExpression = exports.Literal = exports.LeadingComment = exports.ImportSpecifier = exports.ImportNamespaceSpecifier = exports.ImportDefaultSpecifier = exports.ImportDeclaration = exports.IfStatement = exports.Identifier = exports.FunctionExpression = exports.FunctionDeclaration = exports.Function = exports.ForStatement = exports.ForOfStatement = exports.ForInStatement = exports.ExpressionStatement = exports.Expression = exports.ExportSpecifier = exports.ExportNamedDeclaration = exports.ExportAllDeclaration = exports.DoWhileStatement = exports.ContinueStatement = exports.ConditionalExpression = exports.Comment = exports.ClassExpression = exports.ClassDeclaration = exports.ClassBody = exports.ChainExpression = exports.ChainElement = exports.CatchClause = exports.CallExpression = exports.BreakStatement = exports.BlockStatement = exports.BlockComment = exports.BinaryExpression = exports.AwaitExpression = exports.AssignmentPattern = exports.AssignmentExpression = exports.ArrowFunctionExpression = exports.ArrayPattern = exports.ArrayExpression = exports.estreeIsP = exports.TSESTreeNode = exports.ESTreeStatement = exports.ESTreeNode = exports.ESTreeExpression = void 0;
-exports.wrapInEstree = exports.getEstreeField = exports.estreep = exports.estreeTypeP = exports.estreeType = exports.YieldExpression = exports.XRawJavaScript = exports.WhileStatement = exports.VariableDeclarator = exports.VariableDeclaration = exports.UpdateExpression = exports.UnaryExpression = exports.TryStatement = exports.TrailingComment = exports.ThrowStatement = exports.ThisExpression = exports.TemplateLiteral = exports.TemplateElement = exports.TaggedTemplateExpression = exports.TSVoidKeyword = exports.TSUnionType = exports.TSUndefinedKeyword = exports.TSTypeReference = exports.TSTypeParameterInstantiation = exports.TSTypeAnnotation = exports.TSTypeAliasDeclaration = exports.TSTupleType = exports.TSStringKeyword = exports.TSNumberKeyword = exports.TSNode = exports.TSLiteralType = exports.TSIdentifier = exports.TSFunctionType = exports.TSBooleanKeyword = exports.TSAsExpression = exports.TSArrayType = exports.TSAnyKeyword = exports.SwitchStatement = exports.SwitchCase = exports.Statement = exports.SpreadElement = exports.SequenceExpression = exports.ReturnStatement = exports.RestElement = exports.RegExpLiteral = exports.PropertyDefinition = exports.Property = exports.Program = exports.ObjectPattern = exports.ObjectExpression = void 0;
+exports.getEstreeField = exports.estreep = exports.estreeTypeP = exports.estreeType = exports.estreeQuote = exports.YieldExpression = exports.XRawJavaScript = exports.WhileStatement = exports.VariableDeclarator = exports.VariableDeclaration = exports.UpdateExpression = exports.UnaryExpression = exports.TryStatement = exports.TrailingComment = exports.ThrowStatement = exports.ThisExpression = exports.TemplateLiteral = exports.TemplateElement = exports.TaggedTemplateExpression = exports.TSVoidKeyword = exports.TSUnionType = exports.TSUndefinedKeyword = exports.TSTypeReference = exports.TSTypeParameterInstantiation = exports.TSTypeAnnotation = exports.TSTypeAliasDeclaration = exports.TSTupleType = exports.TSStringKeyword = exports.TSNumberKeyword = exports.TSNode = exports.TSLiteralType = exports.TSIdentifier = exports.TSFunctionType = exports.TSBooleanKeyword = exports.TSAsExpression = exports.TSArrayType = exports.TSAnyKeyword = exports.SwitchStatement = exports.SwitchCase = exports.Statement = exports.SpreadElement = exports.SequenceExpression = exports.ReturnStatement = exports.RestElement = exports.RegExpLiteral = exports.PropertyDefinition = exports.Property = exports.Program = exports.ObjectPattern = exports.ObjectExpression = void 0;
+exports.wrapInEstree = void 0;
 const thunk_1 = require("./thunk");
 /**
  * Node
@@ -1611,20 +1612,32 @@ estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol
 /**
  * Wrap a value in an ESTree node.
  *
- * Distinguishes between list values and atomic values.
+ * If `recursive` is `#t`, it distinguishes
+ * between list values and atomic values.
+ * Otherwise, a `Literal` is used.
  */
-function wrapInEstree(x) {
-    if (Array.isArray(x)) {
+function wrapInEstree(x, recursive = false) {
+    if (recursive && Array.isArray(x)) {
         return new ArrayExpression(x.map(function (x) {
-            return wrapInEstree(x);
+            return wrapInEstree(x, recursive);
         }));
     }
     else {
-        return new Literal(x);
+        return estreeQuote(x);
     }
 }
 exports.wrapInEstree = wrapInEstree;
-wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), Symbol.for('wrap-in-estree'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]]]];
+wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x'), [Symbol.for('recursive'), false]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('recursive'), [Symbol.for('array?'), Symbol.for('x')]], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('wrap-in-estree'), Symbol.for('x'), Symbol.for('recursive')]], Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('estree-quote'), Symbol.for('x')]]]];
+/**
+ * Place an arbitrary value inside of an ESTree
+ * `Literal` node. Basically the ESTree equivalent
+ * of Lisp's `quote`.
+ */
+function estreeQuote(x) {
+    return new Literal(x);
+}
+exports.estreeQuote = estreeQuote;
+estreeQuote.fsource = [Symbol.for('define'), [Symbol.for('estree-quote'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]];
 /**
  * Get a field on an ESTree node, forcing it if it is a thunk.
  */

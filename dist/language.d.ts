@@ -48,7 +48,7 @@ declare namespace decompile {
  */
 declare function compileWithEnvironment(exp: any, env?: any, options?: any): any;
 declare namespace compileWithEnvironment {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
 }
 /**
  * Compile a set of modules together.
@@ -72,7 +72,7 @@ declare namespace compileModuleMap {
  */
 declare function compileFilesX(files: any, options?: any): any;
 declare namespace compileFilesX {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (boolean | symbol)[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | symbol[])[])[])[])[];
 }
 /**
  * Compile a file.
@@ -143,7 +143,7 @@ declare namespace splitComments {
  */
 declare function definitionToMacro(exp: any, args: any): any;
 declare namespace definitionToMacro {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Convert a `(define ... (class ...))` expression to

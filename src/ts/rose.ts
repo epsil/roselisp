@@ -873,7 +873,7 @@ function sexpToRose(exp: any, node: any = undefined): any {
     } else if (exp instanceof Rose) {
       return exp;
     } else if (Array.isArray(exp)) {
-      // We need to create a new list since
+      // We may need to create a new list since
       // `exp` may be a list of rose tree nodes
       // and S-expressions.
       const lst: any = [];
@@ -908,18 +908,6 @@ function sexpToRose(exp: any, node: any = undefined): any {
     }
   }
   return sexpToRoseHelper(exp, node, cache, indices);
-}
-
-/**
- * Make a map mapping values to rose tree nodes,
- * but only one level down.
- */
-function makeSimpleRoseMap(node: any): any {
-  const map: any = new Map();
-  node.forEachNode(function (x: any): any {
-    return map.set(x.getValue(), x);
-  });
-  return map;
 }
 
 /**
@@ -1147,7 +1135,6 @@ export {
   makeListRose,
   makeRoseNonrecursive,
   makeSexpRose,
-  makeSimpleRoseMap,
   roseToMap,
   roseToSexp,
   rosep,

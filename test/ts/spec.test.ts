@@ -20,12 +20,51 @@ describe('#t', function (): any {
       true,
     ]);
   });
-  return it('(compile #t)', function (): any {
+  it('(compile #t)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), true],
       'true;',
+    ]);
+  });
+  it("(compile #t :as 'statement)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        true,
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('statement')],
+      ],
+      'true;',
+    ]);
+  });
+  it("(compile #t :as 'expression)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        true,
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('expression')],
+      ],
+      'true',
+    ]);
+  });
+  return it("(compile #t :as 'return)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        true,
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('return')],
+      ],
+      'return true;',
     ]);
   });
 });
@@ -42,12 +81,51 @@ describe('#f', function (): any {
       false,
     ]);
   });
-  return it('(compile #f)', function (): any {
+  it('(compile #f)', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
       [Symbol.for('compile'), false],
       'false;',
+    ]);
+  });
+  it("(compile #f :as 'statement)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        false,
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('statement')],
+      ],
+      'false;',
+    ]);
+  });
+  it("(compile #f :as 'expression)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        false,
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('expression')],
+      ],
+      'false',
+    ]);
+  });
+  return it("(compile #f :as 'return)", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        false,
+        Symbol.for(':as'),
+        [Symbol.for('quote'), Symbol.for('return')],
+      ],
+      'return false;',
     ]);
   });
 });

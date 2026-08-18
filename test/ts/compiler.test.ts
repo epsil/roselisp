@@ -1480,6 +1480,57 @@ describe('compile-with-environment', function (): any {
         'const onePlusOne = _add(1, 1);'
     );
   });
+  it("(module m scheme ... (apply + '(1 1)) ...), comments", function (): any {
+    return assertEqual(
+      compileWithEnvironment(
+        readSyntax(
+          '(module m scheme\n' +
+            '  ;;; Module header.\n' +
+            '\n' +
+            '  ;;; Custom macro.\n' +
+            '  (define-macro (foo &rest body)\n' +
+            '    `(begin ,@body))\n' +
+            '\n' +
+            '  (foo\n' +
+            '   (cond\n' +
+            '    ;; False clause.\n' +
+            '    (#f\n' +
+            '     1)\n' +
+            '    ;; True clause.\n' +
+            '    (else\n' +
+            '     2))))'
+        ),
+        compilationEnvironment,
+        {
+          case: 'camelcase',
+          finlineFunctions: true,
+          language: 'javascript',
+          optimize: true,
+        }
+      ),
+      '/**\n' +
+        ' * Module header.\n' +
+        ' */\n' +
+        '\n' +
+        '/**\n' +
+        ' * Custom macro.\n' +
+        ' */\n' +
+        'function foo(exp, env) {\n' +
+        '  const body = exp.slice(1);\n' +
+        "  return [Symbol.for('begin'), ...body];\n" +
+        '}\n' +
+        '\n' +
+        "foo.ftype = 'macro';\n" +
+        '\n' +
+        'if (false) {\n' +
+        '  // False clause.\n' +
+        '  1;\n' +
+        '} else {\n' +
+        '  // True clause.\n' +
+        '  2;\n' +
+        '}'
+    );
+  });
   xit('(I x), JS function', function (): any {
     return assertEqual(
       compileWithEnvironment(

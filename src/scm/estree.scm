@@ -1444,14 +1444,25 @@
 
 ;;; Wrap a value in an ESTree node.
 ;;;
-;;; Distinguishes between list values and atomic values.
-(define (wrap-in-estree x)
+;;; If `recursive` is `#t`, it distinguishes
+;;; between list values and atomic values.
+;;; Otherwise, a `Literal` is used.
+(define (wrap-in-estree x (recursive #f))
   (cond
-   ((array? x)
+   ((and recursive
+         (array? x))
     (new ArrayExpression
-         (map wrap-in-estree x)))
+         (map (lambda (x)
+                (wrap-in-estree x recursive))
+              x)))
    (else
-    (new Literal x))))
+    (estree-quote x))))
+
+;;; Place an arbitrary value inside of an ESTree
+;;; `Literal` node. Basically the ESTree equivalent
+;;; of Lisp's `quote`.
+(define (estree-quote x)
+  (new Literal x))
 
 ;;; Get a field on an ESTree node, forcing it if it is a thunk.
 (define (get-estree-field field node)
@@ -1560,6 +1571,7 @@
   WhileStatement
   XRawJavaScript
   YieldExpression
+  estree-quote
   estree-type
   estree-type?
   estree?

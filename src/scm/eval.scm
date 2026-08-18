@@ -26,24 +26,25 @@
                   Program
                   VariableDeclaration
                   VariableDeclarator
-                  wrap-in-estree
-                  estree?
-                  estree-type?
+                  estree-quote
                   estree-type
+                  estree-type?
+                  estree?
                   get-estree-field))
 (require (only-in "./env"
                   Environment
-                  TypedEnvironment
-                  LispEnvironment
                   EnvironmentStack
+                  LispEnvironment
+                  TypedEnvironment
                   current-environment
-                  empty-environment
                   default-environment
-                  with-environment
-                  make-environment
-                  extend-environment
+                  empty-environment
                   environment-frames
-                  link-environment-frames))
+                  extend-environment
+                  link-environment-frames
+                  make-environment
+                  with-environment
+                  with-environment-f))
 (require (only-in "./exception"
                   BreakException
                   ContinueException
@@ -132,134 +133,133 @@
 (define (eval-sexp exp env (options (js/obj)))
   (with-environment
    env
-   (lambda ()
-     (cond
-      ((thunk? exp)
-       (eval-sexp (force exp) env options))
-      ((null? exp)
+   (cond
+    ((thunk? exp)
+     (eval-sexp (force exp) env options))
+    ((null? exp)
+     exp)
+    ((list? exp)
+     (define-values (op . args)
        exp)
-      ((list? exp)
-       (define-values (op . args)
-         exp)
+     (cond
+      ((symbol? op)
+       (define name
+         (symbol->string op))
+       (define match)
        (cond
-        ((symbol? op)
-         (define name
-           (symbol->string op))
-         (define match)
+        ((set! match
+               (regexp-match (regexp "^\\.(.+)$") name))
+         ;; Method call expression
+         (define method
+           (second match))
+         (define-values
+             (obj . fargs) args)
+         (define dot-exp
+           `(,(string->symbol ".")
+             ,obj
+             ,(string->symbol method)
+             ,@fargs))
+         (eval-sexp dot-exp env options))
+        (else
+         (define-values (f binding-type)
+           (send env get-typed-value op))
          (cond
-          ((set! match
-                 (regexp-match (regexp "^\\.(.+)$") name))
-           ;; Method call expression
-           (define method
-             (second match))
-           (define-values
-               (obj . fargs) args)
-           (define dot-exp
-             `(,(string->symbol ".")
-               ,obj
-               ,(string->symbol method)
-               ,@fargs))
-           (eval-sexp dot-exp env options))
-          (else
-           (define-values (f binding-type)
-             (send env get-typed-value op))
+          ((macro-type? binding-type)
+           ;; Macros are implemented with a macro function that
+           ;; has the signature `(exp, env) => value`. The arguments
+           ;; to the macro are *not* evaluated, but the macro's
+           ;; return value---the macro expansion---*is* evaluated:
+           ;; that is, it is pushed back on the expressions stack
+           ;; for further evaluation.
+           (define expansion
+             (f exp env))
+           (eval-sexp expansion env options))
+          ((fexpr-type? binding-type)
+           ;; A fexpr is a function that receives its arguments
+           ;; unevaluated, like a macro. However, unlike a macro,
+           ;; the return value is not re-evaluated---it is simply
+           ;; returned.
+           (apply f args))
+          ((special-type? binding-type)
+           ;; Special form
+           (f exp env))
+          ((or (procedure-type? binding-type)
+               (and (variable-type? binding-type)
+                    (procedure? f)))
+           ;; Function call
            (cond
-            ((macro-type? binding-type)
-             ;; Macros are implemented with a macro function that
-             ;; has the signature `(exp, env) => value`. The arguments
-             ;; to the macro are *not* evaluated, but the macro's
-             ;; return value---the macro expansion---*is* evaluated:
-             ;; that is, it is pushed back on the expressions stack
-             ;; for further evaluation.
+            ((fexpr? f)
+             (apply f args))
+            ;; Macro function
+            ((macro? f)
+             ;; (eq? (get-field ftype f)
+             ;;      "macro")
              (define expansion
                (f exp env))
              (eval-sexp expansion env options))
-            ((fexpr-type? binding-type)
-             ;; A fexpr is a function that receives its arguments
-             ;; unevaluated, like a macro. However, unlike a macro,
-             ;; the return value is not re-evaluated---it is simply
-             ;; returned.
-             (apply f args))
-            ((special-type? binding-type)
-             ;; Special form
-             (f exp env))
-            ((or (procedure-type? binding-type)
-                 (and (variable-type? binding-type)
-                      (procedure? f)))
-             ;; Function call
-             (cond
-              ((fexpr? f)
-               (apply f args))
-              ;; Macro function
-              ((macro? f)
-               ;; (eq? (get-field ftype f)
-               ;;      "macro")
-               (define expansion
-                 (f exp env))
-               (eval-sexp expansion env options))
-              (else
-               ;; Apply `f` to evaluated arguments
-               (apply f
-                      (map (lambda (arg)
-                             (eval-sexp arg env options))
-                           args)))))))))
-        ((not op)
-         #u)
-        ((procedure? op)
-         ;; `(<fn> ...)` call. The first element is a
-         ;; function object. If it is a fexpr call, the function
-         ;; is called with its arguments unevaluated. Otherwise,
-         ;; the arguments have to be evaluated first.
-         (define f op)
-         (cond
-          ((or (= (js/length args) 0)
-               (fexpr? f))
-           ;; Fexpr call. The function is called with its
-           ;; arguments unevaluated.
-           (apply f args))
-          (else
-           ;; Regular call. The arguments are evaluated,
-           ;; and the values are passed to the function.
-           (apply f
-                  (map (lambda (arg)
-                         (eval-sexp arg env options))
-                       args)))))
-        (else
-         ;; `((...) ...)` call. The first element is a expression
-         ;; that has to be evaluated before function application
-         ;; can proceed.
-         (eval-sexp (cons (eval-sexp op env options)
-                          args)
-                    env
-                    options))))
-      ((keyword? exp)
-       ;; Keyword
-       exp)
-      ((symbol? exp)
-       ;; Variable
-       (define name
-         (symbol->string exp))
-       (define binding
-         (send env get-typed-value exp))
+            (else
+             ;; Apply `f` to evaluated arguments
+             (apply f
+                    (map (lambda (arg)
+                           (eval-sexp arg env options))
+                         args)))))))))
+      ((not op)
+       #u)
+      ((procedure? op)
+       ;; `(<fn> ...)` call. The first element is a
+       ;; function object. If it is a fexpr call, the function
+       ;; is called with its arguments unevaluated. Otherwise,
+       ;; the arguments have to be evaluated first.
+       (define f op)
        (cond
-        (binding
-         (define-values (value)
-           binding)
-         value)
+        ((or (= (js/length args) 0)
+             (fexpr? f))
+         ;; Fexpr call. The function is called with its
+         ;; arguments unevaluated.
+         (apply f args))
         (else
-         (error
-          (string-append
-           "Could not find symbol: "
-           (symbol->string exp))))))
-      ((string? exp)
-       ;; String
-       exp)
-      ((estree? exp)
-       ;; ESTree
-       (eval-estree exp env))
+         ;; Regular call. The arguments are evaluated,
+         ;; and the values are passed to the function.
+         (apply f
+                (map (lambda (arg)
+                       (eval-sexp arg env options))
+                     args)))))
       (else
-       ;; Self-evaluating value
-       exp)))))
+       ;; `((...) ...)` call. The first element is a expression
+       ;; that has to be evaluated before function application
+       ;; can proceed.
+       (eval-sexp (cons (eval-sexp op env options)
+                        args)
+                  env
+                  options))))
+    ((keyword? exp)
+     ;; Keyword
+     exp)
+    ((symbol? exp)
+     ;; Variable
+     (define name
+       (symbol->string exp))
+     (define binding
+       (send env get-typed-value exp))
+     (cond
+      (binding
+       (define-values (value)
+         binding)
+       value)
+      (else
+       (error
+        (string-append
+         "Could not find symbol: "
+         (symbol->string exp))))))
+    ((string? exp)
+     ;; String
+     exp)
+    ((estree? exp)
+     ;; ESTree
+     (eval-estree exp env))
+    (else
+     ;; Self-evaluating value
+     exp))))
 
 ;;; Evaluate a syntax object.
 (define (eval-syntax node env (options (js/obj)))
@@ -287,8 +287,7 @@
      (evaluator
       (with-environment
        env
-       (lambda ()
-         (evaluator node env options))))
+       (evaluator node env options)))
      (else
       #u)))))
 
@@ -314,10 +313,9 @@
                         env))
   (with-environment
    env1
-   (js/arrow ()
-     (try
-       (catch Error e))
-     (eval-estree-program node env1 options))))
+   (try
+     (catch Error e))
+   (eval-estree-program node env1 options)))
 
 ;;; Evaluate an ESTree [`SequenceExpression`][estree:sequenceexpression] node.
 ;;;
@@ -804,20 +802,19 @@
                         env))
   (with-environment
    for-env
-   (js/arrow ()
-     (eval-estree init for-env options)
-     (try
-       (while (if test
-                  (eval-estree test for-env options)
-                  #t)
-         (try
-           (when body
-             (eval-estree body for-env options))
-           (catch ContinueException e))
-         (when update
-           (eval-estree update for-env options)))
-       (catch BreakException e))
-     #u)))
+   (eval-estree init for-env options)
+   (try
+     (while (if test
+                (eval-estree test for-env options)
+                #t)
+       (try
+         (when body
+           (eval-estree body for-env options))
+         (catch ContinueException e))
+       (when update
+         (eval-estree update for-env options)))
+     (catch BreakException e))
+   #u))
 
 ;;; Evaluate an ESTree [`ForOfStatement`][estree:forofstatement] node.
 ;;;
@@ -834,33 +831,32 @@
                         env))
   (with-environment
    for-of-env
-   (js/arrow ()
-     (define identifier
-       (cond
-        ((estree-type? left "VariableDeclaration")
-         (~> left
-             (get-estree-field "declarations" _)
-             (first _)
-             (get-estree-field "id" _)))
-        (else
-         (get-estree-field "left" left))))
-     (define right-val
-       (eval-estree right for-of-env options))
-     (try
-       (for ((x right-val))
-         (define declaration
-           (new VariableDeclaration
-                (list
-                 (new VariableDeclarator
-                      identifier
-                      (new Literal x)))
-                "let"))
-         (try
-           (eval-estree declaration for-of-env options)
-           (eval-estree body for-of-env options)
-           (catch ContinueException e)))
-       (catch BreakException e))
-     #u)))
+   (define identifier
+     (cond
+      ((estree-type? left "VariableDeclaration")
+       (~> left
+           (get-estree-field "declarations" _)
+           (first _)
+           (get-estree-field "id" _)))
+      (else
+       (get-estree-field "left" left))))
+   (define right-val
+     (eval-estree right for-of-env options))
+   (try
+     (for ((x right-val))
+       (define declaration
+         (new VariableDeclaration
+              (list
+               (new VariableDeclarator
+                    identifier
+                    (new Literal x)))
+              "let"))
+       (try
+         (eval-estree declaration for-of-env options)
+         (eval-estree body for-of-env options)
+         (catch ContinueException e)))
+     (catch BreakException e))
+   #u))
 
 ;;; Evaluate an ESTree [`TryStatement`][estree:trystatement] node.
 ;;;
@@ -890,15 +886,14 @@
                               env))
         (with-environment
          handler-env
-         (js/arrow ()
-           (send handler-env
-                 set-local!
-                 handler-param-sym
-                 err)
-           (set! result
-                 (eval-estree handler-body
-                              handler-env
-                              options)))))
+         (send handler-env
+               set-local!
+               handler-param-sym
+               err)
+         (set! result
+               (eval-estree handler-body
+                            handler-env
+                            options))))
        (else
         (throw err))))
     (finally
@@ -1147,9 +1142,8 @@
   (for ((x elements))
     (cond
      ((estree-type? x "SpreadElement")
-      (set! result
-            (append result
-                    (eval-estree x env options))))
+      (for ((y (eval-estree x env options)))
+        (push-right! result y)))
      (else
       (push-right! result
                    (eval-estree x env options)))))
@@ -1177,7 +1171,7 @@
                                 (list
                                  (new VariableDeclarator
                                       (new ArrayPattern params)
-                                      (wrap-in-estree args)))
+                                      (estree-quote args)))
                                 "let")
                           ,@(get-estree-field "body" body))))
                env
@@ -1202,7 +1196,7 @@
                                    (list
                                     (new VariableDeclarator
                                          (new ArrayPattern params)
-                                         (wrap-in-estree args)))
+                                         (estree-quote args)))
                                    "let")
                              ,@(get-estree-field "body" body))))
                   env

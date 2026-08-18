@@ -20,6 +20,12 @@
  #t
  > (compile #t)
  "true;"
+ > (compile #t :as 'statement)
+ "true;"
+ > (compile #t :as 'expression)
+ "true"
+ > (compile #t :as 'return)
+ "return true;"
 
  ;; `#f`
  > (describe "#f")
@@ -30,6 +36,12 @@
  #f
  > (compile #f)
  "false;"
+ > (compile #f :as 'statement)
+ "false;"
+ > (compile #f :as 'expression)
+ "false"
+ > (compile #f :as 'return)
+ "return false;"
 
  ;; `#u`
  > (describe "#u")

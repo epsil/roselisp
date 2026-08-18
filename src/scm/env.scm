@@ -971,7 +971,7 @@
 ;;; This makes the current environment available through the
 ;;; function {@link currentEnvironment}. The original value
 ;;; of `currentEnvironmentPointer` is restored afterwards.
-(define (with-environment env f)
+(define (with-environment-f env f)
   (define result #u)
   (define tmp current-environment-pointer)
   (try
@@ -981,11 +981,11 @@
       (set! current-environment-pointer tmp)))
   result)
 
-;;; Macro for `with-environment`.
-(define-macro (with-environment-macro environment &rest body)
-  `(with-environment
+;;; Macro for `with-environment-f`.
+(define-macro (with-environment environment &rest body)
+  `(with-environment-f
     ,environment
-    (lambda () ,@body)))
+    (js/arrow () ,@body)))
 
 ;;; Make an environment.
 (define (make-environment (variables #u)
@@ -1051,7 +1051,8 @@
 
 (provide
   (rename-out (current-environment_ current-environment))
-  (rename-out (with-environment with-current-environment))
+  (rename-out (with-environment-f with-current-environment))
+  (rename-out (with-environment-f with-environment))
   DynamicEnvironment
   Environment
   EnvironmentComposition
@@ -1071,4 +1072,4 @@
   make-environment
   prefix-bindings
   with-environment
-  with-environment-macro)
+  with-environment-f)

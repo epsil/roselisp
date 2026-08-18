@@ -1293,7 +1293,8 @@
   (define comments-option
     (oget options :comments))
   (define node1
-    (optimize-syntax node env))
+    ;; (optimize-syntax node env)
+    node)
   (define exp
     (syntax->datum node1))
   (define result)
@@ -1378,19 +1379,16 @@
                 (macro-type? op-type))
             (set! result
                   (compile-macro-call
-                   node1 env
-                   options)))
+                   node1 env options)))
            ;; Fexpr call.
            ((fexpr-type? op-type)
             (set! result
                   (compile-fexpr-call
-                   node1 env
-                   options)))
+                   node1 env options)))
            (else
             (set! result
                   (compile-function-call
-                   node1 env
-                   options)))))))))))
+                   node1 env options)))))))))))
    ((string? exp)
     (set! result
           (compile-string
@@ -3394,18 +3392,17 @@
           (syntax->datum (js/second body-statements)))
     (set! body-statements (drop body-statements 2)))
   (define body
-    (wrap-in-block-statement
-     (compile-statement-or-return-statement
-      (~> (begin-wrap-rose-smart-1
-           body-statements)
-          (send set-parent node))
-      env1
-      (js/obj-append
-       inherited-options
-       (js/obj :expression-type
-               (if (eq? return-type 'Void)
-                   "statement"
-                   "return"))))))
+    (compile-statement-or-return-statement
+     (datum->syntax
+      node
+      `(js/block ,@body-statements))
+     env1
+     (js/obj-append
+      inherited-options
+      (js/obj :expression-type
+              (if (eq? return-type 'Void)
+                  "statement"
+                  "return")))))
   (define result #u)
   (define result-f #u)
   (cond

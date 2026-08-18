@@ -44,7 +44,7 @@
  * [w:Rose tree]: https://en.wikipedia.org/wiki/Rose_tree
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapSexpInRose = exports.transferComments = exports.syntaxp = exports.syntaxE = exports.syntaxToList = exports.syntaxToDatum = exports.sliceRose = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSimpleRoseMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.forestp = exports.datumToSyntax = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.makeRose = exports.makeRoseMap = exports.SyntaxSplice = exports.Syntax = void 0;
+exports.wrapSexpInRose = exports.transferComments = exports.syntaxp = exports.syntaxE = exports.syntaxToList = exports.syntaxToDatum = exports.sliceRose = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.forestp = exports.datumToSyntax = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.makeRose = exports.makeRoseMap = exports.SyntaxSplice = exports.Syntax = void 0;
 const visitor_1 = require("./visitor");
 const [lastCdr] = (() => {
     function lastCdr_(lst) {
@@ -797,7 +797,7 @@ function sexpToRose(exp, node = undefined) {
             return exp;
         }
         else if (Array.isArray(exp)) {
-            // We need to create a new list since
+            // We may need to create a new list since
             // `exp` may be a list of rose tree nodes
             // and S-expressions.
             const lst = [];
@@ -836,18 +836,6 @@ function sexpToRose(exp, node = undefined) {
 }
 exports.makeRose = sexpToRose;
 exports.sexpToRose = sexpToRose;
-/**
- * Make a map mapping values to rose tree nodes,
- * but only one level down.
- */
-function makeSimpleRoseMap(node) {
-    const map = new Map();
-    node.forEachNode(function (x) {
-        return map.set(x.getValue(), x);
-    });
-    return map;
-}
-exports.makeSimpleRoseMap = makeSimpleRoseMap;
 /**
  * Make a rose tree map.
  *

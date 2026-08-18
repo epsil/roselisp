@@ -29,7 +29,8 @@
                   equal?_))
 (require (only-in "./env"
                   LispEnvironment
-                  with-environment))
+                  with-environment
+                  with-environment-f))
 (require (only-in "./language"
                   (interpret eval_)
                   lang-environment
@@ -128,12 +129,11 @@ Type ,q to quit.")
        (else
         (with-environment
          env
-         (lambda ()
-           ;; Read (R), Evaluate (E), Print (P).
-           (~> exp
-               (e _ env)
-               (p _)
-               (display _))))
+         ;; Read (R), Evaluate (E), Print (P).
+         (~> exp
+             (e _ env)
+             (p _)
+             (display _)))
         (loop-f))))
     (send rl question repl-prompt callback))
   (display initial-repl-message)

@@ -1983,19 +1983,32 @@ estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol
 /**
  * Wrap a value in an ESTree node.
  *
- * Distinguishes between list values and atomic values.
+ * If `recursive` is `#t`, it distinguishes
+ * between list values and atomic values.
+ * Otherwise, a `Literal` is used.
  */
-function wrapInEstree(x: any): any {
-  if (Array.isArray(x)) {
+function wrapInEstree(x: any, recursive: any = false): any {
+  if (recursive && Array.isArray(x)) {
     return new ArrayExpression(x.map(function (x: any): any {
-      return wrapInEstree(x);
+      return wrapInEstree(x, recursive);
     }));
   } else {
-    return new Literal(x);
+    return estreeQuote(x);
   }
 }
 
-wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), Symbol.for('wrap-in-estree'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]]]];
+wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x'), [Symbol.for('recursive'), false]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('recursive'), [Symbol.for('array?'), Symbol.for('x')]], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('wrap-in-estree'), Symbol.for('x'), Symbol.for('recursive')]], Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('estree-quote'), Symbol.for('x')]]]];
+
+/**
+ * Place an arbitrary value inside of an ESTree
+ * `Literal` node. Basically the ESTree equivalent
+ * of Lisp's `quote`.
+ */
+function estreeQuote(x: any): any {
+  return new Literal(x);
+}
+
+estreeQuote.fsource = [Symbol.for('define'), [Symbol.for('estree-quote'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]];
 
 /**
  * Get a field on an ESTree node, forcing it if it is a thunk.
@@ -2110,6 +2123,7 @@ export {
   WhileStatement,
   XRawJavaScript,
   YieldExpression,
+  estreeQuote,
   estreeType,
   estreeTypeP,
   estreep,

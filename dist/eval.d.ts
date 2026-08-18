@@ -70,7 +70,7 @@ declare namespace eval1 {
  */
 declare function evalSexp(exp: any, env: any, options?: any): any;
 declare namespace evalSexp {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][])[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[][] | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[][])[][])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][])[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[][] | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[][])[][])[])[])[];
 }
 /**
  * Evaluate a syntax object.
@@ -88,6 +88,6 @@ declare namespace evalSyntax {
  */
 declare function evalEstree(node: any, env: any, options?: any): any;
 declare namespace evalEstree {
-    var fsource: (symbol | (symbol | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | undefined)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[])[])[])[];
 }
 export { evalSyntax as evalRose, eval_ as seval, Evaluator, callEvaluator, defaultEvaluator, evalEstree, evalSexp, evalSyntax, eval1, eval_, evaluatorp, jsEval_ };

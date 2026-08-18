@@ -260,7 +260,7 @@ declare namespace condSpecial_ {
  */
 declare function andSpecial_(exp: any, env: any): any;
 declare namespace andSpecial_ {
-    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (boolean | symbol)[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate an `(or ...)` form.

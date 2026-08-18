@@ -517,7 +517,7 @@ declare namespace memberp_ {
  */
 declare function memq_(v: any, lst: any): any;
 declare namespace memq_ {
-    var fsource: (symbol | (symbol | (boolean | symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][] | (boolean | symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Whether a list contains a value,

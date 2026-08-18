@@ -38,7 +38,8 @@ import {
 
 import {
   LispEnvironment,
-  withEnvironment
+  withEnvironment,
+  withEnvironmentF
 } from './env';
 
 import {
@@ -151,7 +152,7 @@ function repl(): void {
         help();
         return loopF();
       } else {
-        withEnvironment(env, function (): any {
+        withEnvironmentF(env, (): any => {
           // Read (R), Evaluate (E), Print (P).
           return console.log(p(e(exp, env)));
         });

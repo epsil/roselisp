@@ -128,7 +128,7 @@ function repl() {
                 return loopF();
             }
             else {
-                (0, env_1.withEnvironment)(env, function () {
+                (0, env_1.withEnvironmentF)(env, () => {
                     // Read (R), Evaluate (E), Print (P).
                     return console.log(p(e(exp, env)));
                 });

@@ -480,11 +480,6 @@ declare function beginWrapRoseSmart1(nodes: any): any;
  */
 declare function sexpToRose(exp: any, node?: any): any;
 /**
- * Make a map mapping values to rose tree nodes,
- * but only one level down.
- */
-declare function makeSimpleRoseMap(node: any): any;
-/**
  * Make a rose tree map.
  *
  * Returns a map mapping a value to a list of rose tree nodes
@@ -560,4 +555,4 @@ declare function syntaxToList(stx: any): any;
  * [rkt:syntax-e]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-e%29%29
  */
 declare function syntaxE(stx: any): any;
-export { Rose as Syntax, RoseSplice as SyntaxSplice, roseToMap as makeRoseMap, sexpToRose as makeRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, datumToSyntax, forestp, makeListRose, makeRoseNonrecursive, makeSexpRose, makeSimpleRoseMap, roseToMap, roseToSexp, rosep, sexpToRose, sliceRose, syntaxToDatum, syntaxToList, syntaxE, syntaxp, transferComments, wrapSexpInRose };
+export { Rose as Syntax, RoseSplice as SyntaxSplice, roseToMap as makeRoseMap, sexpToRose as makeRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, datumToSyntax, forestp, makeListRose, makeRoseNonrecursive, makeSexpRose, roseToMap, roseToSexp, rosep, sexpToRose, sliceRose, syntaxToDatum, syntaxToList, syntaxE, syntaxp, transferComments, wrapSexpInRose };

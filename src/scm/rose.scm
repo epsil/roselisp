@@ -667,7 +667,7 @@
      ((is-a? exp Rose)
       exp)
      ((array? exp)
-      ;; We need to create a new list since
+      ;; We may need to create a new list since
       ;; `exp` may be a list of rose tree nodes
       ;; and S-expressions.
       (define lst '())
@@ -701,17 +701,6 @@
       (rose-map-set! cache exp result)
       result)))
   (sexp->rose-helper exp node cache indices))
-
-;;; Make a map mapping values to rose tree nodes,
-;;; but only one level down.
-(define (make-simple-rose-map node)
-  (define map
-    (make-hash))
-  (send node
-        for-each-node
-        (lambda (x)
-          (hash-set! map (send x get-value) x)))
-  map)
 
 ;;; Make a rose tree map.
 ;;;
@@ -912,7 +901,6 @@
   make-list-rose
   make-rose-nonrecursive
   make-sexp-rose
-  make-simple-rose-map
   rose->map
   rose->sexp
   rose?

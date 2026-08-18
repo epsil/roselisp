@@ -1455,8 +1455,11 @@
 
 ;;; Get a field on an ESTree node, forcing it if it is a thunk.
 (define (get-estree-field field node)
+  (define node-val node)
+  (when (thunk? node-val)
+    (set! node-val (force node-val)))
   (define field-val
-    (oget node field))
+    (oget node-val field))
   (when (thunk? field-val)
     (set! field-val (force field-val)))
   field-val)

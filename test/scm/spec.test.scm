@@ -958,6 +958,26 @@ foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
         x)
       (my-macro 1)))
  1
+ > (compile '(define-macro (my-macro env &rest body)
+               `(begin
+                  ,env
+                  ,@body)))
+ "function myMacro(exp, env1) {
+  let [env, ...body] = exp.slice(1);
+  return [Symbol.for('begin'), env, ...body];
+}
+
+myMacro.ftype = 'macro';"
+ > (compile '(define-macro (my-macro exp &rest body)
+               `(begin
+                  ,exp
+                  ,@body)))
+ "function myMacro(exp1, env) {
+  let [exp, ...body] = exp1.slice(1);
+  return [Symbol.for('begin'), exp, ...body];
+}
+
+myMacro.ftype = 'macro';"
 
  ;; `defmacro`
  > (describe "defmacro")

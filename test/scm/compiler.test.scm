@@ -1259,14 +1259,16 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
  _
  > (define-macro->lambda-form
      '(define-macro (foo x)
-        x))
+        x)
+     (js/obj :exp 'exp :env 'env))
  '(lambda (exp env)
     (define-values (x)
       (rest exp))
     x)
  > (define-macro->lambda-form
      '(define-macro (foo &whole expression x)
-        x))
+        x)
+     (js/obj :env 'env))
  '(lambda (expression env)
     (define-values (x)
       (rest expression))
@@ -1285,14 +1287,16 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
     x)
  > (define-macro->lambda-form
      '(define-macro (foo &rest x)
-        x))
+        x)
+     (js/obj :exp 'exp :env 'env))
  '(lambda (exp env)
     (define-values x
       (rest exp))
     x)
  > (define-macro->lambda-form
      '(define-macro (foo x &rest y)
-        x))
+        x)
+     (js/obj :exp 'exp :env 'env))
  '(lambda (exp env)
     (define-values (x . y)
       (rest exp))

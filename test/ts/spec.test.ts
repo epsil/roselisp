@@ -3520,7 +3520,7 @@ describe('syntax-e', function (): any {
 });
 
 describe('define-macro', function (): any {
-  return it('((lambda () (define-macro (my-macro x) x) (my-macro 1)))', function (): any {
+  it('((lambda () (define-macro (my-macro x) x) (my-macro 1)))', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
       Symbol.for('>'),
@@ -3537,6 +3537,76 @@ describe('define-macro', function (): any {
         ],
       ],
       1,
+    ]);
+  });
+  it("(compile '(define-macro (my-macro env &rest body) `(begin ,env ,@body)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('define-macro'),
+            [
+              Symbol.for('my-macro'),
+              Symbol.for('env'),
+              Symbol.for('&rest'),
+              Symbol.for('body'),
+            ],
+            [
+              Symbol.for('quasiquote'),
+              [
+                Symbol.for('begin'),
+                [Symbol.for('unquote'), Symbol.for('env')],
+                [Symbol.for('unquote-splicing'), Symbol.for('body')],
+              ],
+            ],
+          ],
+        ],
+      ],
+      'function myMacro(exp, env1) {\n' +
+        '  let [env, ...body] = exp.slice(1);\n' +
+        "  return [Symbol.for('begin'), env, ...body];\n" +
+        '}\n' +
+        '\n' +
+        "myMacro.ftype = 'macro';",
+    ]);
+  });
+  return it("(compile '(define-macro (my-macro exp &rest body) `(begin ,exp ,@body)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('define-macro'),
+            [
+              Symbol.for('my-macro'),
+              Symbol.for('exp'),
+              Symbol.for('&rest'),
+              Symbol.for('body'),
+            ],
+            [
+              Symbol.for('quasiquote'),
+              [
+                Symbol.for('begin'),
+                [Symbol.for('unquote'), Symbol.for('exp')],
+                [Symbol.for('unquote-splicing'), Symbol.for('body')],
+              ],
+            ],
+          ],
+        ],
+      ],
+      'function myMacro(exp1, env) {\n' +
+        '  let [exp, ...body] = exp1.slice(1);\n' +
+        "  return [Symbol.for('begin'), exp, ...body];\n" +
+        '}\n' +
+        '\n' +
+        "myMacro.ftype = 'macro';",
     ]);
   });
 });

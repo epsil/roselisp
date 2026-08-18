@@ -1816,13 +1816,19 @@ describe('definition->macro', function (): any {
 });
 
 describe('define-macro->lambda-form', function (): any {
-  it("(define-macro->lambda-form '(define-macro (foo x) x))", function (): any {
+  it("(define-macro->lambda-form '(define-macro (foo x) x) (js/obj :exp 'exp :env 'env))", function (): any {
     return assertEqual(
-      defineMacroToLambdaForm([
-        Symbol.for('define-macro'),
-        [Symbol.for('foo'), Symbol.for('x')],
-        Symbol.for('x'),
-      ]),
+      defineMacroToLambdaForm(
+        [
+          Symbol.for('define-macro'),
+          [Symbol.for('foo'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        {
+          exp: Symbol.for('exp'),
+          env: Symbol.for('env'),
+        }
+      ),
       [
         Symbol.for('lambda'),
         [Symbol.for('exp'), Symbol.for('env')],
@@ -1835,18 +1841,23 @@ describe('define-macro->lambda-form', function (): any {
       ]
     );
   });
-  it("(define-macro->lambda-form '(define-macro (foo &whole expression x) x))", function (): any {
+  it("(define-macro->lambda-form '(define-macro (foo &whole expression x) x) (js/obj :env 'env))", function (): any {
     return assertEqual(
-      defineMacroToLambdaForm([
-        Symbol.for('define-macro'),
+      defineMacroToLambdaForm(
         [
-          Symbol.for('foo'),
-          Symbol.for('&whole'),
-          Symbol.for('expression'),
+          Symbol.for('define-macro'),
+          [
+            Symbol.for('foo'),
+            Symbol.for('&whole'),
+            Symbol.for('expression'),
+            Symbol.for('x'),
+          ],
           Symbol.for('x'),
         ],
-        Symbol.for('x'),
-      ]),
+        {
+          env: Symbol.for('env'),
+        }
+      ),
       [
         Symbol.for('lambda'),
         [Symbol.for('expression'), Symbol.for('env')],
@@ -1905,13 +1916,19 @@ describe('define-macro->lambda-form', function (): any {
       ]
     );
   });
-  it("(define-macro->lambda-form '(define-macro (foo &rest x) x))", function (): any {
+  it("(define-macro->lambda-form '(define-macro (foo &rest x) x) (js/obj :exp 'exp :env 'env))", function (): any {
     return assertEqual(
-      defineMacroToLambdaForm([
-        Symbol.for('define-macro'),
-        [Symbol.for('foo'), Symbol.for('&rest'), Symbol.for('x')],
-        Symbol.for('x'),
-      ]),
+      defineMacroToLambdaForm(
+        [
+          Symbol.for('define-macro'),
+          [Symbol.for('foo'), Symbol.for('&rest'), Symbol.for('x')],
+          Symbol.for('x'),
+        ],
+        {
+          exp: Symbol.for('exp'),
+          env: Symbol.for('env'),
+        }
+      ),
       [
         Symbol.for('lambda'),
         [Symbol.for('exp'), Symbol.for('env')],
@@ -1924,18 +1941,24 @@ describe('define-macro->lambda-form', function (): any {
       ]
     );
   });
-  return it("(define-macro->lambda-form '(define-macro (foo x &rest y) x))", function (): any {
+  return it("(define-macro->lambda-form '(define-macro (foo x &rest y) x) (js/obj :exp 'exp :env 'env))", function (): any {
     return assertEqual(
-      defineMacroToLambdaForm([
-        Symbol.for('define-macro'),
+      defineMacroToLambdaForm(
         [
-          Symbol.for('foo'),
+          Symbol.for('define-macro'),
+          [
+            Symbol.for('foo'),
+            Symbol.for('x'),
+            Symbol.for('&rest'),
+            Symbol.for('y'),
+          ],
           Symbol.for('x'),
-          Symbol.for('&rest'),
-          Symbol.for('y'),
         ],
-        Symbol.for('x'),
-      ]),
+        {
+          exp: Symbol.for('exp'),
+          env: Symbol.for('env'),
+        }
+      ),
       [
         Symbol.for('lambda'),
         [Symbol.for('exp'), Symbol.for('env')],

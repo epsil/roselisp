@@ -99,7 +99,7 @@
 
 ;;; Create a `(lambda ...)` form for a macro function
 ;;; on the basis of a `(define-macro ...)` expression.
-(define (define-macro->lambda-form exp)
+(define (define-macro->lambda-form exp (options (js/obj)))
   (define name-and-args
     (second exp))
   (define name
@@ -108,8 +108,12 @@
     (cdr name-and-args))
   (define body
     (drop exp 2))
-  (define exp-arg 'exp)
-  (define env-arg 'env)
+  (define exp-arg
+    (or (oget options :exp)
+        (gensym "exp")))
+  (define env-arg
+    (or (oget options :env)
+        (gensym "env")))
   (define macro-args '())
   (define rest-arg #u)
   (cond

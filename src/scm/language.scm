@@ -3468,8 +3468,10 @@
         (if type-param
             (get-field typeAnnotation type-param)
             (new TSAnyKeyword)))
-      (unless (send param has-type)
-        (set-type param type-param-annotation)))
+      (unless (and (estree? param)
+                   (send param has-type))
+        (set! param
+              (set-type param type-param-annotation))))
     (set-field! returnType
                 result-f
                 (get-field returnType type-compiled)))
@@ -5195,14 +5197,6 @@
       #f
       `(string->symbol ,str))
      env options))
-   (literal-symbol-option
-    (define name
-      (make-identifier-string str options))
-    (new Identifier name))
-   ((send compilation-variables-env has? exp)
-    (send compilation-variables-env get exp))
-   ((eq? str "this")
-    (new ThisExpression))
    (gensymed-symbol
     (define gensym-map
       (oget options :gensym-map))
@@ -5248,6 +5242,14 @@
          (lambda ()
            (new Identifier (force gensym-name-thunk)))))
       identifier-thunk)))
+   (literal-symbol-option
+    (define name
+      (make-identifier-string str options))
+    (new Identifier name))
+   ((send compilation-variables-env has? exp)
+    (send compilation-variables-env get exp))
+   ((eq? str "this")
+    (new ThisExpression))
    (else
     (define name
       (make-identifier-string str options))

@@ -56,7 +56,7 @@ exports.r = r;
 /**
  * Eval utility.
  */
-function e(input, env = makeReplEnvironment()) {
+function e(input, env = makeInteractiveEnvironment()) {
     return input.map(function (exp) {
         let result = undefined;
         try {
@@ -76,7 +76,7 @@ function e(input, env = makeReplEnvironment()) {
 /**
  * Read--Eval utility.
  */
-function re(input, env = makeReplEnvironment()) {
+function re(input, env = makeInteractiveEnvironment()) {
     return e(r(input), env);
 }
 exports.re = re;
@@ -91,7 +91,7 @@ function p(input) {
 /**
  * Read--Eval--Print utility.
  */
-function rep(input, env = makeReplEnvironment()) {
+function rep(input, env = makeInteractiveEnvironment()) {
     return p(re(input, env));
 }
 exports.rep = rep;
@@ -108,32 +108,35 @@ function repl() {
         input: process_1.stdin,
         output: process_1.stdout
     });
+    let printFlag = true;
     let quitFlag = false;
-    function quitx() {
-        if (!quitFlag) {
-            quitFlag = true;
-            return rl.close();
-        }
+    function help() {
+        printFlag = false;
+        return console.log(replHelpMessage);
     }
-    const env = makeReplEnvironment([[Symbol.for('exit'), quitx, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quitx, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]]);
+    function quitx() {
+        printFlag = false;
+        quitFlag = true;
+        return rl.close();
+    }
+    const interactiveEnv = makeInteractiveEnvironment({
+        help,
+        quit: quitx
+    });
     // Read-eval-print loop
     function loopF(...args) {
         function callback(x) {
-            const exp = r(x);
-            if (quitFlag || quitCmdP(exp)) {
-                return quitx();
-            }
-            else if (helpCmdP(exp)) {
-                help();
-                return loopF();
-            }
-            else {
-                (0, env_1.withEnvironmentF)(env, () => {
-                    // Read (R), Evaluate (E), Print (P).
-                    return console.log(p(e(exp, env)));
-                });
-                return loopF();
-            }
+            return (0, env_1.withEnvironmentF)(interactiveEnv, () => {
+                // Read (R), Evaluate (E), Print (P).
+                printFlag = true;
+                let result = p(e(rewriteExpression(r(x)), interactiveEnv));
+                if (printFlag) {
+                    console.log(result);
+                }
+                if (!quitFlag) {
+                    return loopF();
+                }
+            });
         }
         return rl.question(replPrompt, callback);
     }
@@ -144,20 +147,24 @@ exports.repl = repl;
 /**
  * Make an environment for the REPL.
  */
-function makeReplEnvironment(bindings = []) {
-    return new env_1.LispEnvironment(bindings, language_1.langEnvironment);
+function makeInteractiveEnvironment(options = {}) {
+    const help_ = options['help'];
+    const quit_ = options['quit'];
+    const parentEnv = new env_1.LispEnvironment([[Symbol.for('exit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('load'), language_1.load_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]], language_1.langEnvironment);
+    const env = new env_1.LispEnvironment([], parentEnv);
+    return env;
 }
 /**
  * Whether `exp` is a command for quitting the REPL.
  */
 function helpCmdP(exp) {
-    return (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('h')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('help')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('help')]]);
+    return (0, equal_1.equalp_)(exp, [[Symbol.for('help')]]);
 }
 /**
  * Whether `exp` is a command for quitting the REPL.
  */
 function quitCmdP(exp) {
-    return (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('q')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('quit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('quit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('exit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('exit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('unquote'), Symbol.for('x')]]);
+    return (0, equal_1.equalp_)(exp, [[Symbol.for('quit')]]) || (0, equal_1.equalp_)(exp, [[Symbol.for('exit')]]);
 }
 /**
  * Print a value.
@@ -166,8 +173,23 @@ function printValue(x, options = {}) {
     return console.log((0, language_1.printSexpAsExpression)(x, options));
 }
 /**
- * Display help message.
+ * Rewrite `(unquote ...)` expressions to regular
+ * function calls.
  */
-function help() {
-    return console.log(replHelpMessage);
+function rewriteExpression(exp) {
+    // TODO: Use `(match ...)` to express things
+    // in a cleaner way.
+    let result = exp;
+    if (Array.isArray(exp) && Array.isArray(exp[0]) && (exp[0][0] === Symbol.for('unquote'))) {
+        if ([Symbol.for('x'), Symbol.for('q')].includes(exp[0][1])) {
+            result = [[Symbol.for('quit')]];
+        }
+        else if (exp[0][1] === Symbol.for('h')) {
+            result = [[Symbol.for('help')]];
+        }
+        else {
+            result = [[...exp[0].slice(1), ...exp.slice(1)]];
+        }
+    }
+    return result;
 }

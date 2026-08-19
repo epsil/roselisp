@@ -34,6 +34,7 @@
 (require (only-in "./language"
                   (interpret eval_)
                   lang-environment
+                  load_
                   print-sexp-as-expression))
 (require (only-in "./parser"
                   read))
@@ -61,7 +62,7 @@ Type ,q to quit.")
       (read _)))
 
 ;;; Eval utility.
-(define (e input (env (make-repl-environment)))
+(define (e input (env (make-interactive-environment)))
   (~> input
       (map (lambda (exp)
              (let ((result #u))
@@ -74,7 +75,7 @@ Type ,q to quit.")
            _)))
 
 ;;; Read--Eval utility.
-(define (re input (env (make-repl-environment)))
+(define (re input (env (make-interactive-environment)))
   (~> input
       (r _)
       (e _ env)))
@@ -86,7 +87,7 @@ Type ,q to quit.")
       (string-join _ "\n")))
 
 ;;; Read--Eval--Print utility.
-(define (rep input (env (make-repl-environment)))
+(define (rep input (env (make-interactive-environment)))
   (~> input
       (re _ env)
       (p _)))
@@ -104,61 +105,65 @@ Type ,q to quit.")
           createInterface
           (js/obj :input stdin
                   :output stdout)))
+  (define print-flag #t)
   (define quit-flag #f)
+  (define (help)
+    (set! print-flag #f)
+    (display repl-help-message))
   (define (quit!)
-    (unless quit-flag
-      (set! quit-flag #t)
-      (send rl close)))
-  (define env
-    (make-repl-environment
-     `((exit ,quit! '(-> Any * Any))
-       (help ,help '(-> Any * Any))
-       (quit ,quit! '(-> Any * Any)))))
+    (set! print-flag #f)
+    (set! quit-flag #t)
+    (send rl close))
+  (define interactive-env
+    (make-interactive-environment
+     (js/obj :help help
+             :quit quit!)))
   ;; Read-eval-print loop
   (define (loop-f . args)
     (define (callback x)
-      (define exp
-        (r x))
-      (cond
-       ((or quit-flag
-            (quit-cmd? exp))
-        (quit!))
-       ((help-cmd? exp)
-        (help)
-        (loop-f))
-       (else
-        (with-environment
-         env
-         ;; Read (R), Evaluate (E), Print (P).
-         (~> exp
-             (e _ env)
-             (p _)
-             (display _)))
-        (loop-f))))
+      (with-environment
+       interactive-env
+       ;; Read (R), Evaluate (E), Print (P).
+       (set! print-flag #t)
+       (define result
+         (~> x
+             (r _)
+             (rewrite-expression _)
+             (e _ interactive-env)
+             (p _)))
+       (when print-flag
+         (display result))
+       (unless quit-flag
+         (loop-f))))
     (send rl question repl-prompt callback))
   (display initial-repl-message)
   (loop-f))
 
 ;;; Make an environment for the REPL.
-(define (make-repl-environment (bindings '()))
-  (new LispEnvironment
-       bindings
-       lang-environment))
+(define (make-interactive-environment (options (js/obj)))
+  (define help_ (oget options :help))
+  (define quit_ (oget options :quit))
+  (define parent-env
+    (new LispEnvironment
+         `((exit ,quit_ '(-> Any * Any))
+           (help ,help_ '(-> Any * Any))
+           (quit ,quit_ '(-> Any * Any))
+           (load ,load_ '(-> Any * Any)))
+         lang-environment))
+  (define env
+    (new LispEnvironment
+         '()
+         parent-env))
+  env)
 
 ;;; Whether `exp` is a command for quitting the REPL.
 (define (help-cmd? exp)
-  (or (equal?_ exp '((unquote h)))
-      (equal?_ exp '((unquote help)))
-      (equal?_ exp '((help)))))
+  (equal?_ exp '((help))))
 
 ;;; Whether `exp` is a command for quitting the REPL.
 (define (quit-cmd? exp)
-  (or (equal?_ exp '((unquote q)))
-      (equal?_ exp '((unquote quit)))
-      (equal?_ exp '((quit)))
-      (equal?_ exp '((unquote exit)))
-      (equal?_ exp '((exit)))
-      (equal?_ exp '((unquote x)))))
+  (or (equal?_ exp '((quit)))
+      (equal?_ exp '((exit)))))
 
 ;;; Print a value.
 (define (print-value x (options (js/obj)))
@@ -166,9 +171,29 @@ Type ,q to quit.")
       (print-sexp-as-expression _ options)
       (display _)))
 
-;;; Display help message.
-(define (help)
-  (display repl-help-message))
+;;; Rewrite `(unquote ...)` expressions to regular
+;;; function calls.
+(define (rewrite-expression exp)
+  ;; TODO: Use `(match ...)` to express things
+  ;; in a cleaner way.
+  (define result exp)
+  (when (and (array? exp)
+             (array? (js/first exp))
+             (eq? (js/first (js/first exp))
+                  'unquote))
+    (cond
+     ((memq? (js/second (js/first exp))
+             '(x q))
+      (set! result '((quit))))
+     ((eq? (js/second (js/first exp))
+           'h)
+      (set! result '((help))))
+     (else
+      (set! result
+            (list
+             (append (js/rest (js/first exp))
+                     (js/rest exp)))))))
+  result)
 
 (provide
   r

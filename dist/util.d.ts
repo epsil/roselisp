@@ -149,4 +149,9 @@ declare function defineGeneric(f: any): any;
  * [cl:defmethod]: http://clhs.lisp.se/Body/m_defmet.htm
  */
 declare function defineMethod(genericFunction: any, arglist: any, functionDefinition: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineGeneric, defineMethod, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };
+/**
+ * Convert a list expression like `(list ...)`
+ * or `(list* ...)` to a list expression pattern.
+ */
+declare function listExpressionToPattern(exp: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineGeneric, defineMethod, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };

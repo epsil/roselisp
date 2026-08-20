@@ -174,26 +174,16 @@ Type ,q to quit.")
 ;;; Rewrite `(unquote ...)` expressions to regular
 ;;; function calls.
 (define (rewrite-expression exp)
-  ;; TODO: Use `(match ...)` to express things
-  ;; in a cleaner way.
-  (define result exp)
-  (when (and (array? exp)
-             (array? (js/first exp))
-             (eq? (js/first (js/first exp))
-                  'unquote))
-    (cond
-     ((memq? (js/second (js/first exp))
-             '(x q))
-      (set! result '((quit))))
-     ((eq? (js/second (js/first exp))
-           'h)
-      (set! result '((help))))
-     (else
-      (set! result
-            (list
-             (append (js/rest (js/first exp))
-                     (js/rest exp)))))))
-  result)
+  (match exp
+    ((list (list 'unquote x) y ...)
+     (cond
+      ((eq? x 'h)
+       (set! x 'help))
+      ((memq? x '(x q))
+       (set! x 'quit)))
+     `((,x ,@y)))
+    (_
+     exp)))
 
 (provide
   r

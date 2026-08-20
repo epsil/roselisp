@@ -684,7 +684,6 @@
     (get-estree-field "right" node))
   (define right-val
     (eval-estree right env options))
-  ;; TODO: Use `js/op` here.
   (cond
    ((eq? operator "+")
     (+ left-val right-val))
@@ -706,12 +705,24 @@
     (js/== left-val right-val))
    ((eq? operator "===")
     (js/=== left-val right-val))
+   ((eq? operator "!=")
+    (not (js/== left-val right-val)))
+   ((eq? operator "!==")
+    (not (js/=== left-val right-val)))
    ((eq? operator "in")
     (js/in left-val right-val))
    ((eq? operator "instanceof")
     (is-a? left-val right-val))
    (else
-    #u)))
+    (js/eval
+     (string-append
+      "("
+      (print-estree (estree-quote left-val))
+      ") "
+      operator
+      " ("
+      (print-estree (estree-quote right-val))
+      ")")))))
 
 ;;; Evaluate an ESTree [`LogicalExpression`][estree:logicalexpression] node.
 ;;;
@@ -1038,103 +1049,96 @@
     (oget settings :local))
   (define left
     (get-estree-field "left" node))
-  (define left-type
-    (estree-type left))
   (define right
     (get-estree-field "right" node))
   (define right-val
+    (if right
+        (eval-estree right env options)
+        #u))
+  (define (eval-pattern pattern val)
     (cond
-     (right
-      (eval-estree right env options))
-     (else
-      #u)))
-  (cond
-   ((eq? left-type "ArrayPattern")
-    (define elements
-      (get-estree-field "elements" left))
-    (for ((i (range 0 (js/length elements))))
-      (define x
-        (aget elements i))
-      (define x-type
-        (estree-type x))
-      (cond
-       ((eq? x-type "RestElement")
-        (define name
-          (~> x
-              (get-estree-field "argument" _)
-              (get-estree-field "name" _)))
-        (define sym
-          (string->symbol name))
-        (define val
-          (drop right-val i))
-        (cond
-         (local-setting
-          (send env set-local! sym val))
-         (else
-          (send env set! sym val))))
-       (else
-        (define name
-          (get-estree-field "name" x))
-        (define sym
-          (string->symbol name))
-        (define val
-          (aget right-val i))
-        (cond
-         (local-setting
-          (send env set-local! sym val))
-         (else
-          (send env set! sym val))))))
-    right-val)
-   ((eq? left-type "ObjectPattern")
-    (define properties
-      (get-estree-field "properties" left))
-    (for ((prop properties))
-      (define key
-        (get-estree-field "key" prop))
-      (define value
-        (get-estree-field "value" prop))
+     ((estree-type? pattern "Identifier")
       (define sym
-        (string->symbol (get-estree-field "name" value)))
-      (define val
-        (oget right-val
-              (get-estree-field "name" key)))
+        (string->symbol (get-estree-field "name" pattern)))
       (cond
        (local-setting
         (send env set-local! sym val))
        (else
-        (send env set! sym val))))
-    right-val)
-   ((eq? left-type "Identifier")
-    (define sym
-      (string->symbol (get-estree-field "name" left)))
-    (cond
-     (local-setting
-      (send env set-local! sym right-val))
+        (send env set! sym val)))
+      val)
+     ((estree-type? pattern "MemberExpression")
+      (define obj
+        (get-estree-field "object" pattern))
+      (define obj-val
+        (eval-estree obj env options))
+      (define computed
+        (get-estree-field "computed" pattern))
+      (define prop
+        (get-estree-field "property" pattern))
+      (define prop-val
+        (cond
+         (computed
+          (eval-estree prop env options))
+         ((estree-type? prop "Identifier")
+          (get-estree-field "name" prop))
+         (else
+          (get-estree-field "value" prop))))
+      (oset! obj-val prop-val val)
+      val)
+     ((estree-type? pattern "ObjectPattern")
+      (define properties
+        (get-estree-field "properties" pattern))
+      (for ((prop properties))
+        (define key
+          (get-estree-field "key" prop))
+        (define value
+          (get-estree-field "value" prop))
+        (define sym
+          (string->symbol (get-estree-field "name" value)))
+        (define val1
+          (oget val
+                (get-estree-field "name" key)))
+        (cond
+         (local-setting
+          (send env set-local! sym val1))
+         (else
+          (send env set! sym val1))))
+      val)
+     ((estree-type? pattern "ArrayPattern")
+      (define elements
+        (get-estree-field "elements" pattern))
+      (for ((i (range 0 (js/length elements))))
+        (define x
+          (aget elements i))
+        (define x1
+          (if (thunk? x)
+              (force x)
+              x))
+        (cond
+         ((not x1)
+          (continue))
+         ((estree-type? x1 "RestElement")
+          (eval-pattern (get-estree-field "argument" x1)
+                        (drop val i)))
+         (else
+          (eval-pattern x1 (aget val i)))))
+      val)
+     ((estree-type? pattern "AssignmentPattern")
+      (define left
+        (get-estree-field "left" pattern))
+      (define right
+        (get-estree-field "right" pattern))
+      (define val1
+        (if (undefined? val)
+            (eval-estree right env options)
+            val))
+      (eval-pattern left val1))
+     ;; TODO: Chain expressions
      (else
-      (send env set! sym right-val)))
-    right-val)
-   ((eq? left-type "MemberExpression")
-    (define obj
-      (get-estree-field "object" left))
-    (define obj-val
-      (eval-estree obj env options))
-    (define computed
-      (get-estree-field "computed" left))
-    (define prop
-      (get-estree-field "property" left))
-    (define prop-val
-      (cond
-       (computed
-        (eval-estree prop env options))
-       ((estree-type? prop "Identifier")
-        (get-estree-field "name" prop))
-       (else
-        (get-estree-field "value" prop))))
-    (oset! obj-val prop-val right-val)
-    right-val)
-   ;; TODO: Chain expressions
-   (else
-    #u)))
+      #u)))
+  (eval-pattern left right-val))
+
+;;; Helper function for `eval-estree-assignment-expression-helper`.
 
 ;;; Helper function for `eval-estree-array-expression`.
 (define (eval-estree-array-expression-helper elements env (options (js/obj)))

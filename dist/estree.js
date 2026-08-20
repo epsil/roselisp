@@ -1642,6 +1642,9 @@ estreeQuote.fsource = [Symbol.for('define'), [Symbol.for('estree-quote'), Symbol
  * Get a field on an ESTree node, forcing it if it is a thunk.
  */
 function getEstreeField(field, node) {
+    if (!node) {
+        return undefined;
+    }
     let nodeVal = node;
     if ((0, thunk_1.thunkp)(nodeVal)) {
         nodeVal = (0, thunk_1.force)(nodeVal);
@@ -1653,4 +1656,4 @@ function getEstreeField(field, node) {
     return fieldVal;
 }
 exports.getEstreeField = getEstreeField;
-getEstreeField.fsource = [Symbol.for('define'), [Symbol.for('get-estree-field'), Symbol.for('field'), Symbol.for('node')], [Symbol.for('define'), Symbol.for('node-val'), Symbol.for('node')], [Symbol.for('when'), [Symbol.for('thunk?'), Symbol.for('node-val')], [Symbol.for('set!'), Symbol.for('node-val'), [Symbol.for('force'), Symbol.for('node-val')]]], [Symbol.for('define'), Symbol.for('field-val'), [Symbol.for('oget'), Symbol.for('node-val'), Symbol.for('field')]], [Symbol.for('when'), [Symbol.for('thunk?'), Symbol.for('field-val')], [Symbol.for('set!'), Symbol.for('field-val'), [Symbol.for('force'), Symbol.for('field-val')]]], Symbol.for('field-val')];
+getEstreeField.fsource = [Symbol.for('define'), [Symbol.for('get-estree-field'), Symbol.for('field'), Symbol.for('node')], [Symbol.for('unless'), Symbol.for('node'), [Symbol.for('return'), undefined]], [Symbol.for('define'), Symbol.for('node-val'), Symbol.for('node')], [Symbol.for('when'), [Symbol.for('thunk?'), Symbol.for('node-val')], [Symbol.for('set!'), Symbol.for('node-val'), [Symbol.for('force'), Symbol.for('node-val')]]], [Symbol.for('define'), Symbol.for('field-val'), [Symbol.for('oget'), Symbol.for('node-val'), Symbol.for('field')]], [Symbol.for('when'), [Symbol.for('thunk?'), Symbol.for('field-val')], [Symbol.for('set!'), Symbol.for('field-val'), [Symbol.for('force'), Symbol.for('field-val')]]], Symbol.for('field-val')];

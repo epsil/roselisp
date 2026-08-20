@@ -107,7 +107,7 @@ declare namespace defineMacroToFunction {
  */
 declare function defineMacroToLambdaForm(exp: any, options?: any): any;
 declare namespace defineMacroToLambdaForm {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | symbol[])[] | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | symbol[])[] | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[];
 }
 /**
  * Expand a `(defmacro ...)` expression.
@@ -454,4 +454,18 @@ declare namespace cljTry_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
 }
-export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, elIf_, for_, letEnv_, multipleValueBind_, newApply_, or_, quasisyntax_, rktNew_, set_, setq_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };
+/**
+ * Expand a `(match ...)` expression.
+ *
+ * Similar to [`match` in Racket] and, to a lesser extent,
+ * [`match` in Guile][guile:match].
+ *
+ * [rkt:match]: https://docs.racket-lang.org/reference/match.html#%28form._%28%28lib._racket%2Fmatch..rkt%29._match%29%29
+ * [guile:match]: https://doc.guix.gnu.org/guile/latest/en/html_node/Pattern-Matching.html#index-match
+ */
+declare function match_(exp1: any, env: any): any;
+declare namespace match_ {
+    var fsource: (symbol | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol[])[] | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (boolean | symbol)[] | (boolean | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[])[])[][] | (boolean | symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][] | (symbol | ((symbol | (symbol | (number | symbol | symbol[])[])[])[] | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[][] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[][])[] | (symbol | (number | symbol)[] | (symbol | (boolean | symbol)[])[])[])[][] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((number | symbol | symbol[])[] | (boolean | symbol | symbol[])[])[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (symbol | (boolean | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
+    var ftype: string;
+}
+export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, elIf_, for_, letEnv_, match_, multipleValueBind_, newApply_, or_, quasisyntax_, rktNew_, set_, setq_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };

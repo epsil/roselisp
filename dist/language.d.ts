@@ -143,7 +143,7 @@ declare namespace splitComments {
  */
 declare function definitionToMacro(exp: any, args: any): any;
 declare namespace definitionToMacro {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[][] | (symbol | undefined)[])[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[] | (symbol | ((number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | symbol[] | ((symbol | (number | symbol | symbol[])[])[] | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | undefined)[] | symbol[][])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | undefined)[] | symbol[][])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Convert a `(define ... (class ...))` expression to
@@ -692,7 +692,7 @@ declare namespace setFields_ {
  */
 declare function callWithCurrentContinuation_(proc: any, promptTag?: any): any;
 declare namespace callWithCurrentContinuation_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
 }
 /**
  * Traverse an ESTree tree.

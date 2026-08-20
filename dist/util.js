@@ -16,7 +16,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
 const [lastCdr] = (() => {
@@ -576,3 +576,43 @@ function argsMatchesParamsP(args, params) {
     }
     return true;
 }
+/**
+ * Convert a list expression like `(list ...)`
+ * or `(list* ...)` to a list expression pattern.
+ */
+function listExpressionToPattern(exp) {
+    if (Array.isArray(exp)) {
+        if (taggedListP(exp, [Symbol.for('list'), Symbol.for('values')])) {
+            if (exp[exp.length - 1] === Symbol.for('...')) {
+                const head = exp.slice(1).slice(0, -2);
+                const tail = exp[exp.length - 2];
+                return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
+            }
+            else {
+                return exp.slice(1).map(function (x) {
+                    return listExpressionToPattern(x);
+                });
+            }
+        }
+        else if (taggedListP(exp, Symbol.for('list*'))) {
+            const head = exp.slice(1).slice(0, -1);
+            const tail = exp[exp.length - 1];
+            if (head.length === 0) {
+                return listExpressionToPattern(tail);
+            }
+            else {
+                return [...head.map(function (x) {
+                        return listExpressionToPattern(x);
+                    }), Symbol.for('.'), listExpressionToPattern(tail)];
+            }
+        }
+        else {
+            // (map list-expression->pattern exp)
+            return false;
+        }
+    }
+    else {
+        return exp;
+    }
+}
+exports.listExpressionToPattern = listExpressionToPattern;

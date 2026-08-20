@@ -668,6 +668,112 @@ describe('case', function (): any {
   });
 });
 
+describe('destructuring-bind', function (): any {
+  it("(destructuring-bind (x) '(1) (list x))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('destructuring-bind'),
+        [Symbol.for('x')],
+        [Symbol.for('quote'), [1]],
+        [Symbol.for('list'), Symbol.for('x')],
+      ],
+      [Symbol.for('quote'), [1]],
+    ]);
+  });
+  it("(destructuring-bind (x y) '(1 2) (list x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('destructuring-bind'),
+        [Symbol.for('x'), Symbol.for('y')],
+        [Symbol.for('quote'), [1, 2]],
+        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+      ],
+      [Symbol.for('quote'), [1, 2]],
+    ]);
+  });
+  it("(destructuring-bind (x y z) '(1 2 3) (list x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('destructuring-bind'),
+        [Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+        [Symbol.for('quote'), [1, 2, 3]],
+        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+      ],
+      [Symbol.for('quote'), [1, 2, 3]],
+    ]);
+  });
+  it("(destructuring-bind ((x) y z) '((1) 2 3) (list x y z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('destructuring-bind'),
+        [[Symbol.for('x')], Symbol.for('y'), Symbol.for('z')],
+        [Symbol.for('quote'), [[1], 2, 3]],
+        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')],
+      ],
+      [Symbol.for('quote'), [1, 2, 3]],
+    ]);
+  });
+  it("(destructuring-bind (x . y) '(1 2) (list x y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('destructuring-bind'),
+        [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
+        [Symbol.for('quote'), [1, 2]],
+        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+      ],
+      [Symbol.for('quote'), [1, [2]]],
+    ]);
+  });
+  it("(compile '(destructuring-bind (x y) '(1 2) (list x y)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('destructuring-bind'),
+            [Symbol.for('x'), Symbol.for('y')],
+            [Symbol.for('quote'), [1, 2]],
+            [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+          ],
+        ],
+      ],
+      'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
+    ]);
+  });
+  return it("(compile '(destructuring-bind (x . y) '(1 2) (list x y)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('destructuring-bind'),
+            [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
+            [Symbol.for('quote'), [1, 2]],
+            [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+          ],
+        ],
+      ],
+      'let [x, ...y] = [1, 2];\n' + '\n' + '[x, y];',
+    ]);
+  });
+});
+
 describe('el/if', function (): any {
   it('(el/if #t 1 2)', function (): any {
     return testRepl([
@@ -699,6 +805,41 @@ describe('el/if', function (): any {
       Symbol.for('>'),
       [Symbol.for('el/if'), false, 1, 2, 3, 4],
       4,
+    ]);
+  });
+});
+
+describe('multiple-values-bind', function (): any {
+  it('(multiple-values-bind (x y) (values 1 2) (list x y))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('multiple-values-bind'),
+        [Symbol.for('x'), Symbol.for('y')],
+        [Symbol.for('values'), 1, 2],
+        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+      ],
+      [Symbol.for('quote'), [1, 2]],
+    ]);
+  });
+  return it("(compile '(multiple-values-bind (x y) (values 1 2) (list x y)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('multiple-values-bind'),
+            [Symbol.for('x'), Symbol.for('y')],
+            [Symbol.for('values'), 1, 2],
+            [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+          ],
+        ],
+      ],
+      'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
     ]);
   });
 });

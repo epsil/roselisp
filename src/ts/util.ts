@@ -557,6 +557,41 @@ function argsMatchesParamsP(args: any, params: any): any {
   return true;
 }
 
+/**
+ * Convert a list expression like `(list ...)`
+ * or `(list* ...)` to a list expression pattern.
+ */
+function listExpressionToPattern(exp: any): any {
+  if (Array.isArray(exp)) {
+    if (taggedListP(exp, [Symbol.for('list'), Symbol.for('values')])) {
+      if (exp[exp.length - 1] === Symbol.for('...')) {
+        const head: any = exp.slice(1).slice(0, -2);
+        const tail: any = exp[exp.length - 2];
+        return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
+      } else {
+        return exp.slice(1).map(function (x: any): any {
+          return listExpressionToPattern(x);
+        });
+      }
+    } else if (taggedListP(exp, Symbol.for('list*'))) {
+      const head: any = exp.slice(1).slice(0, -1);
+      const tail: any = exp[exp.length - 1];
+      if (head.length === 0) {
+        return listExpressionToPattern(tail);
+      } else {
+        return [...head.map(function (x: any): any {
+          return listExpressionToPattern(x);
+        }), Symbol.for('.'), listExpressionToPattern(tail)];
+      }
+    } else {
+      // (map list-expression->pattern exp)
+      return false;
+    }
+  } else {
+    return exp;
+  }
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
@@ -570,6 +605,7 @@ export {
   kebabCaseToCamelCase,
   kebabCaseToSnakeCase,
   lambdaToLet,
+  listExpressionToPattern,
   makeIdentifierString,
   makeUniqueSymbol,
   mapGet,

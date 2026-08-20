@@ -18,6 +18,7 @@
                   eval_))
 (require (only-in "./util"
                   count-tree
+                  list-expression->pattern
                   map-tree
                   tagged-list?))
 
@@ -783,6 +784,200 @@
     ,@catch-clauses
     ,@finalizer-clauses))
 
+;;; Expand a `(match ...)` expression.
+;;;
+;;; Similar to [`match` in Racket] and, to a lesser extent,
+;;; [`match` in Guile][guile:match].
+;;;
+;;; [rkt:match]: https://docs.racket-lang.org/reference/match.html#%28form._%28%28lib._racket%2Fmatch..rkt%29._match%29%29
+;;; [guile:match]: https://doc.guix.gnu.org/guile/latest/en/html_node/Pattern-Matching.html#index-match
+(define-macro (match_ exp &rest clauses)
+  (define (pattern-bind pat exp)
+    (cond
+     ((eq? pat '_)
+      '())
+     ((symbol? pat)
+      (list
+       `(define ,pat ,exp)))
+     ((array? pat)
+      (cond
+       ((null? pat)
+        '())
+       ((tagged-list? pat 'quote)
+        '())
+       ((tagged-list? pat 'var)
+        (list
+         `(define ,(js/second pat)
+            ,exp)))
+       ((tagged-list? pat 'cons)
+        (pattern-bind `(list* ,@(js/rest pat)) exp))
+       ((tagged-list? pat '(list list*))
+        (list
+         `(define-values ,(list-expression->pattern pat)
+            ,exp)))
+       (else
+        '())))
+     (else
+      '())))
+  (define (pattern-match pat exp (make-let #t))
+    (cond
+     ((and make-let
+           (array? exp))
+      (let ((pattern-match-val (gensym "pattern-match-val")))
+        `(let ((,pattern-match-val ,exp))
+           ,(pattern-match pat pattern-match-val))))
+     ((symbol? pat)
+      #t)
+     ((array? pat)
+      (cond
+       ((null? pat)
+        `(null? ,exp))
+       ((tagged-list? pat 'quote)
+        `(,(if (array? (js/second pat))
+               'equal?
+               'eq?)
+          ,exp
+          ,pat))
+       ((tagged-list? pat 'var)
+        #t)
+       ((tagged-list? pat 'not)
+        `(not ,(pattern-match (js/second pat) exp #f)))
+       ((tagged-list? pat 'and)
+        (apply combine-expressions
+               '(and)
+               (map (lambda (x)
+                      (pattern-match x exp #f))
+                    (js/rest pat))))
+       ((tagged-list? pat 'or)
+        (apply combine-expressions
+               '(or)
+               (map (lambda (x)
+                      (pattern-match x exp #f))
+                    (js/rest pat))))
+       ((tagged-list? pat 'cons)
+        (pattern-match `(list* ,@(js/rest pat)) exp #f))
+        ((tagged-list? pat 'list)
+        (cond
+         ((eq? (js/last pat) '...)
+          (define head
+            (~> (drop pat 1)
+                (drop-right _ 2)))
+          (define tail
+            (aget pat (- (js/length pat) 2)))
+          (define pat1
+            `(list* ,@head ,tail))
+          (pattern-match pat1 exp #f))
+         (else
+          (define len
+            (- (js/length pat) 1))
+          (define result
+            `(and (array? ,exp)
+                  (= (js/length ,exp)
+                     ,len)))
+          (for ((i (range 1 (js/length pat))))
+            (define pat1
+              (aget pat i))
+            (define exp1
+              `(aget ,exp ,(- i 1)))
+            (define result1
+              (pattern-match pat1 exp1 #f))
+            (set! result (combine-expressions result result1)))
+          result)))
+       ((tagged-list? pat 'list*)
+        (define head
+          (~> (drop pat 1)
+              (drop-right _ 1)))
+        (define tail
+          (js/last pat))
+        (define len
+          (js/length head))
+        (define result
+          `(and (array? ,exp)
+                (>= (js/length ,exp)
+                    ,(js/length head))))
+        (for ((i (range 0 (js/length head))))
+          (define pat1
+            (aget head i))
+          (define exp1
+            `(aget ,exp ,i))
+          (define result1
+            (pattern-match pat1 exp1 #f))
+          (set! result (combine-expressions result result1)))
+        (define exp2
+          `(drop ,exp ,len))
+        (define result2
+          (pattern-match tail exp2 #f))
+        (set! result (combine-expressions result result2))
+        result)
+       ((tagged-list? pat 'regexp)
+        `(regexp-match ,pat ,exp))
+       ((tagged-list? pat '?)
+        (apply combine-expressions
+               '(and)
+               `(,(js/second pat) ,exp)
+               (map (lambda (x)
+                      (pattern-match x exp #f))
+                    (drop pat 2))))
+       ((tagged-list? pat 'app)
+        (define pats
+          (drop pat 2))
+        (define exp1
+          `(,(js/second pat) ,exp))
+        (cond
+         ((= (js/length pats) 1)
+          (pattern-match (js/first pats) exp1 #f))
+         (else
+          (pattern-match `(and ,@pats) exp1))))
+       (else
+        #f)))
+     (else
+      `(eq? ,exp ,pat))))
+  (define (combine-expressions . exps)
+    (foldl (lambda (x acc)
+             (cond
+              ((not (array? acc))
+               acc)
+              ((tagged-list? x 'and)
+               (for ((x1 (js/rest x)))
+                 (push-right! acc x1))
+               acc)
+              ((array? x)
+               (push-right! acc x)
+               acc)
+              ((and (eq? x #t)
+                    (tagged-list? acc 'or))
+               #t)
+              ((and (eq? x #f)
+                    (tagged-list? acc 'and))
+               #f)
+              (else
+               acc)))
+           (js/first exps)
+           (js/rest exps)))
+  (cond
+   ((array? exp)
+    (let ((match-val (gensym "match-val")))
+      `(let ((,match-val ,exp))
+         (match ,match-val
+           ,@clauses))))
+   (else
+    (define cond-clauses
+      (map (lambda (x)
+             (define pat
+               (js/first x))
+             (define body
+               (js/rest x))
+             `(,(pattern-match pat exp)
+               ,@(pattern-bind pat exp)
+               ,@body))
+           clauses))
+    (define last-cond-clause
+      (js/last cond-clauses))
+    (when (eq? (js/first last-cond-clause) #t)
+      (set-car! last-cond-clause 'else))
+    `(cond
+      ,@cond-clauses))))
+
 (provide
   and_
   begin0_
@@ -806,6 +1001,7 @@
   el/if_
   for_
   let-env_
+  match_
   multiple-value-bind_
   new/apply_
   or_

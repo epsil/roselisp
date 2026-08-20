@@ -306,6 +306,42 @@
       1))
  1
 
+ ;; `destructuring-bind`
+ > (describe "destructuring-bind")
+ _
+ > (destructuring-bind (x)
+                       '(1)
+                       (list x))
+ '(1)
+ > (destructuring-bind (x y)
+                       '(1 2)
+                       (list x y))
+ '(1 2)
+ > (destructuring-bind (x y z)
+                       '(1 2 3)
+                       (list x y z))
+ '(1 2 3)
+ > (destructuring-bind ((x) y z)
+                       '((1) 2 3)
+                       (list x y z))
+ '(1 2 3)
+ > (destructuring-bind (x . y)
+                       '(1 2)
+                       (list x y))
+ '(1 (2))
+ > (compile '(destructuring-bind (x y)
+                                 '(1 2)
+                                 (list x y)))
+ "let [x, y] = [1, 2];
+
+[x, y];"
+ > (compile '(destructuring-bind (x . y)
+                                 '(1 2)
+                                 (list x y)))
+ "let [x, ...y] = [1, 2];
+
+[x, y];"
+
  ;; `el/if`
  > (describe "el/if")
  _
@@ -317,6 +353,20 @@
  3
  > (el/if #f 1 2 3 4)
  4
+
+ ;; `multiple-values-bind`
+ > (describe "multiple-values-bind")
+ _
+ > (multiple-values-bind (x y)
+                         (values 1 2)
+                         (list x y))
+ '(1 2)
+ > (compile '(multiple-values-bind (x y)
+                                   (values 1 2)
+                                   (list x y)))
+ "let [x, y] = [1, 2];
+
+[x, y];"
 
  ;; `set`
  > (describe "set")

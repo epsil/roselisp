@@ -443,6 +443,41 @@
         (return #f)))))
   (return #t))
 
+;;; Convert a list expression like `(list ...)`
+;;; or `(list* ...)` to a list expression pattern.
+(define (list-expression->pattern exp)
+  (cond
+   ((array? exp)
+    (cond
+     ((tagged-list? exp '(list values))
+      (cond
+       ((eq? (js/last exp) '...)
+        (define head
+          (~> (drop exp 1)
+              (drop-right _ 2)))
+        (define tail
+          (aget exp (- (js/length exp) 2)))
+        (list-expression->pattern
+         `(list* ,@head ,tail)))
+       (else
+        (map list-expression->pattern (js/rest exp)))))
+     ((tagged-list? exp 'list*)
+      (define head
+        (~> (drop exp 1)
+            (drop-right _ 1)))
+      (define tail
+        (js/last exp))
+      (if (= (js/length head) 0)
+          (list-expression->pattern tail)
+          `(,@(map list-expression->pattern head)
+            .
+            ,(list-expression->pattern tail))))
+     (else
+      ;; (map list-expression->pattern exp)
+      #f)))
+   (else
+    exp)))
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
@@ -456,6 +491,7 @@
   kebab-case->camel-case
   kebab-case->snake-case
   lambda->let
+  list-expression->pattern
   make-identifier-string
   make-unique-symbol
   map-get

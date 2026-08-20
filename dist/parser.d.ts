@@ -73,7 +73,7 @@ declare namespace tokenize {
  */
 declare function parseSyntax(tokens: any, options?: any): any;
 declare namespace parseSyntax {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((symbol | undefined)[] | (string | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
 }
 /**
  * Take the array of tokens produced by `tokenize` and make a

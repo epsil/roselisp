@@ -381,14 +381,15 @@
                   el/if_
                   for_
                   let-env_
+                  match_
                   multiple-value-bind_
                   new/apply_
                   or_
+                  quasisyntax_
                   rkt/new_
                   set_
                   setq_
                   syntax_
-                  quasisyntax_
                   thread-as_
                   thread-first_
                   thread-last_
@@ -544,6 +545,7 @@
                   colon-form?
                   form?
                   lambda->let
+                  list-expression->pattern
                   make-identifier-string
                   map-tree
                   quote?
@@ -1226,8 +1228,8 @@
                          "\n)")))
                   (define node
                     (read-syntax data
-                               (js/obj :comments
-                                       comments-option)))
+                                 (js/obj :comments
+                                         comments-option)))
                   node)))
     (cond
      (quick-option
@@ -2479,49 +2481,20 @@
    (else
     (define left-compiled #u)
     (cond
+     ((tagged-list? left 'quote)
+      (set! left-compiled
+            (compile-pattern (send left get 1) env options)))
      ((tagged-list? left
                     '(list
+                      list*
                       values))
       (set! left-compiled
-            (new ArrayPattern
-                 (map (lambda (x)
-                        (if (syntax->datum x)
-                            (compile-symbol
-                             x env options
-                             (js/obj :literal-symbol #t))
-                            #n))
-                      (send left drop 1)))))
-     ((tagged-list? left 'list*)
-      (define var-list
-        (send left drop 1))
-      (define regular-vars
-        (drop-right var-list 1))
-      (define rest-var
-        (js/last var-list))
-      (cond
-       ((zero? (js/length regular-vars))
-        (set! left-compiled
-              (if (syntax->datum rest-var)
-                  (compile-symbol
-                   rest-var env options
-                   (js/obj :literal-symbol #t))
-                  #n)))
-       (else
-        (set! left-compiled
-              (new ArrayPattern
-                   `(,@(map (lambda (x)
-                              (if (syntax->datum x)
-                                  (compile-symbol
-                                   x env options
-                                   (js/obj :literal-symbol #t))
-                                  #n))
-                            regular-vars)
-                     ,(new RestElement
-                           (if (syntax->datum rest-var)
-                               (compile-symbol
-                                rest-var env options
-                                (js/obj :literal-symbol #t))
-                               #n))))))))
+            (compile-pattern
+             (datum->syntax
+              left
+              (list-expression->pattern
+               (syntax->datum left)))
+             env options)))
      ((tagged-list? left 'js/obj)
       (define fields
         (send left drop 1))
@@ -2550,6 +2523,38 @@
           left-compiled
           right-compiled)
      options))))
+
+;;; Compile a list pattern to an `ArrayPattern`.
+(define (compile-pattern node env (options (js/obj)))
+  (define exp
+    (syntax->datum node))
+  (cond
+   ((not exp)
+    #n)
+   ((symbol? exp)
+    (compile-symbol node env options))
+   ((array? exp)
+    (cond
+     ((dotted-list? exp)
+      (define head
+        (send node drop-right 2))
+      (define tail
+        (send node last))
+      (new ArrayPattern
+           (append
+            (map (lambda (x)
+                   (compile-pattern x env options))
+                 head)
+            (list
+             (new RestElement
+                  (compile-pattern tail env options))))))
+     (else
+      (new ArrayPattern
+           (map (lambda (x)
+                  (compile-pattern x env options))
+                (syntax->list node))))))
+   (else
+    (compile-expression node env options))))
 
 ;;; Convert an assignment expression to a
 ;;; variable declaration.
@@ -3837,13 +3842,16 @@
            regular-vars))
     (cond
      (rest-var
-      (set! left `(list* ,@var-patterns ,rest-var)))
+      (set! left
+            (if (= (js/length var-patterns) 0)
+                rest-var
+                `(,@var-patterns . ,rest-var))))
      (else
-      (set! left `(list ,@var-patterns))))))
+      (set! left var-patterns)))))
   (compile-js/assignment
    (datum->syntax
     node
-    `(js/= ,left ,right))
+    `(js/= ',left ,right))
    env options))
 
 ;;; Compile a `(let-fields ...)` expression.
@@ -8946,6 +8954,7 @@
          (let-values ,let-values_ (macro-> Any * Any))
          (letrec ,let-star_ (macro-> Any * Any))
          (letrec-values ,let-values_ (macro-> Any * Any))
+         (match ,match_ (macro-> Any * Any))
          (module ,module_ (macro-> Any * Any))
          (multiple-value-bind ,multiple-value-bind_ (macro-> Any * Any))
          (multiple-values-bind ,multiple-value-bind_ (macro-> Any * Any))

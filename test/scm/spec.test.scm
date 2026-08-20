@@ -1689,6 +1689,12 @@ prop;"
       x)
     "Lisp")
  "Lisp"
+ > ((lambda ((x "Lisp"))
+      x))
+ "Lisp"
+ > ((lambda ((x "Lisp"))
+      x) "Scheme")
+ "Scheme"
  > ((lambda x
       x)
     "Lisp")
@@ -1902,6 +1908,15 @@ prop;"
  "x = y;"
  > (compile '(js/= (aget x i) y))
  "x[i] = y;"
+ > (compile '(js/= '(x y) z))
+ "[x, y] = z;"
+ > (compile '(js/= '((x) y) z))
+ "[[x], y] = z;"
+ > (compile '(js/= '(x . y) z))
+ "[x, ...y] = z;"
+ > (compile '(module m scheme
+               (js/= '(length) x)))
+ "[length] = x;"
  > (compile '(js/= (list x y) z))
  "[x, y] = z;"
  > (compile '(js/= (list #f y) z))
@@ -4725,44 +4740,6 @@ let y = 2;"
   x: 1
 });"
 
- ;; `destructuring-bind`
- > (describe "destructuring-bind")
- _
- > (destructuring-bind (x y)
-                       '(1 2)
-                       (list x y))
- '(1 2)
- > (destructuring-bind (x . y)
-                       '(1 2)
-                       (list x y))
- '(1 (2))
- > (compile '(destructuring-bind (x y)
-                                 '(1 2)
-                                 (list x y)))
- "let [x, y] = [1, 2];
-
-[x, y];"
- > (compile '(destructuring-bind (x . y)
-                                 '(1 2)
-                                 (list x y)))
- "let [x, ...y] = [1, 2];
-
-[x, y];"
-
- ;; `multiple-values-bind`
- > (describe "multiple-values-bind")
- _
- > (multiple-values-bind (x y)
-                         (values 1 2)
-                         (list x y))
- '(1 2)
- > (compile '(multiple-values-bind (x y)
-                                   (values 1 2)
-                                   (list x y)))
- "let [x, y] = [1, 2];
-
-[x, y];"
-
  ;; `hash`
  > (describe "hash")
  _
@@ -6471,6 +6448,227 @@ let f: NN = function (x: any): any {
  '.
  > (cons-dot? *cons-dot*)
  #t
+
+ ;; `match`
+ > (describe "match")
+ _
+ > (match 1
+     (x
+      x))
+ 1
+ > (match 1
+     ((var x)
+      x))
+ 1
+ > (match "foo"
+     ("foo"
+      1))
+ 1
+ > (match "foo"
+     ((not "bar")
+      1))
+ 1
+ > (match 'a
+     ('a
+      1))
+ 1
+ > (match '(1 2 3)
+     ((list a b c)
+      (list a b c)))
+ '(1 2 3)
+ > (match '(1 2 3)
+     ((list a b c) a))
+ 1
+ > (match '(1 2 3)
+     ((list _ _ a) a))
+ 3
+ > (match '(1 2 3)
+     ((list x y ...) y))
+ '(2 3)
+ > (compile '(match "foo"
+               ("foo"
+                1)))
+ "if ('foo' === 'foo') {
+  1;
+}"
+ > (compile '(match "foo"
+               ("foo"
+                1)
+               (_
+                2)))
+ "if ('foo' === 'foo') {
+  1;
+} else {
+  2;
+}"
+ > (match '((1) 2 3)
+     ((list (list a) b c)
+      (list a b c)))
+ '(1 2 3)
+ > (compile '(match "foo"
+               ((not "bar")
+                1)))
+ "if ('foo' !== 'bar') {
+  1;
+}"
+ > (compile '(match 1
+               (x
+                x)))
+ "let x = 1;
+
+x;"
+ > (compile '(match 1
+               ((var x)
+                x)))
+ "let x = 1;
+
+x;"
+ > (compile '(match 'a
+               ('a
+                1)))
+ "let matchVal = Symbol.for('a');
+
+if (matchVal === Symbol.for('a')) {
+  1;
+}"
+ > (compile '(match '(1 2 3)
+               ((list a b c) a)))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length === 3)) {
+  let [a, b, c] = matchVal;
+  a;
+}"
+ > (compile '(match '(1 2 3)
+               ((list _ _ a) a)))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length === 3)) {
+  let [, , a] = matchVal;
+  a;
+}"
+ > (compile '(match '(1 2 3)
+               ((list x ...) x)))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length >= 0)) {
+  let x = matchVal;
+  x;
+}"
+ > (compile '(match '(1 2 3)
+               ((list x y ...) y)))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length >= 1)) {
+  let [x, ...y] = matchVal;
+  y;
+}"
+ > (compile '(match '(1 2 3)
+               ((list* x) x)))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length >= 0)) {
+  let x = matchVal;
+  x;
+}"
+ > (compile '(match '(1 2 3)
+               ((list* x y) y)))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length >= 1)) {
+  let [x, ...y] = matchVal;
+  y;
+}"
+ > (compile
+    '(match '(1 2 3)
+       ((cons x y)
+        (list x y))))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length >= 1)) {
+  let [x, ...y] = matchVal;
+  [x, y];
+}"
+ > (compile '(match '(1 2 3)
+               ((list a b c)
+                (list a b c))))
+ "let matchVal = [1, 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length === 3)) {
+  let [a, b, c] = matchVal;
+  [a, b, c];
+}"
+ > (compile '(match '((1) 2 3)
+               ((list (list a) b c)
+                (list a b c))))
+ "let matchVal = [[1], 2, 3];
+
+if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal[0]) && (matchVal[0].length === 1)) {
+  let [[a], b, c] = matchVal;
+  [a, b, c];
+}"
+ > (compile
+    '(match exp
+       ((list (list 'foo x) y ...)
+        (list x y))
+       (_
+        exp)))
+ "if (Array.isArray(exp) && (exp.length >= 1) && Array.isArray(exp[0]) && (exp[0].length === 2) && (exp[0][0] === Symbol.for('foo'))) {
+  let [[, x], ...y] = exp;
+  [x, y];
+} else {
+  exp;
+}"
+ > (compile
+    '(match exp
+       ((and _ ())
+        #t)))
+ "if (Array.isArray(exp) && (exp.length === 0)) {
+  true;
+}"
+ > (compile
+    '(match exp
+       ((or _ ())
+        #t)))
+ "true;"
+ > (compile
+    '(match "foo"
+       ((regexp "foo")
+        #t)))
+ "if ('foo'.match(new RegExp('foo'))) {
+  true;
+}"
+ > (compile
+    '(match "foo"
+       ((? string?)
+        #t)))
+ "if (typeof 'foo' === 'string') {
+  true;
+}"
+ > (compile
+    '(match "foo"
+       ((? string? "foo")
+        #t)))
+ "if ((typeof 'foo' === 'string') && ('foo' === 'foo')) {
+  true;
+}"
+ > (compile
+    '(match "foo"
+       ((app string-length 3)
+        #t)))
+ "if ('foo'.length === 3) {
+  true;
+}"
+ > (compile
+    '(match "foo"
+       ((app string-length (? number?) 3)
+        #t)))
+ "if ((() => {
+  let patternMatchVal = 'foo'.length;
+  return Number.isFinite(patternMatchVal) && (patternMatchVal === 3);
+})()) {
+  true;
+}"
 
  ;; `require`
  > (describe "require")

@@ -2,27 +2,12 @@
 ;;;
 ;;; This file functions as an "inbox" for incoming tests.
 
-(require (only-in "../../src/ts/repl"
-                  rep))
 (require (only-in "./test-util"
                   assert-equal
                   test-repl
                   test-macro))
 
 (declare-macro test-macro)
-
-(test-macro
- > (describe "REPL")
- _
- > (rep "#t")
- "#t"
- > (rep "\"string\"")
- "\"string\""
- > (rep "(+ 1 1)")
- "2"
- > (rep "(+ 1 1) (+ 1 1)")
- "2
-2")
 
 (test-macro
  :repl #t

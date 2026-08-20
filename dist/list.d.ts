@@ -626,7 +626,7 @@ declare namespace last_ {
  */
 declare function lastPair_(lst: any): any;
 declare namespace lastPair_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 /**
  * Return the last cdr of a list, i.e., the terminating empty list.
@@ -972,7 +972,7 @@ declare namespace linkedListTenth_ {
  */
 declare function linkedListLast_(lst: any): any;
 declare namespace linkedListLast_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Return the `n`-th element of a linked list.

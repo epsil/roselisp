@@ -22,11 +22,12 @@ import {
 
 import {
   countTree,
+  listExpressionToPattern,
   mapTree,
   taggedListP
 } from './util';
 
-const [lastCdr, cdr, listStar, cons, take]: any[] = ((): any => {
+const [lastCdr, cdr, listStar, cons, take, setCarX]: any[] = ((): any => {
   function lastCdr_(lst: any): any {
     if (!Array.isArray(lst)) {
       return undefined;
@@ -72,7 +73,13 @@ const [lastCdr, cdr, listStar, cons, take]: any[] = ((): any => {
   function take_(lst: any, n: any): any {
     return lst.slice(0, -(lst.length - n));
   }
-  return [lastCdr_, cdr_, listStar_, cons_, take_];
+  function setCarX_(x: any, y: any): any {
+    if (x.length > 0) {
+      x[0] = y;
+    }
+    return undefined;
+  }
+  return [lastCdr_, cdr_, listStar_, cons_, take_, setCarX_];
 })();
 
 /**
@@ -1068,6 +1075,165 @@ cljTry_.fsource = [Symbol.for('define'), [Symbol.for('clj/try_'), Symbol.for('ex
 
 cljTry_.ftype = 'macro';
 
+/**
+ * Expand a `(match ...)` expression.
+ *
+ * Similar to [`match` in Racket] and, to a lesser extent,
+ * [`match` in Guile][guile:match].
+ *
+ * [rkt:match]: https://docs.racket-lang.org/reference/match.html#%28form._%28%28lib._racket%2Fmatch..rkt%29._match%29%29
+ * [guile:match]: https://doc.guix.gnu.org/guile/latest/en/html_node/Pattern-Matching.html#index-match
+ */
+function match_(exp1: any, env: any): any {
+  const [exp, ...clauses]: any[] = exp1.slice(1);
+  function patternBind(pat: any, exp: any): any {
+    if (pat === Symbol.for('_')) {
+      return [];
+    } else if (typeof pat === 'symbol') {
+      return [[Symbol.for('define'), pat, exp]];
+    } else if (Array.isArray(pat)) {
+      if (Array.isArray(pat) && (pat.length === 0)) {
+        return [];
+      } else if (taggedListP(pat, Symbol.for('quote'))) {
+        return [];
+      } else if (taggedListP(pat, Symbol.for('var'))) {
+        return [[Symbol.for('define'), pat[1], exp]];
+      } else if (taggedListP(pat, Symbol.for('cons'))) {
+        return patternBind([Symbol.for('list*'), ...pat.slice(1)], exp);
+      } else if (taggedListP(pat, [Symbol.for('list'), Symbol.for('list*')])) {
+        return [[Symbol.for('define-values'), listExpressionToPattern(pat), exp]];
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+  patternBind.fsource = [Symbol.for('define'), [Symbol.for('pattern-bind'), Symbol.for('pat'), Symbol.for('exp')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('_')]], [Symbol.for('quote'), []]], [[Symbol.for('symbol?'), Symbol.for('pat')], [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('pat')], [Symbol.for('unquote'), Symbol.for('exp')]]]]], [[Symbol.for('array?'), Symbol.for('pat')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('pat')], [Symbol.for('quote'), []]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('quote')]], [Symbol.for('quote'), []]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('var')]], [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('cons')]], [Symbol.for('pattern-bind'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), [Symbol.for('js/rest'), Symbol.for('pat')]]]], Symbol.for('exp')]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), [Symbol.for('list'), Symbol.for('list*')]]], [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('define-values'), [Symbol.for('unquote'), [Symbol.for('list-expression->pattern'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]]]], [Symbol.for('else'), [Symbol.for('quote'), []]]]], [Symbol.for('else'), [Symbol.for('quote'), []]]]];
+  function patternMatch(pat: any, exp: any, makeLet: any = true): any {
+    if (makeLet && Array.isArray(exp)) {
+      const patternMatchVal: any = Symbol('pattern-match-val');
+      return [Symbol.for('let'), [[patternMatchVal, exp]], patternMatch(pat, patternMatchVal)];
+    } else if (typeof pat === 'symbol') {
+      return true;
+    } else if (Array.isArray(pat)) {
+      if (Array.isArray(pat) && (pat.length === 0)) {
+        return [Symbol.for('null?'), exp];
+      } else if (taggedListP(pat, Symbol.for('quote'))) {
+        return [Array.isArray(pat[1]) ? Symbol.for('equal?') : Symbol.for('eq?'), exp, pat];
+      } else if (taggedListP(pat, Symbol.for('var'))) {
+        return true;
+      } else if (taggedListP(pat, Symbol.for('not'))) {
+        return [Symbol.for('not'), patternMatch(pat[1], exp, false)];
+      } else if (taggedListP(pat, Symbol.for('and'))) {
+        return combineExpressions([Symbol.for('and')], ...pat.slice(1).map(function (x: any): any {
+          return patternMatch(x, exp, false);
+        }));
+      } else if (taggedListP(pat, Symbol.for('or'))) {
+        return combineExpressions([Symbol.for('or')], ...pat.slice(1).map(function (x: any): any {
+          return patternMatch(x, exp, false);
+        }));
+      } else if (taggedListP(pat, Symbol.for('cons'))) {
+        return patternMatch([Symbol.for('list*'), ...pat.slice(1)], exp, false);
+      } else if (taggedListP(pat, Symbol.for('list'))) {
+        if (pat[pat.length - 1] === Symbol.for('...')) {
+          const head: any = pat.slice(1).slice(0, -2);
+          const tail: any = pat[pat.length - 2];
+          const pat1: any = [Symbol.for('list*'), ...head, tail];
+          return patternMatch(pat1, exp, false);
+        } else {
+          const len: any = pat.length - 1;
+          let result: any = [Symbol.for('and'), [Symbol.for('array?'), exp], [Symbol.for('='), [Symbol.for('js/length'), exp], len]];
+          const _end: any = pat.length;
+          for (let i: any = 1; i < _end; i++) {
+            const pat1: any = (pat as any)[i];
+            const exp1: any = [Symbol.for('aget'), exp, i - 1];
+            const result1: any = patternMatch(pat1, exp1, false);
+            result = combineExpressions(result, result1);
+          }
+          return result;
+        }
+      } else if (taggedListP(pat, Symbol.for('list*'))) {
+        const head: any = pat.slice(1).slice(0, -1);
+        const tail: any = pat[pat.length - 1];
+        const len: any = head.length;
+        let result: any = [Symbol.for('and'), [Symbol.for('array?'), exp], [Symbol.for('>='), [Symbol.for('js/length'), exp], head.length]];
+        const _end1: any = head.length;
+        for (let i: any = 0; i < _end1; i++) {
+          const pat1: any = (head as any)[i];
+          const exp1: any = [Symbol.for('aget'), exp, i];
+          const result1: any = patternMatch(pat1, exp1, false);
+          result = combineExpressions(result, result1);
+        }
+        const exp2: any = [Symbol.for('drop'), exp, len];
+        const result2: any = patternMatch(tail, exp2, false);
+        result = combineExpressions(result, result2);
+        return result;
+      } else if (taggedListP(pat, Symbol.for('regexp'))) {
+        return [Symbol.for('regexp-match'), pat, exp];
+      } else if (taggedListP(pat, Symbol.for('?'))) {
+        return combineExpressions([Symbol.for('and')], [pat[1], exp], ...pat.slice(2).map(function (x: any): any {
+          return patternMatch(x, exp, false);
+        }));
+      } else if (taggedListP(pat, Symbol.for('app'))) {
+        const pats: any = pat.slice(2);
+        const exp1: any = [pat[1], exp];
+        if (pats.length === 1) {
+          return patternMatch(pats[0], exp1, false);
+        } else {
+          return patternMatch([Symbol.for('and'), ...pats], exp1);
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return [Symbol.for('eq?'), exp, pat];
+    }
+  }
+  patternMatch.fsource = [Symbol.for('define'), [Symbol.for('pattern-match'), Symbol.for('pat'), Symbol.for('exp'), [Symbol.for('make-let'), true]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('make-let'), [Symbol.for('array?'), Symbol.for('exp')]], [Symbol.for('let'), [[Symbol.for('pattern-match-val'), [Symbol.for('gensym'), 'pattern-match-val']]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('pattern-match-val')], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('unquote'), [Symbol.for('pattern-match'), Symbol.for('pat'), Symbol.for('pattern-match-val')]]]]]], [[Symbol.for('symbol?'), Symbol.for('pat')], true], [[Symbol.for('array?'), Symbol.for('pat')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('pat')], [Symbol.for('quasiquote'), [Symbol.for('null?'), [Symbol.for('unquote'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('quote')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), [Symbol.for('array?'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('quote'), Symbol.for('equal?')], [Symbol.for('quote'), Symbol.for('eq?')]]], [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('var')]], true], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('not')]], [Symbol.for('quasiquote'), [Symbol.for('not'), [Symbol.for('unquote'), [Symbol.for('pattern-match'), [Symbol.for('js/second'), Symbol.for('pat')], Symbol.for('exp'), false]]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('and')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('and')]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('js/rest'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('or')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('or')]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('js/rest'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('cons')]], [Symbol.for('pattern-match'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), [Symbol.for('js/rest'), Symbol.for('pat')]]]], Symbol.for('exp'), false]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('list')]], [Symbol.for('cond'), [[Symbol.for('eq?'), [Symbol.for('js/last'), Symbol.for('pat')], [Symbol.for('quote'), Symbol.for('...')]], [Symbol.for('define'), Symbol.for('head'), [Symbol.for('~>'), [Symbol.for('drop'), Symbol.for('pat'), 1], [Symbol.for('drop-right'), Symbol.for('_'), 2]]], [Symbol.for('define'), Symbol.for('tail'), [Symbol.for('aget'), Symbol.for('pat'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('pat')], 2]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), Symbol.for('head')], [Symbol.for('unquote'), Symbol.for('tail')]]]], [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp'), false]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('len'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('pat')], 1]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('array?'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('='), [Symbol.for('js/length'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('unquote'), Symbol.for('len')]]]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('pat')]]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('aget'), Symbol.for('pat'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [Symbol.for('aget'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), [Symbol.for('-'), Symbol.for('i'), 1]]]]], [Symbol.for('define'), Symbol.for('result1'), [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp1'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result1')]]], Symbol.for('result')]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('list*')]], [Symbol.for('define'), Symbol.for('head'), [Symbol.for('~>'), [Symbol.for('drop'), Symbol.for('pat'), 1], [Symbol.for('drop-right'), Symbol.for('_'), 1]]], [Symbol.for('define'), Symbol.for('tail'), [Symbol.for('js/last'), Symbol.for('pat')]], [Symbol.for('define'), Symbol.for('len'), [Symbol.for('js/length'), Symbol.for('head')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('array?'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('>='), [Symbol.for('js/length'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('unquote'), [Symbol.for('js/length'), Symbol.for('head')]]]]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('head')]]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('aget'), Symbol.for('head'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [Symbol.for('aget'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('i')]]]], [Symbol.for('define'), Symbol.for('result1'), [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp1'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result1')]]], [Symbol.for('define'), Symbol.for('exp2'), [Symbol.for('quasiquote'), [Symbol.for('drop'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('len')]]]], [Symbol.for('define'), Symbol.for('result2'), [Symbol.for('pattern-match'), Symbol.for('tail'), Symbol.for('exp2'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result2')]], Symbol.for('result')], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('regexp')]], [Symbol.for('quasiquote'), [Symbol.for('regexp-match'), [Symbol.for('unquote'), Symbol.for('pat')], [Symbol.for('unquote'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('?')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('and')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('drop'), Symbol.for('pat'), 2]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('app')]], [Symbol.for('define'), Symbol.for('pats'), [Symbol.for('drop'), Symbol.for('pat'), 2]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('pats')], 1], [Symbol.for('pattern-match'), [Symbol.for('js/first'), Symbol.for('pats')], Symbol.for('exp1'), false]], [Symbol.for('else'), [Symbol.for('pattern-match'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote-splicing'), Symbol.for('pats')]]], Symbol.for('exp1')]]]], [Symbol.for('else'), false]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('eq?'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('pat')]]]]]];
+  function combineExpressions(...exps: any[]): any {
+    return exps.slice(1).reduce(function (acc: any, x: any): any {
+      if (!Array.isArray(acc)) {
+        return acc;
+      } else if (taggedListP(x, Symbol.for('and'))) {
+        for (let x1 of x.slice(1)) {
+          acc.push(x1);
+        }
+        return acc;
+      } else if (Array.isArray(x)) {
+        acc.push(x);
+        return acc;
+      } else if ((x === true) && taggedListP(acc, Symbol.for('or'))) {
+        return true;
+      } else if ((x === false) && taggedListP(acc, Symbol.for('and'))) {
+        return false;
+      } else {
+        return acc;
+      }
+    }, exps[0]);
+  }
+  combineExpressions.fsource = [Symbol.for('define'), [Symbol.for('combine-expressions'), Symbol.for('.'), Symbol.for('exps')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('acc')]], Symbol.for('acc')], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('and')]], [Symbol.for('for'), [[Symbol.for('x1'), [Symbol.for('js/rest'), Symbol.for('x')]]], [Symbol.for('push-right!'), Symbol.for('acc'), Symbol.for('x1')]], Symbol.for('acc')], [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('push-right!'), Symbol.for('acc'), Symbol.for('x')], Symbol.for('acc')], [[Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('x'), true], [Symbol.for('tagged-list?'), Symbol.for('acc'), [Symbol.for('quote'), Symbol.for('or')]]], true], [[Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('x'), false], [Symbol.for('tagged-list?'), Symbol.for('acc'), [Symbol.for('quote'), Symbol.for('and')]]], false], [Symbol.for('else'), Symbol.for('acc')]]], [Symbol.for('js/first'), Symbol.for('exps')], [Symbol.for('js/rest'), Symbol.for('exps')]]];
+  if (Array.isArray(exp)) {
+    const matchVal: any = Symbol('match-val');
+    return [Symbol.for('let'), [[matchVal, exp]], [Symbol.for('match'), matchVal, ...clauses]];
+  } else {
+    const condClauses: any = clauses.map(function (x: any): any {
+      const pat: any = x[0];
+      const body: any = x.slice(1);
+      return [patternMatch(pat, exp), ...patternBind(pat, exp), ...body];
+    });
+    const lastCondClause: any = condClauses[condClauses.length - 1];
+    if (lastCondClause[0] === true) {
+      setCarX(lastCondClause, Symbol.for('else'));
+    }
+    return [Symbol.for('cond'), ...condClauses];
+  }
+}
+
+match_.fsource = [Symbol.for('define'), [Symbol.for('match_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), [Symbol.for('exp'), Symbol.for('.'), Symbol.for('clauses')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), [Symbol.for('pattern-bind'), Symbol.for('pat'), Symbol.for('exp')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('_')]], [Symbol.for('quote'), []]], [[Symbol.for('symbol?'), Symbol.for('pat')], [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('pat')], [Symbol.for('unquote'), Symbol.for('exp')]]]]], [[Symbol.for('array?'), Symbol.for('pat')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('pat')], [Symbol.for('quote'), []]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('quote')]], [Symbol.for('quote'), []]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('var')]], [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('cons')]], [Symbol.for('pattern-bind'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), [Symbol.for('js/rest'), Symbol.for('pat')]]]], Symbol.for('exp')]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), [Symbol.for('list'), Symbol.for('list*')]]], [Symbol.for('list'), [Symbol.for('quasiquote'), [Symbol.for('define-values'), [Symbol.for('unquote'), [Symbol.for('list-expression->pattern'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]]]], [Symbol.for('else'), [Symbol.for('quote'), []]]]], [Symbol.for('else'), [Symbol.for('quote'), []]]]], [Symbol.for('define'), [Symbol.for('pattern-match'), Symbol.for('pat'), Symbol.for('exp'), [Symbol.for('make-let'), true]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('make-let'), [Symbol.for('array?'), Symbol.for('exp')]], [Symbol.for('let'), [[Symbol.for('pattern-match-val'), [Symbol.for('gensym'), 'pattern-match-val']]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('pattern-match-val')], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('unquote'), [Symbol.for('pattern-match'), Symbol.for('pat'), Symbol.for('pattern-match-val')]]]]]], [[Symbol.for('symbol?'), Symbol.for('pat')], true], [[Symbol.for('array?'), Symbol.for('pat')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('pat')], [Symbol.for('quasiquote'), [Symbol.for('null?'), [Symbol.for('unquote'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('quote')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), [Symbol.for('array?'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('quote'), Symbol.for('equal?')], [Symbol.for('quote'), Symbol.for('eq?')]]], [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('var')]], true], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('not')]], [Symbol.for('quasiquote'), [Symbol.for('not'), [Symbol.for('unquote'), [Symbol.for('pattern-match'), [Symbol.for('js/second'), Symbol.for('pat')], Symbol.for('exp'), false]]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('and')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('and')]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('js/rest'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('or')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('or')]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('js/rest'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('cons')]], [Symbol.for('pattern-match'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), [Symbol.for('js/rest'), Symbol.for('pat')]]]], Symbol.for('exp'), false]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('list')]], [Symbol.for('cond'), [[Symbol.for('eq?'), [Symbol.for('js/last'), Symbol.for('pat')], [Symbol.for('quote'), Symbol.for('...')]], [Symbol.for('define'), Symbol.for('head'), [Symbol.for('~>'), [Symbol.for('drop'), Symbol.for('pat'), 1], [Symbol.for('drop-right'), Symbol.for('_'), 2]]], [Symbol.for('define'), Symbol.for('tail'), [Symbol.for('aget'), Symbol.for('pat'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('pat')], 2]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), Symbol.for('head')], [Symbol.for('unquote'), Symbol.for('tail')]]]], [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp'), false]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('len'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('pat')], 1]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('array?'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('='), [Symbol.for('js/length'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('unquote'), Symbol.for('len')]]]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('pat')]]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('aget'), Symbol.for('pat'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [Symbol.for('aget'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), [Symbol.for('-'), Symbol.for('i'), 1]]]]], [Symbol.for('define'), Symbol.for('result1'), [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp1'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result1')]]], Symbol.for('result')]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('list*')]], [Symbol.for('define'), Symbol.for('head'), [Symbol.for('~>'), [Symbol.for('drop'), Symbol.for('pat'), 1], [Symbol.for('drop-right'), Symbol.for('_'), 1]]], [Symbol.for('define'), Symbol.for('tail'), [Symbol.for('js/last'), Symbol.for('pat')]], [Symbol.for('define'), Symbol.for('len'), [Symbol.for('js/length'), Symbol.for('head')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('array?'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('>='), [Symbol.for('js/length'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('unquote'), [Symbol.for('js/length'), Symbol.for('head')]]]]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('head')]]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('aget'), Symbol.for('head'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [Symbol.for('aget'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('i')]]]], [Symbol.for('define'), Symbol.for('result1'), [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp1'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result1')]]], [Symbol.for('define'), Symbol.for('exp2'), [Symbol.for('quasiquote'), [Symbol.for('drop'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('len')]]]], [Symbol.for('define'), Symbol.for('result2'), [Symbol.for('pattern-match'), Symbol.for('tail'), Symbol.for('exp2'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result2')]], Symbol.for('result')], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('regexp')]], [Symbol.for('quasiquote'), [Symbol.for('regexp-match'), [Symbol.for('unquote'), Symbol.for('pat')], [Symbol.for('unquote'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('?')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('and')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('drop'), Symbol.for('pat'), 2]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('app')]], [Symbol.for('define'), Symbol.for('pats'), [Symbol.for('drop'), Symbol.for('pat'), 2]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('js/second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('pats')], 1], [Symbol.for('pattern-match'), [Symbol.for('js/first'), Symbol.for('pats')], Symbol.for('exp1'), false]], [Symbol.for('else'), [Symbol.for('pattern-match'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote-splicing'), Symbol.for('pats')]]], Symbol.for('exp1')]]]], [Symbol.for('else'), false]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('eq?'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('pat')]]]]]], [Symbol.for('define'), [Symbol.for('combine-expressions'), Symbol.for('.'), Symbol.for('exps')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('acc')]], Symbol.for('acc')], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('and')]], [Symbol.for('for'), [[Symbol.for('x1'), [Symbol.for('js/rest'), Symbol.for('x')]]], [Symbol.for('push-right!'), Symbol.for('acc'), Symbol.for('x1')]], Symbol.for('acc')], [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('push-right!'), Symbol.for('acc'), Symbol.for('x')], Symbol.for('acc')], [[Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('x'), true], [Symbol.for('tagged-list?'), Symbol.for('acc'), [Symbol.for('quote'), Symbol.for('or')]]], true], [[Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('x'), false], [Symbol.for('tagged-list?'), Symbol.for('acc'), [Symbol.for('quote'), Symbol.for('and')]]], false], [Symbol.for('else'), Symbol.for('acc')]]], [Symbol.for('js/first'), Symbol.for('exps')], [Symbol.for('js/rest'), Symbol.for('exps')]]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('let'), [[Symbol.for('match-val'), [Symbol.for('gensym'), 'match-val']]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('match-val')], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('match'), [Symbol.for('unquote'), Symbol.for('match-val')], [Symbol.for('unquote-splicing'), Symbol.for('clauses')]]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('cond-clauses'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('define'), Symbol.for('pat'), [Symbol.for('js/first'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('js/rest'), Symbol.for('x')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('pattern-match'), Symbol.for('pat'), Symbol.for('exp')]], [Symbol.for('unquote-splicing'), [Symbol.for('pattern-bind'), Symbol.for('pat'), Symbol.for('exp')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('last-cond-clause'), [Symbol.for('js/last'), Symbol.for('cond-clauses')]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('js/first'), Symbol.for('last-cond-clause')], true], [Symbol.for('set-car!'), Symbol.for('last-cond-clause'), [Symbol.for('quote'), Symbol.for('else')]]], [Symbol.for('quasiquote'), [Symbol.for('cond'), [Symbol.for('unquote-splicing'), Symbol.for('cond-clauses')]]]]]];
+
+match_.ftype = 'macro';
+
 export {
   and_,
   begin0_,
@@ -1091,6 +1257,7 @@ export {
   elIf_,
   for_,
   letEnv_,
+  match_,
   multipleValueBind_,
   newApply_,
   or_,

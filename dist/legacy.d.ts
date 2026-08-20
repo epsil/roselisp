@@ -99,7 +99,7 @@ declare namespace letStarSpecial_ {
  */
 declare function letValuesSpecial_(exp: any, env: any): any;
 declare namespace letValuesSpecial_ {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (symbol | (string | symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | undefined)[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (symbol | (string | symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(define-values ...)` form.
@@ -169,7 +169,7 @@ declare namespace forSpecial_ {
  */
 declare function jsWhileSpecial_(exp: any, env: any): any;
 declare namespace jsWhileSpecial_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | undefined)[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | undefined)[])[])[])[];
 }
 /**
  * Evaluate a `(js/do-while ...)` form.
@@ -316,14 +316,14 @@ declare namespace setFieldSpecial_ {
  */
 declare function defineClassSpecial_(exp: any, env: any): any;
 declare namespace defineClassSpecial_ {
-    var fsource: (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(try ...)` form.
  */
 declare function trySpecial_(exp: any, env: any): any;
 declare namespace trySpecial_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][][])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][][])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(provide ...)` form.

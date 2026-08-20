@@ -5445,6 +5445,25 @@ describe('lambda', function (): any {
       'Lisp',
     ]);
   });
+  it('((lambda ((x "Lisp")) x))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [[Symbol.for('lambda'), [[Symbol.for('x'), 'Lisp']], Symbol.for('x')]],
+      'Lisp',
+    ]);
+  });
+  it('((lambda ((x "Lisp")) x) "Scheme")', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        [Symbol.for('lambda'), [[Symbol.for('x'), 'Lisp']], Symbol.for('x')],
+        'Scheme',
+      ],
+      'Scheme',
+    ]);
+  });
   it('((lambda x x) "Lisp")', function (): any {
     return testRepl([
       Symbol.for('roselisp'),
@@ -6163,6 +6182,86 @@ describe('js/=', function (): any {
         ],
       ],
       'x[i] = y;',
+    ]);
+  });
+  it("(compile '(js/= '(x y) z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/='),
+            [Symbol.for('quote'), [Symbol.for('x'), Symbol.for('y')]],
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      '[x, y] = z;',
+    ]);
+  });
+  it("(compile '(js/= '((x) y) z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/='),
+            [Symbol.for('quote'), [[Symbol.for('x')], Symbol.for('y')]],
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      '[[x], y] = z;',
+    ]);
+  });
+  it("(compile '(js/= '(x . y) z))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('js/='),
+            [
+              Symbol.for('quote'),
+              [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
+            ],
+            Symbol.for('z'),
+          ],
+        ],
+      ],
+      '[x, ...y] = z;',
+    ]);
+  });
+  it("(compile '(module m scheme (js/= '(length) x)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('module'),
+            Symbol.for('m'),
+            Symbol.for('scheme'),
+            [
+              Symbol.for('js/='),
+              [Symbol.for('quote'), [Symbol.for('length')]],
+              Symbol.for('x'),
+            ],
+          ],
+        ],
+      ],
+      '[length] = x;',
     ]);
   });
   it("(compile '(js/= (list x y) z))", function (): any {
@@ -15659,108 +15758,6 @@ describe('set!-fields', function (): any {
   });
 });
 
-describe('destructuring-bind', function (): any {
-  it("(destructuring-bind (x y) '(1 2) (list x y))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('destructuring-bind'),
-        [Symbol.for('x'), Symbol.for('y')],
-        [Symbol.for('quote'), [1, 2]],
-        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
-      ],
-      [Symbol.for('quote'), [1, 2]],
-    ]);
-  });
-  it("(destructuring-bind (x . y) '(1 2) (list x y))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('destructuring-bind'),
-        [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
-        [Symbol.for('quote'), [1, 2]],
-        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
-      ],
-      [Symbol.for('quote'), [1, [2]]],
-    ]);
-  });
-  it("(compile '(destructuring-bind (x y) '(1 2) (list x y)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('destructuring-bind'),
-            [Symbol.for('x'), Symbol.for('y')],
-            [Symbol.for('quote'), [1, 2]],
-            [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
-          ],
-        ],
-      ],
-      'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
-    ]);
-  });
-  return it("(compile '(destructuring-bind (x . y) '(1 2) (list x y)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('destructuring-bind'),
-            [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')],
-            [Symbol.for('quote'), [1, 2]],
-            [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
-          ],
-        ],
-      ],
-      'let [x, ...y] = [1, 2];\n' + '\n' + '[x, y];',
-    ]);
-  });
-});
-
-describe('multiple-values-bind', function (): any {
-  it('(multiple-values-bind (x y) (values 1 2) (list x y))', function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('multiple-values-bind'),
-        [Symbol.for('x'), Symbol.for('y')],
-        [Symbol.for('values'), 1, 2],
-        [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
-      ],
-      [Symbol.for('quote'), [1, 2]],
-    ]);
-  });
-  return it("(compile '(multiple-values-bind (x y) (values 1 2) (list x y)))", function (): any {
-    return testRepl([
-      Symbol.for('roselisp'),
-      Symbol.for('>'),
-      [
-        Symbol.for('compile'),
-        [
-          Symbol.for('quote'),
-          [
-            Symbol.for('multiple-values-bind'),
-            [Symbol.for('x'), Symbol.for('y')],
-            [Symbol.for('values'), 1, 2],
-            [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
-          ],
-        ],
-      ],
-      'let [x, y] = [1, 2];\n' + '\n' + '[x, y];',
-    ]);
-  });
-});
-
 describe('hash', function (): any {
   it('(hash)', function (): any {
     return testRepl([
@@ -22194,6 +22191,699 @@ describe('Cons dot', function (): any {
       Symbol.for('>'),
       [Symbol.for('cons-dot?'), Symbol.for('*cons-dot*')],
       true,
+    ]);
+  });
+});
+
+describe('match', function (): any {
+  it('(match 1 (x x))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('match'), 1, [Symbol.for('x'), Symbol.for('x')]],
+      1,
+    ]);
+  });
+  it('(match 1 ((var x) x))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('match'),
+        1,
+        [[Symbol.for('var'), Symbol.for('x')], Symbol.for('x')],
+      ],
+      1,
+    ]);
+  });
+  it('(match "foo" ("foo" 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('match'), 'foo', ['foo', 1]],
+      1,
+    ]);
+  });
+  it('(match "foo" ((not "bar") 1))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [Symbol.for('match'), 'foo', [[Symbol.for('not'), 'bar'], 1]],
+      1,
+    ]);
+  });
+  it("(match 'a ('a 1))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('match'),
+        [Symbol.for('quote'), Symbol.for('a')],
+        [[Symbol.for('quote'), Symbol.for('a')], 1],
+      ],
+      1,
+    ]);
+  });
+  it("(match '(1 2 3) ((list a b c) (list a b c)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('match'),
+        [Symbol.for('quote'), [1, 2, 3]],
+        [
+          [
+            Symbol.for('list'),
+            Symbol.for('a'),
+            Symbol.for('b'),
+            Symbol.for('c'),
+          ],
+          [
+            Symbol.for('list'),
+            Symbol.for('a'),
+            Symbol.for('b'),
+            Symbol.for('c'),
+          ],
+        ],
+      ],
+      [Symbol.for('quote'), [1, 2, 3]],
+    ]);
+  });
+  it("(match '(1 2 3) ((list a b c) a))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('match'),
+        [Symbol.for('quote'), [1, 2, 3]],
+        [
+          [
+            Symbol.for('list'),
+            Symbol.for('a'),
+            Symbol.for('b'),
+            Symbol.for('c'),
+          ],
+          Symbol.for('a'),
+        ],
+      ],
+      1,
+    ]);
+  });
+  it("(match '(1 2 3) ((list _ _ a) a))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('match'),
+        [Symbol.for('quote'), [1, 2, 3]],
+        [
+          [
+            Symbol.for('list'),
+            Symbol.for('_'),
+            Symbol.for('_'),
+            Symbol.for('a'),
+          ],
+          Symbol.for('a'),
+        ],
+      ],
+      3,
+    ]);
+  });
+  it("(match '(1 2 3) ((list x y ...) y))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('match'),
+        [Symbol.for('quote'), [1, 2, 3]],
+        [
+          [
+            Symbol.for('list'),
+            Symbol.for('x'),
+            Symbol.for('y'),
+            Symbol.for('...'),
+          ],
+          Symbol.for('y'),
+        ],
+      ],
+      [Symbol.for('quote'), [2, 3]],
+    ]);
+  });
+  it('(compile \'(match "foo" ("foo" 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [Symbol.for('quote'), [Symbol.for('match'), 'foo', ['foo', 1]]],
+      ],
+      "if ('foo' === 'foo') {\n" + '  1;\n' + '}',
+    ]);
+  });
+  it('(compile \'(match "foo" ("foo" 1) (_ 2)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('match'), 'foo', ['foo', 1], [Symbol.for('_'), 2]],
+        ],
+      ],
+      "if ('foo' === 'foo') {\n" + '  1;\n' + '} else {\n' + '  2;\n' + '}',
+    ]);
+  });
+  it("(match '((1) 2 3) ((list (list a) b c) (list a b c)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('match'),
+        [Symbol.for('quote'), [[1], 2, 3]],
+        [
+          [
+            Symbol.for('list'),
+            [Symbol.for('list'), Symbol.for('a')],
+            Symbol.for('b'),
+            Symbol.for('c'),
+          ],
+          [
+            Symbol.for('list'),
+            Symbol.for('a'),
+            Symbol.for('b'),
+            Symbol.for('c'),
+          ],
+        ],
+      ],
+      [Symbol.for('quote'), [1, 2, 3]],
+    ]);
+  });
+  it('(compile \'(match "foo" ((not "bar") 1)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('match'), 'foo', [[Symbol.for('not'), 'bar'], 1]],
+        ],
+      ],
+      "if ('foo' !== 'bar') {\n" + '  1;\n' + '}',
+    ]);
+  });
+  it("(compile '(match 1 (x x)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('match'), 1, [Symbol.for('x'), Symbol.for('x')]],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'x;',
+    ]);
+  });
+  it("(compile '(match 1 ((var x) x)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            1,
+            [[Symbol.for('var'), Symbol.for('x')], Symbol.for('x')],
+          ],
+        ],
+      ],
+      'let x = 1;\n' + '\n' + 'x;',
+    ]);
+  });
+  it("(compile '(match 'a ('a 1)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), Symbol.for('a')],
+            [[Symbol.for('quote'), Symbol.for('a')], 1],
+          ],
+        ],
+      ],
+      "let matchVal = Symbol.for('a');\n" +
+        '\n' +
+        "if (matchVal === Symbol.for('a')) {\n" +
+        '  1;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((list a b c) a)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [
+              [
+                Symbol.for('list'),
+                Symbol.for('a'),
+                Symbol.for('b'),
+                Symbol.for('c'),
+              ],
+              Symbol.for('a'),
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length === 3)) {\n' +
+        '  let [a, b, c] = matchVal;\n' +
+        '  a;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((list _ _ a) a)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [
+              [
+                Symbol.for('list'),
+                Symbol.for('_'),
+                Symbol.for('_'),
+                Symbol.for('a'),
+              ],
+              Symbol.for('a'),
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length === 3)) {\n' +
+        '  let [, , a] = matchVal;\n' +
+        '  a;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((list x ...) x)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [
+              [Symbol.for('list'), Symbol.for('x'), Symbol.for('...')],
+              Symbol.for('x'),
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length >= 0)) {\n' +
+        '  let x = matchVal;\n' +
+        '  x;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((list x y ...) y)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [
+              [
+                Symbol.for('list'),
+                Symbol.for('x'),
+                Symbol.for('y'),
+                Symbol.for('...'),
+              ],
+              Symbol.for('y'),
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length >= 1)) {\n' +
+        '  let [x, ...y] = matchVal;\n' +
+        '  y;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((list* x) x)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [[Symbol.for('list*'), Symbol.for('x')], Symbol.for('x')],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length >= 0)) {\n' +
+        '  let x = matchVal;\n' +
+        '  x;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((list* x y) y)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [
+              [Symbol.for('list*'), Symbol.for('x'), Symbol.for('y')],
+              Symbol.for('y'),
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length >= 1)) {\n' +
+        '  let [x, ...y] = matchVal;\n' +
+        '  y;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((cons x y) (list x y))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [
+              [Symbol.for('cons'), Symbol.for('x'), Symbol.for('y')],
+              [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length >= 1)) {\n' +
+        '  let [x, ...y] = matchVal;\n' +
+        '  [x, y];\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '(1 2 3) ((list a b c) (list a b c))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [1, 2, 3]],
+            [
+              [
+                Symbol.for('list'),
+                Symbol.for('a'),
+                Symbol.for('b'),
+                Symbol.for('c'),
+              ],
+              [
+                Symbol.for('list'),
+                Symbol.for('a'),
+                Symbol.for('b'),
+                Symbol.for('c'),
+              ],
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [1, 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length === 3)) {\n' +
+        '  let [a, b, c] = matchVal;\n' +
+        '  [a, b, c];\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match '((1) 2 3) ((list (list a) b c) (list a b c))))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            [Symbol.for('quote'), [[1], 2, 3]],
+            [
+              [
+                Symbol.for('list'),
+                [Symbol.for('list'), Symbol.for('a')],
+                Symbol.for('b'),
+                Symbol.for('c'),
+              ],
+              [
+                Symbol.for('list'),
+                Symbol.for('a'),
+                Symbol.for('b'),
+                Symbol.for('c'),
+              ],
+            ],
+          ],
+        ],
+      ],
+      'let matchVal = [[1], 2, 3];\n' +
+        '\n' +
+        'if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal[0]) && (matchVal[0].length === 1)) {\n' +
+        '  let [[a], b, c] = matchVal;\n' +
+        '  [a, b, c];\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match exp ((list (list 'foo x) y ...) (list x y)) (_ exp)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            Symbol.for('exp'),
+            [
+              [
+                Symbol.for('list'),
+                [
+                  Symbol.for('list'),
+                  [Symbol.for('quote'), Symbol.for('foo')],
+                  Symbol.for('x'),
+                ],
+                Symbol.for('y'),
+                Symbol.for('...'),
+              ],
+              [Symbol.for('list'), Symbol.for('x'), Symbol.for('y')],
+            ],
+            [Symbol.for('_'), Symbol.for('exp')],
+          ],
+        ],
+      ],
+      "if (Array.isArray(exp) && (exp.length >= 1) && Array.isArray(exp[0]) && (exp[0].length === 2) && (exp[0][0] === Symbol.for('foo'))) {\n" +
+        '  let [[, x], ...y] = exp;\n' +
+        '  [x, y];\n' +
+        '} else {\n' +
+        '  exp;\n' +
+        '}',
+    ]);
+  });
+  it("(compile '(match exp ((and _ ()) #t)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            Symbol.for('exp'),
+            [[Symbol.for('and'), Symbol.for('_'), []], true],
+          ],
+        ],
+      ],
+      'if (Array.isArray(exp) && (exp.length === 0)) {\n' + '  true;\n' + '}',
+    ]);
+  });
+  it("(compile '(match exp ((or _ ()) #t)))", function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            Symbol.for('exp'),
+            [[Symbol.for('or'), Symbol.for('_'), []], true],
+          ],
+        ],
+      ],
+      'true;',
+    ]);
+  });
+  it('(compile \'(match "foo" ((regexp "foo") #t)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [Symbol.for('match'), 'foo', [[Symbol.for('regexp'), 'foo'], true]],
+        ],
+      ],
+      "if ('foo'.match(new RegExp('foo'))) {\n" + '  true;\n' + '}',
+    ]);
+  });
+  it('(compile \'(match "foo" ((? string?) #t)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            'foo',
+            [[Symbol.for('?'), Symbol.for('string?')], true],
+          ],
+        ],
+      ],
+      "if (typeof 'foo' === 'string') {\n" + '  true;\n' + '}',
+    ]);
+  });
+  it('(compile \'(match "foo" ((? string? "foo") #t)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            'foo',
+            [[Symbol.for('?'), Symbol.for('string?'), 'foo'], true],
+          ],
+        ],
+      ],
+      "if ((typeof 'foo' === 'string') && ('foo' === 'foo')) {\n" +
+        '  true;\n' +
+        '}',
+    ]);
+  });
+  it('(compile \'(match "foo" ((app string-length 3) #t)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            'foo',
+            [[Symbol.for('app'), Symbol.for('string-length'), 3], true],
+          ],
+        ],
+      ],
+      "if ('foo'.length === 3) {\n" + '  true;\n' + '}',
+    ]);
+  });
+  return it('(compile \'(match "foo" ((app string-length (? number?) 3) #t)))', function (): any {
+    return testRepl([
+      Symbol.for('roselisp'),
+      Symbol.for('>'),
+      [
+        Symbol.for('compile'),
+        [
+          Symbol.for('quote'),
+          [
+            Symbol.for('match'),
+            'foo',
+            [
+              [
+                Symbol.for('app'),
+                Symbol.for('string-length'),
+                [Symbol.for('?'), Symbol.for('number?')],
+                3,
+              ],
+              true,
+            ],
+          ],
+        ],
+      ],
+      'if ((() => {\n' +
+        "  let patternMatchVal = 'foo'.length;\n" +
+        '  return Number.isFinite(patternMatchVal) && (patternMatchVal === 3);\n' +
+        '})()) {\n' +
+        '  true;\n' +
+        '}',
     ]);
   });
 });

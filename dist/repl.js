@@ -177,19 +177,17 @@ function printValue(x, options = {}) {
  * function calls.
  */
 function rewriteExpression(exp) {
-    // TODO: Use `(match ...)` to express things
-    // in a cleaner way.
-    let result = exp;
-    if (Array.isArray(exp) && Array.isArray(exp[0]) && (exp[0][0] === Symbol.for('unquote'))) {
-        if ([Symbol.for('x'), Symbol.for('q')].includes(exp[0][1])) {
-            result = [[Symbol.for('quit')]];
+    if (Array.isArray(exp) && (exp.length >= 1) && Array.isArray(exp[0]) && (exp[0].length === 2) && (exp[0][0] === Symbol.for('unquote'))) {
+        let [[, x], ...y] = exp;
+        if (x === Symbol.for('h')) {
+            x = Symbol.for('help');
         }
-        else if (exp[0][1] === Symbol.for('h')) {
-            result = [[Symbol.for('help')]];
+        else if ([Symbol.for('x'), Symbol.for('q')].includes(x)) {
+            x = Symbol.for('quit');
         }
-        else {
-            result = [[...exp[0].slice(1), ...exp.slice(1)]];
-        }
+        return [[x, ...y]];
     }
-    return result;
+    else {
+        return exp;
+    }
 }

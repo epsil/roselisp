@@ -1,6 +1,13 @@
-import { __, curry, dashify } from '../../src/ts/curry';
+import {
+  __,
+  curry,
+  dashify
+} from '../../src/ts/curry';
 
-import { assertEqual, testMacro } from './test-util';
+import {
+  assertEqual,
+  testMacro
+} from './test-util';
 
 testMacro.ftype = 'macro';
 
@@ -57,7 +64,7 @@ describe('curry', function (): any {
   it('((abc-c __ __ __) 1 2 3)', function (): any {
     return assertEqual(abcC(__, __, __)(1, 2, 3), [1, 2, 3]);
   });
-  return it("(not (eq? __ '_))", function (): any {
+  return it('(not (eq? __ \'_))', function (): any {
     return assertEqual(__ !== Symbol.for('_'), true);
   });
 });

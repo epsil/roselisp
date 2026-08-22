@@ -86,25 +86,7 @@ import {
   thunkp
 } from './thunk';
 
-const [length, findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedurep, arrayp, take, lastCdr]: any[] = ((): any => {
-  function length_(lst: any): any {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-      return ((): any => {
-        function linkedListLength_(lst: any): any {
-          let len: any = 0;
-          let current: any = lst;
-          while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
-            len = len + (lst.length - 2);
-            current = current[current.length - 1];
-          }
-          return len;
-        }
-        return linkedListLength_;
-      })()(lst);
-    } else {
-      return lst.length;
-    }
-  }
+const [findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedurep, pairOrListP]: any[] = ((): any => {
   function findf_(proc: any, lst: any, notFound: any = false): any {
     const idx: any = lst.findIndex(proc);
     if (idx >= 0) {
@@ -125,41 +107,16 @@ const [length, findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedure
   function jsNullP_(obj: any): any {
     return obj === null;
   }
-  function stringp_(obj: any): any {
-    return (typeof obj === 'string') || (obj instanceof String);
+  function stringp_(x: any): any {
+    return (typeof x === 'string') || (x instanceof String);
   }
   function procedurep_(obj: any): any {
     return obj instanceof Function;
   }
-  function arrayp_(obj: any): any {
-    return Array.isArray(obj);
+  function pairOrListP_(x: any): any {
+    return (Array.isArray(x) && (x.length > 0)) || (Array.isArray(x) && (x.length === 0));
   }
-  function take_(lst: any, n: any): any {
-    return lst.slice(0, -(lst.length - n));
-  }
-  function lastCdr_(lst: any): any {
-    if (!Array.isArray(lst)) {
-      return undefined;
-    } else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-      let result: any = lst;
-      while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-        result = result[result.length - 1];
-      }
-      return result;
-    } else {
-      return [];
-    }
-  }
-  function linkedListLength_(lst: any): any {
-    let len: any = 0;
-    let current: any = lst;
-    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
-      len = len + (lst.length - 2);
-      current = current[current.length - 1];
-    }
-    return len;
-  }
-  return [length_, findf_, symbolp_, booleanp_, undefinedp_, jsNullP_, stringp_, procedurep_, arrayp_, take_, lastCdr_];
+  return [findf_, symbolp_, booleanp_, undefinedp_, jsNullP_, stringp_, procedurep_, pairOrListP_];
 })();
 
 /**
@@ -250,7 +207,7 @@ function join(sep: any, docs: any): any {
   return result;
 }
 
-join.fsource = [Symbol.for('define'), [Symbol.for('join'), Symbol.for('sep'), Symbol.for('docs')], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('docs')]]]], [Symbol.for('unless'), [Symbol.for('='), Symbol.for('i'), 0], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('sep')]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('docs'), Symbol.for('i')]]], Symbol.for('result')];
+join.fsource = [Symbol.for('define'), [Symbol.for('join'), Symbol.for('sep'), Symbol.for('docs')], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('docs')]]]], [Symbol.for('unless'), [Symbol.for('='), Symbol.for('i'), 0], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('sep')]], [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('docs'), Symbol.for('i')]]], Symbol.for('result')];
 
 /**
  * `Doc` command `group`.
@@ -278,7 +235,7 @@ function docType(doc: any): any {
   }
 }
 
-docType.fsource = [Symbol.for('define'), [Symbol.for('doc-type'), Symbol.for('doc')], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('doc')], 'string'], [[Symbol.for('array?'), Symbol.for('doc')], 'array'], [[Symbol.for('is-a?'), Symbol.for('doc'), Symbol.for('DocCommand')], [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('doc')]], [Symbol.for('else'), 'undefined']]];
+docType.fsource = [Symbol.for('define'), [Symbol.for('doc-type'), Symbol.for('doc')], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('doc')], 'string'], [[Symbol.for('pair-or-list?'), Symbol.for('doc')], 'array'], [[Symbol.for('is-a?'), Symbol.for('doc'), Symbol.for('DocCommand')], [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('doc')]], [Symbol.for('else'), 'undefined']]];
 
 /**
  * Whether the type of a `Doc` object is `typ`.
@@ -316,32 +273,26 @@ docValueString.fsource = [Symbol.for('define'), [Symbol.for('doc-value-string'),
  */
 function docShouldBreakP(doc: any): any {
   if (doc instanceof DocCommand) {
-    return ((): any => {
-      const arr: any = doc.args;
-      return arr[arr.length - 1];
-    })()['shouldBreak'];
+    return doc.args.at(-1)['shouldBreak'];
   } else {
     return false;
   }
 }
 
-docShouldBreakP.fsource = [Symbol.for('define'), [Symbol.for('doc-should-break?'), Symbol.for('doc')], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('doc'), Symbol.for('DocCommand')], [Symbol.for('oget'), [Symbol.for('js/last'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], Symbol.for(':should-break')]], [Symbol.for('else'), false]]];
+docShouldBreakP.fsource = [Symbol.for('define'), [Symbol.for('doc-should-break?'), Symbol.for('doc')], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('doc'), Symbol.for('DocCommand')], [Symbol.for('oget'), [Symbol.for('last'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], Symbol.for(':should-break')]], [Symbol.for('else'), false]]];
 
 /**
  * Whether a `Doc` object contains any comments.
  */
 function docHasCommentsP(doc: any): any {
   if (doc instanceof DocCommand) {
-    return ((): any => {
-      const arr: any = doc.args;
-      return arr[arr.length - 1];
-    })()['hasComments'];
+    return doc.args.at(-1)['hasComments'];
   } else {
     return false;
   }
 }
 
-docHasCommentsP.fsource = [Symbol.for('define'), [Symbol.for('doc-has-comments?'), Symbol.for('doc')], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('doc'), Symbol.for('DocCommand')], [Symbol.for('oget'), [Symbol.for('js/last'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], Symbol.for(':has-comments')]], [Symbol.for('else'), false]]];
+docHasCommentsP.fsource = [Symbol.for('define'), [Symbol.for('doc-has-comments?'), Symbol.for('doc')], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('doc'), Symbol.for('DocCommand')], [Symbol.for('oget'), [Symbol.for('last'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], Symbol.for(':has-comments')]], [Symbol.for('else'), false]]];
 
 /**
  * Wrap a `Doc` object in a pair of parentheses.
@@ -372,7 +323,7 @@ function attachComments(result: any, node: any, options: any = {}): any {
   if ((commentsOption === false) || !comments || (comments.length === 0)) {
     return result;
   }
-  const _end: any = length(comments);
+  const _end: any = comments.length;
   for (let i: any = 0; i < _end; i++) {
     const comment: any = (comments as any)[i];
     if (comment instanceof BlockComment) {
@@ -398,7 +349,7 @@ function attachComments(result: any, node: any, options: any = {}): any {
   });
 }
 
-attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), Symbol.for('result'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':comments')]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('code'), [Symbol.for('doc-value-string'), Symbol.for('result')]], [Symbol.for('define'), Symbol.for('leading-comments'), ''], [Symbol.for('define'), Symbol.for('trailing-comments'), ''], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('comments-option'), false], [Symbol.for('not'), Symbol.for('comments')], [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('comments')], 0]], [Symbol.for('return'), Symbol.for('result')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('comments')]]]], [Symbol.for('define'), Symbol.for('comment'), [Symbol.for('aget'), Symbol.for('comments'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('comment'), Symbol.for('BlockComment')], [Symbol.for('define'), Symbol.for('block-comment'), [Symbol.for('make-block-comment'), [Symbol.for('get-field'), Symbol.for('original-text'), Symbol.for('comment')]]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('='), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('comments')], 1]], [Symbol.for('eq?'), Symbol.for('code'), '']], [Symbol.for('set!'), Symbol.for('block-comment'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\n*$'], Symbol.for('block-comment'), '']]], [Symbol.for('set!'), Symbol.for('leading-comments'), [Symbol.for('string-append'), Symbol.for('leading-comments'), Symbol.for('block-comment'), [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('code'), ''], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\n*$'], Symbol.for('block-comment')]], Symbol.for('empty'), Symbol.for('line')]]]], [[Symbol.for('is-a?'), Symbol.for('comment'), Symbol.for('LeadingComment')], [Symbol.for('define'), Symbol.for('leading-comment'), [Symbol.for('make-line-comment'), [Symbol.for('get-field'), Symbol.for('original-text'), Symbol.for('comment')]]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('='), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('comments')], 1]], [Symbol.for('eq?'), Symbol.for('code'), '']], [Symbol.for('set!'), Symbol.for('leading-comment'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\n$'], Symbol.for('leading-comment'), '']]], [Symbol.for('set!'), Symbol.for('leading-comments'), [Symbol.for('string-append'), Symbol.for('leading-comments'), Symbol.for('leading-comment'), [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('code'), ''], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\n$'], Symbol.for('leading-comment')]], Symbol.for('empty'), Symbol.for('line')]]]], [[Symbol.for('is-a?'), Symbol.for('comment'), Symbol.for('TrailingComment')], [Symbol.for('define'), Symbol.for('trailing-comment'), [Symbol.for('make-line-comment'), [Symbol.for('get-field'), Symbol.for('original-text'), Symbol.for('comment')]]], [Symbol.for('set!'), Symbol.for('trailing-comments'), [Symbol.for('string-append'), Symbol.for('trailing-comments'), Symbol.for('space'), Symbol.for('trailing-comment')]]]]], [Symbol.for('group'), [Symbol.for('list'), Symbol.for('leading-comments'), Symbol.for('code'), Symbol.for('trailing-comments')], [Symbol.for('js/obj'), Symbol.for(':should-break'), true, Symbol.for(':has-comments'), true]]];
+attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), Symbol.for('result'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':comments')]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('code'), [Symbol.for('doc-value-string'), Symbol.for('result')]], [Symbol.for('define'), Symbol.for('leading-comments'), ''], [Symbol.for('define'), Symbol.for('trailing-comments'), ''], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('comments-option'), false], [Symbol.for('not'), Symbol.for('comments')], [Symbol.for('='), [Symbol.for('length'), Symbol.for('comments')], 0]], [Symbol.for('return'), Symbol.for('result')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('comments')]]]], [Symbol.for('define'), Symbol.for('comment'), [Symbol.for('list-ref'), Symbol.for('comments'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('comment'), Symbol.for('BlockComment')], [Symbol.for('define'), Symbol.for('block-comment'), [Symbol.for('make-block-comment'), [Symbol.for('get-field'), Symbol.for('original-text'), Symbol.for('comment')]]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('='), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('comments')], 1]], [Symbol.for('eq?'), Symbol.for('code'), '']], [Symbol.for('set!'), Symbol.for('block-comment'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\n*$'], Symbol.for('block-comment'), '']]], [Symbol.for('set!'), Symbol.for('leading-comments'), [Symbol.for('string-append'), Symbol.for('leading-comments'), Symbol.for('block-comment'), [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('code'), ''], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\n*$'], Symbol.for('block-comment')]], Symbol.for('empty'), Symbol.for('line')]]]], [[Symbol.for('is-a?'), Symbol.for('comment'), Symbol.for('LeadingComment')], [Symbol.for('define'), Symbol.for('leading-comment'), [Symbol.for('make-line-comment'), [Symbol.for('get-field'), Symbol.for('original-text'), Symbol.for('comment')]]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('='), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('comments')], 1]], [Symbol.for('eq?'), Symbol.for('code'), '']], [Symbol.for('set!'), Symbol.for('leading-comment'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\n$'], Symbol.for('leading-comment'), '']]], [Symbol.for('set!'), Symbol.for('leading-comments'), [Symbol.for('string-append'), Symbol.for('leading-comments'), Symbol.for('leading-comment'), [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('code'), ''], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\n$'], Symbol.for('leading-comment')]], Symbol.for('empty'), Symbol.for('line')]]]], [[Symbol.for('is-a?'), Symbol.for('comment'), Symbol.for('TrailingComment')], [Symbol.for('define'), Symbol.for('trailing-comment'), [Symbol.for('make-line-comment'), [Symbol.for('get-field'), Symbol.for('original-text'), Symbol.for('comment')]]], [Symbol.for('set!'), Symbol.for('trailing-comments'), [Symbol.for('string-append'), Symbol.for('trailing-comments'), Symbol.for('space'), Symbol.for('trailing-comment')]]]]], [Symbol.for('group'), [Symbol.for('list'), Symbol.for('leading-comments'), Symbol.for('code'), Symbol.for('trailing-comments')], [Symbol.for('js/obj'), Symbol.for(':should-break'), true, Symbol.for(':has-comments'), true]]];
 
 /**
  * Make a line comment.
@@ -460,7 +411,7 @@ function estreeHasCommentsP(node: any): any {
   return getEstreeField('comments', node).length > 0;
 }
 
-estreeHasCommentsP.fsource = [Symbol.for('define'), [Symbol.for('estree-has-comments?'), Symbol.for('node')], [Symbol.for('>'), [Symbol.for('js/length'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')]], 0]];
+estreeHasCommentsP.fsource = [Symbol.for('define'), [Symbol.for('estree-has-comments?'), Symbol.for('node')], [Symbol.for('>'), [Symbol.for('length'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')]], 0]];
 
 /**
  * Whether an ESTree node has any block comments.
@@ -572,7 +523,7 @@ function writeToDoc(obj: any, options: any = {}): any {
   const visitor: any = makeVisitor([[syntaxp, function (obj: any): any {
     return writeToDoc(syntaxToDatum(obj), options);
   }], [symbolp, function (obj: any): any {
-    return [quoteToplevelOption ? '\'' : empty, (obj === Symbol.for('.')) ? '.' : (obj.description as string)];
+    return [quoteToplevelOption ? '\'' : empty, obj.description as string];
   }], [booleanp, function (obj: any): any {
     if (obj) {
       return '#t';
@@ -587,7 +538,7 @@ function writeToDoc(obj: any, options: any = {}): any {
     return ['"', join(literalline, obj.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"').split(line)), '"'];
   }], [procedurep, function (obj: any): any {
     return '#<procedure>';
-  }], [arrayp, function (obj: any): any {
+  }], [pairOrListP, function (obj: any): any {
     const op: any = obj[0];
     const spec: any = prettyOption && prettyPrintMap.get(op);
     let result: any = (spec instanceof Function) ? spec(obj, options) : (Number.isFinite(spec) ? prettyPrintWithOffset(spec, obj, options) : prettyPrintForm(obj, options));
@@ -604,7 +555,7 @@ function writeToDoc(obj: any, options: any = {}): any {
   return result;
 }
 
-writeToDoc.fsource = [Symbol.for('define'), [Symbol.for('write-to-doc'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('doc-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':doc')]], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('define'), Symbol.for('quote-toplevel-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':quote-toplevel')]], [Symbol.for('define'), Symbol.for('visitor'), [Symbol.for('make-visitor'), [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), Symbol.for('syntax?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('write-to-doc'), [Symbol.for('syntax->datum'), Symbol.for('obj')], Symbol.for('options')]]]], [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('quote-toplevel-option'), '\'', Symbol.for('empty')], [Symbol.for('if'), [Symbol.for('cons-dot?'), Symbol.for('obj')], '.', [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]], [[Symbol.for('unquote'), Symbol.for('boolean?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('if'), Symbol.for('obj'), '#t', '#f']]]], [[Symbol.for('unquote'), Symbol.for('undefined?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#u']]], [[Symbol.for('unquote'), Symbol.for('js/null?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#n']]], [[Symbol.for('unquote'), Symbol.for('string?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), '"', [Symbol.for('~>'), Symbol.for('obj'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\\\', 'g'], Symbol.for('_'), '\\\\'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '"', 'g'], Symbol.for('_'), '\\"'], [Symbol.for('string-split'), Symbol.for('line')], [Symbol.for('join'), Symbol.for('literalline'), Symbol.for('_')]], '"']]]], [[Symbol.for('unquote'), Symbol.for('procedure?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#<procedure>']]], [[Symbol.for('unquote'), Symbol.for('array?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('obj')]], [Symbol.for('define'), Symbol.for('spec'), [Symbol.for('and'), Symbol.for('pretty-option'), [Symbol.for('send'), Symbol.for('pretty-print-map'), Symbol.for('get'), Symbol.for('op')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('spec')], [Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [[Symbol.for('number?'), Symbol.for('spec')], [Symbol.for('pretty-print-with-offset'), Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('pretty-print-form'), Symbol.for('obj'), Symbol.for('options')]]]], [Symbol.for('when'), Symbol.for('quote-toplevel-option'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '\'', Symbol.for('result')]]], Symbol.for('result')]]], [[Symbol.for('unquote'), [Symbol.for('const'), true]], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('string-append'), Symbol.for('obj'), '']]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('obj')]], Symbol.for('result')];
+writeToDoc.fsource = [Symbol.for('define'), [Symbol.for('write-to-doc'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('doc-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':doc')]], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('define'), Symbol.for('quote-toplevel-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':quote-toplevel')]], [Symbol.for('define'), Symbol.for('visitor'), [Symbol.for('make-visitor'), [Symbol.for('quasiquote'), [[[Symbol.for('unquote'), Symbol.for('syntax?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('write-to-doc'), [Symbol.for('syntax->datum'), Symbol.for('obj')], Symbol.for('options')]]]], [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), [Symbol.for('if'), Symbol.for('quote-toplevel-option'), '\'', Symbol.for('empty')], [Symbol.for('symbol->string'), Symbol.for('obj')]]]]], [[Symbol.for('unquote'), Symbol.for('boolean?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('if'), Symbol.for('obj'), '#t', '#f']]]], [[Symbol.for('unquote'), Symbol.for('undefined?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#u']]], [[Symbol.for('unquote'), Symbol.for('js/null?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#n']]], [[Symbol.for('unquote'), Symbol.for('string?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('list'), '"', [Symbol.for('~>'), Symbol.for('obj'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\\\', 'g'], Symbol.for('_'), '\\\\'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '"', 'g'], Symbol.for('_'), '\\"'], [Symbol.for('string-split'), Symbol.for('line')], [Symbol.for('join'), Symbol.for('literalline'), Symbol.for('_')]], '"']]]], [[Symbol.for('unquote'), Symbol.for('procedure?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], '#<procedure>']]], [[Symbol.for('unquote'), Symbol.for('pair-or-list?')], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('obj')]], [Symbol.for('define'), Symbol.for('spec'), [Symbol.for('and'), Symbol.for('pretty-option'), [Symbol.for('send'), Symbol.for('pretty-print-map'), Symbol.for('get'), Symbol.for('op')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('cond'), [[Symbol.for('procedure?'), Symbol.for('spec')], [Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [[Symbol.for('number?'), Symbol.for('spec')], [Symbol.for('pretty-print-with-offset'), Symbol.for('spec'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('pretty-print-form'), Symbol.for('obj'), Symbol.for('options')]]]], [Symbol.for('when'), Symbol.for('quote-toplevel-option'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '\'', Symbol.for('result')]]], Symbol.for('result')]]], [[Symbol.for('unquote'), [Symbol.for('const'), true]], [Symbol.for('unquote'), [Symbol.for('lambda'), [Symbol.for('obj')], [Symbol.for('string-append'), Symbol.for('obj'), '']]]]]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('visit'), Symbol.for('visitor'), Symbol.for('obj')]], Symbol.for('result')];
 
 /**
  * Pretty-print a list expression.
@@ -642,14 +593,14 @@ function prettyPrintWithOffset(offset: any, form: any, options: any): any {
       quoteToplevel: false
     });
   });
-  const elements1: any = take(elements, offset + 1);
+  const elements1: any = elements.slice(0, -(elements.length - (offset + 1)) || undefined);
   const elements2: any = elements.slice(offset + 1);
   let result: any = [join(space, elements1), (elements2.length > 0) ? [line, indent(join(line, elements2))] : empty];
   result = ['(', result, ')'];
   return result;
 }
 
-prettyPrintWithOffset.fsource = [Symbol.for('define'), [Symbol.for('pretty-print-with-offset'), Symbol.for('offset'), Symbol.for('form'), Symbol.for('options')], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('unless'), Symbol.for('pretty-option'), [Symbol.for('return'), [Symbol.for('write-to-string'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('array?'), Symbol.for('form')], [Symbol.for('return'), [Symbol.for('write-to-string'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('write-to-doc'), Symbol.for('x'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':quote-toplevel'), false]]]], Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements1'), [Symbol.for('take'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('elements2'), [Symbol.for('drop'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list'), [Symbol.for('join'), Symbol.for('space'), Symbol.for('elements1')], [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('elements2')], 0], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('indent'), [Symbol.for('join'), Symbol.for('line'), Symbol.for('elements2')]]], Symbol.for('empty')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '(', Symbol.for('result'), ')']], Symbol.for('result')];
+prettyPrintWithOffset.fsource = [Symbol.for('define'), [Symbol.for('pretty-print-with-offset'), Symbol.for('offset'), Symbol.for('form'), Symbol.for('options')], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('unless'), Symbol.for('pretty-option'), [Symbol.for('return'), [Symbol.for('write-to-string'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('pair-or-list?'), Symbol.for('form')], [Symbol.for('return'), [Symbol.for('write-to-string'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('write-to-doc'), Symbol.for('x'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':quote-toplevel'), false]]]], Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements1'), [Symbol.for('take'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('elements2'), [Symbol.for('drop'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list'), [Symbol.for('join'), Symbol.for('space'), Symbol.for('elements1')], [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('elements2')], 0], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('indent'), [Symbol.for('join'), Symbol.for('line'), Symbol.for('elements2')]]], Symbol.for('empty')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '(', Symbol.for('result'), ')']], Symbol.for('result')];
 
 /**
  * Pretty-print a `cond` expression.
@@ -671,7 +622,7 @@ prettyPrintCond.fsource = [Symbol.for('define'), [Symbol.for('pretty-print-cond'
  * Pretty-print an `if` expression.
  */
 function prettyPrintIf(form: any, options: any): any {
-  return ['(', join(' ', take(form, 2).map(function (x: any): any {
+  return ['(', join(' ', form.slice(0, -(form.length - 2) || undefined).map(function (x: any): any {
     return writeToDoc(x, options);
   })), line, align(4, join(line, form.slice(2).map(function (x: any): any {
     return writeToDoc(x, options);
@@ -690,7 +641,7 @@ function prettyPrintModule(form: any, options: any): any {
       return writeToDoc(x, options);
     }));
   } else {
-    return ['(', join(' ', take(form, 3).map(function (x: any): any {
+    return ['(', join(' ', form.slice(0, -(form.length - 3) || undefined).map(function (x: any): any {
       return writeToDoc(x, options);
     })), line, indent(join([line, line], form.slice(3).map(function (x: any): any {
       return writeToDoc(x, options);
@@ -740,25 +691,7 @@ function printDocToDocList(doc: any, options: any = {}): any {
   } else if (dtype === 'align') {
     const args: any = doc.args;
     const offset: any = args[0];
-    const contents: any = (Array.isArray(args) && (args.length >= 3) && (args[args.length - 2] === Symbol.for('.')) && ((): any => {
-      const x: any = lastCdr(args);
-      return Array.isArray(x) && (x.length === 0);
-    })()) ? ((): any => {
-      let i: any = 1;
-      let result: any = args;
-      while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-          result = args[args.length - 1];
-        } else {
-          result = args.slice(1);
-        }
-        i--;
-      }
-      if (Array.isArray(result)) {
-        result = result[0];
-      }
-      return result;
-    })() : args[1];
+    const contents: any = args[1];
     const contentsPrinted: any = printDocToDocList(contents, options).filter(function (x: any): any {
       return x !== empty;
     });
@@ -769,7 +702,7 @@ function printDocToDocList(doc: any, options: any = {}): any {
     }
     const _end: any = contentsPrinted.length;
     for (let i: any = 0; i < _end; i++) {
-      let current: any = (contentsPrinted as any)[i];
+      const current: any = (contentsPrinted as any)[i];
       const next: any = (i < (contentsPrinted.length - 1)) ? contentsPrinted[i + 1] : empty;
       result.push(current);
       if ((current === line) && (next !== line) && (next !== empty)) {
@@ -792,7 +725,7 @@ function printDocToDocList(doc: any, options: any = {}): any {
   }
 }
 
-printDocToDocList.fsource = [Symbol.for('define'), [Symbol.for('print-doc-to-doc-list'), Symbol.for('doc'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('dtype'), [Symbol.for('doc-type'), Symbol.for('doc')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('dtype'), 'string'], [Symbol.for('join'), Symbol.for('line'), [Symbol.for('string-split'), Symbol.for('doc'), Symbol.for('line')]]], [[Symbol.for('eq?'), Symbol.for('dtype'), 'array'], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('x-result'), [Symbol.for('print-doc-to-doc-list'), Symbol.for('x'), Symbol.for('options')]], [Symbol.for('if'), [Symbol.for('array?'), Symbol.for('x-result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('append'), Symbol.for('result'), Symbol.for('x-result')]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('x-result')]]], Symbol.for('result')], [[Symbol.for('eq?'), Symbol.for('dtype'), 'align'], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('offset'), [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('contents'), [Symbol.for('second'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('contents-printed'), [Symbol.for('filter'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('empty')]]], [Symbol.for('print-doc-to-doc-list'), Symbol.for('contents'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), ' ', Symbol.for('offset')]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('contents-printed')], 0], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('indentation')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('contents-printed')]]]], [Symbol.for('define'), Symbol.for('current'), [Symbol.for('aget'), Symbol.for('contents-printed'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('next'), [Symbol.for('if'), [Symbol.for('<'), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('contents-printed')], 1]], [Symbol.for('aget'), Symbol.for('contents-printed'), [Symbol.for('+'), Symbol.for('i'), 1]], Symbol.for('empty')]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('current')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('current'), Symbol.for('line')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('next'), Symbol.for('line')]], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('next'), Symbol.for('empty')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('indentation')]]], Symbol.for('result')], [[Symbol.for('eq?'), Symbol.for('dtype'), 'indent'], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('contents'), [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('offset'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':indent')], 2]], [Symbol.for('print-doc-to-doc-list'), [Symbol.for('new'), Symbol.for('DocCommand'), 'align', Symbol.for('offset'), Symbol.for('contents'), Symbol.for('options')], Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('dtype'), 'group'], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('contents'), [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('contents-printed'), [Symbol.for('print-doc-to-doc-list'), Symbol.for('contents'), Symbol.for('options')]], Symbol.for('contents-printed')], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('doc')]]]];
+printDocToDocList.fsource = [Symbol.for('define'), [Symbol.for('print-doc-to-doc-list'), Symbol.for('doc'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('dtype'), [Symbol.for('doc-type'), Symbol.for('doc')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('dtype'), 'string'], [Symbol.for('join'), Symbol.for('line'), [Symbol.for('string-split'), Symbol.for('doc'), Symbol.for('line')]]], [[Symbol.for('eq?'), Symbol.for('dtype'), 'array'], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('x-result'), [Symbol.for('print-doc-to-doc-list'), Symbol.for('x'), Symbol.for('options')]], [Symbol.for('if'), [Symbol.for('pair-or-list?'), Symbol.for('x-result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('append'), Symbol.for('result'), Symbol.for('x-result')]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('x-result')]]], Symbol.for('result')], [[Symbol.for('eq?'), Symbol.for('dtype'), 'align'], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('offset'), [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('contents'), [Symbol.for('second'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('contents-printed'), [Symbol.for('filter'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('empty')]]], [Symbol.for('print-doc-to-doc-list'), Symbol.for('contents'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), ' ', Symbol.for('offset')]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('contents-printed')], 0], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('indentation')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('contents-printed')]]]], [Symbol.for('define'), Symbol.for('current'), [Symbol.for('list-ref'), Symbol.for('contents-printed'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('next'), [Symbol.for('if'), [Symbol.for('<'), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('contents-printed')], 1]], [Symbol.for('list-ref'), Symbol.for('contents-printed'), [Symbol.for('+'), Symbol.for('i'), 1]], Symbol.for('empty')]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('current')], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('current'), Symbol.for('line')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('next'), Symbol.for('line')]], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('next'), Symbol.for('empty')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('indentation')]]], Symbol.for('result')], [[Symbol.for('eq?'), Symbol.for('dtype'), 'indent'], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('contents'), [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('offset'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':indent')], 2]], [Symbol.for('print-doc-to-doc-list'), [Symbol.for('new'), Symbol.for('DocCommand'), 'align', Symbol.for('offset'), Symbol.for('contents'), Symbol.for('options')], Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('dtype'), 'group'], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-field'), Symbol.for('args'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('contents'), [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('contents-printed'), [Symbol.for('print-doc-to-doc-list'), Symbol.for('contents'), Symbol.for('options')]], Symbol.for('contents-printed')], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('doc')]]]];
 
 /**
  * Print a `Doc` list to a string.
@@ -1183,7 +1116,7 @@ function printSequenceExpression(node: any, options: any = {}): any {
   });
   let result: any;
   result = join([',', space], expressionsPrinted);
-  // (when (> (js/length expressions) 1)
+  // (when (> (length expressions) 1)
   //   (set! result
   //         (doc-wrap result options)))
   return result;
@@ -1211,7 +1144,7 @@ function printBlockStatement(node: any, options: any = {}): any {
   return ['{', line, bodyIndented, (bodyPrinted === '') ? empty : line, '}'];
 }
 
-printBlockStatement.fsource = [Symbol.for('define'), [Symbol.for('print-block-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-modified'), [Symbol.for('begin'), [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('body')], 0]], [Symbol.for('set-field!'), Symbol.for('comments'), [Symbol.for('first'), Symbol.for('body')], [Symbol.for('append'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('or'), [Symbol.for('get-estree-field'), 'comments', [Symbol.for('first'), Symbol.for('body')]], [Symbol.for('quote'), []]]]], [Symbol.for('set-field!'), Symbol.for('comments'), Symbol.for('node'), [Symbol.for('quote'), []]]], [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]]], [Symbol.for('define'), Symbol.for('body-indented'), [Symbol.for('indent'), [Symbol.for('~>'), Symbol.for('body-modified'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), Symbol.for('line'), Symbol.for('_')]]]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-doc'), Symbol.for('body-indented')]], [Symbol.for('list'), '{', Symbol.for('line'), Symbol.for('body-indented'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('body-printed'), ''], Symbol.for('empty'), Symbol.for('line')], '}']];
+printBlockStatement.fsource = [Symbol.for('define'), [Symbol.for('print-block-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-modified'), [Symbol.for('begin'), [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('>'), [Symbol.for('length'), Symbol.for('body')], 0]], [Symbol.for('set-field!'), Symbol.for('comments'), [Symbol.for('first'), Symbol.for('body')], [Symbol.for('append'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('or'), [Symbol.for('get-estree-field'), 'comments', [Symbol.for('first'), Symbol.for('body')]], [Symbol.for('quote'), []]]]], [Symbol.for('set-field!'), Symbol.for('comments'), Symbol.for('node'), [Symbol.for('quote'), []]]], [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]]], [Symbol.for('define'), Symbol.for('body-indented'), [Symbol.for('indent'), [Symbol.for('~>'), Symbol.for('body-modified'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), Symbol.for('line'), Symbol.for('_')]]]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-doc'), Symbol.for('body-indented')]], [Symbol.for('list'), '{', Symbol.for('line'), Symbol.for('body-indented'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('body-printed'), ''], Symbol.for('empty'), Symbol.for('line')], '}']];
 
 /**
  * Print a `MemberExpression` ESTree node to a `Doc` object.
@@ -1689,7 +1622,7 @@ function printImportDeclaration(node: any, options: any = {}): any {
   }
 }
 
-printImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-import-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':fsemicolon')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('source'), [Symbol.for('get-estree-field'), 'source', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('specifiers')], 1], [Symbol.for('not'), [Symbol.for('estree-type?'), [Symbol.for('first'), Symbol.for('specifiers')], 'ImportSpecifier']]], [Symbol.for('list'), 'import', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('first'), Symbol.for('specifiers')], Symbol.for('options')], Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]], [Symbol.for('else'), [Symbol.for('list'), 'import', Symbol.for('space'), '{', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]], Symbol.for('line'), '}', Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]]]];
+printImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-import-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':fsemicolon')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('source'), [Symbol.for('get-estree-field'), 'source', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('specifiers')], 1], [Symbol.for('not'), [Symbol.for('estree-type?'), [Symbol.for('first'), Symbol.for('specifiers')], 'ImportSpecifier']]], [Symbol.for('list'), 'import', Symbol.for('space'), [Symbol.for('print-node'), [Symbol.for('first'), Symbol.for('specifiers')], Symbol.for('options')], Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]], [Symbol.for('else'), [Symbol.for('list'), 'import', Symbol.for('space'), '{', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]], Symbol.for('line'), '}', Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('source'), Symbol.for('options')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]]]];
 
 /**
  * Print an `ImportSpecifier` ESTree node to a `Doc` object.
@@ -1769,7 +1702,7 @@ function printObjectExpression(node: any, options: any = {}): any {
   }))), line], '}'];
 }
 
-printObjectExpression.fsource = [Symbol.for('define'), [Symbol.for('print-object-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('properties'), [Symbol.for('get-estree-field'), 'properties', Symbol.for('node')]], [Symbol.for('list'), '{', [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('properties')], 0], Symbol.for('empty'), [Symbol.for('list'), Symbol.for('line'), [Symbol.for('~>'), Symbol.for('properties'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent')]], Symbol.for('line')]], '}']];
+printObjectExpression.fsource = [Symbol.for('define'), [Symbol.for('print-object-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('properties'), [Symbol.for('get-estree-field'), 'properties', Symbol.for('node')]], [Symbol.for('list'), '{', [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('properties')], 0], Symbol.for('empty'), [Symbol.for('list'), Symbol.for('line'), [Symbol.for('~>'), Symbol.for('properties'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent')]], Symbol.for('line')]], '}']];
 
 /**
  * Print an `ObjectPattern` ESTree node to a `Doc` object.
@@ -1868,7 +1801,7 @@ function printSwitchCase(node: any, options: any = {}): any {
   return [testPrinted, ':', consequentPrinted];
 }
 
-printSwitchCase.fsource = [Symbol.for('define'), [Symbol.for('print-switch-case'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('cond'), [Symbol.for('test'), [Symbol.for('list'), 'case', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]]], [Symbol.for('else'), 'default']]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('is-block-statement'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('consequent')], 1], [Symbol.for('first'), Symbol.for('consequent')], [Symbol.for('estree-type?'), [Symbol.for('first'), Symbol.for('consequent')], 'BlockStatement']]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('consequent')]], [Symbol.for('cond'), [Symbol.for('is-block-statement'), [Symbol.for('set!'), Symbol.for('consequent-printed'), [Symbol.for('list'), Symbol.for('space'), [Symbol.for('first'), Symbol.for('consequent-printed')]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('consequent-printed'), [Symbol.for('list'), Symbol.for('line'), [Symbol.for('~>'), Symbol.for('consequent-printed'), [Symbol.for('join'), Symbol.for('line'), Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]]]]]], [Symbol.for('list'), Symbol.for('test-printed'), ':', Symbol.for('consequent-printed')]];
+printSwitchCase.fsource = [Symbol.for('define'), [Symbol.for('print-switch-case'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('cond'), [Symbol.for('test'), [Symbol.for('list'), 'case', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]]], [Symbol.for('else'), 'default']]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('is-block-statement'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('consequent')], 1], [Symbol.for('first'), Symbol.for('consequent')], [Symbol.for('estree-type?'), [Symbol.for('first'), Symbol.for('consequent')], 'BlockStatement']]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('consequent')]], [Symbol.for('cond'), [Symbol.for('is-block-statement'), [Symbol.for('set!'), Symbol.for('consequent-printed'), [Symbol.for('list'), Symbol.for('space'), [Symbol.for('first'), Symbol.for('consequent-printed')]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('consequent-printed'), [Symbol.for('list'), Symbol.for('line'), [Symbol.for('~>'), Symbol.for('consequent-printed'), [Symbol.for('join'), Symbol.for('line'), Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]]]]]], [Symbol.for('list'), Symbol.for('test-printed'), ':', Symbol.for('consequent-printed')]];
 
 /**
  * Print a `TSAsExpression` TSESTree node to a `Doc` object.

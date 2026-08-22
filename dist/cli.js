@@ -75,8 +75,16 @@ const cliOptions = {
         default: false,
         type: 'boolean'
     },
+    fdottedlists: {
+        default: false,
+        type: 'boolean'
+    },
     fsemicolon: {
         default: true,
+        type: 'boolean'
+    },
+    fstringobjects: {
+        default: false,
         type: 'boolean'
     },
     help: {

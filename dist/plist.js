@@ -20,17 +20,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.plistp_ = exports.plistSet_ = exports.plistSetX_ = exports.plistHasP_ = exports.plistGet_ = exports.plistCopy_ = exports.plistToObject_ = exports.plistMap_ = exports.plistToAlist_ = exports.plistp = exports.plistSet = exports.plistSetX = exports.plistHas_ = exports.plistHasP = exports.plistRef_ = exports.plistGet = exports.plistCopy = exports.plistToObject = exports.plistMap = exports.plistToAlist = void 0;
 const procedures_1 = require("./procedures");
 const util_1 = require("./util");
-const [cons] = (() => {
-    function cons_(x, y) {
-        if (Array.isArray(y)) {
-            return [x, ...y];
-        }
-        else {
-            return [x, Symbol.for('.'), y];
-        }
-    }
-    return [cons_];
-})();
 /**
  * Whether something is a property list.
  *
@@ -45,7 +34,7 @@ function plistp_(obj) {
 }
 exports.plistp = plistp_;
 exports.plistp_ = plistp_;
-plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('obj')], [Symbol.for('even?'), [Symbol.for('array-length'), Symbol.for('obj')]]]];
+plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('obj')], [Symbol.for('even?'), [Symbol.for('length'), Symbol.for('obj')]]]];
 /**
  * Copy a property list.
  */
@@ -77,7 +66,7 @@ function plistGet_(plst, prop) {
 exports.plistGet = plistGet_;
 exports.plistRef_ = plistGet_;
 exports.plistGet_ = plistGet_;
-plistGet_.fsource = [Symbol.for('define'), [Symbol.for('plist-get_'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('val'), undefined], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('break')]]], Symbol.for('val')];
+plistGet_.fsource = [Symbol.for('define'), [Symbol.for('plist-get_'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('val'), undefined], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('list-ref'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('break')]]], Symbol.for('val')];
 /**
  * Whether a property list contains a given property.
  */
@@ -95,7 +84,7 @@ function plistHasP_(plst, prop) {
 exports.plistHasP = plistHasP_;
 exports.plistHas_ = plistHasP_;
 exports.plistHasP_ = plistHasP_;
-plistHasP_.fsource = [Symbol.for('define'), [Symbol.for('plist-has?_'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]]], Symbol.for('found')];
+plistHasP_.fsource = [Symbol.for('define'), [Symbol.for('plist-has?_'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]]], Symbol.for('found')];
 /**
  * Set the value of a property in a property list.
  *
@@ -112,16 +101,16 @@ function plistSetX_(plst, prop, val) {
             found = true;
             break;
         }
-        if (!found) {
-            plst.push(prop);
-            plst.push(val);
-        }
+    }
+    if (!found) {
+        plst.push(prop);
+        plst.push(val);
     }
     return undefined;
 }
 exports.plistSetX = plistSetX_;
 exports.plistSetX_ = plistSetX_;
-plistSetX_.fsource = [Symbol.for('define'), [Symbol.for('plist-set!_'), Symbol.for('plst'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('aset!'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1], Symbol.for('val')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]], [Symbol.for('unless'), Symbol.for('found'), [Symbol.for('push-right!'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('push-right!'), Symbol.for('plst'), Symbol.for('val')]]], undefined];
+plistSetX_.fsource = [Symbol.for('define'), [Symbol.for('plist-set!_'), Symbol.for('plst'), Symbol.for('prop'), Symbol.for('val')], [Symbol.for('define'), Symbol.for('found'), false], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('plst')], 2]]], [Symbol.for('when'), [Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('plst'), Symbol.for('i')], Symbol.for('prop')], [Symbol.for('list-set!'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1], Symbol.for('val')], [Symbol.for('set!'), Symbol.for('found'), true], [Symbol.for('break')]]], [Symbol.for('unless'), Symbol.for('found'), [Symbol.for('push-right!'), Symbol.for('plst'), Symbol.for('prop')], [Symbol.for('push-right!'), Symbol.for('plst'), Symbol.for('val')]], undefined];
 /**
  * Set the value of a property in a property list,
  * returning a new property list.
@@ -146,7 +135,7 @@ function plistIterate_(f, plst) {
         f(entry);
     }
 }
-plistIterate_.fsource = [Symbol.for('define'), [Symbol.for('plist-iterate_'), Symbol.for('f'), Symbol.for('plst')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('list'), Symbol.for('prop'), Symbol.for('val')]], [Symbol.for('f'), Symbol.for('entry')]]];
+plistIterate_.fsource = [Symbol.for('define'), [Symbol.for('plist-iterate_'), Symbol.for('f'), Symbol.for('plst')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('list-ref'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('list-ref'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('entry'), [Symbol.for('list'), Symbol.for('prop'), Symbol.for('val')]], [Symbol.for('f'), Symbol.for('entry')]]];
 /**
  * Map a function over a property list.
  */
@@ -170,13 +159,15 @@ function plistToAlist_(plst) {
     const alst = [];
     const _end = plst.length;
     for (let i = 0; i < _end; i = i + 2) {
-        alst.push(cons(plst[i], plst[i + 1]));
+        alst.push([plst[i], ...((x) => {
+                return Array.isArray(x) ? x : [Symbol.for('.'), x];
+            })(plst[i + 1])]);
     }
     return alst;
 }
 exports.plistToAlist = plistToAlist_;
 exports.plistToAlist_ = plistToAlist_;
-plistToAlist_.fsource = [Symbol.for('define'), [Symbol.for('plist->alist_'), Symbol.for('plst')], [Symbol.for('define'), Symbol.for('alst'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('push-right!'), Symbol.for('alst'), [Symbol.for('cons'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')], [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], Symbol.for('alst')];
+plistToAlist_.fsource = [Symbol.for('define'), [Symbol.for('plist->alist_'), Symbol.for('plst')], [Symbol.for('define'), Symbol.for('alst'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('plst')], 2]]], [Symbol.for('push-right!'), Symbol.for('alst'), [Symbol.for('cons'), [Symbol.for('list-ref'), Symbol.for('plst'), Symbol.for('i')], [Symbol.for('list-ref'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], Symbol.for('alst')];
 /**
  * Convert a property list to a JavaScript object.
  */
@@ -193,4 +184,4 @@ function plistToObject_(plst, options = {}) {
 }
 exports.plistToObject = plistToObject_;
 exports.plistToObject_ = plistToObject_;
-plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plst'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('aget'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('keyword->string'), Symbol.for('_')], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];
+plistToObject_.fsource = [Symbol.for('define'), [Symbol.for('plist->object_'), Symbol.for('plst'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('plst')], 2]]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('list-ref'), Symbol.for('plst'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('list-ref'), Symbol.for('plst'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('~>'), Symbol.for('prop'), [Symbol.for('keyword->string'), Symbol.for('_')], [Symbol.for('make-identifier-string'), Symbol.for('_'), Symbol.for('options')]]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key'), Symbol.for('val')]], Symbol.for('result')];

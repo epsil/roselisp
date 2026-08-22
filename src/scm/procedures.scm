@@ -24,10 +24,10 @@
 ;;; [rkt:apply]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._apply%29%29
 ;;; [cl:apply]: http://clhs.lisp.se/Body/f_apply.htm#apply
 (define (apply_ f . args)
-  (when (> (js/length args) 0)
+  (when (> (length args) 0)
     (set! args
           (append (drop-right args 1)
-                  (js/last args))))
+                  (last args))))
   (send f apply #n args))
 
 ;;; Call `f` with `args`.
@@ -90,9 +90,9 @@
 (define (syntax-transformer-type?_ x)
   ;; FIXME: Or just call `equal?`.
   (and (tagged-list?_ x 'macro->)
-       (= (js/length x) 3)
-       (eq? (js/second x) 'Syntax)
-       (eq? (js/third x) 'Syntax)))
+       (= (length x) 3)
+       (eq? (second x) 'Syntax)
+       (eq? (third x) 'Syntax)))
 
 ;;; Whether `x` is the type of a fexpr.
 (define (fexpr-type?_ x)
@@ -123,9 +123,9 @@
 
 ;;; Whether `exp` is a list whose first element is `tag`.
 (define (tagged-list?_ exp tag)
-  (and (array? exp)
-       (>= (array-length exp) 1)
-       (eq? (array-first exp) tag)))
+  (and (pair-or-list? exp)
+       (>= (length exp) 1)
+       (eq? (first exp) tag)))
 
 ;;; Logical negation.
 ;;;
@@ -155,13 +155,13 @@
 ;;; [cl:lt]: http://clhs.lisp.se/Body/f_eq_sle.htm#LT
 (define (lt_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x < y) === (x >= y)
-      (when (>= (array-list-nth (- i 1) args)
-                (array-list-nth i args))
+      (when (>= (list-ref args (- i 1))
+                (list-ref args i))
         (return #f)))
     #t)))
 
@@ -173,13 +173,13 @@
 ;;; [cl:lte]: http://clhs.lisp.se/Body/f_eq_sle.htm#LTEQ
 (define (lte_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x <= y) === (x > y)
-      (when (> (array-list-nth (- i 1) args)
-               (array-list-nth i args))
+      (when (> (list-ref args (- i 1))
+               (list-ref args i))
         (return #f)))
     #t)))
 
@@ -191,13 +191,13 @@
 ;;; [cl:gt]: http://clhs.lisp.se/Body/f_eq_sle.htm#GT
 (define (gt_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x > y) === (x <= y)
-      (when (<= (array-list-nth (- i 1) args)
-                (array-list-nth i args))
+      (when (<= (list-ref args (- i 1))
+                (list-ref args i))
         (return #f)))
     #t)))
 
@@ -209,13 +209,13 @@
 ;;; [cl:gte]: http://clhs.lisp.se/Body/f_eq_sle.htm#GTEQ
 (define (gte_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x >= y) === (x < y)
-      (when (< (array-list-nth (- i 1) args)
-               (array-list-nth i args))
+      (when (< (list-ref args (- i 1))
+               (list-ref args i))
         (return #f)))
     #t)))
 
@@ -257,7 +257,7 @@
 ;;; [rkt:sub]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._-%29%29
 ;;; [cl:sub]: http://clhs.lisp.se/Body/f__.htm
 (define (sub_ . args)
-  (let ((len (js/length args)))
+  (let ((len (length args)))
     (cond
      ((zero? len)
       0)
@@ -267,7 +267,7 @@
       (let ((result (first args)))
         (for ((i (range 1 len)))
           (set! result
-                (- result (array-list-nth i args))))
+                (- result (list-ref args i))))
         result)))))
 
 ;;; Return `(- x 1)`.
@@ -299,13 +299,13 @@
 ;;; [cl:div]: http://clhs.lisp.se/Body/f_sl.htm
 (define (div_ . args)
   (cond
-   ((= (js/length args) 1)
+   ((= (length args) 1)
     (/ 1 (first args)))
    (else
     (let ((result (first args)))
-      (for ((i (range 1 (js/length args))))
+      (for ((i (range 1 (length args))))
         (set! result
-              (/ result (array-list-nth i args))))
+              (/ result (list-ref args i))))
       result))))
 
 ;;; Whether a value is the number zero.
@@ -409,11 +409,9 @@
       (keyword->string_ _)
       (string->symbol _)))
 
-;; (define (keyword?-1_ obj)
-;;   (true?
-;;    (and (symbol? obj)
-;;         (regexp-match (regexp "^:")
-;;                       (symbol->string obj)))))
+;;; Whether something is an atomic value.
+(define (atom?_ x)
+  (not (pair? x)))
 
 ;;; Whether something is a number.
 ;;;
@@ -545,7 +543,7 @@
 (define (findf_ proc lst (not-found #f))
   (let ((idx (js/find-index proc lst)))
     (if (>= idx 0)
-        (array-list-nth idx lst)
+        (list-ref lst idx)
         not-found)))
 
 ;;; Find the index of a list element matching a predicate.
@@ -603,9 +601,9 @@
           (push-right! result element)))
       result))
   (cond
-   ((= (js/length args) 0)
+   ((= (length args) 0)
     '())
-   ((= (js/length args) 1)
+   ((= (length args) 1)
     (first args))
    (else
     (foldl (lambda (x acc)
@@ -655,7 +653,7 @@
 ;;; [rkt:compose]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._compose%29%29
 (define (compose_ . args)
   (let ((functions (drop-right args 1))
-        (last-function (js/last args)))
+        (last-function (last args)))
     (lambda args
       (let ((val (apply last-function args)))
         (foldr (lambda (f x)
@@ -820,6 +818,7 @@
   add_
   apply_
   assert_
+  atom?_
   boolean?_
   compiler-type?_
   compose_

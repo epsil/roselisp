@@ -1,17 +1,20 @@
-import { tcall, trampoline } from '../../src/ts/trampoline';
+import {
+  tcall,
+  trampoline
+} from '../../src/ts/trampoline';
 
-import { assertEqual, testMacro } from './test-util';
+import {
+  assertEqual,
+  testMacro
+} from './test-util';
 
 testMacro.ftype = 'macro';
 
 describe('trampoline', function (): any {
   it('(trampoline (fn (x) x) 1)', function (): any {
-    return assertEqual(
-      trampoline(function (x: any): any {
-        return x;
-      }, 1),
-      1
-    );
+    return assertEqual(trampoline(function (x: any): any {
+      return x;
+    }, 1), 1);
   });
   function add(x: any, y: any): any {
     return x + y;

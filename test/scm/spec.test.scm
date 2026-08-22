@@ -366,6 +366,18 @@ let bar = test1;"
  > (compile ':foo)
  "Symbol.for(':foo');"
 
+ ;; `atom?`
+ > (describe "atom?")
+ _
+ > (atom? #t)
+ #t
+ > (atom? '())
+ #t
+ > (atom? '(1 . 2))
+ #f
+ > (atom? '(1 2 3))
+ #f
+
  ;; Cons cells
  > (describe "Cons cells")
  _
@@ -810,14 +822,14 @@ x[length];"
 }"
  > (compile
     '(define (add-matrix m1 m2)
-       (let ((l1 (array-list-length m1))
-             (l2 (array-list-length m2)))
+       (let ((l1 (length m1))
+             (l2 (length m2)))
          (let ((matrix (make-matrix l1 l2)))
            (for ((i (range 0 l1)))
              (for ((j (range 0 l2)))
-               (set! (aget (aget matrix j) i)
-                     (+ (aget (aget m1 j) i)
-                        (aget (aget m2 j) i)))))
+               (set! (aget matrix i j)
+                     (+ (aget m1 i j)
+                        (aget m2 i j)))))
            matrix))))
  "function addMatrix(m1, m2) {
   let l1 = m1.length;
@@ -825,7 +837,7 @@ x[length];"
   let matrix = makeMatrix(l1, l2);
   for (let i = 0; i < l1; i++) {
     for (let j = 0; j < l2; j++) {
-      matrix[j][i] = m1[j][i] + m2[j][i];
+      matrix[i][j] = m1[i][j] + m2[i][j];
     }
   }
   return matrix;
@@ -1831,6 +1843,51 @@ prop;"
   return 0;
 };"
 
+ ;; `js/iife`
+ > (describe "js/iife")
+ _
+ > (compile '(js/iife (js/arrow (x y)
+                        (+ x y))
+                      (list 1 2))
+            :as 'expression)
+ "((x, y) => {
+  return x + y;
+})(1, 2)"
+ > (compile '(js/iife (js/arrow (x . y)
+                        (+ x (first y)))
+                      (list* a b))
+            :as 'expression)
+ "((x, ...y) => {
+  return x + y[0];
+})(a, ...b)"
+ > (compile '(js/iife (js/arrow (x y)
+                        (+ x y))
+                      (list 1 2))
+            :as 'statement)
+ "let x = 1;
+
+let y = 2;
+
+x + y;"
+ > (compile '(js/iife (js/arrow (x . y)
+                        (+ x (first y)))
+                      (list a b c))
+            :as 'statement)
+ "let x = a;
+
+let y = [b, c];
+
+x + y[0];"
+ > (compile '(js/iife (js/arrow (x y)
+                        (+ x y))
+                      (list 1 2))
+            :as 'return)
+ "let x = 1;
+
+let y = 2;
+
+return x + y;"
+
  ;; `this`
  > (describe "this")
  _
@@ -1870,10 +1927,19 @@ prop;"
  ;; `funcall`
  > (describe "funcall")
  _
+ > (compile '(funcall f))
+ "f();"
  > (compile '(funcall f x))
  "f(x);"
  > (compile '(funcall f x y))
  "f(x, y);"
+ > (compile '(module m scheme
+               (funcall length x)))
+ "import {
+  length
+} from 'roselisp';
+
+length(x);"
 
  ;; `js/\(\)`
  > (describe "js/\(\)")
@@ -1908,6 +1974,8 @@ prop;"
  "x = y;"
  > (compile '(js/= (aget x i) y))
  "x[i] = y;"
+ > (compile '(js/= (list-ref x i) y))
+ "x[i] = y;"
  > (compile '(js/= '(x y) z))
  "[x, y] = z;"
  > (compile '(js/= '((x) y) z))
@@ -1936,6 +2004,8 @@ prop;"
  > (compile '(js/= (set! x) y))
  "x = y;"
  > (compile '(js/= (aset! x i) y))
+ "x[i] = y;"
+ > (compile '(js/= (list-set! x i) y))
  "x[i] = y;"
  > (compile '(js/= (oset! x "y") z))
  "x['y'] = z;"
@@ -2235,9 +2305,9 @@ z;"
   bar();
 }"
  > (compile
-    '(when (> (array-list-length args) 0)
-       (set! args (.concat (.slice args 0 (- (array-list-length args) 1))
-                           (aref args (- (array-list-length args) 1))))))
+    '(when (> (length args) 0)
+       (set! args (.concat (.slice args 0 (- (length args) 1))
+                           (aref args (- (length args) 1))))))
  "if (args.length > 0) {
   args = args.slice(0, args.length - 1).concat(args[args.length - 1]);
 }"
@@ -2877,7 +2947,7 @@ z;"
  ;; `js/while`
  > (describe "js/while")
  _
- > (compile '(js/while (< (array-list-length result) 3)
+ > (compile '(js/while (< (length result) 3)
                (display result)))
  "while (result.length < 3) {
   console.log(result);
@@ -2897,13 +2967,13 @@ z;"
  > (describe "js/do-while")
  _
  > (compile '(js/do-while ((display result))
-                          (< (array-list-length result) 3)))
+                          (< (length result) 3)))
  "do {
   console.log(result);
 } while (result.length < 3);"
  > (compile '(js/do-while ((foo)
                            (display result))
-                          (< (array-list-length result) 3)))
+                          (< (length result) 3)))
  "do {
   foo();
   console.log(result);
@@ -3307,7 +3377,7 @@ for (let i: any = _start; i < _end; i++) {
  > (describe "do")
  _
  > (compile '(do ()
-                 ((not (< (array-list-length result) 3)))
+                 ((not (< (length result) 3)))
                (display result)))
  "while (result.length < 3) {
   console.log(result);
@@ -4265,9 +4335,9 @@ let y = 2;"
                (define (my-push-2 lst x)
                  (push! (append lst) x))))
  "function myPush2(lst, x) {
-  return (function (lst, x) {
-    lst.unshift(x);
-    return lst;
+  return (function (arr, x) {
+    arr.unshift(x);
+    return arr;
   })([...lst], x);
 }"
  > (compile '(module m lisp
@@ -4289,9 +4359,9 @@ let y = 2;"
                (define (my-push-right-2 lst x)
                  (push-right! (append lst) x))))
  "function myPushRight2(lst, x) {
-  return (function (lst, x) {
-    lst.push(x);
-    return lst;
+  return (function (arr, x) {
+    arr.push(x);
+    return arr;
   })([...lst], x);
 }"
  > (compile '(module m lisp
@@ -5463,12 +5533,52 @@ let y = 2;"
  ;; `take`
  > (describe "take")
  _
- > (take '(1 2 3 4) 0)
+ > (take '(1 2 3) 0)
  '()
- > (take '(1 2 3 4) 1)
+ > (take '(1 2 3) 1)
  '(1)
- > (take '(1 2 3 4) 2)
+ > (take '(1 2 3) 2)
  '(1 2)
+ > (take '(1 2 3) 3)
+ '(1 2 3)
+ > (funcall take '(1 2 3) 0)
+ '()
+ > (funcall take '(1 2 3) 1)
+ '(1)
+ > (funcall take '(1 2 3) 2)
+ '(1 2)
+ > (funcall take '(1 2 3) 3)
+ '(1 2 3)
+ > (compile '(take lst 0))
+ "[];"
+ > (compile '(take lst 1))
+ "lst.slice(0, -(lst.length - 1) || undefined);"
+ > (compile '(define x
+               (take lst 1)))
+ "let x = lst.slice(0, -(lst.length - 1) || undefined);"
+ > (compile '(let ((n 1))
+               (take lst n)))
+ "let n = 1;
+
+lst.slice(0, -(lst.length - n) || undefined);"
+ > (compile '(module m scheme
+               (let ((n 1))
+                 (take lst n)))
+            :fdottedlists #f)
+ "let n = 1;
+
+lst.slice(0, -(lst.length - n) || undefined);"
+ > (compile '(module m scheme
+               (let ((n 1))
+                 (take lst n)))
+            :fdottedlists #t)
+ "import {
+  take
+} from 'roselisp';
+
+let n = 1;
+
+take(lst, n);"
 
  ;; `drop`
  > (describe "drop")
@@ -5477,8 +5587,24 @@ let y = 2;"
  '(1 2 3 4)
  > (drop '(1 2 3 4) 1)
  '(2 3 4)
- > (compile '(drop x 1))
- "x.slice(1);"
+ > (compile '(drop lst 0))
+ "lst;"
+ > (compile '(drop lst 1))
+ "lst.slice(1);"
+ > (compile '(drop lst n))
+ "lst.slice(n);"
+ > (compile '(module m scheme
+               (drop lst n))
+            :fdottedlists #f)
+ "lst.slice(n);"
+ > (compile '(module m scheme
+               (drop lst n))
+            :fdottedlists #t)
+ "import {
+  drop
+} from 'roselisp';
+
+drop(lst, n);"
 
  ;; `drop-right`
  > (describe "drop-right")
@@ -5487,8 +5613,50 @@ let y = 2;"
  '(1 2 3 4)
  > (drop-right '(1 2 3 4) 1)
  '(1 2 3)
- > (compile '(drop-right x 1))
- "x.slice(0, -1);"
+ > (compile '(drop-right lst 0))
+ "lst;"
+ > (compile '(drop-right lst 1))
+ "lst.slice(0, -1);"
+ > (compile '(drop-right lst n))
+ "lst.slice(0, -n || undefined);"
+ > (compile '(module m scheme
+               (drop-right lst n))
+            :fdottedlists #f)
+ "lst.slice(0, -n || undefined);"
+ > (compile '(module m scheme
+               (drop-right lst n))
+            :fdottedlists #t)
+ "import {
+  dropRight
+} from 'roselisp';
+
+dropRight(lst, n);"
+
+ ;; `reverse`
+ > (describe "reverse")
+ _
+ > (reverse '())
+ '()
+ > (reverse '(1))
+ '(1)
+ > (reverse '(1 2))
+ '(2 1)
+ > (reverse '(1 2 3))
+ '(3 2 1)
+ > (compile '(reverse lst))
+ "[...lst].reverse();"
+ > (compile '(module m scheme
+               (reverse lst))
+            :fdottedlists #f)
+ "[...lst].reverse();"
+ > (compile '(module m scheme
+               (reverse lst))
+            :fdottedlists #t)
+ "import {
+  reverse
+} from 'roselisp';
+
+reverse(lst);"
 
  ;; `map`
  > (describe "map")
@@ -6076,25 +6244,171 @@ let f: NN = function (x: any): any {
   return x;
 };"
 
+ ;; `pair?`
+ > (describe "pair?")
+ _
+ > (pair? 0)
+ #f
+ > (pair? 'x)
+ #f
+ > (pair? "x")
+ #f
+ > (pair? '())
+ #f
+ > (pair? '(1))
+ #t
+ > (pair? '(1 2))
+ #t
+ > (pair? '(1 2 3))
+ #t
+ > (pair? '(1 . 2))
+ #t
+ > (pair? '(1 2 . 3))
+ #t
+ > (pair? '(()))
+ #t
+ > (pair? '(.))
+ #t
+ > (pair? '(. 1))
+ #t
+ > (pair? '(. 1 2))
+ #t
+
+ ;; `cons`
+ > (describe "cons")
+ _
+ > (cons 1 2)
+ '(1 . 2)
+ > (cons 1 (cons 2 3))
+ '(1 2 . 3)
+ > (cons 1 '())
+ '(1)
+ > (cons 1 '(2))
+ '(1 2)
+ > (compile '(cons 1 2))
+ "[1, Symbol.for('.'), 2];"
+ > (compile '(cons "1" "2"))
+ "['1', Symbol.for('.'), '2'];"
+ > (compile '(cons x (list y)))
+ "[x, ...[y]];"
+ > (compile '(cons x '(y)))
+ "[x, ...[Symbol.for('y')]];"
+ > (compile '(cons x `(y)))
+ "[x, ...[Symbol.for('y')]];"
+ > (compile '(cons x `(,y)))
+ "[x, ...[y]];"
+ > (compile '(cons x `(,@y)))
+ "[x, ...[...y]];"
+ > (compile '(cons x y))
+ "[x, ...(Array.isArray(y) ? y : [Symbol.for('.'), y])];"
+ > (compile '(cons (x) y))
+ "[x(), ...(Array.isArray(y) ? y : [Symbol.for('.'), y])];"
+ > (compile '(cons x (y)))
+ "[x, ...((x) => {
+  return Array.isArray(x) ? x : [Symbol.for('.'), x];
+})(y())];"
+ > (compile '(cons (x) (y)))
+ "[x(), ...((x) => {
+  return Array.isArray(x) ? x : [Symbol.for('.'), x];
+})(y())];"
+
  ;; `cons?`
  > (describe "cons?")
  _
+ > (cons? 0)
+ #f
+ > (cons? 'x)
+ #f
+ > (cons? "x")
+ #f
  > (cons? '())
  #f
+ > (cons? '(1))
+ #t
+ > (cons? '(1 2))
+ #t
+ > (cons? '(1 2 3))
+ #t
+ > (cons? '(1 . 2))
+ #t
+ > (cons? '(1 2 . 3))
+ #t
+ > (cons? '(()))
+ #t
+ > (cons? '(.))
+ #t
+ > (cons? '(. 1))
+ #t
+ > (cons? '(. 1 2))
+ #t
 
  ;; `list?`
  > (describe "list?")
  _
  > (list? '())
  #t
+ > (list? '(1))
+ #t
+ > (list? '(1 2))
+ #t
+ > (list? '(1 2 3))
+ #t
  > (list? '(1 . 2))
  #f
  > (list? '(1 2 . 3))
  #f
- > (list? '(1 . ()))
+ > (compile '(list? x))
+ "Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !Array.isArray(x.at(-1)));"
+ > (compile '(module m scheme
+               (list? x))
+            :fdottedlists #f)
+ "Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !Array.isArray(x.at(-1)));"
+ > (compile '(module m scheme
+               (list? x))
+            :fdottedlists #t)
+ "import {
+  listp
+} from 'roselisp';
+
+listp(x);"
+
+ ;; `cl/listp`
+ > (describe "cl/listp")
+ _
+ > (cl/listp #t)
+ #f
+ > (cl/listp '())
  #t
- > (list? '(1 . (2 . ())))
+ > (cl/listp '(1 . 2))
  #t
+ > (cl/listp '(1 2 3))
+ #t
+
+ ;; `el/listp`
+ > (describe "el/listp")
+ _
+ > (el/listp #t)
+ #f
+ > (el/listp '())
+ #t
+ > (el/listp '(1 . 2))
+ #t
+ > (el/listp '(1 2 3))
+ #t
+
+ ;; `pair-or-list?`
+ > (describe "pair-or-list?")
+ _
+ > (pair-or-list? #t)
+ #f
+ > (pair-or-list? '())
+ #t
+ > (pair-or-list? '(1 . 2))
+ #t
+ > (pair-or-list? '(1 2 3))
+ #t
+ > (compile '(pair-or-list? x))
+ "Array.isArray(x);"
 
  ;; `vector?`
  > (describe "vector?")
@@ -6110,13 +6424,53 @@ let f: NN = function (x: any): any {
  > (vector? '(1 . (2 . ())))
  #t
 
- ;; `aget`
- > (describe "aget")
+ ;; `list-ref`
+ > (describe "list-ref")
  _
- > (compile '(aget args 0))
- "args[0];"
- > (compile '(aget args 0 1))
- "args[0][1];"
+ > (compile '(list-ref lst i))
+ "lst[i];"
+ > (compile '(list-ref lst i j))
+ "lst[i][j];"
+ > (compile '(module m scheme
+               (list-ref lst i))
+            :fdottedlists #f)
+ "lst[i];"
+ > (compile '(module m scheme
+               (list-ref lst i))
+            :fdottedlists #t)
+ "import {
+  listRef
+} from 'roselisp';
+
+listRef(lst, i);"
+
+ ;; `nth`
+ > (describe "nth")
+ _
+ > (nth 0 '(1))
+ 1
+ > (nth 1 '(1 2))
+ 2
+ > (nth 2 '(1 2 3))
+ 3
+ > (funcall nth 1 '(1 . (2 . ())))
+ 2
+ > (funcall nth 1 '(1 2 . (3 . ())))
+ 2
+ > (compile '(nth n x))
+ "x[n];"
+ > (compile '(module m scheme
+               (nth n x))
+            :fdottedlists #f)
+ "x[n];"
+ > (compile '(module m scheme
+               (nth n x))
+            :fdottedlists #t)
+ "import {
+  nth
+} from 'roselisp';
+
+nth(n, x);"
 
  ;; `aref`
  > (describe "aref")
@@ -6126,105 +6480,481 @@ let f: NN = function (x: any): any {
  > (compile '(aref args 0 1))
  "args[0][1];"
 
+ ;; `aget`
+ > (describe "aget")
+ _
+ > (compile '(aget args 0))
+ "args[0];"
+ > (compile '(aget args 0 1))
+ "args[0][1];"
+
  ;; `js/\[\]`
  > (describe "js/\[\]")
  _
  > (compile '(js/\[\] x y))
  "x[y];"
 
- ;; `aset`
+ ;; `list-set`
+ > (describe "list-set")
+ _
+ > (list-set '(1 2 3) 0 4)
+ '(4 2 3)
+ > (list-set '((1) 2 3) 0 0 4)
+ '((4) 2 3)
+ > (funcall list-set '(1 . ()) 0 2)
+ '(2 . ())
+ > (funcall list-set '(1 . (2 . ())) 1 3)
+ '(1 . (3 . ()))
+ > (funcall list-set '((1 . 2) . (3 . ())) 0 0 4)
+ '((4 . 2) . (3 . ()))
+ > (funcall list-set '(1 2 . (3 . ())) 1 4)
+ '(1 4 . (3 . ()))
+
+ ;; `list-set!`
+ > (describe "list-set!")
+ _
+ > (let ((lst '(1 2 3)))
+     (list-set! lst 0 4)
+     lst)
+ '(4 2 3)
+ > (let ((lst '((1) 2 3)))
+     (list-set! lst 0 0 4)
+     lst)
+ '((4) 2 3)
+ > (let ((lst '(1 . ())))
+     (funcall list-set! lst 0 2)
+     lst)
+ '(2 . ())
+ > (let ((lst '(1 . (2 . ()))))
+     (funcall list-set! lst 1 3)
+     lst)
+ '(1 . (3 . ()))
+ > (let ((lst '((1 . 2) . (3 . ()))))
+     (funcall list-set! lst 0 0 4)
+     lst)
+ '((4 . 2) . (3 . ()))
+ > (let ((lst '(1 2 . (3 . ()))))
+     (funcall list-set! lst 1 4)
+     lst)
+ '(1 4 . (3 . ()))
+ > (compile '(list-set! lst i x))
+ "lst[i] = x;"
+ > (compile '(list-set! lst i j x))
+ "lst[i][j] = x;"
+ > (compile '(module m scheme
+               (list-set! lst i x))
+            :fdottedlists #f)
+ "lst[i] = x;"
+ > (compile '(module m scheme
+               (list-set! lst i x))
+            :fdottedlists #t)
+ "import {
+  listSetX
+} from 'roselisp';
+
+listSetX(lst, i, x);"
+
+ ;; `aset!`
  > (describe "aset!")
  _
  > (compile '(aset! args 0 1))
  "args[0] = 1;"
 
- ;; `array-list?`
- > (describe "array-list?")
- _
- > (array-list? '())
- #t
- > (array-list? '(1 . 2))
- #t
- > (array-list? '(1 2))
- #t
- > (array-list? '(1 2 3))
- #t
-
- ;; `array-list-length`
- > (describe "array-list-length")
- _
- > (compile '(array-list-length x))
- "x.length;"
-
- ;; `linked-list?`
- > (describe "linked-list?")
- _
- > (linked-list? '())
- #f
- > (linked-list? '(1 . 2))
- #f
- > (linked-list? '(1 . ()))
- #t
- > (linked-list? '(1 . (2 . ())))
- #t
- > (linked-list? '(1 2 . (3 . ())))
- #t
-
- ;; `linked-list-link?`
- > (describe "linked-list-link?")
- _
- > (linked-list-link? '())
- #f
- > (linked-list-link? '(1 . 2))
- #t
- > (linked-list-link? '(1 . ()))
- #t
- > (linked-list-link? '(1 . (2 . ())))
- #t
- > (linked-list-link? '(1 2 . (3 . ())))
- #t
-
  ;; `length`
  > (describe "length")
  _
- > (length '(1 . ()))
+ > (length '())
+ 0
+ > (length '(1))
  1
- > (length '(1 . (2 . ())))
+ > (length '(1 2))
  2
- > (length '(1 2 . ()))
+ > (length '(1 2 3))
+ 3
+ > (funcall length '())
+ 0
+ > (funcall length '(1))
+ 1
+ > (funcall length '(1 2))
  2
+ > (funcall length '(1 2 3))
+ 3
+ > (funcall length '(1 . ()))
+ 1
+ > (funcall length '(1 . (2 . ())))
+ 2
+ > (funcall length '(1 2 . ()))
+ 2
+ > (compile '(length x))
+ "x.length;"
+ > (compile '(module m scheme
+               (length x))
+            :fdottedlists #f)
+ "x.length;"
+ > (compile '(module m scheme
+               (length x))
+            :fdottedlists #t)
+ "import {
+  length
+} from 'roselisp';
+
+length(x);"
 
  ;; `first`
  > (describe "first")
  _
  > (compile '(first x))
  "x[0];"
+ > (compile '(module m scheme
+               (first x))
+            :fdottedlists #f)
+ "x[0];"
+ > (compile '(module m scheme
+               (first x))
+            :fdottedlists #t)
+ "import {
+  first
+} from 'roselisp';
+
+first(x);"
+
+ ;; `second`
+ > (describe "second")
+ _
+ > (compile '(second x))
+ "x[1];"
+ > (compile '(module m scheme
+               (second x))
+            :fdottedlists #f)
+ "x[1];"
+ > (compile '(module m scheme
+               (second x))
+            :fdottedlists #t)
+ "import {
+  second
+} from 'roselisp';
+
+second(x);"
+
+ ;; `third`
+ > (describe "third")
+ _
+ > (compile '(third x))
+ "x[2];"
+ > (compile '(module m scheme
+               (third x))
+            :fdottedlists #f)
+ "x[2];"
+ > (compile '(module m scheme
+               (third x))
+            :fdottedlists #t)
+ "import {
+  third
+} from 'roselisp';
+
+third(x);"
+
+ ;; `fourth`
+ > (describe "fourth")
+ _
+ > (compile '(fourth x))
+ "x[3];"
+ > (compile '(module m scheme
+               (fourth x))
+            :fdottedlists #f)
+ "x[3];"
+ > (compile '(module m scheme
+               (fourth x))
+            :fdottedlists #t)
+ "import {
+  fourth
+} from 'roselisp';
+
+fourth(x);"
+
+ ;; `fifth`
+ > (describe "fifth")
+ _
+ > (compile '(fifth x))
+ "x[4];"
+ > (compile '(module m scheme
+               (fifth x))
+            :fdottedlists #f)
+ "x[4];"
+ > (compile '(module m scheme
+               (fifth x))
+            :fdottedlists #t)
+ "import {
+  fifth
+} from 'roselisp';
+
+fifth(x);"
+
+ ;; `sixth`
+ > (describe "sixth")
+ _
+ > (compile '(sixth x))
+ "x[5];"
+ > (compile '(module m scheme
+               (sixth x))
+            :fdottedlists #f)
+ "x[5];"
+ > (compile '(module m scheme
+               (sixth x))
+            :fdottedlists #t)
+ "import {
+  sixth
+} from 'roselisp';
+
+sixth(x);"
+
+ ;; `seventh`
+ > (describe "seventh")
+ _
+ > (compile '(seventh x))
+ "x[6];"
+ > (compile '(module m scheme
+               (seventh x))
+            :fdottedlists #f)
+ "x[6];"
+ > (compile '(module m scheme
+               (seventh x))
+            :fdottedlists #t)
+ "import {
+  seventh
+} from 'roselisp';
+
+seventh(x);"
+
+ ;; `eighth`
+ > (describe "eighth")
+ _
+ > (compile '(eighth x))
+ "x[7];"
+ > (compile '(module m scheme
+               (eighth x))
+            :fdottedlists #f)
+ "x[7];"
+ > (compile '(module m scheme
+               (eighth x))
+            :fdottedlists #t)
+ "import {
+  eighth
+} from 'roselisp';
+
+eighth(x);"
+
+ ;; `ninth`
+ > (describe "ninth")
+ _
+ > (compile '(ninth x))
+ "x[8];"
+ > (compile '(module m scheme
+               (ninth x))
+            :fdottedlists #f)
+ "x[8];"
+ > (compile '(module m scheme
+               (ninth x))
+            :fdottedlists #t)
+ "import {
+  ninth
+} from 'roselisp';
+
+ninth(x);"
+
+ ;; `tenth`
+ > (describe "tenth")
+ _
+ > (compile '(tenth x))
+ "x[9];"
+ > (compile '(module m scheme
+               (tenth x))
+            :fdottedlists #f)
+ "x[9];"
+ > (compile '(module m scheme
+               (tenth x))
+            :fdottedlists #t)
+ "import {
+  tenth
+} from 'roselisp';
+
+tenth(x);"
 
  ;; `last`
  > (describe "last")
  _
- > (last '(1 . ()))
+ > (last '(1))
  1
- > (last '(1 . (2 . ())))
+ > (last '(1 2))
  2
- > (last '(1 2 . ()))
+ > (last '(1 2 3))
+ 3
+ > (funcall last '(1 . ()))
+ 1
+ > (funcall last '(1 . (2 . ())))
  2
+ > (funcall last '(1 2 . ()))
+ 2
+ > (compile '(last lst))
+ "lst.at(-1);"
+ > (compile '(module m scheme
+               (last lst))
+            :fdottedlists #f)
+ "lst.at(-1);"
+ > (compile '(module m scheme
+               (last lst))
+            :fdottedlists #t)
+ "import {
+  last
+} from 'roselisp';
 
- ;; `nth`
- > (describe "nth")
+last(lst);"
+
+ ;; `list-tail`
+ > (describe "list-tail")
  _
- > (nth 1 '(1 . (2 . ())))
+ > (list-tail '(1 2 3) 0)
+ '(1 2 3)
+ > (list-tail '(1 2 3) 1)
+ '(2 3)
+ > (list-tail '(1 2 3) 2)
+ '(3)
+ > (list-tail '(1 2 3) 3)
+ '()
+ > (list-tail '(1 . 2) 1)
  2
- > (nth 1 '(1 2 . (3 . ())))
+ > (compile '(module m scheme
+               (list-tail x n))
+            :fdottedlists #f)
+ "import {
+  listTail
+} from 'roselisp';
+
+listTail(x, n);"
+ > (compile '(module m scheme
+               (list-tail x n))
+            :fdottedlists #t)
+ "import {
+  listTail
+} from 'roselisp';
+
+listTail(x, n);"
+
+ ;; `nthcdr`
+ > (describe "nthcdr")
+ _
+ > (nthcdr 0 '(1 2 3))
+ '(1 2 3)
+ > (nthcdr 1 '(1 2 3))
+ '(2 3)
+ > (nthcdr 2 '(1 2 3))
+ '(3)
+ > (nthcdr 3 '(1 2 3))
+ '()
+ > (nthcdr 1 '(1 . 2))
  2
+ > (compile '(module m scheme
+               (nthcdr n x))
+            :fdottedlists #f)
+ "import {
+  nthcdr
+} from 'roselisp';
+
+nthcdr(n, x);"
+ > (compile '(module m scheme
+               (nthcdr n x))
+            :fdottedlists #t)
+ "import {
+  nthcdr
+} from 'roselisp';
+
+nthcdr(n, x);"
 
  ;; `cdr`
  > (describe "cdr")
  _
+ > (cdr '(1))
+ '()
+ > (cdr '(1 2))
+ '(2)
+ > (cdr '(1 . 2))
+ 2
+ > (cdr '(1 . ()))
+ '()
+ > (cdr '(1 2 . ()))
+ '(2 . ())
  > (cdr '(1 . (2 . ())))
  '(2 . ())
  > (cdr '(1 2 . (3 . ())))
  '(2 . (3 . ()))
+ > (funcall cdr '(1))
+ '()
+ > (funcall cdr '(1 2))
+ '(2)
+ > (funcall cdr '(1 . 2))
+ 2
+ > (funcall cdr '(1 . ()))
+ '()
+ > (funcall cdr '(1 2 . ()))
+ '(2 . ())
+ > (funcall cdr '(1 . (2 . ())))
+ '(2 . ())
+ > (funcall cdr '(1 2 . (3 . ())))
+ '(2 . (3 . ()))
+ > (compile '(cdr x))
+ "((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);"
+ > (compile '(module m scheme
+               (cdr x))
+            :fdottedlists #f)
+ "((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);"
+ > (compile '(module m scheme
+               (cdr x))
+            :fdottedlists #t)
+ "import {
+  cdr
+} from 'roselisp';
+
+cdr(x);"
+
+ ;; `rest`
+ > (describe "rest")
+ _
+ > (rest '(1))
+ '()
+ > (rest '(1 2))
+ '(2)
+ > (rest '(1 2 3))
+ '(2 3)
+ > (funcall rest '(1))
+ '()
+ > (funcall rest '(1 2))
+ '(2)
+ > (funcall rest '(1 2 3))
+ '(2 3)
+ > (funcall rest '(1 . 2))
+ 2
+ > (funcall rest '(1 . ()))
+ '()
+ > (funcall rest '(1 2 . ()))
+ '(2 . ())
+ > (funcall rest '(1 . (2 . ())))
+ '(2 . ())
+ > (funcall rest '(1 2 . (3 . ())))
+ '(2 . (3 . ()))
+ > (compile '(rest x))
+ "x.slice(1);"
+ > (compile '(module m scheme
+               (rest x))
+            :fdottedlists #f)
+ "x.slice(1);"
+ > (compile '(module m scheme
+               (rest x))
+            :fdottedlists #t)
+ "import {
+  rest
+} from 'roselisp';
+
+rest(x);"
 
  ;; `set-car!`
  > (describe "set-car!")
@@ -6294,16 +7024,94 @@ let f: NN = function (x: any): any {
  #f
  > (dotted-list? '(1 . 2))
  #t
- > (dotted-list? '(1 . ()))
- #f
- > (dotted-list? '(1 . (2 . ())))
- #f
  > (dotted-list? '(1 . (2 . 3)))
  #t
  > (dotted-list? '(foo . bar))
  #t
  > (dotted-list? '(foo bar))
  #f
+ > (compile '(dotted-list? x))
+ "Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'));"
+
+ ;; `dotted-pair?`
+ > (describe "dotted-pair?")
+ _
+ > (dotted-pair? '())
+ #f
+ > (dotted-pair? '(1 . 2))
+ #t
+ > (dotted-pair? '(1 . (2 . 3)))
+ #t
+ > (dotted-pair? '(1 2 . 3))
+ #f
+ > (dotted-pair? '(foo . bar))
+ #t
+ > (dotted-pair? '(foo bar))
+ #f
+ > (compile '(dotted-pair? x))
+ "Array.isArray(x) && (x.length === 3) && (x[1] === Symbol.for('.'));"
+
+ > (describe "dotted-proper-list?")
+ _
+ > (dotted-proper-list? '())
+ #f
+ > (dotted-proper-list? '(1 . 2))
+ #f
+ > (dotted-proper-list? '(1 . ()))
+ #t
+ > (dotted-proper-list? '(1 . (2 . ())))
+ #t
+ > (dotted-proper-list? '(1 . (2 . 3)))
+ #f
+ > (dotted-proper-list? '(foo . bar))
+ #f
+ > (dotted-proper-list? '(foo bar))
+ #f
+
+ > (describe "dotted-improper-list?")
+ _
+ > (dotted-improper-list? '())
+ #f
+ > (dotted-improper-list? '(1 . 2))
+ #t
+ > (dotted-improper-list? '(1 . ()))
+ #f
+ > (dotted-improper-list? '(1 . (2 . ())))
+ #f
+ > (dotted-improper-list? '(1 . (2 . 3)))
+ #t
+ > (dotted-improper-list? '(foo . bar))
+ #t
+ > (dotted-improper-list? '(foo bar))
+ #f
+
+ ;; `dotted-list-head`
+ > (describe "dotted-list-head")
+ _
+ > (dotted-list-head '(foo . bar))
+ '(foo)
+ > (dotted-list-head '(foo bar . baz))
+ '(foo bar)
+ > (compile '(dotted-list-head x))
+ "x.slice(0, -2);"
+
+ ;; `dotted-list-tail`
+ > (describe "dotted-list-tail")
+ _
+ > (dotted-list-tail '(foo . bar))
+ 'bar
+ > (dotted-list-tail '(foo bar . baz))
+ 'baz
+ > (compile '(dotted-list-tail x))
+ "x.at(-1);"
+
+ ;; `dotted-list-parse`
+ > (describe "dotted-list-parse")
+ _
+ > (dotted-list-parse '(foo . bar))
+ (values '(foo) 'bar)
+ > (dotted-list-parse '(foo bar . baz))
+ (values '(foo bar) 'baz)
 
  ;; `dotted-list-length`
  > (describe "dotted-list-length")
@@ -6315,21 +7123,131 @@ let f: NN = function (x: any): any {
  > (dotted-list-length '(1 . (2 . ())))
  2
 
- ;; `dotted-list-head`
- > (describe "dotted-list-head")
+ ;; `dotted-list-ref`
+ > (describe "dotted-list-ref")
  _
- > (dotted-list-head '(foo . bar))
- '(foo)
- > (dotted-list-head '(foo bar . baz))
- '(foo bar)
+ > (dotted-list-ref '(1 . ()) 0)
+ 1
+ > (dotted-list-ref '(1 . (2 . ())) 1)
+ 2
+ > (dotted-list-ref '(1 2 . ()) 1)
+ 2
+ > (dotted-list-ref '(1 2 . (3 . 4)) 2)
+ 3
 
- ;; `dotted-list-tail`
- > (describe "dotted-list-tail")
+ ;; `dotted-list-set`
+ > (describe "dotted-list-set")
  _
- > (dotted-list-tail '(foo . bar))
- 'bar
- > (dotted-list-tail '(foo bar . baz))
- 'baz
+ > (dotted-list-set '(1 . ()) 0 2)
+ '(2 . ())
+ > (dotted-list-set '(1 . (2 . ())) 1 3)
+ '(1 . (3 . ()))
+ > (dotted-list-set '((1 . 2) . (3 . ())) 0 0 4)
+ '((4 . 2) . (3 . ()))
+ > (dotted-list-set '(1 2 . (3 . ())) 1 4)
+ '(1 4 . (3 . ()))
+
+ ;; `dotted-list-set!`
+ > (describe "dotted-list-set!")
+ _
+ > (let ((lst '(1 . ())))
+     (dotted-list-set! lst 0 2)
+     lst)
+ '(2 . ())
+ > (let ((lst '(1 . (2 . ()))))
+     (dotted-list-set! lst 1 3)
+     lst)
+ '(1 . (3 . ()))
+ > (let ((lst '((1 . 2) . (3 . ()))))
+     (dotted-list-set! lst 0 0 4)
+     lst)
+ '((4 . 2) . (3 . ()))
+ > (let ((lst '(1 2 . (3 . ()))))
+     (dotted-list-set! lst 1 4)
+     lst)
+ '(1 4 . (3 . ()))
+
+ ;; `dotted-list-first`
+ > (describe "dotted-list-first")
+ _
+ > (dotted-list-first '(1 . ()))
+ 1
+ > (dotted-list-first '(1 . (2 . ())))
+ 1
+ > (dotted-list-first '(1 2 . ()))
+ 1
+
+ ;; `dotted-list-second`
+ > (describe "dotted-list-second")
+ _
+ > (dotted-list-second '(1 . (2 . ())))
+ 2
+ > (dotted-list-second '(1 2 . ()))
+ 2
+
+ ;; `dotted-list-third`
+ > (describe "dotted-list-third")
+ _
+ > (dotted-list-third '(1 . (2 . (3 . ()))))
+ 3
+ > (dotted-list-third '(1 2 3 . ()))
+ 3
+
+ ;; `dotted-list-fourth`
+ > (describe "dotted-list-fourth")
+ _
+ > (dotted-list-fourth '(1 . (2 . (3 . (4 . ())))))
+ 4
+ > (dotted-list-fourth '(1 2 3 4 . ()))
+ 4
+
+ ;; `dotted-list-fifth`
+ > (describe "dotted-list-fifth")
+ _
+ > (dotted-list-fifth '(1 . (2 . (3 . (4 . (5 . ()))))))
+ 5
+ > (dotted-list-fifth '(1 2 3 4 5 . ()))
+ 5
+
+ ;; `dotted-list-sixth`
+ > (describe "dotted-list-sixth")
+ _
+ > (dotted-list-sixth '(1 . (2 . (3 . (4 . (5 . (6 . ())))))))
+ 6
+ > (dotted-list-sixth '(1 2 3 4 5 6 . ()))
+ 6
+
+ ;; `dotted-list-seventh`
+ > (describe "dotted-list-seventh")
+ _
+ > (dotted-list-seventh '(1 . (2 . (3 . (4 . (5 . (6 . (7 . ()))))))))
+ 7
+ > (dotted-list-seventh '(1 2 3 4 5 6 7 . ()))
+ 7
+
+ ;; `dotted-list-eighth`
+ > (describe "dotted-list-eighth")
+ _
+ > (dotted-list-eighth '(1 . (2 . (3 . (4 . (5 . (6 . (7 . (8 . ())))))))))
+ 8
+ > (dotted-list-eighth '(1 2 3 4 5 6 7 8 . ()))
+ 8
+
+ ;; `dotted-list-ninth`
+ > (describe "dotted-list-ninth")
+ _
+ > (dotted-list-ninth '(1 . (2 . (3 . (4 . (5 . (6 . (7 . (8 . (9 . ()))))))))))
+ 9
+ > (dotted-list-ninth '(1 2 3 4 5 6 7 8 9 . ()))
+ 9
+
+ ;; `dotted-list-tenth`
+ > (describe "dotted-list-tenth")
+ _
+ > (dotted-list-tenth '(1 . (2 . (3 . (4 . (5 . (6 . (7 . (8 . (9 . (10 . ())))))))))))
+ 10
+ > (dotted-list-tenth '(1 2 3 4 5 6 7 8 9 10 . ()))
+ 10
 
  ;; `dotted-list-last`
  > (describe "dotted-list-last")
@@ -6438,16 +7356,6 @@ let f: NN = function (x: any): any {
  '(a b c d e)
  > (flatten '((((4)))))
  '(4)
-
- ;; Cons dot
- > (describe "Cons dot")
- _
- > *cons-dot*
- '.
- > (cons-dot)
- '.
- > (cons-dot? *cons-dot*)
- #t
 
  ;; `match`
  > (describe "match")

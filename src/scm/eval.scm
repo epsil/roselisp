@@ -212,7 +212,7 @@
        ;; the arguments have to be evaluated first.
        (define f op)
        (cond
-        ((or (= (js/length args) 0)
+        ((or (= (length args) 0)
              (fexpr? f))
          ;; Fexpr call. The function is called with its
          ;; arguments unevaluated.
@@ -999,11 +999,11 @@
 (define (eval-estree-switch-case node env (options (js/obj)))
   (define consequent
     (get-estree-field "consequent" node))
-  (when (and (= (js/length consequent) 1)
-             (estree-type? (js/first consequent)
+  (when (and (= (length consequent) 1)
+             (estree-type? (first consequent)
                            "BlockStatement"))
     (set! consequent
-          (get-estree-field "body" (js/first consequent))))
+          (get-estree-field "body" (first consequent))))
   (define result #u)
   (try
     (for ((x consequent))
@@ -1107,9 +1107,9 @@
      ((estree-type? pattern "ArrayPattern")
       (define elements
         (get-estree-field "elements" pattern))
-      (for ((i (range 0 (js/length elements))))
+      (for ((i (range 0 (length elements))))
         (define x
-          (aget elements i))
+          (list-ref elements i))
         (define x1
           (if (thunk? x)
               (force x)
@@ -1121,7 +1121,7 @@
           (eval-pattern (get-estree-field "argument" x1)
                         (drop val i)))
          (else
-          (eval-pattern x1 (aget val i)))))
+          (eval-pattern x1 (list-ref val i)))))
       val)
      ((estree-type? pattern "AssignmentPattern")
       (define left
@@ -1168,7 +1168,7 @@
       (try
         (set! result
               (eval-estree
-               (if (= (js/length params) 0)
+               (if (= (length params) 0)
                    body
                    (new BlockStatement
                         `(,(new VariableDeclaration
@@ -1193,7 +1193,7 @@
          (try
            (set! result
                  (eval-estree
-                  (if (= (js/length params) 0)
+                  (if (= (length params) 0)
                       body
                       (new BlockStatement
                            `(,(new VariableDeclaration

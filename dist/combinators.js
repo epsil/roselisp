@@ -156,7 +156,7 @@ function B2(...args) {
         }
         default: {
             const fs = args.slice(0, -1);
-            const x = args[args.length - 1];
+            const x = args.at(-1);
             // Right-to-left function composition
             // corresponds to a right fold.
             return (
@@ -169,7 +169,7 @@ function B2(...args) {
     }
 }
 exports.B2 = B2;
-B2.fsource = [Symbol.for('define'), [Symbol.for('B2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('js/length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('js/last'), Symbol.for('args')]], [Symbol.for('foldr'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
+B2.fsource = [Symbol.for('define'), [Symbol.for('B2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('last'), Symbol.for('args')]], [Symbol.for('foldr'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
 /**
  * Curried **B1** combinator.
  */
@@ -241,7 +241,7 @@ function C2(f, ...args) {
     }
 }
 exports.C2 = C2;
-C2.fsource = [Symbol.for('define'), [Symbol.for('C2'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('args')]], [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('args')]]]]]]]];
+C2.fsource = [Symbol.for('define'), [Symbol.for('C2'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('args')]], [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('args')]]]]]]]];
 /**
  * **C3** combinator.
  *
@@ -259,11 +259,11 @@ function C3(f, ...args) {
         return f(...args);
     }
     else {
-        return f(...[args[args.length - 1], ...args.slice(0, -1)]);
+        return f(...[args.at(-1), ...args.slice(0, -1)]);
     }
 }
 exports.C3 = C3;
-C3.fsource = [Symbol.for('define'), [Symbol.for('C3'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('js/last'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), [Symbol.for('drop-right'), Symbol.for('args'), 1]]]]]]]];
+C3.fsource = [Symbol.for('define'), [Symbol.for('C3'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('last'), Symbol.for('args')]], [Symbol.for('unquote-splicing'), [Symbol.for('drop-right'), Symbol.for('args'), 1]]]]]]]];
 /**
  * Curried **C1** combinator.
  */
@@ -489,7 +489,7 @@ function Q2(...args) {
         }
         default: {
             const fs = args.slice(0, -1);
-            const x = args[args.length - 1];
+            const x = args.at(-1);
             // Left-to-right function composition
             // corresponds to a left fold.
             return (
@@ -502,7 +502,7 @@ function Q2(...args) {
     }
 }
 exports.Q2 = Q2;
-Q2.fsource = [Symbol.for('define'), [Symbol.for('Q2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('js/length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('js/last'), Symbol.for('args')]], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
+Q2.fsource = [Symbol.for('define'), [Symbol.for('Q2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('fs'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('last'), Symbol.for('args')]], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
 /**
  * Curried **Q1** combinator.
  */
@@ -648,7 +648,7 @@ function T2(...args) {
     }
 }
 exports.T2 = T2;
-T2.fsource = [Symbol.for('define'), [Symbol.for('T2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('js/length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')], Symbol.for('args')], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
+T2.fsource = [Symbol.for('define'), [Symbol.for('T2'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('case'), [Symbol.for('length'), Symbol.for('args')], [[0], undefined], [[1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')], Symbol.for('args')], [Symbol.for('foldl'), Symbol.for('A'), Symbol.for('x'), Symbol.for('fs')]]]];
 /**
  * Curried **T1** combinator.
  */

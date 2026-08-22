@@ -21,17 +21,8 @@
 ;;;
 ;;; [rkt:stringp]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string~3f%29%29
 ;;; [cl:stringp]: http://clhs.lisp.se/Body/f_stgp.htm#stringp
-(define (string?_ obj)
-  (or (string-primitive? obj)
-      (string-object? obj)))
-
-;;; Whether something is a string primitive.
-(define (string-primitive?_ obj)
-  (eq? (type-of obj) "string"))
-
-;;; Whether something is a string object.
-(define (string-object?_ obj)
-  (is-a? obj String))
+(define (string?_ x)
+  (js/string? x))
 
 ;;; The length of a string.
 (define (string-length_ x)
@@ -43,10 +34,10 @@
 ;;;
 ;;; [rkt:string-append]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-append%29%29
 (define (string-append_ . args)
-  (foldl (lambda (x acc)
-           (string-append acc x))
-         ""
-         args))
+  (let ((result ""))
+    (for ((x args))
+      (set! result (js/string-concat result x)))
+    result))
 
 ;;; Get the character at a particular position in a string.
 ;;;
@@ -68,19 +59,13 @@
       (plist-get options :repeat?))
     (define pattern-str
       (string-append
-       "("
-       (regexp-quote sep)
-       ")"
-       (if repeat-option
-           "+"
-           "")))
+       "(" (regexp-quote sep) ")"
+       (if repeat-option "+" "")))
     (~> str
-        (regexp-replace (regexp (string-append "^" pattern-str))
-                        _
-                        "")
-        (regexp-replace (regexp (string-append pattern-str "$"))
-                        _
-                        "")))
+        (regexp-replace
+         (regexp (string-append "^" pattern-str)) _ "")
+        (regexp-replace
+         (regexp (string-append pattern-str "$")) _ "")))
    (else
     (send str trim))))
 
@@ -150,7 +135,7 @@
 ;;;
 ;;; [rkt:number-to-string]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._number-~3estring%29%29
 (define (number->string_ n)
-  (string-append n ""))
+  (js/string-concat n ""))
 
 ;;; Indent a string by prepending each line with `n` spaces.
 (define (indent-string str (n 2) (options (js/obj)))
@@ -172,7 +157,6 @@
   (rename-out (number->string_ number->string))
   (rename-out (string->number_ string->number))
   (rename-out (string-append_ string-append))
-  (rename-out (string-primitive?_ string-primitive?))
   (rename-out (string-replace_ string-replace))
   (rename-out (string?_ string?))
   (rename-out (substring_ substring))
@@ -182,8 +166,6 @@
   string-downcase_
   string-join_
   string-length_
-  string-object?_
-  string-primitive?_
   string-ref_
   string-repeat_
   string-replace_

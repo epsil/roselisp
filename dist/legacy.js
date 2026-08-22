@@ -44,28 +44,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.throwSpecial_ = exports.setqSpecial_ = exports.setValuesSpecial_ = exports.setSpecial_ = exports.setFieldsSpecial_ = exports.setFieldSpecial_ = exports.sendSpecial_ = exports.sendApplySpecial_ = exports.returnSpecial_ = exports.requireSpecial_ = exports.quoteSpecial_ = exports.quasiquoteSpecial_ = exports.provideSpecial_ = exports.orSpecial_ = exports.nlambdaSpecial_ = exports.moduleSpecial_ = exports.macropSpecial_ = exports.letValuesSpecial_ = exports.letStarSpecial_ = exports.letFieldsSpecial_ = exports.letEnvSpecial_ = exports.lambdaSpecial_ = exports.jsWhileSpecial_ = exports.jsOptionalChainingSpecial_ = exports.jsFunctionSpecial_ = exports.jsDoWhileSpecial_ = exports.jsArrowSpecial_ = exports.getFieldSpecial_ = exports.fsetSpecial_ = exports.forSpecial_ = exports.dotSpecial_ = exports.defmacroSpecial_ = exports.defineValuesSpecial_ = exports.defineTypeSpecial_ = exports.defineSpecial_ = exports.definePublicSpecial_ = exports.defineMacroSpecial_ = exports.defineGeneratorSpecial_ = exports.defineFieldsSpecial_ = exports.defineClassSpecial_ = exports.defineAsyncSpecial_ = exports.continueSpecial_ = exports.condSpecial_ = exports.colonSpecial_ = exports.breakSpecial_ = exports.beginSpecial_ = exports.awaitSpecial_ = exports.asyncSpecial_ = exports.annSpecial_ = exports.andSpecial_ = void 0;
 exports.yieldSpecial_ = exports.trySpecial_ = void 0;
-const array_1 = require("./array");
 const env_1 = require("./env");
 const eval_1 = require("./eval");
 const exception_1 = require("./exception");
+const list_1 = require("./list");
 const rose_1 = require("./rose");
 const util_1 = require("./util");
-const [lastCdr, flatten, nthcdr, cdr] = (() => {
-    function lastCdr_(lst) {
-        if (!Array.isArray(lst)) {
-            return undefined;
-        }
-        else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-            let result = lst;
-            while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-                result = result[result.length - 1];
-            }
-            return result;
-        }
-        else {
-            return [];
-        }
-    }
+const [flatten, nthcdr] = (() => {
     function flatten_(lst) {
         return lst.reduce(function (acc, x) {
             if (Array.isArray(x)) {
@@ -81,22 +66,15 @@ const [lastCdr, flatten, nthcdr, cdr] = (() => {
         }, []);
     }
     function nthcdr_(n, lst) {
-        if ((lst.length === (n + 2)) && (lst[n] === Symbol.for('.'))) {
-            return lst[lst.length - 1];
+        let result = lst;
+        let i = n;
+        while (i > 0) {
+            result = ((result.length === 3) && (result[1] === Symbol.for('.'))) ? result[2] : result.slice(1);
+            i--;
         }
-        else {
-            return lst.slice(n);
-        }
+        return result;
     }
-    function cdr_(lst) {
-        if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
-            return lst[2];
-        }
-        else {
-            return lst.slice(1);
-        }
-    }
-    return [lastCdr_, flatten_, nthcdr_, cdr_];
+    return [flatten_, nthcdr_];
 })();
 /**
  * Evaluate a `(quote ...)` form.
@@ -110,26 +88,7 @@ quoteSpecial_.fsource = [Symbol.for('define'), [Symbol.for('quote-special_'), Sy
  * Evaluate a `(quasiquote ...)` form.
  */
 function quasiquoteSpecial_(exp, env) {
-    return quasiquoteHelper((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1], env);
+    return quasiquoteHelper(exp[1], env);
 }
 exports.quasiquoteSpecial_ = quasiquoteSpecial_;
 quasiquoteSpecial_.fsource = [Symbol.for('define'), [Symbol.for('quasiquote-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('quasiquote-helper'), [Symbol.for('second'), Symbol.for('exp')], Symbol.for('env')]];
@@ -137,63 +96,19 @@ quasiquoteSpecial_.fsource = [Symbol.for('define'), [Symbol.for('quasiquote-spec
  * Helper function for `quasiquote-special_`.
  */
 function quasiquoteHelper(exp, env) {
-    if (!(() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    if (!(Array.isArray(exp) && !((exp.length >= 3) && (exp.at(-2) === Symbol.for('.')) && !Array.isArray(exp.at(-1))))) {
         return exp;
     }
     else {
         let result = [];
         for (let x of exp) {
             if ((0, util_1.unquotep)(x)) {
-                const val = (0, eval_1.eval_)((Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (() => {
-                    const x1 = lastCdr(x);
-                    return Array.isArray(x1) && (x1.length === 0);
-                })()) ? (() => {
-                    let i = 1;
-                    let result = x;
-                    while (i > 0) {
-                        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                            result = x[x.length - 1];
-                        }
-                        else {
-                            result = x.slice(1);
-                        }
-                        i--;
-                    }
-                    if (Array.isArray(result)) {
-                        result = result[0];
-                    }
-                    return result;
-                })() : x[1], env);
+                const val = (0, eval_1.eval_)(x[1], env);
                 result.push(val);
             }
             else if ((0, util_1.unquoteSplicingP)(x)) {
-                const val = (0, eval_1.eval_)((Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (() => {
-                    const x1 = lastCdr(x);
-                    return Array.isArray(x1) && (x1.length === 0);
-                })()) ? (() => {
-                    let i = 1;
-                    let result = x;
-                    while (i > 0) {
-                        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                            result = x[x.length - 1];
-                        }
-                        else {
-                            result = x.slice(1);
-                        }
-                        i--;
-                    }
-                    if (Array.isArray(result)) {
-                        result = result[0];
-                    }
-                    return result;
-                })() : x[1], env);
-                if (!(() => {
-                    const x1 = lastCdr(val);
-                    return Array.isArray(x1) && (x1.length === 0);
-                })()) {
+                const val = (0, eval_1.eval_)(x[1], env);
+                if (!(Array.isArray(val) && !((val.length >= 3) && (val.at(-2) === Symbol.for('.')) && !Array.isArray(val.at(-1))))) {
                     throw new Error('Wrong type of argument: expected list');
                 }
                 result = [...result, ...val];
@@ -201,10 +116,7 @@ function quasiquoteHelper(exp, env) {
             else if ((0, util_1.quasiquotep)(x)) {
                 result.push(x);
             }
-            else if ((() => {
-                const x1 = lastCdr(x);
-                return Array.isArray(x1) && (x1.length === 0);
-            })()) {
+            else if (Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !Array.isArray(x.at(-1)))) {
                 const val = quasiquoteHelper(x, env);
                 result.push(val);
             }
@@ -238,7 +150,7 @@ function setqSpecial_(exp, env) {
     return (0, eval_1.eval_)(setExp, env);
 }
 exports.setqSpecial_ = setqSpecial_;
-setqSpecial_.fsource = [Symbol.for('define'), [Symbol.for('setq-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('assignments'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('exp')], 1], 2]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('aget'), Symbol.for('exp'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('aget'), Symbol.for('exp'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('assignment'), [Symbol.for('quasiquote'), [Symbol.for('set'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('sym')]], [Symbol.for('unquote'), Symbol.for('val')]]]], [Symbol.for('push-right!'), Symbol.for('assignments'), Symbol.for('assignment')]], [Symbol.for('define'), Symbol.for('set-exp'), [Symbol.for('quote'), []]], [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('assignments')], 1], [Symbol.for('set!'), Symbol.for('set-exp'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('assignments')]]]], [Symbol.for('set!'), Symbol.for('set-exp'), [Symbol.for('first'), Symbol.for('assignments')]]], [Symbol.for('eval_'), Symbol.for('set-exp'), Symbol.for('env')]];
+setqSpecial_.fsource = [Symbol.for('define'), [Symbol.for('setq-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('assignments'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('-'), [Symbol.for('length'), Symbol.for('exp')], 1], 2]]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('list-ref'), Symbol.for('exp'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('list-ref'), Symbol.for('exp'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('define'), Symbol.for('assignment'), [Symbol.for('quasiquote'), [Symbol.for('set'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('sym')]], [Symbol.for('unquote'), Symbol.for('val')]]]], [Symbol.for('push-right!'), Symbol.for('assignments'), Symbol.for('assignment')]], [Symbol.for('define'), Symbol.for('set-exp'), [Symbol.for('quote'), []]], [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('assignments')], 1], [Symbol.for('set!'), Symbol.for('set-exp'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('assignments')]]]], [Symbol.for('set!'), Symbol.for('set-exp'), [Symbol.for('first'), Symbol.for('assignments')]]], [Symbol.for('eval_'), Symbol.for('set-exp'), Symbol.for('env')]];
 /**
  * Evaluate a `(set ...)` form.
  */
@@ -246,97 +158,18 @@ function setSpecial_(exp, env) {
     const params = exp.slice(1);
     let sym = params[0];
     sym = (0, eval_1.eval_)(sym, env);
-    if ((0, util_1.formp)(sym, env, array_1.aget_)) {
-        return (0, eval_1.eval_)([array_1.aset_, ...sym.slice(1), (Array.isArray(params) && (params.length >= 3) && (params[params.length - 2] === Symbol.for('.')) && (() => {
-                const x = lastCdr(params);
-                return Array.isArray(x) && (x.length === 0);
-            })()) ? (() => {
-                let i = 1;
-                let result = params;
-                while (i > 0) {
-                    if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                        result = params[params.length - 1];
-                    }
-                    else {
-                        result = params.slice(1);
-                    }
-                    i--;
-                }
-                if (Array.isArray(result)) {
-                    result = result[0];
-                }
-                return result;
-            })() : params[1]], env);
+    if ((0, util_1.formp)(sym, env, list_1.listRef_)) {
+        return (0, eval_1.eval_)([list_1.listSetX_, ...sym.slice(1), params[1]], env);
     }
     else {
-        const val = (0, eval_1.eval_)((Array.isArray(params) && (params.length >= 3) && (params[params.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(params);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = params;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = params[params.length - 1];
-                }
-                else {
-                    result = params.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : params[1], env);
-        if ((() => {
-            const x = lastCdr(sym);
-            return Array.isArray(x) && (x.length === 0);
-        })() && (sym.length === 2)) {
+        const val = (0, eval_1.eval_)(params[1], env);
+        if (Array.isArray(sym) && !((sym.length >= 3) && (sym.at(-2) === Symbol.for('.')) && !Array.isArray(sym.at(-1))) && (sym.length === 2)) {
             let prop = sym[0];
-            let obj = (0, eval_1.eval_)((Array.isArray(sym) && (sym.length >= 3) && (sym[sym.length - 2] === Symbol.for('.')) && (() => {
-                const x = lastCdr(sym);
-                return Array.isArray(x) && (x.length === 0);
-            })()) ? (() => {
-                let i = 1;
-                let result = sym;
-                while (i > 0) {
-                    if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                        result = sym[sym.length - 1];
-                    }
-                    else {
-                        result = sym.slice(1);
-                    }
-                    i--;
-                }
-                if (Array.isArray(result)) {
-                    result = result[0];
-                }
-                return result;
-            })() : sym[1], env);
+            let obj = (0, eval_1.eval_)(sym[1], env);
             if (typeof prop === 'symbol') {
                 let match;
                 if ((match = prop.description.match(new RegExp('^\\.-(.*)$')))) {
-                    prop = (Array.isArray(match) && (match.length >= 3) && (match[match.length - 2] === Symbol.for('.')) && (() => {
-                        const x = lastCdr(match);
-                        return Array.isArray(x) && (x.length === 0);
-                    })()) ? (() => {
-                        let i = 1;
-                        let result = match;
-                        while (i > 0) {
-                            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                                result = match[match.length - 1];
-                            }
-                            else {
-                                result = match.slice(1);
-                            }
-                            i--;
-                        }
-                        if (Array.isArray(result)) {
-                            result = result[0];
-                        }
-                        return result;
-                    })() : match[1];
+                    prop = match[1];
                     obj[prop] = val;
                 }
             }
@@ -348,33 +181,14 @@ function setSpecial_(exp, env) {
     }
 }
 exports.setSpecial_ = setSpecial_;
-setSpecial_.fsource = [Symbol.for('define'), [Symbol.for('set-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('first'), Symbol.for('params')]], [Symbol.for('set!'), Symbol.for('sym'), [Symbol.for('eval_'), Symbol.for('sym'), Symbol.for('env')]], [Symbol.for('cond'), [[Symbol.for('form?'), Symbol.for('sym'), Symbol.for('env'), Symbol.for('aget_')], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('aset_')], [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('sym')]], [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('params')]]]], Symbol.for('env')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('params')], Symbol.for('env')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('list?'), Symbol.for('sym')], [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('sym')], 2]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('first'), Symbol.for('sym')]], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('sym')], Symbol.for('env')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('match')], [Symbol.for('when'), [Symbol.for('set!'), Symbol.for('match'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^\\.-(.*)$'], [Symbol.for('symbol->string'), Symbol.for('prop')]]], [Symbol.for('set!'), Symbol.for('prop'), [Symbol.for('second'), Symbol.for('match')]], [Symbol.for('set!'), [Symbol.for('oget'), Symbol.for('obj'), Symbol.for('prop')], Symbol.for('val')]]]]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('val'), [Symbol.for('quote'), Symbol.for('Any')]]]], Symbol.for('val')]]];
+setSpecial_.fsource = [Symbol.for('define'), [Symbol.for('set-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('first'), Symbol.for('params')]], [Symbol.for('set!'), Symbol.for('sym'), [Symbol.for('eval_'), Symbol.for('sym'), Symbol.for('env')]], [Symbol.for('cond'), [[Symbol.for('form?'), Symbol.for('sym'), Symbol.for('env'), Symbol.for('aget_')], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('aset_')], [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('sym')]], [Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('params')]]]], Symbol.for('env')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('params')], Symbol.for('env')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('list?'), Symbol.for('sym')], [Symbol.for('='), [Symbol.for('length'), Symbol.for('sym')], 2]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('first'), Symbol.for('sym')]], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('sym')], Symbol.for('env')]], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('prop')], [Symbol.for('define'), Symbol.for('match')], [Symbol.for('when'), [Symbol.for('set!'), Symbol.for('match'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^\\.-(.*)$'], [Symbol.for('symbol->string'), Symbol.for('prop')]]], [Symbol.for('set!'), Symbol.for('prop'), [Symbol.for('second'), Symbol.for('match')]], [Symbol.for('set!'), [Symbol.for('oget'), Symbol.for('obj'), Symbol.for('prop')], Symbol.for('val')]]]]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('val'), [Symbol.for('quote'), Symbol.for('Any')]]]], Symbol.for('val')]]];
 /**
  * Evaluate a `(fset ...)` form.
  */
 function fsetSpecial_(exp, env) {
     const params = exp.slice(1);
     let sym = (0, eval_1.eval_)(params[0], env);
-    const val = (0, eval_1.eval_)((Array.isArray(params) && (params.length >= 3) && (params[params.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(params);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = params;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = params[params.length - 1];
-            }
-            else {
-                result = params.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : params[1], env);
+    const val = (0, eval_1.eval_)(params[1], env);
     env.setx(sym, val, [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
     return val;
 }
@@ -407,7 +221,7 @@ function beginHelper(expressions, env, val) {
         return beginHelper(expressions.slice(1), env, (0, eval_1.eval_)(expressions[0], env));
     }
 }
-beginHelper.fsource = [Symbol.for('define'), [Symbol.for('begin-helper'), Symbol.for('expressions'), Symbol.for('env'), Symbol.for('val')], [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('expressions')], 0], Symbol.for('val'), [Symbol.for('tcall'), Symbol.for('begin-helper'), [Symbol.for('rest'), Symbol.for('expressions')], Symbol.for('env'), [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('first'), Symbol.for('expressions')], Symbol.for('env')]]]];
+beginHelper.fsource = [Symbol.for('define'), [Symbol.for('begin-helper'), Symbol.for('expressions'), Symbol.for('env'), Symbol.for('val')], [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('expressions')], 0], Symbol.for('val'), [Symbol.for('tcall'), Symbol.for('begin-helper'), [Symbol.for('rest'), Symbol.for('expressions')], Symbol.for('env'), [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('first'), Symbol.for('expressions')], Symbol.for('env')]]]];
 /**
  * Evaluate a `(let* ...)` form.
  */
@@ -438,26 +252,7 @@ letStarSpecial_.fsource = [Symbol.for('define'), [Symbol.for('let-star-special_'
  * Evaluate a `(let-values ...)` form.
  */
 function letValuesSpecial_(exp, env) {
-    const bindings = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
+    const bindings = exp[1];
     let body = exp.slice(2);
     const letBindings = [];
     const _end = bindings.length;
@@ -465,38 +260,16 @@ function letValuesSpecial_(exp, env) {
         let result = Symbol('let-values-result-' + i + 1 + '');
         const binding = bindings[i];
         const bindingVars = binding[0];
-        const bindingExp = (Array.isArray(binding) && (binding.length >= 3) && (binding[binding.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(binding);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = binding;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = binding[binding.length - 1];
-                }
-                else {
-                    result = binding.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : binding[1];
+        const bindingExp = binding[1];
         let regularBindings = [];
         let restBinding = undefined;
         if (typeof bindingVars === 'symbol') {
             restBinding = bindingVars;
         }
-        else if (Array.isArray(bindingVars) && (bindingVars.length >= 3) && (bindingVars[bindingVars.length - 2] === Symbol.for('.')) && !(() => {
-            const x = lastCdr(bindingVars);
-            return Array.isArray(x) && (x.length === 0);
-        })()) {
+        else if (Array.isArray(bindingVars) && (bindingVars.length >= 3) && (bindingVars.at(-2) === Symbol.for('.'))) {
             const bindingList = flatten(bindingVars);
             regularBindings = bindingList.slice(0, -1);
-            restBinding = bindingList[bindingList.length - 1];
+            restBinding = bindingList.at(-1);
         }
         else {
             regularBindings = bindingVars;
@@ -504,7 +277,7 @@ function letValuesSpecial_(exp, env) {
         letBindings.push([result, bindingExp]);
         const _end1 = regularBindings.length;
         for (let j = 0; j < _end1; j++) {
-            letBindings.push([regularBindings[j], [Symbol.for('aget'), result, j]]);
+            letBindings.push([regularBindings[j], [Symbol.for('list-ref'), result, j]]);
         }
         if (restBinding) {
             letBindings.push([restBinding, [Symbol.for('nthcdr'), regularBindings.length, result]]);
@@ -513,64 +286,23 @@ function letValuesSpecial_(exp, env) {
     return (0, eval_1.eval_)([Symbol.for('let*'), letBindings, ...body], env);
 }
 exports.letValuesSpecial_ = letValuesSpecial_;
-letValuesSpecial_.fsource = [Symbol.for('define'), [Symbol.for('let-values-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('let-bindings'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('bindings')]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('gensym'), [Symbol.for('string-append'), 'let-values-result-', [Symbol.for('number->string'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('define'), Symbol.for('binding'), [Symbol.for('aget'), Symbol.for('bindings'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('binding-vars'), [Symbol.for('first'), Symbol.for('binding')]], [Symbol.for('define'), Symbol.for('binding-exp'), [Symbol.for('second'), Symbol.for('binding')]], [Symbol.for('define'), Symbol.for('regular-bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-binding'), undefined], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('binding-vars')], [Symbol.for('set!'), Symbol.for('rest-binding'), Symbol.for('binding-vars')]], [[Symbol.for('dotted-list?'), Symbol.for('binding-vars')], [Symbol.for('define'), Symbol.for('binding-list'), [Symbol.for('flatten'), Symbol.for('binding-vars')]], [Symbol.for('set!'), Symbol.for('regular-bindings'), [Symbol.for('drop-right'), Symbol.for('binding-list'), 1]], [Symbol.for('set!'), Symbol.for('rest-binding'), [Symbol.for('js/last'), Symbol.for('binding-list')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('regular-bindings'), Symbol.for('binding-vars')]]], [Symbol.for('push-right!'), Symbol.for('let-bindings'), [Symbol.for('list'), Symbol.for('result'), Symbol.for('binding-exp')]], [Symbol.for('for'), [[Symbol.for('j'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('regular-bindings')]]]], [Symbol.for('push-right!'), Symbol.for('let-bindings'), [Symbol.for('list'), [Symbol.for('aget'), Symbol.for('regular-bindings'), Symbol.for('j')], [Symbol.for('quasiquote'), [Symbol.for('aget'), [Symbol.for('unquote'), Symbol.for('result')], [Symbol.for('unquote'), Symbol.for('j')]]]]]], [Symbol.for('when'), Symbol.for('rest-binding'), [Symbol.for('push-right!'), Symbol.for('let-bindings'), [Symbol.for('list'), Symbol.for('rest-binding'), [Symbol.for('quasiquote'), [Symbol.for('nthcdr'), [Symbol.for('unquote'), [Symbol.for('js/length'), Symbol.for('regular-bindings')]], [Symbol.for('unquote'), Symbol.for('result')]]]]]]], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('let*'), [Symbol.for('unquote'), Symbol.for('let-bindings')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]], Symbol.for('env')]];
+letValuesSpecial_.fsource = [Symbol.for('define'), [Symbol.for('let-values-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('bindings'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('let-bindings'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('bindings')]]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('gensym'), [Symbol.for('string-append'), 'let-values-result-', [Symbol.for('number->string'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('define'), Symbol.for('binding'), [Symbol.for('list-ref'), Symbol.for('bindings'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('binding-vars'), [Symbol.for('first'), Symbol.for('binding')]], [Symbol.for('define'), Symbol.for('binding-exp'), [Symbol.for('second'), Symbol.for('binding')]], [Symbol.for('define'), Symbol.for('regular-bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-binding'), undefined], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('binding-vars')], [Symbol.for('set!'), Symbol.for('rest-binding'), Symbol.for('binding-vars')]], [[Symbol.for('dotted-list?'), Symbol.for('binding-vars')], [Symbol.for('define'), Symbol.for('binding-list'), [Symbol.for('flatten'), Symbol.for('binding-vars')]], [Symbol.for('set!'), Symbol.for('regular-bindings'), [Symbol.for('drop-right'), Symbol.for('binding-list'), 1]], [Symbol.for('set!'), Symbol.for('rest-binding'), [Symbol.for('last'), Symbol.for('binding-list')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('regular-bindings'), Symbol.for('binding-vars')]]], [Symbol.for('push-right!'), Symbol.for('let-bindings'), [Symbol.for('list'), Symbol.for('result'), Symbol.for('binding-exp')]], [Symbol.for('for'), [[Symbol.for('j'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('regular-bindings')]]]], [Symbol.for('push-right!'), Symbol.for('let-bindings'), [Symbol.for('list'), [Symbol.for('list-ref'), Symbol.for('regular-bindings'), Symbol.for('j')], [Symbol.for('quasiquote'), [Symbol.for('list-ref'), [Symbol.for('unquote'), Symbol.for('result')], [Symbol.for('unquote'), Symbol.for('j')]]]]]], [Symbol.for('when'), Symbol.for('rest-binding'), [Symbol.for('push-right!'), Symbol.for('let-bindings'), [Symbol.for('list'), Symbol.for('rest-binding'), [Symbol.for('quasiquote'), [Symbol.for('nthcdr'), [Symbol.for('unquote'), [Symbol.for('length'), Symbol.for('regular-bindings')]], [Symbol.for('unquote'), Symbol.for('result')]]]]]]], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('let*'), [Symbol.for('unquote'), Symbol.for('let-bindings')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]], Symbol.for('env')]];
 /**
  * Evaluate a `(define-values ...)` form.
  */
 function defineValuesSpecial_(exp, env) {
-    const ids = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
-    const val = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    const ids = exp[1];
+    const val = exp[2];
     let regularBindings = [];
     let restBinding = undefined;
     let result;
     if (typeof ids === 'symbol') {
         restBinding = ids;
     }
-    else if (Array.isArray(ids) && (ids.length >= 3) && (ids[ids.length - 2] === Symbol.for('.')) && !(() => {
-        const x = lastCdr(ids);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    else if (Array.isArray(ids) && (ids.length >= 3) && (ids.at(-2) === Symbol.for('.'))) {
         const bindingList = flatten(ids);
         regularBindings = bindingList.slice(0, -1);
-        restBinding = bindingList[bindingList.length - 1];
+        restBinding = bindingList.at(-1);
     }
     else {
         regularBindings = ids;
@@ -586,64 +318,23 @@ function defineValuesSpecial_(exp, env) {
     return undefined;
 }
 exports.defineValuesSpecial_ = defineValuesSpecial_;
-defineValuesSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-values-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('ids'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('regular-bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-binding'), undefined], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('ids')], [Symbol.for('set!'), Symbol.for('rest-binding'), Symbol.for('ids')]], [[Symbol.for('dotted-list?'), Symbol.for('ids')], [Symbol.for('define'), Symbol.for('binding-list'), [Symbol.for('flatten'), Symbol.for('ids')]], [Symbol.for('set!'), Symbol.for('regular-bindings'), [Symbol.for('drop-right'), Symbol.for('binding-list'), 1]], [Symbol.for('set!'), Symbol.for('rest-binding'), [Symbol.for('js/last'), Symbol.for('binding-list')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('regular-bindings'), Symbol.for('ids')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('val'), Symbol.for('env')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('regular-bindings')]]]], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('aget'), Symbol.for('regular-bindings'), Symbol.for('i')]], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('aget'), Symbol.for('result'), Symbol.for('i')]]]]], Symbol.for('env')]], [Symbol.for('when'), Symbol.for('rest-binding'), [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('rest-binding')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('nthcdr'), [Symbol.for('js/length'), Symbol.for('regular-bindings')], Symbol.for('result')]]]]], Symbol.for('env')]], undefined];
+defineValuesSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-values-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('ids'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('regular-bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-binding'), undefined], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('ids')], [Symbol.for('set!'), Symbol.for('rest-binding'), Symbol.for('ids')]], [[Symbol.for('dotted-list?'), Symbol.for('ids')], [Symbol.for('define'), Symbol.for('binding-list'), [Symbol.for('flatten'), Symbol.for('ids')]], [Symbol.for('set!'), Symbol.for('regular-bindings'), [Symbol.for('drop-right'), Symbol.for('binding-list'), 1]], [Symbol.for('set!'), Symbol.for('rest-binding'), [Symbol.for('last'), Symbol.for('binding-list')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('regular-bindings'), Symbol.for('ids')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('val'), Symbol.for('env')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('regular-bindings')]]]], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('list-ref'), Symbol.for('regular-bindings'), Symbol.for('i')]], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('list-ref'), Symbol.for('result'), Symbol.for('i')]]]]], Symbol.for('env')]], [Symbol.for('when'), Symbol.for('rest-binding'), [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('rest-binding')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('nthcdr'), [Symbol.for('length'), Symbol.for('regular-bindings')], Symbol.for('result')]]]]], Symbol.for('env')]], undefined];
 /**
  * Evaluate a `(set!-values ...)` form.
  */
 function setValuesSpecial_(exp, env) {
-    const ids = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
-    const val = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    const ids = exp[1];
+    const val = exp[2];
     let regularBindings = [];
     let restBinding = undefined;
     let result;
     if (typeof ids === 'symbol') {
         restBinding = ids;
     }
-    else if (Array.isArray(ids) && (ids.length >= 3) && (ids[ids.length - 2] === Symbol.for('.')) && !(() => {
-        const x = lastCdr(ids);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    else if (Array.isArray(ids) && (ids.length >= 3) && (ids.at(-2) === Symbol.for('.'))) {
         const bindingList = flatten(ids);
         regularBindings = bindingList.slice(0, -1);
-        restBinding = bindingList[bindingList.length - 1];
+        restBinding = bindingList.at(-1);
     }
     else {
         regularBindings = ids;
@@ -659,31 +350,12 @@ function setValuesSpecial_(exp, env) {
     return undefined;
 }
 exports.setValuesSpecial_ = setValuesSpecial_;
-setValuesSpecial_.fsource = [Symbol.for('define'), [Symbol.for('set-values-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('ids'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('regular-bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-binding'), undefined], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('ids')], [Symbol.for('set!'), Symbol.for('rest-binding'), Symbol.for('ids')]], [[Symbol.for('dotted-list?'), Symbol.for('ids')], [Symbol.for('define'), Symbol.for('binding-list'), [Symbol.for('flatten'), Symbol.for('ids')]], [Symbol.for('set!'), Symbol.for('regular-bindings'), [Symbol.for('drop-right'), Symbol.for('binding-list'), 1]], [Symbol.for('set!'), Symbol.for('rest-binding'), [Symbol.for('js/last'), Symbol.for('binding-list')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('regular-bindings'), Symbol.for('ids')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('val'), Symbol.for('env')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('regular-bindings')]]]], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), [Symbol.for('aget'), Symbol.for('regular-bindings'), Symbol.for('i')]], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('aget'), Symbol.for('result'), Symbol.for('i')]]]]], Symbol.for('env')]], [Symbol.for('when'), Symbol.for('rest-binding'), [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('rest-binding')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('nthcdr'), [Symbol.for('js/length'), Symbol.for('regular-bindings')], Symbol.for('result')]]]]], Symbol.for('env')]], undefined];
+setValuesSpecial_.fsource = [Symbol.for('define'), [Symbol.for('set-values-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('ids'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('regular-bindings'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('rest-binding'), undefined], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('ids')], [Symbol.for('set!'), Symbol.for('rest-binding'), Symbol.for('ids')]], [[Symbol.for('dotted-list?'), Symbol.for('ids')], [Symbol.for('define'), Symbol.for('binding-list'), [Symbol.for('flatten'), Symbol.for('ids')]], [Symbol.for('set!'), Symbol.for('regular-bindings'), [Symbol.for('drop-right'), Symbol.for('binding-list'), 1]], [Symbol.for('set!'), Symbol.for('rest-binding'), [Symbol.for('last'), Symbol.for('binding-list')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('regular-bindings'), Symbol.for('ids')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('val'), Symbol.for('env')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('regular-bindings')]]]], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), [Symbol.for('list-ref'), Symbol.for('regular-bindings'), Symbol.for('i')]], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('list-ref'), Symbol.for('result'), Symbol.for('i')]]]]], Symbol.for('env')]], [Symbol.for('when'), Symbol.for('rest-binding'), [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('rest-binding')], [Symbol.for('quote'), [Symbol.for('unquote'), [Symbol.for('nthcdr'), [Symbol.for('length'), Symbol.for('regular-bindings')], Symbol.for('result')]]]]], Symbol.for('env')]], undefined];
 /**
  * Evaluate a `(define ...)` form.
  */
 function defineSpecial_(exp, env) {
-    let name = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
+    let name = exp[1];
     let body = exp.slice(2);
     if (Array.isArray(name)) {
         // Function definition.
@@ -714,58 +386,20 @@ function defineSpecial_(exp, env) {
     }
     else if (((exp.length === 3) &&
         // (form? (third exp) env define-class_)
-        (0, util_1.taggedListP)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(exp);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 2;
-            let result = exp;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = exp[exp.length - 1];
-                }
-                else {
-                    result = exp.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : exp[2], Symbol.for('define-class')))) {
+        (0, util_1.taggedListP)(exp[2], Symbol.for('define-class')))) {
         // Class definition.
         return (0, eval_1.eval_)(defineToDefineClass(exp), env);
     }
     else {
         // Variable definition.
-        const valExp = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(exp);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 2;
-            let result = exp;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = exp[exp.length - 1];
-                }
-                else {
-                    result = exp.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : exp[2];
+        const valExp = exp[2];
         const val = (0, eval_1.eval_)(valExp, env);
         env.setLocalX(name, val);
         return val;
     }
 }
 exports.defineSpecial_ = defineSpecial_;
-defineSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('name-and-params'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('f-name'), [Symbol.for('first'), Symbol.for('name-and-params')]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('name-and-params')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('f-name')], [Symbol.for('define'), Symbol.for('curried-name-and-params'), [Symbol.for('send'), Symbol.for('name-and-params'), Symbol.for('flat'), Infinity]], [Symbol.for('define'), Symbol.for('curried-name'), [Symbol.for('first'), Symbol.for('curried-name-and-params')]], [Symbol.for('define'), Symbol.for('curried-params'), [Symbol.for('rest'), Symbol.for('curried-name-and-params')]], [Symbol.for('define'), Symbol.for('curried-arity'), [Symbol.for('js/length'), Symbol.for('curried-params')]], [Symbol.for('define'), Symbol.for('curried-function-exp'), [Symbol.for('quasiquote'), [Symbol.for('curry'), [Symbol.for('lambda'), [Symbol.for('unquote'), Symbol.for('curried-params')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('unquote'), Symbol.for('curried-arity')]]]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), Symbol.for('curried-function-exp'), Symbol.for('env')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('curried-name'), Symbol.for('val')], Symbol.for('val')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('lambda-exp'), [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('unquote'), Symbol.for('params')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), Symbol.for('lambda-exp'), Symbol.for('env')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('f-name'), Symbol.for('val')], Symbol.for('val')]]], [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('exp')], 3], [Symbol.for('tagged-list?'), [Symbol.for('third'), Symbol.for('exp')], [Symbol.for('quote'), Symbol.for('define-class')]]], [Symbol.for('eval_'), [Symbol.for('define->define-class'), Symbol.for('exp')], Symbol.for('env')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('val-exp'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), Symbol.for('val-exp'), Symbol.for('env')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('name'), Symbol.for('val')], Symbol.for('val')]]];
+defineSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('cond'), [[Symbol.for('pair-or-list?'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('name-and-params'), Symbol.for('name')], [Symbol.for('define'), Symbol.for('f-name'), [Symbol.for('first'), Symbol.for('name-and-params')]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('name-and-params')]], [Symbol.for('cond'), [[Symbol.for('pair-or-list?'), Symbol.for('f-name')], [Symbol.for('define'), Symbol.for('curried-name-and-params'), [Symbol.for('send'), Symbol.for('name-and-params'), Symbol.for('flat'), Infinity]], [Symbol.for('define'), Symbol.for('curried-name'), [Symbol.for('first'), Symbol.for('curried-name-and-params')]], [Symbol.for('define'), Symbol.for('curried-params'), [Symbol.for('rest'), Symbol.for('curried-name-and-params')]], [Symbol.for('define'), Symbol.for('curried-arity'), [Symbol.for('length'), Symbol.for('curried-params')]], [Symbol.for('define'), Symbol.for('curried-function-exp'), [Symbol.for('quasiquote'), [Symbol.for('curry'), [Symbol.for('lambda'), [Symbol.for('unquote'), Symbol.for('curried-params')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('unquote'), Symbol.for('curried-arity')]]]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), Symbol.for('curried-function-exp'), Symbol.for('env')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('curried-name'), Symbol.for('val')], Symbol.for('val')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('lambda-exp'), [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('unquote'), Symbol.for('params')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), Symbol.for('lambda-exp'), Symbol.for('env')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('f-name'), Symbol.for('val')], Symbol.for('val')]]], [[Symbol.for('and'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('exp')], 3], [Symbol.for('tagged-list?'), [Symbol.for('third'), Symbol.for('exp')], [Symbol.for('quote'), Symbol.for('define-class')]]], [Symbol.for('eval_'), [Symbol.for('define->define-class'), Symbol.for('exp')], Symbol.for('env')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('val-exp'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval_'), Symbol.for('val-exp'), Symbol.for('env')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('name'), Symbol.for('val')], Symbol.for('val')]]];
 /**
  * Convert a `(define ... (class ...))` form to
  * a `(define-class ...)` form.
@@ -810,30 +444,8 @@ defineAsyncSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-async-s
  * Evaluate a `(defmacro ...)` form.
  */
 function defmacroSpecial_(exp, env) {
-    let name = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
-    if ((() => {
-        const x = lastCdr(name);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    let name = exp[1];
+    if (Array.isArray(name) && !((name.length >= 3) && (name.at(-2) === Symbol.for('.')) && !Array.isArray(name.at(-1)))) {
         name = name[0];
     }
     const macroFn = defmacroToFn(exp, env);
@@ -857,61 +469,17 @@ defmacroToFn.fsource = [Symbol.for('define'), [Symbol.for('defmacro->fn'), Symbo
  * on the basis of a `(defmacro ...)` form.
  */
 function defmacroToLambdaForm(exp) {
-    let name = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
-    let args = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    let name = exp[1];
+    let args = exp[2];
     let body = exp.slice(3);
     let env = Symbol.for('env');
     let macroArgs = [];
-    if ((() => {
-        const x = lastCdr(name);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    if (Array.isArray(name) && !((name.length >= 3) && (name.at(-2) === Symbol.for('.')) && !Array.isArray(name.at(-1)))) {
         args = name.slice(1);
         name = name[0];
         body = exp.slice(2);
     }
-    if ((() => {
-        const x = lastCdr(args);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    if (Array.isArray(args) && !((args.length >= 3) && (args.at(-2) === Symbol.for('.')) && !Array.isArray(args.at(-1)))) {
         const _end = args.length;
         for (let i = 0; i < _end; i++) {
             const arg = args[i];
@@ -934,31 +502,12 @@ function defmacroToLambdaForm(exp) {
         return [Symbol.for('lambda'), [Symbol.for('exp'), env], [Symbol.for('let-values'), [[macroArgs, [Symbol.for('rest'), Symbol.for('exp')]]], ...body]];
     }
 }
-defmacroToLambdaForm.fsource = [Symbol.for('define'), [Symbol.for('defmacro->lambda-form'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 3]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('quote'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('macro-args'), [Symbol.for('quote'), []]], [Symbol.for('when'), [Symbol.for('list?'), Symbol.for('name')], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('name')]], [Symbol.for('set!'), Symbol.for('name'), [Symbol.for('first'), Symbol.for('name')]], [Symbol.for('set!'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]]], [Symbol.for('cond'), [[Symbol.for('list?'), Symbol.for('args')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('define'), Symbol.for('arg'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('eq'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&environment')]], [Symbol.for('set!'), Symbol.for('env'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('macro-args'), Symbol.for('arg')]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('let-values'), [[[Symbol.for('unquote'), Symbol.for('macro-args')], [Symbol.for('rest'), Symbol.for('exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]]];
+defmacroToLambdaForm.fsource = [Symbol.for('define'), [Symbol.for('defmacro->lambda-form'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 3]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('quote'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('macro-args'), [Symbol.for('quote'), []]], [Symbol.for('when'), [Symbol.for('list?'), Symbol.for('name')], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('rest'), Symbol.for('name')]], [Symbol.for('set!'), Symbol.for('name'), [Symbol.for('first'), Symbol.for('name')]], [Symbol.for('set!'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]]], [Symbol.for('cond'), [[Symbol.for('list?'), Symbol.for('args')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('define'), Symbol.for('arg'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('eq'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&environment')]], [Symbol.for('set!'), Symbol.for('env'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('macro-args'), Symbol.for('arg')]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('let-values'), [[[Symbol.for('unquote'), Symbol.for('macro-args')], [Symbol.for('rest'), Symbol.for('exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]]];
 /**
  * Evaluate a `(define-macro ...)` form.
  */
 function defineMacroSpecial_(exp, env) {
-    let name = ((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1])[0];
+    let name = exp[1][0];
     const macroFn = defineMacroToFn(exp, env);
     env.setx(name, macroFn, [Symbol.for('->macro'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
     return name;
@@ -979,35 +528,13 @@ defineMacroToFn.fsource = [Symbol.for('define'), [Symbol.for('define-macro->fn')
  * on the basis of a `(define-macro ...)` form.
  */
 function defineMacroToLambdaForm(exp) {
-    const nameAndArgs = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
+    const nameAndArgs = exp[1];
     let name = nameAndArgs[0];
-    let args = cdr(nameAndArgs);
+    let args = ((nameAndArgs.length === 3) && (nameAndArgs[1] === Symbol.for('.'))) ? nameAndArgs[2] : nameAndArgs.slice(1);
     let body = exp.slice(2);
     let env = Symbol.for('env');
     let macroArgs = [];
-    if ((() => {
-        const x = lastCdr(args);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    if (Array.isArray(args) && !((args.length >= 3) && (args.at(-2) === Symbol.for('.')) && !Array.isArray(args.at(-1)))) {
         const _end = args.length;
         for (let i = 0; i < _end; i++) {
             const arg = args[i];
@@ -1030,31 +557,12 @@ function defineMacroToLambdaForm(exp) {
         return [Symbol.for('lambda'), [Symbol.for('exp'), env], [Symbol.for('let-values'), [[macroArgs, [Symbol.for('rest'), Symbol.for('exp')]]], ...body]];
     }
 }
-defineMacroToLambdaForm.fsource = [Symbol.for('define'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('name-and-args'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('cdr'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('quote'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('macro-args'), [Symbol.for('quote'), []]], [Symbol.for('cond'), [[Symbol.for('list?'), Symbol.for('args')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('define'), Symbol.for('arg'), [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('eq'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&environment')]], [Symbol.for('set!'), Symbol.for('env'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('macro-args'), Symbol.for('arg')]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('let-values'), [[[Symbol.for('unquote'), Symbol.for('macro-args')], [Symbol.for('rest'), Symbol.for('exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]]];
+defineMacroToLambdaForm.fsource = [Symbol.for('define'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('name-and-args'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('car'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('cdr'), Symbol.for('name-and-args')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('env'), [Symbol.for('quote'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('macro-args'), [Symbol.for('quote'), []]], [Symbol.for('cond'), [[Symbol.for('list?'), Symbol.for('args')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('define'), Symbol.for('arg'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('cond'), [[Symbol.for('eq'), Symbol.for('arg'), [Symbol.for('quote'), Symbol.for('&environment')]], [Symbol.for('set!'), Symbol.for('env'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 2]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('macro-args'), Symbol.for('arg')]]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('macro-args'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('macro-args')], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('exp'), [Symbol.for('unquote'), Symbol.for('env')]], [Symbol.for('let-values'), [[[Symbol.for('unquote'), Symbol.for('macro-args')], [Symbol.for('rest'), Symbol.for('exp')]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]]];
 /**
  * Evaluate a `(for ...)` form.
  */
 function forSpecial_(exp, env) {
-    const decls = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
+    const decls = exp[1];
     let body = exp.slice(2);
     const [decl1] = decls;
     let [sym, valuesExpr] = decl1;
@@ -1090,26 +598,7 @@ forSpecial_.fsource = [Symbol.for('define'), [Symbol.for('for-special_'), Symbol
  * Evaluate a `(js/while ...)` form.
  */
 function jsWhileSpecial_(exp, env) {
-    const test = [Symbol.for('truep'), (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(exp);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = exp;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = exp[exp.length - 1];
-                }
-                else {
-                    result = exp.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : exp[1]];
+    const test = [Symbol.for('truep'), exp[1]];
     let body = (0, util_1.beginWrap)(exp.slice(2));
     let result = undefined;
     try {
@@ -1142,46 +631,8 @@ jsWhileSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js/while-special_'
  * Evaluate a `(js/do-while ...)` form.
  */
 function jsDoWhileSpecial_(exp, env) {
-    let body = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
-    const test = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    let body = exp[1];
+    const test = exp[2];
     const beginExp = [Symbol.for('begin'), body, [Symbol.for('while'), test, body]];
     return (0, eval_1.eval_)(beginExp, env);
 }
@@ -1207,26 +658,7 @@ continueSpecial_.fsource = [Symbol.for('define'), [Symbol.for('continue-special_
  * Evaluate a `(yield ...)` form.
  */
 function yieldSpecial_(exp, env) {
-    const val = (0, eval_1.eval_)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1], env);
+    const val = (0, eval_1.eval_)(exp[1], env);
     return val;
 }
 exports.yieldSpecial_ = yieldSpecial_;
@@ -1235,26 +667,7 @@ yieldSpecial_.fsource = [Symbol.for('define'), [Symbol.for('yield-special_'), Sy
  * Evaluate a `(return ...)` form.
  */
 function returnSpecial_(exp, env) {
-    const val = (0, eval_1.eval_)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1], env);
+    const val = (0, eval_1.eval_)(exp[1], env);
     throw new exception_1.ReturnException(val);
 }
 exports.returnSpecial_ = returnSpecial_;
@@ -1263,26 +676,7 @@ returnSpecial_.fsource = [Symbol.for('define'), [Symbol.for('return-special_'), 
  * Evaluate a `(throw ...)` form.
  */
 function throwSpecial_(exp, env) {
-    const val = (0, eval_1.eval_)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1], env);
+    const val = (0, eval_1.eval_)(exp[1], env);
     throw val;
 }
 exports.throwSpecial_ = throwSpecial_;
@@ -1292,26 +686,7 @@ throwSpecial_.fsource = [Symbol.for('define'), [Symbol.for('throw-special_'), Sy
  */
 function asyncSpecial_(exp, env) {
     return async function (...args) {
-        return (0, eval_1.eval_)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(exp);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = exp;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = exp[exp.length - 1];
-                }
-                else {
-                    result = exp.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : exp[1], env)(...args);
+        return (0, eval_1.eval_)(exp[1], env)(...args);
     };
 }
 exports.asyncSpecial_ = asyncSpecial_;
@@ -1320,26 +695,7 @@ asyncSpecial_.fsource = [Symbol.for('define'), [Symbol.for('async-special_'), Sy
  * Evaluate an `(await ...)` form.
  */
 async function awaitSpecial_(exp, env) {
-    return await (0, eval_1.eval_)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1], env);
+    return await (0, eval_1.eval_)(exp[1], env);
 }
 exports.awaitSpecial_ = awaitSpecial_;
 awaitSpecial_.fsource = [Symbol.for('define/async'), [Symbol.for('await-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('await'), [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('exp')], Symbol.for('env')]]];
@@ -1409,26 +765,7 @@ function condSpecial_(exp, env) {
         return false;
     }
     else {
-        const clause = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(exp);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = exp;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = exp[exp.length - 1];
-                }
-                else {
-                    result = exp.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : exp[1];
+        const clause = exp[1];
         const clauses = exp.slice(2);
         const condition = clause[0];
         const thenExpr = (0, util_1.beginWrap)(clause.slice(1));
@@ -1436,7 +773,7 @@ function condSpecial_(exp, env) {
     }
 }
 exports.condSpecial_ = condSpecial_;
-condSpecial_.fsource = [Symbol.for('define'), [Symbol.for('cond-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('cond'), [[Symbol.for('<='), [Symbol.for('js/length'), Symbol.for('exp')], 1], false], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('clause'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('clauses'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('condition'), [Symbol.for('first'), Symbol.for('clause')]], [Symbol.for('define'), Symbol.for('then-expr'), [Symbol.for('begin-wrap'), [Symbol.for('rest'), Symbol.for('clause')]]], [Symbol.for('tcall'), Symbol.for('cond-helper'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('condition'), [Symbol.for('quote'), Symbol.for('else')]], [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('quasiquote'), [Symbol.for('truep'), [Symbol.for('unquote'), Symbol.for('condition')]]], Symbol.for('env')]], Symbol.for('then-expr'), Symbol.for('clauses'), Symbol.for('env')]]]];
+condSpecial_.fsource = [Symbol.for('define'), [Symbol.for('cond-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('cond'), [[Symbol.for('<='), [Symbol.for('length'), Symbol.for('exp')], 1], false], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('clause'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('clauses'), [Symbol.for('drop'), Symbol.for('exp'), 2]], [Symbol.for('define'), Symbol.for('condition'), [Symbol.for('first'), Symbol.for('clause')]], [Symbol.for('define'), Symbol.for('then-expr'), [Symbol.for('begin-wrap'), [Symbol.for('rest'), Symbol.for('clause')]]], [Symbol.for('tcall'), Symbol.for('cond-helper'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('condition'), [Symbol.for('quote'), Symbol.for('else')]], [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('quasiquote'), [Symbol.for('truep'), [Symbol.for('unquote'), Symbol.for('condition')]]], Symbol.for('env')]], Symbol.for('then-expr'), Symbol.for('clauses'), Symbol.for('env')]]]];
 /**
  * Helper function for `cond-special_`.
  */
@@ -1455,7 +792,7 @@ function condHelper(condition, thenExpr, clauses, env) {
         return condHelper((condition1 === Symbol.for('else')) || (0, eval_1.eval_)([Symbol.for('truep'), condition1], env), thenExpr1, clauses1, env);
     }
 }
-condHelper.fsource = [Symbol.for('define'), [Symbol.for('cond-helper'), Symbol.for('condition'), Symbol.for('then-expr'), Symbol.for('clauses'), Symbol.for('env')], [Symbol.for('cond'), [Symbol.for('condition'), [Symbol.for('tcall'), Symbol.for('eval-t'), Symbol.for('then-expr'), Symbol.for('env')]], [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('clauses')], 0], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('clause1'), [Symbol.for('first'), Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('clauses1'), [Symbol.for('rest'), Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('condition1'), [Symbol.for('first'), Symbol.for('clause1')]], [Symbol.for('define'), Symbol.for('then-expr-1'), [Symbol.for('begin-wrap'), [Symbol.for('rest'), Symbol.for('clause1')]]], [Symbol.for('tcall'), Symbol.for('cond-helper'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('condition1'), [Symbol.for('quote'), Symbol.for('else')]], [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('quasiquote'), [Symbol.for('truep'), [Symbol.for('unquote'), Symbol.for('condition1')]]], Symbol.for('env')]], Symbol.for('then-expr-1'), Symbol.for('clauses1'), Symbol.for('env')]]]];
+condHelper.fsource = [Symbol.for('define'), [Symbol.for('cond-helper'), Symbol.for('condition'), Symbol.for('then-expr'), Symbol.for('clauses'), Symbol.for('env')], [Symbol.for('cond'), [Symbol.for('condition'), [Symbol.for('tcall'), Symbol.for('eval-t'), Symbol.for('then-expr'), Symbol.for('env')]], [[Symbol.for('='), [Symbol.for('length'), Symbol.for('clauses')], 0], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('clause1'), [Symbol.for('first'), Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('clauses1'), [Symbol.for('rest'), Symbol.for('clauses')]], [Symbol.for('define'), Symbol.for('condition1'), [Symbol.for('first'), Symbol.for('clause1')]], [Symbol.for('define'), Symbol.for('then-expr-1'), [Symbol.for('begin-wrap'), [Symbol.for('rest'), Symbol.for('clause1')]]], [Symbol.for('tcall'), Symbol.for('cond-helper'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('condition1'), [Symbol.for('quote'), Symbol.for('else')]], [Symbol.for('tcall'), Symbol.for('eval-t'), [Symbol.for('quasiquote'), [Symbol.for('truep'), [Symbol.for('unquote'), Symbol.for('condition1')]]], Symbol.for('env')]], Symbol.for('then-expr-1'), Symbol.for('clauses1'), Symbol.for('env')]]]];
 /**
  * Evaluate an `(and ...)` form.
  */
@@ -1492,47 +829,9 @@ orSpecial_.fsource = [Symbol.for('define'), [Symbol.for('or-special_'), Symbol.f
  * Evaluate a `(send ...)` form.
  */
 function sendSpecial_(exp, env) {
-    let obj = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
+    let obj = exp[1];
     obj = (0, eval_1.eval_)(obj, env);
-    let method = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    let method = exp[2];
     if ((0, util_1.quotep)(method)) {
         method = (0, eval_1.eval_)(method, env);
     }
@@ -1548,47 +847,9 @@ sendSpecial_.fsource = [Symbol.for('define'), [Symbol.for('send-special_'), Symb
  * Evaluate a `(send/apply ...)` form.
  */
 function sendApplySpecial_(exp, env) {
-    let obj = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
+    let obj = exp[1];
     obj = (0, eval_1.eval_)(obj, env);
-    let method = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    let method = exp[2];
     if ((0, util_1.quotep)(method)) {
         method = (0, eval_1.eval_)(method, env);
     }
@@ -1597,12 +858,12 @@ function sendApplySpecial_(exp, env) {
         return (0, eval_1.eval_)(x, env);
     });
     if (args.length > 0) {
-        args = [...args.slice(0, -1), ...args[args.length - 1]];
+        args = [...args.slice(0, -1), ...args.at(-1)];
     }
     return sendMethod(obj, method, ...args);
 }
 exports.sendApplySpecial_ = sendApplySpecial_;
-sendApplySpecial_.fsource = [Symbol.for('define'), [Symbol.for('send-apply-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('set!'), Symbol.for('obj'), [Symbol.for('eval_'), Symbol.for('obj'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('method'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('quote?'), Symbol.for('method')], [Symbol.for('set!'), Symbol.for('method'), [Symbol.for('eval_'), Symbol.for('method'), Symbol.for('env')]]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('drop'), Symbol.for('exp'), 3]], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eval_'), Symbol.for('x'), Symbol.for('env')]], Symbol.for('args')]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('js/last'), Symbol.for('args')]]]], [Symbol.for('apply'), Symbol.for('send-method'), Symbol.for('obj'), Symbol.for('method'), Symbol.for('args')]];
+sendApplySpecial_.fsource = [Symbol.for('define'), [Symbol.for('send-apply-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('set!'), Symbol.for('obj'), [Symbol.for('eval_'), Symbol.for('obj'), Symbol.for('env')]], [Symbol.for('define'), Symbol.for('method'), [Symbol.for('third'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('quote?'), Symbol.for('method')], [Symbol.for('set!'), Symbol.for('method'), [Symbol.for('eval_'), Symbol.for('method'), Symbol.for('env')]]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('drop'), Symbol.for('exp'), 3]], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eval_'), Symbol.for('x'), Symbol.for('env')]], Symbol.for('args')]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('last'), Symbol.for('args')]]]], [Symbol.for('apply'), Symbol.for('send-method'), Symbol.for('obj'), Symbol.for('method'), Symbol.for('args')]];
 /**
  * Call a method on an object.
  *
@@ -1628,69 +889,12 @@ sendMethod.fsource = [Symbol.for('define'), [Symbol.for('send-method'), Symbol.f
  * Evaluate a `(. ...)` form.
  */
 function dotSpecial_(exp, env) {
-    let obj = (0, eval_1.eval_)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1], env);
-    let method = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    let obj = (0, eval_1.eval_)(exp[1], env);
+    let method = exp[2];
     let field;
     let match;
     if ((typeof method === 'symbol') && (match = method.description.match(new RegExp('^-(.*)$')))) {
-        field = (Array.isArray(match) && (match.length >= 3) && (match[match.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(match);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = match;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = match[match.length - 1];
-                }
-                else {
-                    result = match.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : match[1];
+        field = match[1];
         return (0, eval_1.eval_)([Symbol.for('get-field'), Symbol.for(field), obj], env);
     }
     else {
@@ -1703,47 +907,9 @@ dotSpecial_.fsource = [Symbol.for('define'), [Symbol.for('dot-special_'), Symbol
  * Evaluate a `(get-field ...)` form.
  */
 function getFieldSpecial_(exp, env) {
-    let field = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
+    let field = exp[1];
     const fieldName = field.description;
-    let obj = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    let obj = exp[2];
     return (0, eval_1.eval_)(obj, env)[fieldName];
 }
 exports.getFieldSpecial_ = getFieldSpecial_;
@@ -1752,46 +918,8 @@ getFieldSpecial_.fsource = [Symbol.for('define'), [Symbol.for('get-field-special
  * Evaluate a `(js/optional-chaining ...)` form.
  */
 function jsOptionalChainingSpecial_(exp, env) {
-    let obj = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
-    let field = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
+    let obj = exp[1];
+    let field = exp[2];
     const fieldName = field.description;
     return (0, eval_1.eval_)(obj, env)[fieldName];
 }
@@ -1801,66 +929,9 @@ jsOptionalChainingSpecial_.fsource = [Symbol.for('define'), [Symbol.for('js/opti
  * Evaluate a `(set-field! ...)` form.
  */
 function setFieldSpecial_(exp, env) {
-    let field = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1];
-    let obj = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 2;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[2];
-    const val = (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 3;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[3];
+    let field = exp[1];
+    let obj = exp[2];
+    const val = exp[3];
     return (0, eval_1.eval_)(obj, env)[field.description] = (0, eval_1.eval_)(val, env);
 }
 exports.setFieldSpecial_ = setFieldSpecial_;
@@ -1877,46 +948,8 @@ function defineClassSpecial_(exp, env) {
         for ( // Initialize fields.
         let field of fields) {
             // Initialize fields.
-            let name = ((Array.isArray(field) && (field.length >= 3) && (field[field.length - 2] === Symbol.for('.')) && (() => {
-                const x = lastCdr(field);
-                return Array.isArray(x) && (x.length === 0);
-            })()) ? (() => {
-                let i = 1;
-                let result = field;
-                while (i > 0) {
-                    if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                        result = field[field.length - 1];
-                    }
-                    else {
-                        result = field.slice(1);
-                    }
-                    i--;
-                }
-                if (Array.isArray(result)) {
-                    result = result[0];
-                }
-                return result;
-            })() : field[1]).description;
-            const exp = (Array.isArray(field) && (field.length >= 3) && (field[field.length - 2] === Symbol.for('.')) && (() => {
-                const x = lastCdr(field);
-                return Array.isArray(x) && (x.length === 0);
-            })()) ? (() => {
-                let i = 2;
-                let result = field;
-                while (i > 0) {
-                    if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                        result = field[field.length - 1];
-                    }
-                    else {
-                        result = field.slice(1);
-                    }
-                    i--;
-                }
-                if (Array.isArray(result)) {
-                    result = result[0];
-                }
-                return result;
-            })() : field[2];
+            let name = field[1].description;
+            const exp = field[2];
             this[name] = (0, eval_1.eval_)([Symbol.for('let'), [[Symbol.for('this'), [Symbol.for('quote'), this]]], exp], env);
         }
         const arity = args.length;
@@ -1936,10 +969,7 @@ function defineClassSpecial_(exp, env) {
         definitions = definitions.slice(1);
     }
     const superClasses = definitions[0];
-    if ((() => {
-        const x = lastCdr(superClasses);
-        return Array.isArray(x) && (x.length === 0);
-    })() && !(0, util_1.taggedListP)(superClasses, Symbol.for('define'))) {
+    if (Array.isArray(superClasses) && !((superClasses.length >= 3) && (superClasses.at(-2) === Symbol.for('.')) && !Array.isArray(superClasses.at(-1))) && !(0, util_1.taggedListP)(superClasses, Symbol.for('define'))) {
         // The first form is a list of superclasses.
         definitions = definitions.slice(1);
         // JavaScript supports single inheritance only,
@@ -1956,26 +986,7 @@ function defineClassSpecial_(exp, env) {
     for ( // Sort field definitions from method definitions.
     let definition of definitions) {
         // Sort field definitions from method definitions.
-        if (typeof ((Array.isArray(definition) && (definition.length >= 3) && (definition[definition.length - 2] === Symbol.for('.')) && (() => {
-            const x = lastCdr(definition);
-            return Array.isArray(x) && (x.length === 0);
-        })()) ? (() => {
-            let i = 1;
-            let result = definition;
-            while (i > 0) {
-                if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                    result = definition[definition.length - 1];
-                }
-                else {
-                    result = definition.slice(1);
-                }
-                i--;
-            }
-            if (Array.isArray(result)) {
-                result = result[0];
-            }
-            return result;
-        })() : definition[1]) === 'symbol') {
+        if (typeof definition[1] === 'symbol') {
             fields.push(definition);
         }
         else {
@@ -1995,10 +1006,7 @@ function defineClassSpecial_(exp, env) {
             const varExps = [];
             for (let i = 0; i < arity; i++) {
                 const argExp = defArgs[i];
-                let name = (() => {
-                    const x = lastCdr(argExp);
-                    return Array.isArray(x) && (x.length === 0);
-                })() ? argExp[0] : argExp;
+                let name = (Array.isArray(argExp) && !((argExp.length >= 3) && (argExp.at(-2) === Symbol.for('.')) && !Array.isArray(argExp.at(-1)))) ? argExp[0] : argExp;
                 const value = (i >= args.length) ? undefined : args[i];
                 const varExp = [name, [Symbol.for('quote'), value]];
                 varExps.push(varExp);
@@ -2026,7 +1034,7 @@ function defineClassSpecial_(exp, env) {
     return constructor;
 }
 exports.defineClassSpecial_ = defineClassSpecial_;
-defineClassSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-class-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('fields'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('methods'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('constructors'), [Symbol.for('make-hash')]], [Symbol.for('define'), Symbol.for('constructor'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('for'), [[Symbol.for('field'), Symbol.for('fields')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('symbol->string'), [Symbol.for('second'), Symbol.for('field')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('third'), Symbol.for('field')]], [Symbol.for('set!'), [Symbol.for('oget'), Symbol.for('this'), Symbol.for('name')], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('this'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('this')]]]], [Symbol.for('unquote'), Symbol.for('exp')]]], Symbol.for('env')]]], [Symbol.for('define'), Symbol.for('arity'), [Symbol.for('js/length'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('constructor-fn'), [Symbol.for('send'), Symbol.for('constructors'), Symbol.for('get'), Symbol.for('arity')]], [Symbol.for('when'), [Symbol.for('procedure?'), Symbol.for('constructor-fn')], [Symbol.for('send/apply'), Symbol.for('constructor-fn'), Symbol.for('call'), Symbol.for('this'), Symbol.for('args')]]]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('definitions'), Symbol.for('params')], [Symbol.for('define'), Symbol.for('class-name-symbol'), [Symbol.for('first'), Symbol.for('params')]], [Symbol.for('define'), Symbol.for('class-name'), [Symbol.for('if'), [Symbol.for('symbol?'), Symbol.for('class-name-symbol')], [Symbol.for('symbol->string'), Symbol.for('class-name-symbol')], '']], [Symbol.for('define'), Symbol.for('base-class'), undefined], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('class-name'), ''], [Symbol.for('set!'), Symbol.for('definitions'), [Symbol.for('rest'), Symbol.for('definitions')]]], [Symbol.for('define'), Symbol.for('super-classes'), [Symbol.for('first'), Symbol.for('definitions')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('list?'), Symbol.for('super-classes')], [Symbol.for('not'), [Symbol.for('tagged-list?'), Symbol.for('super-classes'), [Symbol.for('quote'), Symbol.for('define')]]]], [Symbol.for('set!'), Symbol.for('definitions'), [Symbol.for('rest'), Symbol.for('definitions')]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('super-classes')], 0], [Symbol.for('set!'), Symbol.for('base-class'), [Symbol.for('eval_'), [Symbol.for('first'), Symbol.for('super-classes')], Symbol.for('env')]]]], [Symbol.for('when'), Symbol.for('base-class'), [Symbol.for('set!'), [Symbol.for('oget'), Symbol.for('constructor'), Symbol.for(':prototype')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('create'), [Symbol.for('oget'), Symbol.for('base-class'), Symbol.for(':prototype')]]]], [Symbol.for('for'), [[Symbol.for('definition'), Symbol.for('definitions')]], [Symbol.for('if'), [Symbol.for('symbol?'), [Symbol.for('second'), Symbol.for('definition')]], [Symbol.for('push-right!'), Symbol.for('fields'), Symbol.for('definition')], [Symbol.for('push-right!'), Symbol.for('methods'), Symbol.for('definition')]]], [Symbol.for('for'), [[Symbol.for('method'), Symbol.for('methods')]], [Symbol.for('define'), Symbol.for('def-params'), [Symbol.for('rest'), Symbol.for('method')]], [Symbol.for('define'), Symbol.for('def-name-and-args'), [Symbol.for('first'), Symbol.for('def-params')]], [Symbol.for('define'), Symbol.for('def-name'), [Symbol.for('symbol->string'), [Symbol.for('first'), Symbol.for('def-name-and-args')]]], [Symbol.for('define'), Symbol.for('def-args'), [Symbol.for('rest'), Symbol.for('def-name-and-args')]], [Symbol.for('define'), Symbol.for('def-body'), [Symbol.for('rest'), Symbol.for('def-params')]], [Symbol.for('define'), Symbol.for('arity'), [Symbol.for('js/length'), Symbol.for('def-args')]], [Symbol.for('define'), Symbol.for('method-fn'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('var-exps'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, Symbol.for('arity')]]], [Symbol.for('define'), Symbol.for('arg-exp'), [Symbol.for('aget'), Symbol.for('def-args'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('if'), [Symbol.for('list?'), Symbol.for('arg-exp')], [Symbol.for('first'), Symbol.for('arg-exp')], Symbol.for('arg-exp')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('if'), [Symbol.for('>='), Symbol.for('i'), [Symbol.for('js/length'), Symbol.for('args')]], undefined, [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]]], [Symbol.for('define'), Symbol.for('var-exp'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('value')]]]]], [Symbol.for('push-right!'), Symbol.for('var-exps'), Symbol.for('var-exp')]], [Symbol.for('define'), Symbol.for('this-exp'), [Symbol.for('quasiquote'), [Symbol.for('this'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('this')]]]]], [Symbol.for('push-right!'), Symbol.for('var-exps'), Symbol.for('this-exp')], [Symbol.for('define'), Symbol.for('let-exp'), [Symbol.for('quasiquote'), [Symbol.for('let*'), [Symbol.for('unquote'), Symbol.for('var-exps')], [Symbol.for('unquote-splicing'), Symbol.for('def-body')]]]], [Symbol.for('eval_'), Symbol.for('let-exp'), Symbol.for('env')]]], [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('def-name'), 'constructor'], [Symbol.for('eq?'), Symbol.for('def-name'), Symbol.for('class-name')]], [Symbol.for('send'), Symbol.for('constructors'), Symbol.for('set'), Symbol.for('arity'), Symbol.for('method-fn')], [Symbol.for('set!'), [Symbol.for('oget'), [Symbol.for('get-field'), Symbol.for('prototype'), Symbol.for('constructor')], Symbol.for('def-name')], Symbol.for('method-fn')]]], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('class-name'), ''], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('class-name-symbol'), Symbol.for('constructor'), [Symbol.for('quote'), Symbol.for('Any')]]], Symbol.for('constructor')];
+defineClassSpecial_.fsource = [Symbol.for('define'), [Symbol.for('define-class-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('fields'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('methods'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('constructors'), [Symbol.for('make-hash')]], [Symbol.for('define'), Symbol.for('constructor'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('for'), [[Symbol.for('field'), Symbol.for('fields')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('symbol->string'), [Symbol.for('second'), Symbol.for('field')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('third'), Symbol.for('field')]], [Symbol.for('set!'), [Symbol.for('oget'), Symbol.for('this'), Symbol.for('name')], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('this'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('this')]]]], [Symbol.for('unquote'), Symbol.for('exp')]]], Symbol.for('env')]]], [Symbol.for('define'), Symbol.for('arity'), [Symbol.for('length'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('constructor-fn'), [Symbol.for('send'), Symbol.for('constructors'), Symbol.for('get'), Symbol.for('arity')]], [Symbol.for('when'), [Symbol.for('procedure?'), Symbol.for('constructor-fn')], [Symbol.for('send/apply'), Symbol.for('constructor-fn'), Symbol.for('call'), Symbol.for('this'), Symbol.for('args')]]]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('definitions'), Symbol.for('params')], [Symbol.for('define'), Symbol.for('class-name-symbol'), [Symbol.for('first'), Symbol.for('params')]], [Symbol.for('define'), Symbol.for('class-name'), [Symbol.for('if'), [Symbol.for('symbol?'), Symbol.for('class-name-symbol')], [Symbol.for('symbol->string'), Symbol.for('class-name-symbol')], '']], [Symbol.for('define'), Symbol.for('base-class'), undefined], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('class-name'), ''], [Symbol.for('set!'), Symbol.for('definitions'), [Symbol.for('rest'), Symbol.for('definitions')]]], [Symbol.for('define'), Symbol.for('super-classes'), [Symbol.for('first'), Symbol.for('definitions')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('list?'), Symbol.for('super-classes')], [Symbol.for('not'), [Symbol.for('tagged-list?'), Symbol.for('super-classes'), [Symbol.for('quote'), Symbol.for('define')]]]], [Symbol.for('set!'), Symbol.for('definitions'), [Symbol.for('rest'), Symbol.for('definitions')]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('super-classes')], 0], [Symbol.for('set!'), Symbol.for('base-class'), [Symbol.for('eval_'), [Symbol.for('first'), Symbol.for('super-classes')], Symbol.for('env')]]]], [Symbol.for('when'), Symbol.for('base-class'), [Symbol.for('set!'), [Symbol.for('oget'), Symbol.for('constructor'), Symbol.for(':prototype')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('create'), [Symbol.for('oget'), Symbol.for('base-class'), Symbol.for(':prototype')]]]], [Symbol.for('for'), [[Symbol.for('definition'), Symbol.for('definitions')]], [Symbol.for('if'), [Symbol.for('symbol?'), [Symbol.for('second'), Symbol.for('definition')]], [Symbol.for('push-right!'), Symbol.for('fields'), Symbol.for('definition')], [Symbol.for('push-right!'), Symbol.for('methods'), Symbol.for('definition')]]], [Symbol.for('for'), [[Symbol.for('method'), Symbol.for('methods')]], [Symbol.for('define'), Symbol.for('def-params'), [Symbol.for('rest'), Symbol.for('method')]], [Symbol.for('define'), Symbol.for('def-name-and-args'), [Symbol.for('first'), Symbol.for('def-params')]], [Symbol.for('define'), Symbol.for('def-name'), [Symbol.for('symbol->string'), [Symbol.for('first'), Symbol.for('def-name-and-args')]]], [Symbol.for('define'), Symbol.for('def-args'), [Symbol.for('rest'), Symbol.for('def-name-and-args')]], [Symbol.for('define'), Symbol.for('def-body'), [Symbol.for('rest'), Symbol.for('def-params')]], [Symbol.for('define'), Symbol.for('arity'), [Symbol.for('length'), Symbol.for('def-args')]], [Symbol.for('define'), Symbol.for('method-fn'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('var-exps'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, Symbol.for('arity')]]], [Symbol.for('define'), Symbol.for('arg-exp'), [Symbol.for('list-ref'), Symbol.for('def-args'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('if'), [Symbol.for('list?'), Symbol.for('arg-exp')], [Symbol.for('first'), Symbol.for('arg-exp')], Symbol.for('arg-exp')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('if'), [Symbol.for('>='), Symbol.for('i'), [Symbol.for('length'), Symbol.for('args')]], undefined, [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]], [Symbol.for('define'), Symbol.for('var-exp'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('name')], [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('value')]]]]], [Symbol.for('push-right!'), Symbol.for('var-exps'), Symbol.for('var-exp')]], [Symbol.for('define'), Symbol.for('this-exp'), [Symbol.for('quasiquote'), [Symbol.for('this'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('this')]]]]], [Symbol.for('push-right!'), Symbol.for('var-exps'), Symbol.for('this-exp')], [Symbol.for('define'), Symbol.for('let-exp'), [Symbol.for('quasiquote'), [Symbol.for('let*'), [Symbol.for('unquote'), Symbol.for('var-exps')], [Symbol.for('unquote-splicing'), Symbol.for('def-body')]]]], [Symbol.for('eval_'), Symbol.for('let-exp'), Symbol.for('env')]]], [Symbol.for('if'), [Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('def-name'), 'constructor'], [Symbol.for('eq?'), Symbol.for('def-name'), Symbol.for('class-name')]], [Symbol.for('send'), Symbol.for('constructors'), Symbol.for('set'), Symbol.for('arity'), Symbol.for('method-fn')], [Symbol.for('set!'), [Symbol.for('oget'), [Symbol.for('get-field'), Symbol.for('prototype'), Symbol.for('constructor')], Symbol.for('def-name')], Symbol.for('method-fn')]]], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('class-name'), ''], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('class-name-symbol'), Symbol.for('constructor'), [Symbol.for('quote'), Symbol.for('Any')]]], Symbol.for('constructor')];
 /**
  * Evaluate a `(try ...)` form.
  */
@@ -2053,46 +1061,8 @@ function trySpecial_(exp, env) {
     }
     catch (err) {
         for (let clause of catchClauses) {
-            if (err instanceof (0, eval_1.eval_)((Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && (() => {
-                const x = lastCdr(clause);
-                return Array.isArray(x) && (x.length === 0);
-            })()) ? (() => {
-                let i = 1;
-                let result = clause;
-                while (i > 0) {
-                    if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                        result = clause[clause.length - 1];
-                    }
-                    else {
-                        result = clause.slice(1);
-                    }
-                    i--;
-                }
-                if (Array.isArray(result)) {
-                    result = result[0];
-                }
-                return result;
-            })() : clause[1], env)) {
-                result = (0, eval_1.eval_)([Symbol.for('let'), [[(Array.isArray(clause) && (clause.length >= 3) && (clause[clause.length - 2] === Symbol.for('.')) && (() => {
-                                const x = lastCdr(clause);
-                                return Array.isArray(x) && (x.length === 0);
-                            })()) ? (() => {
-                                let i = 2;
-                                let result = clause;
-                                while (i > 0) {
-                                    if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                                        result = clause[clause.length - 1];
-                                    }
-                                    else {
-                                        result = clause.slice(1);
-                                    }
-                                    i--;
-                                }
-                                if (Array.isArray(result)) {
-                                    result = result[0];
-                                }
-                                return result;
-                            })() : clause[2], [Symbol.for('quote'), err]]], ...clause.slice(3)], env);
+            if (err instanceof (0, eval_1.eval_)(clause[1], env)) {
+                result = (0, eval_1.eval_)([Symbol.for('let'), [[clause[2], [Symbol.for('quote'), err]]], ...clause.slice(3)], env);
                 break;
             }
         }
@@ -2105,7 +1075,7 @@ function trySpecial_(exp, env) {
     return result;
 }
 exports.trySpecial_ = trySpecial_;
-trySpecial_.fsource = [Symbol.for('define'), [Symbol.for('try-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('body-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('finally-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('body')], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('drop'), Symbol.for('exp'), 1]]], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('catch')]], [Symbol.for('push-right!'), Symbol.for('catch-clauses'), Symbol.for('x')]], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('finally')]], [Symbol.for('push-right!'), Symbol.for('finally-clauses'), Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('body-clauses'), Symbol.for('x')]]]], [Symbol.for('set!'), Symbol.for('body'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('body-clauses')], 1], [Symbol.for('first'), Symbol.for('body-clauses')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body-clauses')]]]]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('body'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('err'), [Symbol.for('for'), [[Symbol.for('clause'), Symbol.for('catch-clauses')]], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('err'), [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('clause')], Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), [Symbol.for('third'), Symbol.for('clause')]], [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('err')]]]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('clause'), 3]]]], Symbol.for('env')]], [Symbol.for('break')]]]], [Symbol.for('finally'), [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('finally-clauses')], 0], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('drop'), [Symbol.for('first'), Symbol.for('finally-clauses')], 1]]]], Symbol.for('env')]]]], Symbol.for('result')];
+trySpecial_.fsource = [Symbol.for('define'), [Symbol.for('try-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('body-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('catch-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('finally-clauses'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('body')], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('drop'), Symbol.for('exp'), 1]]], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('catch')]], [Symbol.for('push-right!'), Symbol.for('catch-clauses'), Symbol.for('x')]], [[Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('finally')]], [Symbol.for('push-right!'), Symbol.for('finally-clauses'), Symbol.for('x')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('body-clauses'), Symbol.for('x')]]]], [Symbol.for('set!'), Symbol.for('body'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('body-clauses')], 1], [Symbol.for('first'), Symbol.for('body-clauses')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body-clauses')]]]]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), Symbol.for('body'), Symbol.for('env')]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('err'), [Symbol.for('for'), [[Symbol.for('clause'), Symbol.for('catch-clauses')]], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('err'), [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('clause')], Symbol.for('env')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), [Symbol.for('third'), Symbol.for('clause')]], [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('err')]]]], [Symbol.for('unquote-splicing'), [Symbol.for('drop'), Symbol.for('clause'), 3]]]], Symbol.for('env')]], [Symbol.for('break')]]]], [Symbol.for('finally'), [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('finally-clauses')], 0], [Symbol.for('eval_'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), [Symbol.for('drop'), [Symbol.for('first'), Symbol.for('finally-clauses')], 1]]]], Symbol.for('env')]]]], Symbol.for('result')];
 /**
  * Evaluate a `(provide ...)` form.
  */
@@ -2126,26 +1096,7 @@ requireSpecial_.fsource = [Symbol.for('define'), [Symbol.for('require-special_')
  * Evaluate an `(ann ...)` form.
  */
 function annSpecial_(exp, env) {
-    return (0, eval_1.eval_)((Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : exp[1], env);
+    return (0, eval_1.eval_)(exp[1], env);
 }
 exports.annSpecial_ = annSpecial_;
 annSpecial_.fsource = [Symbol.for('define'), [Symbol.for('ann-special_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('eval_'), [Symbol.for('second'), Symbol.for('exp')], Symbol.for('env')]];

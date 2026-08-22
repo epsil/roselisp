@@ -1597,7 +1597,7 @@ function estreeTypeP(node, typ) {
     else if ((0, thunk_1.thunkp)(node)) {
         return false;
     }
-    else if (Array.isArray(typ)) {
+    else if (Array.isArray(typ) && !((typ.length >= 3) && (typ.at(-2) === Symbol.for('.')) && !Array.isArray(typ.at(-1)))) {
         return typ.findIndex(function (x) {
             return estreeTypeP(node, x);
         }) >= 0;
@@ -1608,7 +1608,7 @@ function estreeTypeP(node, typ) {
 }
 exports.estreeIsP = estreeTypeP;
 exports.estreeTypeP = estreeTypeP;
-estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], false], [[Symbol.for('thunk?'), Symbol.for('node')], false], [[Symbol.for('array?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
+estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], false], [[Symbol.for('thunk?'), Symbol.for('node')], false], [[Symbol.for('list?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
 /**
  * Wrap a value in an ESTree node.
  *
@@ -1617,7 +1617,7 @@ estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol
  * Otherwise, a `Literal` is used.
  */
 function wrapInEstree(x, recursive = false) {
-    if (recursive && Array.isArray(x)) {
+    if (recursive && Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !Array.isArray(x.at(-1)))) {
         return new ArrayExpression(x.map(function (x) {
             return wrapInEstree(x, recursive);
         }));
@@ -1627,7 +1627,7 @@ function wrapInEstree(x, recursive = false) {
     }
 }
 exports.wrapInEstree = wrapInEstree;
-wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x'), [Symbol.for('recursive'), false]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('recursive'), [Symbol.for('array?'), Symbol.for('x')]], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('wrap-in-estree'), Symbol.for('x'), Symbol.for('recursive')]], Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('estree-quote'), Symbol.for('x')]]]];
+wrapInEstree.fsource = [Symbol.for('define'), [Symbol.for('wrap-in-estree'), Symbol.for('x'), [Symbol.for('recursive'), false]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('recursive'), [Symbol.for('list?'), Symbol.for('x')]], [Symbol.for('new'), Symbol.for('ArrayExpression'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('wrap-in-estree'), Symbol.for('x'), Symbol.for('recursive')]], Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('estree-quote'), Symbol.for('x')]]]];
 /**
  * Place an arbitrary value inside of an ESTree
  * `Literal` node. Basically the ESTree equivalent

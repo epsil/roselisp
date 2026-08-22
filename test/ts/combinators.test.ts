@@ -1,11 +1,18 @@
-import { __, curried, variadic } from '../../src/ts/combinators';
+import {
+  __,
+  curried,
+  variadic
+} from '../../src/ts/combinators';
 
-import { assertEqual, testMacro } from './test-util';
+import {
+  assertEqual,
+  testMacro
+} from './test-util';
 
 testMacro.ftype = 'macro';
 
 describe('curried', function (): any {
-  const { C, Y } = curried;
+  const {C, Y} = curried;
   function subtraction(x: any, y: any): any {
     return x - y;
   }
@@ -46,65 +53,34 @@ describe('curried', function (): any {
 });
 
 describe('variadic', function (): any {
-  const { A, B, I, Q, T } = variadic;
+  const {A, B, I, Q, T} = variadic;
   it('(A I 1)', function (): any {
     return assertEqual(A(I, 1), 1);
   });
   it('(A (fn (x) (+ x 4)) 1)', function (): any {
-    return assertEqual(
-      A(function (x: any): any {
-        return x + 4;
-      }, 1),
-      5
-    );
+    return assertEqual(A(function (x: any): any {
+      return x + 4;
+    }, 1), 5);
   });
   it('(A (fn (x y) (+ x y)) 1 1)', function (): any {
-    return assertEqual(
-      A(
-        function (x: any, y: any): any {
-          return x + y;
-        },
-        1,
-        1
-      ),
-      2
-    );
+    return assertEqual(A(function (x: any, y: any): any {
+      return x + y;
+    }, 1, 1), 2);
   });
   it('((A __ 1 1) (fn (x y) (+ x y)))', function (): any {
-    return assertEqual(
-      A(
-        __,
-        1,
-        1
-      )(function (x: any, y: any): any {
-        return x + y;
-      }),
-      2
-    );
+    return assertEqual(A(__, 1, 1)(function (x: any, y: any): any {
+      return x + y;
+    }), 2);
   });
   it('((A (fn (x y) (+ x y)) __ 1) 1)', function (): any {
-    return assertEqual(
-      A(
-        function (x: any, y: any): any {
-          return x + y;
-        },
-        __,
-        1
-      )(1),
-      2
-    );
+    return assertEqual(A(function (x: any, y: any): any {
+      return x + y;
+    }, __, 1)(1), 2);
   });
   it('((A (fn (x y) (+ x y)) 1 __) 1)', function (): any {
-    return assertEqual(
-      A(
-        function (x: any, y: any): any {
-          return x + y;
-        },
-        1,
-        __
-      )(1),
-      2
-    );
+    return assertEqual(A(function (x: any, y: any): any {
+      return x + y;
+    }, 1, __)(1), 2);
   });
   it('(eq? (B) #u)', function (): any {
     return assertEqual(B() === undefined, true);
@@ -122,32 +98,18 @@ describe('variadic', function (): any {
     return assertEqual(B(I, I, I, 1), 1);
   });
   it('(B (fn (x) (- x)) (fn (x) (+ x 4)) 5)', function (): any {
-    return assertEqual(
-      B(
-        function (x: any): any {
-          return -x;
-        },
-        function (x: any): any {
-          return x + 4;
-        },
-        5
-      ),
-      -9
-    );
+    return assertEqual(B(function (x: any): any {
+      return -x;
+    }, function (x: any): any {
+      return x + 4;
+    }, 5), -9);
   });
   it('((B (fn (x) (- x)) (fn (x) (+ x 4)) __) 5)', function (): any {
-    return assertEqual(
-      B(
-        function (x: any): any {
-          return -x;
-        },
-        function (x: any): any {
-          return x + 4;
-        },
-        __
-      )(5),
-      -9
-    );
+    return assertEqual(B(function (x: any): any {
+      return -x;
+    }, function (x: any): any {
+      return x + 4;
+    }, __)(5), -9);
   });
   it('(eq? (I) #u)', function (): any {
     return assertEqual(I() === undefined, true);
@@ -189,32 +151,18 @@ describe('variadic', function (): any {
     return assertEqual(Q(I, I, I, 1), 1);
   });
   it('(Q (fn (x) (+ x 4)) (fn (x) (- x)) 5)', function (): any {
-    return assertEqual(
-      Q(
-        function (x: any): any {
-          return x + 4;
-        },
-        function (x: any): any {
-          return -x;
-        },
-        5
-      ),
-      -9
-    );
+    return assertEqual(Q(function (x: any): any {
+      return x + 4;
+    }, function (x: any): any {
+      return -x;
+    }, 5), -9);
   });
   it('((Q (fn (x) (+ x 4)) (fn (x) (- x)) __) 5)', function (): any {
-    return assertEqual(
-      Q(
-        function (x: any): any {
-          return x + 4;
-        },
-        function (x: any): any {
-          return -x;
-        },
-        __
-      )(5),
-      -9
-    );
+    return assertEqual(Q(function (x: any): any {
+      return x + 4;
+    }, function (x: any): any {
+      return -x;
+    }, __)(5), -9);
   });
   it('(eq? (T) #u)', function (): any {
     return assertEqual(T() === undefined, true);
@@ -232,31 +180,17 @@ describe('variadic', function (): any {
     return assertEqual(T(1, I, I, I), 1);
   });
   it('(T 5 (fn (x) (+ x 4)) (fn (x) (- x)))', function (): any {
-    return assertEqual(
-      T(
-        5,
-        function (x: any): any {
-          return x + 4;
-        },
-        function (x: any): any {
-          return -x;
-        }
-      ),
-      -9
-    );
+    return assertEqual(T(5, function (x: any): any {
+      return x + 4;
+    }, function (x: any): any {
+      return -x;
+    }), -9);
   });
   return it('((T __ (fn (x) (+ x 4)) (fn (x) (- x))) 5)', function (): any {
-    return assertEqual(
-      T(
-        __,
-        function (x: any): any {
-          return x + 4;
-        },
-        function (x: any): any {
-          return -x;
-        }
-      )(5),
-      -9
-    );
+    return assertEqual(T(__, function (x: any): any {
+      return x + 4;
+    }, function (x: any): any {
+      return -x;
+    })(5), -9);
   });
 });

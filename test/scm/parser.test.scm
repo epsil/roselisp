@@ -33,7 +33,7 @@
  (list (new SymbolToken "foo"))
  > (tokenize "f\\oo")
  (list (new SymbolToken "foo"))
- xit> (tokenize "|foo|")
+ > (tokenize "|foo|")
  (list (new SymbolToken "foo"))
  > (tokenize "\"foo\"")
  (list (new StringToken "foo"))
@@ -334,6 +334,10 @@ test"
 test\"")
  "string
 test"
+ > (read "'foo")
+ '(quote foo)
+ > (read "'|foo|")
+ '(quote foo)
  > (read "'()")
  '(quote ())
  > (read "`()")

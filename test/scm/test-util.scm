@@ -299,8 +299,8 @@
 ;;; Whether `exp` is a list whose first element is `tag`.
 (define (tagged-list? exp tag)
   (and (array? exp)
-       (>= (js/length exp) 1)
-       (eq? (js/first exp) tag)))
+       (>= (length exp) 1)
+       (eq? (first exp) tag)))
 
 (define (print-sexp exp)
   (cond
@@ -313,19 +313,19 @@
    ((tagged-list? exp 'quote)
     (string-append
      "'"
-     (print-sexp (js/second exp))))
+     (print-sexp (second exp))))
    ((tagged-list? exp 'quasiquote)
     (string-append
      "`"
-     (print-sexp (js/second exp))))
+     (print-sexp (second exp))))
    ((tagged-list? exp 'unquote)
     (string-append
      ","
-     (print-sexp (js/second exp))))
+     (print-sexp (second exp))))
    ((tagged-list? exp 'unquote-splicing)
     (string-append
      ",@"
-     (print-sexp (js/second exp))))
+     (print-sexp (second exp))))
    ((array? exp)
     (string-append
      "("
@@ -352,7 +352,7 @@
   (define options
     (js/obj))
   (define body-exps '())
-  (for ((i (range 0 (js/length body) 2)))
+  (for ((i (range 0 (length body) 2)))
     (define exp
       (aget body i))
     (cond
@@ -373,7 +373,7 @@
   (define group '())
   (define groups '())
   (define only #f)
-  (for ((i (range 0 (js/length body-exps) 3)))
+  (for ((i (range 0 (length body-exps) 3)))
     (define prompt
       (aget body-exps i))
     (define exp
@@ -382,17 +382,17 @@
       (aget body-exps (+ i 2)))
     (cond
      ((and (array? exp)
-           (>= (js/length exp) 2)
-           (eq? (js/first exp) 'describe))
-      (when (> (js/length group) 0)
+           (>= (length exp) 2)
+           (eq? (first exp) 'describe))
+      (when (> (length group) 0)
         (push-right groups group)
         (set! group '()))
       (define description
-        (js/second exp))
+        (second exp))
       (push-right! group description))
      ((and (array? exp)
-           (>= (js/length exp) 1)
-           (eq? (js/first exp) 'only))
+           (>= (length exp) 1)
+           (eq? (first exp) 'only))
       (set! only #t))
      (else
       (define f
@@ -408,11 +408,11 @@
       (define actual #u)
       (cond
        ((tagged-list? exp 'it)
-        (set! description (js/second exp))
+        (set! description (second exp))
         (set! actual
-              (if (> (js/length exp) 3)
+              (if (> (length exp) 3)
                   `(begin ,@(drop exp 2))
-                  (js/third exp))))
+                  (third exp))))
        (else
         (set! description (print-sexp exp))
         (set! actual exp)))
@@ -442,7 +442,7 @@
                      ,expected)))))))))
       (push-right! group test)
       (set! only #f))))
-  (when (> (js/length group) 0)
+  (when (> (length group) 0)
     (push-right groups group))
   (define tests
     (map (lambda (group)

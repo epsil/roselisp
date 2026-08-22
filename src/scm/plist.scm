@@ -27,8 +27,8 @@
 (define (plist?_ obj)
   ;; Since we permit properties to be any kind of value, it suffices
   ;; to verify that the input is an array of even length.
-  (and (array? obj)
-       (even? (array-length obj))))
+  (and (pair-or-list? obj)
+       (even? (length obj))))
 
 ;;; Copy a property list.
 (define (plist-copy_ plst)
@@ -42,17 +42,17 @@
 ;;; [el:plist-get]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dget
 (define (plist-get_ plst prop)
   (define val #u)
-  (for ((i (range 0 (array-length plst) 2)))
-    (when (eq? (aget plst i) prop)
-      (set! val (aget plst (+ i 1)))
+  (for ((i (range 0 (length plst) 2)))
+    (when (eq? (list-ref plst i) prop)
+      (set! val (list-ref plst (+ i 1)))
       (break)))
   val)
 
 ;;; Whether a property list contains a given property.
 (define (plist-has?_ plst prop)
   (define found #f)
-  (for ((i (range 0 (array-length plst) 2)))
-    (when (eq? (aget plst i) prop)
+  (for ((i (range 0 (length plst) 2)))
+    (when (eq? (list-ref plst i) prop)
       (set! found #t)
       (break)))
   found)
@@ -64,14 +64,14 @@
 ;;; [el:plist-put]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#index-plist_002dput
 (define (plist-set!_ plst prop val)
   (define found #f)
-  (for ((i (range 0 (array-length plst) 2)))
-    (when (eq? (aget plst i) prop)
-      (aset! plst (+ i 1) val)
+  (for ((i (range 0 (length plst) 2)))
+    (when (eq? (list-ref plst i) prop)
+      (list-set! plst (+ i 1) val)
       (set! found #t)
-      (break))
-    (unless found
-      (push-right! plst prop)
-      (push-right! plst val)))
+      (break)))
+  (unless found
+    (push-right! plst prop)
+    (push-right! plst val))
   #u)
 
 ;;; Set the value of a property in a property list,
@@ -83,11 +83,11 @@
 
 ;;; Iterate over a property list.
 (define (plist-iterate_ f plst)
-  (for ((i (range 0 (js/length plst) 2)))
+  (for ((i (range 0 (length plst) 2)))
     (define prop
-      (aget plst i))
+      (list-ref plst i))
     (define val
-      (aget plst (+ i 1)))
+      (list-ref plst (+ i 1)))
     (define entry
       (list prop val))
     (f entry)))
@@ -107,21 +107,21 @@
 ;;; Convert a plist to an association list.
 (define (plist->alist_ plst)
   (define alst '())
-  (for ((i (range 0 (js/length plst) 2)))
+  (for ((i (range 0 (length plst) 2)))
     (push-right! alst
-                 (cons (aget plst i)
-                       (aget plst (+ i 1)))))
+                 (cons (list-ref plst i)
+                       (list-ref plst (+ i 1)))))
   alst)
 
 ;;; Convert a property list to a JavaScript object.
 (define (plist->object_ plst (options (js/obj)))
   (define result
     (js/obj))
-  (for ((i (range 0 (js/length plst) 2)))
+  (for ((i (range 0 (length plst) 2)))
     (define prop
-      (aget plst i))
+      (list-ref plst i))
     (define val
-      (aget plst (+ i 1)))
+      (list-ref plst (+ i 1)))
     (define key
       (~> prop
           (keyword->string _)

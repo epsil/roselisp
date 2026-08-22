@@ -428,7 +428,7 @@
   ;;; to the environment.
   (define/public (set-entry! entry)
     (cond
-     ((= (js/length entry) 3)
+     ((= (length entry) 3)
       (define-values (key value type)
         entry)
       (send this set-local! key value type))
@@ -1032,9 +1032,9 @@
 ;;; the next frame in the array.
 (define (link-environment-frames frames)
   (define first-frame #u)
-  (for ((i (range (- (js/length frames) 1) -1 -1)))
+  (for ((i (range (- (length frames) 1) -1 -1)))
     (define frame
-      (aget frames i))
+      (list-ref frames i))
     (set-field! parent frame first-frame)
     (set! first-frame frame))
   first-frame)

@@ -159,7 +159,7 @@
   ;;; Pop a function call off the call stack.
   (define/public (pop-call)
     (cond
-     ((zero? (js/length (get-field calls this)))
+     ((zero? (length (get-field calls this)))
       #u)
      (else
       (pop! (get-field calls this)))))
@@ -167,7 +167,7 @@
   ;;; Pop a value off the value stack.
   (define/public (pop-value)
     (cond
-     ((zero? (js/length (get-field values this)))
+     ((zero? (length (get-field values this)))
       #u)
      (else
       (pop! (get-field values this)))))
@@ -197,7 +197,7 @@
 
   ;;; The number of function calls on the call stack.
   (define/public (size)
-    (js/length (get-field calls this)))
+    (length (get-field calls this)))
 
   ;;; Pop a single function call off the call stack
   ;;; and evaluate it. The value thus obtained is
@@ -235,7 +235,7 @@
     (define call1
       (send call map-right f))
     (cond
-     ((> (js/length nested-calls) 0)
+     ((> (length nested-calls) 0)
       (send tramp push-call call1)
       (for ((nested-call nested-calls))
         (send tramp push-call nested-call)))
@@ -268,7 +268,7 @@
     (cond
      ((= (~> this
              (get-field call _)
-             (js/length _))
+             (length _))
          0)
       #u)
      (else
@@ -298,7 +298,7 @@
     (for ((i (range (- (send this size) 1) -1 -1)))
       (~> this
           (get-field call _)
-          (aget _ i)
+          (list-ref _ i)
           (f _)
           (push! call _)))
     (apply new TrampolineCall call))
@@ -344,7 +344,7 @@
   (define/public (size)
     (~> this
         (get-field call _)
-        (js/length _))))
+        (length _))))
 
 ;;; Run a trampolined function.
 ;;;

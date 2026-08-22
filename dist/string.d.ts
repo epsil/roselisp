@@ -22,22 +22,8 @@
  * [rkt:stringp]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string~3f%29%29
  * [cl:stringp]: http://clhs.lisp.se/Body/f_stgp.htm#stringp
  */
-declare function stringp_(obj: any): any;
+declare function stringp_(x: any): any;
 declare namespace stringp_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-}
-/**
- * Whether something is a string primitive.
- */
-declare function stringPrimitiveP_(obj: any): any;
-declare namespace stringPrimitiveP_ {
-    var fsource: (symbol | (string | symbol | symbol[])[])[];
-}
-/**
- * Whether something is a string object.
- */
-declare function stringObjectP_(obj: any): any;
-declare namespace stringObjectP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -56,7 +42,7 @@ declare namespace stringLength_ {
  */
 declare function stringAppend_(...args: any[]): any;
 declare namespace stringAppend_ {
-    var fsource: (symbol | (string | symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[][])[])[];
 }
 /**
  * Get the character at a particular position in a string.
@@ -182,4 +168,4 @@ declare function indentString(str: any, n?: any, options?: any): any;
 declare namespace indentString {
     var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
 }
-export { numberToString_ as numberToString, stringToNumber_ as stringToNumber, stringAppend_ as stringAppend, stringPrimitiveP_ as stringPrimitiveP, stringReplace_ as stringReplace, stringp_ as stringp, substring_ as substring, indentString, numberToString_, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringObjectP_, stringPrimitiveP_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringToNumber_, stringTrim_, stringUpcase_, stringp_, substring_ };
+export { numberToString_ as numberToString, stringToNumber_ as stringToNumber, stringAppend_ as stringAppend, stringReplace_ as stringReplace, stringp_ as stringp, substring_ as substring, indentString, numberToString_, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringToNumber_, stringTrim_, stringUpcase_, stringp_, substring_ };

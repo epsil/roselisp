@@ -15,6 +15,12 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+;;; JavaScript's [`eval` function][js:eval].
+;;;
+;;; [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+(define (js/eval_ str)
+  (js/eval str))
+
 ;;; JavaScript [strict equality][js:strict-equality],
 ;;; i.e., the [`===`][js:strict-equality-operator] operator.
 ;;;
@@ -90,7 +96,7 @@
 ;;;
 ;;; [js:in]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in
 (define (js/in_ prop obj)
-  (js/in prop obj))
+  (js/op in prop obj))
 
 ;;; Make a JavaScript object.
 ;;;
@@ -99,10 +105,10 @@
 ;;; [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
 (define (js/obj_ . args)
   (let ((entries '()))
-    (for ((i (range 0 (js/length args) 2)))
+    (for ((i (range 0 (length args) 2)))
       (push-right! entries
-                   (list (js/get args i)
-                         (js/get args (+ i 1)))))
+                   (list (list-ref args i)
+                         (list-ref args (+ i 1)))))
     (send Object fromEntries entries)))
 
 ;;; Whether something is a JavaScript object.
@@ -147,11 +153,14 @@
 ;;; [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
 ;;; [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
 (define (js/plus_ . args)
-  (if (zero? (js/length args))
-      #u
-      (js/reduce args
-                 (lambda (acc x)
-                   (js/+ acc x)))))
+  (cond
+   ((zero? (length args))
+    #u)
+   (else
+    (let ((result (first args)))
+      (for ((x (rest args)))
+        (set! result (js/+ result x)))
+      result))))
 
 ;;; Return the absolute value of `x`.
 (define (js/abs_ x)
@@ -184,56 +193,12 @@
   #u)
 
 ;;; Whether something is a JavaScript array.
-(define (js/array?_ obj)
-  (send Array isArray obj))
-
-;;; Return the last element of a JavaScript array.
-(define (js/last_ arr)
-  (js/get arr (- (js/length arr) 1)))
+(define (js/array?_ x)
+  (send Array isArray x))
 
 ;;; Return the length of a JavaScript string or array.
-(define (js/length_ arr)
-  (get-field length arr))
-
-;;; Return the first element of a JavaScript array.
-(define (js/first_ lst)
-  (js/get lst 0))
-
-;;; Return the second element of a JavaScript array.
-(define (js/second_ lst)
-  (js/get lst 1))
-
-;;; Return the third element of a JavaScript array.
-(define (js/third_ lst)
-  (js/get lst 2))
-
-;;; Return the fourth element of a JavaScript array.
-(define (js/fourth_ lst)
-  (js/get lst 3))
-
-;;; Return the fifth element of a JavaScript array.
-(define (js/fifth_ lst)
-  (js/get lst 4))
-
-;;; Return the sixth element of a JavaScript array.
-(define (js/sixth_ lst)
-  (js/get lst 5))
-
-;;; Return the seventh element of a JavaScript array.
-(define (js/seventh_ lst)
-  (js/get lst 6))
-
-;;; Return the eight element of a JavaScript array.
-(define (js/eighth_ lst)
-  (js/get lst 7))
-
-;;; Return the ninth element of a JavaScript array.
-(define (js/ninth_ lst)
-  (js/get lst 8))
-
-;;; Return the tenth element of a JavaScript array.
-(define (js/tenth_ lst)
-  (js/get lst 9))
+(define (js/length_ x)
+  (get-field length x))
 
 ;;; Look up the property `key` in the JavaScript object `obj`.
 (define (js/get_ obj key)
@@ -246,28 +211,19 @@
 ;;; Look up properties `args` in the JavaScript object `obj`,
 ;;; using optional chaining.
 (define (js/optional-chaining_ obj . args)
-  (foldl (lambda (prop obj)
-           (js/?. obj prop))
-         obj
-         args))
+  (let ((result obj))
+    (for ((x args))
+      (cond
+       ((js/in x result)
+        (set! result (js/get result x)))
+       (else
+        (set! result #u)
+        (break))))
+    result))
 
 ;;; Slice a JavaScript array.
 (define (js/slice_ arr . args)
   (send/apply arr slice args))
-
-;;; Return the tail of a JavaScript array.
-(define (js/rest_ arr)
-  (js/slice arr 1))
-
-;;; Reverse the order of a JavaScript array.
-;;; Returns a new array.
-(define (js/reverse_ arr)
-  (send arr reverse))
-
-;;; Take the `n` first elements from
-;;; the JavaScript array `arr`.
-(define (js/take_ arr n)
-  (js/slice arr 0 (- (js/length arr) n)))
 
 ;;; Fold up a JavaScript array left to right.
 (define (js/reduce_ arr . args)
@@ -276,6 +232,26 @@
 ;;; Fold up a JavaScript array right to left.
 (define (js/reduce-right_ arr . args)
   (send/apply arr reduceRight args))
+
+;;; Whether something is a JavaScript string.
+(define (js/string?_ x)
+  (or (js/string-literal? x)
+      (js/string-object? x)))
+
+;;; Whether something is a JavaScript string literal.
+(define (js/string-literal?_ x)
+  (eq? (type-of x) "string"))
+
+;;; Whether something is a JavaScript string object.
+(define (js/string-object?_ x)
+  (is-a? x String))
+
+;;; Concatenate two or more JavaScript strings together.
+(define (js/string-concat_ . args)
+  (let ((result ""))
+    (for ((x args))
+      (set! result (js/op + result x)))
+    result))
 
 ;;; Create a JavaScript regular expression.
 (define (js/regexp_ input (flags #u))
@@ -296,12 +272,6 @@
 (define (js/regexp-replace_ str pattern insert)
   (send str replace pattern insert))
 
-;;; JavaScript's [`eval` function][js:eval].
-;;;
-;;; [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
-(define (js/eval_ str)
-  (js/eval str))
-
 ;;; Create a JavaScript `new` expression.
 (define (js/new_ x . args)
   (new/apply x args))
@@ -317,52 +287,52 @@
 ;;; Less than comparison.
 (define (js/lt_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x < y) === (x >= y)
-      (when (js/>= (aget args (- i 1))
-                   (aget args i))
+      (when (>= (list-ref args (- i 1))
+                (list-ref args i))
         (return #f)))
     #t)))
 
 ;;; Less than or equal comparison.
 (define (js/lte_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x <= y) === (x > y)
-      (when (js/> (aget args (- i 1))
-                  (aget args i))
+      (when (> (list-ref args (- i 1))
+               (list-ref args i))
         (return #f)))
     #t)))
 
 ;;; Greater than comparison.
 (define (js/gt_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x > y) === (x <= y)
-      (when (js/<= (aget args (- i 1))
-                   (aget args i))
+      (when (<= (list-ref args (- i 1))
+                (list-ref args i))
         (return #f)))
     #t)))
 
 ;;; Greater than or equal comparison.
 (define (js/gte_ . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     #t)
    (else
-    (for ((i (range 1 (js/length args))))
+    (for ((i (range 1 (length args))))
       ;; !(x >= y) === (x < y)
-      (when (js/< (aget args (- i 1))
-                  (aget args i))
+      (when (< (list-ref args (- i 1))
+               (list-ref args i))
         (return #f)))
     #t)))
 
@@ -410,6 +380,10 @@
 (define (js/unsigned-bitwise-shift-right_ . args)
   (js/op/apply >>> args))
 
+;;; Immediately invoked function expression (IIFE).
+(define (js/iife_ f args)
+  (apply f args))
+
 (provide
   js/abs_
   js/and_
@@ -422,22 +396,18 @@
   js/bitwise-xor_
   js/delete_
   js/dot_
-  js/eighth_
   js/eval_
-  js/fifth_
   js/find-index_
-  js/first_
-  js/fourth_
   js/function-object?_
   js/function-type?_
   js/function?_
   js/get_
   js/gt_
   js/gte_
+  js/iife_
   js/in_
   js/instance-of?_
   js/keys_
-  js/last_
   js/length_
   js/loosely-equal?_
   js/lt_
@@ -445,7 +415,6 @@
   js/mod_
   js/nan?_
   js/new_
-  js/ninth_
   js/not_
   js/null?_
   js/obj-append_
@@ -462,20 +431,16 @@
   js/regexp-replace_
   js/regexp?_
   js/regexp_
-  js/rest_
   js/return_
-  js/reverse_
   js/same-value-zero?_
   js/same-value?_
-  js/second_
-  js/seventh_
-  js/sixth_
   js/slice_
   js/strictly-equal?_
+  js/string-concat_
+  js/string-literal?_
+  js/string-object?_
+  js/string?_
   js/tagged-template_
-  js/take_
-  js/tenth_
-  js/third_
   js/type-of_
   js/unsigned-bitwise-shift-right_
   js/yield_)

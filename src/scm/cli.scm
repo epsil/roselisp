@@ -68,9 +68,15 @@
                        :alias "finline-functions"
                        :default #f
                        :type "boolean")
+   :fdottedlists (js/obj
+                  :default #f
+                  :type "boolean")
    :fsemicolon (js/obj
                 :default #t
                 :type "boolean")
+   :fstringobjects (js/obj
+                    :default #f
+                    :type "boolean")
    :help (js/obj
           :alias "h"
           :default #f
@@ -174,7 +180,7 @@ Options:
    (eval-flag
     (display (interpret-string eval-flag)))
    ((or repl-flag
-        (= (js/length input) 0))
+        (= (length input) 0))
     (repl))
    (decompile-flag
     (decompile-files! input flags))

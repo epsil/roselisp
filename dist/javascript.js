@@ -18,8 +18,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjSpread_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNinth_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsLast_ = exports.jsKeys_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFourth_ = exports.jsFirst_ = exports.jsFindIndex_ = exports.jsFifth_ = exports.jsEval_ = exports.jsEighth_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
-exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeOf_ = exports.jsThird_ = exports.jsTenth_ = exports.jsTake_ = exports.jsTaggedTemplate_ = exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSixth_ = exports.jsSeventh_ = exports.jsSecond_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReverse_ = exports.jsReturn_ = exports.jsRest_ = exports.jsRegexp_ = void 0;
+exports.jsSlice_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReturn_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjSpread_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsKeys_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsIife_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFindIndex_ = exports.jsEval_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
+exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeOf_ = exports.jsTaggedTemplate_ = exports.jsStringP_ = exports.jsStringObjectP_ = exports.jsStringLiteralP_ = exports.jsStringConcat_ = exports.jsStrictlyEqualP_ = void 0;
+/**
+ * JavaScript's [`eval` function][js:eval].
+ *
+ * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+ */
+function jsEval_(str) {
+    return eval(str);
+}
+exports.jsEval_ = jsEval_;
+jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js/eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
 /**
  * JavaScript [strict equality][js:strict-equality],
  * i.e., the [`===`][js:strict-equality-operator] operator.
@@ -142,7 +152,7 @@ function jsIn_(prop, obj) {
     return prop in obj;
 }
 exports.jsIn_ = jsIn_;
-jsIn_.fsource = [Symbol.for('define'), [Symbol.for('js/in_'), Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/in'), Symbol.for('prop'), Symbol.for('obj')]];
+jsIn_.fsource = [Symbol.for('define'), [Symbol.for('js/in_'), Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/op'), Symbol.for('in'), Symbol.for('prop'), Symbol.for('obj')]];
 /**
  * Make a JavaScript object.
  *
@@ -159,7 +169,7 @@ function jsObj_(...args) {
     return Object.fromEntries(entries);
 }
 exports.jsObj_ = jsObj_;
-jsObj_.fsource = [Symbol.for('define'), [Symbol.for('js/obj_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('entries'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('js/length'), Symbol.for('args')], 2]]], [Symbol.for('push-right!'), Symbol.for('entries'), [Symbol.for('list'), [Symbol.for('js/get'), Symbol.for('args'), Symbol.for('i')], [Symbol.for('js/get'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('fromEntries'), Symbol.for('entries')]]];
+jsObj_.fsource = [Symbol.for('define'), [Symbol.for('js/obj_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('entries'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('args')], 2]]], [Symbol.for('push-right!'), Symbol.for('entries'), [Symbol.for('list'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')], [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('fromEntries'), Symbol.for('entries')]]];
 /**
  * Whether something is a JavaScript object.
  */
@@ -227,13 +237,15 @@ function jsPlus_(...args) {
         return undefined;
     }
     else {
-        return args.reduce(function (acc, x) {
-            return acc + x;
-        });
+        let result = args[0];
+        for (let x of args.slice(1)) {
+            result = result + x;
+        }
+        return result;
     }
 }
 exports.jsPlus_ = jsPlus_;
-jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js/plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('if'), [Symbol.for('zero?'), [Symbol.for('js/length'), Symbol.for('args')]], undefined, [Symbol.for('js/reduce'), Symbol.for('args'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('acc'), Symbol.for('x')]]]]];
+jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js/plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('zero?'), [Symbol.for('length'), Symbol.for('args')]], undefined], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('rest'), Symbol.for('args')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/+'), Symbol.for('result'), Symbol.for('x')]]], Symbol.for('result')]]]];
 /**
  * Return the absolute value of `x`.
  */
@@ -283,107 +295,19 @@ jsDelete_.fsource = [Symbol.for('define'), [Symbol.for('js/delete_'), Symbol.for
 /**
  * Whether something is a JavaScript array.
  */
-function jsArrayP_(obj) {
-    return Array.isArray(obj);
+function jsArrayP_(x) {
+    return Array.isArray(x);
 }
 exports.jsArrayP_ = jsArrayP_;
-jsArrayP_.fsource = [Symbol.for('define'), [Symbol.for('js/array?_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('obj')]];
-/**
- * Return the last element of a JavaScript array.
- */
-function jsLast_(arr) {
-    return arr[arr.length - 1];
-}
-exports.jsLast_ = jsLast_;
-jsLast_.fsource = [Symbol.for('define'), [Symbol.for('js/last_'), Symbol.for('arr')], [Symbol.for('js/get'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('arr')], 1]]];
+jsArrayP_.fsource = [Symbol.for('define'), [Symbol.for('js/array?_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('x')]];
 /**
  * Return the length of a JavaScript string or array.
  */
-function jsLength_(arr) {
-    return arr.length;
+function jsLength_(x) {
+    return x.length;
 }
 exports.jsLength_ = jsLength_;
-jsLength_.fsource = [Symbol.for('define'), [Symbol.for('js/length_'), Symbol.for('arr')], [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('arr')]];
-/**
- * Return the first element of a JavaScript array.
- */
-function jsFirst_(lst) {
-    return lst[0];
-}
-exports.jsFirst_ = jsFirst_;
-jsFirst_.fsource = [Symbol.for('define'), [Symbol.for('js/first_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 0]];
-/**
- * Return the second element of a JavaScript array.
- */
-function jsSecond_(lst) {
-    return lst[1];
-}
-exports.jsSecond_ = jsSecond_;
-jsSecond_.fsource = [Symbol.for('define'), [Symbol.for('js/second_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 1]];
-/**
- * Return the third element of a JavaScript array.
- */
-function jsThird_(lst) {
-    return lst[2];
-}
-exports.jsThird_ = jsThird_;
-jsThird_.fsource = [Symbol.for('define'), [Symbol.for('js/third_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 2]];
-/**
- * Return the fourth element of a JavaScript array.
- */
-function jsFourth_(lst) {
-    return lst[3];
-}
-exports.jsFourth_ = jsFourth_;
-jsFourth_.fsource = [Symbol.for('define'), [Symbol.for('js/fourth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 3]];
-/**
- * Return the fifth element of a JavaScript array.
- */
-function jsFifth_(lst) {
-    return lst[4];
-}
-exports.jsFifth_ = jsFifth_;
-jsFifth_.fsource = [Symbol.for('define'), [Symbol.for('js/fifth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 4]];
-/**
- * Return the sixth element of a JavaScript array.
- */
-function jsSixth_(lst) {
-    return lst[5];
-}
-exports.jsSixth_ = jsSixth_;
-jsSixth_.fsource = [Symbol.for('define'), [Symbol.for('js/sixth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 5]];
-/**
- * Return the seventh element of a JavaScript array.
- */
-function jsSeventh_(lst) {
-    return lst[6];
-}
-exports.jsSeventh_ = jsSeventh_;
-jsSeventh_.fsource = [Symbol.for('define'), [Symbol.for('js/seventh_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 6]];
-/**
- * Return the eight element of a JavaScript array.
- */
-function jsEighth_(lst) {
-    return lst[7];
-}
-exports.jsEighth_ = jsEighth_;
-jsEighth_.fsource = [Symbol.for('define'), [Symbol.for('js/eighth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 7]];
-/**
- * Return the ninth element of a JavaScript array.
- */
-function jsNinth_(lst) {
-    return lst[8];
-}
-exports.jsNinth_ = jsNinth_;
-jsNinth_.fsource = [Symbol.for('define'), [Symbol.for('js/ninth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 8]];
-/**
- * Return the tenth element of a JavaScript array.
- */
-function jsTenth_(lst) {
-    return lst[9];
-}
-exports.jsTenth_ = jsTenth_;
-jsTenth_.fsource = [Symbol.for('define'), [Symbol.for('js/tenth_'), Symbol.for('lst')], [Symbol.for('js/get'), Symbol.for('lst'), 9]];
+jsLength_.fsource = [Symbol.for('define'), [Symbol.for('js/length_'), Symbol.for('x')], [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('x')]];
 /**
  * Look up the property `key` in the JavaScript object `obj`.
  */
@@ -405,12 +329,20 @@ jsDot_.fsource = [Symbol.for('define'), [Symbol.for('js/dot_'), Symbol.for('obj'
  * using optional chaining.
  */
 function jsOptionalChaining_(obj, ...args) {
-    return args.reduce(function (obj, prop) {
-        return obj === null || obj === void 0 ? void 0 : obj.prop;
-    }, obj);
+    let result = obj;
+    for (let x of args) {
+        if (x in result) {
+            result = result[x];
+        }
+        else {
+            result = undefined;
+            break;
+        }
+    }
+    return result;
 }
 exports.jsOptionalChaining_ = jsOptionalChaining_;
-jsOptionalChaining_.fsource = [Symbol.for('define'), [Symbol.for('js/optional-chaining_'), Symbol.for('obj'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/?.'), Symbol.for('obj'), Symbol.for('prop')]], Symbol.for('obj'), Symbol.for('args')]];
+jsOptionalChaining_.fsource = [Symbol.for('define'), [Symbol.for('js/optional-chaining_'), Symbol.for('obj'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), Symbol.for('obj')]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('args')]], [Symbol.for('cond'), [[Symbol.for('js/in'), Symbol.for('x'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/get'), Symbol.for('result'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), undefined], [Symbol.for('break')]]]], Symbol.for('result')]];
 /**
  * Slice a JavaScript array.
  */
@@ -419,32 +351,6 @@ function jsSlice_(arr, ...args) {
 }
 exports.jsSlice_ = jsSlice_;
 jsSlice_.fsource = [Symbol.for('define'), [Symbol.for('js/slice_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('args')]];
-/**
- * Return the tail of a JavaScript array.
- */
-function jsRest_(arr) {
-    return arr.slice(1);
-}
-exports.jsRest_ = jsRest_;
-jsRest_.fsource = [Symbol.for('define'), [Symbol.for('js/rest_'), Symbol.for('arr')], [Symbol.for('js/slice'), Symbol.for('arr'), 1]];
-/**
- * Reverse the order of a JavaScript array.
- * Returns a new array.
- */
-function jsReverse_(arr) {
-    return arr.reverse();
-}
-exports.jsReverse_ = jsReverse_;
-jsReverse_.fsource = [Symbol.for('define'), [Symbol.for('js/reverse_'), Symbol.for('arr')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('reverse')]];
-/**
- * Take the `n` first elements from
- * the JavaScript array `arr`.
- */
-function jsTake_(arr, n) {
-    return arr.slice(0, arr.length - n);
-}
-exports.jsTake_ = jsTake_;
-jsTake_.fsource = [Symbol.for('define'), [Symbol.for('js/take_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('js/slice'), Symbol.for('arr'), 0, [Symbol.for('-'), [Symbol.for('js/length'), Symbol.for('arr')], Symbol.for('n')]]];
 /**
  * Fold up a JavaScript array left to right.
  */
@@ -461,6 +367,42 @@ function jsReduceRight_(arr, ...args) {
 }
 exports.jsReduceRight_ = jsReduceRight_;
 jsReduceRight_.fsource = [Symbol.for('define'), [Symbol.for('js/reduce-right_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('reduceRight'), Symbol.for('args')]];
+/**
+ * Whether something is a JavaScript string.
+ */
+function jsStringP_(x) {
+    return (typeof x === 'string') || (x instanceof String);
+}
+exports.jsStringP_ = jsStringP_;
+jsStringP_.fsource = [Symbol.for('define'), [Symbol.for('js/string?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('js/string-literal?'), Symbol.for('x')], [Symbol.for('js/string-object?'), Symbol.for('x')]]];
+/**
+ * Whether something is a JavaScript string literal.
+ */
+function jsStringLiteralP_(x) {
+    return typeof x === 'string';
+}
+exports.jsStringLiteralP_ = jsStringLiteralP_;
+jsStringLiteralP_.fsource = [Symbol.for('define'), [Symbol.for('js/string-literal?_'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'string']];
+/**
+ * Whether something is a JavaScript string object.
+ */
+function jsStringObjectP_(x) {
+    return x instanceof String;
+}
+exports.jsStringObjectP_ = jsStringObjectP_;
+jsStringObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js/string-object?_'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('String')]];
+/**
+ * Concatenate two or more JavaScript strings together.
+ */
+function jsStringConcat_(...args) {
+    let result = '';
+    for (let x of args) {
+        result = result + x;
+    }
+    return result;
+}
+exports.jsStringConcat_ = jsStringConcat_;
+jsStringConcat_.fsource = [Symbol.for('define'), [Symbol.for('js/string-concat_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), '']], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/op'), Symbol.for('+'), Symbol.for('result'), Symbol.for('x')]]], Symbol.for('result')]];
 /**
  * Create a JavaScript regular expression.
  */
@@ -496,16 +438,6 @@ function jsRegexpReplace_(str, pattern, insert) {
 }
 exports.jsRegexpReplace_ = jsRegexpReplace_;
 jsRegexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp-replace_'), Symbol.for('str'), Symbol.for('pattern'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
-/**
- * JavaScript's [`eval` function][js:eval].
- *
- * [js:eval]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
- */
-function jsEval_(str) {
-    return eval(str);
-}
-exports.jsEval_ = jsEval_;
-jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js/eval_'), Symbol.for('str')], [Symbol.for('js/eval'), Symbol.for('str')]];
 /**
  * Create a JavaScript `new` expression.
  */
@@ -549,7 +481,7 @@ function jsLt_(...args) {
     }
 }
 exports.jsLt_ = jsLt_;
-jsLt_.fsource = [Symbol.for('define'), [Symbol.for('js/lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('js/>='), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
+jsLt_.fsource = [Symbol.for('define'), [Symbol.for('js/lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Less than or equal comparison.
  */
@@ -569,7 +501,7 @@ function jsLte_(...args) {
     }
 }
 exports.jsLte_ = jsLte_;
-jsLte_.fsource = [Symbol.for('define'), [Symbol.for('js/lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('js/>'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
+jsLte_.fsource = [Symbol.for('define'), [Symbol.for('js/lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Greater than comparison.
  */
@@ -589,7 +521,7 @@ function jsGt_(...args) {
     }
 }
 exports.jsGt_ = jsGt_;
-jsGt_.fsource = [Symbol.for('define'), [Symbol.for('js/gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('js/<='), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
+jsGt_.fsource = [Symbol.for('define'), [Symbol.for('js/gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Greater than or equal comparison.
  */
@@ -609,7 +541,7 @@ function jsGte_(...args) {
     }
 }
 exports.jsGte_ = jsGte_;
-jsGte_.fsource = [Symbol.for('define'), [Symbol.for('js/gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('js/<'), [Symbol.for('aget'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('aget'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
+jsGte_.fsource = [Symbol.for('define'), [Symbol.for('js/gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Modulo operation.
  */
@@ -714,3 +646,11 @@ function jsUnsignedBitwiseShiftRight_(...args) {
 }
 exports.jsUnsignedBitwiseShiftRight_ = jsUnsignedBitwiseShiftRight_;
 jsUnsignedBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/unsigned-bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('>>>'), Symbol.for('args')]];
+/**
+ * Immediately invoked function expression (IIFE).
+ */
+function jsIife_(f, args) {
+    return f(...args);
+}
+exports.jsIife_ = jsIife_;
+jsIife_.fsource = [Symbol.for('define'), [Symbol.for('js/iife_'), Symbol.for('f'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]];

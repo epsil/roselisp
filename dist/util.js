@@ -19,24 +19,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
-const [lastCdr] = (() => {
-    function lastCdr_(lst) {
-        if (!Array.isArray(lst)) {
-            return undefined;
-        }
-        else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-            let result = lst;
-            while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-                result = result[result.length - 1];
-            }
-            return result;
-        }
-        else {
-            return [];
-        }
-    }
-    return [lastCdr_];
-})();
 /**
  * Get the value stored under `path` in the map `map`.
  */
@@ -81,7 +63,7 @@ exports.mapHasP = mapHasP;
 function mapSetX(map, path, value) {
     const mapConstructor = map.constructor;
     const mapPath = path.slice(0, -1);
-    const mapKey = path[path.length - 1];
+    const mapKey = path.at(-1);
     let currentMap = map;
     for (let key of mapPath) {
         let currentValue = currentMap.get(key);
@@ -264,29 +246,7 @@ exports.taggedListP = taggedListP;
  * Unwrap a `(quote ...)` expression.
  */
 function textOfQuotation(exp) {
-    if (Array.isArray(exp) && (exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 1;
-        let result = exp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = exp[exp.length - 1];
-            }
-            else {
-                result = exp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    }
-    else {
-        return exp[1];
-    }
+    return exp[1];
 }
 exports.textOfQuotation = textOfQuotation;
 /**
@@ -362,26 +322,7 @@ exports.unquoteSplicingP = unquoteSplicingP;
  * Convert a `lambda` expression to a `let` expression.
  */
 function lambdaToLet(lambdaExp, args) {
-    const params = (Array.isArray(lambdaExp) && (lambdaExp.length >= 3) && (lambdaExp[lambdaExp.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lambdaExp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) ? (() => {
-        let i = 1;
-        let result = lambdaExp;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lambdaExp[lambdaExp.length - 1];
-            }
-            else {
-                result = lambdaExp.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
-    })() : lambdaExp[1];
+    const params = lambdaExp[1];
     const body = lambdaExp.slice(2);
     const bindings = [];
     if (typeof params === 'symbol') {
@@ -392,26 +333,7 @@ function lambdaToLet(lambdaExp, args) {
         for (let i = 0; i < _end; i++) {
             const param = params[i];
             const name = Array.isArray(param) ? param[0] : param;
-            let value = (i >= args.length) ? (Array.isArray(param) ? ((Array.isArray(param) && (param.length >= 3) && (param[param.length - 2] === Symbol.for('.')) && (() => {
-                const x = lastCdr(param);
-                return Array.isArray(x) && (x.length === 0);
-            })()) ? (() => {
-                let i = 1;
-                let result = param;
-                while (i > 0) {
-                    if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                        result = param[param.length - 1];
-                    }
-                    else {
-                        result = param.slice(1);
-                    }
-                    i--;
-                }
-                if (Array.isArray(result)) {
-                    result = result[0];
-                }
-                return result;
-            })() : param[1]) : undefined) : [Symbol.for('quote'), args[i]];
+            let value = (i >= args.length) ? (Array.isArray(param) ? param[1] : undefined) : [Symbol.for('quote'), args[i]];
             const binding = [name, value];
             bindings.push(binding);
         }
@@ -452,10 +374,7 @@ exports.countTree = countTree;
  * Wrap a list of expressions in a `(begin ...)` expression.
  */
 function beginWrap(expressions) {
-    if (!(() => {
-        const x = lastCdr(expressions);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions.at(-2) === Symbol.for('.')) && !Array.isArray(expressions.at(-1))))) {
         return expressions;
     }
     else {
@@ -469,10 +388,7 @@ exports.beginWrap = beginWrap;
  * no wrapping is necessary.
  */
 function beginWrapSmart(expressions) {
-    if (!(() => {
-        const x = lastCdr(expressions);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions.at(-2) === Symbol.for('.')) && !Array.isArray(expressions.at(-1))))) {
         return expressions;
     }
     else if (expressions.length === 1) {
@@ -583,7 +499,7 @@ function argsMatchesParamsP(args, params) {
 function listExpressionToPattern(exp) {
     if (Array.isArray(exp)) {
         if (taggedListP(exp, [Symbol.for('list'), Symbol.for('values')])) {
-            if (exp[exp.length - 1] === Symbol.for('...')) {
+            if (exp.at(-1) === Symbol.for('...')) {
                 const head = exp.slice(1).slice(0, -2);
                 const tail = exp[exp.length - 2];
                 return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
@@ -596,7 +512,7 @@ function listExpressionToPattern(exp) {
         }
         else if (taggedListP(exp, Symbol.for('list*'))) {
             const head = exp.slice(1).slice(0, -1);
-            const tail = exp[exp.length - 1];
+            const tail = exp.at(-1);
             if (head.length === 0) {
                 return listExpressionToPattern(tail);
             }
@@ -607,7 +523,6 @@ function listExpressionToPattern(exp) {
             }
         }
         else {
-            // (map list-expression->pattern exp)
             return false;
         }
     }

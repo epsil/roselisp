@@ -26,6 +26,7 @@
                   extname
                   join))
 (require (only-in "./array"
+                  array-copy_
                   array-drop-right_
                   array-drop_
                   array-eighth_
@@ -35,13 +36,23 @@
                   array-last_
                   array-length_
                   array-ninth_
+                  array-pop-left!_
+                  array-pop-right!_
+                  array-push-left!_
+                  array-push-right!_
                   array-ref_
+                  array-at_
                   array-rest_
+                  array-reverse!_
+                  array-concat_
                   array-reverse_
                   array-second_
+                  array-nlast_
+                  array-set!_
                   array-set_
                   array-seventh_
                   array-sixth_
+                  array-slice_
                   array-take_
                   array-tenth_
                   array-third_
@@ -201,22 +212,18 @@
                   js/bitwise-xor_
                   js/delete_
                   js/dot_
-                  js/eighth_
                   js/eval_
-                  js/fifth_
                   js/find-index_
-                  js/first_
-                  js/fourth_
                   js/function-object?_
                   js/function-type?_
                   js/function?_
                   js/get_
                   js/gt_
                   js/gte_
+                  js/iife_
                   js/in_
                   js/instance-of?_
                   js/keys_
-                  js/last_
                   js/length_
                   js/loosely-equal?_
                   js/lt_
@@ -224,7 +231,6 @@
                   js/mod_
                   js/nan?_
                   js/new_
-                  js/ninth_
                   js/not_
                   js/null?_
                   js/obj-append_
@@ -241,60 +247,55 @@
                   js/regexp-replace_
                   js/regexp?_
                   js/regexp_
-                  js/rest_
                   js/return_
-                  js/reverse_
                   js/same-value-zero?_
                   js/same-value?_
-                  js/second_
-                  js/seventh_
-                  js/sixth_
                   js/slice_
                   js/strictly-equal?_
+                  js/string-concat_
+                  js/string-literal?_
+                  js/string-object?_
+                  js/string?_
                   js/tagged-template_
-                  js/take_
-                  js/tenth_
-                  js/third_
                   js/type-of_
                   js/unsigned-bitwise-shift-right_
                   js/yield_))
 (require (only-in "./list"
                   append_
-                  array-list-cdr_
-                  array-list-drop-right_
-                  array-list-drop_
-                  array-list-eighth_
-                  array-list-fifth_
-                  array-list-first_
-                  array-list-fourth_
-                  array-list-last_
-                  array-list-length_
-                  array-list-ninth_
-                  array-list-nth_
-                  array-list-nthcdr_
-                  array-list-rest_
-                  array-list-reverse_
-                  array-list-second_
-                  array-list-seventh_
-                  array-list-sixth_
-                  array-list-take_
-                  array-list-tenth_
-                  array-list-third_
-                  array-list->linked-list_
-                  array-list?_
                   build-list_
                   cadr_
                   car_
                   cdr_
                   circular-list?_
-                  cons-dot-compiled_
-                  cons-dot-f_
-                  cons-dot?_
-                  cons-dot_
-                  cons?_
                   cons_
+                  dotted-improper-list?_
+                  dotted-list->list_
+                  dotted-list-eighth_
+                  dotted-list-fifth_
+                  dotted-list-first_
+                  dotted-list-fourth_
+                  dotted-list-head_
+                  dotted-list-last-cdr_
+                  dotted-list-last_
+                  dotted-list-length_
+                  dotted-list-ninth_
+                  dotted-list-nth_
+                  dotted-list-nthcdr_
+                  dotted-list-parse_
+                  dotted-list-ref_
+                  dotted-list-second_
+                  dotted-list-set!_
+                  dotted-list-set_
+                  dotted-list-seventh_
+                  dotted-list-sixth_
+                  dotted-list-tail_
+                  dotted-list-tenth_
+                  dotted-list-link_
+                  dotted-list-third_
                   dotted-list?_
-                  dotted-pair-p_
+                  dotted-pair-cdr_
+                  dotted-pair?_
+                  dotted-proper-list?_
                   drop-right_
                   drop_
                   eighth_
@@ -307,35 +308,10 @@
                   last-pair_
                   last_
                   length_
-                  linked-list-car_
-                  linked-list-cdr_
-                  linked-list-drop-right_
-                  linked-list-eighth_
-                  linked-list-fifth_
-                  linked-list-first_
-                  linked-list-fourth_
-                  linked-list-head_
-                  linked-list-last-cdr_
-                  linked-list-last_
-                  linked-list-length_
-                  linked-list-link-car_
-                  linked-list-link-cdr_
-                  linked-list-link?_
-                  linked-list-ninth_
-                  linked-list-nth_
-                  linked-list-nthcdr_
-                  linked-list-second_
-                  linked-list-seventh_
-                  linked-list-sixth_
-                  linked-list-tail_
-                  linked-list-tenth_
-                  linked-list-third_
-                  linked-list->array-list_
-                  linked-list?_
-                  linked-pair-car_
-                  linked-pair-cdr_
-                  linked-pair-cdr_
-                  linked-pair?_
+                  list->dotted-list_
+                  list-ref_
+                  list-set!_
+                  list-set_
                   list-star_
                   list-tail_
                   list?_
@@ -345,12 +321,15 @@
                   nth_
                   nthcdr_
                   null?_
+                  pair-or-list?_
+                  pair?_
                   pop-left!_
                   pop-right!_
                   proper-list?_
                   push-left!_
                   push-right!_
                   rest_
+                  reverse!_
                   reverse_
                   second_
                   set-car!_
@@ -431,6 +410,7 @@
                   add_
                   apply_
                   assert_
+                  atom?_
                   boolean?_
                   compiler-type?
                   const_
@@ -519,8 +499,6 @@
                   string-downcase_
                   string-join_
                   string-length_
-                  string-object?_
-                  string-primitive?_
                   string-ref_
                   string-repeat_
                   string-replace_
@@ -566,7 +544,7 @@
           :finline-functions #f
           :fsemicolon #t
           :gensym-map (make-hash)
-          :should-inline #t))
+          :should-import #t))
 
 ;;; Add `default-options` to an options object.
 ;;; If `modify` is `#t`, the original object
@@ -587,64 +565,46 @@
 ;;; that it might be inlined directly into the call site.
 (define inlined-functions
   (list
-   js/and_
-   js/or_
    abs_
    add1_
+   array-copy_
+   array-nlast_
    array-eighth_
    array-fifth_
    array-first_
    array-fourth_
    array-last_
    array-length_
-   array-list-cdr_
-   array-list-eighth_
-   array-list-fifth_
-   array-list-first_
-   array-list-fourth_
-   array-list-last_
-   array-list-length_
-   array-list-ninth_
-   array-list-nth_
-   array-list-nthcdr_
-   array-list-rest_
-   array-list-reverse_
-   array-list-second_
-   array-list-seventh_
-   array-list-sixth_
-   array-list-take_
-   array-list-tenth_
-   array-list-third_
-   array-list?_
    array-ninth_
+   array-pop-left!_
+   array-pop-right!_
    array-rest_
+   array-reverse!_
    array-reverse_
    array-second_
    array-seventh_
    array-sixth_
+   array-at_
+   array-slice_
    array-take_
    array-tenth_
    array-third_
    array?_
+   atom?_
    boolean?_
-   cons-dot-f_
-   cons-dot?_
-   cons?_
    const_
+   dotted-list-head_
+   dotted-list-tail_
    dotted-list?_
-   dotted-pair-p_
-   eighth_
+   dotted-pair?_
    eq?_
    eqv?_
    error_
    even?_
    false?_
    field-names_
-   fifth_
    filter_
    findf-index_
-   first_
-   fourth_
    gensym?_
    gensym_
    hash->list_
@@ -661,6 +621,7 @@
    index-where_
    is-a?_
    js/abs_
+   js/and_
    js/array?_
    js/bitwise-and_
    js/bitwise-not_
@@ -668,94 +629,55 @@
    js/bitwise-shift-left_
    js/bitwise-shift-right_
    js/bitwise-xor_
-   js/eighth_
-   js/fifth_
    js/find-index_
-   js/first_
-   js/fourth_
    js/function-object?_
    js/function-type?_
    js/function?_
    js/keys_
-   js/last_
    js/length_
    js/nan?_
-   js/ninth_
    js/null?_
    js/obj?_
    js/object-type?_
+   js/or_
    js/reduce-right_
    js/reduce_
    js/regexp-match_
    js/regexp-replace_
    js/regexp?_
-   js/rest_
-   js/reverse_
    js/same-value?_
-   js/second_
-   js/seventh_
-   js/sixth_
    js/slice_
-   js/take_
-   js/tenth_
-   js/third_
+   js/string-literal?_
+   js/string-object?_
+   js/string?_
    js/unsigned-bitwise-shift-right_
-   linked-list-car_
-   linked-list-cdr_
-   linked-list-eighth_
-   linked-list-fifth_
-   linked-list-first_
-   linked-list-fourth_
-   linked-list-head_
-   linked-list-link-car_
-   linked-list-link-cdr_
-   linked-list-link?_
-   linked-list-ninth_
-   linked-list-nth_
-   linked-list-nthcdr_
-   linked-list-second_
-   linked-list-seventh_
-   linked-list-sixth_
-   linked-list-tail_
-   linked-list-tenth_
-   linked-list-third_
-   linked-list?_
-   linked-pair-car_
-   linked-pair-cdr_
-   linked-pair?_
-   list?_
    memf?_
    memq?_
-   ninth_
-   nth_
    null?_
    number->string_
    number?_
    object-ref_
    odd?_
    one?_
+   pair?_
    plist-copy_
    plist?_
    pop-left!_
    pop-right!_
    procedure?_
+   push-left!_
+   push-right!_
    regexp-match?_
    regexp-match_
    regexp-quote_
    regexp-replace_
    regexp?_
-   rest_
-   reverse_
-   second_
-   seventh_
-   sixth_
+   reverse!_
    string->number_
    string->symbol_
    string-downcase_
    string-join_
    string-length_
-   string-object?_
-   string-primitive?_
    string-ref_
    string-repeat_
    string-split_
@@ -763,8 +685,6 @@
    sub1_
    symbol->string_
    symbol?_
-   tenth_
-   third_
    true?_
    type-of_
    undefined?_
@@ -793,7 +713,6 @@
          (,(string->symbol "js/null") ,(new Literal #n) Any)
          (,(string->symbol "js/require") ,(new Identifier "require") Any)
          (,(string->symbol "js/undefined") ,(new Identifier "undefined") Any)
-         (,(string->symbol "*cons-dot*") ,cons-dot-compiled_ Any)
          (,(string->symbol "nil") ,(new ArrayExpression) Any)
          (,(string->symbol "null") ,(new ArrayExpression) Any)
          (,(string->symbol "t") ,(new Literal #t) Any)
@@ -806,8 +725,8 @@
          (,ann_ ,compile-ann (compiler-> Any * Any))
          (,append_ ,compile-append (compiler-> Any * Any))
          (,apply_ ,compile-apply (compiler-> Any * Any))
-         (,array-ref_ ,compile-array-ref (compiler-> Any * Any))
-         (,array-set_ ,compile-array-set (compiler-> Any * Any))
+         (,array-push-left!_ ,compile-array-push-left (compiler-> Any * Any))
+         (,array-push-right!_ ,compile-array-push-right (compiler-> Any * Any))
          (,begin_ ,compile-begin (compiler-> Any * Any))
          (,break_ ,compile-break (compiler-> Any * Any))
          (,class_ ,compile-class (compiler-> Any * Any))
@@ -844,6 +763,7 @@
          (,js/gt_ ,compile-greater-than (compiler-> Any * Any))
          (,js/gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
          (,js/if_ ,compile-js/if (compiler-> Any * Any))
+         (,js/iife_ ,compile-js/iife (compiler-> Any * Any))
          (,js/in_ ,compile-js/in (compiler-> Any * Any))
          (,js/instance-of?_ ,compile-js/instance-of (compiler-> Any * Any))
          (,js/loosely-equal?_ ,compile-js/loosely-equal (compiler-> Any * Any))
@@ -880,10 +800,7 @@
          (,modulo_ ,compile-modulo (compiler-> Any * Any))
          (,mul_ ,compile-mul (compiler-> Any * Any))
          (,not_ ,compile-not (compiler-> Any * Any))
-         (,object-set!_ ,compile-object-set (compiler-> Any * Any))
          (,provide_ ,compile-provide (compiler-> Any * Any))
-         (,push-left!_ ,compile-push-left (compiler-> Any * Any))
-         (,push-right!_ ,compile-push-right (compiler-> Any * Any))
          (,quasiquote_ ,compile-quasiquote (compiler-> Any * Any))
          (,quote_ ,compile-quote (compiler-> Any * Any))
          (,require_ ,compile-require (compiler-> Any * Any))
@@ -894,7 +811,6 @@
          (,set-field_ ,compile-set-field (compiler-> Any * Any))
          (,set-fields_ ,compile-set-fields (compiler-> Any * Any))
          (,set-values_ ,compile-set-values (compiler-> Any * Any))
-         (,string-append_ ,compile-string-append (compiler-> Any * Any))
          (,sub_ ,compile-sub (compiler-> Any * Any))
          (,throw_ ,compile-throw (compiler-> Any * Any))
          (,yield_ ,compile-yield (compiler-> Any * Any)))))
@@ -903,27 +819,54 @@
 (define compilation-macro-mapping-env
   (new CompilationEnvironment
        `((,array-drop-right_ ,compile-array-drop-right-macro (macro-> Any * Any))
+         (,array-concat_ ,compile-array-concat-macro (macro-> Any * Any))
          (,array-drop_ ,compile-array-drop-macro (macro-> Any * Any))
-         (,array-list-drop-right_ ,compile-array-list-drop-right-macro (macro-> Any * Any))
-         (,array-list-drop_ ,compile-array-list-drop-macro (macro-> Any * Any))
+         (,array-ref_ ,compile-array-ref-macro (macro-> Any * Any))
+         (,array-set!_ ,compile-array-set!-macro (macro-> Any * Any))
          (,assert_ ,compile-assert-macro (macro-> Any * Any))
+         (,cdr_ ,compile-cdr-macro (macro-> Any * Any))
+         (,cons_ ,compile-cons-macro (macro-> Any * Any))
          (,display_ ,compile-display-macro (macro-> Any * Any))
+         (,dotted-list-link_ ,compile-dotted-list-link-macro (macro-> Any * Any))
          (,drop-right_ ,compile-drop-right-macro (macro-> Any * Any))
          (,drop_ ,compile-drop-macro (macro-> Any * Any))
+         (,eighth_ ,compile-eighth-macro (macro-> Any * Any))
+         (,fifth_ ,compile-fifth-macro (macro-> Any * Any))
+         (,first_ ,compile-first-macro (macro-> Any * Any))
          (,foldl_ ,compile-foldl-macro (macro-> Any * Any))
          (,foldr_ ,compile-foldr-macro (macro-> Any * Any))
+         (,fourth_ ,compile-fourth-macro (macro-> Any * Any))
          (,hash-clear_ ,compile-hash-clear-macro (macro-> Any * Any))
          (,hash-ref_ ,compile-hash-ref-macro (macro-> Any * Any))
          (,hash-remove!_ ,compile-hash-remove-macro (macro-> Any * Any))
          (,hash-remove_ ,compile-hash-remove-macro (macro-> Any * Any))
          (,js/regexp_ ,compile-js/regexp-macro (macro-> Any * Any))
+         (,js/string-concat_ ,compile-js/string-concat-macro (macro-> Any * Any))
+         (,last_ ,compile-last-macro (macro-> Any * Any))
+         (,length_ ,compile-length-macro (macro-> Any * Any))
+         (,list-ref_ ,compile-list-ref-macro (macro-> Any * Any))
+         (,list-set!_ ,compile-list-set!-macro (macro-> Any * Any))
+         (,list?_ ,compile-list?-macro (macro-> Any * Any))
          (,make-hash_ ,compile-make-hash-macro (macro-> Any * Any))
          (,map_ ,compile-map-macro (macro-> Any * Any))
          (,member?_ ,compile-member-p-macro (macro-> Any * Any))
+         (,ninth_ ,compile-ninth-macro (macro-> Any * Any))
+         (,nth_ ,compile-nth-macro (macro-> Any * Any))
+         (,object-set!_ ,compile-object-set!-macro (macro-> Any * Any))
+         (,pair-or-list?_ ,compile-pair-or-list-macro (macro-> Any * Any))
          (,print ,compile-display-macro (macro-> Any * Any))
+         (,rest_ ,compile-rest-macro (macro-> Any * Any))
+         (,reverse_ ,compile-reverse-macro (macro-> Any * Any))
+         (,second_ ,compile-second-macro (macro-> Any * Any))
+         (,seventh_ ,compile-seventh-macro (macro-> Any * Any))
+         (,sixth_ ,compile-sixth-macro (macro-> Any * Any))
+         (,string-append_ ,compile-string-append-macro (macro-> Any * Any))
          (,string-trim_ ,compile-string-trim-macro (macro-> Any * Any))
-         (,string?_ ,compile-stringp-macro (macro-> Any * Any))
+         (,string?_ ,compile-string?-macro (macro-> Any * Any))
          (,substring_ ,compile-substring-macro (macro-> Any * Any))
+         (,take_ ,compile-take-macro (macro-> Any * Any))
+         (,tenth_ ,compile-tenth-macro (macro-> Any * Any))
+         (,third_ ,compile-third-macro (macro-> Any * Any))
          (,values_ ,compile-values-macro (macro-> Any * Any)))))
 
 ;;; Compilation mapping environment.
@@ -1294,19 +1237,16 @@
     (not (eq? x language-env)))
   (define comments-option
     (oget options :comments))
-  (define node1
-    ;; (optimize-syntax node env)
-    node)
   (define exp
-    (syntax->datum node1))
+    (syntax->datum node))
   (define result)
   (cond
-   ((array? exp)
+   ((pair-or-list? exp)
     (cond
-     ((= (js/length exp) 0)
+     ((= (length exp) 0)
       (set! result
             (compile-list
-             node1 env options)))
+             node env options)))
      (else
       (define op
         (first exp))
@@ -1314,7 +1254,7 @@
        ((not (symbol? op))
         (set! result
               (compile-function-call
-               node1 env
+               node env
                options)))
        ((send env has-thunk? op (js/obj :filter lang-filter))
         (define op-type
@@ -1324,25 +1264,25 @@
          ((macro-type? op-type)
           (set! result
                 (compile-macro-call
-                 node1 env
+                 node env
                  options)))
          ;; Call to locally defined fexpr.
          ((fexpr-type? op-type)
           (set! result
                 (compile-fexpr-call
-                 node1 env
+                 node env
                  options)))
          ;; Call to locally defined function.
          (else
           (set! result
                 (compile-function-call
-                 node1 env
+                 node env
                  options)))))
        ((regexp-match (regexp "^\\.")
                       (symbol->string op))
         (set! result
               (compile-dot
-               node1 env options)))
+               node env options)))
        (else
         (define-values (f op-type)
           (send env get-typed-value op))
@@ -1350,7 +1290,7 @@
          ((undefined-type? op-type)
           (set! result
                 (compile-function-call
-                 node1 env options)))
+                 node env options)))
          ((inlined-function? f)
           (set! result
                 (compile-inlined-function-call
@@ -1365,14 +1305,14 @@
            ((compiler-type? compilation-type)
             (set! result
                   (compilation-f
-                   node1 env
+                   node env
                    options)))
            ;; Compilation macro.
            ((macro-type? compilation-type)
             (set! result
                   (compile-syntax
                    (datum->syntax
-                    node1
+                    node
                     (compilation-f exp env))
                    env
                    options)))
@@ -1381,35 +1321,35 @@
                 (macro-type? op-type))
             (set! result
                   (compile-macro-call
-                   node1 env options)))
+                   node env options)))
            ;; Fexpr call.
            ((fexpr-type? op-type)
             (set! result
                   (compile-fexpr-call
-                   node1 env options)))
+                   node env options)))
            (else
             (set! result
                   (compile-function-call
-                   node1 env options)))))))))))
+                   node env options)))))))))))
    ((string? exp)
     (set! result
           (compile-string
-           node1 env options)))
+           node env options)))
    ((symbol? exp)
     (set! result
           (compile-variable
-           node1 env options)))
+           node env options)))
    ((estree? exp)
     (set! result exp))
    (else
     (set! result
           (compile-atom
-           node1 env options))))
+           node env options))))
   (when (and comments-option
-             (send node1 has-property "comments"))
+             (send node has-property "comments"))
     (define comments
-      (send node1 get-property "comments"))
-    (when (> (js/length comments) 0)
+      (send node get-property "comments"))
+    (when (> (length comments) 0)
       (set-field! comments
                   result
                   (compile-comments comments))))
@@ -1451,17 +1391,17 @@
   (define result '())
   (define return-idx -1)
   (when (eq? expression-type "return")
-    (for ((i (range (- (js/length statements) 1) -1 -1)))
+    (for ((i (range (- (length statements) 1) -1 -1)))
       (define statement
-        (aget statements i))
+        (list-ref statements i))
       (unless (or (form? statement break_ env)
                   (form? statement continue_ env)
                   (form? statement yield_ env))
         (set! return-idx i)
         (break))))
-  (for ((i (range 0 (js/length statements))))
+  (for ((i (range 0 (length statements))))
     (define statement
-      (aget statements i))
+      (list-ref statements i))
     (cond
      ((= i return-idx)
       (push-right! result
@@ -1494,7 +1434,7 @@
       :case "none"
       :expression-type expression-type
       :estree #t
-      :should-inline #f)))
+      :should-import #f)))
   (define environment
     (make-interpretation-environment env inherited-options))
   ;; TODO: Memoize compilation?
@@ -1682,7 +1622,7 @@
 ;;; Handles `Program` fragments.
 (define (make-block-statement body)
   (cond
-   ((array? body)
+   ((pair-or-list? body)
     (new BlockStatement
          (make-block-statement-helper body)))
    (else
@@ -1702,11 +1642,11 @@
       (define fragment-comments
         (get-field comments fragment))
       (cond
-       ((> (js/length fragment-statements) 0)
+       ((> (length fragment-statements) 0)
         (transfer-comments fragment (first fragment-statements))
         (set! statements
               (append statements fragment-statements)))
-       ((> (js/length fragment-comments) 0)
+       ((> (length fragment-comments) 0)
         (push-right! statements statement))))
      (else
       (push-right! statements statement))))
@@ -1734,7 +1674,7 @@
   (unless (estree-type? exp "BlockStatement")
     (return exp))
   (define unwrapped-exp exp)
-  (while (and (= (js/length (get-field body unwrapped-exp))
+  (while (and (= (length (get-field body unwrapped-exp))
                  1)
               (estree-type? (first (get-field body unwrapped-exp))
                             "BlockStatement"))
@@ -1849,8 +1789,8 @@
    ((syntax? exp)
     (macro-call? (syntax->datum exp) env))
    (else
-    (and (array? exp)
-         (> (js/length exp) 1)
+    (and (pair-or-list? exp)
+         (> (length exp) 1)
          (symbol? (first exp))
          (procedure-type?
           (send env get-type (first exp)))))))
@@ -1861,8 +1801,8 @@
    ((syntax? exp)
     (macro-call? (syntax->datum exp) env))
    (else
-    (and (array? exp)
-         (> (js/length exp) 1)
+    (and (pair-or-list? exp)
+         (> (length exp) 1)
          (symbol? (first exp))
          (macro-type?
           (send env get-type (first exp)))))))
@@ -1873,8 +1813,8 @@
    ((syntax? exp)
     (macro-call? (syntax->datum exp) env))
    (else
-    (and (array? exp)
-         (> (js/length exp) 1)
+    (and (pair-or-list? exp)
+         (> (length exp) 1)
          (symbol? (first exp))
          (special-type?
           (send env get-type (first exp)))))))
@@ -1898,18 +1838,18 @@
   (define should-curry
     (or curried-option
         (and (undefined? curried-option)
-             (array? name))))
+             (pair-or-list? name))))
   (when should-curry
     (set! name (first (flatten name-and-params)))
     (set! params (rest (flatten name-and-params)))
     (when (and (dotted-list? name-and-params)
-               (= (js/length params) 1))
+               (= (length params) 1))
       (set! params (first params))))
   (define body
     (send node drop 2))
   (define return-type '())
-  (when (and (>= (js/length body) 2)
-             (eq? (syntax->datum (js/first body)) ':))
+  (when (and (>= (length body) 2)
+             (eq? (syntax->datum (first body)) ':))
     (set! return-type (take body 2))
     (set! body (drop body 2)))
   (define plist
@@ -1928,10 +1868,8 @@
 ;;; Convert a function to a macro on the basis
 ;;; of its `(define ...)` form.
 (define (definition->macro exp args)
-  ;; FIXME: When a complex argument is referenced inside of a `lambda`
-  ;; expression, we should store the value in a local variable.
   (define params
-    (cdr (js/second exp)))
+    (cdr (second exp)))
   (define-values (regular-params rest-param)
     (parse-params-list params))
   (when rest-param
@@ -1940,41 +1878,40 @@
                   (list rest-param))))
   (define params-list
     (map (lambda (x)
-           (if (array? x)
-               (js/first x)
+           (if (pair-or-list? x)
+               (first x)
                x))
          params))
   (define regular-args '())
   (define rest-arg '(list))
-  (for ((i (range 0 (js/length args))))
+  (for ((i (range 0 (length args))))
     (define arg
-      (aget args i))
+      (list-ref args i))
     (cond
-     ((< i (js/length regular-params))
+     ((< i (length regular-params))
       (push-right! regular-args arg))
      (rest-param
       (push-right! rest-arg arg))))
   (define args-list
     (append regular-args
             (if (and rest-param
-                     (> (js/length rest-arg 1)))
+                     (> (length rest-arg 1)))
                 (list rest-arg)
                 '())))
   (define body
     (drop exp 2))
   (cond
-   ((= (js/length params-list) 0)
+   ((= (length params-list) 0)
     (cond
-     ((= (js/length body) 1)
+     ((= (length body) 1)
       (first body))
      (else
       `(begin ,@body))))
    (else
     (define counts
-      (build-list (js/length args-list)
+      (build-list (length args-list)
                   (const 0)))
-    (define should-make-lambda #f)
-    (define should-make-let #f)
+    (define should-make-iife #f)
     (define result
       (map (lambda (x)
              (map-tree
@@ -1988,16 +1925,16 @@
                  ((>= idx 0)
                   (list-set! counts
                              idx
-                             (+ (aget counts idx)
+                             (+ (list-ref counts idx)
                                 1))
                   (cond
-                   ((< idx (js/length args-list))
-                    (aget args-list idx))
+                   ((< idx (length args-list))
+                    (list-ref args-list idx))
                    (else
                     (define current-param
-                      (aget params idx))
+                      (list-ref params idx))
                     (cond
-                     ((array? current-param)
+                     ((pair-or-list? current-param)
                       (second current-param))
                      (else
                       #u)))))
@@ -2006,73 +1943,31 @@
               x))
            body))
     ;; Determine whether a complex argument is referenced
-    ;; more than once. If so, we need to make a `lambda`
-    ;; expression instead.
-    (for ((i (range 0 (js/length args-list))))
+    ;; more than once. If so, we need to make an IIFE.
+    (for ((i (range 0 (length args-list))))
       (define count
-        (aget counts i))
+        (list-ref counts i))
       (define arg
-        (aget args-list i))
+        (list-ref args-list i))
       (when (and (> count 1)
                  (not (or (symbol? arg)
                           (boolean? arg)
                           (string? arg)
                           (number? arg))))
-        (set! should-make-let #t)
+        (set! should-make-iife #t)
         (break)))
     (cond
-     (should-make-let
-      (define let-bindings-env '())
-      (define gensym-param-map
-        (make-hash))
-      (for ((i (range 0 (js/length params-list))))
-        (define arg-exp
-          (cond
-           ((< i (js/length args-list))
-            (aget args-list i))
-           (else
-            (define current-param
-              (aget params i))
-            (cond
-             ((array? current-param)
-              (second current-param))
-             (else
-              #u)))))
-        (define param-exp
-          (aget params-list i))
-        (define param
-          (if (array? param-exp)
-              (first param-exp)
-              param-exp))
-        (cond
-         ((symbol? arg-exp)
-          (hash-set! gensym-param-map param arg-exp))
-         (else
-          (define param-gensym
-            (gensym (symbol->string param)))
-          (hash-set! gensym-param-map param param-gensym)
-          (push-right! let-bindings-env
-                       (list param-gensym arg-exp)))))
-      (define let-body
-        (map-tree (lambda (x)
-                    (cond
-                     ((hash-has-key? gensym-param-map x)
-                      (hash-ref gensym-param-map x))
-                     (else
-                      x)))
-                  body))
-      `(let* ,let-bindings-env
-         ,@let-body))
-     (should-make-lambda
-      `((lambda ,params
-          ,@body)
-        ,@args))
+     ;; If the expression is complex, then make an IIFE.
+     (should-make-iife
+      `(js/iife (js/arrow ,params
+                  ,@body)
+                (list ,@args)))
+     ;; Otherwise, the expression is simple, and no
+     ;; IIFE is needed.
+     ((= (length result) 1)
+      (first result))
      (else
-      (cond
-       ((= (js/length result) 1)
-        (first result))
-       (else
-        `(begin ,@result))))))))
+      `(begin ,@result))))))
 
 ;;; Convert a `(define ... (class ...))` expression to
 ;;; a `(define-class ...)` expression.
@@ -2210,32 +2105,32 @@
     (define params
       (drop exp 1))
     (define return-value
-      (js/last params))
+      (last params))
     (set! params (drop-right params 1))
     (define plist '())
-    (for ((i (range 0 (js/length params))))
-      (when (keyword? (aget params i))
+    (for ((i (range 0 (length params))))
+      (when (keyword? (list-ref params i))
         (set! plist (drop params i))
         (set! params
               (drop-right params
-                          (- (js/length params) i)))
+                          (- (length params) i)))
         (break)))
     (define rest-param #u)
     (cond
-     ((eq? (js/last params) '*)
+     ((eq? (last params) '*)
       (pop-right! params)
       (set! rest-param (pop-right! params)))
      (else
       (set! rest-param (plist-get_ plist ':rest))))
     (define mandatory-params
       (if (and (tagged-list? exp '->*)
-               (>= (js/length params) 1))
-          (js/first params)
+               (>= (length params) 1))
+          (first params)
           params))
     (define optional-params
       (if (and (tagged-list? exp '->*)
-               (>= (js/length params) 2))
-          (js/second params)
+               (>= (length params) 2))
+          (second params)
           '()))
     (define pos 0)
     (define (compile-param param
@@ -2277,15 +2172,15 @@
                  optional-params-compiled
                  rest-params-compiled)
          return-value-compiled))
-   ((and (array? exp)
-         (> (js/length exp) 0))
+   ((and (pair-or-list? exp)
+         (> (length exp) 0))
     (define name
       (new Identifier
            (symbol->string (first exp))))
     (define params
       (map symbol->string (rest exp)))
     (cond
-     ((> (js/length params) 0)
+     ((> (length params) 0)
       (new TSTypeReference
            name
            (new TSTypeParameterInstantiation
@@ -2334,7 +2229,7 @@
      (datum->syntax #f callee)
      env options))
   (define args-compiled '())
-  (when (> (js/length args) 0)
+  (when (> (length args) 0)
     (define regular-args
       (drop-right args 1))
     (for ((arg regular-args))
@@ -2343,7 +2238,7 @@
                     (datum->syntax #f arg)
                     env options)))
     (define rest-arg
-      (js/last args))
+      (last args))
     (define rest-arg-compiled
       (compile-expression (datum->syntax #f rest-arg) env options))
     (define spread-element
@@ -2381,8 +2276,8 @@
           args-compiled)
      options))))
 
-;;; Compile an `(array-ref ...)` expression.
-(define (compile-array-ref node env (options (js/obj)))
+;;; Compile a `(js/get ...)` expression.
+(define (compile-js/get node env (options (js/obj)))
   (define language
     (oget options :language))
   (define variable
@@ -2395,8 +2290,8 @@
              (syntax->datum x))
            (define is-quoted-symbol #f)
            (when (and (quoted-expression? x-exp)
-                      (symbol? (js/second x-exp)))
-             (set! x-exp (js/second x-exp))
+                      (symbol? (second x-exp)))
+             (set! x-exp (second x-exp))
              (set! x (datum->syntax x x-exp))
              (set! is-quoted-symbol #t))
            (when (keyword? x-exp)
@@ -2417,7 +2312,7 @@
   ;; like `x[y]`, where `y` is `any`-typed.
   (when (and (eq? language "typescript")
              (not (form? variable ann_ env))
-             (not (estree-type? (js/first indices-compiled)
+             (not (estree-type? (first indices-compiled)
                                 '("Literal"
                                   "UnaryExpression"
                                   "BinaryExpression"))))
@@ -2441,22 +2336,6 @@
            indices-compiled))
   (make-expression-or-statement result options))
 
-;;; Compile an `(array-set! ...)` expression.
-(define (compile-array-set node env (options (js/obj)))
-  (define exp
-    (syntax->datum node))
-  (define arr
-    (second exp))
-  (define indices
-    (drop-right (drop exp 2) 1))
-  (define value
-    (aget exp (- (js/length exp) 1)))
-  (compile-syntax
-   (datum->syntax
-    node
-    `(js/= (aget ,arr ,@indices) ,value))
-   env options))
-
 ;;; Compile a `(js/= ...)` expression.
 (define (compile-js/assignment node env (options (js/obj)))
   (define left
@@ -2469,6 +2348,7 @@
                     define
                     define-fields
                     define-values
+                    list-set!
                     oset!
                     set!
                     set!-fields
@@ -2499,14 +2379,14 @@
       (define fields
         (send left drop 1))
       (define properties '())
-      (for ((i (range 0 (js/length fields) 2)))
+      (for ((i (range 0 (length fields) 2)))
         (push-right! properties
                      (new Property
                           (compile-symbol
-                           (aget fields i)
+                           (list-ref fields i)
                            env options)
                           (compile-symbol
-                           (aget fields (+ i 1))
+                           (list-ref fields (+ i 1))
                            env options))))
       (set! left-compiled
             (new ObjectPattern properties)))
@@ -2533,7 +2413,7 @@
     #n)
    ((symbol? exp)
     (compile-symbol node env options))
-   ((array? exp)
+   ((pair-or-list? exp)
     (cond
      ((dotted-list? exp)
       (define head
@@ -2570,17 +2450,9 @@
                   (get-field right assignment-expression)))
        "let"))
 
-;;; Compile a `(js/get ...)` expression.
-(define (compile-js/get node env (options (js/obj)))
-  (compile-array-ref node env options))
-
-;;; Compile an `(object-ref ...)` expression.
-(define (compile-object-ref node env (options (js/obj)))
-  (compile-js/get node env options))
-
-;;; Compile an `(object-set! ...)` expression.
-(define (compile-object-set node env (options (js/obj)))
-  (compile-array-set node env options))
+;;; Compiler macro for `(object-set! ...)` expressions.
+(define-macro (compile-object-set!-macro obj key val)
+  `(js/= (js/get ,obj ,key) ,val))
 
 ;;; Compile an atomic expression, such as `foo`.
 (define (compile-atom node env (options (js/obj)))
@@ -2692,11 +2564,11 @@
   (define type_ 'Any)
   (cond
    ;; Function definition.
-   ((array? (second exp))
+   ((pair-or-list? (second exp))
     (define sym
-      (js/first (js/second exp)))
-    (when (array? sym)
-      (set! sym (js/first (flatten sym))))
+      (first (second exp)))
+    (when (pair-or-list? sym)
+      (set! sym (first (flatten sym))))
     (define function-exp
       (define->function node))
     (define return-type
@@ -2726,10 +2598,10 @@
                   (list '(Listof Any)))
                  ((dotted-list? params)
                   (append
-                   (make-list (- (js/length params) 2) 'Any)
+                   (make-list (- (length params) 2) 'Any)
                    (list '(Listof Any))))
                  (else
-                  (make-list (js/length params) 'Any)))
+                  (make-list (length params) 'Any)))
               ,return-type)))
      (else
       (set! type_ declared-type)))
@@ -2765,7 +2637,7 @@
      (else
       result)))
    ;; Uninitialized variable.
-   ((= (js/length exp) 2)
+   ((= (length exp) 2)
     (define sym
       (send node get 1))
     (define result
@@ -2776,7 +2648,7 @@
          `(js/= ,sym #u))
         env options)))
     (define declarator
-      (js/first (get-field declarations result)))
+      (first (get-field declarations result)))
     (set-field! init declarator #n)
     (send env set-local! (syntax->datum sym) #u 'Any)
     result)
@@ -2806,9 +2678,9 @@
    ;; Initialized variable.
    (else
     (define sym
-      (js/second exp))
+      (second exp))
     (define val
-      (js/third exp))
+      (third exp))
     (set! type_
           (send env
                 get-local-type
@@ -2831,7 +2703,7 @@
        (compile-js/assignment node env options)))
     (~> result
         (get-field declarations _)
-        (js/first _)
+        (first _)
         (get-field id _)
         (set-type _ (compile-type type_ env options)))
     result)))
@@ -2871,11 +2743,11 @@
   (define exp
     (syntax->datum node))
   (cond
-   ((= (js/length exp) 1)
+   ((= (length exp) 1)
     (compile-expression
      (datum->syntax node #u)
      env options))
-   ((= (js/length exp) 2)
+   ((= (length exp) 2)
     (compile-div
      (datum->syntax
       node
@@ -2946,6 +2818,344 @@
    (js/obj :identity #t
            :operator "==")))
 
+;;; Compiler macro for `(list? ...)` expressions.
+(define-macro (compile-list?-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall list? ,x))
+   (else
+    (definition->macro
+      '(define (list?_ x)
+         (and (array? x)
+              (not (and (>= (array-length x) 3)
+                        (eq? (array-at x -2) '|.|)
+                        (not (array? (array-last x)))))))
+      (list x)))))
+
+;;; Compiler macro for `(length ...)` expressions.
+(define-macro (compile-length-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall length ,x))
+   (else
+    `(js/length ,x))))
+
+;;; Compiler macro for `(first ...)` expressions.
+(define-macro (compile-first-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall first ,x))
+   (else
+    `(array-first ,x))))
+
+;;; Compiler macro for `(second ...)` expressions.
+(define-macro (compile-second-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall second ,x))
+   (else
+    `(array-second ,x))))
+
+;;; Compiler macro for `(third ...)` expressions.
+(define-macro (compile-third-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall third ,x))
+   (else
+    `(array-third ,x))))
+
+;;; Compiler macro for `(fourth ...)` expressions.
+(define-macro (compile-fourth-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall fourth ,x))
+   (else
+    `(array-fourth ,x))))
+
+;;; Compiler macro for `(fifth ...)` expressions.
+(define-macro (compile-fifth-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall fifth ,x))
+   (else
+    `(array-fifth ,x))))
+
+;;; Compiler macro for `(sixth ...)` expressions.
+(define-macro (compile-sixth-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall sixth ,x))
+   (else
+    `(array-sixth ,x))))
+
+;;; Compiler macro for `(seventh ...)` expressions.
+(define-macro (compile-seventh-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall seventh ,x))
+   (else
+    `(array-seventh ,x))))
+
+;;; Compiler macro for `(eighth ...)` expressions.
+(define-macro (compile-eighth-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall eighth ,x))
+   (else
+    `(array-eighth ,x))))
+
+;;; Compiler macro for `(ninth ...)` expressions.
+(define-macro (compile-ninth-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall ninth ,x))
+   (else
+    `(array-ninth ,x))))
+
+;;; Compiler macro for `(tenth ...)` expressions.
+(define-macro (compile-tenth-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall tenth ,x))
+   (else
+    `(array-tenth ,x))))
+
+;;; Compiler macro for `(pair-or-list? ...)` expressions.
+(define-macro (compile-pair-or-list-macro x)
+  `(array? ,x))
+
+;;; Compiler macro for `(cons ...)` expressions.
+(define-macro (compile-cons-macro x y)
+  ;; TODO: Terser way of expressing this.
+  (cond
+   ((self-evaluating? y)
+    (list 'quasiquote
+          (list
+           (list 'unquote x)
+           '|.|
+           (list 'unquote y))))
+   ((or (tagged-list? y 'list)
+        (and (tagged-list? y 'list*)
+             (> (length y) 2))
+        (and (tagged-list? y '(quote quasiquote))
+             (pair-or-list? (second y))))
+    (list 'quasiquote
+          (list
+           (list 'unquote x)
+           (list 'unquote-splicing y))))
+   (else
+    (definition->macro
+      (source cons_)
+      (list x y)))))
+
+;;; Compiler macro for `(dotted-list-link ...)` expressions.
+(define-macro (compile-dotted-list-link-macro x)
+  (cond
+   ((self-evaluating? x)
+    (list '|.| x))
+   ((or (tagged-list? x 'list)
+        (and (tagged-list? x 'list*)
+             (> (length x) 2))
+        (and (tagged-list? x '(quote quasiquote))
+             (pair-or-list? (second x))))
+    x)
+   (else
+    (definition->macro
+      '(define (dotted-list-link_ x)
+         (js/? (pair-or-list? x)
+               x
+               (list '|.| x)))
+      (list x)))))
+
+;;; Compiler macro for `(cdr ...)` expressions.
+(define-macro (compile-cdr-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall cdr ,x))
+   (else
+    (definition->macro
+      '(define (cdr_ x)
+         (js/? (and (= (array-length x) 3)
+                    (eq? (array-ref x 1) '|.|))
+               (array-third x)
+               (array-rest x)))
+      (list x)))))
+
+;;; Compiler macro for `(rest ...)` expressions.
+(define-macro (compile-rest-macro x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall rest ,x))
+   (else
+    `(array-rest ,x))))
+
+;;; Compiler macro for `(nth ...)` expressions.
+(define-macro (compile-nth-macro n lst)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall nth ,n ,lst))
+   (else
+    `(list-ref ,lst ,n))))
+
+;;; Compiler macro for `(take ...)` expressions.
+(define-macro (compile-take-macro lst n)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall take ,lst ,n))
+   ((eq? n 0)
+    '())
+   (else
+    (definition->macro
+      '(define (take_ lst n)
+         (drop-right lst (- (length lst) n)))
+      (list lst n)))))
+
+;;; Compiler macro for `(drop ...)` expressions.
+(define-macro (compile-drop-macro lst n)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall drop ,lst ,n))
+   (else
+    `(array-drop ,lst ,n))))
+
+;;; Compiler macro for `(drop-right ...)` expressions.
+(define-macro (compile-drop-right-macro lst n)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall drop-right ,lst ,n))
+   (else
+    `(array-drop-right ,lst ,n))))
+
+;;; Compiler macro for `(array-drop ...)` expressions.
+(define-macro (compile-array-drop-macro arr n)
+  (cond
+   ((eq? n 0)
+    arr)
+   (else
+    `(array-slice ,arr ,n))))
+
+;;; Compiler macro for `(array-drop-right ...)` expressions.
+(define-macro (compile-array-drop-right-macro arr n)
+  (cond
+   ;; Edge case: `(array-slice arr 0 (- n))` works well most
+   ;; of the time, but not when `n` is zero, in which case
+   ;; `(array-slice arr 0 0)` returns an empty array (and
+   ;; not the full array, as expected). To deal with this,
+   ;; the value of `n` must be inspected. If it can be
+   ;; determined at compile time, then the whole expression
+   ;; can be expanded to just `arr` if the value is zero.
+   ((number? n)
+    (cond
+     ((= n 0)
+      arr)
+     (else
+      `(array-slice ,arr 0 (- ,n)))))
+   ;; Otherwise, if `n` is a variable or an expression,
+   ;; then its value must be checked at runtime instead.
+   (else
+    (definition->macro
+      '(define (array-drop-right_ arr n)
+         (array-slice arr 0 (or (- n) #u)))
+      (list arr n)))))
+
+;;; Compiler macro for `(array-concat ...)` expressions.
+(define-macro (compile-array-concat-macro &rest args)
+  (cond
+   ((eq? (length args) 0)
+    '())
+   ((eq? (length args) 1)
+    (first args))
+   (else
+    `(send ,(first args) concat ,@(rest args)))))
+
+;;; Compiler macro for `(reverse ...)` expressions.
+(define-macro (compile-reverse-macro lst)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall reverse ,lst))
+   (else
+    `(array-reverse ,lst))))
+
+;;; Compiler macro for `(last ...)` expressions.
+(define-macro (compile-last-macro lst)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall last ,lst))
+   (else
+    `(array-last ,lst))))
+
+;;; Compiler macro for `(list-ref ...)` expressions.
+(define-macro (compile-list-ref-macro lst &rest indices)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall list-ref ,lst ,@indices))
+   (else
+    `(array-ref ,lst ,@indices))))
+
+;;; Compiler macro for `(list-set! ...)` expressions.
+(define-macro (compile-list-set!-macro lst &rest indices-and-value)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall list-set! ,lst ,@indices-and-value))
+   (else
+    `(array-set! ,lst ,@indices-and-value))))
+
+;;; Compiler macro for `(array-ref ...)` expressions.
+(define-macro (compile-array-ref-macro arr &rest indices)
+  `(js/get ,arr ,@indices))
+
+;;; Compiler macro for `(array-set! ...)` expressions.
+(define-macro (compile-array-set!-macro arr &rest indices-and-value)
+  (define indices
+    (drop-right indices-and-value 1))
+  (define value
+    (last indices-and-value))
+  `(js/= (js/get ,arr ,@indices) ,value))
+
 ;;; Compiler macro for `(foldl ...)` expressions.
 (define-macro (compile-foldl-macro f v lst &environment env)
   ;; `foldl()` and `.reduce()` invoke the reducing function with
@@ -2975,7 +3185,7 @@
    ;; Function expression is a `lambda` form:
    ;; swap the two first arguments.
    ((and (form? exp lambda_ env)
-         (>= (js/length (second exp)) 2))
+         (>= (length (second exp)) 2))
     `(lambda (,(second (second exp))
               ,(first (second exp))
               ,@(drop (second exp) 2))
@@ -2996,46 +3206,54 @@
 
 ;;; Compile a `(funcall ...)` expression.
 (define (compile-funcall node env (options (js/obj)))
+  (define-fields (should-import)
+    options)
   (compile-function-call
    (slice-rose node 1)
-   env options))
+   env
+   options
+   (js/obj :should-import should-import)))
 
 ;;; Compile a function call.
-(define (compile-function-call node env (options (js/obj)))
+(define (compile-function-call node env (options (js/obj)) (settings (js/obj)))
   (define referenced-symbols
     (oget options :referenced-symbols))
   (define current-module
     (oget options :current-module))
   (define compilation-mapping-environment
     (oget options :compilation-mapping-environment))
+  (define should-import-setting
+    (oget settings :should-import))
   (define callee
     (send node get 0))
   (define op
     (syntax->datum callee))
   (define symbolic-op
     (symbol? op))
-  (define should-inline-op
-    (and symbolic-op
-         (should-inline? op env options)
-         ;; Do not inline the operator if a
-         ;; compilation macro is defined for it.
-         (not (send env has-thunk? op))
-         (not (send compilation-mapping-environment
-                    has?
-                    (send env get op)))))
+  (define should-import-op
+    (or should-import-setting
+        (and symbolic-op
+             (should-import? op env options)
+             ;; Do not inline the operator if a
+             ;; compilation macro is defined for it.
+             (not (send env has-thunk? op))
+             (not (send compilation-mapping-environment
+                        has?
+                        (send env get op))))))
   (define args
     (send node drop 1))
   (define callee-exp
     (compile-expression
-     callee env
+     callee
+     env
      (if (and symbolic-op
-              (not should-inline-op))
-         ;; Set the `shouldInline` option to `#f`
+              (not should-import-op))
+         ;; Set the `should-import` option to `#f`
          ;; if `op` is a symbol and there is a
          ;; compilation macro defined for it.
          (js/obj-append
           options
-          (js/obj :should-inline #f))
+          (js/obj :should-import #f))
          options)))
   (define args-exps
     (map (lambda (x)
@@ -3051,7 +3269,7 @@
   (define exp
     (syntax->datum node))
   (define op
-    (js/first exp))
+    (first exp))
   (define f
     (send env get op))
   (define inlined-exp
@@ -3072,17 +3290,20 @@
   (when (and referenced-symbols
              ;; Do not add if already added.
              (not (memq? sym referenced-symbols))
-             (should-inline? sym env options))
+             (should-import? sym env options))
     (push-right! referenced-symbols sym)))
 
-;;; Whether the language binding for `sym` should be added to
-;;; the global environment.
-(define (should-inline? sym env (options (js/obj)))
-  ;; This may be disabled with the `shouldInline` option.
-  (define should-inline-option
-    (oget options :should-inline))
-  (unless should-inline-option
+;;; Whether to import the language binding for `sym`.
+;;; If yes, it might be added to the global environment
+;;; or inlined into the call site.
+(define (should-import? sym env (options (js/obj)))
+  ;; This may be disabled with the `should-import` option.
+  (define should-import-option
+    (oget options :should-import))
+  (unless should-import-option
     (return #f))
+  ;; Otherwise, determine whether importing is applicable
+  ;; by inspecting the value `sym` is bound to.
   (define language-env
     (oget options :language-environment))
   (define (lang-filter x)
@@ -3094,18 +3315,18 @@
   (define current-module
     (oget options :current-module))
   (and (symbol? sym)
-       ;; Do not inline if the symbol is listed in
+       ;; Do not import if the symbol is listed in
        ;; `compilation-variables-env`.
        (not (send compilation-variables-env has? sym))
-       ;; Do not inline if there is a local binding for the
+       ;; Do not import if there is a local binding for the
        ;; value (e.g., a `let` variable).
        (not (send env has? sym (js/obj :filter lang-filter)))
-       ;; Do not inline if the current module defines the
+       ;; Do not import if the current module defines the
        ;; value.
        (not (and current-module
                  (send current-module has-symbol sym)))
-       ;; Only inline if the language environment binds the symbol.
-       ;; However, do not inline if the value is a JavaScript
+       ;; Only import if the language environment binds the symbol.
+       ;; However, do not import if the value is a JavaScript
        ;; value, i.e., if it is provided by the very language
        ;; compiled to.
        (send language-env has? sym (js/obj :filter js-filter))))
@@ -3115,11 +3336,11 @@
   (define exp
     (syntax->datum node))
   (cond
-   ((< (js/length exp) 3)
+   ((< (length exp) 3)
     (compile-syntax
      (datum->syntax #f #t)
      env options))
-   ((= (js/length exp) 3)
+   ((= (length exp) 3)
     (compile-binary-expression
      node env options
      (js/obj :identity #t
@@ -3128,10 +3349,10 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (js/length exp))))
+    (for ((i (range 2 (length exp))))
       (push-right! and-exp
-                   `(> ,(aget exp (- i 1))
-                       ,(aget exp i))))
+                   `(> ,(list-ref exp (- i 1))
+                       ,(list-ref exp i))))
     (compile-syntax
      (datum->syntax #f and-exp)
      env options))))
@@ -3141,11 +3362,11 @@
   (define exp
     (syntax->datum node))
   (cond
-   ((< (js/length exp) 3)
+   ((< (length exp) 3)
     (compile-syntax
      (datum->syntax #f #t)
      env options))
-   ((= (js/length exp) 3)
+   ((= (length exp) 3)
     (compile-binary-expression
      node env options
      (js/obj :identity #t
@@ -3154,10 +3375,10 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (js/length exp))))
+    (for ((i (range 2 (length exp))))
       (push-right! and-exp
-                   `(>= ,(aget exp (- i 1))
-                        ,(aget exp i))))
+                   `(>= ,(list-ref exp (- i 1))
+                        ,(list-ref exp i))))
     (compile-syntax
      (datum->syntax #f and-exp)
      env options))))
@@ -3176,7 +3397,7 @@
   (define operands
     (send node drop 1))
   (cond
-   ((= (js/length operands) 0)
+   ((= (length operands) 0)
     (define identity
       (oget settings :identity))
     (make-expression-or-statement
@@ -3184,7 +3405,7 @@
       (datum->syntax #f identity)
       env options)
      options))
-   ((= (js/length operands) 1)
+   ((= (length operands) 1)
     (make-expression-or-statement
      (compile-syntax
       (first operands)
@@ -3297,7 +3518,7 @@
   (define return-type
     (or (oget settings :return-type)
         (if (tagged-list? type_ '->)
-            (js/last type_)
+            (last type_)
             #u)))
   (define generator
     (oget settings :generator))
@@ -3321,9 +3542,8 @@
     (set! rest-arg (second exp)))
    ((dotted-list? (second exp))
     (set! args-list (second exp))
-    (set! regular-args (linked-list-drop-right_ args-list 1))
-    (set! rest-arg
-          (dotted-list-tail args-list)))
+    (set! regular-args (dotted-list-head args-list))
+    (set! rest-arg (dotted-list-tail args-list)))
    (else
     (set! regular-args (second exp))))
   (when regular-args
@@ -3336,7 +3556,7 @@
           (third arg))
         (make-type-binding env1 sym 'Any lang-filter)
         (define result
-          (~> (if (= (js/length arg) 4)
+          (~> (if (= (length arg) 4)
                   (new AssignmentPattern
                        (compile-symbol
                         (datum->syntax #f sym)
@@ -3351,7 +3571,7 @@
                _
                (compile-type typ env1 options))))
         (push-right! params result))
-       ((array? arg)
+       ((pair-or-list? arg)
         (make-type-binding env1 (first arg) 'Any lang-filter)
         (push-right! params
                      (new AssignmentPattern
@@ -3384,17 +3604,17 @@
                        env1 inherited-options))))
   (define body-statements
     (send node drop 2))
-  (when (and (>= (js/length body-statements) 2)
-             (eq? (syntax->datum (js/first body-statements))
+  (when (and (>= (length body-statements) 2)
+             (eq? (syntax->datum (first body-statements))
                   ':))
     (set! return-type
-          (syntax->datum (js/second body-statements)))
+          (syntax->datum (second body-statements)))
     (set! body-statements (drop body-statements 2)))
-  (when (and (>= (js/length body-statements) 2)
-             (eq? (syntax->datum (js/first body-statements))
+  (when (and (>= (length body-statements) 2)
+             (eq? (syntax->datum (first body-statements))
                   ':name))
     (set! name
-          (syntax->datum (js/second body-statements)))
+          (syntax->datum (second body-statements)))
     (set! body-statements (drop body-statements 2)))
   (define body
     (compile-statement-or-return-statement
@@ -3461,11 +3681,11 @@
         (compile-type type_ env options)
         #u))
   (when (is-a? type-compiled TSFunctionType)
-    (for ((i (range 0 (js/length (get-field params result-f)))))
+    (for ((i (range 0 (length (get-field params result-f)))))
       (define param
-        (aget (get-field params result-f) i))
+        (list-ref (get-field params result-f) i))
       (define type-param
-        (aget (get-field params type-compiled) i))
+        (list-ref (get-field params type-compiled) i))
       (define type-param-annotation
         (if type-param
             (get-field typeAnnotation type-param)
@@ -3501,16 +3721,124 @@
                      settings
                      (js/obj :function-type 'js/arrow))))
 
+;;; Compile a `(js/iife ...)` expression.
+(define (compile-js/iife node env (options (js/obj)) (settings (js/obj)))
+  (define expression-type
+    (oget options :expression-type))
+  (define f
+    (send node get 1))
+  (define args
+    (send node get 2))
+  (define args-list
+    (send args drop 1))
+  (define fapply
+    (if (tagged-list? args '(cons* list*))
+        'apply
+        'funcall))
+  (cond
+   ((memq? expression-type '("statement" "return"))
+    (define f-exp
+      (syntax->datum f))
+    (define params
+      (second f-exp))
+    (define-values (regular-params rest-param)
+      (parse-params-list params))
+    (when rest-param
+      (set! params
+            (append regular-params
+                    (list rest-param))))
+    (define params-list
+      (map (lambda (x)
+             (if (pair-or-list? x)
+                 (first x)
+                 x))
+           params))
+    (define regular-args '())
+    (define rest-arg '(list))
+    (for ((i (range 0 (length args-list))))
+      (define arg
+        (list-ref args-list i))
+      (cond
+       ((< i (length regular-params))
+        (push-right! regular-args arg))
+       (rest-param
+        (push-right! rest-arg arg))))
+    (set! args-list
+          (append regular-args
+                  (if (and rest-param
+                           (> (length rest-arg 1)))
+                      (list rest-arg)
+                      '())))
+    (define body
+      (drop f-exp 2))
+    (define let-bindings-env '())
+    (define gensym-param-map
+      (make-hash))
+    (for ((i (range 0 (length params-list))))
+      (define arg-exp
+        (cond
+         ((< i (length args-list))
+          (list-ref args-list i))
+         (else
+          (define current-param
+            (list-ref params i))
+          (cond
+           ((pair-or-list? current-param)
+            (second current-param))
+           (else
+            #u)))))
+      (define param-exp
+        (list-ref params-list i))
+      (define param
+        (if (pair-or-list? param-exp)
+            (first param-exp)
+            param-exp))
+      (cond
+       ((symbol? arg-exp)
+        (hash-set! gensym-param-map param arg-exp))
+       (else
+        (define param-gensym
+          (gensym (symbol->string param)))
+        (hash-set! gensym-param-map param param-gensym)
+        (push-right! let-bindings-env
+                     (list param-gensym arg-exp)))))
+    ;; FIXME: This might not handle quoted expressions
+    ;; correctly. E.g., in `(list 'x x)`, `'x` should
+    ;; never be substituted.
+    (define let-body
+      (map-tree (lambda (x)
+                  (cond
+                   ((and (symbol? x)
+                         (hash-has-key? gensym-param-map x))
+                    (hash-ref gensym-param-map x))
+                   (else
+                    x)))
+                body))
+    (compile-syntax
+     (datum->syntax
+      node
+      `(let* ,let-bindings-env
+         ,@let-body))
+     env options))
+   (else
+    (compile-syntax
+     (datum->syntax
+      node
+      `(,fapply
+        ,f
+        ,@args-list))
+     env options))))
+
 ;;; Compile a `(< ...)` expression.
 (define (compile-less-than node env (options (js/obj)))
   (define exp
     (syntax->datum node))
   (cond
-   ((< (js/length exp) 3)
+   ((< (length exp) 3)
     (compile-syntax
      (datum->syntax #f #t)
      env options))
-   ((= (js/length exp) 3)
+   ((= (length exp) 3)
     (compile-binary-expression
      node env options
      (js/obj :identity #t
@@ -3519,10 +3847,10 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (js/length exp))))
+    (for ((i (range 2 (length exp))))
       (push-right! and-exp
-                   `(< ,(aget exp (- i 1))
-                       ,(aget exp i))))
+                   `(< ,(list-ref exp (- i 1))
+                       ,(list-ref exp i))))
     (compile-syntax
      (datum->syntax #f and-exp)
      env options))))
@@ -3532,11 +3860,11 @@
   (define exp
     (syntax->datum node))
   (cond
-   ((< (js/length exp) 3)
+   ((< (length exp) 3)
     (compile-syntax
      (datum->syntax #f #t)
      env options))
-   ((= (js/length exp) 3)
+   ((= (length exp) 3)
     (compile-binary-expression
      node env options
      (js/obj :identity #t
@@ -3545,10 +3873,10 @@
     ;; Create `(and ...)` expression.
     (define and-exp
       `(and))
-    (for ((i (range 2 (js/length exp))))
+    (for ((i (range 2 (length exp))))
       (push-right! and-exp
-                   `(<= ,(aget exp (- i 1))
-                        ,(aget exp i))))
+                   `(<= ,(list-ref exp (- i 1))
+                        ,(list-ref exp i))))
     (compile-syntax
      (datum->syntax #f and-exp)
      env options))))
@@ -3587,7 +3915,7 @@
              (define exp
                (syntax->datum x))
              (cond
-              ((array? exp)
+              ((pair-or-list? exp)
                (define sym
                  (first exp))
                (when (and (not make-block)
@@ -3761,7 +4089,7 @@
       (set! regular-vars
             (drop-right var-list 1))
       (set! rest-var
-            (js/last var-list)))
+            (last var-list)))
      (else
       (set! regular-vars variables)))
     (for ((x regular-vars))
@@ -3773,8 +4101,8 @@
              (define result '())
              (try
                (set! result
-                     (aget (force expression-thunk)
-                           idx))
+                     (list-ref (force expression-thunk)
+                               idx))
                (catch Error e
                  ;; Do nothing
                  ))
@@ -3831,7 +4159,7 @@
       (define var-list
         (flatten variables-exp))
       (set! regular-vars (drop-right var-list 1))
-      (set! rest-var (js/last var-list)))
+      (set! rest-var (last var-list)))
      (else
       (set! regular-vars variables-exp)))
     (define var-patterns
@@ -3843,7 +4171,7 @@
     (cond
      (rest-var
       (set! left
-            (if (= (js/length var-patterns) 0)
+            (if (= (length var-patterns) 0)
                 rest-var
                 `(,@var-patterns . ,rest-var))))
      (else
@@ -3887,7 +4215,7 @@
                (send x get 1))
              (for ((f fields-exp))
                (define sym
-                 (if (array? f)
+                 (if (pair-or-list? f)
                      (second f)
                      f))
                (when (and (not make-block)
@@ -3949,14 +4277,14 @@
        result)))
   (for ((f fields-exp))
     (define is-array
-      (array? f))
+      (pair-or-list? f))
     (define prop
       (if is-array
-          (js/first f)
+          (first f)
           f))
     (define sym
       (if is-array
-          (js/second f)
+          (second f)
           f))
     (define prop-str
       (symbol->string prop))
@@ -3990,7 +4318,7 @@
   (define properties '())
   (for ((x fields))
     (cond
-     ((array? (syntax->datum x))
+     ((pair-or-list? (syntax->datum x))
       (push-right! properties (send x get 0))
       (push-right! properties (send x get 1)))
      (else
@@ -4105,7 +4433,7 @@
           (text-of-quotation exp1)))
    (else
     (define op
-      (js/first exp1))
+      (first exp1))
     (define-values (macro-f typ)
       (send env1 get-typed-value op))
     (when (or (macro?_ macro-f)
@@ -4310,8 +4638,8 @@
     (define computed
       (not (symbol? prop-exp)))
     (when (and (quoted-expression? prop-exp)
-               (symbol? (js/second prop-exp)))
-      (set! prop-exp (js/second prop-exp))
+               (symbol? (second prop-exp)))
+      (set! prop-exp (second prop-exp))
       (set! prop (datum->syntax prop prop-exp))
       (set! computed #f))
     (when (keyword? prop-exp)
@@ -4370,7 +4698,7 @@
     (define field
       (send node get 2))
     (define result
-      (if (array? (syntax->datum field))
+      (if (pair-or-list? (syntax->datum field))
           (compile-expression
            (datum->syntax
             node
@@ -4466,16 +4794,16 @@
   (define body
     (send node drop 1))
   (define compiled-body '())
-  ;; Kludge: look ahead and add defined variables to environment.
-  ;; Should replace this with something better (e.g., delayed
-  ;; compilation of `gensym`'ed symbols).
-  (for ((i (range 0 (js/length body))))
+  ;; TODO: Remove kludge that looks ahead and adds defined variables
+  ;; to the environment. Should replace this with something better
+  ;; (e.g., delayed compilation of `gensym`'ed symbols).
+  (for ((i (range 0 (length body))))
     (define exp
-      (syntax->datum (aget body i)))
+      (syntax->datum (list-ref body i)))
     (cond
      ((form? exp define_ env)
       (define sym
-        (if (array? (second exp))
+        (if (pair-or-list? (second exp))
             (first (second exp))
             (second exp)))
       (make-type-binding env sym 'Any lang-filter))
@@ -4490,7 +4818,7 @@
   (cond
    ((eq? expression-type "expression")
     (cond
-     ((= (js/length exp) 2)
+     ((= (length exp) 2)
       (compile-expression
        (send node get 1)
        env options))
@@ -4543,7 +4871,7 @@
 ;;; if there are no symbols.
 (define (make-global-environment-exp symbols env options)
   (cond
-   ((= (js/length symbols) 0)
+   ((= (length symbols) 0)
     #f)
    ((oget options :finline-functions)
     (make-define-values-exp symbols env options))
@@ -4571,7 +4899,7 @@
   (define internal-symbol)
   (define symbol)
   (define value)
-  (while (> (js/length referenced-symbols) 0)
+  (while (> (length referenced-symbols) 0)
     (set! symbol (pop! referenced-symbols))
     (push-right! seen symbol)
     (when (and (not (memq? symbol external-symbols))
@@ -4582,9 +4910,9 @@
         (set! exp (source value))
         (when (tagged-list? exp 'define)
           (set! internal-symbol
-                (if (array? (second exp))
-                    (js/first (js/second exp))
-                    (js/second exp)))
+                (if (pair-or-list? (second exp))
+                    (first (second exp))
+                    (second exp)))
           (define referenced-symbols-1 '())
           (define env2
             (send env1 clone))
@@ -4649,7 +4977,7 @@
       (when (memq? symbol symbols)
         (push-right! internal-symbols internal-symbol)
         (push-right! external-symbols symbol))))
-  (when (> (js/length external-symbols) 0)
+  (when (> (length external-symbols) 0)
     (set! definitions
           `(define-values ,external-symbols
              ((js/arrow ()
@@ -4680,7 +5008,7 @@
         `(,(first exp) ,(second exp)
           (list)))
       (define body
-        (aget exp 2))
+        (list-ref exp 2))
       (define body-compiled
         (compile-sexp
          body
@@ -4720,18 +5048,18 @@
       options
       (js/obj :finline-functions #t))))
   (cond
-   ((> (js/length global-environment-exp) 1)
+   ((> (length global-environment-exp) 1)
     (define lambda-call
-      (aget global-environment-exp 2))
+      (list-ref global-environment-exp 2))
     (define lambda-exp
-      (aget lambda-call 0))
+      (list-ref lambda-call 0))
     (define values-exp
-      (js/last lambda-exp))
+      (last lambda-exp))
     (define sym
       (second values-exp))
     (define result lambda-call)
     (cond
-     ((and (= (js/length lambda-exp) 4)
+     ((and (= (length lambda-exp) 4)
            (symbol? (second (third lambda-exp))))
       ;; In simple cases, where there is only a single
       ;; `(define sym ...)` form, no `lambda` expression
@@ -4742,7 +5070,7 @@
       ;; Change the return value of the `lambda` function
       ;; from a `(values ...)` form to a single value.
       (list-set! lambda-exp
-                 (- (js/length lambda-exp) 1)
+                 (- (length lambda-exp) 1)
                  sym)))
     result)
    (else
@@ -4754,7 +5082,7 @@
     (syntax->datum node))
   (define result)
   (cond
-   ((array? (second exp))
+   ((pair-or-list? (second exp))
     (set! result
           (compile-expression
            (datum->syntax
@@ -4793,7 +5121,7 @@
   (define exp
     (syntax->datum node))
   (cond
-   ((not (array? exp))
+   ((not (pair-or-list? exp))
     (compile-expression
      (datum->syntax
       #f
@@ -4848,7 +5176,7 @@
        (datum->syntax
         #f
         `(define-fields ,(drop x-exp 2)
-           (js/require ,(js/second x-exp))))
+           (js/require ,(second x-exp))))
        env options))
      (else
       (when (string? x-exp)
@@ -4869,7 +5197,7 @@
         (define exp
           (syntax->datum x))
         (cond
-         ((array? exp)
+         ((pair-or-list? exp)
           (define x1
             (first exp))
           (define x2
@@ -4990,7 +5318,7 @@
              (compile-expression source env options)))
       (push-right! results result))
     ;; Compile other expressions.
-    (when (> (js/length other-expressions) 0)
+    (when (> (length other-expressions) 0)
       (define specifiers '())
       (define seen '())
       (for ((x other-expressions))
@@ -5034,7 +5362,7 @@
              specifiers))
       (push-right! results result))
     (cond
-     ((= (js/length results) 1)
+     ((= (length results) 1)
       (first results))
      (else
       (make-program-fragment results))))))
@@ -5102,7 +5430,7 @@
     (define lines
       (string-split str (regexp "^" "gm")))
     (cond
-     ((<= (js/length lines) 1)
+     ((<= (length lines) 1)
       (compile-atom node env options))
      (else
       ;; TODO: We could compile to a template literal instead.
@@ -5122,7 +5450,7 @@
   (define exp
     (syntax->datum node))
   (cond
-   ((= (js/length exp) 2)
+   ((= (length exp) 2)
     (define num
       (send node get 1))
     (define num-compiled
@@ -5150,10 +5478,17 @@
   (define exp (syntax->datum node))
   (unless (or quoted-symbol
               literal-symbol)
-    (when (should-inline? exp env options)
+    (when (should-import? exp env options)
       (cond
        (current-module
-        (add-referenced-symbol exp env options))
+        (add-referenced-symbol exp env options)
+        ;; TODO: Use a global rather than a local binding.
+        ;; Fetch the module's import environment and
+        ;; set it there.
+        ;; (define-values (val typ)
+        ;;   (send env get-typed-value exp))
+        ;; (send env set-local! exp val typ)
+        )
        (else
         ;; Inlined expression. The symbol references a value
         ;; that is defined in the language environment.
@@ -5191,9 +5526,10 @@
     (gensym? exp))
   (define str
     (symbol->string exp))
-  ;; Keyword symbols (i.e., symbols beginning with `:`,
-  ;; e.g., `:foo`) are auto-quoted.
-  (when (regexp-match (regexp "^:") str)
+  ;; Keyword symbols are auto-quoted, as is the
+  ;; special symbol `'|.|`.
+  (when (or (regexp-match (regexp "^:") str)
+            (eq? str "."))
     (set! quoted-symbol-option #t))
   (cond
    (quoted-symbol-option
@@ -5397,19 +5733,19 @@
   (define sym #u)
   (define (binding? x)
     (and x
-         (= (js/length x) 2)
-         (symbol? (js/first x))))
+         (= (length x) 2)
+         (symbol? (first x))))
   (cond
    ((binding? init-exp)
-    (set! sym (js/first init-exp))
+    (set! sym (first init-exp))
     (set! init
           (datum->syntax
            init
            `(define ,@(syntax->list init)))))
    ((form? init-exp define_ env1)
-    (set! sym (js/second init-exp)))
+    (set! sym (second init-exp)))
    ((form? init-exp set!_ env1)
-    (set! sym (js/second init-exp))))
+    (set! sym (second init-exp))))
   (define init-compiled
     (if (or (not init-exp)
             (null? init-exp))
@@ -5433,10 +5769,10 @@
   (when (increment? update-exp)
     (unless sym
       (cond
-       ((symbol? (js/second update-exp))
-        (set! sym (js/second update-exp)))
-       ((symbol? (js/third update-exp))
-        (set! sym (js/third update-exp)))))
+       ((symbol? (second update-exp))
+        (set! sym (second update-exp)))
+       ((symbol? (third update-exp))
+        (set! sym (third update-exp)))))
     (when sym
       (set! update
             (datum->syntax
@@ -5586,16 +5922,19 @@
          env options))
    options))
 
-;;; Compile a `(string-append ...)` expression.
-(define (compile-string-append node env (options (js/obj)))
+;;; Compile a `(js/string-concat ...)` expression.
+(define (compile-js/string-concat node env (options (js/obj)))
   (define exp
     (syntax->datum node))
   (cond
-   ((<= (js/length exp) 0)
-    (compile-syntax "" env options))
-   ((= (js/length exp) 2)
+   ((<= (length exp) 1)
     (compile-syntax
-     (send node get 1) env options))
+     (datum->syntax node "")
+     env options))
+   ((= (length exp) 2)
+    (compile-syntax
+     (send node get 1)
+     env options))
    (else
     (compile-binary-expression
      node env options
@@ -5639,7 +5978,7 @@
     (extend-environment (new LispEnvironment)
                         env))
   (make-type-binding env1 'super 'Any)
-  (when (and (array? (first body-exp))
+  (when (and (pair-or-list? (first body-exp))
              (not (form? (first body-exp) define_ env1)))
     (define super-classes-node
       (send body-node get 0))
@@ -5647,7 +5986,7 @@
       (syntax->datum super-classes-node))
     (set! body-node (slice-rose body-node 1))
     (set! body-exp (syntax->datum body-node))
-    (when (> (js/length super-classes) 0)
+    (when (> (length super-classes) 0)
       (set! super-class
             (compile-expression
              (datum->syntax
@@ -5667,11 +6006,11 @@
       (hash-set! accessibilities (second exp) "private"))
      (else
       (define is-initialized
-        (>= (js/length exp) 3))
+        (>= (length exp) 3))
       (define id
         (second exp))
       (define is-method
-        (array? id))
+        (pair-or-list? id))
       (when is-method
         (set! id (first id)))
       (define id-node
@@ -5690,7 +6029,7 @@
         (tagged-list? exp 'define/generator))
       (define is-constructor
         (and is-method
-             (> (js/length (second exp)) 0)
+             (> (length (second exp)) 0)
              (eq? id 'constructor)))
       (when (or is-constructor is-generator)
         (set! accessibility "public"))
@@ -5797,7 +6136,7 @@
     (syntax->datum node))
   (define properties '())
   (define i 1)
-  (while (< i (js/length exp))
+  (while (< i (length exp))
     (define key-node
       (send node get i))
     (cond
@@ -5815,8 +6154,8 @@
         (send node get (+ i 1)))
       (define is-quoted-symbol #f)
       (when (and (quoted-expression? key-exp)
-                 (symbol? (js/second key-exp)))
-        (set! key-exp (js/second key-exp))
+                 (symbol? (second key-exp)))
+        (set! key-exp (second key-exp))
         (set! key-node (datum->syntax key-node key-exp))
         (set! is-quoted-symbol #t)
         (set! computed #f))
@@ -5910,12 +6249,12 @@
     (cond
      ((estree-type? el "ArrayExpression")
       (cond
-       ((= (js/length (get-field elements el)) 0)
+       ((= (length (get-field elements el)) 0)
         ;; Ignore empty arrays.
         )
-       ((= (js/length (get-field elements el)) 1)
+       ((= (length (get-field elements el)) 1)
         ;; Unwrap singleton arrays.
-        (push-right! elements (aget (get-field elements el) 0)))
+        (push-right! elements (list-ref (get-field elements el) 0)))
        (else
         (push-right! elements (new SpreadElement el)))))
      (else
@@ -5984,11 +6323,11 @@
         finalizer)
    options))
 
-;;; Compile a `(push-left! ...)` expression.
-(define (compile-push-left node env (options (js/obj)))
-  ;; `.unshift()` returns the length of the array, while `push!()`
-  ;; returns the list.
-  (compile-push-helper
+;;; Compile an `(array-push-left! ...)` expression.
+(define (compile-array-push-left node env (options (js/obj)))
+  ;; `.unshift()` returns the length of the array,
+  ;; while `push!()` returns the list.
+  (compile-array-push-helper
    (datum->syntax
     #f
     `(send ,(send node get 1)
@@ -5996,18 +6335,18 @@
            ,(send node get 2)))
    (datum->syntax
     #f
-    `((lambda (lst x)
-        (send lst unshift x)
-        lst)
+    `((lambda (arr x)
+        (send arr unshift x)
+        arr)
       ,(send node get 1)
       ,(send node get 2)))
    node env options))
 
-;;; Compile a `(push-right! ...)` expression.
-(define (compile-push-right node env (options (js/obj)))
-  ;; `.push()` returns the length of the array, while `push-right!()`
-  ;; returns the list.
-  (compile-push-helper
+;;; Compile an `(array-push-right! ...)` expression.
+(define (compile-array-push-right node env (options (js/obj)))
+  ;; `.push()` returns the length of the array,
+  ;; while `push-right!()` returns the list.
+  (compile-array-push-helper
    (datum->syntax
     #f
     `(send ,(send node get 1)
@@ -6015,20 +6354,22 @@
            ,(send node get 2)))
    (datum->syntax
     #f
-    `((lambda (lst x)
-        (send lst push x)
-        lst)
+    `((lambda (arr x)
+        (send arr push x)
+        arr)
       ,(send node get 1)
       ,(send node get 2)))
    node env options))
 
-;;; Helper function for `compile-push-left`
-;;; and `compile-push-right`.
-(define (compile-push-helper statement-exp
-                             expression-exp
-                             node
-                             env
-                             (options (js/obj)))
+;;; Helper function for `compile-array-push-left`
+;;; and `compile-array-push-right`.
+(define (compile-array-push-helper statement-exp
+                                   expression-exp
+                                   node
+                                   env
+                                   (options (js/obj)))
+  ;; TODO: Separate out helper function for
+  ;; `statement-exp`/`expression-exp` pattern.
   (define expression-type
     (oget options :expression-type))
   (cond
@@ -6069,8 +6410,7 @@
    ;; In more complicated cases, we compile to
    ;; a lambda expression.
    (else
-    (compile-expression
-     expression-exp env options))))
+    (compile-expression expression-exp env options))))
 
 ;;; Compile a `(declare ...)` expression.
 (define (compile-declare node env (options (js/obj)))
@@ -6081,15 +6421,15 @@
   (define exp
     (syntax->datum node))
   (define name
-    (js/second exp))
+    (second exp))
   (define specs
     (drop exp 2))
   (for ((spec specs))
     (define field
-      (js/first spec))
+      (first spec))
     (when (eq? field 'ftype)
       (define value
-        (js/second spec))
+        (second spec))
       (define type_
         (parse-ftype value))
       (make-type-binding env name type_ lang-filter)))
@@ -6105,11 +6445,11 @@
      ((and (or (tagged-list? assocs 'quasiquote)
                (tagged-list? assocs 'quote))
            (list? (second assocs))
-           (= (js/length
+           (= (length
                (filter
                 (lambda (x)
-                  (or (not (array? x))
-                      (and (= (js/length x) 2)
+                  (or (not (pair-or-list? x))
+                      (and (= (length x) 2)
                            (or (tagged-list? x 'unquote)
                                (and (tagged-list? x 'unquote-splicing)
                                     (not (tagged-list?
@@ -6204,8 +6544,8 @@
    ((and (or (form? f-exp lambda_ env)
              (form? f-exp js/function_ env)
              (form? f-exp js/arrow_ env))
-         (array? (second f-exp))
-         (= (js/length (second f-exp)) 1))
+         (pair-or-list? (second f-exp))
+         (= (length (second f-exp)) 1))
     f-exp)
    (else
     ;; Curried function application, i.e., the **A** combinator
@@ -6224,14 +6564,28 @@
   `(list ,@args))
 
 ;;; Compiler macro for `(string? ...)` expressions.
-(define-macro (compile-stringp-macro x)
-  `(eq? (type-of ,x) "string"))
+(define-macro (compile-string?-macro x)
+  (define-fields (fstringobjects)
+    (current-compilation-options))
+  (cond
+   (fstringobjects
+    `(funcall string? ,x))
+   (else
+    `(js/string-literal? ,x))))
+
+;;; Compiler macro for `(string-append ...)` expressions.
+(define-macro (compile-string-append-macro &rest args)
+  `(js/string-concat ,@args))
+
+;;; Compiler macro for `(js/string-concat ...)` expressions.
+(define-macro (compile-js/string-concat-macro &rest args)
+  `(js/op/apply + (list ,@args) :identity ""))
 
 ;;; Compiler macro for `(string-trim ...)` expressions.
 (define-macro (compile-string-trim-macro &rest args)
   (cond
-   ((= (js/length args) 1)
-    `(send ,(js/first args) trim))
+   ((= (length args) 1)
+    `(send ,(first args) trim))
    (else
     (definition->macro (source string-trim_) args))))
 
@@ -6256,86 +6610,6 @@
 ;;; Compiler macro for `(substring ...)` expressions.
 (define-macro (compile-substring-macro str &rest args)
   `(send ,str substring ,@args))
-
-;;; Compiler macro for `(array-drop ...)` expressions.
-(define-macro (compile-array-drop-macro arr n)
-  (cond
-   ((number? n)
-    (cond
-     ((= n 0)
-      arr)
-     (else
-      `(send ,arr slice ,n))))
-   (else
-    (definition->macro
-      (source array-drop_)
-      (list arr n)))))
-
-;;; Compiler macro for `(drop-right ...)` expressions.
-(define-macro (compile-array-drop-right-macro arr n)
-  (cond
-   ((number? n)
-    (cond
-     ((= n 0)
-      arr)
-     (else
-      `(send ,arr slice 0 (- ,n)))))
-   (else
-    (definition->macro
-      (source array-drop-right_)
-      (list arr n)))))
-
-;;; Compiler macro for `(drop ...)` expressions.
-(define-macro (compile-drop-macro lst pos)
-  (cond
-   ((number? pos)
-    (cond
-     ((= pos 0)
-      lst)
-     (else
-      `(send ,lst slice ,pos))))
-   (else
-    (definition->macro (source drop_) (list lst pos)))))
-
-;;; Compiler macro for `(drop-right ...)` expressions.
-(define-macro (compile-drop-right-macro lst n)
-  (cond
-   ((number? n)
-    (cond
-     ((= n 0)
-      lst)
-     (else
-      `(send ,lst slice 0 (- ,n)))))
-   (else
-    (definition->macro (source drop-right_) (list lst n)))))
-
-;;; Compiler macro for `(array-list-drop ...)` expressions.
-(define-macro (compile-array-list-drop-macro lst n)
-  (cond
-   ((number? n)
-    (cond
-     ((= n 0)
-      lst)
-     (else
-      `(send ,lst slice ,n))))
-   (else
-    (definition->macro
-      (source array-list-drop_)
-      (list lst n)))))
-
-;;; Compiler macro for `(array-list-drop-right ...)` expressions.
-(define-macro (compile-array-list-drop-right-macro lst n)
-  (cond
-   ((number? n)
-    (cond
-     ((= n 0)
-      lst)
-     (else
-      `(send ,lst slice 0 (- ,n)))))
-   (else
-    (definition->macro
-      (source array-list-drop-right_)
-      (list lst n)))))
 
 ;;; Compiler macro for `(js/regexp ...)` expressions.
 (define-macro (compile-js/regexp-macro &rest args)
@@ -6691,37 +6965,50 @@
 ;;; This macro generalizes a binary operator
 ;;; to multiple operands, using a left fold.
 (define-macro (js/op/apply_ op args . options)
+  ;; TODO: Option for single-argument behavior.
+  ;; Should it return the argument unchanged
+  ;; or combine it with the identity value?
   (define identity
-    (plist-get_ options ':identity))
+    (plist-get_ options :identity))
+  (define fold
+    (if (eq? (plist-get_ options :fold) 'right)
+        'foldr
+        'foldl))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
    ((symbol? args)
     (if (undefined? identity)
-        `(foldl (lambda (right left)
+        `(,fold (lambda (right left)
                   (js/op ,op left right))
-                (js/first ,args)
-                (js/rest ,args))
-        `(foldl (lambda (right left)
+                (first ,args)
+                (rest ,args))
+        `(,fold (lambda (right left)
                   (js/op ,op left right))
                 ,identity
                 ,args)))
    ;; If `args` is a list expression, however,
    ;; then it is actually possible to perform
-   ;; the fold at compile time.
+   ;; the fold at compile time, which produces
+   ;; neater code.
    ((tagged-list? args 'list)
     (define args1
       (rest args))
     (cond
-     ((= (js/length args1) 0)
+     ((= (length args1) 0)
       identity)
-     ((= (js/length args1) 1)
-      (js/first args1))
+     ((= (length args1) 1)
+      (first args1))
      (else
-      (foldl (lambda (right left)
-               `(js/op ,op ,left ,right))
-             (first args1)
-             (rest args1)))))
+      (if (eq? fold 'foldr)
+          (foldr (lambda (right left)
+                   `(js/op ,op ,left ,right))
+                 (first args1)
+                 (rest args1))
+          (foldl (lambda (right left)
+                   `(js/op ,op ,left ,right))
+                 (first args1)
+                 (rest args1))))))
    ;; A quoted list is just another way of
    ;; writing a list.
    ((tagged-list? args 'quote)
@@ -6729,19 +7016,13 @@
                   (list
                    ,(map (lambda (x)
                            `(quote ,x))
-                         (js/second args))))
-    (define args1
-      (rest args))
-    (foldl (lambda (right left)
-             `(js/op ,op ,left ,right))
-           (first args1)
-           (rest args1)))
+                         (second args)))
+                  ,@options))
    ;; A function call can be stored in a variable.
    (else
-    (define args-var
-      (gensym "_args"))
-    `(let ((,args-var ,args))
-       (js/op/apply ,op ,args-var)))))
+    (let ((args-var (gensym "_args")))
+      `(let ((,args-var ,args))
+         (js/op/apply ,op ,args-var ,@options))))))
 
 ;;; Expand a `(js/if ...)` expression.
 (define-macro (js/if_ &whole exp &environment env)
@@ -6977,7 +7258,7 @@
     #t)
   (define (visit-forms-node-with visitor node stack bindings (skip 0))
     (define exp (syntax->datum node))
-    (unless (array? exp)
+    (unless (pair-or-list? exp)
       ;; `node` is not a list expression; early return.
       (return (visit visitor node stack bindings)))
     (define nodes (syntax->list node))
@@ -6995,7 +7276,7 @@
         (send result insert node))
       result)))
   (define (visit-forms-list-with visitor nodes stack bindings (skip 0))
-    (unless (array? nodes)
+    (unless (pair-or-list? nodes)
       ;; `nodes` is not a list; early return.
       (return (visit visitor nodes stack bindings)))
     ;; Keep track of whether any of the expressions are modified
@@ -7058,7 +7339,7 @@
     (define body (send node drop 2))
     (for ((let-binding (syntax->datum let-bindings-env)))
       (define binding-sym
-        (if (array? let-binding)
+        (if (pair-or-list? let-binding)
             (first let-binding)
             let-binding))
       (make-type-binding bindings-2 binding-sym 'Any))
@@ -7177,7 +7458,7 @@
       (make-type-binding bindings-2 params-exp 'Any))
      (else
       (for ((param params-exp))
-        (when (array? param)
+        (when (pair-or-list? param)
           (set! param (first param)))
         (make-type-binding bindings-2 param 'Any))))
     (define visited-params
@@ -7205,15 +7486,15 @@
     (define id (send node get 1))
     (define id-exp (syntax->datum id))
     (define id-sym
-      (if (array? id-exp)
+      (if (pair-or-list? id-exp)
           (first id-exp)
           id-exp))
     (define bindings-2 bindings)
     (cond
-     ((array? id-exp)
+     ((pair-or-list? id-exp)
       (make-type-binding bindings id-sym '(-> Any * Any))
       (for ((param (rest id-exp)))
-        (when (array? param)
+        (when (pair-or-list? param)
           (set! param (first param)))
         (make-type-binding bindings param 'Any))
       (set! bindings-2
@@ -7223,7 +7504,7 @@
       (make-type-binding bindings id-sym 'Any)))
     (define body (send node drop 2))
     (define visited-id
-      (if (array? id-exp)
+      (if (pair-or-list? id-exp)
           (visit-clauses-node id `(,@stack ,node) bindings-2)
           (visit-node id `(,@stack ,node) bindings-2)))
     (define visited-body
@@ -7425,7 +7706,7 @@
   ;; List.
   (define (visit-nonatomic-p node)
     (let ((exp (syntax->datum node)))
-      (array? exp)))
+      (pair-or-list? exp)))
   ;; Atomic value.
   (define visit-atom-p visit-else-p)
   (define visit-atom visit-node)
@@ -7680,9 +7961,9 @@
   (for ((key (js/keys node)))
     (set! val (oget node key))
     (cond
-     ((array? val)
-      (for ((i (range 0 (js/length val))))
-        (set! el (aget val i))
+     ((pair-or-list? val)
+      (for ((i (range 0 (length val))))
+        (set! el (list-ref val i))
         (set! el1 (traverse-estree el enter leave replace))
         (unless (eq? el el1)
           (list-set! val i el1))))
@@ -7766,7 +8047,7 @@
                 (lambda (x)
                   (or (not (get-field init x))
                       (not (zero?
-                            (js/length
+                            (length
                              (find-estree
                               (lambda (y)
                                 (and (estree-type? y "Identifier")
@@ -7900,22 +8181,22 @@
                          (get-field value comment)))))
         (when (> (length comment-strings) 0)
           (set! header-comment-strings
-                (array-drop-right comment-strings 1))
+                (drop-right comment-strings 1))
           (set! initial-node-comment-string
-                (js/last comment-strings))
+                (last comment-strings))
           (when (regexp-match (regexp "\\n\\n$")
                               initial-node-comment-string)
             (push-right! header-comment-strings
                          initial-node-comment-string)
             (set! initial-node-comment-string #u))
           (when (> (length header-comment-strings) 0)
-            (aset! header-comment-strings
-                   (- (js/length header-comment-strings) 1)
-                   (regexp-replace
-                    (regexp "\\n*$")
-                    (aget header-comment-strings
-                          (- (js/length header-comment-strings) 1))
-                    "")))))
+            (list-set! header-comment-strings
+                       (- (length header-comment-strings) 1)
+                       (regexp-replace
+                        (regexp "\\n*$")
+                        (list-ref header-comment-strings
+                                  (- (length header-comment-strings) 1))
+                        "")))))
       (when (> (length header-comment-strings) 0)
         (define header-exp
           '(begin))
@@ -7991,7 +8272,7 @@
       (set! exp (syntax->datum node))
       (cond
        ((and (tagged-list? exp 'require)
-             (> (js/length exp) 1)
+             (> (length exp) 1)
              (tagged-list? (second exp) 'only-in))
         (define module-name
           (second (second exp)))
@@ -8008,13 +8289,13 @@
         ;; Add imported symbols to `.symbol-map`.
         (for ((x (rest (second exp))))
           (cond
-           ((array? x)
+           ((pair-or-list? x)
             (send (get-field symbol-map this) set (cadr x) #t))
            (else
             (send (get-field symbol-map this) set x #t)))))
        ((and (tagged-list? exp 'require)
-             (> (js/length exp) 1))
-        (let* ((module-name-symbol (js/last exp))
+             (> (length exp) 1))
+        (let* ((module-name-symbol (last exp))
                (module-name module-name-symbol))
           (cond
            ((symbol? module-name-symbol)
@@ -8038,7 +8319,7 @@
       (when (or (tagged-list? exp 'define)
                 (tagged-list? exp 'define-class))
         (define name
-          (if (array? (second exp))
+          (if (pair-or-list? (second exp))
               (first (second exp))
               (second exp)))
         (send (get-field symbol-map this) set name #t)))
@@ -8079,7 +8360,7 @@
         (syntax->datum node))
       (cond
        ((and (tagged-list? exp 'require)
-             (> (js/length exp) 1)
+             (> (length exp) 1)
              (tagged-list? (second exp) 'only-in))
         (set! module-name (second (second exp)))
         (when (symbol? module-name)
@@ -8098,7 +8379,7 @@
           (set! env #u)))
         (for ((exp1 (drop (second exp) 2)))
           (cond
-           ((array? exp1)
+           ((pair-or-list? exp1)
             (set! local (first exp1))
             (set! imported (second exp1)))
            (else
@@ -8123,7 +8404,7 @@
         ;; environment is not needed in many cases.
         (define name
           (second exp))
-        (when (array? name)
+        (when (pair-or-list? name)
           (set! name (first name)))
         (define typ
           (if (macro-definition? exp)
@@ -8246,7 +8527,7 @@
 ;;; Whether an expression is a function definition.
 (define (function-definition? exp)
   (and (definition? exp)
-       (or (cons? (second exp))
+       (or (pair? (second exp))
            (function-expression? (third exp)))))
 
 ;;; Whether an expression is a function expression.
@@ -8269,7 +8550,7 @@
    ((symbol? params)
     (set! rest-param params))
    ((dotted-list? params)
-    (set! regular-params (linked-list-drop-right_ params 1))
+    (set! regular-params (dotted-list-head params))
     (set! rest-param (dotted-list-tail params)))
    (else
     (set! regular-params params)))
@@ -8305,8 +8586,8 @@
   (cond
    ;; If the args list contains a single object,
    ;; just use that.
-   ((= (js/length args) 1)
-    (js/first args))
+   ((= (length args) 1)
+    (first args))
    (else
     ;; Otherwise, treat the args list as a property list
     ;; and convert that to an object.
@@ -8355,6 +8636,77 @@
         (read-syntax _)))
   (interpret exp))
 
+;;; Normalize an array expression like `[1, Symbol.for('.'), []]'
+;;; to `[1]`.
+(define (normalize-array-expression exp)
+  ;; TODO: Pattern matching for ESTree nodes.
+  ;; TODO: Handle `quote`, `quasiquote`,
+  ;; `unquote`, `unquote-splicing`.
+  (define (array-exp? exp)
+    (estree-type? exp "ArrayExpression"))
+  (define (dotted-array-exp? exp)
+    (and (estree-type? exp "ArrayExpression")
+         (>= (length (get-field elements exp)) 3)
+         (cons-dot-exp?
+          (list-ref (get-field elements exp)
+                    (- (length (get-field elements exp)) 2)))
+         (estree-type?
+          (list-ref (get-field elements exp)
+                    (- (length (get-field elements exp)) 1))
+          "ArrayExpression")))
+  (define (cons-dot-exp? exp)
+    (and (estree-type? exp "CallExpression")
+         (estree-type? (get-field callee exp)
+                       "MemberExpression")
+         (estree-type? (get-field object
+                                  (get-field callee exp))
+                       "Identifier")
+         (eq? (get-field name (get-field object
+                                         (get-field callee exp)))
+              "Symbol")
+         (estree-type? (get-field property
+                                  (get-field callee exp))
+                       "Identifier")
+         (estree-type? (get-field property
+                                  (get-field callee exp))
+                       "Identifier")
+         (eq? (get-field name
+                         (get-field property
+                                    (get-field callee exp)))
+              "for")
+         (not (get-field computed exp))
+         (= (length (get-field arguments exp)) 1)
+         (estree-type? (first (get-field arguments exp))
+                       "Literal")
+         (eq? (get-field value
+                         (first (get-field arguments exp)))
+              ".")))
+  (define result exp)
+  (when (array-exp? exp)
+    (define normalized-subarrays #f)
+    (define elements
+      (map (lambda (x)
+             (define result
+               (normalize-array-expression x))
+             (unless (eq? result x)
+               (set! normalized-subarrays #t))
+             result)
+           (get-field elements exp)))
+    (cond
+     ((dotted-array-exp? exp)
+      (define tail
+        (last (get-field elements exp)))
+      (when (array-exp? tail)
+        (set! result
+              (new ArrayExpression
+                   `(,@(drop-right elements 2)
+                     ,@(get-field elements tail))))))
+     (normalized-subarrays
+      (set! result
+            (new ArrayExpression elements))))
+    result)
+  result)
+
 ;;; Lisp environment.
 (define lisp-environment
   (new LispEnvironment
@@ -8376,7 +8728,6 @@
          (js-undefined ,undefined_ Any)
          (js/undefined ,undefined_ Any)
          (undefined ,undefined_ Any)
-         (,(string->symbol "*cons-dot*") ,cons-dot_ Any)
          (license ,license Any)
          (Rose ,Syntax Any)
          (Syntax ,Syntax Any)
@@ -8396,58 +8747,48 @@
          (abs ,abs_ (-> Any * Any))
          (add ,add_ (-> Any * Any))
          (add1 ,add1_ (-> Any * Any))
-         (aget ,array-ref_ (-> Any * Any))
+         (aget ,list-ref_ (-> Any * Any))
          (append ,append_ (-> Any * Any))
          (apply ,apply_ (-> Any * Any))
          (aref ,array-ref_ (-> Any * Any))
+         (array-at ,array-at_ (-> Any * Any))
          (array-drop ,array-drop_ (-> Any * Any))
+         (array-copy ,array-copy_ (-> Any * Any))
          (array-drop-right ,array-drop-right_ (-> Any * Any))
          (array-eighth ,array-eighth_ (-> Any * Any))
          (array-fifth ,array-fifth_ (-> Any * Any))
          (array-first ,array-first_ (-> Any * Any))
+         (array-nlast ,array-nlast_ (-> Any * Any))
          (array-fourth ,array-fourth_ (-> Any * Any))
          (array-get ,array-ref_ (-> Any * Any))
          (array-last ,array-last_ (-> Any * Any))
+         (array-concat ,array-concat_ (-> Any * Any))
          (array-length ,array-length_ (-> Any * Any))
-         (array-list->linked-list ,array-list->linked-list_ (-> Any * Any))
-         (array-list-car ,car_ (-> Any * Any))
-         (array-list-cdr ,array-list-cdr_ (-> Any * Any))
-         (array-list-drop ,array-list-drop_ (-> Any * Any))
-         (array-list-drop-right ,array-list-drop-right_ (-> Any * Any))
-         (array-list-eighth ,array-list-eighth_ (-> Any * Any))
-         (array-list-fifth ,array-list-fifth_ (-> Any * Any))
-         (array-list-first ,array-list-first_ (-> Any * Any))
-         (array-list-fourth ,array-list-fourth_ (-> Any * Any))
-         (array-list-last ,array-list-last_ (-> Any * Any))
-         (array-list-length ,array-list-length_ (-> Any * Any))
-         (array-list-ninth ,array-list-ninth_ (-> Any * Any))
-         (array-list-nth ,array-list-nth_ (-> Any * Any))
-         (array-list-nthcdr ,array-list-nthcdr_ (-> Any * Any))
-         (array-list-rest ,array-list-rest_ (-> Any * Any))
-         (array-list-reverse ,array-list-reverse_ (-> Any * Any))
-         (array-list-second ,array-list-second_ (-> Any * Any))
-         (array-list-seventh ,array-list-seventh_ (-> Any * Any))
-         (array-list-sixth ,array-list-sixth_ (-> Any * Any))
-         (array-list-take ,array-list-take_ (-> Any * Any))
-         (array-list-tenth ,array-list-tenth_ (-> Any * Any))
-         (array-list-third ,array-list-third_ (-> Any * Any))
-         (array-list? ,array-list?_ (-> Any * Any))
          (array-ninth ,array-ninth_ (-> Any * Any))
+         (array-pop-left ,array-pop-left!_ (-> Any * Any))
+         (array-pop-left! ,array-pop-left!_ (-> Any * Any))
+         (array-pop-right ,array-pop-right!_ (-> Any * Any))
+         (array-pop-right! ,array-pop-right!_ (-> Any * Any))
+         (array-push-left! ,array-push-left!_ (-> Any * Any))
+         (array-push-right! ,array-push-right!_ (-> Any * Any))
          (array-ref ,array-ref_ (-> Any * Any))
          (array-rest ,array-rest_ (-> Any * Any))
          (array-reverse ,array-reverse_ (-> Any * Any))
+         (array-reverse! ,array-reverse!_ (-> Any * Any))
          (array-second ,array-second_ (-> Any * Any))
          (array-set ,array-set_ (-> Any * Any))
-         (array-set! ,array-set_ (-> Any * Any))
+         (array-set! ,array-set!_ (-> Any * Any))
          (array-seventh ,array-seventh_ (-> Any * Any))
          (array-sixth ,array-sixth_ (-> Any * Any))
+         (array-slice ,array-slice_ (-> Any * Any))
          (array-take ,array-take_ (-> Any * Any))
          (array-tenth ,array-tenth_ (-> Any * Any))
          (array-third ,array-third_ (-> Any * Any))
          (array? ,array?_ (-> Any * Any))
          (aset ,array-set_ (-> Any * Any))
-         (aset! ,array-set_ (-> Any * Any))
+         (aset! ,array-set!_ (-> Any * Any))
          (assert ,assert_ (-> Any * Any))
+         (atom? ,atom?_ (-> Any * Any))
          (bit-and ,js/bitwise-and_ (-> Any * Any))
          (bit-not ,js/bitwise-not_ (-> Any * Any))
          (bit-or ,js/bitwise-or_ (-> Any * Any))
@@ -8472,14 +8813,14 @@
          (cdr ,cdr_ (-> Any * Any))
          (circular-list-p ,circular-list?_ (-> Any * Any))
          (circular-list? ,circular-list?_ (-> Any * Any))
+         (cl/listp ,pair-or-list?_ (-> Any * Any))
          (compile ,compile (-> Any * Any))
          (cons ,cons_ (-> Any * Any))
          (cons* ,list-star_ (-> Any * Any))
-         (cons-dot ,cons-dot-f_ (-> Any * Any))
-         (cons-dot? ,cons-dot?_ (-> Any * Any))
-         (cons? ,cons?_ (-> Any * Any))
+         (cons-or-list? ,pair-or-list?_ (-> Any * Any))
+         (cons? ,pair?_ (-> Any * Any))
          (console.log ,(get-field log console) (-> Any * Any))
-         (consp ,cons?_ (-> Any * Any))
+         (consp ,pair?_ (-> Any * Any))
          (const ,const_ (-> Any * Any))
          (constantly ,const_ (-> Any * Any))
          (current-environment ,current-environment_ (-> Any * Any))
@@ -8490,24 +8831,46 @@
          (delete ,js/delete_ (-> Any * Any))
          (display ,display_ (-> Any * Any))
          (div ,div_ (-> Any * Any))
-         (dotted-list->proper-list ,linked-list->array-list_ (-> Any * Any))
-         (dotted-list-car ,linked-list-car_ (-> Any * Any))
-         (dotted-list-cdr ,linked-list-cdr_ (-> Any * Any))
-         (dotted-list-head ,linked-list-head_ (-> Any * Any))
-         (dotted-list-last ,linked-list-last_ (-> Any * Any))
-         (dotted-list-last-cdr ,linked-list-last-cdr_ (-> Any * Any))
-         (dotted-list-length ,linked-list-length_ (-> Any * Any))
-         (dotted-list-nth ,linked-list-nth_ (-> Any * Any))
-         (dotted-list-nthcdr ,linked-list-nthcdr_ (-> Any * Any))
+         (dotted-improper-list? ,dotted-improper-list?_ (-> Any * Any))
+         (dotted-list->list ,dotted-list->list_ (-> Any * Any))
+         (dotted-list->list ,dotted-list->list_ (-> Any * Any))
+         (dotted-list->proper-list ,dotted-list->list_ (-> Any * Any))
+         (dotted-list-car ,car_ (-> Any * Any))
+         (dotted-list-cdr ,cdr_ (-> Any * Any))
+         (dotted-list-eighth ,dotted-list-eighth_ (-> Any * Any))
+         (dotted-list-link ,dotted-list-link_ (-> Any * Any))
+         (dotted-list-fifth ,dotted-list-fifth_ (-> Any * Any))
+         (dotted-list-first ,dotted-list-first_ (-> Any * Any))
+         (dotted-list-fourth ,dotted-list-fourth_ (-> Any * Any))
+         (dotted-list-head ,dotted-list-head_ (-> Any * Any))
+         (dotted-list-last ,dotted-list-last_ (-> Any * Any))
+         (dotted-list-last-cdr ,dotted-list-last-cdr_ (-> Any * Any))
+         (dotted-list-last-pair ,dotted-list-last-cdr_ (-> Any * Any))
+         (dotted-list-length ,dotted-list-length_ (-> Any * Any))
+         (dotted-list-ninth ,dotted-list-ninth_ (-> Any * Any))
+         (dotted-list-nth ,dotted-list-nth_ (-> Any * Any))
+         (dotted-list-nthcdr ,dotted-list-nthcdr_ (-> Any * Any))
          (dotted-list-p ,dotted-list?_ (-> Any * Any))
-         (dotted-list-tail ,linked-list-tail_ (-> Any * Any))
+         (dotted-list-parse ,dotted-list-parse_ (-> Any * Any))
+         (dotted-list-ref ,dotted-list-ref_ (-> Any * Any))
+         (dotted-list-second ,dotted-list-second_ (-> Any * Any))
+         (dotted-list-set ,dotted-list-set_ (-> Any * Any))
+         (dotted-list-set! ,dotted-list-set!_ (-> Any * Any))
+         (dotted-list-seventh ,dotted-list-seventh_ (-> Any * Any))
+         (dotted-list-sixth ,dotted-list-sixth_ (-> Any * Any))
+         (dotted-list-tail ,dotted-list-tail_ (-> Any * Any))
+         (dotted-list-tenth ,dotted-list-tenth_ (-> Any * Any))
+         (dotted-list-third ,dotted-list-third_ (-> Any * Any))
          (dotted-list? ,dotted-list?_ (-> Any * Any))
-         (dotted-pair-cdr ,linked-pair-cdr_ (-> Any * Any))
-         (dotted-pair-p ,dotted-pair-p_ (-> Any * Any))
-         (dotted-pair? ,dotted-pair-p_ (-> Any * Any))
-         (drop ,list-tail_ (-> Any * Any))
+         (dotted-pair-car ,car_ (-> Any * Any))
+         (dotted-pair-cdr ,dotted-pair-cdr_ (-> Any * Any))
+         (dotted-pair-p ,dotted-pair?_ (-> Any * Any))
+         (dotted-pair? ,dotted-pair?_ (-> Any * Any))
+         (dotted-proper-list? ,dotted-proper-list?_ (-> Any * Any))
+         (drop ,drop_ (-> Any * Any))
          (drop-right ,drop-right_ (-> Any * Any))
          (eighth ,eighth_ (-> Any * Any))
+         (el/listp ,pair-or-list?_ (-> Any * Any))
          (eq ,eq?_ (-> Any * Any))
          (eq? ,eq?_ (-> Any * Any))
          (eql ,eqv?_ (-> Any * Any))
@@ -8540,7 +8903,7 @@
          (functionp ,procedure?_ (-> Any * Any))
          (gensym ,gensym_ (-> Any * Any))
          (gensym? ,gensym?_ (-> Any * Any))
-         (get ,array-ref_ (-> Any * Any))
+         (get ,list-ref_ (-> Any * Any))
          (hash ,make-hash_ (-> Any * Any))
          (hash->list ,hash->list_ (-> Any * Any))
          (hash-clear ,hash-clear_ (-> Any * Any))
@@ -8573,7 +8936,7 @@
          (intersection ,intersection_ (-> Any * Any))
          (is-a? ,is-a?_ (-> Any * Any))
          (js ,js/raw_ (-> Any * Any))
-         (js-field ,array-ref_ (-> Any * Any))
+         (js-field ,list-ref_ (-> Any * Any))
          (js-keys ,js/keys_ (-> Any * Any))
          (js-obj ,js/obj_ (-> Any * Any))
          (js-obj-append ,js/obj-append_ (-> Any * Any))
@@ -8602,7 +8965,7 @@
          (js/>>> ,js/unsigned-bitwise-shift-right_ (-> Any * Any))
          (js/?. ,js/optional-chaining_ (-> Any * Any))
          (js/\(\) ,funcall_ (-> Any * Any))
-         (js/\[\] ,array-ref_ (-> Any * Any))
+         (js/\[\] ,list-ref_ (-> Any * Any))
          (js/\| ,js/bitwise-or_ (-> Any * Any))
          (js/\|\| ,js/or_ (-> Any * Any))
          (js/^ ,js/bitwise-xor_ (-> Any * Any))
@@ -8611,18 +8974,19 @@
          (js/array? ,js/array?_ (-> Any * Any))
          (js/console.log ,(get-field log console) (-> Any * Any))
          (js/delete ,js/delete_ (-> Any * Any))
-         (js/eighth ,js/eighth_ (-> Any * Any))
-         (js/field ,array-ref_ (-> Any * Any))
-         (js/fifth ,js/fifth_ (-> Any * Any))
+         (js/eighth ,array-eighth_ (-> Any * Any))
+         (js/field ,list-ref_ (-> Any * Any))
+         (js/fifth ,array-fifth_ (-> Any * Any))
          (js/find-index ,js/find-index_ (-> Any * Any))
          (js/findf-index ,js/find-index_ (-> Any * Any))
-         (js/first ,js/first_ (-> Any * Any))
-         (js/fourth ,js/fourth_ (-> Any * Any))
+         (js/first ,array-first_ (-> Any * Any))
+         (js/fourth ,array-fourth_ (-> Any * Any))
          (js/function-object? ,js/function-object?_ (-> Any * Any))
          (js/function-type? ,js/function-type?_ (-> Any * Any))
          (js/function? ,js/function?_ (-> Any * Any))
          (js/get ,js/get_ (-> Any * Any))
          (js/in ,js/in_ (-> Any * Any))
+         (js/iife ,js/iife_ (-> Any * Any))
          (js/instance-of ,js/instance-of?_ (-> Any * Any))
          (js/instance-of? ,js/instance-of?_ (-> Any * Any))
          (js/instanceof ,js/instance-of?_ (-> Any * Any))
@@ -8633,12 +8997,12 @@
          (js/js-obj-append ,js/obj-append_ (-> Any * Any))
          (js/js-obj? ,js/obj?_ (-> Any * Any))
          (js/keys ,js/keys_ (-> Any * Any))
-         (js/last ,js/last_ (-> Any * Any))
+         (js/last ,array-last_ (-> Any * Any))
          (js/length ,js/length_ (-> Any * Any))
          (js/nan? ,js/nan?_ (-> Any * Any))
          (js/new ,js/new_ (-> Any * Any))
-         (js/ninth ,js/ninth_ (-> Any * Any))
-         (js/nth ,array-list-nth_ (-> Any * Any))
+         (js/ninth ,array-ninth_ (-> Any * Any))
+         (js/nth ,nth_ (-> Any * Any))
          (js/null? ,js/null?_ (-> Any * Any))
          (js/obj ,js/obj_ (-> Any * Any))
          (js/obj-append ,js/obj-append_ (-> Any * Any))
@@ -8656,20 +9020,25 @@
          (js/regexp-quote ,regexp-quote_ (-> Any * Any))
          (js/regexp-replace ,js/regexp-replace_ (-> Any * Any))
          (js/regexp? ,js/regexp?_ (-> Any * Any))
-         (js/rest ,js/rest_ (-> Any * Any))
+         (js/rest ,array-rest_ (-> Any * Any))
          (js/return ,js/return_ (-> Any * Any))
-         (js/reverse ,js/reverse_ (-> Any * Any))
+         (js/reverse ,array-reverse_ (-> Any * Any))
          (js/same-value-zero? ,js/same-value-zero?_ (-> Any * Any))
          (js/same-value? ,js/same-value?_ (-> Any * Any))
-         (js/second ,js/second_ (-> Any * Any))
-         (js/seventh ,js/seventh_ (-> Any * Any))
-         (js/sixth ,js/sixth_ (-> Any * Any))
+         (js/second ,array-second_ (-> Any * Any))
+         (js/seventh ,array-seventh_ (-> Any * Any))
+         (js/sixth ,array-sixth_ (-> Any * Any))
          (js/slice ,js/slice_ (-> Any * Any))
+         (js/string-append ,js/string-concat_ (-> Any * Any))
+         (js/string-concat ,js/string-concat_ (-> Any * Any))
+         (js/string-literal? ,js/string-literal?_ (-> Any * Any))
+         (js/string-object? ,js/string-object?_ (-> Any * Any))
+         (js/string? ,js/string?_ (-> Any * Any))
          (js/tag ,js/tagged-template_ (-> Any * Any))
          (js/tagged-template ,js/tagged-template_ (-> Any * Any))
-         (js/take ,js/take_ (-> Any * Any))
-         (js/tenth ,js/tenth_ (-> Any * Any))
-         (js/third ,js/third_ (-> Any * Any))
+         (js/take ,array-take_ (-> Any * Any))
+         (js/tenth ,array-tenth_ (-> Any * Any))
+         (js/third ,array-third_ (-> Any * Any))
          (js/type-of ,js/type-of_ (-> Any * Any))
          (js/typeof ,js/type-of_ (-> Any * Any))
          (js/yield ,yield_ (-> Any * Any))
@@ -8678,46 +9047,23 @@
          (keywordp ,keyword?_ (-> Any * Any))
          (last ,last_ (-> Any * Any))
          (last-cdr ,last-cdr_ (-> Any * Any))
+         (last-pair ,last-pair_ (-> Any * Any))
          (last-cons ,last-pair_ (-> Any * Any))
          (last-pair ,last-pair_ (-> Any * Any))
          (length ,length_ (-> Any * Any))
          (length* ,length_ (-> Any * Any))
-         (linked-list-car ,linked-list-car_ (-> Any * Any))
-         (linked-list-cdr ,linked-list-cdr_ (-> Any * Any))
-         (linked-list-eighth ,linked-list-eighth_ (-> Any * Any))
-         (linked-list-fifth ,linked-list-fifth_ (-> Any * Any))
-         (linked-list-first ,linked-list-first_ (-> Any * Any))
-         (linked-list-fourth ,linked-list-fourth_ (-> Any * Any))
-         (linked-list-head ,linked-list-head_ (-> Any * Any))
-         (linked-list-last ,linked-list-last_ (-> Any * Any))
-         (linked-list-last-cdr ,linked-list-last-cdr_ (-> Any * Any))
-         (linked-list-length ,linked-list-length_ (-> Any * Any))
-         (linked-list-link-car ,linked-list-link-car_ (-> Any * Any))
-         (linked-list-link-cdr ,linked-list-link-cdr_ (-> Any * Any))
-         (linked-list-link-p ,linked-list-link?_ (-> Any * Any))
-         (linked-list-link? ,linked-list-link?_ (-> Any * Any))
-         (linked-list-ninth ,linked-list-ninth_ (-> Any * Any))
-         (linked-list-nth ,linked-list-nth_ (-> Any * Any))
-         (linked-list-nthcdr ,linked-list-nthcdr_ (-> Any * Any))
-         (linked-list-p ,linked-list?_ (-> Any * Any))
-         (linked-list-second ,linked-list-second_ (-> Any * Any))
-         (linked-list-seventh ,linked-list-seventh_ (-> Any * Any))
-         (linked-list-sixth ,linked-list-sixth_ (-> Any * Any))
-         (linked-list-tail ,linked-list-tail_ (-> Any * Any))
-         (linked-list-tenth ,linked-list-tenth_ (-> Any * Any))
-         (linked-list-third ,linked-list-third_ (-> Any * Any))
-         (linked-list? ,linked-list?_ (-> Any * Any))
-         (linked-pair-car ,linked-pair-car_ (-> Any * Any))
-         (linked-pair-cdr ,linked-pair-cdr_ (-> Any * Any))
-         (linked-pair? ,linked-pair?_ (-> Any * Any))
          (list ,list_ (-> Any * Any))
          (list* ,list-star_ (-> Any * Any))
-         (list-ref ,nth_ (-> Any * Any))
-         (list-set ,array-set_ (-> Any * Any))
-         (list-set! ,array-set_ (-> Any * Any))
+         (list->dotted-list_ ,list->dotted-list_ (-> Any * Any))
+         (list-or-cons? ,pair-or-list?_ (-> Any * Any))
+         (list-or-pair? ,pair-or-list?_ (-> Any * Any))
+         (list-ref ,list-ref_ (-> Any * Any))
+         (list-set ,list-set_ (-> Any * Any))
+         (list-set! ,list-set!_ (-> Any * Any))
          (list-star ,list-star_ (-> Any * Any))
          (list-tail ,list-tail_ (-> Any * Any))
          (list? ,list?_ (-> Any * Any))
+         (listlike? ,pair-or-list?_ (-> Any * Any))
          (listp ,list?_ (-> Any * Any))
          (log ,(get-field log console) (-> Any * Any))
          (macro? ,macro?_ (-> Any * Any))
@@ -8759,9 +9105,11 @@
          (oget ,object-ref_ (-> Any * Any))
          (one? ,one?_ (-> Any * Any))
          (onep ,one?_ (-> Any * Any))
-         (oref ,array-ref_ (-> Any * Any))
+         (oref ,list-ref_ (-> Any * Any))
          (oset ,object-set!_ (-> Any * Any))
          (oset! ,object-set!_ (-> Any * Any))
+         (pair-or-list? ,pair-or-list?_ (-> Any * Any))
+         (pair? ,pair?_ (-> Any * Any))
          (plist->alist ,plist->alist_ (-> Any * Any))
          (plist->object ,plist->object_ (-> Any * Any))
          (plist-copy ,plist-copy_ (-> Any * Any))
@@ -8781,7 +9129,7 @@
          (print ,print (-> Any * Any))
          (print-estree ,print-estree (-> Any * Any))
          (procedure? ,procedure?_ (-> Any * Any))
-         (proper-list->dotted-list ,array-list->linked-list_ (-> Any * Any))
+         (proper-list->dotted-list ,list->dotted-list_ (-> Any * Any))
          (proper-list-p ,proper-list?_ (-> Any * Any))
          (proper-list? ,proper-list?_ (-> Any * Any))
          (push ,push-left!_ (-> Any * Any))
@@ -8803,6 +9151,7 @@
          (regexp? ,regexp?_ (-> Any * Any))
          (rest ,rest_ (-> Any * Any))
          (reverse ,reverse_ (-> Any * Any))
+         (reverse! ,reverse!_ (-> Any * Any))
          (rx ,js/regexp_ (-> Any * Any))
          (scm/new ,js/new_ (-> Any * Any))
          (second ,second_ (-> Any * Any))
@@ -8811,8 +9160,8 @@
          (set-cdr! ,set-cdr!_ (-> Any * Any))
          (set-mcar! ,set-car!_ (-> Any * Any))
          (set-mcdr! ,set-cdr!_ (-> Any * Any))
-         (set-nth ,array-set_ (-> Any * Any))
-         (set-nth! ,array-set_ (-> Any * Any))
+         (set-nth ,list-set_ (-> Any * Any))
+         (set-nth! ,list-set!_ (-> Any * Any))
          (seventh ,seventh_ (-> Any * Any))
          (sixth ,sixth_ (-> Any * Any))
          (source ,source (-> Any * Any))
@@ -8822,8 +9171,9 @@
          (string-downcase ,string-downcase_ (-> Any * Any))
          (string-join ,string-join_ (-> Any * Any))
          (string-length ,string-length_ (-> Any * Any))
-         (string-object? ,string-object?_ (-> Any * Any))
-         (string-primitive? ,string-primitive?_ (-> Any * Any))
+         (string-literal? ,js/string-literal?_ (-> Any * Any))
+         (string-object? ,js/string-object?_ (-> Any * Any))
+         (string-primitive? ,js/string-literal?_ (-> Any * Any))
          (string-ref ,string-ref_ (-> Any * Any))
          (string-repeat ,string-repeat_ (-> Any * Any))
          (string-replace ,string-replace_ (-> Any * Any))
@@ -8860,8 +9210,8 @@
          (values ,values_ (-> Any * Any))
          (vector ,list_ (-> Any * Any))
          (vector-ref ,nth_ (-> Any * Any))
-         (vector-set ,array-set_ (-> Any * Any))
-         (vector-set! ,array-set_ (-> Any * Any))
+         (vector-set ,list-set_ (-> Any * Any))
+         (vector-set! ,list-set!_ (-> Any * Any))
          (vector? ,array?_ (-> Any * Any))
          (write-to-string ,write-to-string (-> Any * Any))
          (zero? ,zero?_ (-> Any * Any))
@@ -9060,12 +9410,8 @@
   (rename-out (and_ and))
   (rename-out (ann_ ann))
   (rename-out (begin_ begin))
-  (rename-out (js/block_ block))
-  (rename-out (js/block_ block_))
   (rename-out (call-with-current-continuation_ call-with-current-continuation))
   (rename-out (call-with-current-continuation_ call/cc))
-  ;; (rename-out (clj/try_ try))
-  ;; (rename-out (clj/try_ try_))
   (rename-out (colon_ colon))
   (rename-out (compile-syntax compile-rose))
   (rename-out (compile-with-environment compile-lisp))
@@ -9073,9 +9419,9 @@
   (rename-out (cond_ cond))
   (rename-out (define-async_ define/async))
   (rename-out (define-class_ define-class))
-  (rename-out (define-generator_ define/generator))
   (rename-out (define-fields_ define-fields))
   (rename-out (define-fields_ define-js/obj))
+  (rename-out (define-generator_ define/generator))
   (rename-out (define-macro_ define-macro))
   (rename-out (define-public_ define/public))
   (rename-out (define-type_ define-type))
@@ -9089,6 +9435,8 @@
   (rename-out (js/await_ await))
   (rename-out (js/await_ await_))
   (rename-out (js/await_ js-await))
+  (rename-out (js/block_ block))
+  (rename-out (js/block_ block_))
   (rename-out (js/raw_ js))
   (rename-out (js/raw_ js/raw))
   (rename-out (js/raw_ js_))
@@ -9123,7 +9471,6 @@
   (rename-out (send_ call-method))
   (rename-out (send_ send))
   (rename-out (set!_ set!))
-  (rename-out (setq_ setq))
   (rename-out (set-field_ set-field!))
   (rename-out (set-field_ set-field))
   (rename-out (set-fields_ set!-fields))
@@ -9132,6 +9479,7 @@
   (rename-out (set-fields_ set-fields))
   (rename-out (set-values_ set!-values))
   (rename-out (set-values_ set-values))
+  (rename-out (setq_ setq))
   (rename-out (sexp read-from-string))
   Module
   and_
@@ -9154,8 +9502,8 @@
   decompile
   define->define-class
   define-async_
-  define-generator_
   define-fields_
+  define-generator_
   define-macro_
   define-type_
   define-values_
@@ -9217,21 +9565,21 @@
   require_
   return_
   s
-  send/apply_
   send-method
+  send/apply_
   send_
   set!_
   set-field_
-  setq_
   set-fields_
   set-values_
+  setq_
   sexp
   source
   source?
   split-comments
   throw_
   tokenize
-  try_
   traverse-estree
+  try_
   type-of_
   yield_)

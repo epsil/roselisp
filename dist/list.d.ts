@@ -7,165 +7,23 @@
  *
  * Lists are implemented in terms of JavaScript arrays. There is,
  * however, no direct JavaScript equivalent to the Lisp concept of a
- * *cons cell*, such as `'(1 . 2)`. Therefore, Roselisp defines a
- * list type called a linked list, whose constituent links correspond
- * to the cons cell concept.
- *
- * ### Terminology
- *
- * The *empty list* is the list `'()`, represented by the JavaScript
- * array `[]`. The function `null?` returns `#t` only when passed the
- * empty list.
- *
- *     > (null? '())
- *     #t
- *
- * A list with one or more elements is a *nonempty list*. There are
- * two forms of nonempty lists: *array lists* and *linked lists*. An
- * array list is a list that is straightforwardly implemented in
- * terms of a JavaScript array, such as `'(1)`, `'(1 2)` and
- * `'(1 2 3)`. These correspond to the JavaScript arrays `[1]`,
- * `[1, 2]` and `[1, 2, 3]`, respectively. The function `array-list?`
- * returns `#t` when passed an array list.
- *
- *     > (array-list? '(1))
- *     #t
- *     > (array-list? '(1 2))
- *     #t
- *     > (array-list? '(1 2 3))
- *     #t
- *
- * The other type of nonempty list is the *linked list*, which is
- * composed out of *linked list links*. A linked list link is an
- * expression such as `'(1 . ())`, which is implemented in terms of
- * the JavaScript array `[1, Symbol.for('.'), []]`. Here, the
- * penultimate array element is the special symbol `.` (i.e., `'.`),
- * which is also referred to as the *cons dot*. The function
- * `linked-list-link?` returns `#t` when passed a linked list link.
- *
- *     > (linked-list-link? '(1 . ()))
- *     #t
- *     > (linked-list-link? '(1 2 . ()))
- *     #t
- *
- * By chaining such links together, a sequence of values is obtained.
- * If the final chain is the empty list, then the resulting structure
- * is referred to as a *linked list*. For example, the linked list
- * `'(1 . (2 . ()))` may be considered to represent the same sequence
- * as the array list `(1 2)`, even though the underlying JavaScript
- * arrays are different. The function `linked-list?` returns `#t`
- * when passed a linked list.
- *
- *     > (linked-list? '(1 . ()))
- *     #t
- *     > (linked-list? '(1 . (2 . ())))
- *     #t
- *     > (linked-list? '(1 2 . (3 . ())))
- *     #t
- *
- * However, if the final chain is *not* the empty list, then the
- * sequence is called a *dotted list*. The function `dotted-list?`
- * returns `#t` when passed a dotted list.
+ * *cons cell*, such as `'(1 . 2)`. Instead, such values are
+ * represented as a *dotted list*, which is a list where the
+ * penultimate value is the symbol `|.|` (in JavaScript,
+ * `Symbol.for('.')`).
  *
  *     > (dotted-list? '(1 . 2))
  *     #t
  *     > (dotted-list? '(1 2 . 3))
  *     #t
- *     > (dotted-list? '(1 . (2 . 3)))
- *     #t
- *     > (dotted-list? '(1 2 . (3 . 4)))
+ *     > (dotted-list? (list 1 '|.| 2))
  *     #t
  *
- * Dotted lists are sometimes referred to as "improper lists", to
- * distinguish them from "proper lists", which are `()`-terminated.
- * Thus, array lists and linked lists are proper lists, while dotted
- * lists are improper. The function `list?` returns `#t` when passed
- * a proper list, but not when passed an improper list.
- *
- *     > (list? '())
- *     #t
- *     > (list? '(1))
- *     #t
- *     > (list? '(1 . ()))
- *     #t
- *     > (list? '(1 . (2 . ())))
- *     #t
- *     > (list? '(1 2 . (3 . ())))
- *     #t
- *
- * While array lists are the fastest and are preferable for most
- * tasks, linked lists are more versatile. For example, a linked list
- * may be turned into a *circular list*, i.e., a list that loops back
- * on itself. The function `circular-list?` returns `#t` when passed
- * a circular list.
- *
- *     > (define circ-lst
- *         '(1 . ()))
- *     undefined
- *     > (set-cdr! circ-lst circ-lst)
- *     undefined
- *     > (circular-list? circ-lst)
- *     #t))))
- *
- * It should be appreciated that Lisp's "list" concept is not a type,
- * but a structural property. Whether something is a list or not can
- * be determined only by inspecting the structure itself. One can
- * avoid this check by working exclusively with array lists and using
- * `array-list?` to determine whether something is an array list or
- * not.
- *
- * ### Subtleties
- *
- * Note that the function `array-list?` also returns `#t` when passed
- * a linked list:
- *
- *     > (array-list? '(1 . ()))
- *     #t
- *
- * Roselisp allows for the possibility that you simply wants to treat
- * the list `'(1 . ())` as an array list of three elements, with the
- * cons dot as the second element. If you wish to distinguish linked
- * lists from array lists, you should use `linked-list?`, not
- * `array-list?`. The standard list functions---`cdr`, `nth`,
- * `first`, `second`, `third`, etc.---treat the input as a linked
- * list if `linked-list?` returns `#t`, and as an array list
- * otherwise.
- *
- * The term "dotted list" refers exclusively to improper lists.
- * Therefore, while the linked list `'(1 . ())` does indeed contain
- * a dot, it is not regarded as a dotted list. The improper list
- * `'(1 . 2)`, on the other hand, is regarded as dotted.
- *
- * ### Cons dot
- *
- * TODO: Merge this section into the other text.
- *
- * There is no direct analogue to the cons cell concept in
- * JavaScript. Therefore, Roselisp represents cons cells in terms of
- * *dotted lists*, which are lists where the penultimate element is
- * the *cons dot*, the symbol `.` (i.e., `|.|`, or `Symbol.for('.')`
- * in JavaScript).
- *
- * Thus, in Roselisp, the expression `'(1 . 2)` is the same as
- * `(list 1 '. 2)`, or, in JavaScript, `[1, Symbol.for('.'), 2]`.
- * A cons cell can be considered from two perspectives: either as a
- * pair of two elements, or as a list where the second element is the
- * cons dot.
- *
- * Cons cells are implemented as a *dotted list*, i.e., as a
- * three-element list with a special cons dot symbol as the second
- * element. Thus, the cons cell `(a . b)` is represented as the list
- * `(a <cons-dot> b)`, where `<cons-dot>` is a special value defined
- * in this file. It is just the symbol `.` (also written `|.|`).
- *
- * It is possible to have more than one element before the dot, as in
- * `(a b c . d)`. Thus, dotted lists can be understood as a
- * generalization of cons cells, with a cons cell being a dotted list
- * with two elements.
- *
- * It is also possible to represent circular lists in terms of dotted
- * lists. In Roselisp, a circular list is a dotted list containing
- * itself.
+ * The simplifying assumption is made that dotted lists are only used
+ * to represent values that cannot be expressed without a dot. This
+ * permits most list functions to be implemented as simple array
+ * operations, although some checks are necessary in places since
+ * dotted lists are also implemented as arrays.
  *
  * ## License
  *
@@ -174,65 +32,28 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 /**
- * Cons dot value.
- */
-declare const consDot_: any;
-/**
- * Compiled cons dot value.
- */
-declare const consDotCompiled_: any;
-/**
- * `cons-dot` function.
- */
-declare function consDotF_(): any;
-declare namespace consDotF_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Whether a value is the cons dot.
- */
-declare function consDotP_(obj: any): any;
-declare namespace consDotP_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Create a cons cell whose CAR is `x` and CDR is `y`.
+ * Whether something is a pair, i.e., a cons cell.
  *
- * Similar to [`cons` in Racket][rkt:cons] and
- * [`cons` in Common Lisp][cl:cons].
- *
- * [rkt:cons]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._cons%29%29
- * [cl:cons]: http://clhs.lisp.se/Body/f_cons.htm
- */
-declare function cons_(x: any, y: any): any;
-declare namespace cons_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[];
-}
-/**
- * Whether something is a cons cell.
- *
- * Similar to [`cons?` in Racket][rkt:consp] and
+ * Similar to [`pair?` in Racket][rkt:pairp] and
  * [`consp` in Common Lisp][cl:consp].
  *
- * [rkt:consp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._cons~3f%29%29
+ * [rkt:pairp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._pair~3f%29%29
  * [cl:consp]: http://clhs.lisp.se/Body/f_consp.htm
  */
-declare function consp_(obj: any): any;
-declare namespace consp_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+declare function pairp_(x: any): any;
+declare namespace pairp_ {
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
- * Make a list.
+ * Whether something is the empty list.
  *
- * Similar to [`list` in Racket][rkt:list] and
- * [`list` in Common Lisp][cl:list].
+ * Similar to [`null?` in Racket][rkt:nullp].
  *
- * [rkt:list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._list%29%29
- * [cl:list]: http://clhs.lisp.se/Body/f_list_.htm
+ * [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
  */
-declare function list_(...args: any[]): any;
-declare namespace list_ {
-    var fsource: (symbol | symbol[])[];
+declare function nullp_(x: any): any;
+declare namespace nullp_ {
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
  * Whether something is a list.
@@ -248,6 +69,46 @@ declare namespace list_ {
 declare function listp_(x: any): any;
 declare namespace listp_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+}
+/**
+ * Whether something is a pair or a list.
+ *
+ * Similar to [`listp` in Common Lisp][cl:listp] and
+ * [`listp` in Emacs Lisp], which are not as
+ * rigorous as `list?` in Scheme.
+ *
+ * [cl:listp]: http://clhs.lisp.se/Body/f_listp.htm#listp
+ * [el:listp]: https://www.gnu.org/software/emacs/manual/html_node/elisp/List_002drelated-Predicates.html#index-listp
+ */
+declare function pairOrListP_(x: any): any;
+declare namespace pairOrListP_ {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+}
+/**
+ * Make a list.
+ *
+ * Similar to [`list` in Racket][rkt:list] and
+ * [`list` in Common Lisp][cl:list].
+ *
+ * [rkt:list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._list%29%29
+ * [cl:list]: http://clhs.lisp.se/Body/f_list_.htm
+ */
+declare function list_(...args: any[]): any;
+declare namespace list_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Create a cons cell whose CAR is `x` and CDR is `y`.
+ *
+ * Similar to [`cons` in Racket][rkt:cons] and
+ * [`cons` in Common Lisp][cl:cons].
+ *
+ * [rkt:cons]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._cons%29%29
+ * [cl:cons]: http://clhs.lisp.se/Body/f_cons.htm
+ */
+declare function cons_(x: any, y: any): any;
+declare namespace cons_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
 }
 /**
  * Make a dotted list. Like `list`, but the final argument
@@ -267,7 +128,7 @@ declare namespace listp_ {
  */
 declare function listStar_(...args: any[]): any;
 declare namespace listStar_ {
-    var fsource: (symbol | (symbol | ((number | symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | ((number | symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 /**
  * Make a list of `n` elements. The function `proc` is applied
@@ -314,7 +175,7 @@ declare namespace append_ {
  */
 declare function flatten_(lst: any): any;
 declare namespace flatten_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
 }
 /**
  * Return the first element of a list.
@@ -451,7 +312,15 @@ declare namespace cdr_ {
  */
 declare function rest_(lst: any): any;
 declare namespace rest_ {
-    var fsource: (symbol | symbol[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
+}
+/**
+ * Access the list element indicated by
+ * one or more `indices`.
+ */
+declare function listRef_(lst: any, ...indices: any[]): any;
+declare namespace listRef_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Return the `n`-th element of a list.
@@ -464,7 +333,30 @@ declare namespace rest_ {
  */
 declare function nth_(n: any, lst: any): any;
 declare namespace nth_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Set a list position to a given value.
+ * Returns a new list.
+ */
+declare function listSet_(lst: any, ...indicesAndValue: any[]): any;
+declare namespace listSet_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | ((symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[])[])[])[])[];
+}
+/**
+ * Set a list position to a given value.
+ * Modifies the original list.
+ */
+declare function listSetX_(lst: any, ...indicesAndValue: any[]): any;
+declare namespace listSetX_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[];
+}
+/**
+ * Return the `n`-th CDR element of a list.
+ */
+declare function listTail_(lst: any, n: any): any;
+declare namespace listTail_ {
+    var fsource: (symbol | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Return the `n`-th CDR element of a list.
@@ -475,7 +367,7 @@ declare namespace nth_ {
  */
 declare function nthcdr_(n: any, lst: any): any;
 declare namespace nthcdr_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Take the `n` first elements from `lst`.
@@ -486,7 +378,7 @@ declare namespace nthcdr_ {
  */
 declare function take_(lst: any, n: any): any;
 declare namespace take_ {
-    var fsource: (symbol | symbol[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Return the list obtained by dropping
@@ -522,6 +414,13 @@ declare namespace dropRight_ {
  */
 declare function reverse_(lst: any): any;
 declare namespace reverse_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Reverse the order of a list.
+ */
+declare function reversex_(lst: any): any;
+declare namespace reversex_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -655,174 +554,7 @@ declare namespace setCarX_ {
  */
 declare function setCdrX_(x: any, y: any): any;
 declare namespace setCdrX_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[][] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | symbol[] | symbol[][])[][])[])[])[] | undefined)[];
-}
-/**
- * Whether something is the empty list.
- *
- * Similar to [`null?` in Racket][rkt:nullp].
- *
- * [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
- */
-declare function nullp_(x: any): any;
-declare namespace nullp_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
-}
-/**
- * Whether something is an array list.
- *
- * An array list is a list implemented in terms of an array.
- * It corresponds roughly to the
- * [`ArrayList` class in Java][java:ArrayList].
- *
- * [java:ArrayList]: https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html
- */
-declare function arrayListP_(x: any): any;
-declare namespace arrayListP_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the length of an array list.
- */
-declare function arrayListLength_(lst: any): any;
-declare namespace arrayListLength_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the first element of an array list.
- */
-declare function arrayListFirst_(lst: any): any;
-declare namespace arrayListFirst_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the second element of an array list.
- */
-declare function arrayListSecond_(lst: any): any;
-declare namespace arrayListSecond_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the third element of an array list.
- */
-declare function arrayListThird_(lst: any): any;
-declare namespace arrayListThird_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the fourth element of an array list.
- */
-declare function arrayListFourth_(lst: any): any;
-declare namespace arrayListFourth_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the fifth element of an array list.
- */
-declare function arrayListFifth_(lst: any): any;
-declare namespace arrayListFifth_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the sixth element of an array list.
- */
-declare function arrayListSixth_(lst: any): any;
-declare namespace arrayListSixth_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the seventh element of an array list.
- */
-declare function arrayListSeventh_(lst: any): any;
-declare namespace arrayListSeventh_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the eighth element of an array list.
- */
-declare function arrayListEighth_(lst: any): any;
-declare namespace arrayListEighth_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the ninth element of an array list.
- */
-declare function arrayListNinth_(lst: any): any;
-declare namespace arrayListNinth_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the tenth element of an array list.
- */
-declare function arrayListTenth_(lst: any): any;
-declare namespace arrayListTenth_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the last element of an array list.
- */
-declare function arrayListLast_(lst: any): any;
-declare namespace arrayListLast_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the `n`-th element of an array list.
- */
-declare function arrayListNth_(n: any, lst: any): any;
-declare namespace arrayListNth_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the `n`-th CDR of an array list.
- */
-declare function arrayListNthcdr_(n: any, lst: any): any;
-declare namespace arrayListNthcdr_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the CDR of an array list.
- */
-declare function arrayListCdr_(lst: any): any;
-declare namespace arrayListCdr_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the tail of an array list.
- */
-declare function arrayListRest_(lst: any): any;
-declare namespace arrayListRest_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Take the `n` first elements from an array list.
- */
-declare function arrayListTake_(lst: any, n: any): any;
-declare namespace arrayListTake_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the list obtained by dropping
- * the first `n` elements from an array list.
- */
-declare function arrayListDrop_(lst: any, n: any): any;
-declare namespace arrayListDrop_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the list obtained by dropping
- * the last `n` elements from an array list.
- */
-declare function arrayListDropRight_(lst: any, n: any): any;
-declare namespace arrayListDropRight_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Reverse the order of an array list.
- * Returns a new array list.
- */
-declare function arrayListReverse_(lst: any): any;
-declare namespace arrayListReverse_ {
-    var fsource: (symbol | symbol[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[][] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | symbol[][])[][])[])[])[] | undefined)[];
 }
 /**
  * Whether something is a dotted list.
@@ -833,225 +565,185 @@ declare namespace arrayListReverse_ {
  */
 declare function dottedListP_(x: any): any;
 declare namespace dottedListP_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
 }
 /**
- * Whether something is a linked list.
- *
- * An linked list is a list implemented as a chain of links.
- * It corresponds roughly to the
- * [`LinkedList` class in Java][java:LinkedList].
- *
- * [java:LinkedList]: https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html
+ * Whether something is a dotted pair.
  */
-declare function linkedListP_(x: any): any;
-declare namespace linkedListP_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+declare function dottedPairP_(x: any): any;
+declare namespace dottedPairP_ {
+    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
 }
 /**
- * Whether something is a linked list link.
+ * Whether something is a proper dotted list.
  */
-declare function linkedListLinkP_(x: any): any;
-declare namespace linkedListLinkP_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+declare function dottedProperListP_(x: any): any;
+declare namespace dottedProperListP_ {
+    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
 }
 /**
- * Whether something is a linked pair.
+ * Whether something is an improper dotted list.
  */
-declare function linkedPairP_(x: any): any;
-declare namespace linkedPairP_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[];
+declare function dottedImproperListP_(x: any): any;
+declare namespace dottedImproperListP_ {
+    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[])[];
 }
 /**
- * Return the CAR of a linked list link.
+ * Return the head of a dotted list.
  */
-declare function linkedListLinkCar_(x: any): any;
-declare namespace linkedListLinkCar_ {
+declare function dottedListHead_(lst: any): any;
+declare namespace dottedListHead_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the tail of a dotted list.
+ */
+declare function dottedListTail_(lst: any): any;
+declare namespace dottedListTail_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
- * Return the CDR of a linked list link.
+ * Create a dotted list link.
  */
-declare function linkedListLinkCdr_(x: any): any;
-declare namespace linkedListLinkCdr_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the CAR of a linked pair.
- */
-declare function linkedPairCar_(x: any): any;
-declare namespace linkedPairCar_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the CDR of a linked pair.
- */
-declare function linkedPairCdr_(x: any): any;
-declare namespace linkedPairCdr_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the length of a linked list.
- */
-declare function linkedListLength_(lst: any): any;
-declare namespace linkedListLength_ {
-    var fsource: (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
-}
-/**
- * Return the first element of a linked list.
- */
-declare function linkedListFirst_(lst: any): any;
-declare namespace linkedListFirst_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the second element of a linked list.
- */
-declare function linkedListSecond_(lst: any): any;
-declare namespace linkedListSecond_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the third element of a linked list.
- */
-declare function linkedListThird_(lst: any): any;
-declare namespace linkedListThird_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the fourth element of a linked list.
- */
-declare function linkedListFourth_(lst: any): any;
-declare namespace linkedListFourth_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the fifth element of a linked list.
- */
-declare function linkedListFifth_(lst: any): any;
-declare namespace linkedListFifth_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the sixth element of a linked list.
- */
-declare function linkedListSixth_(lst: any): any;
-declare namespace linkedListSixth_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the seventh element of a linked list.
- */
-declare function linkedListSeventh_(lst: any): any;
-declare namespace linkedListSeventh_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the eighth element of a linked list.
- */
-declare function linkedListEighth_(lst: any): any;
-declare namespace linkedListEighth_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the ninth element of a linkedd list.
- */
-declare function linkedListNinth_(lst: any): any;
-declare namespace linkedListNinth_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the tenth element of a linkedd list.
- */
-declare function linkedListTenth_(lst: any): any;
-declare namespace linkedListTenth_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the last element of a linked list.
- */
-declare function linkedListLast_(lst: any): any;
-declare namespace linkedListLast_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
-}
-/**
- * Return the `n`-th element of a linked list.
- */
-declare function linkedListNth_(n: any, lst: any): any;
-declare namespace linkedListNth_ {
-    var fsource: (symbol | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
-}
-/**
- * Return the `n`-th CDR of a linked list.
- */
-declare function linkedListNthcdr_(n: any, lst: any): any;
-declare namespace linkedListNthcdr_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
-}
-/**
- * Return the list obtained by dropping
- * the first `n` elements from a linked list.
- */
-declare function linkedListDrop_(lst: any, pos: any): any;
-declare namespace linkedListDrop_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the list obtained by dropping
- * the last `n` elements from a linked list.
- */
-declare function linkedListDropRight_(lst: any, n: any): any;
-declare namespace linkedListDropRight_ {
-    var fsource: (symbol | (symbol | (number | symbol)[])[])[];
-}
-/**
- * Return the CAR of a linked list.
- */
-declare function linkedListCar_(lst: any): any;
-declare namespace linkedListCar_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the CDR of a linked list.
- */
-declare function linkedListCdr_(lst: any): any;
-declare namespace linkedListCdr_ {
+declare function dottedListLink_(x: any): any;
+declare namespace dottedListLink_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
- * Return the head of a linked list.
+ * Return the CDR of a dotted pair.
  */
-declare function linkedListHead_(lst: any): any;
-declare namespace linkedListHead_ {
-    var fsource: (symbol | (number | symbol)[])[];
-}
-/**
- * Return the tail of a linked list.
- */
-declare function linkedListTail_(lst: any): any;
-declare namespace linkedListTail_ {
+declare function dottedPairCdr_(x: any): any;
+declare namespace dottedPairCdr_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
- * Parse a linked list.
+ * Parse a dotted list.
  */
-declare function linkedListParse_(lst: any): any;
-declare namespace linkedListParse_ {
+declare function dottedListParse_(lst: any): any;
+declare namespace dottedListParse_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
- * Make a linked list.
+ * Return the length of a dotted list.
+ */
+declare function dottedListLength_(lst: any): any;
+declare namespace dottedListLength_ {
+    var fsource: (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+}
+/**
+ * Access the dotted list element indicated by
+ * one or more `indices`.
+ */
+declare function dottedListRef_(lst: any, ...indices: any[]): any;
+declare namespace dottedListRef_ {
+    var fsource: (symbol | (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[];
+}
+/**
+ * Set a dotted list position to a given value.
+ * Returns a new list.
+ */
+declare function dottedListSet_(lst: any, ...indicesAndValue: any[]): any;
+declare namespace dottedListSet_ {
+    var fsource: (symbol | (symbol | ((number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[])[])[];
+}
+/**
+ * Set a dotted list position to a given value.
+ * Modifies the original list.
+ */
+declare function dottedListSetX_(lst: any, ...indicesAndValue: any[]): any;
+declare namespace dottedListSetX_ {
+    var fsource: (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[];
+}
+/**
+ * Return the first element of a dotted list.
+ */
+declare function dottedListFirst_(lst: any): any;
+declare namespace dottedListFirst_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Return the second element of a dotted list.
+ */
+declare function dottedListSecond_(lst: any): any;
+declare namespace dottedListSecond_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the third element of a dotted list.
+ */
+declare function dottedListThird_(lst: any): any;
+declare namespace dottedListThird_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the fourth element of a dotted list.
+ */
+declare function dottedListFourth_(lst: any): any;
+declare namespace dottedListFourth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the fifth element of a dotted list.
+ */
+declare function dottedListFifth_(lst: any): any;
+declare namespace dottedListFifth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the sixth element of a dotted list.
+ */
+declare function dottedListSixth_(lst: any): any;
+declare namespace dottedListSixth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the seventh element of a dotted list.
+ */
+declare function dottedListSeventh_(lst: any): any;
+declare namespace dottedListSeventh_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the eighth element of a dotted list.
+ */
+declare function dottedListEighth_(lst: any): any;
+declare namespace dottedListEighth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the ninth element of a dotted list.
+ */
+declare function dottedListNinth_(lst: any): any;
+declare namespace dottedListNinth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the tenth element of a dotted list.
+ */
+declare function dottedListTenth_(lst: any): any;
+declare namespace dottedListTenth_ {
+    var fsource: (symbol | (number | symbol)[])[];
+}
+/**
+ * Return the last element of a dotted list.
+ */
+declare function dottedListLast_(lst: any): any;
+declare namespace dottedListLast_ {
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[];
+}
+/**
+ * Make a dotted list.
  */
 declare function makeDottedList_(car: any, cdr: any): any;
 declare namespace makeDottedList_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
- * Make a linked pair.
+ * Make a dotted pair.
  */
 declare function makePair_(car: any, cdr: any): any;
 declare namespace makePair_ {
-    var fsource: (symbol | (symbol | symbol[][])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Whether something is a proper list,
@@ -1092,15 +784,15 @@ declare namespace circularListP_ {
 /**
  * Convert an array list to a linked list.
  */
-declare function arrayListToLinkedList_(x: any): any;
-declare namespace arrayListToLinkedList_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[][])[])[];
+declare function listToDottedList_(x: any): any;
+declare namespace listToDottedList_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 /**
  * Convert a linked list to an array list.
  */
-declare function linkedListToArrayList_(x: any): any;
-declare namespace linkedListToArrayList_ {
+declare function dottedListToList_(x: any): any;
+declare namespace dottedListToList_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
 }
-export { append_ as append, arrayListToLinkedList_ as arrayListToLinkedList, arrayListToLinkedList_ as properListToDottedList_, arrayListCdr_ as arrayListCdr, arrayListDropRight_ as arrayListDropRight, arrayListDrop_ as arrayListDrop, arrayListEighth_ as arrayListEighth, arrayListFifth_ as arrayListFifth, arrayListFirst_ as arrayListFirst, arrayListFourth_ as arrayListFourth, arrayListLast_ as arrayListLast, arrayListLength_ as arrayListLength, arrayListNinth_ as arrayListNinth, arrayListNth_ as arrayListNth, arrayListNthcdr_ as arrayListNthcdr, arrayListRest_ as arrayListRest, arrayListReverse_ as arrayListReverse, arrayListSecond_ as arrayListSecond, arrayListSeventh_ as arrayListSeventh, arrayListSixth_ as arrayListSixth, arrayListTake_ as arrayListTake, arrayListTenth_ as arrayListTenth, arrayListThird_ as arrayListThird, arrayListP_ as arrayListP, buildList_ as buildList, butlast_ as butlast, cdr_ as cdr, cdr_ as tail, cdr_ as tail_, circularListP_ as circularListP, consDotCompiled_ as consDotCompiled, consDotF_ as consDotF, consDotP_ as consDotP, consDot_ as consDot, consp_ as consp, consp_ as pairp, consp_ as pairp_, cons_ as cons, dottedListP_ as dottedListP, dropRight_ as dropRight, drop_ as drop, drop_ as listTail, drop_ as listTail_, eighth_ as eighth, fifth_ as fifth, first_ as car, first_ as car_, first_ as first, first_ as head, first_ as head_, flatten_ as flatten, fourth_ as fourth, improperListP_ as improperListP, lastCdr_ as lastCdr, lastCdr_ as linkedListLastCdr_, lastPair_ as lastCons_, lastPair_ as lastPair, lastPair_ as linkedListLastCons_, lastPair_ as linkedListLastPair_, last_ as last, length_ as length, linkedListToArrayList_ as linkedListToArrayList, linkedListCar_ as linkedListCar, linkedListCdr_ as linkedListCdr, linkedListDropRight_ as linkedListDropRight, linkedListDrop_ as linkedListDrop, linkedListEighth_ as linkedListEighth, linkedListFifth_ as linkedListFifth, linkedListFirst_ as linkedListFirst, linkedListFourth_ as linkedListFourth, linkedListHead_ as linkedListHead, linkedListLast_ as linkedListLast, linkedListLength_ as linkedListLength, linkedListLinkCar_ as linkedListLinkCar, linkedListLinkCdr_ as linkedListLinkCdr, linkedListLinkP_ as linkedListLinkP, linkedListNinth_ as linkedListNinth, linkedListNth_ as linkedListNth, linkedListNthcdr_ as linkedListNthcdr, linkedListParse_ as linkedListParse, linkedListSecond_ as linkedListSecond, linkedListSeventh_ as linkedListSeventh, linkedListSixth_ as linkedListSixth, linkedListTail_ as linkedListTail, linkedListTenth_ as linkedListTenth, linkedListThird_ as linkedListThird, linkedListP_ as linkedListP, linkedPairCar_ as linkedPairCar, linkedPairCdr_ as linkedPairCdr, linkedPairP_ as dottedPairP_, linkedPairP_ as linkedPairP, listStar_ as listStar, listp_ as listp, listp_ as properListP, list_ as list, makeDottedList_ as makeDottedList, makeList_ as makeList, makePair_ as makePair, nbutlast_ as nbutlast, ninth_ as ninth, nth_ as nth, nthcdr_ as nthcdr, nullp_ as nullp, popLeftX_ as popx, popLeftX_ as popx_, popLeftX_ as popLeftX, popRightX_ as popRightX, pushLeftX_ as pushx, pushLeftX_ as pushLeftX, pushRightX_ as appendToList, pushRightX_ as pushRightX, rest_ as rest, reverse_ as reverse, second_ as cadr_, second_ as second, setCarX_ as setCarX, setCdrX_ as setCdrX, seventh_ as seventh, sixth_ as sixth, take_ as take, tenth_ as tenth, third_ as third, append_, arrayListToLinkedList_, arrayListCdr_, arrayListDropRight_, arrayListDrop_, arrayListEighth_, arrayListFifth_, arrayListFirst_, arrayListFourth_, arrayListLast_, arrayListLength_, arrayListNinth_, arrayListNth_, arrayListNthcdr_, arrayListRest_, arrayListReverse_, arrayListSecond_, arrayListSeventh_, arrayListSixth_, arrayListTake_, arrayListTenth_, arrayListThird_, arrayListP_, buildList_, butlast_, cdr_, circularListP_, consDotCompiled_, consDotF_, consDotP_, consDot_, consp_, cons_, dottedListP_, dropRight_, drop_, eighth_, fifth_, first_, flatten_, fourth_, improperListP_, lastCdr_, lastPair_, last_, length_, linkedListToArrayList_, linkedListCar_, linkedListCdr_, linkedListDropRight_, linkedListDrop_, linkedListEighth_, linkedListFifth_, linkedListFirst_, linkedListFourth_, linkedListHead_, linkedListLast_, linkedListLength_, linkedListLinkCar_, linkedListLinkCdr_, linkedListLinkP_, linkedListNinth_, linkedListNth_, linkedListNthcdr_, linkedListParse_, linkedListSecond_, linkedListSeventh_, linkedListSixth_, linkedListTail_, linkedListTenth_, linkedListThird_, linkedListP_, linkedPairCar_, linkedPairCdr_, linkedPairP_, listStar_, listp_, list_, makeDottedList_, makeList_, makePair_, nbutlast_, ninth_, nth_, nthcdr_, nullp_, popLeftX_, popRightX_, properListP_, pushLeftX_, pushRightX_, rest_, reverse_, second_, setCarX_, setCdrX_, seventh_, sixth_, take_, tenth_, third_ };
+export { append_ as append, buildList_ as buildList, butlast_ as butlast, cdr_ as cdr, cdr_ as tail, cdr_ as tail_, circularListP_ as circularListP, cons_ as cons, dottedListP_ as dottedListP, dropRight_ as dropRight, drop_ as drop, eighth_ as eighth, fifth_ as fifth, first_ as car, first_ as car_, first_ as first, first_ as head, first_ as head_, flatten_ as flatten, fourth_ as fourth, improperListP_ as improperListP, lastCdr_ as dottedListLastCdr_, lastCdr_ as lastCdr, lastPair_ as lastCons_, lastPair_ as lastPair, last_ as last, length_ as length, listStar_ as listStar, listp_ as listp, listp_ as properListP, list_ as list, makeDottedList_ as makeDottedList, makeList_ as makeList, makePair_ as makePair, nbutlast_ as nbutlast, ninth_ as ninth, nth_ as dottedListNth, nth_ as dottedListNth_, nth_ as nth, nthcdr_ as dottedListNthcdr, nthcdr_ as dottedListNthcdr_, nthcdr_ as nthcdr, nullp_ as nullp, pairp_ as consp, pairp_ as consp_, pairp_ as pairp, popLeftX_ as popx, popLeftX_ as popx_, popLeftX_ as popLeftX, popRightX_ as popRightX, pushLeftX_ as pushx, pushLeftX_ as pushLeftX, pushRightX_ as appendToList, pushRightX_ as pushRightX, rest_ as rest, reverse_ as reverse, second_ as cadr_, second_ as second, setCarX_ as setCarX, setCdrX_ as setCdrX, seventh_ as seventh, sixth_ as sixth, take_ as take, tenth_ as tenth, third_ as third, append_, buildList_, butlast_, cdr_, circularListP_, cons_, dottedImproperListP_, dottedListToList_, dottedListEighth_, dottedListFifth_, dottedListFirst_, dottedListFourth_, dottedListHead_, dottedListLast_, dottedListLength_, dottedListNinth_, dottedListParse_, dottedListRef_, dottedListSecond_, dottedListSetX_, dottedListSet_, dottedListSeventh_, dottedListSixth_, dottedListTail_, dottedListTenth_, dottedListLink_, dottedListThird_, dottedListP_, dottedPairCdr_, dottedPairP_, dottedProperListP_, dropRight_, drop_, eighth_, fifth_, first_, flatten_, fourth_, improperListP_, lastCdr_, lastPair_, last_, length_, listToDottedList_, listRef_, listSetX_, listSet_, listStar_, listTail_, listp_, list_, makeDottedList_, makeList_, makePair_, nbutlast_, ninth_, nth_, nthcdr_, nullp_, pairOrListP_, pairp_, popLeftX_, popRightX_, properListP_, pushLeftX_, pushRightX_, rest_, reversex_, reverse_, second_, setCarX_, setCdrX_, seventh_, sixth_, take_, tenth_, third_ };

@@ -38,7 +38,7 @@
     "typescript": "^4.4.4"
   },
   "scripts": {
-    "build": "npm run prettier && npm run transpile-all && npm run compile",
+    "build": "npm run transpile-all && npm run compile",
     "build!": "npm run build && npm run test",
     "build-doc": "npm run sphinx",
     "cli": "node dist/cli.js",
@@ -56,7 +56,8 @@
     "sphinx": "cd doc; make html",
     "start": "npm run repl",
     "test": "npm run transpile && npm run transpile-test && npm run ts-mocha",
-    "test!": "npm run build && npm run transpile-test-all && npm run prettier && npm run ts-mocha",
+    "test!": "npm run build && npm run transpile-test-all && npm run ts-mocha",
+    "test-loop": "while true; do npm run test!; done",
     "profiler": "npm run profiler-transpile && npm run profiler-view",
     "profiler-transpile": "node --prof dist/cli.js -c --feval-bindings --finline-functions --language typescript --out-dir src/ts src/scm/*.scm",
     "profiler-view": "node --prof-process *.log > processed.txt; less processed.txt",

@@ -179,7 +179,7 @@ Type ,q to quit.")
      (cond
       ((eq? x 'h)
        (set! x 'help))
-      ((memq? x '(x q))
+      ((memq? x '(ex x q))
        (set! x 'quit)))
      `((,x ,@y)))
     (_

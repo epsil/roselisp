@@ -124,7 +124,7 @@
 ;;; [r:compose]: https://ramdajs.com/docs/#compose
 ;;; [r:dash]: https://ramdajs.com/docs/#__
 (define (B2 . args)
-  (case (js/length args)
+  (case (length args)
     ((0)
      #u)
     ((1)
@@ -133,7 +133,7 @@
      (define fs
        (drop-right args 1))
      (define x
-       (js/last args))
+       (last args))
      ;; Right-to-left function composition
      ;; corresponds to a right fold.
      (foldr A x fs))))
@@ -192,7 +192,7 @@
 ;;; See also {@link C3 **C3**}.
 (define (C2 f . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     (apply f args))
    (else
     (apply f
@@ -211,11 +211,11 @@
 ;;; See also {@link C2 **C2**}.
 (define (C3 f . args)
   (cond
-   ((< (js/length args) 2)
+   ((< (length args) 2)
     (apply f args))
    (else
     (apply f
-           `(,(js/last args)
+           `(,(last args)
              ,@(drop-right args 1))))))
 
 ;;; Curried **C1** combinator.
@@ -392,7 +392,7 @@
 ;;; [r:pipe]: https://ramdajs.com/docs/#pipe
 ;;; [r:dash]: https://ramdajs.com/docs/#__
 (define (Q2 . args)
-  (case (js/length args)
+  (case (length args)
     ((0)
      #u)
     ((1)
@@ -401,7 +401,7 @@
      (define fs
        (drop-right args 1))
      (define x
-       (js/last args))
+       (last args))
      ;; Left-to-right function composition
      ;; corresponds to a left fold.
      (foldl A x fs))))
@@ -511,7 +511,7 @@
 ;;; See also {@link T1 **T1**}. See also {@link Q2 **Q2**}, which is
 ;;; similar to this combinator except that the `x` argument comes last.
 (define (T2 . args)
-  (case (js/length args)
+  (case (length args)
     ((0)
      #u)
     ((1)

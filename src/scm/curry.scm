@@ -56,7 +56,7 @@
 (define (curry-n arity f (received '()))
   (define (curried-f . args)
     (cond
-     ((= (js/length args) 0)
+     ((= (length args) 0)
       curried-f)
      (else
       (define args-idx 0)
@@ -64,18 +64,18 @@
       (define combined '())
       (define combined-idx 0)
       (define result)
-      (while (or (< combined-idx (js/length received))
-                 (< args-idx (js/length args)))
+      (while (or (< combined-idx (length received))
+                 (< args-idx (length args)))
         (cond
-         ((and (< combined-idx (js/length received))
-               (or (not (eq? (aget received combined-idx)
+         ((and (< combined-idx (length received))
+               (or (not (eq? (list-ref received combined-idx)
                              __))
-                   (>= args-idx (js/length args))))
-          (set! result (aget received combined-idx)))
+                   (>= args-idx (length args))))
+          (set! result (list-ref received combined-idx)))
          (else
-          (set! result (aget args args-idx))
+          (set! result (list-ref args args-idx))
           (set! args-idx (+ args-idx 1))))
-        (aset! combined combined-idx result)
+        (list-set! combined combined-idx result)
         (unless (eq? result __)
           (set! left (- left 1)))
         (set! combined-idx (+ combined-idx 1)))
@@ -96,31 +96,31 @@
     (define complete-args
       `(,@args))
     (define arg)
-    (for ((i (range 0 (js/length args))))
-      (set! arg (aget args i))
+    (for ((i (range 0 (length args))))
+      (set! arg (list-ref args i))
       (when (eq? arg placeholder)
         (push-right! indices i)))
     (cond
-     ((= (js/length indices) 0)
+     ((= (length indices) 0)
       (apply f args))
      (else
       ;; `h` is a function that receives remaining arguments.
       ;; When all arguments have been received, it invokes `f`.
       (define (h . remaining-args)
-        (for ((i (range 0 (js/length remaining-args))))
+        (for ((i (range 0 (length remaining-args))))
           (cond
-           ((= (js/length indices) 0)
+           ((= (length indices) 0)
             (break))
-           ((eq? (aget remaining-args i) placeholder)
+           ((eq? (list-ref remaining-args i) placeholder)
             (continue))
            (else
             (define j
               (pop! indices))
-            (aset! complete-args
-                   j
-                   (aget remaining-args i)))))
+            (list-set! complete-args
+                       j
+                       (list-ref remaining-args i)))))
         (cond
-         ((= (js/length indices) 0)
+         ((= (length indices) 0)
           (apply f complete-args))
          (else
           h)))

@@ -173,7 +173,7 @@
           (datum->syntax
            #f
            `(begin ,@(send result drop 3))))
-    (when (= (js/length (syntax->datum result)) 2)
+    (when (= (length (syntax->datum result)) 2)
       (set! result (send result get 1))))
   result)
 
@@ -207,12 +207,12 @@
   (define is-spread-last
     (and (number? spread-idx)
          (= spread-idx
-            (- (js/length args) 1))))
+            (- (length args) 1))))
   (define args-decompiled
     (cond
      ((and is-spread
            (not is-spread-last)
-           (> (js/length args) 1))
+           (> (length args) 1))
       `((append
          ,@(map (lambda (x)
                   (define result
@@ -283,11 +283,11 @@
      `(set-field! ,(send left-decompiled get 1)
                   ,(send left-decompiled get 2)
                   ,right-decompiled)))
-   ((tagged-list? left-exp 'aget)
+   ((tagged-list? left-exp 'list-ref)
     (datum->syntax
      #f
-     `(aset! ,@(send left-decompiled drop 1)
-             ,right-decompiled)))
+     `(list-set! ,@(send left-decompiled drop 1)
+                 ,right-decompiled)))
    ((tagged-list? left-exp 'oget)
     (datum->syntax
      #f
@@ -478,7 +478,7 @@
   (define result
     (~> (datum->syntax #f decls)
         (send set-value (new SyntaxSplice))))
-  (when (= (js/length decls) 1)
+  (when (= (length decls) 1)
     (set! result (send result get 0)))
   result)
 
@@ -580,8 +580,8 @@
      ((number? property-exp)
       (datum->syntax
        #f
-       `(aget
-         ,@(if (tagged-list? object-exp 'aget)
+       `(list-ref
+         ,@(if (tagged-list? object-exp 'list-ref)
                (send object drop 1)
                (list object))
          ,property)))
@@ -596,7 +596,7 @@
    ((eq? property-exp 'length)
     (datum->syntax
      #f
-     `(js/length ,object)))
+     `(length ,object)))
    (else
     (datum->syntax
      #f
@@ -615,7 +615,7 @@
   (cond
    ((tagged-list? expression-decompiled-exp 'get-field)
     (cond
-     ((symbol? (aget expression-decompiled-exp 2))
+     ((symbol? (list-ref expression-decompiled-exp 2))
       (datum->syntax
        #f
        `(and (field-bound?
@@ -634,7 +634,7 @@
                   _)))))))
    ((tagged-list? expression-decompiled-exp 'send)
     (cond
-     ((symbol? (aget expression-decompiled-exp 1))
+     ((symbol? (list-ref expression-decompiled-exp 1))
       (datum->syntax
        #f
        `(and (field-bound?
@@ -735,11 +735,11 @@
   (define alternate-exp
     (and alternate (syntax->datum alternate)))
   (when (and (tagged-list? consequent-exp 'js/block)
-             (= (js/length consequent-exp) 2))
+             (= (length consequent-exp) 2))
     (set! consequent (send consequent get 1))
     (set! consequent-exp (syntax->datum consequent)))
   (when (and (tagged-list? alternate-exp 'js/block)
-             (= (js/length alternate-exp) 2))
+             (= (length alternate-exp) 2))
     (set! alternate (send alternate get 1))
     (set! alternate-exp (syntax->datum alternate)))
   (cond
@@ -780,7 +780,7 @@
         ,@(if (tagged-list? alternate-consequent-exp 'js/block)
               (send alternate-consequent drop 1)
               (list alternate-consequent)))
-       ,@(if (> (js/length alternate-exp) 3)
+       ,@(if (> (length alternate-exp) 3)
              (list `(else ,@(send alternate drop 3)))
              '()))))
    ((tagged-list? alternate-exp 'cond)
@@ -883,9 +883,9 @@
         (send update drop 1)
         (list update)))
   (define bindings '())
-  (for ((i (range 0 (js/length inits))))
+  (for ((i (range 0 (length inits))))
     (define current-init
-      (aget inits i))
+      (list-ref inits i))
     (define current-init-exp
       (syntax->datum current-init))
     (when (or (tagged-list? current-init-exp 'define)
@@ -897,7 +897,7 @@
       (set! current-init-exp
             (syntax->datum current-init)))
     (define current-update
-      (aget updates i))
+      (list-ref updates i))
     (define current-update-exp
       (syntax->datum current-update))
     (when (tagged-list? current-update-exp 'begin0)
@@ -916,7 +916,7 @@
   (define body
     (decompile-estree (get-field body node) options))
   (cond
-   ((and (= (js/length bindings) 1)
+   ((and (= (length bindings) 1)
          (or (tagged-list? test '<)
              (tagged-list? test '>)))
     (define binding
@@ -1091,8 +1091,8 @@
   (define arguments_
     (get-field arguments node))
   (define is-spread
-    (and (> (js/length arguments_) 0)
-         (estree-type? (js/last arguments_) "SpreadElement")))
+    (and (> (length arguments_) 0)
+         (estree-type? (last arguments_) "SpreadElement")))
   (datum->syntax
    #f
    `(,@(if is-spread
@@ -1122,11 +1122,11 @@
   (define specifiers
     (get-field specifiers node))
   (cond
-   ((= (js/length specifiers) 0)
+   ((= (length specifiers) 0)
     (datum->syntax
      #f
      `(require ,source-decompiled)))
-   ((and (= (js/length specifiers) 1)
+   ((and (= (length specifiers) 1)
          (estree-type? (first specifiers)
                        "ImportNamespaceSpecifier"))
     (datum->syntax
@@ -1213,7 +1213,7 @@
                    (decompile-estree (get-field value prop)
                                      options)))))
   (cond
-   ((= (js/length spreads) 0)
+   ((= (length spreads) 0)
     (datum->syntax
      #f
      `(js/obj ,@properties)))
@@ -1222,7 +1222,7 @@
      #f
      `(js/obj-append
        ,@spreads
-       ,@(if (> (js/length properties) 0)
+       ,@(if (> (length properties) 0)
              (list `(js/obj ,@properties))
              '()))))))
 
@@ -1251,7 +1251,7 @@
   (define str "")
   (define quasis
     (get-field quasis node))
-  (when (> (js/length quasis) 0)
+  (when (> (length quasis) 0)
     (set! str
           (~> (first quasis)
               (get-field value _)
@@ -1285,14 +1285,14 @@
         (decompile-estree x options)
         '_))
   (cond
-   ((and (> (js/length elements) 0)
-         (js/last elements)
-         (estree-type? (js/last elements) "RestElement"))
+   ((and (> (length elements) 0)
+         (last elements)
+         (estree-type? (last elements) "RestElement"))
     (define regular-elements
       (map decompile-element
            (drop-right elements 1)))
     (define rest-element
-      (decompile-element (js/last elements)))
+      (decompile-element (last elements)))
     (datum->syntax
      #f
      (apply list*
@@ -1441,7 +1441,7 @@
    #f
    `(,define-symbol
       ,(cons key-decompiled-exp
-             (aget (syntax->datum value-decompiled) 1))
+             (list-ref (syntax->datum value-decompiled) 1))
       ,@(send value-decompiled drop 2))))
 
 ;;; Decompile a TSESTree `TSAsExpression` node.
@@ -1567,7 +1567,7 @@
         (decompile-estree params options)
         '()))
   (cond
-   ((= (js/length params-decompiled) 0)
+   ((= (length params-decompiled) 0)
     (datum->syntax #f name-decompiled))
    (else
     (datum->syntax
@@ -1620,11 +1620,11 @@
     (map (lambda (x)
            (decompile-parameter x options))
          (get-field params node)))
-  (when (and (> (js/length params) 0)
-             (estree-type? (js/last (get-field params node))
+  (when (and (> (length params) 0)
+             (estree-type? (last (get-field params node))
                            "RestElement"))
-    (if (= (js/length params) 1)
-        (set! params (js/last params))
+    (if (= (length params) 1)
+        (set! params (last params))
         (set! params (apply list* params))))
   (define body
     (remove-return-tail-call
@@ -1700,14 +1700,14 @@
     (syntax->datum node))
   (cond
    ((and (tagged-list? exp 'return)
-         (= (js/length exp) 2))
+         (= (length exp) 2))
     (send node get 1))
    ((tagged-list? exp 'js/block)
     (datum->syntax
      #f
      `(,@(send node drop-right 1)
        ,(remove-return-tail-call
-         (send node get (- (js/length exp) 1))))
+         (send node get (- (length exp) 1))))
      node))
    ((tagged-list? exp 'if)
     (datum->syntax
@@ -1728,7 +1728,7 @@
                    ,(remove-return-tail-call
                      (send x
                            get
-                           (- (js/length (syntax->datum x))
+                           (- (length (syntax->datum x))
                               1))))
                  node))
               (send node drop 1)))

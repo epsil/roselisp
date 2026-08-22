@@ -84,13 +84,13 @@
   (cond
    ((eq? input "")
     '())
-   ((array? input)
+   ((pair-or-list? input)
     (define arr '())
     (for ((str input))
       (set! str (string-trim str))
       (unless (eq? str "")
         (set! arr (append arr (tokenize str))))
-      (when (> (array-length args) 0)
+      (when (> (length args) 0)
         (push-right! arr (new Token (pop-left! args)))))
     (if (null? arr)
         arr

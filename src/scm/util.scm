@@ -58,7 +58,7 @@
   (define map-path
     (drop-right path 1))
   (define map-key
-    (js/last path))
+    (last path))
   (define current-map map)
   (for ((key map-path))
     (define current-value
@@ -185,10 +185,10 @@
                   (not (eq? x "")))
                 _)))
   (cond
-   ((= (js/length segments) 0)
+   ((= (length segments) 0)
     "")
-   ((= (js/length segments) 1)
-    (js/first segments))
+   ((= (length segments) 1)
+    (first segments))
    (else
     (define-values (first-segment . rest-segments)
       segments)
@@ -227,16 +227,16 @@
   (cond
    ((syntax? exp)
     (tagged-list? (syntax->datum exp) tag len))
-   ((array? tag)
+   ((pair-or-list? tag)
     (for ((x tag))
       (when (tagged-list? exp x len)
         (return #t)))
     #f)
    ((number? len)
     (and (tagged-list? exp tag)
-         (= (array-length exp) len)))
+         (= (length exp) len)))
    (else
-    (and (array? exp)
+    (and (pair-or-list? exp)
          (symbol? (first exp))
          (eq? (first exp) tag)))))
 
@@ -251,10 +251,10 @@
     (form? (syntax->datum exp) f env))
    (else
     (cond
-     ((and (array? exp)
-           (> (js/length exp) 0))
+     ((and (pair-or-list? exp)
+           (> (length exp) 0))
       (define op
-        (js/first exp))
+        (first exp))
       (cond
        ((not (symbol? op))
         #f)
@@ -275,9 +275,9 @@
    ((syntax? exp)
     (colon-form? (syntax->datum exp)))
    (else
-    (and (array? exp)
-         (>= (js/length exp) 3)
-         (eq? (array-second exp) ':)))))
+    (and (pair-or-list? exp)
+         (>= (length exp) 3)
+         (eq? (second exp) ':)))))
 
 
 ;;; Whether `exp` is a `(quote ...)` expression.
@@ -307,19 +307,19 @@
    ((symbol? params)
     (push-right! bindings `(,params ',args)))
    (else
-    (for ((i (range 0 (js/length params))))
+    (for ((i (range 0 (length params))))
       (define param
-        (aget params i))
+        (list-ref params i))
       (define name
-        (if (array? param)
+        (if (pair-or-list? param)
             (first param)
             param))
       (define value
-        (if (>= i (js/length args))
-            (if (array? param)
+        (if (>= i (length args))
+            (if (pair-or-list? param)
                 (second param)
                 #u)
-            `(quote ,(aget args i))))
+            `(quote ,(list-ref args i))))
       (define binding
         `(,name ,value))
       (push-right! bindings binding))))
@@ -329,7 +329,7 @@
 ;;; Map a function over a tree.
 (define (map-tree f x)
   (cond
-   ((array? x)
+   ((pair-or-list? x)
     (map (lambda (x1)
            (map-tree f x1))
          x))
@@ -362,7 +362,7 @@
   (cond
    ((not (list? expressions))
     expressions)
-   ((= (js/length expressions) 1)
+   ((= (length expressions) 1)
     (first expressions))
    (else
     (begin-wrap expressions))))
@@ -405,25 +405,25 @@
 
 ;;; Helper function for `defGeneric`.
 (define (args-matches-params? args params)
-  (unless (= (js/length args)
-             (js/length params))
+  (unless (= (length args)
+             (length params))
     (return #f))
-  (for ((i (range 0 (js/length params))))
+  (for ((i (range 0 (length params))))
     (define param
-      (aget params i))
+      (list-ref params i))
     (define arg
-      (aget args i))
+      (list-ref args i))
     (cond
-     ((array? param)
+     ((pair-or-list? param)
       (cond
-       ((eq? (array-first param) "eql")
+       ((eq? (first param) "eql")
         (define value
-          (array-second param))
+          (second param))
         (unless (eq? arg value)
           (return #f)))
-       ((eq? (array-first param) "pred")
+       ((eq? (first param) "pred")
         (define pred
-          (array-second param))
+          (second param))
         (unless (pred arg)
           (return #f)))))
      ((eq? (type-of param) "string")
@@ -432,7 +432,7 @@
         (continue))
        ((eq? param "array")
         (cond
-         ((array? arg)
+         ((pair-or-list? arg)
           (continue))
          (else
           (return #f))))
@@ -447,33 +447,32 @@
 ;;; or `(list* ...)` to a list expression pattern.
 (define (list-expression->pattern exp)
   (cond
-   ((array? exp)
+   ((pair-or-list? exp)
     (cond
      ((tagged-list? exp '(list values))
       (cond
-       ((eq? (js/last exp) '...)
+       ((eq? (last exp) '...)
         (define head
           (~> (drop exp 1)
               (drop-right _ 2)))
         (define tail
-          (aget exp (- (js/length exp) 2)))
+          (list-ref exp (- (length exp) 2)))
         (list-expression->pattern
          `(list* ,@head ,tail)))
        (else
-        (map list-expression->pattern (js/rest exp)))))
+        (map list-expression->pattern (rest exp)))))
      ((tagged-list? exp 'list*)
       (define head
         (~> (drop exp 1)
             (drop-right _ 1)))
       (define tail
-        (js/last exp))
-      (if (= (js/length head) 0)
+        (last exp))
+      (if (= (length head) 0)
           (list-expression->pattern tail)
           `(,@(map list-expression->pattern head)
             .
             ,(list-expression->pattern tail))))
      (else
-      ;; (map list-expression->pattern exp)
       #f)))
    (else
     exp)))

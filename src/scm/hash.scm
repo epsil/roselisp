@@ -150,8 +150,7 @@
 ;;; [rkt:hash-to-list]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-~3elist%29%29
 (define (hash->list_ ht)
   (map (lambda (x)
-         (cons (array-first x)
-               (array-second x)))
+         (cons (first x) (second x)))
        (hash-entries ht)))
 
 (provide

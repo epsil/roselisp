@@ -46,24 +46,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wrapSexpInRose = exports.transferComments = exports.syntaxp = exports.syntaxE = exports.syntaxToList = exports.syntaxToDatum = exports.sliceRose = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.forestp = exports.datumToSyntax = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.makeRose = exports.makeRoseMap = exports.SyntaxSplice = exports.Syntax = void 0;
 const visitor_1 = require("./visitor");
-const [lastCdr] = (() => {
-    function lastCdr_(lst) {
-        if (!Array.isArray(lst)) {
-            return undefined;
-        }
-        else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-            let result = lst;
-            while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-                result = result[result.length - 1];
-            }
-            return result;
-        }
-        else {
-            return [];
-        }
-    }
-    return [lastCdr_];
-})();
 /**
  * Rose tree node class.
  */
@@ -515,7 +497,7 @@ class Forest {
      * the last `n` nodes.
      */
     dropRight(n) {
-        return this.nodeList.slice(0, -n);
+        return this.nodeList.slice(0, -n || undefined);
     }
     /**
      * Return the forest obtained by dropping
@@ -1016,10 +998,7 @@ exports.datumToSyntax = datumToSyntax;
  */
 function syntaxToList(stx) {
     const exp = syntaxToDatum(stx);
-    if ((() => {
-        const x = lastCdr(exp);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
+    if (Array.isArray(exp) && !((exp.length >= 3) && (exp.at(-2) === Symbol.for('.')) && !Array.isArray(exp.at(-1)))) {
         return stx.getNodes();
     }
     else {
@@ -1040,7 +1019,7 @@ function syntaxE(stx) {
         const nodes = stx.getNodes();
         if ((nodes.length >= 3) && (syntaxToDatum(nodes[nodes.length - 2]) === Symbol.for('.'))) {
             // Dotted list.
-            let tail = nodes[nodes.length - 1];
+            let tail = nodes.at(-1);
             const tailE = syntaxE(tail);
             if (Array.isArray(tailE)) {
                 tail = tailE;

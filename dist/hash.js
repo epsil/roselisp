@@ -21,7 +21,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeHash_ = exports.hashp_ = exports.hashValues_ = exports.hashSize_ = exports.hashSet_ = exports.hashSetX_ = exports.hashRemove_ = exports.hashRemoveX_ = exports.hashRef_ = exports.hashKeys_ = exports.hashHasKeyP_ = exports.hashEntries_ = exports.hashCopy_ = exports.hashClear_ = exports.hashClearX_ = exports.hashToList_ = void 0;
-const [flatten, cons] = (() => {
+const [flatten] = (() => {
     function flatten_(lst) {
         return lst.reduce(function (acc, x) {
             if (Array.isArray(x)) {
@@ -36,15 +36,7 @@ const [flatten, cons] = (() => {
             }
         }, []);
     }
-    function cons_(x, y) {
-        if (Array.isArray(y)) {
-            return [x, ...y];
-        }
-        else {
-            return [x, Symbol.for('.'), y];
-        }
-    }
-    return [flatten_, cons_];
+    return [flatten_];
 })();
 /**
  * Whether something is a hash map.
@@ -243,8 +235,10 @@ hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symb
  */
 function hashToList_(ht) {
     return [...ht.entries()].map(function (x) {
-        return cons(x[0], x[1]);
+        return [x[0], ...((x) => {
+                return Array.isArray(x) ? x : [Symbol.for('.'), x];
+            })(x[1])];
     });
 }
 exports.hashToList_ = hashToList_;
-hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('array-first'), Symbol.for('x')], [Symbol.for('array-second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];
+hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];

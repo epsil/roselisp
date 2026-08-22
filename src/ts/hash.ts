@@ -19,7 +19,7 @@
  * [js:Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
  */
 
-const [flatten, cons]: any[] = ((): any => {
+const [flatten]: any[] = ((): any => {
   function flatten_(lst: any): any {
     return lst.reduce(function (acc: any, x: any): any {
       if (Array.isArray(x)) {
@@ -32,14 +32,7 @@ const [flatten, cons]: any[] = ((): any => {
       }
     }, []);
   }
-  function cons_(x: any, y: any): any {
-    if (Array.isArray(y)) {
-      return [x, ...y];
-    } else {
-      return [x, Symbol.for('.'), y];
-    }
-  }
-  return [flatten_, cons_];
+  return [flatten_];
 })();
 
 /**
@@ -253,11 +246,13 @@ hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symb
  */
 function hashToList_(ht: any): any {
   return [...ht.entries()].map(function (x: any): any {
-    return cons(x[0], x[1]);
+    return [x[0], ...((x: any): any => {
+      return Array.isArray(x) ? x : [Symbol.for('.'), x];
+    })(x[1])];
   });
 }
 
-hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('array-first'), Symbol.for('x')], [Symbol.for('array-second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];
+hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];
 
 export {
   hashToList_,

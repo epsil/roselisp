@@ -65,7 +65,7 @@
     (set! comments #t))
   (define pos 0)
   (define len
-    (js/length str))
+    (length str))
   (define char "")
   (define buffer "")
   (define result '())
@@ -82,7 +82,7 @@
        ((>= pos len)
         (set! state "stop"))
        (else
-        (set! char (aget str pos))
+        (set! char (list-ref str pos))
         (cond
          ((whitespace? char)
           (set! pos (+ pos 1)))
@@ -91,6 +91,9 @@
           (set! pos (+ pos 1)))
          ((eq? char ")")
           (push-right! result (new SymbolToken char))
+          (set! pos (+ pos 1)))
+         ((eq? char "|")
+          (set! state "pipe")
           (set! pos (+ pos 1)))
          ((eq? char "\"")
           (set! state "string")
@@ -106,9 +109,9 @@
          ((eq? char ",")
           (cond
            ((and (< pos len)
-                 (eq? (aget str (+ pos 1)) "@"))
+                 (eq? (list-ref str (+ pos 1)) "@"))
             (define next-token
-              (aget str (+ pos 1)))
+              (list-ref str (+ pos 1)))
             (push-right! result
                          (new SymbolToken
                               (string-append
@@ -120,7 +123,7 @@
          (else
           (set! state "symbol"))))))
      ((eq? state "symbol")
-      (set! char (aget str pos))
+      (set! char (list-ref str pos))
       (cond
        ((or (>= pos len)
             (regexp-match (regexp "\\s") char)
@@ -133,46 +136,65 @@
         (set! buffer "")
         (set! state "read"))
        ((eq? char "\\")
-        (set! char (aget str (+ pos 1)))
+        (set! char (list-ref str (+ pos 1)))
         (set! buffer (string-append buffer char))
         (set! pos (+ pos 2)))
        (else
         (set! buffer (string-append buffer char))
         (set! pos (+ pos 1)))))
+     ((eq? state "pipe")
+      (cond
+       ((>= pos len)
+        (push-right! result (new SymbolToken buffer))
+        (set! buffer "")
+        (set! state "read"))
+       (else
+        (set! char (list-ref str pos))
+        (cond
+         ((eq? char "|")
+          (set! pos (+ pos 1))
+          (push-right! result (new SymbolToken buffer))
+          (set! buffer "")
+          (set! state "read"))
+         (else
+          (set! buffer (string-append buffer char))
+          (set! pos (+ pos 1)))))))
      ((eq? state "string")
-      (set! char (aget str pos))
       (cond
        ((>= pos len)
         (push-right! result (new StringToken buffer))
         (set! buffer "")
         (set! state "read"))
-       ((eq? char "\\")
-        (cond
-         ((< pos len)
-          (define next-token
-            (aget str (+ pos 1)))
-          (cond
-           ((eq? next-token "n")
-            (set! buffer (string-append buffer "\n")))
-           ((eq? next-token "t")
-            (set! buffer (string-append buffer "\t")))
-           ((eq? next-token "r")
-            (set! buffer (string-append buffer "\r")))
-           (else
-            (set! buffer (string-append buffer next-token))))
-          (set! pos (+ pos 2)))
-         (else
-          (set! pos (+ pos 1)))))
-       ((eq? char "\"")
-        (set! pos (+ pos 1))
-        (push-right! result (new StringToken buffer))
-        (set! buffer "")
-        (set! state "read"))
        (else
-        (set! buffer (string-append buffer char))
-        (set! pos (+ pos 1)))))
+        (set! char (list-ref str pos))
+        (cond
+         ((eq? char "\\")
+          (cond
+           ((< pos len)
+            (define next-token
+              (list-ref str (+ pos 1)))
+            (cond
+             ((eq? next-token "n")
+              (set! buffer (string-append buffer "\n")))
+             ((eq? next-token "t")
+              (set! buffer (string-append buffer "\t")))
+             ((eq? next-token "r")
+              (set! buffer (string-append buffer "\r")))
+             (else
+              (set! buffer (string-append buffer next-token))))
+            (set! pos (+ pos 2)))
+           (else
+            (set! pos (+ pos 1)))))
+         ((eq? char "\"")
+          (set! pos (+ pos 1))
+          (push-right! result (new StringToken buffer))
+          (set! buffer "")
+          (set! state "read"))
+         (else
+          (set! buffer (string-append buffer char))
+          (set! pos (+ pos 1)))))))
      ((eq? state "comment")
-      (set! char (aget str pos))
+      (set! char (list-ref str pos))
       (cond
        ((>= pos len)
         (when comments
@@ -186,12 +208,12 @@
                     (< pos len))
           (set! buffer (string-append buffer char))
           (set! pos (+ pos 1))
-          (set! char (aget str pos)))
+          (set! char (list-ref str pos)))
         ;; Skip past indentation on the next line and see if there
         ;; is another leading comment; if so, merge it into this.
         (while (indentation? char)
           (set! pos (+ pos 1))
-          (set! char (aget str pos)))
+          (set! char (list-ref str pos)))
         (unless (comment? char)
           ;; Exit `comment` state.
           (when comments
@@ -282,10 +304,10 @@
                current-exp-node
                parent-val-node)))
   ;; Iterate over the list of tokens.
-  (for ((i (range 0 (js/length tokens))))
+  (for ((i (range 0 (length tokens))))
     ;; The current token.
     (define token
-      (aget tokens i))
+      (list-ref tokens i))
     (cond
      ;; Comments.
      ((is-a? token CommentToken)
@@ -357,8 +379,8 @@
                       current-val-node)
                      entry)
         (define parent-entry
-          (if (> (js/length stack) 0)
-              (js/last stack)
+          (if (> (length stack) 0)
+              (last stack)
               '(#u #u #u #u)))
         (set!-values (parent-exp
                       parent-val
@@ -443,7 +465,7 @@
         (datum->syntax #f node)))
   (when (and comments-option
              comments
-             (> (js/length comments) 0))
+             (> (length comments) 0))
     (send result set-property "comments" comments))
   (values result '()))
 

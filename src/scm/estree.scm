@@ -1435,7 +1435,7 @@
     #f)
    ((thunk? node)
     #f)
-   ((array? typ)
+   ((list? typ)
     (memf? (lambda (x)
              (estree-type? node x))
            typ))
@@ -1450,7 +1450,7 @@
 (define (wrap-in-estree x (recursive #f))
   (cond
    ((and recursive
-         (array? x))
+         (list? x))
     (new ArrayExpression
          (map (lambda (x)
                 (wrap-in-estree x recursive))

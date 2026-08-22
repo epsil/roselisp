@@ -8,165 +8,23 @@
 ;;;
 ;;; Lists are implemented in terms of JavaScript arrays. There is,
 ;;; however, no direct JavaScript equivalent to the Lisp concept of a
-;;; *cons cell*, such as `'(1 . 2)`. Therefore, Roselisp defines a
-;;; list type called a linked list, whose constituent links correspond
-;;; to the cons cell concept.
-;;;
-;;; ### Terminology
-;;;
-;;; The *empty list* is the list `'()`, represented by the JavaScript
-;;; array `[]`. The function `null?` returns `#t` only when passed the
-;;; empty list.
-;;;
-;;;     > (null? '())
-;;;     #t
-;;;
-;;; A list with one or more elements is a *nonempty list*. There are
-;;; two forms of nonempty lists: *array lists* and *linked lists*. An
-;;; array list is a list that is straightforwardly implemented in
-;;; terms of a JavaScript array, such as `'(1)`, `'(1 2)` and
-;;; `'(1 2 3)`. These correspond to the JavaScript arrays `[1]`,
-;;; `[1, 2]` and `[1, 2, 3]`, respectively. The function `array-list?`
-;;; returns `#t` when passed an array list.
-;;;
-;;;     > (array-list? '(1))
-;;;     #t
-;;;     > (array-list? '(1 2))
-;;;     #t
-;;;     > (array-list? '(1 2 3))
-;;;     #t
-;;;
-;;; The other type of nonempty list is the *linked list*, which is
-;;; composed out of *linked list links*. A linked list link is an
-;;; expression such as `'(1 . ())`, which is implemented in terms of
-;;; the JavaScript array `[1, Symbol.for('.'), []]`. Here, the
-;;; penultimate array element is the special symbol `.` (i.e., `'.`),
-;;; which is also referred to as the *cons dot*. The function
-;;; `linked-list-link?` returns `#t` when passed a linked list link.
-;;;
-;;;     > (linked-list-link? '(1 . ()))
-;;;     #t
-;;;     > (linked-list-link? '(1 2 . ()))
-;;;     #t
-;;;
-;;; By chaining such links together, a sequence of values is obtained.
-;;; If the final chain is the empty list, then the resulting structure
-;;; is referred to as a *linked list*. For example, the linked list
-;;; `'(1 . (2 . ()))` may be considered to represent the same sequence
-;;; as the array list `(1 2)`, even though the underlying JavaScript
-;;; arrays are different. The function `linked-list?` returns `#t`
-;;; when passed a linked list.
-;;;
-;;;     > (linked-list? '(1 . ()))
-;;;     #t
-;;;     > (linked-list? '(1 . (2 . ())))
-;;;     #t
-;;;     > (linked-list? '(1 2 . (3 . ())))
-;;;     #t
-;;;
-;;; However, if the final chain is *not* the empty list, then the
-;;; sequence is called a *dotted list*. The function `dotted-list?`
-;;; returns `#t` when passed a dotted list.
+;;; *cons cell*, such as `'(1 . 2)`. Instead, such values are
+;;; represented as a *dotted list*, which is a list where the
+;;; penultimate value is the symbol `|.|` (in JavaScript,
+;;; `Symbol.for('.')`).
 ;;;
 ;;;     > (dotted-list? '(1 . 2))
 ;;;     #t
 ;;;     > (dotted-list? '(1 2 . 3))
 ;;;     #t
-;;;     > (dotted-list? '(1 . (2 . 3)))
-;;;     #t
-;;;     > (dotted-list? '(1 2 . (3 . 4)))
+;;;     > (dotted-list? (list 1 '|.| 2))
 ;;;     #t
 ;;;
-;;; Dotted lists are sometimes referred to as "improper lists", to
-;;; distinguish them from "proper lists", which are `()`-terminated.
-;;; Thus, array lists and linked lists are proper lists, while dotted
-;;; lists are improper. The function `list?` returns `#t` when passed
-;;; a proper list, but not when passed an improper list.
-;;;
-;;;     > (list? '())
-;;;     #t
-;;;     > (list? '(1))
-;;;     #t
-;;;     > (list? '(1 . ()))
-;;;     #t
-;;;     > (list? '(1 . (2 . ())))
-;;;     #t
-;;;     > (list? '(1 2 . (3 . ())))
-;;;     #t
-;;;
-;;; While array lists are the fastest and are preferable for most
-;;; tasks, linked lists are more versatile. For example, a linked list
-;;; may be turned into a *circular list*, i.e., a list that loops back
-;;; on itself. The function `circular-list?` returns `#t` when passed
-;;; a circular list.
-;;;
-;;;     > (define circ-lst
-;;;         '(1 . ()))
-;;;     undefined
-;;;     > (set-cdr! circ-lst circ-lst)
-;;;     undefined
-;;;     > (circular-list? circ-lst)
-;;;     #t))))
-;;;
-;;; It should be appreciated that Lisp's "list" concept is not a type,
-;;; but a structural property. Whether something is a list or not can
-;;; be determined only by inspecting the structure itself. One can
-;;; avoid this check by working exclusively with array lists and using
-;;; `array-list?` to determine whether something is an array list or
-;;; not.
-;;;
-;;; ### Subtleties
-;;;
-;;; Note that the function `array-list?` also returns `#t` when passed
-;;; a linked list:
-;;;
-;;;     > (array-list? '(1 . ()))
-;;;     #t
-;;;
-;;; Roselisp allows for the possibility that you simply wants to treat
-;;; the list `'(1 . ())` as an array list of three elements, with the
-;;; cons dot as the second element. If you wish to distinguish linked
-;;; lists from array lists, you should use `linked-list?`, not
-;;; `array-list?`. The standard list functions---`cdr`, `nth`,
-;;; `first`, `second`, `third`, etc.---treat the input as a linked
-;;; list if `linked-list?` returns `#t`, and as an array list
-;;; otherwise.
-;;;
-;;; The term "dotted list" refers exclusively to improper lists.
-;;; Therefore, while the linked list `'(1 . ())` does indeed contain
-;;; a dot, it is not regarded as a dotted list. The improper list
-;;; `'(1 . 2)`, on the other hand, is regarded as dotted.
-;;;
-;;; ### Cons dot
-;;;
-;;; TODO: Merge this section into the other text.
-;;;
-;;; There is no direct analogue to the cons cell concept in
-;;; JavaScript. Therefore, Roselisp represents cons cells in terms of
-;;; *dotted lists*, which are lists where the penultimate element is
-;;; the *cons dot*, the symbol `.` (i.e., `|.|`, or `Symbol.for('.')`
-;;; in JavaScript).
-;;;
-;;; Thus, in Roselisp, the expression `'(1 . 2)` is the same as
-;;; `(list 1 '. 2)`, or, in JavaScript, `[1, Symbol.for('.'), 2]`.
-;;; A cons cell can be considered from two perspectives: either as a
-;;; pair of two elements, or as a list where the second element is the
-;;; cons dot.
-;;;
-;;; Cons cells are implemented as a *dotted list*, i.e., as a
-;;; three-element list with a special cons dot symbol as the second
-;;; element. Thus, the cons cell `(a . b)` is represented as the list
-;;; `(a <cons-dot> b)`, where `<cons-dot>` is a special value defined
-;;; in this file. It is just the symbol `.` (also written `|.|`).
-;;;
-;;; It is possible to have more than one element before the dot, as in
-;;; `(a b c . d)`. Thus, dotted lists can be understood as a
-;;; generalization of cons cells, with a cons cell being a dotted list
-;;; with two elements.
-;;;
-;;; It is also possible to represent circular lists in terms of dotted
-;;; lists. In Roselisp, a circular list is a dotted list containing
-;;; itself.
+;;; The simplifying assumption is made that dotted lists are only used
+;;; to represent values that cannot be expressed without a dot. This
+;;; permits most list functions to be implemented as simple array
+;;; operations, although some checks are necessary in places since
+;;; dotted lists are also implemented as arrays.
 ;;;
 ;;; ## License
 ;;;
@@ -180,64 +38,26 @@
                   Literal
                   MemberExpression))
 
-;;; Cons dot value.
-(define cons-dot_ *cons-dot*)
-
-;;; Compiled cons dot value.
-(define cons-dot-compiled_
-  ;; `Symbol.for('.')`
-  (new CallExpression
-       (new MemberExpression
-            (new Identifier "Symbol")
-            (new Identifier "for"))
-       (list (new Literal "."))))
-
-;;; `cons-dot` function.
-(define (cons-dot-f_)
-  *cons-dot*)
-
-;;; Whether a value is the cons dot.
-(define (cons-dot?_ obj)
-  (eq? obj *cons-dot*))
-
-;;; Create a cons cell whose CAR is `x` and CDR is `y`.
+;;; Whether something is a pair, i.e., a cons cell.
 ;;;
-;;; Similar to [`cons` in Racket][rkt:cons] and
-;;; [`cons` in Common Lisp][cl:cons].
-;;;
-;;; [rkt:cons]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._cons%29%29
-;;; [cl:cons]: http://clhs.lisp.se/Body/f_cons.htm
-(define (cons_ x y)
-  ;; Create an array list whenever possible;
-  ;; otherwise create a dotted list.
-  (cond
-   ((array? y)
-    `(,x ,@y))
-   (else
-    `(,x ,*cons-dot* ,y))))
-
-;;; Whether something is a cons cell.
-;;;
-;;; Similar to [`cons?` in Racket][rkt:consp] and
+;;; Similar to [`pair?` in Racket][rkt:pairp] and
 ;;; [`consp` in Common Lisp][cl:consp].
 ;;;
-;;; [rkt:consp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._cons~3f%29%29
+;;; [rkt:pairp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._pair~3f%29%29
 ;;; [cl:consp]: http://clhs.lisp.se/Body/f_consp.htm
-(define (cons?_ obj)
-  ;; All lists except the empty list
-  ;; qualify as cons cells.
-  (and (array? obj)
-       (not (null? obj))))
+(define (pair?_ x)
+  ;; All lists except the empty list qualify as pairs.
+  (and (array? x)
+       (> (array-length x) 0)))
 
-;;; Make a list.
+;;; Whether something is the empty list.
 ;;;
-;;; Similar to [`list` in Racket][rkt:list] and
-;;; [`list` in Common Lisp][cl:list].
+;;; Similar to [`null?` in Racket][rkt:nullp].
 ;;;
-;;; [rkt:list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._list%29%29
-;;; [cl:list]: http://clhs.lisp.se/Body/f_list_.htm
-(define (list_ . args)
-  args)
+;;; [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
+(define (null?_ x)
+  (and (array? x)
+       (= (array-length x) 0)))
 
 ;;; Whether something is a list.
 ;;;
@@ -250,6 +70,40 @@
 ;;; [cl:listp]: http://clhs.lisp.se/Body/f_listp.htm#listp
 (define (list?_ x)
   (null? (last-cdr x)))
+
+;;; Whether something is a pair or a list.
+;;;
+;;; Similar to [`listp` in Common Lisp][cl:listp] and
+;;; [`listp` in Emacs Lisp], which are not as
+;;; rigorous as `list?` in Scheme.
+;;;
+;;; [cl:listp]: http://clhs.lisp.se/Body/f_listp.htm#listp
+;;; [el:listp]: https://www.gnu.org/software/emacs/manual/html_node/elisp/List_002drelated-Predicates.html#index-listp
+(define (pair-or-list?_ x)
+  (or (pair? x)
+      (null? x)))
+
+;;; Make a list.
+;;;
+;;; Similar to [`list` in Racket][rkt:list] and
+;;; [`list` in Common Lisp][cl:list].
+;;;
+;;; [rkt:list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._list%29%29
+;;; [cl:list]: http://clhs.lisp.se/Body/f_list_.htm
+(define (list_ . args)
+  args)
+
+;;; Create a cons cell whose CAR is `x` and CDR is `y`.
+;;;
+;;; Similar to [`cons` in Racket][rkt:cons] and
+;;; [`cons` in Common Lisp][cl:cons].
+;;;
+;;; [rkt:cons]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._cons%29%29
+;;; [cl:cons]: http://clhs.lisp.se/Body/f_cons.htm
+(define (cons_ x y)
+  ;; Create a regular list whenever possible;
+  ;; otherwise create a dotted list.
+  `(,x ,@(dotted-list-link y)))
 
 ;;; Make a dotted list. Like `list`, but the final argument
 ;;; is used as the tail, instead of as the final element.
@@ -267,22 +121,22 @@
 ;;; [rkt:list-star]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._list%2A%29%29
 (define (list-star_ . args)
   (cond
-   ((= (array-list-length args) 0)
+   ((= (length args) 0)
     #u)
-   ((= (array-list-length args) 1)
+   ((= (length args) 1)
     (first args))
    (else
     (define tail-lst
-      (array-list-last args))
+      (last args))
     (define head-lst
       (drop-right args 1))
     (cond
      ;; Make a proper list if possible.
-     ((array? tail-lst)
+     ((pair-or-list? tail-lst)
       `(,@head-lst ,@tail-lst))
      ;; If not, make a dotted list.
      (else
-      `(,@head-lst ,*cons-dot* ,tail-lst))))))
+      `(,@head-lst . ,tail-lst))))))
 
 ;;; Make a list of `n` elements. The function `proc` is applied
 ;;; to the integers from `0` to `n - 1`.
@@ -325,9 +179,9 @@
 (define (flatten_ lst)
   (foldl (lambda (x acc)
            (cond
-            ((array? x)
+            ((pair-or-list? x)
              (append acc (flatten_ x)))
-            ((cons-dot? x)
+            ((eq? x '|.|)
              acc)
             (else
              (push-right! acc x))))
@@ -348,9 +202,9 @@
 ;;;
 ;;; [rkt:second]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._second%29%29
 (define (second_ lst)
-  (if (linked-list? lst)
-      (linked-list-second lst)
-      (array-list-second lst)))
+  (if (dotted-list? lst)
+      (dotted-list-second lst)
+      (array-second lst)))
 
 ;;; Return the third element of a list.
 ;;;
@@ -358,9 +212,9 @@
 ;;;
 ;;; [rkt:third]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._third%29%29
 (define (third_ lst)
-  (if (linked-list? lst)
-      (linked-list-third lst)
-      (array-list-third lst)))
+  (if (dotted-list? lst)
+      (dotted-list-third lst)
+      (array-third lst)))
 
 ;;; Return the fourth element of a list.
 ;;;
@@ -368,9 +222,9 @@
 ;;;
 ;;; [rkt:fourth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._fourth%29%29
 (define (fourth_ lst)
-  (if (linked-list? lst)
-      (linked-list-fourth lst)
-      (array-list-fourth lst)))
+  (if (dotted-list? lst)
+      (dotted-list-fourth lst)
+      (array-fourth lst)))
 
 ;;; Return the fifth element of a list.
 ;;;
@@ -378,9 +232,9 @@
 ;;;
 ;;; [rkt:fifth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._fifth%29%29
 (define (fifth_ lst)
-  (if (linked-list? lst)
-      (linked-list-fifth lst)
-      (array-list-fifth lst)))
+  (if (dotted-list? lst)
+      (dotted-list-fifth lst)
+      (array-fifth lst)))
 
 ;;; Return the sixth element of a list.
 ;;;
@@ -388,9 +242,9 @@
 ;;;
 ;;; [rkt:sixth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._sixth%29%29
 (define (sixth_ lst)
-  (if (linked-list? lst)
-      (linked-list-sixth lst)
-      (array-list-sixth lst)))
+  (if (dotted-list? lst)
+      (dotted-list-sixth lst)
+      (array-sixth lst)))
 
 ;;; Return the seventh element of a list.
 ;;;
@@ -398,9 +252,9 @@
 ;;;
 ;;; [rkt:seventh]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._seventh%29%29
 (define (seventh_ lst)
-  (if (linked-list? lst)
-      (linked-list-seventh lst)
-      (array-list-seventh lst)))
+  (if (dotted-list? lst)
+      (dotted-list-seventh lst)
+      (array-seventh lst)))
 
 ;;; Return the eighth element of a list.
 ;;;
@@ -408,9 +262,9 @@
 ;;;
 ;;; [rkt:eighth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._eighth%29%29
 (define (eighth_ lst)
-  (if (linked-list? lst)
-      (linked-list-eighth lst)
-      (array-list-eighth lst)))
+  (if (dotted-list? lst)
+      (dotted-list-eighth lst)
+      (array-eighth lst)))
 
 ;;; Return the ninth element of a list.
 ;;;
@@ -418,9 +272,9 @@
 ;;;
 ;;; [rkt:ninth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._ninth%29%29
 (define (ninth_ lst)
-  (if (linked-list? lst)
-      (linked-list-ninth lst)
-      (array-list-ninth lst)))
+  (if (dotted-list? lst)
+      (dotted-list-ninth lst)
+      (array-ninth lst)))
 
 ;;; Return the tenth element of a list.
 ;;;
@@ -428,9 +282,9 @@
 ;;;
 ;;; [rkt:tenth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._tenth%29%29
 (define (tenth_ lst)
-  (if (linked-list? lst)
-      (linked-list-tenth lst)
-      (array-list-tenth lst)))
+  (if (dotted-list? lst)
+      (dotted-list-tenth lst)
+      (array-tenth lst)))
 
 ;;; Return the tail of a list.
 ;;;
@@ -443,9 +297,9 @@
 ;;; [rkt:cdr]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._cdr%29%29
 ;;; [cl:cdr]: http://clhs.lisp.se/Body/f_car_c.htm#cdr
 (define (cdr_ lst)
-  (if (linked-pair? lst)
-      (linked-pair-cdr lst)
-      (array-list-cdr lst)))
+  (if (dotted-pair? lst)
+      (array-third lst)
+      (array-rest lst)))
 
 ;;; Return the tail of a list.
 ;;;
@@ -453,9 +307,21 @@
 ;;;
 ;;; [rkt:rest]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._rest%29%29
 (define (rest_ lst)
-  ;; TODO: Handle linked lists.
-  ;; TODO: Alias of `cdr`.
-  (array-list-rest lst))
+  (if (dotted-pair? lst)
+      (array-third lst)
+      (array-rest lst)))
+
+;;; Access the list element indicated by
+;;; one or more `indices`.
+(define (list-ref_ lst . indices)
+  (cond
+   ((dotted-list? lst)
+    (apply dotted-list-ref_ lst indices))
+   (else
+    (define result lst)
+    (for ((i indices))
+      (set! result (array-ref lst i)))
+    result)))
 
 ;;; Return the `n`-th element of a list.
 ;;;
@@ -465,9 +331,61 @@
 ;;; [rkt:nth]: https://docs.racket-lang.org/collections/collections-api.html#%28def._%28%28lib._data%2Fcollection..rkt%29._nth%29%29
 ;;; [cl:nth]: http://clhs.lisp.se/Body/f_nth.htm#nth
 (define (nth_ n lst)
-  (if (linked-list-link? lst)
-      (linked-list-nth n lst)
-      (array-list-nth n lst)))
+  (list-ref_ lst n))
+
+;;; Set a list position to a given value.
+;;; Returns a new list.
+(define (list-set_ lst . indices-and-value)
+  (cond
+   ((dotted-list? lst)
+    (apply dotted-list-set_ lst indices-and-value))
+   (else
+    (define result
+      `(,@lst))
+    (cond
+     ((> (length indices-and-value) 2)
+      (define-values (pos . indices-and-value-1)
+        indices-and-value)
+      (array-set! result
+                  pos
+                  (apply list-set_
+                         (array-ref result pos)
+                         indices-and-value-1)))
+     (else
+      (define-values (pos val)
+        indices-and-value)
+      (array-set! result pos val)))
+    result)))
+
+;;; Set a list position to a given value.
+;;; Modifies the original list.
+(define (list-set!_ lst . indices-and-value)
+  (cond
+   ((dotted-list? lst)
+    (apply dotted-list-set!_ lst indices-and-value))
+   (else
+    (define indices
+      (drop-right indices-and-value 1))
+    (define first-indices
+      (drop-right indices 1))
+    (define last-index
+      (last indices))
+    (define value
+      (last indices-and-value))
+    (define lst1 lst)
+    (for ((i first-indices))
+      (set! lst1 (list-ref lst1 i)))
+    (array-set! lst1 last-index value)
+    value)))
+
+;;; Return the `n`-th CDR element of a list.
+(define (list-tail_ lst n)
+  (define result lst)
+  (define i n)
+  (while (> i 0)
+    (set! result (cdr result))
+    (set! i (- i 1)))
+  result)
 
 ;;; Return the `n`-th CDR element of a list.
 ;;;
@@ -475,10 +393,12 @@
 ;;;
 ;;; [cl:nth]: http://clhs.lisp.se/Body/f_nthcdr.htm#nthcdr
 (define (nthcdr_ n lst)
-  (if (and (= (array-length lst) (+ n 2))
-           (cons-dot? (aget lst n)))
-      (linked-list-nthcdr n lst)
-      (array-list-nthcdr n lst)))
+  (define result lst)
+  (define i n)
+  (while (> i 0)
+    (set! result (cdr result))
+    (set! i (- i 1)))
+  result)
 
 ;;; Take the `n` first elements from `lst`.
 ;;;
@@ -486,7 +406,7 @@
 ;;;
 ;;; [rkt:take]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._take%29%29
 (define (take_ lst n)
-  (array-list-take lst n))
+  (drop-right lst (- (length lst) n)))
 
 ;;; Return the list obtained by dropping
 ;;; the first `n` elements from `lst`.
@@ -495,7 +415,7 @@
 ;;;
 ;;; [rkt:drop]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._drop%29%29
 (define (drop_ lst n)
-  (array-list-drop lst n))
+  (array-drop lst n))
 
 ;;; Return the list obtained by dropping
 ;;; the last `n` elements from `lst`.
@@ -504,7 +424,7 @@
 ;;;
 ;;; [rkt:drop-right]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._drop-right%29%29
 (define (drop-right_ lst n)
-  (array-list-drop-right lst n))
+  (array-drop-right lst n))
 
 ;;; Reverse the order of a list.
 ;;; Returns a new list.
@@ -513,7 +433,11 @@
 ;;;
 ;;; [rkt:reverse]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._reverse%29%29
 (define (reverse_ lst)
-  (array-list-reverse lst))
+  (array-reverse lst))
+
+;;; Reverse the order of a list.
+(define (reverse!_ lst)
+  (array-reverse! lst))
 
 ;;; Return a list where the last `n` conses have been omitted.
 ;;;
@@ -524,7 +448,7 @@
   (let ((result `(,@x))
         (i n))
     (while (and (> i 0)
-                (> (array-length result) 0))
+                (> (length result) 0))
       (pop-right! result)
       (set! i (- i 1)))
     result))
@@ -538,7 +462,7 @@
 (define (nbutlast_ x (n 1))
   (let ((i n))
     (while (and (> i 0)
-                (> (array-length x) 0))
+                (> (length x) 0))
       (pop-right! x)
       (set! i (- i 1)))
     x))
@@ -549,7 +473,7 @@
 ;;;
 ;;; [cl:pop]: http://clhs.lisp.se/Body/m_pop.htm#pop
 (define (pop-left!_ lst)
-  (send lst shift))
+  (array-pop-left! lst))
 
 ;;; Pop an element off the end of a list.
 ;;;
@@ -557,7 +481,7 @@
 ;;;
 ;;; [js:pop]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop
 (define (pop-right!_ lst)
-  (send lst pop))
+  (array-pop-right! lst))
 
 ;;; Push an element onto the beginning of a list.
 ;;;
@@ -565,8 +489,7 @@
 ;;;
 ;;; [cl:push]: http://clhs.lisp.se/Body/m_push.htm#push
 (define (push-left!_ lst x)
-  (send lst unshift x)
-  lst)
+  (array-push-left! lst x))
 
 ;;; Push an element onto the end of a list.
 ;;;
@@ -574,8 +497,7 @@
 ;;;
 ;;; [js:push]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push
 (define (push-right!_ lst x)
-  (send lst push x)
-  lst)
+  (array-push-right! lst x))
 
 ;;; Return the length of a list.
 ;;;
@@ -585,9 +507,9 @@
 ;;; [rkt:length]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._length%29%29
 ;;; [cl:length]: http://clhs.lisp.se/Body/f_length.htm#length
 (define (length_ lst)
-  (if (linked-list-link? lst)
-      (linked-list-length lst)
-      (array-list-length lst)))
+  (if (dotted-list? lst)
+      (dotted-list-length lst)
+      (array-length lst)))
 
 ;;; Return the last element of a list.
 ;;;
@@ -595,9 +517,9 @@
 ;;;
 ;;; [rkt:last]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._last%29%29
 (define (last_ lst)
-  (if (linked-list-link? lst)
-      (linked-list-last lst)
-      (array-list-last lst)))
+  (if (dotted-list? lst)
+      (dotted-list-last lst)
+      (array-last lst)))
 
 ;;; Return the last pair of a list.
 ;;;
@@ -608,29 +530,29 @@
 ;;; [cl:last]: http://clhs.lisp.se/Body/f_last.htm#last
 (define (last-pair_ lst)
   (cond
-   ((not (array? lst))
+   ((not (pair-or-list? lst))
     #u)
    ((null? lst)
     lst)
-   ((linked-list-link? lst)
+   ((dotted-list? lst)
     (define current lst)
     (define result #u)
-    (while (and (linked-list-link? current)
-                (not (null? (linked-list-tail current))))
-      (set! current (linked-list-tail current)))
+    (while (and (dotted-list? current)
+                (not (null? (dotted-list-tail current))))
+      (set! current (dotted-list-tail current)))
     result)
    (else
-    (array-list-drop lst (- (array-list-length lst) 1)))))
+    (array-drop lst (- (array-length lst) 1)))))
 
 ;;; Return the last cdr of a list, i.e., the terminating empty list.
 (define (last-cdr_ lst)
   (cond
-   ((not (array? lst))
+   ((not (pair-or-list? lst))
     #u)
-   ((linked-list-link? lst)
+   ((dotted-list? lst)
     (define result lst)
-    (while (linked-list-link? result)
-      (set! result (linked-list-tail result)))
+    (while (dotted-list? result)
+      (set! result (dotted-list-tail result)))
     result)
    (else
     '())))
@@ -641,8 +563,8 @@
 ;;;
 ;;; [rkt:set-car]: https://docs.racket-lang.org/r5rs/r5rs-std/r5rs-Z-H-9.html#%25_idx_416
 (define (set-car!_ x y)
-  (when (> (array-length x) 0)
-    (aset! x 0 y))
+  (when (> (length x) 0)
+    (list-set! x 0 y))
   #u)
 
 ;;; Set the CDR of a list.
@@ -655,124 +577,22 @@
    ((null? x))
    ((eq? x y)
     (cond
-     ((linked-list-link? x)
-      (aset! x (- (array-length x) 1) y))
+     ((dotted-list? x)
+      (array-set! x (- (array-length x) 1) y))
      (else
-      (push-right! x *cons-dot*)
+      (push-right! x '|.|)
       (push-right! x y))))
    (else
     (while (> (array-length x) 1)
       (pop-right! x))
     (cond
-     ((array? y)
+     ((pair-or-list? y)
       (for ((z y))
         (push-right! x z)))
      (else
-      (push-right! x *cons-dot*)
+      (push-right! x '|.|)
       (push-right! x y)))))
   #u)
-
-;;; Whether something is the empty list.
-;;;
-;;; Similar to [`null?` in Racket][rkt:nullp].
-;;;
-;;; [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
-(define (null?_ x)
-  (and (array? x)
-       (= (array-length x) 0)))
-
-;;; Whether something is an array list.
-;;;
-;;; An array list is a list implemented in terms of an array.
-;;; It corresponds roughly to the
-;;; [`ArrayList` class in Java][java:ArrayList].
-;;;
-;;; [java:ArrayList]: https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html
-(define (array-list?_ x)
-  (array? x))
-
-;;; Return the length of an array list.
-(define (array-list-length_ lst)
-  (array-length lst))
-
-;;; Return the first element of an array list.
-(define (array-list-first_ lst)
-  (array-first lst))
-
-;;; Return the second element of an array list.
-(define (array-list-second_ lst)
-  (array-second lst))
-
-;;; Return the third element of an array list.
-(define (array-list-third_ lst)
-  (array-third lst))
-
-;;; Return the fourth element of an array list.
-(define (array-list-fourth_ lst)
-  (array-fourth lst))
-
-;;; Return the fifth element of an array list.
-(define (array-list-fifth_ lst)
-  (array-fifth lst))
-
-;;; Return the sixth element of an array list.
-(define (array-list-sixth_ lst)
-  (array-sixth lst))
-
-;;; Return the seventh element of an array list.
-(define (array-list-seventh_ lst)
-  (array-seventh lst))
-
-;;; Return the eighth element of an array list.
-(define (array-list-eighth_ lst)
-  (array-eighth lst))
-
-;;; Return the ninth element of an array list.
-(define (array-list-ninth_ lst)
-  (array-ninth lst))
-
-;;; Return the tenth element of an array list.
-(define (array-list-tenth_ lst)
-  (array-tenth lst))
-
-;;; Return the last element of an array list.
-(define (array-list-last_ lst)
-  (array-last lst))
-
-;;; Return the `n`-th element of an array list.
-(define (array-list-nth_ n lst)
-  (aget lst n))
-
-;;; Return the `n`-th CDR of an array list.
-(define (array-list-nthcdr_ n lst)
-  (array-drop lst n))
-
-;;; Return the CDR of an array list.
-(define (array-list-cdr_ lst)
-  (array-rest lst))
-
-;;; Return the tail of an array list.
-(define (array-list-rest_ lst)
-  (array-list-cdr lst))
-
-;;; Take the `n` first elements from an array list.
-(define (array-list-take_ lst n)
-  (array-take lst n))
-
-;;; Return the list obtained by dropping
-;;; the first `n` elements from an array list.
-(define (array-list-drop_ lst n)
-  (array-drop lst n))
-
-;;; Return the list obtained by dropping
-;;; the last `n` elements from an array list.
-(define (array-list-drop-right_ lst n)
-  (array-drop-right lst n))
-
-;;; Reverse the order of an array list.
-;;; Returns a new array list.
-(define (array-list-reverse_ lst)
-  (array-reverse lst))
 
 ;;; Whether something is a dotted list.
 ;;;
@@ -782,178 +602,209 @@
 (define (dotted-list?_ x)
   (and (array? x)
        (>= (array-length x) 3)
-       (cons-dot? (aget x (- (array-length x) 2)))
-       (not (null? (last-cdr x)))))
+       (eq? (array-nlast x 2) '|.|)))
 
-;;; Whether something is a linked list.
-;;;
-;;; An linked list is a list implemented as a chain of links.
-;;; It corresponds roughly to the
-;;; [`LinkedList` class in Java][java:LinkedList].
-;;;
-;;; [java:LinkedList]: https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html
-(define (linked-list?_ x)
-  (and (array? x)
-       (>= (array-length x) 3)
-       (cons-dot? (aget x (- (array-length x) 2)))
-       (null? (last-cdr x))))
-
-;;; Whether something is a linked list link.
-(define (linked-list-link?_ x)
-  (and (array? x)
-       (>= (array-length x) 3)
-       (cons-dot? (aget x (- (array-length x) 2)))))
-
-;;; Whether something is a linked pair.
-(define (linked-pair?_ x)
+;;; Whether something is a dotted pair.
+(define (dotted-pair?_ x)
   (and (array? x)
        (= (array-length x) 3)
-       (cons-dot? (aget x 1))))
+       (eq? (array-ref x 1) '|.|)))
 
-;;; Return the CAR of a linked list link.
-(define (linked-list-link-car_ x)
-  (array-first x))
+;;; Whether something is a proper dotted list.
+(define (dotted-proper-list?_ x)
+  (and (array? x)
+       (>= (array-length x) 3)
+       (eq? (array-nlast x 2) '|.|)
+       (null? (last-cdr x))))
 
-;;; Return the CDR of a linked list link.
-(define (linked-list-link-cdr_ x)
-  (array-last x))
+;;; Whether something is an improper dotted list.
+(define (dotted-improper-list?_ x)
+  (and (array? x)
+       (>= (array-length x) 3)
+       (eq? (array-nlast x 2) '|.|)
+       (not (null? (last-cdr x)))))
 
-;;; Return the CAR of a linked pair.
-(define (linked-pair-car_ x)
-  (array-first x))
+;;; Return the head of a dotted list.
+(define (dotted-list-head_ lst)
+  (array-drop-right lst 2))
 
-;;; Return the CDR of a linked pair.
-(define (linked-pair-cdr_ x)
-  (array-third x))
-
-;;; Return the length of a linked list.
-(define (linked-list-length_ lst)
-  (define len 0)
-  (define current lst)
-  (while (linked-list-link? current)
-    (set! len (+ len (- (array-length lst) 2)))
-    (set! current (linked-list-tail current)))
-  len)
-
-;;; Return the first element of a linked list.
-(define (linked-list-first_ lst)
-  (array-first lst))
-
-;;; Return the second element of a linked list.
-(define (linked-list-second_ lst)
-  (linked-list-nth 1 lst))
-
-;;; Return the third element of a linked list.
-(define (linked-list-third_ lst)
-  (linked-list-nth 2 lst))
-
-;;; Return the fourth element of a linked list.
-(define (linked-list-fourth_ lst)
-  (linked-list-nth 3 lst))
-
-;;; Return the fifth element of a linked list.
-(define (linked-list-fifth_ lst)
-  (linked-list-nth 4 lst))
-
-;;; Return the sixth element of a linked list.
-(define (linked-list-sixth_ lst)
-  (linked-list-nth 5 lst))
-
-;;; Return the seventh element of a linked list.
-(define (linked-list-seventh_ lst)
-  (linked-list-nth 6 lst))
-
-;;; Return the eighth element of a linked list.
-(define (linked-list-eighth_ lst)
-  (linked-list-nth 7 lst))
-
-;;; Return the ninth element of a linkedd list.
-(define (linked-list-ninth_ lst)
-  (linked-list-nth 8 lst))
-
-;;; Return the tenth element of a linkedd list.
-(define (linked-list-tenth_ lst)
-  (linked-list-nth 9 lst))
-
-;;; Return the last element of a linked list.
-(define (linked-list-last_ lst)
-  (define current lst)
-  (define result #u)
-  (while (and (linked-list-link? current)
-              (not (null? (linked-list-link-cdr current))))
-    (set! current (linked-list-link-cdr current)))
-  (when (linked-list-link? current)
-    (set! result
-          (aget current (- (array-length current) 3))))
-  result)
-
-;;; Return the `n`-th element of a linked list.
-(define (linked-list-nth_ n lst)
-  (define i n)
-  (define result lst)
-  (while (> i 0)
-    (cond
-     ((dotted-pair? result)
-      (set! result (linked-list-tail lst)))
-     (else
-      (set! result (array-rest lst))))
-    (set! i (- i 1)))
-  (when (array? result)
-    (set! result (array-first result)))
-  result)
-
-;;; Return the `n`-th CDR of a linked list.
-(define (linked-list-nthcdr_ n lst)
-  (aget lst (- (array-length lst) 1)))
-
-;;; Return the list obtained by dropping
-;;; the first `n` elements from a linked list.
-(define (linked-list-drop_ lst pos)
-  ;; TODO: Linked lists.
-  (array-drop lst pos))
-
-;;; Return the list obtained by dropping
-;;; the last `n` elements from a linked list.
-(define (linked-list-drop-right_ lst n)
-  ;; TODO: Linked lists.
-  (array-drop-right lst (+ n 1)))
-
-;;; Return the CAR of a linked list.
-(define (linked-list-car_ lst)
-  (array-first lst))
-
-;;; Return the CDR of a linked list.
-(define (linked-list-cdr_ lst)
-  (cond
-   ((dotted-pair? lst)
-    (array-third lst))
-   (else
-    (array-rest lst))))
-
-;;; Return the head of a linked list.
-(define (linked-list-head_ lst)
-  ;; TODO: Rename to `linked-list-link-head`.
-  (drop-right lst 2))
-
-;;; Return the tail of a linked list.
-(define (linked-list-tail_ lst)
-  ;; TODO: Rename to `linked-list-link-tail`.
+;;; Return the tail of a dotted list.
+(define (dotted-list-tail_ lst)
   (array-last lst))
 
-;;; Parse a linked list.
-(define (linked-list-parse_ lst)
-  (values (linked-list-head_ lst)
-          (linked-list-tail_ lst)))
+;;; Create a dotted list link.
+(define (dotted-list-link_ x)
+  (if (pair-or-list? x)
+      x
+      (list '|.| x)))
 
-;;; Make a linked list.
+;;; Return the CDR of a dotted pair.
+(define (dotted-pair-cdr_ x)
+  (array-third x))
+
+;;; Parse a dotted list.
+(define (dotted-list-parse_ lst)
+  (values (dotted-list-head_ lst)
+          (dotted-list-tail_ lst)))
+
+;;; Return the length of a dotted list.
+(define (dotted-list-length_ lst)
+  (define len 0)
+  (define current lst)
+  (while (dotted-list? current)
+    (set! len
+          (+ len
+             (- (array-length lst) 2)))
+    (set! current (dotted-list-tail current)))
+  len)
+
+;;; Access the dotted list element indicated by
+;;; one or more `indices`.
+(define (dotted-list-ref_ lst . indices)
+  (define result lst)
+  (for ((i indices))
+    (while (> i 0)
+      (cond
+       ((< i (- (array-length result) 2))
+        (break))
+       (else
+        (set! i (- i (- (array-length result) 2)))
+        (set! result (dotted-list-tail result)))))
+    (when (pair-or-list? result)
+      (set! result (array-ref result i))))
+  result)
+
+;;; Set a dotted list position to a given value.
+;;; Returns a new list.
+(define (dotted-list-set_ lst . indices-and-value)
+  (cond
+   ((> (length indices-and-value) 2)
+    (define-values (pos . indices-and-value-1)
+      indices-and-value)
+    (cond
+     ((< pos (- (array-length lst) 2))
+      (define result `(,@lst))
+      (array-set! result
+                  pos
+                  (apply dotted-list-set_
+                         (array-ref result pos)
+                         indices-and-value-1))
+      result)
+     (else
+      (append (array-drop-right lst 1)
+              (list
+               (dotted-list-set_
+                (array-last lst)
+                `(,(- pos (- (array-length lst) 2))
+                  ,@indices-and-value-1)))))))
+   (else
+    (define-values (pos val)
+      indices-and-value)
+    (cond
+     ((< pos (- (array-length lst) 2))
+      (define result `(,@lst))
+      (array-set! result pos val)
+      result)
+     (else
+      (append (array-drop-right lst 1)
+              (list
+               (dotted-list-set_
+                (array-last lst)
+                (- pos (- (array-length lst) 2))
+                val))))))))
+
+;;; Set a dotted list position to a given value.
+;;; Modifies the original list.
+(define (dotted-list-set!_ lst . indices-and-value)
+  (define indices
+    (drop-right indices-and-value 1))
+  (define indices1
+    (drop-right indices 1))
+  (define last-index
+    (last indices))
+  (define value
+    (last indices-and-value))
+  (define lst1 lst)
+  (for ((i indices1))
+    (while (> i 0)
+      (cond
+       ((< i (- (array-length lst1) 2))
+        (break))
+       (else
+        (set! i (- i (- (array-length lst1) 2)))
+        (set! lst1 (dotted-list-tail lst1)))))
+    (when (pair-or-list? lst1)
+      (set! lst1 (list-ref lst1 i))))
+  (while (> last-index 0)
+    (cond
+     ((< last-index (- (array-length lst1) 2))
+      (break))
+     (else
+      (set! last-index
+            (- last-index (- (array-length lst1) 2)))
+      (set! lst1 (dotted-list-tail lst1)))))
+  (array-set! lst1 last-index value)
+  value)
+
+;;; Return the first element of a dotted list.
+(define (dotted-list-first_ lst)
+  (array-first lst))
+
+;;; Return the second element of a dotted list.
+(define (dotted-list-second_ lst)
+  (dotted-list-ref_ lst 1))
+
+;;; Return the third element of a dotted list.
+(define (dotted-list-third_ lst)
+  (dotted-list-ref_ lst 2))
+
+;;; Return the fourth element of a dotted list.
+(define (dotted-list-fourth_ lst)
+  (dotted-list-ref_ lst 3))
+
+;;; Return the fifth element of a dotted list.
+(define (dotted-list-fifth_ lst)
+  (dotted-list-ref_ lst 4))
+
+;;; Return the sixth element of a dotted list.
+(define (dotted-list-sixth_ lst)
+  (dotted-list-ref_ lst 5))
+
+;;; Return the seventh element of a dotted list.
+(define (dotted-list-seventh_ lst)
+  (dotted-list-ref_ lst 6))
+
+;;; Return the eighth element of a dotted list.
+(define (dotted-list-eighth_ lst)
+  (dotted-list-ref_ lst 7))
+
+;;; Return the ninth element of a dotted list.
+(define (dotted-list-ninth_ lst)
+  (dotted-list-ref_ lst 8))
+
+;;; Return the tenth element of a dotted list.
+(define (dotted-list-tenth_ lst)
+  (dotted-list-ref_ lst 9))
+
+;;; Return the last element of a dotted list.
+(define (dotted-list-last_ lst)
+  (define current lst)
+  (define result #u)
+  (while (and (dotted-list? current)
+              (not (null? (dotted-list-cdr current))))
+    (set! current (dotted-list-cdr current)))
+  (when (dotted-list? current)
+    (set! result
+          (list-ref current (- (array-length current) 3))))
+  result)
+
+;;; Make a dotted list.
 (define (make-dotted-list_ car cdr)
-  ;; TODO: Rename to `make-linked-list`.
   (list-star_ car cdr))
 
-;;; Make a linked pair.
+;;; Make a dotted pair.
 (define (make-pair_ car cdr)
-  ;; TODO: Rename to `make-linked-pair`.
-  `(,car ,*cons-dot* ,cdr))
+  `(,car . ,cdr))
 
 ;;; Whether something is a proper list,
 ;;; i.e., a list that is terminated by
@@ -980,61 +831,29 @@
 ;;;
 ;;; [rkt:circular-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#circular-list-p
 (define (circular-list?_ x)
-  (and (linked-list-link? x)
-       (eq? (linked-list-tail x) x)))
+  (and (dotted-list? x)
+       (eq? (dotted-list-tail x) x)))
 
 ;;; Convert an array list to a linked list.
-(define (array-list->linked-list_ x)
-  `(,@(drop-right x 1) ,*cons-dot* ,(array-list-last x)))
+(define (list->dotted-list_ x)
+  `(,@(array-drop-right x 1) . ,(array-last x)))
 
 ;;; Convert a linked list to an array list.
-(define (linked-list->array-list_ x)
-  `(,@(linked-list-head x) ,(linked-list-tail x)))
+(define (dotted-list->list_ x)
+  `(,@(dotted-list-head x) ,(dotted-list-tail x)))
 
 (provide
   (rename-out (append_ append))
-  (rename-out (array-list->linked-list_ array-list->linked-list))
-  (rename-out (array-list->linked-list_ proper-list->dotted-list_))
-  (rename-out (array-list-cdr_ array-list-cdr))
-  (rename-out (array-list-drop-right_ array-list-drop-right))
-  (rename-out (array-list-drop_ array-list-drop))
-  (rename-out (array-list-eighth_ array-list-eighth))
-  (rename-out (array-list-fifth_ array-list-fifth))
-  (rename-out (array-list-first_ array-list-first))
-  (rename-out (array-list-fourth_ array-list-fourth))
-  (rename-out (array-list-last_ array-list-last))
-  (rename-out (array-list-length_ array-list-length))
-  (rename-out (array-list-ninth_ array-list-ninth))
-  (rename-out (array-list-nth_ array-list-nth))
-  (rename-out (array-list-nthcdr_ array-list-nthcdr))
-  (rename-out (array-list-rest_ array-list-rest))
-  (rename-out (array-list-reverse_ array-list-reverse))
-  (rename-out (array-list-second_ array-list-second))
-  (rename-out (array-list-seventh_ array-list-seventh))
-  (rename-out (array-list-sixth_ array-list-sixth))
-  (rename-out (array-list-take_ array-list-take))
-  (rename-out (array-list-tenth_ array-list-tenth))
-  (rename-out (array-list-third_ array-list-third))
-  (rename-out (array-list?_ array-list?))
   (rename-out (build-list_ build-list))
   (rename-out (butlast_ butlast))
   (rename-out (cdr_ cdr))
   (rename-out (cdr_ tail))
   (rename-out (cdr_ tail_))
   (rename-out (circular-list?_ circular-list?))
-  (rename-out (cons-dot-compiled_ cons-dot-compiled))
-  (rename-out (cons-dot-f_ cons-dot-f))
-  (rename-out (cons-dot?_ cons-dot?))
-  (rename-out (cons-dot_ cons-dot))
-  (rename-out (cons?_ cons?))
-  (rename-out (cons?_ pair?))
-  (rename-out (cons?_ pair?_))
   (rename-out (cons_ cons))
   (rename-out (dotted-list?_ dotted-list?))
   (rename-out (drop-right_ drop-right))
   (rename-out (drop_ drop))
-  (rename-out (drop_ list-tail))
-  (rename-out (drop_ list-tail_))
   (rename-out (eighth_ eighth))
   (rename-out (fifth_ fifth))
   (rename-out (first_ car))
@@ -1045,44 +864,12 @@
   (rename-out (flatten_ flatten))
   (rename-out (fourth_ fourth))
   (rename-out (improper-list?_ improper-list?))
+  (rename-out (last-cdr_ dotted-list-last-cdr_))
   (rename-out (last-cdr_ last-cdr))
-  (rename-out (last-cdr_ linked-list-last-cdr_))
   (rename-out (last-pair_ last-cons_))
   (rename-out (last-pair_ last-pair))
-  (rename-out (last-pair_ linked-list-last-cons_))
-  (rename-out (last-pair_ linked-list-last-pair_))
   (rename-out (last_ last))
   (rename-out (length_ length))
-  (rename-out (linked-list->array-list_ linked-list->array-list))
-  (rename-out (linked-list-car_ linked-list-car))
-  (rename-out (linked-list-cdr_ linked-list-cdr))
-  (rename-out (linked-list-drop-right_ linked-list-drop-right))
-  (rename-out (linked-list-drop_ linked-list-drop))
-  (rename-out (linked-list-eighth_ linked-list-eighth))
-  (rename-out (linked-list-fifth_ linked-list-fifth))
-  (rename-out (linked-list-first_ linked-list-first))
-  (rename-out (linked-list-fourth_ linked-list-fourth))
-  (rename-out (linked-list-head_ linked-list-head))
-  (rename-out (linked-list-last_ linked-list-last))
-  (rename-out (linked-list-length_ linked-list-length))
-  (rename-out (linked-list-link-car_ linked-list-link-car))
-  (rename-out (linked-list-link-cdr_ linked-list-link-cdr))
-  (rename-out (linked-list-link?_ linked-list-link?))
-  (rename-out (linked-list-ninth_ linked-list-ninth))
-  (rename-out (linked-list-nth_ linked-list-nth))
-  (rename-out (linked-list-nthcdr_ linked-list-nthcdr))
-  (rename-out (linked-list-parse_ linked-list-parse))
-  (rename-out (linked-list-second_ linked-list-second))
-  (rename-out (linked-list-seventh_ linked-list-seventh))
-  (rename-out (linked-list-sixth_ linked-list-sixth))
-  (rename-out (linked-list-tail_ linked-list-tail))
-  (rename-out (linked-list-tenth_ linked-list-tenth))
-  (rename-out (linked-list-third_ linked-list-third))
-  (rename-out (linked-list?_ linked-list?))
-  (rename-out (linked-pair-car_ linked-pair-car))
-  (rename-out (linked-pair-cdr_ linked-pair-cdr))
-  (rename-out (linked-pair?_ dotted-pair-p_))
-  (rename-out (linked-pair?_ linked-pair?))
   (rename-out (list-star_ list*))
   (rename-out (list?_ list?))
   (rename-out (list?_ proper-list?))
@@ -1092,9 +879,16 @@
   (rename-out (make-pair_ make-pair))
   (rename-out (nbutlast_ nbutlast))
   (rename-out (ninth_ ninth))
+  (rename-out (nth_ dotted-list-nth))
+  (rename-out (nth_ dotted-list-nth_))
   (rename-out (nth_ nth))
+  (rename-out (nthcdr_ dotted-list-nthcdr))
+  (rename-out (nthcdr_ dotted-list-nthcdr_))
   (rename-out (nthcdr_ nthcdr))
   (rename-out (null?_ null?))
+  (rename-out (pair?_ cons?))
+  (rename-out (pair?_ cons?_))
+  (rename-out (pair?_ pair?))
   (rename-out (pop-left!_ pop!))
   (rename-out (pop-left!_ pop!_))
   (rename-out (pop-left!_ pop-left!))
@@ -1116,39 +910,36 @@
   (rename-out (tenth_ tenth))
   (rename-out (third_ third))
   append_
-  array-list->linked-list_
-  array-list-cdr_
-  array-list-drop-right_
-  array-list-drop_
-  array-list-eighth_
-  array-list-fifth_
-  array-list-first_
-  array-list-fourth_
-  array-list-last_
-  array-list-length_
-  array-list-ninth_
-  array-list-nth_
-  array-list-nthcdr_
-  array-list-rest_
-  array-list-reverse_
-  array-list-second_
-  array-list-seventh_
-  array-list-sixth_
-  array-list-take_
-  array-list-tenth_
-  array-list-third_
-  array-list?_
   build-list_
   butlast_
   cdr_
   circular-list?_
-  cons-dot-compiled_
-  cons-dot-f_
-  cons-dot?_
-  cons-dot_
-  cons?_
   cons_
+  dotted-improper-list?_
+  dotted-list->list_
+  dotted-list-eighth_
+  dotted-list-fifth_
+  dotted-list-first_
+  dotted-list-fourth_
+  dotted-list-head_
+  dotted-list-last_
+  dotted-list-length_
+  dotted-list-ninth_
+  dotted-list-parse_
+  dotted-list-ref_
+  dotted-list-second_
+  dotted-list-set!_
+  dotted-list-set_
+  dotted-list-seventh_
+  dotted-list-sixth_
+  dotted-list-tail_
+  dotted-list-tenth_
+  dotted-list-link_
+  dotted-list-third_
   dotted-list?_
+  dotted-pair-cdr_
+  dotted-pair?_
+  dotted-proper-list?_
   drop-right_
   drop_
   eighth_
@@ -1161,37 +952,12 @@
   last-pair_
   last_
   length_
-  linked-list->array-list_
-  linked-list-car_
-  linked-list-cdr_
-  linked-list-drop-right_
-  linked-list-drop_
-  linked-list-eighth_
-  linked-list-fifth_
-  linked-list-first_
-  linked-list-fourth_
-  linked-list-head_
-  linked-list-last_
-  linked-list-length_
-  linked-list-link-car_
-  linked-list-link-cdr_
-  linked-list-link?_
-  linked-list-ninth_
-  linked-list-nth_
-  linked-list-nthcdr_
-  linked-list-parse_
-  linked-list-second_
-  linked-list-seventh_
-  linked-list-sixth_
-  linked-list-tail_
-  linked-list-tenth_
-  linked-list-third_
-  linked-list?_
-  linked-pair-car_
-  linked-pair-cdr_
-  linked-pair-cdr_
-  linked-pair?_
+  list->dotted-list_
+  list-ref_
+  list-set!_
+  list-set_
   list-star_
+  list-tail_
   list?_
   list_
   make-dotted-list_
@@ -1202,12 +968,15 @@
   nth_
   nthcdr_
   null?_
+  pair-or-list?_
+  pair?_
   pop-left!_
   pop-right!_
   proper-list?_
   push-left!_
   push-right!_
   rest_
+  reverse!_
   reverse_
   second_
   set-car!_

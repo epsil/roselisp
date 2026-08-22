@@ -70,6 +70,6 @@ declare namespace curryN {
  */
 declare function dashify(f: any, placeholder?: any): any;
 declare namespace dashify {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | symbol[] | (number | symbol | symbol[])[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[][])[])[] | (symbol | symbol[] | (number | symbol | symbol[])[][])[])[])[])[])[])[];
 }
 export { __, __ as _, __ as placeholder, curry, curryN, dashify, isPlaceholder };

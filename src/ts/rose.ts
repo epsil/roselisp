@@ -47,23 +47,6 @@ import {
   visit
 } from './visitor';
 
-const [lastCdr]: any[] = ((): any => {
-  function lastCdr_(lst: any): any {
-    if (!Array.isArray(lst)) {
-      return undefined;
-    } else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-      let result: any = lst;
-      while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-        result = result[result.length - 1];
-      }
-      return result;
-    } else {
-      return [];
-    }
-  }
-  return [lastCdr_];
-})();
-
 /**
  * Rose tree node class.
  */
@@ -576,7 +559,7 @@ class Forest {
    * the last `n` nodes.
    */
   dropRight(n: any): any {
-    return this.nodeList.slice(0, -n);
+    return this.nodeList.slice(0, -n || undefined);
   }
 
   /**
@@ -1081,10 +1064,7 @@ function datumToSyntax(ctxt: any, v: any, srcloc: any = undefined): any {
  */
 function syntaxToList(stx: any): any {
   const exp: any = syntaxToDatum(stx);
-  if (((): any => {
-    const x: any = lastCdr(exp);
-    return Array.isArray(x) && (x.length === 0);
-  })()) {
+  if (Array.isArray(exp) && !((exp.length >= 3) && (exp.at(-2) === Symbol.for('.')) && !Array.isArray(exp.at(-1)))) {
     return stx.getNodes();
   } else {
     return false;
@@ -1104,7 +1084,7 @@ function syntaxE(stx: any): any {
     const nodes: any = stx.getNodes();
     if ((nodes.length >= 3) && (syntaxToDatum(nodes[nodes.length - 2]) === Symbol.for('.'))) {
       // Dotted list.
-      let tail: any = nodes[nodes.length - 1];
+      let tail: any = nodes.at(-1);
       const tailE: any = syntaxE(tail);
       if (Array.isArray(tailE)) {
         tail = tailE;

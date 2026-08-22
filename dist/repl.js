@@ -182,7 +182,7 @@ function rewriteExpression(exp) {
         if (x === Symbol.for('h')) {
             x = Symbol.for('help');
         }
-        else if ([Symbol.for('x'), Symbol.for('q')].includes(x)) {
+        else if ([Symbol.for('ex'), Symbol.for('x'), Symbol.for('q')].includes(x)) {
             x = Symbol.for('quit');
         }
         return [[x, ...y]];

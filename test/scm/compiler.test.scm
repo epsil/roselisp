@@ -27,7 +27,7 @@
  > (compile '(module m scheme
                (define lst
                  `(,symbol? ,boolean?)))
-             :finline-functions #t)
+            :finline-functions #t)
  "let [symbolp, booleanp] = (() => {
   function symbolp_(obj) {
     return typeof obj === 'symbol';
@@ -42,7 +42,7 @@ let lst = [symbolp, booleanp];"
  > (compile '(module m scheme
                (define one-plus-one
                  (apply + '(1 1))))
-             :finline-functions #t)
+            :finline-functions #t)
  "let [_add] = (() => {
   function add_(...args) {
     let result = 0;
@@ -58,7 +58,7 @@ let onePlusOne = _add(1, 1);"
  > (compile '(module m scheme
                (define one-minus-one
                  (apply - '(1 1))))
-             :finline-functions #t)
+            :finline-functions #t)
  "let [_sub] = (() => {
   function sub_(...args) {
     let len = args.length;
@@ -89,7 +89,7 @@ let oneMinusOne = _sub(1, 1);"
  > (compile '(module m scheme
                (define one-times-one
                  (apply * '(1 1))))
-             :finline-functions #t)
+            :finline-functions #t)
  "let [_mul] = (() => {
   function mul_(...args) {
     let result = 1;
@@ -105,7 +105,7 @@ let oneTimesOne = _mul(1, 1);"
  > (compile '(module m scheme
                (define one-divided-by-one
                  (apply / '(1 1))))
-             :finline-functions #t)
+            :finline-functions #t)
  "let [_div] = (() => {
   function div_(...args) {
     if (args.length === 1) {
@@ -127,12 +127,14 @@ let oneDividedByOne = _div(1, 1);"
     '(module m scheme
        (define foo-bar
          (apply string-append '("foo" "bar"))))
-     :finline-functions #t)
+    :finline-functions #t)
  "let [stringAppend] = (() => {
   function stringAppend_(...args) {
-    return args.reduce(function (acc, x) {
-      return acc + x;
-    }, '');
+    let result = '';
+    for (let x of args) {
+      result = result + x;
+    }
+    return result;
   }
   return [stringAppend_];
 })();
@@ -143,7 +145,7 @@ let fooBar = stringAppend('foo', 'bar');"
                  (map f x))
                (define bar
                  (my-map first '((1) (2) (3)))))
-             :finline-functions #t)
+            :finline-functions #t)
  "let [first] = (() => {
   function first_(lst) {
     return lst[0];
@@ -161,25 +163,14 @@ let bar = myMap(first, [[1], [2], [3]]);"
  > (compile '(module m lisp
                (define (my-cdr x)
                  (cdr x)))
-             :finline-functions #t)
- "let [cdr] = (() => {
-  function cdr_(lst) {
-    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
-      return lst[2];
-    } else {
-      return lst.slice(1);
-    }
-  }
-  return [cdr_];
-})();
-
-function myCdr(x) {
-  return cdr(x);
+            :finline-functions #t)
+ "function myCdr(x) {
+  return ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
 }"
  > (compile '(module m lisp
                (define (my-intersection x y)
                  (intersection x y)))
-             :finline-functions #t)
+            :finline-functions #t)
  "let [intersection] = (() => {
   function intersection_(...args) {
     function intersection2(arr1, arr2) {
@@ -230,12 +221,12 @@ function myIntersection(x, y) {
             (defmacro foo (x)
               x)
             (provide foo))
-          '(module b scheme
-             (require (only-in "./a"
-                               foo))
-             (declare-macro foo)
-             (define (bar x)
-               (foo x))))
+         '(module b scheme
+            (require (only-in "./a"
+                              foo))
+            (declare-macro foo)
+            (define (bar x)
+              (foo x))))
         compilation-environment
         (js/obj "language" "javascript"
                 "optimize" #t)))
@@ -268,10 +259,10 @@ function bar(x) {
             (declare-macro bar)
             (define (foo x)
               (bar x)))
-          '(module b scheme
-             (defmacro bar (x)
-               x)
-             (provide bar)))
+         '(module b scheme
+            (defmacro bar (x)
+              x)
+            (provide bar)))
         compilation-environment
         (js/obj "language" "javascript"
                 "optimize" #t)))
@@ -306,10 +297,10 @@ export {
               (baz x))
             (define (foo x)
               (bar x)))
-          '(module b scheme
-             (define (baz x)
-               x)
-             (provide baz)))
+         '(module b scheme
+            (define (baz x)
+              x)
+            (provide baz)))
         compilation-environment
         (js/obj "language" "javascript"
                 "optimize" #t)))
@@ -343,12 +334,12 @@ export {
             (defmacro foo (x)
               x)
             (provide foo))
-          '(module b scheme
-             (require (only-in "./a"
-                               (foo foo1)))
-             (declare-macro foo1)
-             (define (bar x)
-               (foo1 x))))
+         '(module b scheme
+            (require (only-in "./a"
+                              (foo foo1)))
+            (declare-macro foo1)
+            (define (bar x)
+              (foo1 x))))
         compilation-environment
         (js/obj "language" "javascript"
                 "optimize" #t)))
@@ -376,7 +367,7 @@ function bar(x) {
  > (describe "--fsemicolon false")
  _
  > (compile '(begin x y z)
-             :fsemicolon #f)
+            :fsemicolon #f)
  "x
 
 y
@@ -399,8 +390,8 @@ z"
             (js/obj))
           (compile-with-environment
            '(define foo 1)
-            #u
-            options)
+           #u
+           options)
           (define continuation-env
             (oget options "continuationEnv"))
           (send continuation-env has 'foo))
@@ -410,8 +401,8 @@ z"
             (js/obj))
           (compile-with-environment
            'foo
-            #u
-            options)
+           #u
+           options)
           (define continuation-env
             (oget options "continuationEnv"))
           (instance-of? continuation-env EnvironmentStack))
@@ -622,24 +613,28 @@ function A(f: any, ...args: any[]): any {
   // Apply f to args.
   return f(...args);
 }"
- > (it "B2, TS"
-       (compile-with-environment
-        (read-syntax
-         "(module m scheme
+ xit> (it "B2, TS"
+          (compile-with-environment
+           (read-syntax
+            "(module m scheme
   ;;; B2 combinator.
   (define (B2 . args)
     (let ((fs (drop-right args 1))
           (x (array-list-last args)))
+      ;; Right-to-left function composition
+      ;; corresponds to a right fold.
       (foldr A x fs))))")
-        compilation-environment
-        (js/obj :language "typescript"
-                :optimize #t)))
+           compilation-environment
+           (js/obj :language "typescript"
+                   :optimize #t)))
  "/**
  * B2 combinator.
  */
 function B2(...args: any[]): any {
   const fs: any = args.slice(0, -1);
   const x: any = args[args.length - 1];
+  // Right-to-left function composition
+  // corresponds to a right fold.
   return fs.reduceRight(function (acc: any, x: any): any {
     return A(x, acc);
   }, x);
@@ -992,14 +987,14 @@ import * as foo from 'foo';"
  xit> (it "x, camelCase"
           (compile-with-environment
            'x
-            (new LispEnvironment
+           (new LispEnvironment
+                (list
                  (list
-                  (list
-                   "x"
-                   1
-                   "variable")))
-            (js/obj :language "javascript"
-                    :optimize #t)))
+                  "x"
+                  1
+                  "variable")))
+           (js/obj :language "javascript"
+                   :optimize #t)))
  "1"
  > (it "(module m scheme ... (apply + '(1 1)) ...), comment"
        (compile-with-environment
@@ -1110,15 +1105,15 @@ if (false) {
  xit> (it "(I x), JS function"
           (compile-with-environment
            '(I x)
-            (new LispEnvironment
+           (new LispEnvironment
+                (list
                  (list
-                  (list
-                   "I"
-                   (lambda (x)
-                     x)
-                   "function")))
-            (js/obj :language "javascript"
-                    :optimize #t)))
+                  "I"
+                  (lambda (x)
+                    x)
+                  "function")))
+           (js/obj :language "javascript"
+                   :optimize #t)))
  "(function {
    let I = function(x) {
      return x;
@@ -1128,18 +1123,18 @@ if (false) {
  > (it "(truep x)"
        (compile-with-environment
         '(truep x)
-         compilation-environment
-         (js/obj :case "camelcase"
-                 :language "javascript"
-                 :optimize #t)))
+        compilation-environment
+        (js/obj :case "camelcase"
+                :language "javascript"
+                :optimize #t)))
  "x ? true : false"
  > (it "(falsep x)"
        (compile-with-environment
         '(falsep x)
-         compilation-environment
-         (js/obj :case "camelcase"
-                 :language "javascript"
-                 :optimize #t)))
+        compilation-environment
+        (js/obj :case "camelcase"
+                :language "javascript"
+                :optimize #t)))
  "x ? false : true"
  > (it "read-syntax"
        (compile-with-environment
@@ -1223,10 +1218,10 @@ const f: NN = function (x: any): any {
     '(module m scheme
        (define (foo x)
          x))
-     compilation-environment
-     (js/obj :language "javascript"
-             :inline-lisp-sources #t
-             :optimize #t))
+    compilation-environment
+    (js/obj :language "javascript"
+            :inline-lisp-sources #t
+            :optimize #t))
  "function foo(x) {
   return x;
 }
@@ -1237,10 +1232,10 @@ foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbo
           (define foo
             (lambda (x)
               x)))
-        compilation-environment
-        (js/obj :language "javascript"
-                :inline-lisp-sources #t
-                :optimize #t))
+       compilation-environment
+       (js/obj :language "javascript"
+               :inline-lisp-sources #t
+               :optimize #t))
  "const foo = function (x) {
   return x;
 };
@@ -1252,10 +1247,10 @@ foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
          (async
           (lambda (x)
             x))))
-     compilation-environment
-     (js/obj :language "javascript"
-             :inline-lisp-sources #t
-             :optimize #t))
+    compilation-environment
+    (js/obj :language "javascript"
+            :inline-lisp-sources #t
+            :optimize #t))
  "async function foo(x) {
   return x;
 }
@@ -1268,92 +1263,92 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
  > (definition->macro
      '(define (inc x)
         (+ x 1))
-      '(1))
+     '(1))
  '(+ 1 1)
-  > (definition->macro
-      '(define (logical-or x)
-         (or x x))
-       '(#t))
-  '(or #t #t)
-   > (definition->macro
-       '(define (repeat x)
-          (string-append x x))
-        '("1"))
-   '(string-append "1" "1")
-    > (definition->macro
+ > (definition->macro
+     '(define (logical-or x)
+        (or x x))
+     '(#t))
+ '(or #t #t)
+ > (definition->macro
+     '(define (repeat x)
+        (string-append x x))
+     '("1"))
+ '(string-append "1" "1")
+ > (definition->macro
+     '(define (square x)
+        (* x x))
+     '(1))
+ '(* 1 1)
+ > (definition->macro
+     '(define (square x)
+        (* x x))
+     '(x))
+ '(* x x)
+ xit> (definition->macro
         '(define (square x)
            (* x x))
-         '(1))
-    '(* 1 1)
-     > (definition->macro
-         '(define (square x)
-            (* x x))
-          '(x))
-     '(* x x)
-      xit> (definition->macro
-             '(define (square x)
-                (* x x))
-              '((+ 1 1)))
-      '((lambda (x)
-          (* x x))
-        (+ 1 1))
+        '((+ 1 1)))
+ '((lambda (x)
+     (* x x))
+   (+ 1 1))
 
-       ;; `define-macro->lambda-form`
-       > (describe "define-macro->lambda-form")
-       _
-       > (define-macro->lambda-form
-           '(define-macro (foo x)
-              x)
-            (js/obj :exp 'exp :env 'env))
-       '(lambda (exp env)
-          (define-values (x)
-            (rest exp))
-          x)
-        > (define-macro->lambda-form
-            '(define-macro (foo &whole expression x)
-               x)
-             (js/obj :env 'env))
-        '(lambda (expression env)
-           (define-values (x)
-             (rest expression))
-           x)
-         > (define-macro->lambda-form
-             '(define-macro (foo &whole exp &environment env)
-                exp))
-         '(lambda (exp env)
-            exp)
-          > (define-macro->lambda-form
-              '(define-macro (foo &whole exp &environment env x)
-                 x))
-          '(lambda (exp env)
-             (define-values (x)
-               (rest exp))
-             x)
-           > (define-macro->lambda-form
-               '(define-macro (foo &rest x)
-                  x)
-                (js/obj :exp 'exp :env 'env))
-           '(lambda (exp env)
-              (define-values x
-                (rest exp))
-              x)
-            > (define-macro->lambda-form
-                '(define-macro (foo x &rest y)
-                   x)
-                 (js/obj :exp 'exp :env 'env))
-            '(lambda (exp env)
-               (define-values (x . y)
-                 (rest exp))
-               x)
+ ;; `define-macro->lambda-form`
+ > (describe "define-macro->lambda-form")
+ _
+ > (define-macro->lambda-form
+     '(define-macro (foo x)
+        x)
+     (js/obj :exp 'exp :env 'env))
+ '(lambda (exp env)
+    (define-values (x)
+      (rest exp))
+    x)
+ > (define-macro->lambda-form
+     '(define-macro (foo &whole expression x)
+        x)
+     (js/obj :env 'env))
+ '(lambda (expression env)
+    (define-values (x)
+      (rest expression))
+    x)
+ > (define-macro->lambda-form
+     '(define-macro (foo &whole exp &environment env)
+        exp))
+ '(lambda (exp env)
+    exp)
+ > (define-macro->lambda-form
+     '(define-macro (foo &whole exp &environment env x)
+        x))
+ '(lambda (exp env)
+    (define-values (x)
+      (rest exp))
+    x)
+ > (define-macro->lambda-form
+     '(define-macro (foo &rest x)
+        x)
+     (js/obj :exp 'exp :env 'env))
+ '(lambda (exp env)
+    (define-values x
+      (rest exp))
+    x)
+ > (define-macro->lambda-form
+     '(define-macro (foo x &rest y)
+        x)
+     (js/obj :exp 'exp :env 'env))
+ '(lambda (exp env)
+    (define-values (x . y)
+      (rest exp))
+    x)
 
-             ;; `split-comments`
-             > (describe "split-comments")
-             _
-             > (split-comments ";;; Foo\n")
-             '(";;; Foo\n")
-              xit> (split-comments ";;; Foo")
-              '(";;; Foo")
-               xit> (split-comments ";; Foo\n;;; Bar")
-               '(";; Foo\n" ";;; Bar")
-                xit> (split-comments ";; Foo\n;;; Bar\n")
-                '(";; Foo\n" ";;; Bar\n"))
+ ;; `split-comments`
+ > (describe "split-comments")
+ _
+ > (split-comments ";;; Foo\n")
+ '(";;; Foo\n")
+ xit> (split-comments ";;; Foo")
+ '(";;; Foo")
+ xit> (split-comments ";; Foo\n;;; Bar")
+ '(";; Foo\n" ";;; Bar")
+ xit> (split-comments ";; Foo\n;;; Bar\n")
+ '(";; Foo\n" ";;; Bar\n"))

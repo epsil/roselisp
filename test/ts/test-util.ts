@@ -13,63 +13,23 @@ import {
   extendEnvironment,
   interpret,
   printSexp,
-  writeToString,
+  writeToString
 } from '../../src/ts/language';
 
-const [equalp, lastCdr, length, last, keywordp]: any[] = ((): any => {
+const [equalp, keywordp]: any[] = ((): any => {
   function equalp_(x: any, y: any): any {
     if (x === y) {
       return true;
-    } else if (
-      Array.isArray(x) &&
-      x.length >= 3 &&
-      x[x.length - 2] === Symbol.for('.') &&
-      Array.isArray(y)
-    ) {
-      const cdrX: any =
-        Array.isArray(x) && x.length === 3 && x[1] === Symbol.for('.')
-          ? x[2]
-          : x.slice(1);
-      if (
-        Array.isArray(x) &&
-        x.length >= 3 &&
-        x[x.length - 2] === Symbol.for('.') &&
-        x.length === 3 &&
-        !Array.isArray(cdrX) &&
-        !(
-          Array.isArray(cdrX) &&
-          cdrX.length >= 3 &&
-          cdrX[cdrX.length - 2] === Symbol.for('.')
-        )
-      ) {
+    } else if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && Array.isArray(y)) {
+      const cdrX: any = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
+      if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX.at(-2) === Symbol.for('.')))) {
         return false;
       } else if (equalp_(x[0], y[0])) {
-        return equalp_(
-          cdrX,
-          ((): any => {
-            function cdr_(lst: any): any {
-              if (
-                Array.isArray(lst) &&
-                lst.length === 3 &&
-                lst[1] === Symbol.for('.')
-              ) {
-                return lst[2];
-              } else {
-                return lst.slice(1);
-              }
-            }
-            return cdr_;
-          })()(y)
-        );
+        return equalp_(cdrX, ((y.length === 3) && (y[1] === Symbol.for('.'))) ? y[2] : y.slice(1));
       } else {
         return false;
       }
-    } else if (
-      Array.isArray(x) &&
-      Array.isArray(y) &&
-      y.length >= 3 &&
-      y[y.length - 2] === Symbol.for('.')
-    ) {
+    } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y.at(-2) === Symbol.for('.'))) {
       return equalp_(y, x);
     } else if (Array.isArray(x) && Array.isArray(y)) {
       if (x.length !== y.length) {
@@ -82,7 +42,7 @@ const [equalp, lastCdr, length, last, keywordp]: any[] = ((): any => {
         }
       }
       return true;
-    } else if (x instanceof Map && y instanceof Map) {
+    } else if ((x instanceof Map) && (y instanceof Map)) {
       if (x.size !== y.size) {
         return false;
       }
@@ -94,12 +54,7 @@ const [equalp, lastCdr, length, last, keywordp]: any[] = ((): any => {
         }
       }
       return true;
-    } else if (
-      x !== null &&
-      typeof x === 'object' &&
-      y !== null &&
-      typeof y === 'object'
-    ) {
+    } else if ((x !== null) && (typeof x === 'object') && (y !== null) && (typeof y === 'object')) {
       if (Object.keys(x).length !== Object.keys(y).length) {
         return false;
       }
@@ -113,139 +68,10 @@ const [equalp, lastCdr, length, last, keywordp]: any[] = ((): any => {
       return false;
     }
   }
-  function lastCdr_(lst: any): any {
-    if (!Array.isArray(lst)) {
-      return undefined;
-    } else if (
-      Array.isArray(lst) &&
-      lst.length >= 3 &&
-      lst[lst.length - 2] === Symbol.for('.')
-    ) {
-      let result: any = lst;
-      while (
-        Array.isArray(result) &&
-        result.length >= 3 &&
-        result[result.length - 2] === Symbol.for('.')
-      ) {
-        result = result[result.length - 1];
-      }
-      return result;
-    } else {
-      return [];
-    }
-  }
-  function length_(lst: any): any {
-    if (
-      Array.isArray(lst) &&
-      lst.length >= 3 &&
-      lst[lst.length - 2] === Symbol.for('.')
-    ) {
-      return ((): any => {
-        function linkedListLength_(lst: any): any {
-          let len: any = 0;
-          let current: any = lst;
-          while (
-            Array.isArray(current) &&
-            current.length >= 3 &&
-            current[current.length - 2] === Symbol.for('.')
-          ) {
-            len = len + (lst.length - 2);
-            current = current[current.length - 1];
-          }
-          return len;
-        }
-        return linkedListLength_;
-      })()(lst);
-    } else {
-      return lst.length;
-    }
-  }
-  function last_(lst: any): any {
-    if (
-      Array.isArray(lst) &&
-      lst.length >= 3 &&
-      lst[lst.length - 2] === Symbol.for('.')
-    ) {
-      return ((): any => {
-        function linkedListLast_(lst: any): any {
-          let current: any = lst;
-          let result: any = undefined;
-          while (
-            Array.isArray(current) &&
-            current.length >= 3 &&
-            current[current.length - 2] === Symbol.for('.') &&
-            !((): any => {
-              const x: any = current[current.length - 1];
-              return Array.isArray(x) && x.length === 0;
-            })()
-          ) {
-            current = current[current.length - 1];
-          }
-          if (
-            Array.isArray(current) &&
-            current.length >= 3 &&
-            current[current.length - 2] === Symbol.for('.')
-          ) {
-            result = current[current.length - 3];
-          }
-          return result;
-        }
-        return linkedListLast_;
-      })()(lst);
-    } else {
-      return lst[lst.length - 1];
-    }
-  }
   function keywordp_(obj: any): any {
-    return (
-      typeof obj === 'symbol' &&
-      ((obj.description as string).match(new RegExp('^:')) ? true : false)
-    );
+    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
   }
-  function cdr_(lst: any): any {
-    if (Array.isArray(lst) && lst.length === 3 && lst[1] === Symbol.for('.')) {
-      return lst[2];
-    } else {
-      return lst.slice(1);
-    }
-  }
-  function linkedListLength_(lst: any): any {
-    let len: any = 0;
-    let current: any = lst;
-    while (
-      Array.isArray(current) &&
-      current.length >= 3 &&
-      current[current.length - 2] === Symbol.for('.')
-    ) {
-      len = len + (lst.length - 2);
-      current = current[current.length - 1];
-    }
-    return len;
-  }
-  function linkedListLast_(lst: any): any {
-    let current: any = lst;
-    let result: any = undefined;
-    while (
-      Array.isArray(current) &&
-      current.length >= 3 &&
-      current[current.length - 2] === Symbol.for('.') &&
-      !((): any => {
-        const x: any = current[current.length - 1];
-        return Array.isArray(x) && x.length === 0;
-      })()
-    ) {
-      current = current[current.length - 1];
-    }
-    if (
-      Array.isArray(current) &&
-      current.length >= 3 &&
-      current[current.length - 2] === Symbol.for('.')
-    ) {
-      result = current[current.length - 3];
-    }
-    return result;
-  }
-  return [equalp_, lastCdr_, length_, last_, keywordp_];
+  return [equalp_, keywordp_];
 })();
 
 const assertEqual: any = chai.assert.deepEqual;
@@ -303,49 +129,35 @@ const assertThrows: any = chai.assert.throws;
  * [3]: http://www.lispworks.com/documentation/HyperSpec/Body/f_eval.htm
  * [4]: https://github.com/IUCompilerCourse/Essentials-of-Compilation
  */
-function testLisp(
-  exp: any = undefined,
-  val: any = undefined,
-  options: any = {}
-): any {
+function testLisp(exp: any = undefined, val: any = undefined, options: any = {}): any {
   // FIXME: `exp` *might* be modified by side-effect. If so, the
   // compilation test will receive a different value. We should
   // clone the value to avoid this.
-  let {
-    compile,
-    env,
-    interpret: interpretFlag,
-    interpretValue: interpretValueOption,
-    verbose,
-    wrapParens,
-  } = options;
+  let {compile, env, interpret: interpretFlag, interpretValue: interpretValueOption, verbose, wrapParens} = options;
   env = env || new LispEnvironment();
   const expectedValue: any = interpretValueOption ? interpret(val, env) : val;
   const evaluationOptions: any = {
-    ...options,
+    ...options
   };
   delete evaluationOptions.compile;
   const compilationOptions: any = {
     ...evaluationOptions,
-    case: 'camelcase',
+    case: 'camelcase'
   };
-  interpretFlag = interpretFlag === undefined ? true : compile;
-  compile = compile === undefined ? true : compile;
+  interpretFlag = (interpretFlag === undefined) ? true : compile;
+  compile = (compile === undefined) ? true : compile;
   let interpretedValue: any = undefined;
   let compiledValue: any = undefined;
   if (verbose) {
     console.log('expression:', writeToString(exp));
   }
   if (interpretFlag) {
-    const interpretationEnv: any = extendEnvironment(
-      new LispEnvironment(),
-      env
-    );
+    const interpretationEnv: any = extendEnvironment(new LispEnvironment(), env);
     interpretedValue = interpret(exp, interpretationEnv);
     if (verbose) {
       console.log('interpreted value:', interpretedValue);
     }
-    if (interpretedValue === null || interpretedValue === undefined) {
+    if ((interpretedValue === null) || (interpretedValue === undefined)) {
       assertEqual(interpretedValue === expectedValue, true);
     } else {
       assertEqual(interpretedValue, expectedValue);
@@ -364,7 +176,7 @@ function testLisp(
     if (verbose) {
       console.log('compiled value:', compiledValue);
     }
-    if (compiledValue === null || compiledValue === undefined) {
+    if ((compiledValue === null) || (compiledValue === undefined)) {
       assertEqual(compiledValue === expectedValue, true);
     } else {
       assertEqual(compiledValue, expectedValue);
@@ -381,16 +193,12 @@ function testLisp(
  * Test a REPL form.
  */
 function testRepl(exp: any, options: any = {}): any {
-  let { env } = options;
+  let {env} = options;
   env = env || new LispEnvironment();
   const _value: any = getReplFormType(exp);
-  if (
-    [Symbol.for('javascript'), Symbol.for('js'), Symbol.for('node')].findIndex(
-      function (x: any): any {
-        return equalp(_value, x);
-      }
-    ) >= 0
-  ) {
+  if ([Symbol.for('javascript'), Symbol.for('js'), Symbol.for('node')].findIndex(function (x: any): any {
+    return equalp(_value, x);
+  }) >= 0) {
     return testNodeRepl(exp);
   } else {
     return testRoselispRepl(exp, options);
@@ -404,66 +212,8 @@ function testNodeRepl(exp: any): any {
   const clauses: any = parseReplForm(exp);
   for (let clause of clauses) {
     const expected: any = eval(clause[0]);
-    if (
-      (Array.isArray(clause) &&
-      clause.length >= 3 &&
-      clause[clause.length - 2] === Symbol.for('.') &&
-      ((): any => {
-        const x: any = lastCdr(clause);
-        return Array.isArray(x) && x.length === 0;
-      })()
-        ? ((): any => {
-            let i: any = 1;
-            let result: any = clause;
-            while (i > 0) {
-              if (
-                Array.isArray(result) &&
-                result.length === 3 &&
-                result[1] === Symbol.for('.')
-              ) {
-                result = clause[clause.length - 1];
-              } else {
-                result = clause.slice(1);
-              }
-              i--;
-            }
-            if (Array.isArray(result)) {
-              result = result[0];
-            }
-            return result;
-          })()
-        : clause[1]) !== '_'
-    ) {
-      let actual: any = eval(
-        Array.isArray(clause) &&
-          clause.length >= 3 &&
-          clause[clause.length - 2] === Symbol.for('.') &&
-          ((): any => {
-            const x: any = lastCdr(clause);
-            return Array.isArray(x) && x.length === 0;
-          })()
-          ? ((): any => {
-              let i: any = 1;
-              let result: any = clause;
-              while (i > 0) {
-                if (
-                  Array.isArray(result) &&
-                  result.length === 3 &&
-                  result[1] === Symbol.for('.')
-                ) {
-                  result = clause[clause.length - 1];
-                } else {
-                  result = clause.slice(1);
-                }
-                i--;
-              }
-              if (Array.isArray(result)) {
-                result = result[0];
-              }
-              return result;
-            })()
-          : clause[1]
-      );
+    if (clause[1] !== '_') {
+      let actual: any = eval(clause[1]);
       assertEqual(expected, actual);
     }
   }
@@ -473,93 +223,27 @@ function testNodeRepl(exp: any): any {
  * Test a Roselisp REPL form.
  */
 function testRoselispRepl(exp: any, options: any = {}): any {
-  let {
-    compile: compileOption,
-    verbose: verboseOption,
-    env,
-  } = {
+  let {compile: compileOption, verbose: verboseOption, env} = {
     compile: false,
     ...// #t
-    options,
+    options
   };
   if (verboseOption) {
     console.log('Roselisp REPL form: ', exp);
   }
-  const testEnv: any = extendEnvironment(
-    new LispEnvironment(),
-    env || new LispEnvironment()
-  );
+  const testEnv: any = extendEnvironment(new LispEnvironment(), env || new LispEnvironment());
   const clauses: any = parseReplForm(exp);
   for (let clause of clauses) {
     const expected: any = interpret(clause[0], testEnv);
-    if (
-      (Array.isArray(clause) &&
-      clause.length >= 3 &&
-      clause[clause.length - 2] === Symbol.for('.') &&
-      ((): any => {
-        const x: any = lastCdr(clause);
-        return Array.isArray(x) && x.length === 0;
-      })()
-        ? ((): any => {
-            let i: any = 1;
-            let result: any = clause;
-            while (i > 0) {
-              if (
-                Array.isArray(result) &&
-                result.length === 3 &&
-                result[1] === Symbol.for('.')
-              ) {
-                result = clause[clause.length - 1];
-              } else {
-                result = clause.slice(1);
-              }
-              i--;
-            }
-            if (Array.isArray(result)) {
-              result = result[0];
-            }
-            return result;
-          })()
-        : clause[1]) !== Symbol.for('_')
-    ) {
-      let actual: any = interpret(
-        Array.isArray(clause) &&
-          clause.length >= 3 &&
-          clause[clause.length - 2] === Symbol.for('.') &&
-          ((): any => {
-            const x: any = lastCdr(clause);
-            return Array.isArray(x) && x.length === 0;
-          })()
-          ? ((): any => {
-              let i: any = 1;
-              let result: any = clause;
-              while (i > 0) {
-                if (
-                  Array.isArray(result) &&
-                  result.length === 3 &&
-                  result[1] === Symbol.for('.')
-                ) {
-                  result = clause[clause.length - 1];
-                } else {
-                  result = clause.slice(1);
-                }
-                i--;
-              }
-              if (Array.isArray(result)) {
-                result = result[0];
-              }
-              return result;
-            })()
-          : clause[1],
-        testEnv
-      );
+    if (clause[1] !== Symbol.for('_')) {
+      let actual: any = interpret(clause[1], testEnv);
       assertEqual(expected, actual);
     }
   }
   if (compileOption) {
     const nodeReplForm: any = compileReplForm(simplifyReplForm(exp), {
       from: 'roselisp',
-      to: 'node',
+      to: 'node'
     });
     if (verboseOption) {
       console.log('Node REPL form: ', nodeReplForm);
@@ -580,117 +264,22 @@ function testRoselispRepl(exp: any, options: any = {}): any {
  * Returns a list of `(input output)` tuples.
  */
 function parseReplForm(exp: any): any {
-  const form: any =
-    length(exp) === 0
-      ? exp
-      : exp[0] === Symbol.for('>')
-      ? exp
-      : exp[0] === Symbol.for('$')
-      ? exp.slice(2)
-      : exp.slice(1);
-  let result: any = [];
-  const _end: any = length(form);
+  const form: any = (exp.length === 0) ? exp : ((exp[0] === Symbol.for('>')) ? exp : ((exp[0] === Symbol.for('$')) ? exp.slice(2) : exp.slice(1)));
+  const result: any = [];
+  const _end: any = form.length;
   for (let i: any = 0; i < _end; i = i + 3) {
-    result.push([
-      ((): any => {
-        const n: any = i + 1;
-        if (
-          Array.isArray(form) &&
-          form.length >= 3 &&
-          form[form.length - 2] === Symbol.for('.')
-        ) {
-          let i: any = n;
-          let result: any = form;
-          while (i > 0) {
-            if (
-              Array.isArray(result) &&
-              result.length === 3 &&
-              result[1] === Symbol.for('.')
-            ) {
-              result = form[form.length - 1];
-            } else {
-              result = form.slice(1);
-            }
-            i--;
-          }
-          if (Array.isArray(result)) {
-            result = result[0];
-          }
-          return result;
-        } else {
-          return (form as any)[n];
-        }
-      })(),
-      ((): any => {
-        const n: any = i + 2;
-        if (
-          Array.isArray(form) &&
-          form.length >= 3 &&
-          form[form.length - 2] === Symbol.for('.')
-        ) {
-          let i: any = n;
-          let result: any = form;
-          while (i > 0) {
-            if (
-              Array.isArray(result) &&
-              result.length === 3 &&
-              result[1] === Symbol.for('.')
-            ) {
-              result = form[form.length - 1];
-            } else {
-              result = form.slice(1);
-            }
-            i--;
-          }
-          if (Array.isArray(result)) {
-            result = result[0];
-          }
-          return result;
-        } else {
-          return (form as any)[n];
-        }
-      })(),
-    ]);
+    result.push([form[i + 1], form[i + 2]]);
   }
   return result;
 }
 
 function getReplFormType(exp: any): any {
-  if (length(exp) === 0) {
+  if (exp.length === 0) {
     return Symbol.for('roselisp');
   } else if (exp[0] === Symbol.for('>')) {
     return Symbol.for('roselisp');
-  } else if (length(exp) >= 2 && exp[0] === Symbol.for('$')) {
-    if (
-      Array.isArray(exp) &&
-      exp.length >= 3 &&
-      exp[exp.length - 2] === Symbol.for('.') &&
-      ((): any => {
-        const x: any = lastCdr(exp);
-        return Array.isArray(x) && x.length === 0;
-      })()
-    ) {
-      let i: any = 1;
-      let result: any = exp;
-      while (i > 0) {
-        if (
-          Array.isArray(result) &&
-          result.length === 3 &&
-          result[1] === Symbol.for('.')
-        ) {
-          result = exp[exp.length - 1];
-        } else {
-          result = exp.slice(1);
-        }
-        i--;
-      }
-      if (Array.isArray(result)) {
-        result = result[0];
-      }
-      return result;
-    } else {
-      return exp[1];
-    }
+  } else if ((exp.length >= 2) && (exp[0] === Symbol.for('$'))) {
+    return exp[1];
   } else {
     return exp[0];
   }
@@ -702,52 +291,12 @@ function getReplFormType(exp: any): any {
  */
 function simplifyReplForm(exp: any): any {
   const clauses: any = parseReplForm(exp);
-  if (length(clauses) <= 1) {
+  if (clauses.length <= 1) {
     return exp;
   } else {
-    return [
-      getReplFormType(exp),
-      Symbol.for('>'),
-      [
-        Symbol.for('begin'),
-        ...clauses.map(function (x: any): any {
-          return x[0];
-        }),
-      ],
-      ((): any => {
-        const lst: any = last(clauses);
-        if (
-          Array.isArray(lst) &&
-          lst.length >= 3 &&
-          lst[lst.length - 2] === Symbol.for('.') &&
-          ((): any => {
-            const x: any = lastCdr(lst);
-            return Array.isArray(x) && x.length === 0;
-          })()
-        ) {
-          let i: any = 1;
-          let result: any = lst;
-          while (i > 0) {
-            if (
-              Array.isArray(result) &&
-              result.length === 3 &&
-              result[1] === Symbol.for('.')
-            ) {
-              result = lst[lst.length - 1];
-            } else {
-              result = lst.slice(1);
-            }
-            i--;
-          }
-          if (Array.isArray(result)) {
-            result = result[0];
-          }
-          return result;
-        } else {
-          return lst[1];
-        }
-      })(),
-    ];
+    return [getReplFormType(exp), Symbol.for('>'), [Symbol.for('begin'), ...clauses.map(function (x: any): any {
+      return x[0];
+    })], clauses.at(-1)[1]];
   }
 }
 
@@ -761,75 +310,11 @@ function compileReplForm(exp: any, options: any = {}): any {
   if (fromOption === 'roselisp') {
     if (toOption === 'node') {
       const clauses: any = parseReplForm(exp);
-      let result: any = [Symbol.for('node')];
+      const result: any = [Symbol.for('node')];
       for (let clause of clauses) {
         result.push(Symbol.for('>'));
         result.push(compile([[Symbol.for('lambda'), [], clause[0]]]));
-        result.push(
-          (Array.isArray(clause) &&
-          clause.length >= 3 &&
-          clause[clause.length - 2] === Symbol.for('.') &&
-          ((): any => {
-            const x: any = lastCdr(clause);
-            return Array.isArray(x) && x.length === 0;
-          })()
-            ? ((): any => {
-                let i: any = 1;
-                let result: any = clause;
-                while (i > 0) {
-                  if (
-                    Array.isArray(result) &&
-                    result.length === 3 &&
-                    result[1] === Symbol.for('.')
-                  ) {
-                    result = clause[clause.length - 1];
-                  } else {
-                    result = clause.slice(1);
-                  }
-                  i--;
-                }
-                if (Array.isArray(result)) {
-                  result = result[0];
-                }
-                return result;
-              })()
-            : clause[1]) === Symbol.for('_')
-            ? '_'
-            : compile([
-                [
-                  Symbol.for('lambda'),
-                  [],
-                  Array.isArray(clause) &&
-                  clause.length >= 3 &&
-                  clause[clause.length - 2] === Symbol.for('.') &&
-                  ((): any => {
-                    const x: any = lastCdr(clause);
-                    return Array.isArray(x) && x.length === 0;
-                  })()
-                    ? ((): any => {
-                        let i: any = 1;
-                        let result: any = clause;
-                        while (i > 0) {
-                          if (
-                            Array.isArray(result) &&
-                            result.length === 3 &&
-                            result[1] === Symbol.for('.')
-                          ) {
-                            result = clause[clause.length - 1];
-                          } else {
-                            result = clause.slice(1);
-                          }
-                          i--;
-                        }
-                        if (Array.isArray(result)) {
-                          result = result[0];
-                        }
-                        return result;
-                      })()
-                    : clause[1],
-                ],
-              ])
-        );
+        result.push((clause[1] === Symbol.for('_')) ? '_' : compile([[Symbol.for('lambda'), [], clause[1]]]));
       }
       return result;
     } else {
@@ -844,7 +329,7 @@ function compileReplForm(exp: any, options: any = {}): any {
  * Whether `exp` is a list whose first element is `tag`.
  */
 function taggedListP(exp: any, tag: any): any {
-  return Array.isArray(exp) && exp.length >= 1 && exp[0] === tag;
+  return Array.isArray(exp) && (exp.length >= 1) && (exp[0] === tag);
 }
 
 function printSexp(exp: any): any {
@@ -859,7 +344,7 @@ function printSexp(exp: any): any {
       return '#f';
     }
   } else if (taggedListP(exp, Symbol.for('quote'))) {
-    return "'" + printSexp(exp[1]);
+    return '\'' + printSexp(exp[1]);
   } else if (taggedListP(exp, Symbol.for('quasiquote'))) {
     return '`' + printSexp(exp[1]);
   } else if (taggedListP(exp, Symbol.for('unquote'))) {
@@ -867,23 +352,11 @@ function printSexp(exp: any): any {
   } else if (taggedListP(exp, Symbol.for('unquote-splicing'))) {
     return ',@' + printSexp(exp[1]);
   } else if (Array.isArray(exp)) {
-    return (
-      '(' +
-      exp
-        .map(function (x: any): any {
-          return printSexp(x);
-        })
-        .join(' ') +
-      ')'
-    );
+    return '(' + exp.map(function (x: any): any {
+      return printSexp(x);
+    }).join(' ') + ')';
   } else if (typeof exp === 'string') {
-    return (
-      '"' +
-      exp
-        .replace(new RegExp('\\\\', 'g'), '\\\\')
-        .replace(new RegExp('"', 'g'), '\\"') +
-      '"'
-    );
+    return '"' + exp.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"') + '"';
   } else if (typeof exp === 'symbol') {
     return exp.description as string;
   } else {
@@ -904,10 +377,7 @@ function testMacro(exp: any, env: any): any {
   for (let i: any = 0; i < _end; i = i + 2) {
     const exp: any = (body as any)[i];
     if (keywordp(exp)) {
-      const key: any = (exp.description as string).replace(
-        new RegExp('^:'),
-        ''
-      );
+      const key: any = (exp.description as string).replace(new RegExp('^:'), '');
       const val: any = body[i + 1];
       (options as any)[key] = val;
     } else {
@@ -925,67 +395,27 @@ function testMacro(exp: any, env: any): any {
     const prompt: any = (bodyExps as any)[i];
     const exp: any = bodyExps[i + 1];
     const expected: any = bodyExps[i + 2];
-    if (
-      Array.isArray(exp) &&
-      exp.length >= 2 &&
-      exp[0] === Symbol.for('describe')
-    ) {
+    if (Array.isArray(exp) && (exp.length >= 2) && (exp[0] === Symbol.for('describe'))) {
       if (group.length > 0) {
         groups.push(group);
         group = [];
       }
       let description: any = exp[1];
       group.push(description);
-    } else if (
-      Array.isArray(exp) &&
-      exp.length >= 1 &&
-      exp[0] === Symbol.for('only')
-    ) {
+    } else if (Array.isArray(exp) && (exp.length >= 1) && (exp[0] === Symbol.for('only'))) {
       only = true;
     } else {
-      const f: any =
-        prompt === Symbol.for('xit>')
-          ? [Symbol.for('xit')]
-          : only ||
-            [Symbol.for('it.only>'), Symbol.for('only>')].includes(prompt)
-          ? [Symbol.for('send'), Symbol.for('it'), Symbol.for('only')]
-          : [Symbol.for('it')];
+      const f: any = (prompt === Symbol.for('xit>')) ? [Symbol.for('xit')] : ((only || [Symbol.for('it.only>'), Symbol.for('only>')].includes(prompt)) ? [Symbol.for('send'), Symbol.for('it'), Symbol.for('only')] : [Symbol.for('it')]);
       let description: any = '';
       let actual: any = undefined;
       if (taggedListP(exp, Symbol.for('it'))) {
         description = exp[1];
-        actual =
-          exp.length > 3 ? [Symbol.for('begin'), ...exp.slice(2)] : exp[2];
+        actual = (exp.length > 3) ? [Symbol.for('begin'), ...exp.slice(2)] : exp[2];
       } else {
         description = printSexp(exp);
         actual = exp;
       }
-      const test: any =
-        expected === Symbol.for('_') && !taggedListP(exp, Symbol.for('it'))
-          ? actual
-          : [
-              ...f,
-              description,
-              [
-                Symbol.for('fn'),
-                [],
-                ...(replOption
-                  ? [
-                      [
-                        Symbol.for('test-repl'),
-                        [
-                          Symbol.for('quote'),
-                          [Symbol.for('roselisp'), prompt, actual, expected],
-                        ],
-                      ],
-                    ]
-                  : expected === Symbol.for('_')
-                  ? taggedListP(actual, Symbol.for('begin'))
-                    ? actual.slice(1)
-                    : [actual]
-                  : [[Symbol.for('assert-equal'), actual, expected]]),
-              ],
-            ];
+      const test: any = ((expected === Symbol.for('_')) && !taggedListP(exp, Symbol.for('it'))) ? actual : [...f, description, [Symbol.for('fn'), [], ...(replOption ? [[Symbol.for('test-repl'), [Symbol.for('quote'), [Symbol.for('roselisp'), prompt, actual, expected]]]] : ((expected === Symbol.for('_')) ? (taggedListP(actual, Symbol.for('begin')) ? actual.slice(1) : [actual]) : [[Symbol.for('assert-equal'), actual, expected]]))]];
       group.push(test);
       only = false;
     }
@@ -994,11 +424,7 @@ function testMacro(exp: any, env: any): any {
     groups.push(group);
   }
   const tests: any = groups.map(function (group: any): any {
-    return [
-      Symbol.for('describe'),
-      group[0],
-      [Symbol.for('fn'), [], ...group.slice(1)],
-    ];
+    return [Symbol.for('describe'), group[0], [Symbol.for('fn'), [], ...group.slice(1)]];
   });
   return [Symbol.for('begin'), ...tests];
 }
@@ -1017,5 +443,5 @@ export {
   simplifyReplForm,
   testLisp,
   testMacro,
-  testRepl,
+  testRepl
 };

@@ -40,29 +40,11 @@ const [plistGet]: any[] = ((): any => {
  * [rkt:stringp]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string~3f%29%29
  * [cl:stringp]: http://clhs.lisp.se/Body/f_stgp.htm#stringp
  */
-function stringp_(obj: any): any {
-  return (typeof obj === 'string') || (obj instanceof String);
+function stringp_(x: any): any {
+  return (typeof x === 'string') || (x instanceof String);
 }
 
-stringp_.fsource = [Symbol.for('define'), [Symbol.for('string?_'), Symbol.for('obj')], [Symbol.for('or'), [Symbol.for('string-primitive?'), Symbol.for('obj')], [Symbol.for('string-object?'), Symbol.for('obj')]]];
-
-/**
- * Whether something is a string primitive.
- */
-function stringPrimitiveP_(obj: any): any {
-  return typeof obj === 'string';
-}
-
-stringPrimitiveP_.fsource = [Symbol.for('define'), [Symbol.for('string-primitive?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'string']];
-
-/**
- * Whether something is a string object.
- */
-function stringObjectP_(obj: any): any {
-  return obj instanceof String;
-}
-
-stringObjectP_.fsource = [Symbol.for('define'), [Symbol.for('string-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('String')]];
+stringp_.fsource = [Symbol.for('define'), [Symbol.for('string?_'), Symbol.for('x')], [Symbol.for('js/string?'), Symbol.for('x')]];
 
 /**
  * The length of a string.
@@ -81,12 +63,14 @@ stringLength_.fsource = [Symbol.for('define'), [Symbol.for('string-length_'), Sy
  * [rkt:string-append]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-append%29%29
  */
 function stringAppend_(...args: any[]): any {
-  return args.reduce(function (acc: any, x: any): any {
-    return acc + x;
-  }, '');
+  let result: any = '';
+  for (let x of args) {
+    result = result + x;
+  }
+  return result;
 }
 
-stringAppend_.fsource = [Symbol.for('define'), [Symbol.for('string-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('string-append'), Symbol.for('acc'), Symbol.for('x')]], '', Symbol.for('args')]];
+stringAppend_.fsource = [Symbol.for('define'), [Symbol.for('string-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), '']], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/string-concat'), Symbol.for('result'), Symbol.for('x')]]], Symbol.for('result')]];
 
 /**
  * Get the character at a particular position in a string.
@@ -231,7 +215,7 @@ function numberToString_(n: any): any {
   return n + '';
 }
 
-numberToString_.fsource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('string-append'), Symbol.for('n'), '']];
+numberToString_.fsource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('js/string-concat'), Symbol.for('n'), '']];
 
 /**
  * Indent a string by prepending each line with `n` spaces.
@@ -251,7 +235,6 @@ export {
   numberToString_ as numberToString,
   stringToNumber_ as stringToNumber,
   stringAppend_ as stringAppend,
-  stringPrimitiveP_ as stringPrimitiveP,
   stringReplace_ as stringReplace,
   stringp_ as stringp,
   substring_ as substring,
@@ -261,8 +244,6 @@ export {
   stringDowncase_,
   stringJoin_,
   stringLength_,
-  stringObjectP_,
-  stringPrimitiveP_,
   stringRef_,
   stringRepeat_,
   stringReplace_,

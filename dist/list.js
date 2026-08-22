@@ -10,165 +10,23 @@
  *
  * Lists are implemented in terms of JavaScript arrays. There is,
  * however, no direct JavaScript equivalent to the Lisp concept of a
- * *cons cell*, such as `'(1 . 2)`. Therefore, Roselisp defines a
- * list type called a linked list, whose constituent links correspond
- * to the cons cell concept.
- *
- * ### Terminology
- *
- * The *empty list* is the list `'()`, represented by the JavaScript
- * array `[]`. The function `null?` returns `#t` only when passed the
- * empty list.
- *
- *     > (null? '())
- *     #t
- *
- * A list with one or more elements is a *nonempty list*. There are
- * two forms of nonempty lists: *array lists* and *linked lists*. An
- * array list is a list that is straightforwardly implemented in
- * terms of a JavaScript array, such as `'(1)`, `'(1 2)` and
- * `'(1 2 3)`. These correspond to the JavaScript arrays `[1]`,
- * `[1, 2]` and `[1, 2, 3]`, respectively. The function `array-list?`
- * returns `#t` when passed an array list.
- *
- *     > (array-list? '(1))
- *     #t
- *     > (array-list? '(1 2))
- *     #t
- *     > (array-list? '(1 2 3))
- *     #t
- *
- * The other type of nonempty list is the *linked list*, which is
- * composed out of *linked list links*. A linked list link is an
- * expression such as `'(1 . ())`, which is implemented in terms of
- * the JavaScript array `[1, Symbol.for('.'), []]`. Here, the
- * penultimate array element is the special symbol `.` (i.e., `'.`),
- * which is also referred to as the *cons dot*. The function
- * `linked-list-link?` returns `#t` when passed a linked list link.
- *
- *     > (linked-list-link? '(1 . ()))
- *     #t
- *     > (linked-list-link? '(1 2 . ()))
- *     #t
- *
- * By chaining such links together, a sequence of values is obtained.
- * If the final chain is the empty list, then the resulting structure
- * is referred to as a *linked list*. For example, the linked list
- * `'(1 . (2 . ()))` may be considered to represent the same sequence
- * as the array list `(1 2)`, even though the underlying JavaScript
- * arrays are different. The function `linked-list?` returns `#t`
- * when passed a linked list.
- *
- *     > (linked-list? '(1 . ()))
- *     #t
- *     > (linked-list? '(1 . (2 . ())))
- *     #t
- *     > (linked-list? '(1 2 . (3 . ())))
- *     #t
- *
- * However, if the final chain is *not* the empty list, then the
- * sequence is called a *dotted list*. The function `dotted-list?`
- * returns `#t` when passed a dotted list.
+ * *cons cell*, such as `'(1 . 2)`. Instead, such values are
+ * represented as a *dotted list*, which is a list where the
+ * penultimate value is the symbol `|.|` (in JavaScript,
+ * `Symbol.for('.')`).
  *
  *     > (dotted-list? '(1 . 2))
  *     #t
  *     > (dotted-list? '(1 2 . 3))
  *     #t
- *     > (dotted-list? '(1 . (2 . 3)))
- *     #t
- *     > (dotted-list? '(1 2 . (3 . 4)))
+ *     > (dotted-list? (list 1 '|.| 2))
  *     #t
  *
- * Dotted lists are sometimes referred to as "improper lists", to
- * distinguish them from "proper lists", which are `()`-terminated.
- * Thus, array lists and linked lists are proper lists, while dotted
- * lists are improper. The function `list?` returns `#t` when passed
- * a proper list, but not when passed an improper list.
- *
- *     > (list? '())
- *     #t
- *     > (list? '(1))
- *     #t
- *     > (list? '(1 . ()))
- *     #t
- *     > (list? '(1 . (2 . ())))
- *     #t
- *     > (list? '(1 2 . (3 . ())))
- *     #t
- *
- * While array lists are the fastest and are preferable for most
- * tasks, linked lists are more versatile. For example, a linked list
- * may be turned into a *circular list*, i.e., a list that loops back
- * on itself. The function `circular-list?` returns `#t` when passed
- * a circular list.
- *
- *     > (define circ-lst
- *         '(1 . ()))
- *     undefined
- *     > (set-cdr! circ-lst circ-lst)
- *     undefined
- *     > (circular-list? circ-lst)
- *     #t))))
- *
- * It should be appreciated that Lisp's "list" concept is not a type,
- * but a structural property. Whether something is a list or not can
- * be determined only by inspecting the structure itself. One can
- * avoid this check by working exclusively with array lists and using
- * `array-list?` to determine whether something is an array list or
- * not.
- *
- * ### Subtleties
- *
- * Note that the function `array-list?` also returns `#t` when passed
- * a linked list:
- *
- *     > (array-list? '(1 . ()))
- *     #t
- *
- * Roselisp allows for the possibility that you simply wants to treat
- * the list `'(1 . ())` as an array list of three elements, with the
- * cons dot as the second element. If you wish to distinguish linked
- * lists from array lists, you should use `linked-list?`, not
- * `array-list?`. The standard list functions---`cdr`, `nth`,
- * `first`, `second`, `third`, etc.---treat the input as a linked
- * list if `linked-list?` returns `#t`, and as an array list
- * otherwise.
- *
- * The term "dotted list" refers exclusively to improper lists.
- * Therefore, while the linked list `'(1 . ())` does indeed contain
- * a dot, it is not regarded as a dotted list. The improper list
- * `'(1 . 2)`, on the other hand, is regarded as dotted.
- *
- * ### Cons dot
- *
- * TODO: Merge this section into the other text.
- *
- * There is no direct analogue to the cons cell concept in
- * JavaScript. Therefore, Roselisp represents cons cells in terms of
- * *dotted lists*, which are lists where the penultimate element is
- * the *cons dot*, the symbol `.` (i.e., `|.|`, or `Symbol.for('.')`
- * in JavaScript).
- *
- * Thus, in Roselisp, the expression `'(1 . 2)` is the same as
- * `(list 1 '. 2)`, or, in JavaScript, `[1, Symbol.for('.'), 2]`.
- * A cons cell can be considered from two perspectives: either as a
- * pair of two elements, or as a list where the second element is the
- * cons dot.
- *
- * Cons cells are implemented as a *dotted list*, i.e., as a
- * three-element list with a special cons dot symbol as the second
- * element. Thus, the cons cell `(a . b)` is represented as the list
- * `(a <cons-dot> b)`, where `<cons-dot>` is a special value defined
- * in this file. It is just the symbol `.` (also written `|.|`).
- *
- * It is possible to have more than one element before the dot, as in
- * `(a b c . d)`. Thus, dotted lists can be understood as a
- * generalization of cons cells, with a cons cell being a dotted list
- * with two elements.
- *
- * It is also possible to represent circular lists in terms of dotted
- * lists. In Roselisp, a circular list is a dotted list containing
- * itself.
+ * The simplifying assumption is made that dotted lists are only used
+ * to represent values that cannot be expressed without a dot. This
+ * permits most list functions to be implemented as simple array
+ * operations, although some checks are necessary in places since
+ * dotted lists are also implemented as arrays.
  *
  * ## License
  *
@@ -177,21 +35,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.head_ = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.listTail_ = exports.listTail = exports.drop = exports.dropRight = exports.dottedListP = exports.cons = exports.pairp_ = exports.pairp = exports.consp = exports.consDot = exports.consDotP = exports.consDotF = exports.consDotCompiled = exports.circularListP = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.buildList = exports.arrayListP = exports.arrayListThird = exports.arrayListTenth = exports.arrayListTake = exports.arrayListSixth = exports.arrayListSeventh = exports.arrayListSecond = exports.arrayListReverse = exports.arrayListRest = exports.arrayListNthcdr = exports.arrayListNth = exports.arrayListNinth = exports.arrayListLength = exports.arrayListLast = exports.arrayListFourth = exports.arrayListFirst = exports.arrayListFifth = exports.arrayListEighth = exports.arrayListDrop = exports.arrayListDropRight = exports.arrayListCdr = exports.properListToDottedList_ = exports.arrayListToLinkedList = exports.append = void 0;
-exports.ninth = exports.nbutlast = exports.makePair = exports.makeList = exports.makeDottedList = exports.list = exports.properListP = exports.listp = exports.listStar = exports.linkedPairP = exports.dottedPairP_ = exports.linkedPairCdr = exports.linkedPairCar = exports.linkedListP = exports.linkedListThird = exports.linkedListTenth = exports.linkedListTail = exports.linkedListSixth = exports.linkedListSeventh = exports.linkedListSecond = exports.linkedListParse = exports.linkedListNthcdr = exports.linkedListNth = exports.linkedListNinth = exports.linkedListLinkP = exports.linkedListLinkCdr = exports.linkedListLinkCar = exports.linkedListLength = exports.linkedListLast = exports.linkedListHead = exports.linkedListFourth = exports.linkedListFirst = exports.linkedListFifth = exports.linkedListEighth = exports.linkedListDrop = exports.linkedListDropRight = exports.linkedListCdr = exports.linkedListCar = exports.linkedListToArrayList = exports.length = exports.last = exports.linkedListLastPair_ = exports.linkedListLastCons_ = exports.lastPair = exports.lastCons_ = exports.linkedListLastCdr_ = exports.lastCdr = exports.improperListP = exports.fourth = exports.flatten = void 0;
-exports.consDotCompiled_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.arrayListP_ = exports.arrayListThird_ = exports.arrayListTenth_ = exports.arrayListTake_ = exports.arrayListSixth_ = exports.arrayListSeventh_ = exports.arrayListSecond_ = exports.arrayListReverse_ = exports.arrayListRest_ = exports.arrayListNthcdr_ = exports.arrayListNth_ = exports.arrayListNinth_ = exports.arrayListLength_ = exports.arrayListLast_ = exports.arrayListFourth_ = exports.arrayListFirst_ = exports.arrayListFifth_ = exports.arrayListEighth_ = exports.arrayListDrop_ = exports.arrayListDropRight_ = exports.arrayListCdr_ = exports.arrayListToLinkedList_ = exports.append_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = exports.popRightX = exports.popLeftX = exports.popx_ = exports.popx = exports.nullp = exports.nthcdr = exports.nth = void 0;
-exports.list_ = exports.listp_ = exports.listStar_ = exports.linkedPairP_ = exports.linkedPairCdr_ = exports.linkedPairCar_ = exports.linkedListP_ = exports.linkedListThird_ = exports.linkedListTenth_ = exports.linkedListTail_ = exports.linkedListSixth_ = exports.linkedListSeventh_ = exports.linkedListSecond_ = exports.linkedListParse_ = exports.linkedListNthcdr_ = exports.linkedListNth_ = exports.linkedListNinth_ = exports.linkedListLinkP_ = exports.linkedListLinkCdr_ = exports.linkedListLinkCar_ = exports.linkedListLength_ = exports.linkedListLast_ = exports.linkedListHead_ = exports.linkedListFourth_ = exports.linkedListFirst_ = exports.linkedListFifth_ = exports.linkedListEighth_ = exports.linkedListDrop_ = exports.linkedListDropRight_ = exports.linkedListCdr_ = exports.linkedListCar_ = exports.linkedListToArrayList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedListP_ = exports.cons_ = exports.consp_ = exports.consDot_ = exports.consDotP_ = exports.consDotF_ = void 0;
-exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = void 0;
-const estree_1 = require("./estree");
-const [lastCdr, range, linkedListLength, linkedListLast] = (() => {
+exports.popRightX = exports.popLeftX = exports.popx_ = exports.popx = exports.pairp = exports.consp_ = exports.consp = exports.nullp = exports.nthcdr = exports.dottedListNthcdr_ = exports.dottedListNthcdr = exports.nth = exports.dottedListNth_ = exports.dottedListNth = exports.ninth = exports.nbutlast = exports.makePair = exports.makeList = exports.makeDottedList = exports.list = exports.properListP = exports.listp = exports.listStar = exports.length = exports.last = exports.lastPair = exports.lastCons_ = exports.lastCdr = exports.dottedListLastCdr_ = exports.improperListP = exports.fourth = exports.flatten = exports.head_ = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.drop = exports.dropRight = exports.dottedListP = exports.cons = exports.circularListP = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.buildList = exports.append = void 0;
+exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedProperListP_ = exports.dottedPairP_ = exports.dottedPairCdr_ = exports.dottedListP_ = exports.dottedListThird_ = exports.dottedListLink_ = exports.dottedListTenth_ = exports.dottedListTail_ = exports.dottedListSixth_ = exports.dottedListSeventh_ = exports.dottedListSet_ = exports.dottedListSetX_ = exports.dottedListSecond_ = exports.dottedListRef_ = exports.dottedListParse_ = exports.dottedListNinth_ = exports.dottedListLength_ = exports.dottedListLast_ = exports.dottedListHead_ = exports.dottedListFourth_ = exports.dottedListFirst_ = exports.dottedListFifth_ = exports.dottedListEighth_ = exports.dottedListToList_ = exports.dottedImproperListP_ = exports.cons_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.append_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = void 0;
+exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.reversex_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.pairp_ = exports.pairOrListP_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = exports.list_ = exports.listp_ = exports.listTail_ = exports.listStar_ = exports.listSet_ = exports.listSetX_ = exports.listRef_ = exports.listToDottedList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = void 0;
+const [lastCdr, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListLength, dottedListLast] = (() => {
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
             return undefined;
         }
-        else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+        else if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
             let result = lst;
-            while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-                result = result[result.length - 1];
+            while (Array.isArray(result) && (result.length >= 3) && (result.at(-2) === Symbol.for('.'))) {
+                result = result.at(-1);
             }
             return result;
         }
@@ -209,119 +64,88 @@ const [lastCdr, range, linkedListLength, linkedListLast] = (() => {
         }
         return result;
     }
-    function linkedListLength_(lst) {
+    function dottedListSecond_(lst) {
+        return dottedListRef_(lst, 1);
+    }
+    function dottedListThird_(lst) {
+        return dottedListRef_(lst, 2);
+    }
+    function dottedListFourth_(lst) {
+        return dottedListRef_(lst, 3);
+    }
+    function dottedListFifth_(lst) {
+        return dottedListRef_(lst, 4);
+    }
+    function dottedListSixth_(lst) {
+        return dottedListRef_(lst, 5);
+    }
+    function dottedListSeventh_(lst) {
+        return dottedListRef_(lst, 6);
+    }
+    function dottedListEighth_(lst) {
+        return dottedListRef_(lst, 7);
+    }
+    function dottedListNinth_(lst) {
+        return dottedListRef_(lst, 8);
+    }
+    function dottedListTenth_(lst) {
+        return dottedListRef_(lst, 9);
+    }
+    function dottedListLength_(lst) {
         let len = 0;
         let current = lst;
-        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
+        while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
             len = len + (lst.length - 2);
-            current = current[current.length - 1];
+            current = current.at(-1);
         }
         return len;
     }
-    function linkedListLast_(lst) {
+    function dottedListLast_(lst) {
         let current = lst;
         let result = undefined;
-        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !(() => {
-            const x = current[current.length - 1];
+        while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.')) && !((x) => {
             return Array.isArray(x) && (x.length === 0);
-        })()) {
-            current = current[current.length - 1];
+        })(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
+            current = ((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1);
         }
-        if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
+        if (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
             result = current[current.length - 3];
         }
         return result;
     }
-    return [lastCdr_, range_, linkedListLength_, linkedListLast_];
+    return [lastCdr_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListLength_, dottedListLast_];
 })();
 /**
- * Cons dot value.
- */
-const consDot_ = Symbol.for('.');
-exports.consDot = consDot_;
-exports.consDot_ = consDot_;
-/**
- * Compiled cons dot value.
- */
-const consDotCompiled_ = 
-// `Symbol.for('.')`
-new estree_1.CallExpression(new estree_1.MemberExpression(new estree_1.Identifier('Symbol'), new estree_1.Identifier('for')), [new estree_1.Literal('.')]);
-exports.consDotCompiled = consDotCompiled_;
-exports.consDotCompiled_ = consDotCompiled_;
-/**
- * `cons-dot` function.
- */
-function consDotF_() {
-    return Symbol.for('.');
-}
-exports.consDotF = consDotF_;
-exports.consDotF_ = consDotF_;
-consDotF_.fsource = [Symbol.for('define'), [Symbol.for('cons-dot-f_')], Symbol.for('*cons-dot*')];
-/**
- * Whether a value is the cons dot.
- */
-function consDotP_(obj) {
-    return obj === Symbol.for('.');
-}
-exports.consDotP = consDotP_;
-exports.consDotP_ = consDotP_;
-consDotP_.fsource = [Symbol.for('define'), [Symbol.for('cons-dot?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), Symbol.for('*cons-dot*')]];
-/**
- * Create a cons cell whose CAR is `x` and CDR is `y`.
+ * Whether something is a pair, i.e., a cons cell.
  *
- * Similar to [`cons` in Racket][rkt:cons] and
- * [`cons` in Common Lisp][cl:cons].
- *
- * [rkt:cons]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._cons%29%29
- * [cl:cons]: http://clhs.lisp.se/Body/f_cons.htm
- */
-function cons_(x, y) {
-    // Create an array list whenever possible;
-    // otherwise create a dotted list.
-    if (Array.isArray(y)) {
-        return [x, ...y];
-    }
-    else {
-        return [x, Symbol.for('.'), y];
-    }
-}
-exports.cons = cons_;
-exports.cons_ = cons_;
-cons_.fsource = [Symbol.for('define'), [Symbol.for('cons_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('y')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote-splicing'), Symbol.for('y')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), Symbol.for('y')]]]]]];
-/**
- * Whether something is a cons cell.
- *
- * Similar to [`cons?` in Racket][rkt:consp] and
+ * Similar to [`pair?` in Racket][rkt:pairp] and
  * [`consp` in Common Lisp][cl:consp].
  *
- * [rkt:consp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._cons~3f%29%29
+ * [rkt:pairp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._pair~3f%29%29
  * [cl:consp]: http://clhs.lisp.se/Body/f_consp.htm
  */
-function consp_(obj) {
-    // All lists except the empty list
-    // qualify as cons cells.
-    return Array.isArray(obj) && !(Array.isArray(obj) && (obj.length === 0));
+function pairp_(x) {
+    // All lists except the empty list qualify as pairs.
+    return Array.isArray(x) && (x.length > 0);
 }
-exports.consp = consp_;
-exports.pairp = consp_;
-exports.pairp_ = consp_;
-exports.consp_ = consp_;
-consp_.fsource = [Symbol.for('define'), [Symbol.for('cons?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('obj')], [Symbol.for('not'), [Symbol.for('null?'), Symbol.for('obj')]]]];
+exports.consp = pairp_;
+exports.consp_ = pairp_;
+exports.pairp = pairp_;
+exports.pairp_ = pairp_;
+pairp_.fsource = [Symbol.for('define'), [Symbol.for('pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
 /**
- * Make a list.
+ * Whether something is the empty list.
  *
- * Similar to [`list` in Racket][rkt:list] and
- * [`list` in Common Lisp][cl:list].
+ * Similar to [`null?` in Racket][rkt:nullp].
  *
- * [rkt:list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._list%29%29
- * [cl:list]: http://clhs.lisp.se/Body/f_list_.htm
+ * [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
  */
-function list_(...args) {
-    return args;
+function nullp_(x) {
+    return Array.isArray(x) && (x.length === 0);
 }
-exports.list = list_;
-exports.list_ = list_;
-list_.fsource = [Symbol.for('define'), [Symbol.for('list_'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')];
+exports.nullp = nullp_;
+exports.nullp_ = nullp_;
+nullp_.fsource = [Symbol.for('define'), [Symbol.for('null?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
 /**
  * Whether something is a list.
  *
@@ -341,6 +165,53 @@ exports.listp = listp_;
 exports.properListP = listp_;
 exports.listp_ = listp_;
 listp_.fsource = [Symbol.for('define'), [Symbol.for('list?_'), Symbol.for('x')], [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]];
+/**
+ * Whether something is a pair or a list.
+ *
+ * Similar to [`listp` in Common Lisp][cl:listp] and
+ * [`listp` in Emacs Lisp], which are not as
+ * rigorous as `list?` in Scheme.
+ *
+ * [cl:listp]: http://clhs.lisp.se/Body/f_listp.htm#listp
+ * [el:listp]: https://www.gnu.org/software/emacs/manual/html_node/elisp/List_002drelated-Predicates.html#index-listp
+ */
+function pairOrListP_(x) {
+    return (Array.isArray(x) && (x.length > 0)) || (Array.isArray(x) && (x.length === 0));
+}
+exports.pairOrListP_ = pairOrListP_;
+pairOrListP_.fsource = [Symbol.for('define'), [Symbol.for('pair-or-list?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('pair?'), Symbol.for('x')], [Symbol.for('null?'), Symbol.for('x')]]];
+/**
+ * Make a list.
+ *
+ * Similar to [`list` in Racket][rkt:list] and
+ * [`list` in Common Lisp][cl:list].
+ *
+ * [rkt:list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._list%29%29
+ * [cl:list]: http://clhs.lisp.se/Body/f_list_.htm
+ */
+function list_(...args) {
+    return args;
+}
+exports.list = list_;
+exports.list_ = list_;
+list_.fsource = [Symbol.for('define'), [Symbol.for('list_'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')];
+/**
+ * Create a cons cell whose CAR is `x` and CDR is `y`.
+ *
+ * Similar to [`cons` in Racket][rkt:cons] and
+ * [`cons` in Common Lisp][cl:cons].
+ *
+ * [rkt:cons]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._cons%29%29
+ * [cl:cons]: http://clhs.lisp.se/Body/f_cons.htm
+ */
+function cons_(x, y) {
+    // Create a regular list whenever possible;
+    // otherwise create a dotted list.
+    return [x, ...(Array.isArray(y) ? y : [Symbol.for('.'), y])];
+}
+exports.cons = cons_;
+exports.cons_ = cons_;
+cons_.fsource = [Symbol.for('define'), [Symbol.for('cons_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote-splicing'), [Symbol.for('dotted-list-link'), Symbol.for('y')]]]]];
 /**
  * Make a dotted list. Like `list`, but the final argument
  * is used as the tail, instead of as the final element.
@@ -365,7 +236,7 @@ function listStar_(...args) {
         return args[0];
     }
     else {
-        const tailLst = args[args.length - 1];
+        const tailLst = args.at(-1);
         const headLst = args.slice(0, -1);
         if (Array.isArray(tailLst)) {
             // Make a proper list if possible.
@@ -379,7 +250,7 @@ function listStar_(...args) {
 }
 exports.listStar = listStar_;
 exports.listStar_ = listStar_;
-listStar_.fsource = [Symbol.for('define'), [Symbol.for('list-star_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 0], undefined], [[Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('tail-lst'), [Symbol.for('array-list-last'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('head-lst'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('tail-lst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], [Symbol.for('unquote-splicing'), Symbol.for('tail-lst')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), Symbol.for('tail-lst')]]]]]]]];
+listStar_.fsource = [Symbol.for('define'), [Symbol.for('list-star_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 0], undefined], [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('tail-lst'), [Symbol.for('last'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('head-lst'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('cond'), [[Symbol.for('pair-or-list?'), Symbol.for('tail-lst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], [Symbol.for('unquote-splicing'), Symbol.for('tail-lst')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('head-lst')], Symbol.for('.'), [Symbol.for('unquote'), Symbol.for('tail-lst')]]]]]]]];
 /**
  * Make a list of `n` elements. The function `proc` is applied
  * to the integers from `0` to `n - 1`.
@@ -453,7 +324,7 @@ function flatten_(lst) {
 }
 exports.flatten = flatten_;
 exports.flatten_ = flatten_;
-flatten_.fsource = [Symbol.for('define'), [Symbol.for('flatten_'), Symbol.for('lst')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('x')], [Symbol.for('append'), Symbol.for('acc'), [Symbol.for('flatten_'), Symbol.for('x')]]], [[Symbol.for('cons-dot?'), Symbol.for('x')], Symbol.for('acc')], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('acc'), Symbol.for('x')]]]], [Symbol.for('quote'), []], Symbol.for('lst')]];
+flatten_.fsource = [Symbol.for('define'), [Symbol.for('flatten_'), Symbol.for('lst')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('pair-or-list?'), Symbol.for('x')], [Symbol.for('append'), Symbol.for('acc'), [Symbol.for('flatten_'), Symbol.for('x')]]], [[Symbol.for('eq?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('.')]], Symbol.for('acc')], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('acc'), Symbol.for('x')]]]], [Symbol.for('quote'), []], Symbol.for('lst')]];
 /**
  * Return the first element of a list.
  *
@@ -479,25 +350,8 @@ first_.fsource = [Symbol.for('define'), [Symbol.for('first_'), Symbol.for('lst')
  * [rkt:second]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._second%29%29
  */
 function second_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 1;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListSecond(lst);
     }
     else {
         return lst[1];
@@ -506,7 +360,7 @@ function second_(lst) {
 exports.cadr_ = second_;
 exports.second = second_;
 exports.second_ = second_;
-second_.fsource = [Symbol.for('define'), [Symbol.for('second_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-second'), Symbol.for('lst')], [Symbol.for('array-list-second'), Symbol.for('lst')]]];
+second_.fsource = [Symbol.for('define'), [Symbol.for('second_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-second'), Symbol.for('lst')], [Symbol.for('array-second'), Symbol.for('lst')]]];
 /**
  * Return the third element of a list.
  *
@@ -515,25 +369,8 @@ second_.fsource = [Symbol.for('define'), [Symbol.for('second_'), Symbol.for('lst
  * [rkt:third]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._third%29%29
  */
 function third_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 2;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListThird(lst);
     }
     else {
         return lst[2];
@@ -541,7 +378,7 @@ function third_(lst) {
 }
 exports.third = third_;
 exports.third_ = third_;
-third_.fsource = [Symbol.for('define'), [Symbol.for('third_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-third'), Symbol.for('lst')], [Symbol.for('array-list-third'), Symbol.for('lst')]]];
+third_.fsource = [Symbol.for('define'), [Symbol.for('third_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-third'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')]]];
 /**
  * Return the fourth element of a list.
  *
@@ -550,25 +387,8 @@ third_.fsource = [Symbol.for('define'), [Symbol.for('third_'), Symbol.for('lst')
  * [rkt:fourth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._fourth%29%29
  */
 function fourth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 3;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListFourth(lst);
     }
     else {
         return lst[3];
@@ -576,7 +396,7 @@ function fourth_(lst) {
 }
 exports.fourth = fourth_;
 exports.fourth_ = fourth_;
-fourth_.fsource = [Symbol.for('define'), [Symbol.for('fourth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-fourth'), Symbol.for('lst')], [Symbol.for('array-list-fourth'), Symbol.for('lst')]]];
+fourth_.fsource = [Symbol.for('define'), [Symbol.for('fourth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-fourth'), Symbol.for('lst')], [Symbol.for('array-fourth'), Symbol.for('lst')]]];
 /**
  * Return the fifth element of a list.
  *
@@ -585,25 +405,8 @@ fourth_.fsource = [Symbol.for('define'), [Symbol.for('fourth_'), Symbol.for('lst
  * [rkt:fifth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._fifth%29%29
  */
 function fifth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 4;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListFifth(lst);
     }
     else {
         return lst[4];
@@ -611,7 +414,7 @@ function fifth_(lst) {
 }
 exports.fifth = fifth_;
 exports.fifth_ = fifth_;
-fifth_.fsource = [Symbol.for('define'), [Symbol.for('fifth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-fifth'), Symbol.for('lst')], [Symbol.for('array-list-fifth'), Symbol.for('lst')]]];
+fifth_.fsource = [Symbol.for('define'), [Symbol.for('fifth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-fifth'), Symbol.for('lst')], [Symbol.for('array-fifth'), Symbol.for('lst')]]];
 /**
  * Return the sixth element of a list.
  *
@@ -620,25 +423,8 @@ fifth_.fsource = [Symbol.for('define'), [Symbol.for('fifth_'), Symbol.for('lst')
  * [rkt:sixth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._sixth%29%29
  */
 function sixth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 5;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListSixth(lst);
     }
     else {
         return lst[5];
@@ -646,7 +432,7 @@ function sixth_(lst) {
 }
 exports.sixth = sixth_;
 exports.sixth_ = sixth_;
-sixth_.fsource = [Symbol.for('define'), [Symbol.for('sixth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-sixth'), Symbol.for('lst')], [Symbol.for('array-list-sixth'), Symbol.for('lst')]]];
+sixth_.fsource = [Symbol.for('define'), [Symbol.for('sixth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-sixth'), Symbol.for('lst')], [Symbol.for('array-sixth'), Symbol.for('lst')]]];
 /**
  * Return the seventh element of a list.
  *
@@ -655,25 +441,8 @@ sixth_.fsource = [Symbol.for('define'), [Symbol.for('sixth_'), Symbol.for('lst')
  * [rkt:seventh]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._seventh%29%29
  */
 function seventh_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 6;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListSeventh(lst);
     }
     else {
         return lst[6];
@@ -681,7 +450,7 @@ function seventh_(lst) {
 }
 exports.seventh = seventh_;
 exports.seventh_ = seventh_;
-seventh_.fsource = [Symbol.for('define'), [Symbol.for('seventh_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-seventh'), Symbol.for('lst')], [Symbol.for('array-list-seventh'), Symbol.for('lst')]]];
+seventh_.fsource = [Symbol.for('define'), [Symbol.for('seventh_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-seventh'), Symbol.for('lst')], [Symbol.for('array-seventh'), Symbol.for('lst')]]];
 /**
  * Return the eighth element of a list.
  *
@@ -690,25 +459,8 @@ seventh_.fsource = [Symbol.for('define'), [Symbol.for('seventh_'), Symbol.for('l
  * [rkt:eighth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._eighth%29%29
  */
 function eighth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 7;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListEighth(lst);
     }
     else {
         return lst[7];
@@ -716,7 +468,7 @@ function eighth_(lst) {
 }
 exports.eighth = eighth_;
 exports.eighth_ = eighth_;
-eighth_.fsource = [Symbol.for('define'), [Symbol.for('eighth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-eighth'), Symbol.for('lst')], [Symbol.for('array-list-eighth'), Symbol.for('lst')]]];
+eighth_.fsource = [Symbol.for('define'), [Symbol.for('eighth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-eighth'), Symbol.for('lst')], [Symbol.for('array-eighth'), Symbol.for('lst')]]];
 /**
  * Return the ninth element of a list.
  *
@@ -725,25 +477,8 @@ eighth_.fsource = [Symbol.for('define'), [Symbol.for('eighth_'), Symbol.for('lst
  * [rkt:ninth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._ninth%29%29
  */
 function ninth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 8;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListNinth(lst);
     }
     else {
         return lst[8];
@@ -751,7 +486,7 @@ function ninth_(lst) {
 }
 exports.ninth = ninth_;
 exports.ninth_ = ninth_;
-ninth_.fsource = [Symbol.for('define'), [Symbol.for('ninth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-ninth'), Symbol.for('lst')], [Symbol.for('array-list-ninth'), Symbol.for('lst')]]];
+ninth_.fsource = [Symbol.for('define'), [Symbol.for('ninth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-ninth'), Symbol.for('lst')], [Symbol.for('array-ninth'), Symbol.for('lst')]]];
 /**
  * Return the tenth element of a list.
  *
@@ -760,25 +495,8 @@ ninth_.fsource = [Symbol.for('define'), [Symbol.for('ninth_'), Symbol.for('lst')
  * [rkt:tenth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._tenth%29%29
  */
 function tenth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.')) && (() => {
-        const x = lastCdr(lst);
-        return Array.isArray(x) && (x.length === 0);
-    })()) {
-        let i = 9;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
-        }
-        if (Array.isArray(result)) {
-            result = result[0];
-        }
-        return result;
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListTenth(lst);
     }
     else {
         return lst[9];
@@ -786,7 +504,7 @@ function tenth_(lst) {
 }
 exports.tenth = tenth_;
 exports.tenth_ = tenth_;
-tenth_.fsource = [Symbol.for('define'), [Symbol.for('tenth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list?'), Symbol.for('lst')], [Symbol.for('linked-list-tenth'), Symbol.for('lst')], [Symbol.for('array-list-tenth'), Symbol.for('lst')]]];
+tenth_.fsource = [Symbol.for('define'), [Symbol.for('tenth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-tenth'), Symbol.for('lst')], [Symbol.for('array-tenth'), Symbol.for('lst')]]];
 /**
  * Return the tail of a list.
  *
@@ -811,7 +529,7 @@ exports.cdr = cdr_;
 exports.tail = cdr_;
 exports.tail_ = cdr_;
 exports.cdr_ = cdr_;
-cdr_.fsource = [Symbol.for('define'), [Symbol.for('cdr_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-pair?'), Symbol.for('lst')], [Symbol.for('linked-pair-cdr'), Symbol.for('lst')], [Symbol.for('array-list-cdr'), Symbol.for('lst')]]];
+cdr_.fsource = [Symbol.for('define'), [Symbol.for('cdr_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-pair?'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')], [Symbol.for('array-rest'), Symbol.for('lst')]]];
 /**
  * Return the tail of a list.
  *
@@ -820,13 +538,34 @@ cdr_.fsource = [Symbol.for('define'), [Symbol.for('cdr_'), Symbol.for('lst')], [
  * [rkt:rest]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._rest%29%29
  */
 function rest_(lst) {
-    // TODO: Handle linked lists.
-    // TODO: Alias of `cdr`.
-    return lst.slice(1);
+    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
+        return lst[2];
+    }
+    else {
+        return lst.slice(1);
+    }
 }
 exports.rest = rest_;
 exports.rest_ = rest_;
-rest_.fsource = [Symbol.for('define'), [Symbol.for('rest_'), Symbol.for('lst')], [Symbol.for('array-list-rest'), Symbol.for('lst')]];
+rest_.fsource = [Symbol.for('define'), [Symbol.for('rest_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-pair?'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')], [Symbol.for('array-rest'), Symbol.for('lst')]]];
+/**
+ * Access the list element indicated by
+ * one or more `indices`.
+ */
+function listRef_(lst, ...indices) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListRef_(lst, ...indices);
+    }
+    else {
+        let result = lst;
+        for (let i of indices) {
+            result = lst[i];
+        }
+        return result;
+    }
+}
+exports.listRef_ = listRef_;
+listRef_.fsource = [Symbol.for('define'), [Symbol.for('list-ref_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-ref_'), Symbol.for('lst'), Symbol.for('indices')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-ref'), Symbol.for('lst'), Symbol.for('i')]]], Symbol.for('result')]]];
 /**
  * Return the `n`-th element of a list.
  *
@@ -837,30 +576,73 @@ rest_.fsource = [Symbol.for('define'), [Symbol.for('rest_'), Symbol.for('lst')],
  * [cl:nth]: http://clhs.lisp.se/Body/f_nth.htm#nth
  */
 function nth_(n, lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-        let i = n;
-        let result = lst;
-        while (i > 0) {
-            if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-                result = lst[lst.length - 1];
-            }
-            else {
-                result = lst.slice(1);
-            }
-            i--;
+    return listRef_(lst, n);
+}
+exports.dottedListNth = nth_;
+exports.dottedListNth_ = nth_;
+exports.nth = nth_;
+exports.nth_ = nth_;
+nth_.fsource = [Symbol.for('define'), [Symbol.for('nth_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('list-ref_'), Symbol.for('lst'), Symbol.for('n')]];
+/**
+ * Set a list position to a given value.
+ * Returns a new list.
+ */
+function listSet_(lst, ...indicesAndValue) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListSet_(lst, ...indicesAndValue);
+    }
+    else {
+        let result = [...lst];
+        if (indicesAndValue.length > 2) {
+            const [pos, ...indicesAndValue1] = indicesAndValue;
+            result[pos] = listSet_(result[pos], ...indicesAndValue1);
         }
-        if (Array.isArray(result)) {
-            result = result[0];
+        else {
+            const [pos, val] = indicesAndValue;
+            result[pos] = val;
         }
         return result;
     }
+}
+exports.listSet_ = listSet_;
+listSet_.fsource = [Symbol.for('define'), [Symbol.for('list-set_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-set_'), Symbol.for('lst'), Symbol.for('indices-and-value')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('lst')]]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('length'), Symbol.for('indices-and-value')], 2], [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('.'), Symbol.for('indices-and-value-1')], Symbol.for('indices-and-value')], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), [Symbol.for('apply'), Symbol.for('list-set_'), [Symbol.for('array-ref'), Symbol.for('result'), Symbol.for('pos')], Symbol.for('indices-and-value-1')]]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('val')], Symbol.for('indices-and-value')], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), Symbol.for('val')]]], Symbol.for('result')]]];
+/**
+ * Set a list position to a given value.
+ * Modifies the original list.
+ */
+function listSetX_(lst, ...indicesAndValue) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListSetX_(lst, ...indicesAndValue);
+    }
     else {
-        return lst[n];
+        const indices = indicesAndValue.slice(0, -1);
+        const firstIndices = indices.slice(0, -1);
+        let lastIndex = indices.at(-1);
+        const value = indicesAndValue.at(-1);
+        let lst1 = lst;
+        for (let i of firstIndices) {
+            lst1 = lst1[i];
+        }
+        lst1[lastIndex] = value;
+        return value;
     }
 }
-exports.nth = nth_;
-exports.nth_ = nth_;
-nth_.fsource = [Symbol.for('define'), [Symbol.for('nth_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('array-list-nth'), Symbol.for('n'), Symbol.for('lst')]]];
+exports.listSetX_ = listSetX_;
+listSetX_.fsource = [Symbol.for('define'), [Symbol.for('list-set!_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-set!_'), Symbol.for('lst'), Symbol.for('indices-and-value')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('drop-right'), Symbol.for('indices-and-value'), 1]], [Symbol.for('define'), Symbol.for('first-indices'), [Symbol.for('drop-right'), Symbol.for('indices'), 1]], [Symbol.for('define'), Symbol.for('last-index'), [Symbol.for('last'), Symbol.for('indices')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('last'), Symbol.for('indices-and-value')]], [Symbol.for('define'), Symbol.for('lst1'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('first-indices')]], [Symbol.for('set!'), Symbol.for('lst1'), [Symbol.for('list-ref'), Symbol.for('lst1'), Symbol.for('i')]]], [Symbol.for('array-set!'), Symbol.for('lst1'), Symbol.for('last-index'), Symbol.for('value')], Symbol.for('value')]]];
+/**
+ * Return the `n`-th CDR element of a list.
+ */
+function listTail_(lst, n) {
+    let result = lst;
+    let i = n;
+    while (i > 0) {
+        result = ((result.length === 3) && (result[1] === Symbol.for('.'))) ? result[2] : result.slice(1);
+        i--;
+    }
+    return result;
+}
+exports.listTail_ = listTail_;
+listTail_.fsource = [Symbol.for('define'), [Symbol.for('list-tail_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('i'), Symbol.for('n')], [Symbol.for('while'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('cdr'), Symbol.for('result')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('result')];
 /**
  * Return the `n`-th CDR element of a list.
  *
@@ -869,16 +651,19 @@ nth_.fsource = [Symbol.for('define'), [Symbol.for('nth_'), Symbol.for('n'), Symb
  * [cl:nth]: http://clhs.lisp.se/Body/f_nthcdr.htm#nthcdr
  */
 function nthcdr_(n, lst) {
-    if ((lst.length === (n + 2)) && (lst[n] === Symbol.for('.'))) {
-        return lst[lst.length - 1];
+    let result = lst;
+    let i = n;
+    while (i > 0) {
+        result = ((result.length === 3) && (result[1] === Symbol.for('.'))) ? result[2] : result.slice(1);
+        i--;
     }
-    else {
-        return lst.slice(n);
-    }
+    return result;
 }
+exports.dottedListNthcdr = nthcdr_;
+exports.dottedListNthcdr_ = nthcdr_;
 exports.nthcdr = nthcdr_;
 exports.nthcdr_ = nthcdr_;
-nthcdr_.fsource = [Symbol.for('define'), [Symbol.for('nthcdr_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('lst')], [Symbol.for('+'), Symbol.for('n'), 2]], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('lst'), Symbol.for('n')]]], [Symbol.for('linked-list-nthcdr'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('array-list-nthcdr'), Symbol.for('n'), Symbol.for('lst')]]];
+nthcdr_.fsource = [Symbol.for('define'), [Symbol.for('nthcdr_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('i'), Symbol.for('n')], [Symbol.for('while'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('cdr'), Symbol.for('result')]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('result')];
 /**
  * Take the `n` first elements from `lst`.
  *
@@ -887,11 +672,11 @@ nthcdr_.fsource = [Symbol.for('define'), [Symbol.for('nthcdr_'), Symbol.for('n')
  * [rkt:take]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._take%29%29
  */
 function take_(lst, n) {
-    return lst.slice(0, -(lst.length - n));
+    return lst.slice(0, -(lst.length - n) || undefined);
 }
 exports.take = take_;
 exports.take_ = take_;
-take_.fsource = [Symbol.for('define'), [Symbol.for('take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-list-take'), Symbol.for('lst'), Symbol.for('n')]];
+take_.fsource = [Symbol.for('define'), [Symbol.for('take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('drop-right'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('lst')], Symbol.for('n')]]];
 /**
  * Return the list obtained by dropping
  * the first `n` elements from `lst`.
@@ -904,10 +689,8 @@ function drop_(lst, n) {
     return lst.slice(n);
 }
 exports.drop = drop_;
-exports.listTail = drop_;
-exports.listTail_ = drop_;
 exports.drop_ = drop_;
-drop_.fsource = [Symbol.for('define'), [Symbol.for('drop_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-list-drop'), Symbol.for('lst'), Symbol.for('n')]];
+drop_.fsource = [Symbol.for('define'), [Symbol.for('drop_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
 /**
  * Return the list obtained by dropping
  * the last `n` elements from `lst`.
@@ -917,11 +700,11 @@ drop_.fsource = [Symbol.for('define'), [Symbol.for('drop_'), Symbol.for('lst'), 
  * [rkt:drop-right]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._drop-right%29%29
  */
 function dropRight_(lst, n) {
-    return lst.slice(0, -n);
+    return lst.slice(0, -n || undefined);
 }
 exports.dropRight = dropRight_;
 exports.dropRight_ = dropRight_;
-dropRight_.fsource = [Symbol.for('define'), [Symbol.for('drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-list-drop-right'), Symbol.for('lst'), Symbol.for('n')]];
+dropRight_.fsource = [Symbol.for('define'), [Symbol.for('drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), Symbol.for('n')]];
 /**
  * Reverse the order of a list.
  * Returns a new list.
@@ -931,11 +714,19 @@ dropRight_.fsource = [Symbol.for('define'), [Symbol.for('drop-right_'), Symbol.f
  * [rkt:reverse]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._reverse%29%29
  */
 function reverse_(lst) {
-    return lst.reverse();
+    return [...lst].reverse();
 }
 exports.reverse = reverse_;
 exports.reverse_ = reverse_;
-reverse_.fsource = [Symbol.for('define'), [Symbol.for('reverse_'), Symbol.for('lst')], [Symbol.for('array-list-reverse'), Symbol.for('lst')]];
+reverse_.fsource = [Symbol.for('define'), [Symbol.for('reverse_'), Symbol.for('lst')], [Symbol.for('array-reverse'), Symbol.for('lst')]];
+/**
+ * Reverse the order of a list.
+ */
+function reversex_(lst) {
+    return lst.reverse();
+}
+exports.reversex_ = reversex_;
+reversex_.fsource = [Symbol.for('define'), [Symbol.for('reverse!_'), Symbol.for('lst')], [Symbol.for('array-reverse!'), Symbol.for('lst')]];
 /**
  * Return a list where the last `n` conses have been omitted.
  *
@@ -954,7 +745,7 @@ function butlast_(x, n = 1) {
 }
 exports.butlast = butlast_;
 exports.butlast_ = butlast_;
-butlast_.fsource = [Symbol.for('define'), [Symbol.for('butlast_'), Symbol.for('x'), [Symbol.for('n'), 1]], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('x')]]]], [Symbol.for('i'), Symbol.for('n')]], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('result')], 0]], [Symbol.for('pop-right!'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('result')]];
+butlast_.fsource = [Symbol.for('define'), [Symbol.for('butlast_'), Symbol.for('x'), [Symbol.for('n'), 1]], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('x')]]]], [Symbol.for('i'), Symbol.for('n')]], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('>'), [Symbol.for('length'), Symbol.for('result')], 0]], [Symbol.for('pop-right!'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('result')]];
 /**
  * Return a list where the last `n` conses have been omitted.
  * Changes the original list.
@@ -973,7 +764,7 @@ function nbutlast_(x, n = 1) {
 }
 exports.nbutlast = nbutlast_;
 exports.nbutlast_ = nbutlast_;
-nbutlast_.fsource = [Symbol.for('define'), [Symbol.for('nbutlast_'), Symbol.for('x'), [Symbol.for('n'), 1]], [Symbol.for('let'), [[Symbol.for('i'), Symbol.for('n')]], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0]], [Symbol.for('pop-right!'), Symbol.for('x')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('x')]];
+nbutlast_.fsource = [Symbol.for('define'), [Symbol.for('nbutlast_'), Symbol.for('x'), [Symbol.for('n'), 1]], [Symbol.for('let'), [[Symbol.for('i'), Symbol.for('n')]], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('>'), [Symbol.for('length'), Symbol.for('x')], 0]], [Symbol.for('pop-right!'), Symbol.for('x')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('x')]];
 /**
  * Pop an element off the beginning of a list.
  *
@@ -988,7 +779,7 @@ exports.popx = popLeftX_;
 exports.popx_ = popLeftX_;
 exports.popLeftX = popLeftX_;
 exports.popLeftX_ = popLeftX_;
-popLeftX_.fsource = [Symbol.for('define'), [Symbol.for('pop-left!_'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('shift')]];
+popLeftX_.fsource = [Symbol.for('define'), [Symbol.for('pop-left!_'), Symbol.for('lst')], [Symbol.for('array-pop-left!'), Symbol.for('lst')]];
 /**
  * Pop an element off the end of a list.
  *
@@ -1001,7 +792,7 @@ function popRightX_(lst) {
 }
 exports.popRightX = popRightX_;
 exports.popRightX_ = popRightX_;
-popRightX_.fsource = [Symbol.for('define'), [Symbol.for('pop-right!_'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('pop')]];
+popRightX_.fsource = [Symbol.for('define'), [Symbol.for('pop-right!_'), Symbol.for('lst')], [Symbol.for('array-pop-right!'), Symbol.for('lst')]];
 /**
  * Push an element onto the beginning of a list.
  *
@@ -1016,7 +807,7 @@ function pushLeftX_(lst, x) {
 exports.pushx = pushLeftX_;
 exports.pushLeftX = pushLeftX_;
 exports.pushLeftX_ = pushLeftX_;
-pushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('push-left!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('unshift'), Symbol.for('x')], Symbol.for('lst')];
+pushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('push-left!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-left!'), Symbol.for('lst'), Symbol.for('x')]];
 /**
  * Push an element onto the end of a list.
  *
@@ -1031,7 +822,7 @@ function pushRightX_(lst, x) {
 exports.appendToList = pushRightX_;
 exports.pushRightX = pushRightX_;
 exports.pushRightX_ = pushRightX_;
-pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('push'), Symbol.for('x')], Symbol.for('lst')];
+pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-right!'), Symbol.for('lst'), Symbol.for('x')]];
 /**
  * Return the length of a list.
  *
@@ -1042,8 +833,8 @@ pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol
  * [cl:length]: http://clhs.lisp.se/Body/f_length.htm#length
  */
 function length_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-        return linkedListLength(lst);
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListLength(lst);
     }
     else {
         return lst.length;
@@ -1051,7 +842,7 @@ function length_(lst) {
 }
 exports.length = length_;
 exports.length_ = length_;
-length_.fsource = [Symbol.for('define'), [Symbol.for('length_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('linked-list-length'), Symbol.for('lst')], [Symbol.for('array-list-length'), Symbol.for('lst')]]];
+length_.fsource = [Symbol.for('define'), [Symbol.for('length_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-length'), Symbol.for('lst')], [Symbol.for('array-length'), Symbol.for('lst')]]];
 /**
  * Return the last element of a list.
  *
@@ -1060,16 +851,16 @@ length_.fsource = [Symbol.for('define'), [Symbol.for('length_'), Symbol.for('lst
  * [rkt:last]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._last%29%29
  */
 function last_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-        return linkedListLast(lst);
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        return dottedListLast(lst);
     }
     else {
-        return lst[lst.length - 1];
+        return lst.at(-1);
     }
 }
 exports.last = last_;
 exports.last_ = last_;
-last_.fsource = [Symbol.for('define'), [Symbol.for('last_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('linked-list-last'), Symbol.for('lst')], [Symbol.for('array-list-last'), Symbol.for('lst')]]];
+last_.fsource = [Symbol.for('define'), [Symbol.for('last_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-last'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]]];
 /**
  * Return the last pair of a list.
  *
@@ -1086,14 +877,13 @@ function lastPair_(lst) {
     else if (Array.isArray(lst) && (lst.length === 0)) {
         return lst;
     }
-    else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+    else if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
         let current = lst;
         let result = undefined;
-        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !(() => {
-            const x = current[current.length - 1];
+        while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.')) && !((x) => {
             return Array.isArray(x) && (x.length === 0);
-        })()) {
-            current = current[current.length - 1];
+        })(current.at(-1))) {
+            current = current.at(-1);
         }
         return result;
     }
@@ -1103,10 +893,8 @@ function lastPair_(lst) {
 }
 exports.lastCons_ = lastPair_;
 exports.lastPair = lastPair_;
-exports.linkedListLastCons_ = lastPair_;
-exports.linkedListLastPair_ = lastPair_;
 exports.lastPair_ = lastPair_;
-lastPair_.fsource = [Symbol.for('define'), [Symbol.for('last-pair_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('lst')]], undefined], [[Symbol.for('null?'), Symbol.for('lst')], Symbol.for('lst')], [[Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('array-list-drop'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('array-list-length'), Symbol.for('lst')], 1]]]]];
+lastPair_.fsource = [Symbol.for('define'), [Symbol.for('last-pair_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('pair-or-list?'), Symbol.for('lst')]], undefined], [[Symbol.for('null?'), Symbol.for('lst')], Symbol.for('lst')], [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('dotted-list?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('dotted-list-tail'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('dotted-list-tail'), Symbol.for('current')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('array-drop'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 1]]]]];
 /**
  * Return the last cdr of a list, i.e., the terminating empty list.
  */
@@ -1114,10 +902,10 @@ function lastCdr_(lst) {
     if (!Array.isArray(lst)) {
         return undefined;
     }
-    else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+    else if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
         let result = lst;
-        while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-            result = result[result.length - 1];
+        while (Array.isArray(result) && (result.length >= 3) && (result.at(-2) === Symbol.for('.'))) {
+            result = result.at(-1);
         }
         return result;
     }
@@ -1125,10 +913,10 @@ function lastCdr_(lst) {
         return [];
     }
 }
+exports.dottedListLastCdr_ = lastCdr_;
 exports.lastCdr = lastCdr_;
-exports.linkedListLastCdr_ = lastCdr_;
 exports.lastCdr_ = lastCdr_;
-lastCdr_.fsource = [Symbol.for('define'), [Symbol.for('last-cdr_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('array?'), Symbol.for('lst')]], undefined], [[Symbol.for('linked-list-link?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('linked-list-link?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('linked-list-tail'), Symbol.for('result')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('quote'), []]]]];
+lastCdr_.fsource = [Symbol.for('define'), [Symbol.for('last-cdr_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('not'), [Symbol.for('pair-or-list?'), Symbol.for('lst')]], undefined], [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('dotted-list?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('dotted-list-tail'), Symbol.for('result')]]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('quote'), []]]]];
 /**
  * Set the CAR of a list.
  *
@@ -1144,7 +932,7 @@ function setCarX_(x, y) {
 }
 exports.setCarX = setCarX_;
 exports.setCarX_ = setCarX_;
-setCarX_.fsource = [Symbol.for('define'), [Symbol.for('set-car!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0], [Symbol.for('aset!'), Symbol.for('x'), 0, Symbol.for('y')]], undefined];
+setCarX_.fsource = [Symbol.for('define'), [Symbol.for('set-car!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('x')], 0], [Symbol.for('list-set!'), Symbol.for('x'), 0, Symbol.for('y')]], undefined];
 /**
  * Set the CDR of a list.
  *
@@ -1156,7 +944,7 @@ function setCdrX_(x, y) {
     if (Array.isArray(x) && (x.length === 0)) {
     }
     else if (x === y) {
-        if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'))) {
+        if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'))) {
             x[x.length - 1] = y;
         }
         else {
@@ -1182,218 +970,7 @@ function setCdrX_(x, y) {
 }
 exports.setCdrX = setCdrX_;
 exports.setCdrX_ = setCdrX_;
-setCdrX_.fsource = [Symbol.for('define'), [Symbol.for('set-cdr!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('x')]], [[Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('aset!'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 1], Symbol.for('y')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]], [Symbol.for('else'), [Symbol.for('while'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 1], [Symbol.for('pop-right!'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('array?'), Symbol.for('y')], [Symbol.for('for'), [[Symbol.for('z'), Symbol.for('y')]], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('z')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('*cons-dot*')], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]]], undefined];
-/**
- * Whether something is the empty list.
- *
- * Similar to [`null?` in Racket][rkt:nullp].
- *
- * [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
- */
-function nullp_(x) {
-    return Array.isArray(x) && (x.length === 0);
-}
-exports.nullp = nullp_;
-exports.nullp_ = nullp_;
-nullp_.fsource = [Symbol.for('define'), [Symbol.for('null?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
-/**
- * Whether something is an array list.
- *
- * An array list is a list implemented in terms of an array.
- * It corresponds roughly to the
- * [`ArrayList` class in Java][java:ArrayList].
- *
- * [java:ArrayList]: https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html
- */
-function arrayListP_(x) {
-    return Array.isArray(x);
-}
-exports.arrayListP = arrayListP_;
-exports.arrayListP_ = arrayListP_;
-arrayListP_.fsource = [Symbol.for('define'), [Symbol.for('array-list?_'), Symbol.for('x')], [Symbol.for('array?'), Symbol.for('x')]];
-/**
- * Return the length of an array list.
- */
-function arrayListLength_(lst) {
-    return lst.length;
-}
-exports.arrayListLength = arrayListLength_;
-exports.arrayListLength_ = arrayListLength_;
-arrayListLength_.fsource = [Symbol.for('define'), [Symbol.for('array-list-length_'), Symbol.for('lst')], [Symbol.for('array-length'), Symbol.for('lst')]];
-/**
- * Return the first element of an array list.
- */
-function arrayListFirst_(lst) {
-    return lst[0];
-}
-exports.arrayListFirst = arrayListFirst_;
-exports.arrayListFirst_ = arrayListFirst_;
-arrayListFirst_.fsource = [Symbol.for('define'), [Symbol.for('array-list-first_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
-/**
- * Return the second element of an array list.
- */
-function arrayListSecond_(lst) {
-    return lst[1];
-}
-exports.arrayListSecond = arrayListSecond_;
-exports.arrayListSecond_ = arrayListSecond_;
-arrayListSecond_.fsource = [Symbol.for('define'), [Symbol.for('array-list-second_'), Symbol.for('lst')], [Symbol.for('array-second'), Symbol.for('lst')]];
-/**
- * Return the third element of an array list.
- */
-function arrayListThird_(lst) {
-    return lst[2];
-}
-exports.arrayListThird = arrayListThird_;
-exports.arrayListThird_ = arrayListThird_;
-arrayListThird_.fsource = [Symbol.for('define'), [Symbol.for('array-list-third_'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')]];
-/**
- * Return the fourth element of an array list.
- */
-function arrayListFourth_(lst) {
-    return lst[3];
-}
-exports.arrayListFourth = arrayListFourth_;
-exports.arrayListFourth_ = arrayListFourth_;
-arrayListFourth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-fourth_'), Symbol.for('lst')], [Symbol.for('array-fourth'), Symbol.for('lst')]];
-/**
- * Return the fifth element of an array list.
- */
-function arrayListFifth_(lst) {
-    return lst[4];
-}
-exports.arrayListFifth = arrayListFifth_;
-exports.arrayListFifth_ = arrayListFifth_;
-arrayListFifth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-fifth_'), Symbol.for('lst')], [Symbol.for('array-fifth'), Symbol.for('lst')]];
-/**
- * Return the sixth element of an array list.
- */
-function arrayListSixth_(lst) {
-    return lst[5];
-}
-exports.arrayListSixth = arrayListSixth_;
-exports.arrayListSixth_ = arrayListSixth_;
-arrayListSixth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-sixth_'), Symbol.for('lst')], [Symbol.for('array-sixth'), Symbol.for('lst')]];
-/**
- * Return the seventh element of an array list.
- */
-function arrayListSeventh_(lst) {
-    return lst[6];
-}
-exports.arrayListSeventh = arrayListSeventh_;
-exports.arrayListSeventh_ = arrayListSeventh_;
-arrayListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('array-list-seventh_'), Symbol.for('lst')], [Symbol.for('array-seventh'), Symbol.for('lst')]];
-/**
- * Return the eighth element of an array list.
- */
-function arrayListEighth_(lst) {
-    return lst[7];
-}
-exports.arrayListEighth = arrayListEighth_;
-exports.arrayListEighth_ = arrayListEighth_;
-arrayListEighth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-eighth_'), Symbol.for('lst')], [Symbol.for('array-eighth'), Symbol.for('lst')]];
-/**
- * Return the ninth element of an array list.
- */
-function arrayListNinth_(lst) {
-    return lst[8];
-}
-exports.arrayListNinth = arrayListNinth_;
-exports.arrayListNinth_ = arrayListNinth_;
-arrayListNinth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-ninth_'), Symbol.for('lst')], [Symbol.for('array-ninth'), Symbol.for('lst')]];
-/**
- * Return the tenth element of an array list.
- */
-function arrayListTenth_(lst) {
-    return lst[9];
-}
-exports.arrayListTenth = arrayListTenth_;
-exports.arrayListTenth_ = arrayListTenth_;
-arrayListTenth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-tenth_'), Symbol.for('lst')], [Symbol.for('array-tenth'), Symbol.for('lst')]];
-/**
- * Return the last element of an array list.
- */
-function arrayListLast_(lst) {
-    return lst[lst.length - 1];
-}
-exports.arrayListLast = arrayListLast_;
-exports.arrayListLast_ = arrayListLast_;
-arrayListLast_.fsource = [Symbol.for('define'), [Symbol.for('array-list-last_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
-/**
- * Return the `n`-th element of an array list.
- */
-function arrayListNth_(n, lst) {
-    return lst[n];
-}
-exports.arrayListNth = arrayListNth_;
-exports.arrayListNth_ = arrayListNth_;
-arrayListNth_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nth_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), Symbol.for('n')]];
-/**
- * Return the `n`-th CDR of an array list.
- */
-function arrayListNthcdr_(n, lst) {
-    return lst.slice(n);
-}
-exports.arrayListNthcdr = arrayListNthcdr_;
-exports.arrayListNthcdr_ = arrayListNthcdr_;
-arrayListNthcdr_.fsource = [Symbol.for('define'), [Symbol.for('array-list-nthcdr_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
-/**
- * Return the CDR of an array list.
- */
-function arrayListCdr_(lst) {
-    return lst.slice(1);
-}
-exports.arrayListCdr = arrayListCdr_;
-exports.arrayListCdr_ = arrayListCdr_;
-arrayListCdr_.fsource = [Symbol.for('define'), [Symbol.for('array-list-cdr_'), Symbol.for('lst')], [Symbol.for('array-rest'), Symbol.for('lst')]];
-/**
- * Return the tail of an array list.
- */
-function arrayListRest_(lst) {
-    return lst.slice(1);
-}
-exports.arrayListRest = arrayListRest_;
-exports.arrayListRest_ = arrayListRest_;
-arrayListRest_.fsource = [Symbol.for('define'), [Symbol.for('array-list-rest_'), Symbol.for('lst')], [Symbol.for('array-list-cdr'), Symbol.for('lst')]];
-/**
- * Take the `n` first elements from an array list.
- */
-function arrayListTake_(lst, n) {
-    return lst.slice(0, -(lst.length - n));
-}
-exports.arrayListTake = arrayListTake_;
-exports.arrayListTake_ = arrayListTake_;
-arrayListTake_.fsource = [Symbol.for('define'), [Symbol.for('array-list-take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-take'), Symbol.for('lst'), Symbol.for('n')]];
-/**
- * Return the list obtained by dropping
- * the first `n` elements from an array list.
- */
-function arrayListDrop_(lst, n) {
-    return lst.slice(n);
-}
-exports.arrayListDrop = arrayListDrop_;
-exports.arrayListDrop_ = arrayListDrop_;
-arrayListDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
-/**
- * Return the list obtained by dropping
- * the last `n` elements from an array list.
- */
-function arrayListDropRight_(lst, n) {
-    return lst.slice(0, -n);
-}
-exports.arrayListDropRight = arrayListDropRight_;
-exports.arrayListDropRight_ = arrayListDropRight_;
-arrayListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-list-drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), Symbol.for('n')]];
-/**
- * Reverse the order of an array list.
- * Returns a new array list.
- */
-function arrayListReverse_(lst) {
-    return lst.reverse();
-}
-exports.arrayListReverse = arrayListReverse_;
-exports.arrayListReverse_ = arrayListReverse_;
-arrayListReverse_.fsource = [Symbol.for('define'), [Symbol.for('array-list-reverse_'), Symbol.for('lst')], [Symbol.for('array-reverse'), Symbol.for('lst')]];
+setCdrX_.fsource = [Symbol.for('define'), [Symbol.for('set-cdr!_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('x')]], [[Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('x')], [Symbol.for('array-set!'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 1], Symbol.for('y')]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]], [Symbol.for('else'), [Symbol.for('while'), [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 1], [Symbol.for('pop-right!'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('pair-or-list?'), Symbol.for('y')], [Symbol.for('for'), [[Symbol.for('z'), Symbol.for('y')]], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('z')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('push-right!'), Symbol.for('x'), Symbol.for('y')]]]]], undefined];
 /**
  * Whether something is a dotted list.
  *
@@ -1402,468 +979,306 @@ arrayListReverse_.fsource = [Symbol.for('define'), [Symbol.for('array-list-rever
  * [rkt:dotted-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#dotted-list-p
  */
 function dottedListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !(() => {
-        const x1 = lastCdr(x);
-        return Array.isArray(x1) && (x1.length === 0);
-    })();
+    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'));
 }
 exports.dottedListP = dottedListP_;
 exports.dottedListP_ = dottedListP_;
-dottedListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 2]]], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]]];
+dottedListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]]]];
 /**
- * Whether something is a linked list.
- *
- * An linked list is a list implemented as a chain of links.
- * It corresponds roughly to the
- * [`LinkedList` class in Java][java:LinkedList].
- *
- * [java:LinkedList]: https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html
+ * Whether something is a dotted pair.
  */
-function linkedListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (() => {
-        const x1 = lastCdr(x);
-        return Array.isArray(x1) && (x1.length === 0);
-    })();
-}
-exports.linkedListP = linkedListP_;
-exports.linkedListP_ = linkedListP_;
-linkedListP_.fsource = [Symbol.for('define'), [Symbol.for('linked-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 2]]], [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]];
-/**
- * Whether something is a linked list link.
- */
-function linkedListLinkP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'));
-}
-exports.linkedListLinkP = linkedListLinkP_;
-exports.linkedListLinkP_ = linkedListLinkP_;
-linkedListLinkP_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-link?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('x'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('x')], 2]]]]];
-/**
- * Whether something is a linked pair.
- */
-function linkedPairP_(x) {
+function dottedPairP_(x) {
     return Array.isArray(x) && (x.length === 3) && (x[1] === Symbol.for('.'));
 }
-exports.dottedPairP_ = linkedPairP_;
-exports.linkedPairP = linkedPairP_;
-exports.linkedPairP_ = linkedPairP_;
-linkedPairP_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('cons-dot?'), [Symbol.for('aget'), Symbol.for('x'), 1]]]];
+exports.dottedPairP_ = dottedPairP_;
+dottedPairP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), Symbol.for('x'), 1], [Symbol.for('quote'), Symbol.for('.')]]]];
 /**
- * Return the CAR of a linked list link.
+ * Whether something is a proper dotted list.
  */
-function linkedListLinkCar_(x) {
-    return x[0];
+function dottedProperListP_(x) {
+    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && ((x) => {
+        return Array.isArray(x) && (x.length === 0);
+    })(lastCdr(x));
 }
-exports.linkedListLinkCar = linkedListLinkCar_;
-exports.linkedListLinkCar_ = linkedListLinkCar_;
-linkedListLinkCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-link-car_'), Symbol.for('x')], [Symbol.for('array-first'), Symbol.for('x')]];
+exports.dottedProperListP_ = dottedProperListP_;
+dottedProperListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-proper-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]];
 /**
- * Return the CDR of a linked list link.
+ * Whether something is an improper dotted list.
  */
-function linkedListLinkCdr_(x) {
-    return x[x.length - 1];
+function dottedImproperListP_(x) {
+    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !((x) => {
+        return Array.isArray(x) && (x.length === 0);
+    })(lastCdr(x));
 }
-exports.linkedListLinkCdr = linkedListLinkCdr_;
-exports.linkedListLinkCdr_ = linkedListLinkCdr_;
-linkedListLinkCdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-link-cdr_'), Symbol.for('x')], [Symbol.for('array-last'), Symbol.for('x')]];
+exports.dottedImproperListP_ = dottedImproperListP_;
+dottedImproperListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-improper-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]]];
 /**
- * Return the CAR of a linked pair.
+ * Return the head of a dotted list.
  */
-function linkedPairCar_(x) {
-    return x[0];
+function dottedListHead_(lst) {
+    return lst.slice(0, -2);
 }
-exports.linkedPairCar = linkedPairCar_;
-exports.linkedPairCar_ = linkedPairCar_;
-linkedPairCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair-car_'), Symbol.for('x')], [Symbol.for('array-first'), Symbol.for('x')]];
+exports.dottedListHead_ = dottedListHead_;
+dottedListHead_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-head_'), Symbol.for('lst')], [Symbol.for('array-drop-right'), Symbol.for('lst'), 2]];
 /**
- * Return the CDR of a linked pair.
+ * Return the tail of a dotted list.
  */
-function linkedPairCdr_(x) {
+function dottedListTail_(lst) {
+    return lst.at(-1);
+}
+exports.dottedListTail_ = dottedListTail_;
+dottedListTail_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tail_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
+/**
+ * Create a dotted list link.
+ */
+function dottedListLink_(x) {
+    if (Array.isArray(x)) {
+        return x;
+    }
+    else {
+        return [Symbol.for('.'), x];
+    }
+}
+exports.dottedListLink_ = dottedListLink_;
+dottedListLink_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-link_'), Symbol.for('x')], [Symbol.for('if'), [Symbol.for('pair-or-list?'), Symbol.for('x')], Symbol.for('x'), [Symbol.for('list'), [Symbol.for('quote'), Symbol.for('.')], Symbol.for('x')]]];
+/**
+ * Return the CDR of a dotted pair.
+ */
+function dottedPairCdr_(x) {
     return x[2];
 }
-exports.linkedPairCdr = linkedPairCdr_;
-exports.linkedPairCdr_ = linkedPairCdr_;
-linkedPairCdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-pair-cdr_'), Symbol.for('x')], [Symbol.for('array-third'), Symbol.for('x')]];
+exports.dottedPairCdr_ = dottedPairCdr_;
+dottedPairCdr_.fsource = [Symbol.for('define'), [Symbol.for('dotted-pair-cdr_'), Symbol.for('x')], [Symbol.for('array-third'), Symbol.for('x')]];
 /**
- * Return the length of a linked list.
+ * Parse a dotted list.
  */
-function linkedListLength_(lst) {
+function dottedListParse_(lst) {
+    return [dottedListHead_(lst), dottedListTail_(lst)];
+}
+exports.dottedListParse_ = dottedListParse_;
+dottedListParse_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-parse_'), Symbol.for('lst')], [Symbol.for('values'), [Symbol.for('dotted-list-head_'), Symbol.for('lst')], [Symbol.for('dotted-list-tail_'), Symbol.for('lst')]]];
+/**
+ * Return the length of a dotted list.
+ */
+function dottedListLength_(lst) {
     let len = 0;
     let current = lst;
-    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
+    while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
         len = len + (lst.length - 2);
-        current = current[current.length - 1];
+        current = current.at(-1);
     }
     return len;
 }
-exports.linkedListLength = linkedListLength_;
-exports.linkedListLength_ = linkedListLength_;
-linkedListLength_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-length_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('len'), 0], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('len'), [Symbol.for('+'), Symbol.for('len'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-tail'), Symbol.for('current')]]], Symbol.for('len')];
+exports.dottedListLength_ = dottedListLength_;
+dottedListLength_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-length_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('len'), 0], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('dotted-list?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('len'), [Symbol.for('+'), Symbol.for('len'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('dotted-list-tail'), Symbol.for('current')]]], Symbol.for('len')];
 /**
- * Return the first element of a linked list.
+ * Access the dotted list element indicated by
+ * one or more `indices`.
  */
-function linkedListFirst_(lst) {
+function dottedListRef_(lst, ...indices) {
+    let result = lst;
+    for (let i of indices) {
+        while (i > 0) {
+            if (i < (result.length - 2)) {
+                break;
+            }
+            else {
+                i = i - (result.length - 2);
+                result = result.at(-1);
+            }
+        }
+        if (Array.isArray(result)) {
+            result = result[i];
+        }
+    }
+    return result;
+}
+exports.dottedListRef_ = dottedListRef_;
+dottedListRef_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices')]], [Symbol.for('while'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('result')], 2]], [Symbol.for('break')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('result')], 2]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('dotted-list-tail'), Symbol.for('result')]]]]], [Symbol.for('when'), [Symbol.for('pair-or-list?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-ref'), Symbol.for('result'), Symbol.for('i')]]]], Symbol.for('result')];
+/**
+ * Set a dotted list position to a given value.
+ * Returns a new list.
+ */
+function dottedListSet_(lst, ...indicesAndValue) {
+    if (indicesAndValue.length > 2) {
+        const [pos, ...indicesAndValue1] = indicesAndValue;
+        if (pos < (lst.length - 2)) {
+            let result = [...lst];
+            result[pos] = dottedListSet_(result[pos], ...indicesAndValue1);
+            return result;
+        }
+        else {
+            return [...lst.slice(0, -1), dottedListSet_(lst.at(-1), [pos - (lst.length - 2), ...indicesAndValue1])];
+        }
+    }
+    else {
+        const [pos, val] = indicesAndValue;
+        if (pos < (lst.length - 2)) {
+            let result = [...lst];
+            result[pos] = val;
+            return result;
+        }
+        else {
+            return [...lst.slice(0, -1), dottedListSet_(lst.at(-1), pos - (lst.length - 2), val)];
+        }
+    }
+}
+exports.dottedListSet_ = dottedListSet_;
+dottedListSet_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-set_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('length'), Symbol.for('indices-and-value')], 2], [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('.'), Symbol.for('indices-and-value-1')], Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('lst')]]]], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), [Symbol.for('apply'), Symbol.for('dotted-list-set_'), [Symbol.for('array-ref'), Symbol.for('result'), Symbol.for('pos')], Symbol.for('indices-and-value-1')]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('append'), [Symbol.for('array-drop-right'), Symbol.for('lst'), 1], [Symbol.for('list'), [Symbol.for('dotted-list-set_'), [Symbol.for('array-last'), Symbol.for('lst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('-'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]]], [Symbol.for('unquote-splicing'), Symbol.for('indices-and-value-1')]]]]]]]]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('val')], Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('lst')]]]], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), Symbol.for('val')], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('append'), [Symbol.for('array-drop-right'), Symbol.for('lst'), 1], [Symbol.for('list'), [Symbol.for('dotted-list-set_'), [Symbol.for('array-last'), Symbol.for('lst')], [Symbol.for('-'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], Symbol.for('val')]]]]]]]];
+/**
+ * Set a dotted list position to a given value.
+ * Modifies the original list.
+ */
+function dottedListSetX_(lst, ...indicesAndValue) {
+    const indices = indicesAndValue.slice(0, -1);
+    const indices1 = indices.slice(0, -1);
+    let lastIndex = indices.at(-1);
+    const value = indicesAndValue.at(-1);
+    let lst1 = lst;
+    for (let i of indices1) {
+        while (i > 0) {
+            if (i < (lst1.length - 2)) {
+                break;
+            }
+            else {
+                i = i - (lst1.length - 2);
+                lst1 = lst1.at(-1);
+            }
+        }
+        if (Array.isArray(lst1)) {
+            lst1 = lst1[i];
+        }
+    }
+    while (lastIndex > 0) {
+        if (lastIndex < (lst1.length - 2)) {
+            break;
+        }
+        else {
+            lastIndex = lastIndex - (lst1.length - 2);
+            lst1 = lst1.at(-1);
+        }
+    }
+    lst1[lastIndex] = value;
+    return value;
+}
+exports.dottedListSetX_ = dottedListSetX_;
+dottedListSetX_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-set!_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('drop-right'), Symbol.for('indices-and-value'), 1]], [Symbol.for('define'), Symbol.for('indices1'), [Symbol.for('drop-right'), Symbol.for('indices'), 1]], [Symbol.for('define'), Symbol.for('last-index'), [Symbol.for('last'), Symbol.for('indices')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('last'), Symbol.for('indices-and-value')]], [Symbol.for('define'), Symbol.for('lst1'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices1')]], [Symbol.for('while'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst1')], 2]], [Symbol.for('break')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst1')], 2]]], [Symbol.for('set!'), Symbol.for('lst1'), [Symbol.for('dotted-list-tail'), Symbol.for('lst1')]]]]], [Symbol.for('when'), [Symbol.for('pair-or-list?'), Symbol.for('lst1')], [Symbol.for('set!'), Symbol.for('lst1'), [Symbol.for('list-ref'), Symbol.for('lst1'), Symbol.for('i')]]]], [Symbol.for('while'), [Symbol.for('>'), Symbol.for('last-index'), 0], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('last-index'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst1')], 2]], [Symbol.for('break')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('last-index'), [Symbol.for('-'), Symbol.for('last-index'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst1')], 2]]], [Symbol.for('set!'), Symbol.for('lst1'), [Symbol.for('dotted-list-tail'), Symbol.for('lst1')]]]]], [Symbol.for('array-set!'), Symbol.for('lst1'), Symbol.for('last-index'), Symbol.for('value')], Symbol.for('value')];
+/**
+ * Return the first element of a dotted list.
+ */
+function dottedListFirst_(lst) {
     return lst[0];
 }
-exports.linkedListFirst = linkedListFirst_;
-exports.linkedListFirst_ = linkedListFirst_;
-linkedListFirst_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-first_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
+exports.dottedListFirst_ = dottedListFirst_;
+dottedListFirst_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-first_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
 /**
- * Return the second element of a linked list.
+ * Return the second element of a dotted list.
  */
-function linkedListSecond_(lst) {
-    let i = 1;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListSecond_(lst) {
+    return dottedListRef_(lst, 1);
 }
-exports.linkedListSecond = linkedListSecond_;
-exports.linkedListSecond_ = linkedListSecond_;
-linkedListSecond_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-second_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 1, Symbol.for('lst')]];
+exports.dottedListSecond_ = dottedListSecond_;
+dottedListSecond_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-second_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 1]];
 /**
- * Return the third element of a linked list.
+ * Return the third element of a dotted list.
  */
-function linkedListThird_(lst) {
-    let i = 2;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListThird_(lst) {
+    return dottedListRef_(lst, 2);
 }
-exports.linkedListThird = linkedListThird_;
-exports.linkedListThird_ = linkedListThird_;
-linkedListThird_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-third_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 2, Symbol.for('lst')]];
+exports.dottedListThird_ = dottedListThird_;
+dottedListThird_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-third_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 2]];
 /**
- * Return the fourth element of a linked list.
+ * Return the fourth element of a dotted list.
  */
-function linkedListFourth_(lst) {
-    let i = 3;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListFourth_(lst) {
+    return dottedListRef_(lst, 3);
 }
-exports.linkedListFourth = linkedListFourth_;
-exports.linkedListFourth_ = linkedListFourth_;
-linkedListFourth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-fourth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 3, Symbol.for('lst')]];
+exports.dottedListFourth_ = dottedListFourth_;
+dottedListFourth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-fourth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 3]];
 /**
- * Return the fifth element of a linked list.
+ * Return the fifth element of a dotted list.
  */
-function linkedListFifth_(lst) {
-    let i = 4;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListFifth_(lst) {
+    return dottedListRef_(lst, 4);
 }
-exports.linkedListFifth = linkedListFifth_;
-exports.linkedListFifth_ = linkedListFifth_;
-linkedListFifth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-fifth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 4, Symbol.for('lst')]];
+exports.dottedListFifth_ = dottedListFifth_;
+dottedListFifth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-fifth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 4]];
 /**
- * Return the sixth element of a linked list.
+ * Return the sixth element of a dotted list.
  */
-function linkedListSixth_(lst) {
-    let i = 5;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListSixth_(lst) {
+    return dottedListRef_(lst, 5);
 }
-exports.linkedListSixth = linkedListSixth_;
-exports.linkedListSixth_ = linkedListSixth_;
-linkedListSixth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-sixth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 5, Symbol.for('lst')]];
+exports.dottedListSixth_ = dottedListSixth_;
+dottedListSixth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-sixth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 5]];
 /**
- * Return the seventh element of a linked list.
+ * Return the seventh element of a dotted list.
  */
-function linkedListSeventh_(lst) {
-    let i = 6;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListSeventh_(lst) {
+    return dottedListRef_(lst, 6);
 }
-exports.linkedListSeventh = linkedListSeventh_;
-exports.linkedListSeventh_ = linkedListSeventh_;
-linkedListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-seventh_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 6, Symbol.for('lst')]];
+exports.dottedListSeventh_ = dottedListSeventh_;
+dottedListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-seventh_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 6]];
 /**
- * Return the eighth element of a linked list.
+ * Return the eighth element of a dotted list.
  */
-function linkedListEighth_(lst) {
-    let i = 7;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListEighth_(lst) {
+    return dottedListRef_(lst, 7);
 }
-exports.linkedListEighth = linkedListEighth_;
-exports.linkedListEighth_ = linkedListEighth_;
-linkedListEighth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-eighth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 7, Symbol.for('lst')]];
+exports.dottedListEighth_ = dottedListEighth_;
+dottedListEighth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-eighth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 7]];
 /**
- * Return the ninth element of a linkedd list.
+ * Return the ninth element of a dotted list.
  */
-function linkedListNinth_(lst) {
-    let i = 8;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListNinth_(lst) {
+    return dottedListRef_(lst, 8);
 }
-exports.linkedListNinth = linkedListNinth_;
-exports.linkedListNinth_ = linkedListNinth_;
-linkedListNinth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-ninth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 8, Symbol.for('lst')]];
+exports.dottedListNinth_ = dottedListNinth_;
+dottedListNinth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-ninth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 8]];
 /**
- * Return the tenth element of a linkedd list.
+ * Return the tenth element of a dotted list.
  */
-function linkedListTenth_(lst) {
-    let i = 9;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
+function dottedListTenth_(lst) {
+    return dottedListRef_(lst, 9);
 }
-exports.linkedListTenth = linkedListTenth_;
-exports.linkedListTenth_ = linkedListTenth_;
-linkedListTenth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-tenth_'), Symbol.for('lst')], [Symbol.for('linked-list-nth'), 9, Symbol.for('lst')]];
+exports.dottedListTenth_ = dottedListTenth_;
+dottedListTenth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tenth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 9]];
 /**
- * Return the last element of a linked list.
+ * Return the last element of a dotted list.
  */
-function linkedListLast_(lst) {
+function dottedListLast_(lst) {
     let current = lst;
     let result = undefined;
-    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !(() => {
-        const x = current[current.length - 1];
+    while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.')) && !((x) => {
         return Array.isArray(x) && (x.length === 0);
-    })()) {
-        current = current[current.length - 1];
+    })(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
+        current = ((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1);
     }
-    if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
+    if (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
         result = current[current.length - 3];
     }
     return result;
 }
-exports.linkedListLast = linkedListLast_;
-exports.linkedListLast_ = linkedListLast_;
-linkedListLast_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-last_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('linked-list-link-cdr'), Symbol.for('current')]]], [Symbol.for('when'), [Symbol.for('linked-list-link?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('aget'), Symbol.for('current'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('current')], 3]]]], Symbol.for('result')];
+exports.dottedListLast_ = dottedListLast_;
+dottedListLast_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-last_'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('current'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('dotted-list?'), Symbol.for('current')], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('dotted-list-cdr'), Symbol.for('current')]]]], [Symbol.for('set!'), Symbol.for('current'), [Symbol.for('dotted-list-cdr'), Symbol.for('current')]]], [Symbol.for('when'), [Symbol.for('dotted-list?'), Symbol.for('current')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('current'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('current')], 3]]]], Symbol.for('result')];
 /**
- * Return the `n`-th element of a linked list.
- */
-function linkedListNth_(n, lst) {
-    let i = n;
-    let result = lst;
-    while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-            result = lst[lst.length - 1];
-        }
-        else {
-            result = lst.slice(1);
-        }
-        i--;
-    }
-    if (Array.isArray(result)) {
-        result = result[0];
-    }
-    return result;
-}
-exports.linkedListNth = linkedListNth_;
-exports.linkedListNth_ = linkedListNth_;
-linkedListNth_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-nth_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('define'), Symbol.for('i'), Symbol.for('n')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('while'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('cond'), [[Symbol.for('dotted-pair?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('linked-list-tail'), Symbol.for('lst')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-rest'), Symbol.for('lst')]]]], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], [Symbol.for('when'), [Symbol.for('array?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-first'), Symbol.for('result')]]], Symbol.for('result')];
-/**
- * Return the `n`-th CDR of a linked list.
- */
-function linkedListNthcdr_(n, lst) {
-    return lst[lst.length - 1];
-}
-exports.linkedListNthcdr = linkedListNthcdr_;
-exports.linkedListNthcdr_ = linkedListNthcdr_;
-linkedListNthcdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-nthcdr_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('aget'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 1]]];
-/**
- * Return the list obtained by dropping
- * the first `n` elements from a linked list.
- */
-function linkedListDrop_(lst, pos) {
-    // TODO: Linked lists.
-    return (
-    // TODO: Linked lists.
-    lst.slice(pos));
-}
-exports.linkedListDrop = linkedListDrop_;
-exports.linkedListDrop_ = linkedListDrop_;
-linkedListDrop_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-drop_'), Symbol.for('lst'), Symbol.for('pos')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('pos')]];
-/**
- * Return the list obtained by dropping
- * the last `n` elements from a linked list.
- */
-function linkedListDropRight_(lst, n) {
-    // TODO: Linked lists.
-    return (
-    // TODO: Linked lists.
-    lst.slice(0, -(n + 1)));
-}
-exports.linkedListDropRight = linkedListDropRight_;
-exports.linkedListDropRight_ = linkedListDropRight_;
-linkedListDropRight_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), [Symbol.for('+'), Symbol.for('n'), 1]]];
-/**
- * Return the CAR of a linked list.
- */
-function linkedListCar_(lst) {
-    return lst[0];
-}
-exports.linkedListCar = linkedListCar_;
-exports.linkedListCar_ = linkedListCar_;
-linkedListCar_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-car_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
-/**
- * Return the CDR of a linked list.
- */
-function linkedListCdr_(lst) {
-    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
-        return lst[2];
-    }
-    else {
-        return lst.slice(1);
-    }
-}
-exports.linkedListCdr = linkedListCdr_;
-exports.linkedListCdr_ = linkedListCdr_;
-linkedListCdr_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-cdr_'), Symbol.for('lst')], [Symbol.for('cond'), [[Symbol.for('dotted-pair?'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')]], [Symbol.for('else'), [Symbol.for('array-rest'), Symbol.for('lst')]]]];
-/**
- * Return the head of a linked list.
- */
-function linkedListHead_(lst) {
-    // TODO: Rename to `linked-list-link-head`.
-    return lst.slice(0, -2);
-}
-exports.linkedListHead = linkedListHead_;
-exports.linkedListHead_ = linkedListHead_;
-linkedListHead_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-head_'), Symbol.for('lst')], [Symbol.for('drop-right'), Symbol.for('lst'), 2]];
-/**
- * Return the tail of a linked list.
- */
-function linkedListTail_(lst) {
-    // TODO: Rename to `linked-list-link-tail`.
-    return lst[lst.length - 1];
-}
-exports.linkedListTail = linkedListTail_;
-exports.linkedListTail_ = linkedListTail_;
-linkedListTail_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-tail_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
-/**
- * Parse a linked list.
- */
-function linkedListParse_(lst) {
-    return [linkedListHead_(lst), linkedListTail_(lst)];
-}
-exports.linkedListParse = linkedListParse_;
-exports.linkedListParse_ = linkedListParse_;
-linkedListParse_.fsource = [Symbol.for('define'), [Symbol.for('linked-list-parse_'), Symbol.for('lst')], [Symbol.for('values'), [Symbol.for('linked-list-head_'), Symbol.for('lst')], [Symbol.for('linked-list-tail_'), Symbol.for('lst')]]];
-/**
- * Make a linked list.
+ * Make a dotted list.
  */
 function makeDottedList_(car, cdr) {
-    // TODO: Rename to `make-linked-list`.
     return listStar_(car, cdr);
 }
 exports.makeDottedList = makeDottedList_;
 exports.makeDottedList_ = makeDottedList_;
 makeDottedList_.fsource = [Symbol.for('define'), [Symbol.for('make-dotted-list_'), Symbol.for('car'), Symbol.for('cdr')], [Symbol.for('list-star_'), Symbol.for('car'), Symbol.for('cdr')]];
 /**
- * Make a linked pair.
+ * Make a dotted pair.
  */
 function makePair_(car, cdr) {
-    // TODO: Rename to `make-linked-pair`.
     return [car, Symbol.for('.'), cdr];
 }
 exports.makePair = makePair_;
 exports.makePair_ = makePair_;
-makePair_.fsource = [Symbol.for('define'), [Symbol.for('make-pair_'), Symbol.for('car'), Symbol.for('cdr')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('car')], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), Symbol.for('cdr')]]]];
+makePair_.fsource = [Symbol.for('define'), [Symbol.for('make-pair_'), Symbol.for('car'), Symbol.for('cdr')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('car')], Symbol.for('.'), [Symbol.for('unquote'), Symbol.for('cdr')]]]];
 /**
  * Whether something is a proper list,
  * i.e., a list that is terminated by
@@ -1888,10 +1303,9 @@ properListP_.fsource = [Symbol.for('define'), [Symbol.for('proper-list?_'), Symb
  * [rkt:dotted-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#dotted-list-p
  */
 function improperListP_(x) {
-    return !(() => {
-        const x1 = lastCdr(x);
-        return Array.isArray(x1) && (x1.length === 0);
-    })();
+    return !((x) => {
+        return Array.isArray(x) && (x.length === 0);
+    })(lastCdr(x));
 }
 exports.improperListP = improperListP_;
 exports.improperListP_ = improperListP_;
@@ -1904,27 +1318,24 @@ improperListP_.fsource = [Symbol.for('define'), [Symbol.for('improper-list?_'), 
  * [rkt:circular-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#circular-list-p
  */
 function circularListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x[x.length - 1] === x);
+    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.at(-1) === x);
 }
 exports.circularListP = circularListP_;
 exports.circularListP_ = circularListP_;
-circularListP_.fsource = [Symbol.for('define'), [Symbol.for('circular-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('linked-list-tail'), Symbol.for('x')], Symbol.for('x')]]];
+circularListP_.fsource = [Symbol.for('define'), [Symbol.for('circular-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('dotted-list?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('dotted-list-tail'), Symbol.for('x')], Symbol.for('x')]]];
 /**
  * Convert an array list to a linked list.
  */
-function arrayListToLinkedList_(x) {
-    return [...x.slice(0, -1), Symbol.for('.'), x[x.length - 1]];
+function listToDottedList_(x) {
+    return [...x.slice(0, -1), Symbol.for('.'), x.at(-1)];
 }
-exports.arrayListToLinkedList = arrayListToLinkedList_;
-exports.properListToDottedList_ = arrayListToLinkedList_;
-exports.arrayListToLinkedList_ = arrayListToLinkedList_;
-arrayListToLinkedList_.fsource = [Symbol.for('define'), [Symbol.for('array-list->linked-list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('drop-right'), Symbol.for('x'), 1]], [Symbol.for('unquote'), Symbol.for('*cons-dot*')], [Symbol.for('unquote'), [Symbol.for('array-list-last'), Symbol.for('x')]]]]];
+exports.listToDottedList_ = listToDottedList_;
+listToDottedList_.fsource = [Symbol.for('define'), [Symbol.for('list->dotted-list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('array-drop-right'), Symbol.for('x'), 1]], Symbol.for('.'), [Symbol.for('unquote'), [Symbol.for('array-last'), Symbol.for('x')]]]]];
 /**
  * Convert a linked list to an array list.
  */
-function linkedListToArrayList_(x) {
-    return [...x.slice(0, -2), x[x.length - 1]];
+function dottedListToList_(x) {
+    return [...x.slice(0, -2), x.at(-1)];
 }
-exports.linkedListToArrayList = linkedListToArrayList_;
-exports.linkedListToArrayList_ = linkedListToArrayList_;
-linkedListToArrayList_.fsource = [Symbol.for('define'), [Symbol.for('linked-list->array-list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('linked-list-head'), Symbol.for('x')]], [Symbol.for('unquote'), [Symbol.for('linked-list-tail'), Symbol.for('x')]]]]];
+exports.dottedListToList_ = dottedListToList_;
+dottedListToList_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list->list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('dotted-list-head'), Symbol.for('x')]], [Symbol.for('unquote'), [Symbol.for('dotted-list-tail'), Symbol.for('x')]]]]];

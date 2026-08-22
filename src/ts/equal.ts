@@ -17,17 +17,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-const [cdr]: any[] = ((): any => {
-  function cdr_(lst: any): any {
-    if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
-      return lst[2];
-    } else {
-      return lst.slice(1);
-    }
-  }
-  return [cdr_];
-})();
-
 /**
  * Strict equality.
  *
@@ -71,20 +60,20 @@ function equalp_(x: any, y: any): any {
   if (x === y) {
     // Compare equivalent values.
     return true;
-  } else if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && Array.isArray(y)) {
-    // Compare linked lists.
-    const cdrX: any = (Array.isArray(x) && (x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
-    if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX[cdrX.length - 2] === Symbol.for('.')))) {
+  } else if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && Array.isArray(y)) {
+    // Compare dotted lists.
+    const cdrX: any = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
+    if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX.at(-2) === Symbol.for('.')))) {
       return false;
     } else if (equalp_(x[0], y[0])) {
-      return equalp_(cdrX, cdr(y));
+      return equalp_(cdrX, ((y.length === 3) && (y[1] === Symbol.for('.'))) ? y[2] : y.slice(1));
     } else {
       return false;
     }
-  } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y[y.length - 2] === Symbol.for('.'))) {
+  } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y.at(-2) === Symbol.for('.'))) {
     return equalp_(y, x);
   } else if (Array.isArray(x) && Array.isArray(y)) {
-    // Compare arrays.
+    // Compare lists.
     if (x.length !== y.length) {
       return false;
     }
@@ -124,7 +113,7 @@ function equalp_(x: any, y: any): any {
   }
 }
 
-equalp_.fsource = [Symbol.for('define'), [Symbol.for('equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')], true], [[Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('array-list?'), Symbol.for('y')]], [Symbol.for('define'), Symbol.for('cdr-x'), [Symbol.for('linked-list-cdr'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('linked-list-link?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('not'), [Symbol.for('array-list?'), Symbol.for('cdr-x')]], [Symbol.for('not'), [Symbol.for('linked-list-link?'), Symbol.for('cdr-x')]]], false], [[Symbol.for('equal?_'), [Symbol.for('car'), Symbol.for('x')], [Symbol.for('car'), Symbol.for('y')]], [Symbol.for('equal?_'), Symbol.for('cdr-x'), [Symbol.for('cdr'), Symbol.for('y')]]], [Symbol.for('else'), false]]], [[Symbol.for('and'), [Symbol.for('array-list?'), Symbol.for('x')], [Symbol.for('linked-list-link?'), Symbol.for('y')]], [Symbol.for('equal?_'), Symbol.for('y'), Symbol.for('x')]], [[Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('array?'), Symbol.for('y')]], [Symbol.for('unless'), [Symbol.for('='), [Symbol.for('array-list-length'), Symbol.for('x')], [Symbol.for('array-list-length'), Symbol.for('y')]], [Symbol.for('return'), false]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('array-list-length'), Symbol.for('x')]]]], [Symbol.for('unless'), [Symbol.for('equal?_'), [Symbol.for('aget'), Symbol.for('x'), Symbol.for('i')], [Symbol.for('aget'), Symbol.for('y'), Symbol.for('i')]], [Symbol.for('return'), false]]], true], [[Symbol.for('and'), [Symbol.for('hash?'), Symbol.for('x')], [Symbol.for('hash?'), Symbol.for('y')]], [Symbol.for('unless'), [Symbol.for('='), [Symbol.for('hash-size'), Symbol.for('x')], [Symbol.for('hash-size'), Symbol.for('y')]], [Symbol.for('return'), false]], [Symbol.for('for'), [[Symbol.for('entry'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('entries')]]], [Symbol.for('define-values'), [Symbol.for('key1'), Symbol.for('value1')], Symbol.for('entry')], [Symbol.for('define'), Symbol.for('value2'), [Symbol.for('send'), Symbol.for('y'), Symbol.for('get'), Symbol.for('key1')]], [Symbol.for('unless'), [Symbol.for('equal?_'), Symbol.for('value1'), Symbol.for('value2')], [Symbol.for('return'), false]]], true], [[Symbol.for('and'), [Symbol.for('object?'), Symbol.for('x')], [Symbol.for('object?'), Symbol.for('y')]], [Symbol.for('unless'), [Symbol.for('='), [Symbol.for('array-list-length'), [Symbol.for('js/keys'), Symbol.for('x')]], [Symbol.for('array-list-length'), [Symbol.for('js/keys'), Symbol.for('y')]]], [Symbol.for('return'), false]], [Symbol.for('for'), [[Symbol.for('key'), [Symbol.for('js/keys'), Symbol.for('x')]]], [Symbol.for('unless'), [Symbol.for('equal?_'), [Symbol.for('oget'), Symbol.for('x'), Symbol.for('key')], [Symbol.for('oget'), Symbol.for('y'), Symbol.for('key')]], [Symbol.for('return'), false]]], true], [Symbol.for('else'), false]]];
+equalp_.fsource = [Symbol.for('define'), [Symbol.for('equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('x'), Symbol.for('y')], true], [[Symbol.for('and'), [Symbol.for('dotted-list?'), Symbol.for('x')], [Symbol.for('pair-or-list?'), Symbol.for('y')]], [Symbol.for('define'), Symbol.for('cdr-x'), [Symbol.for('dotted-list-cdr'), Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('dotted-list?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('length'), Symbol.for('x')], 3], [Symbol.for('not'), [Symbol.for('pair-or-list?'), Symbol.for('cdr-x')]], [Symbol.for('not'), [Symbol.for('dotted-list?'), Symbol.for('cdr-x')]]], false], [[Symbol.for('equal?_'), [Symbol.for('car'), Symbol.for('x')], [Symbol.for('car'), Symbol.for('y')]], [Symbol.for('equal?_'), Symbol.for('cdr-x'), [Symbol.for('cdr'), Symbol.for('y')]]], [Symbol.for('else'), false]]], [[Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('x')], [Symbol.for('dotted-list?'), Symbol.for('y')]], [Symbol.for('equal?_'), Symbol.for('y'), Symbol.for('x')]], [[Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('x')], [Symbol.for('pair-or-list?'), Symbol.for('y')]], [Symbol.for('unless'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('x')], [Symbol.for('length'), Symbol.for('y')]], [Symbol.for('return'), false]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('x')]]]], [Symbol.for('unless'), [Symbol.for('equal?_'), [Symbol.for('aget'), Symbol.for('x'), Symbol.for('i')], [Symbol.for('aget'), Symbol.for('y'), Symbol.for('i')]], [Symbol.for('return'), false]]], true], [[Symbol.for('and'), [Symbol.for('hash?'), Symbol.for('x')], [Symbol.for('hash?'), Symbol.for('y')]], [Symbol.for('unless'), [Symbol.for('='), [Symbol.for('hash-size'), Symbol.for('x')], [Symbol.for('hash-size'), Symbol.for('y')]], [Symbol.for('return'), false]], [Symbol.for('for'), [[Symbol.for('entry'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('entries')]]], [Symbol.for('define-values'), [Symbol.for('key1'), Symbol.for('value1')], Symbol.for('entry')], [Symbol.for('define'), Symbol.for('value2'), [Symbol.for('send'), Symbol.for('y'), Symbol.for('get'), Symbol.for('key1')]], [Symbol.for('unless'), [Symbol.for('equal?_'), Symbol.for('value1'), Symbol.for('value2')], [Symbol.for('return'), false]]], true], [[Symbol.for('and'), [Symbol.for('object?'), Symbol.for('x')], [Symbol.for('object?'), Symbol.for('y')]], [Symbol.for('unless'), [Symbol.for('='), [Symbol.for('length'), [Symbol.for('js/keys'), Symbol.for('x')]], [Symbol.for('length'), [Symbol.for('js/keys'), Symbol.for('y')]]], [Symbol.for('return'), false]], [Symbol.for('for'), [[Symbol.for('key'), [Symbol.for('js/keys'), Symbol.for('x')]]], [Symbol.for('unless'), [Symbol.for('equal?_'), [Symbol.for('oget'), Symbol.for('x'), Symbol.for('key')], [Symbol.for('oget'), Symbol.for('y'), Symbol.for('key')]], [Symbol.for('return'), false]]], true], [Symbol.for('else'), false]]];
 
 export {
   eqp_ as eq,

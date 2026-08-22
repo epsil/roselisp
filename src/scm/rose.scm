@@ -565,7 +565,7 @@
   (define/public (nth n)
     (~> this
         (get-field node-list _)
-        (aget _ n)))
+        (list-ref _ n)))
 
   ;;; Remove the node whose index is `n`.
   (define/public (remove-node n)
@@ -615,14 +615,14 @@
 ;;; Legacy function, but still used in a few places.
 (define (begin-wrap-rose-smart nodes)
   (cond
-   ((not (array? nodes))
+   ((not (pair-or-list? nodes))
     nodes)
-   ((and (= (js/length nodes) 1)
-         (array? (~> (first nodes)
-                     (send _ get-value)))
+   ((and (= (length nodes) 1)
+         (pair-or-list? (~> (first nodes)
+                            (send _ get-value)))
          (> (~> (first nodes)
                 (send _ get-value)
-                (js/length _))
+                (length _))
             0)
          (eq? (~> (first nodes)
                   (send _ get-value)
@@ -635,9 +635,9 @@
 ;;; Legacy function, but still used in a few places.
 (define (begin-wrap-rose-smart-1 nodes)
   (cond
-   ((not (array? nodes))
+   ((not (pair-or-list? nodes))
     nodes)
-   ((= (js/length nodes) 1)
+   ((= (length nodes) 1)
     (first nodes))
    (else
     (begin-wrap-rose nodes))))
@@ -659,14 +659,14 @@
       (define entry
         (hash-ref cache exp))
       (define val
-        (aget entry idx))
-      (unless (>= idx (- (js/length entry) 1))
+        (list-ref entry idx))
+      (unless (>= idx (- (length entry) 1))
         (set! idx (+ idx 1)))
       (hash-set! indices exp idx)
       val)
      ((is-a? exp Rose)
       exp)
-     ((array? exp)
+     ((pair-or-list? exp)
       ;; We may need to create a new list since
       ;; `exp` may be a list of rose tree nodes
       ;; and S-expressions.
@@ -727,7 +727,7 @@
 
 (define (make-rose-nonrecursive exp)
   (cond
-   ((array? exp)
+   ((pair-or-list? exp)
     (make-list-rose exp))
    ((is-a? exp Rose)
     exp)
@@ -741,7 +741,7 @@
 ;;; Make a rose tree-wrapped S-expression.
 (define (make-sexp-rose (exp '()))
   (cond
-   ((array? exp)
+   ((pair-or-list? exp)
     (define lst '())
     (define node
       (new Rose lst))
@@ -766,7 +766,7 @@
   (define value
     (send node get-value))
   (cond
-   ((array? value)
+   ((pair-or-list? value)
     (define sliced-node
       (new Rose (drop value n)))
     (for ((x (send node drop n)))
@@ -783,7 +783,7 @@
    (else
     (define node
       (new Rose exp))
-    (when (array? exp)
+    (when (pair-or-list? exp)
       (for ((x exp))
         (send node
               insert
@@ -863,20 +863,21 @@
   (define v
     (syntax->datum stx))
   (cond
-   ((array? v)
+   ((pair-or-list? v)
     (define nodes
       (send stx get-nodes))
     (cond
      ;; Dotted list.
-     ((and (>= (js/length nodes) 3)
-           (cons-dot?
-            (syntax->datum
-             (aget nodes (- (js/length nodes) 2)))))
+     ((and (>= (length nodes) 3)
+           (eq? (syntax->datum
+                 (list-ref nodes
+                           (- (length nodes) 2)))
+                '|.|))
       (define tail
-        (js/last nodes))
+        (last nodes))
       (define tail-e
         (syntax-e tail))
-      (when (array? tail-e)
+      (when (pair-or-list? tail-e)
         (set! tail tail-e))
       `(,@(drop-right nodes 2) . ,tail))
      ;; Regular list.

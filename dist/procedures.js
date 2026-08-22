@@ -19,36 +19,26 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = void 0;
+exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = void 0;
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
         if (x === y) {
             return true;
         }
-        else if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && Array.isArray(y)) {
-            const cdrX = (Array.isArray(x) && (x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
-            if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX[cdrX.length - 2] === Symbol.for('.')))) {
+        else if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && Array.isArray(y)) {
+            const cdrX = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
+            if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX.at(-2) === Symbol.for('.')))) {
                 return false;
             }
             else if (equalp_(x[0], y[0])) {
-                return equalp_(cdrX, (() => {
-                    function cdr_(lst) {
-                        if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
-                            return lst[2];
-                        }
-                        else {
-                            return lst.slice(1);
-                        }
-                    }
-                    return cdr_;
-                })()(y));
+                return equalp_(cdrX, ((y.length === 3) && (y[1] === Symbol.for('.'))) ? y[2] : y.slice(1));
             }
             else {
                 return false;
             }
         }
-        else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y[y.length - 2] === Symbol.for('.'))) {
+        else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y.at(-2) === Symbol.for('.'))) {
             return equalp_(y, x);
         }
         else if (Array.isArray(x) && Array.isArray(y)) {
@@ -94,14 +84,6 @@ const [equalp, keywordp] = (() => {
     function keywordp_(obj) {
         return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
     }
-    function cdr_(lst) {
-        if (Array.isArray(lst) && (lst.length === 3) && (lst[1] === Symbol.for('.'))) {
-            return lst[2];
-        }
-        else {
-            return lst.slice(1);
-        }
-    }
     return [equalp_, keywordp_];
 })();
 /**
@@ -116,13 +98,13 @@ const [equalp, keywordp] = (() => {
  */
 function apply_(f, ...args) {
     if (args.length > 0) {
-        args = [...args.slice(0, -1), ...args[args.length - 1]];
+        args = [...args.slice(0, -1), ...args.at(-1)];
     }
     return f.apply(null, args);
 }
 exports.apply = apply_;
 exports.apply_ = apply_;
-apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('js/length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('js/last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, Symbol.for('args')]];
+apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, Symbol.for('args')]];
 /**
  * Call `f` with `args`.
  * Returns the value `f` returns.
@@ -227,7 +209,7 @@ function syntaxTransformerTypeP_(x) {
 }
 exports.syntaxTransformerTypeP = syntaxTransformerTypeP_;
 exports.syntaxTransformerTypeP_ = syntaxTransformerTypeP_;
-syntaxTransformerTypeP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer-type?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('macro->')]], [Symbol.for('='), [Symbol.for('js/length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('js/second'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]], [Symbol.for('eq?'), [Symbol.for('js/third'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]]]];
+syntaxTransformerTypeP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer-type?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('tagged-list?_'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('macro->')]], [Symbol.for('='), [Symbol.for('length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('second'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]], [Symbol.for('eq?'), [Symbol.for('third'), Symbol.for('x')], [Symbol.for('quote'), Symbol.for('Syntax')]]]];
 /**
  * Whether `x` is the type of a fexpr.
  */
@@ -283,7 +265,7 @@ function taggedListP_(exp, tag) {
 }
 exports.taggedListP = taggedListP_;
 exports.taggedListP_ = taggedListP_;
-taggedListP_.fsource = [Symbol.for('define'), [Symbol.for('tagged-list?_'), Symbol.for('exp'), Symbol.for('tag')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('exp')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('exp')], 1], [Symbol.for('eq?'), [Symbol.for('array-first'), Symbol.for('exp')], Symbol.for('tag')]]];
+taggedListP_.fsource = [Symbol.for('define'), [Symbol.for('tagged-list?_'), Symbol.for('exp'), Symbol.for('tag')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('exp')], [Symbol.for('>='), [Symbol.for('length'), Symbol.for('exp')], 1], [Symbol.for('eq?'), [Symbol.for('first'), Symbol.for('exp')], Symbol.for('tag')]]];
 /**
  * Logical negation.
  *
@@ -342,7 +324,7 @@ function lt_(...args) {
 }
 exports.lt = lt_;
 exports.lt_ = lt_;
-lt_.fsource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+lt_.fsource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Less than or equal operator.
  *
@@ -368,7 +350,7 @@ function lte_(...args) {
 }
 exports.lte = lte_;
 exports.lte_ = lte_;
-lte_.fsource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+lte_.fsource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Greater than operator.
  *
@@ -394,7 +376,7 @@ function gt_(...args) {
 }
 exports.gt = gt_;
 exports.gt_ = gt_;
-gt_.fsource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+gt_.fsource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Greater than or equal operator.
  *
@@ -420,7 +402,7 @@ function gte_(...args) {
 }
 exports.gte = gte_;
 exports.gte_ = gte_;
-gte_.fsource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('js/length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('array-list-nth'), [Symbol.for('-'), Symbol.for('i'), 1], Symbol.for('args')], [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]], [Symbol.for('return'), false]]], true]]];
+gte_.fsource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
 /**
  * Modulo operation.
  *
@@ -497,7 +479,7 @@ exports.minus = sub_;
 exports.sub = sub_;
 exports.subtract = sub_;
 exports.sub_ = sub_;
-sub_.fsource = [Symbol.for('define'), [Symbol.for('sub_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('js/length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], 0], [[Symbol.for('one?'), Symbol.for('len')], [Symbol.for('-'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('-'), Symbol.for('result'), [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]]]], Symbol.for('result')]]]]];
+sub_.fsource = [Symbol.for('define'), [Symbol.for('sub_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], 0], [[Symbol.for('one?'), Symbol.for('len')], [Symbol.for('-'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('-'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]]];
 /**
  * Return `(- x 1)`.
  *
@@ -554,7 +536,7 @@ function div_(...args) {
 exports._div = div_;
 exports.div = div_;
 exports.div_ = div_;
-div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('js/length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('array-list-nth'), Symbol.for('i'), Symbol.for('args')]]]], Symbol.for('result')]]]];
+div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
 /**
  * Whether a value is the number zero.
  *
@@ -716,11 +698,14 @@ function keywordToSymbol_(exp) {
 exports.keywordToSymbol = keywordToSymbol_;
 exports.keywordToSymbol_ = keywordToSymbol_;
 keywordToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('keyword->symbol_'), Symbol.for('exp')], [Symbol.for('~>'), Symbol.for('exp'), [Symbol.for('keyword->string_'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')]]];
-// (define (keyword?-1_ obj)
-//   (true?
-//    (and (symbol? obj)
-//         (regexp-match (regexp "^:")
-//                       (symbol->string obj)))))
+/**
+ * Whether something is an atomic value.
+ */
+function atomp_(x) {
+    return !(Array.isArray(x) && (x.length > 0));
+}
+exports.atomp_ = atomp_;
+atomp_.fsource = [Symbol.for('define'), [Symbol.for('atom?_'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('pair?'), Symbol.for('x')]]];
 /**
  * Whether something is a number.
  *
@@ -923,7 +908,7 @@ function findf_(proc, lst, notFound = false) {
 }
 exports.findf = findf_;
 exports.findf_ = findf_;
-findf_.fsource = [Symbol.for('define'), [Symbol.for('findf_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('array-list-nth'), Symbol.for('idx'), Symbol.for('lst')], Symbol.for('not-found')]]];
+findf_.fsource = [Symbol.for('define'), [Symbol.for('findf_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('list-ref'), Symbol.for('lst'), Symbol.for('idx')], Symbol.for('not-found')]]];
 /**
  * Find the index of a list element matching a predicate.
  *
@@ -1021,7 +1006,7 @@ function intersection_(...args) {
 }
 exports.intersection = intersection_;
 exports.intersection_ = intersection_;
-intersection_.fsource = [Symbol.for('define'), [Symbol.for('intersection_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('intersection2'), Symbol.for('arr1'), Symbol.for('arr2')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr1')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('arr2')], [Symbol.for('not'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], Symbol.for('result')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 0], [Symbol.for('quote'), []]], [[Symbol.for('='), [Symbol.for('js/length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('intersection2'), Symbol.for('acc'), Symbol.for('x')]], [Symbol.for('first'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('args')]]]]];
+intersection_.fsource = [Symbol.for('define'), [Symbol.for('intersection_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('intersection2'), Symbol.for('arr1'), Symbol.for('arr2')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr1')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('arr2')], [Symbol.for('not'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], Symbol.for('result')]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('quote'), []]], [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 1], [Symbol.for('first'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('intersection2'), Symbol.for('acc'), Symbol.for('x')]], [Symbol.for('first'), Symbol.for('args')], [Symbol.for('rest'), Symbol.for('args')]]]]];
 /**
  * Return the union of multiple lists.
  *
@@ -1082,7 +1067,7 @@ range_.fsource = [Symbol.for('define'), [Symbol.for('range_'), Symbol.for('start
  */
 function compose_(...args) {
     const functions = args.slice(0, -1);
-    const lastFunction = args[args.length - 1];
+    const lastFunction = args.at(-1);
     return function (...args) {
         const val = lastFunction(...args);
         return functions.reduceRight(function (x, f) {
@@ -1092,7 +1077,7 @@ function compose_(...args) {
 }
 exports.compose = compose_;
 exports.compose_ = compose_;
-compose_.fsource = [Symbol.for('define'), [Symbol.for('compose_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('functions'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('last-function'), [Symbol.for('js/last'), Symbol.for('args')]]], [Symbol.for('lambda'), Symbol.for('args'), [Symbol.for('let'), [[Symbol.for('val'), [Symbol.for('apply'), Symbol.for('last-function'), Symbol.for('args')]]], [Symbol.for('foldr'), [Symbol.for('lambda'), [Symbol.for('f'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]], Symbol.for('val'), Symbol.for('functions')]]]]];
+compose_.fsource = [Symbol.for('define'), [Symbol.for('compose_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('functions'), [Symbol.for('drop-right'), Symbol.for('args'), 1]], [Symbol.for('last-function'), [Symbol.for('last'), Symbol.for('args')]]], [Symbol.for('lambda'), Symbol.for('args'), [Symbol.for('let'), [[Symbol.for('val'), [Symbol.for('apply'), Symbol.for('last-function'), Symbol.for('args')]]], [Symbol.for('foldr'), [Symbol.for('lambda'), [Symbol.for('f'), Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]], Symbol.for('val'), Symbol.for('functions')]]]]];
 /**
  * Left-to-right function composition.
  *

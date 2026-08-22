@@ -57,7 +57,7 @@ declare namespace quasiquoteSpecial_ {
  */
 declare function setqSpecial_(exp: any, env: any): any;
 declare namespace setqSpecial_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[])[];
 }
 /**
  * Evaluate a `(set ...)` form.
@@ -316,14 +316,14 @@ declare namespace setFieldSpecial_ {
  */
 declare function defineClassSpecial_(exp: any, env: any): any;
 declare namespace defineClassSpecial_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[] | undefined)[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(try ...)` form.
  */
 declare function trySpecial_(exp: any, env: any): any;
 declare namespace trySpecial_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][][])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][][])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(provide ...)` form.

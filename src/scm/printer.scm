@@ -127,10 +127,10 @@
 ;;; Join a list of documents with a separator.
 (define (join sep docs)
   (define result '())
-  (for ((i (range 0 (js/length docs))))
+  (for ((i (range 0 (length docs))))
     (unless (= i 0)
       (push-right! result sep))
-    (push-right! result (aget docs i)))
+    (push-right! result (list-ref docs i)))
   result)
 
 ;;; `Doc` command `group`.
@@ -144,7 +144,7 @@
   (cond
    ((string? doc)
     "string")
-   ((array? doc)
+   ((pair-or-list? doc)
     "array")
    ((is-a? doc DocCommand)
     (get-field type doc))
@@ -171,7 +171,7 @@
 (define (doc-should-break? doc)
   (cond
    ((is-a? doc DocCommand)
-    (oget (js/last (get-field args doc)) :should-break))
+    (oget (last (get-field args doc)) :should-break))
    (else
     #f)))
 
@@ -179,7 +179,7 @@
 (define (doc-has-comments? doc)
   (cond
    ((is-a? doc DocCommand)
-    (oget (js/last (get-field args doc)) :has-comments))
+    (oget (last (get-field args doc)) :has-comments))
    (else
     #f)))
 
@@ -221,17 +221,17 @@
   (define trailing-comments "")
   (when (or (eq? comments-option #f)
             (not comments)
-            (= (js/length comments) 0))
+            (= (length comments) 0))
     (return result))
   (for ((i (range 0 (length comments))))
     (define comment
-      (aget comments i))
+      (list-ref comments i))
     (cond
      ((is-a? comment BlockComment)
       (define block-comment
         (make-block-comment
          (get-field original-text comment)))
-      (when (and (= i (- (js/length comments) 1))
+      (when (and (= i (- (length comments) 1))
                  (eq? code ""))
         (set! block-comment
               (regexp-replace (regexp "\\n*$")
@@ -250,7 +250,7 @@
       (define leading-comment
         (make-line-comment
          (get-field original-text comment)))
-      (when (and (= i (- (js/length comments) 1))
+      (when (and (= i (- (length comments) 1))
                  (eq? code ""))
         (set! leading-comment
               (regexp-replace (regexp "\\n$")
@@ -351,7 +351,7 @@
 
 ;;; Whether an ESTree node has any comments.
 (define (estree-has-comments? node)
-  (> (js/length (get-estree-field "comments" node)) 0))
+  (> (length (get-estree-field "comments" node)) 0))
 
 ;;; Whether an ESTree node has any block comments.
 (define (estree-has-block-comment? node)
@@ -432,9 +432,7 @@
             (if quote-toplevel-option
                 "'"
                 empty)
-            (if (cons-dot? obj)
-                "."
-                (symbol->string obj)))))
+            (symbol->string obj))))
        ;; Boolean.
        (,boolean?
         ,(lambda (obj)
@@ -467,7 +465,7 @@
         ,(lambda (obj)
            "#<procedure>"))
        ;; List or cons cell.
-       (,array?
+       (,pair-or-list?
         ,(lambda (obj)
            (define op
              (first obj))
@@ -518,7 +516,7 @@
     (oget options :pretty))
   (unless pretty-option
     (return (write-to-string form options)))
-  (unless (array? form)
+  (unless (pair-or-list? form)
     (return (write-to-string form options)))
   (define op
     (first form))
@@ -538,7 +536,7 @@
   (define result
     (list
      (join space elements1)
-     (if (> (js/length elements2) 0)
+     (if (> (length elements2) 0)
          (list
           line
           (indent
@@ -673,7 +671,7 @@
     (for ((x doc))
       (define x-result
         (print-doc-to-doc-list x options))
-      (if (array? x-result)
+      (if (pair-or-list? x-result)
           (set! result (append result x-result))
           (push-right! result x-result)))
     result)
@@ -692,14 +690,14 @@
     (define result '())
     (define indentation
       (string-repeat " " offset))
-    (when (> (js/length contents-printed) 0)
+    (when (> (length contents-printed) 0)
       (push-right! result indentation))
-    (for ((i (range 0 (js/length contents-printed))))
+    (for ((i (range 0 (length contents-printed))))
       (define current
-        (aget contents-printed i))
+        (list-ref contents-printed i))
       (define next
-        (if (< i (- (js/length contents-printed) 1))
-            (aget contents-printed (+ i 1))
+        (if (< i (- (length contents-printed) 1))
+            (list-ref contents-printed (+ i 1))
             empty))
       (push-right! result current)
       (when (and (eq? current line)
@@ -1192,7 +1190,7 @@
   (set! result
         (join (list "," space)
               expressions-printed))
-  ;; (when (> (js/length expressions) 1)
+  ;; (when (> (length expressions) 1)
   ;;   (set! result
   ;;         (doc-wrap result options)))
   result)
@@ -1205,7 +1203,7 @@
   (define body-modified
     (begin
       (when (and (get-estree-field "comments" node)
-                 (> (js/length body) 0))
+                 (> (length body) 0))
         (set-field! comments
                     (first body)
                     (append (get-estree-field "comments" node)
@@ -1944,7 +1942,7 @@
   (define source
     (get-estree-field "source" node))
   (cond
-   ((and (= (js/length specifiers) 1)
+   ((and (= (length specifiers) 1)
          (not (estree-type? (first specifiers)
                             "ImportSpecifier")))
     (list
@@ -2072,7 +2070,7 @@
     (get-estree-field "properties" node))
   (list
    "{"
-   (if (= (js/length properties) 0)
+   (if (= (length properties) 0)
        empty
        (list
         line
@@ -2201,7 +2199,7 @@
   (define consequent
     (get-estree-field "consequent" node))
   (define is-block-statement
-    (and (= (js/length consequent) 1)
+    (and (= (length consequent) 1)
          (first consequent)
          (estree-type? (first consequent) "BlockStatement")))
   (define consequent-printed

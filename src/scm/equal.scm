@@ -47,31 +47,31 @@
    ;; Compare equivalent values.
    ((eq? x y)
     #t)
-   ;; Compare linked lists.
-   ((and (linked-list-link? x)
-         (array-list? y))
+   ;; Compare dotted lists.
+   ((and (dotted-list? x)
+         (pair-or-list? y))
     (define cdr-x
-      (linked-list-cdr x))
+      (dotted-list-cdr x))
     (cond
-     ((and (linked-list-link? x)
-           (= (array-length x) 3)
-           (not (array-list? cdr-x))
-           (not (linked-list-link? cdr-x)))
+     ((and (dotted-list? x)
+           (= (length x) 3)
+           (not (pair-or-list? cdr-x))
+           (not (dotted-list? cdr-x)))
       #f)
      ((equal?_ (car x) (car y))
       (equal?_ cdr-x (cdr y)))
      (else
       #f)))
-   ((and (array-list? x)
-         (linked-list-link? y))
+   ((and (pair-or-list? x)
+         (dotted-list? y))
     (equal?_ y x))
-   ;; Compare arrays.
-   ((and (array? x)
-         (array? y))
-    (unless (= (array-list-length x)
-               (array-list-length y))
+   ;; Compare lists.
+   ((and (pair-or-list? x)
+         (pair-or-list? y))
+    (unless (= (length x)
+               (length y))
       (return #f))
-    (for ((i (range 0 (array-list-length x))))
+    (for ((i (range 0 (length x))))
       (unless (equal?_ (aget x i)
                        (aget y i))
         (return #f)))
@@ -93,8 +93,8 @@
    ;; Compare objects.
    ((and (object? x)
          (object? y))
-    (unless (= (array-list-length (js/keys x))
-               (array-list-length (js/keys y)))
+    (unless (= (length (js/keys x))
+               (length (js/keys y)))
       (return #f))
     (for ((key (js/keys x)))
       (unless (equal?_ (oget x key)

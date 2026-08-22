@@ -60,34 +60,14 @@ import {
   taggedListP
 } from './util';
 
-const [lastCdr, cons, listStar, findf]: any[] = ((): any => {
-  function lastCdr_(lst: any): any {
-    if (!Array.isArray(lst)) {
-      return undefined;
-    } else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-      let result: any = lst;
-      while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
-        result = result[result.length - 1];
-      }
-      return result;
-    } else {
-      return [];
-    }
-  }
-  function cons_(x: any, y: any): any {
-    if (Array.isArray(y)) {
-      return [x, ...y];
-    } else {
-      return [x, Symbol.for('.'), y];
-    }
-  }
+const [listStar, findf]: any[] = ((): any => {
   function listStar_(...args: any[]): any {
     if (args.length === 0) {
       return undefined;
     } else if (args.length === 1) {
       return args[0];
     } else {
-      const tailLst: any = args[args.length - 1];
+      const tailLst: any = args.at(-1);
       const headLst: any = args.slice(0, -1);
       if (Array.isArray(tailLst)) {
         return [...headLst, ...tailLst];
@@ -104,7 +84,7 @@ const [lastCdr, cons, listStar, findf]: any[] = ((): any => {
       return notFound;
     }
   }
-  return [lastCdr_, cons_, listStar_, findf_];
+  return [listStar_, findf_];
 })();
 
 /**
@@ -301,8 +281,8 @@ function decompileAssignmentExpression(node: any, options: any = {}): any {
   }
   if (taggedListP(leftExp, Symbol.for('get-field'))) {
     return datumToSyntax(false, [Symbol.for('set-field!'), leftDecompiled.get(1), leftDecompiled.get(2), rightDecompiled]);
-  } else if (taggedListP(leftExp, Symbol.for('aget'))) {
-    return datumToSyntax(false, [Symbol.for('aset!'), ...leftDecompiled.drop(1), rightDecompiled]);
+  } else if (taggedListP(leftExp, Symbol.for('list-ref'))) {
+    return datumToSyntax(false, [Symbol.for('list-set!'), ...leftDecompiled.drop(1), rightDecompiled]);
   } else if (taggedListP(leftExp, Symbol.for('oget'))) {
     return datumToSyntax(false, [Symbol.for('oset!'), ...leftDecompiled.drop(1), rightDecompiled]);
   } else if (estreeTypeP(left, 'ArrayPattern')) {
@@ -491,14 +471,14 @@ function decompileMemberExpression(node: any, options: any = {}): any {
       object = [Symbol.for('js/?.'), object];
     }
     if (Number.isFinite(propertyExp)) {
-      return datumToSyntax(false, [Symbol.for('aget'), ...(taggedListP(objectExp, Symbol.for('aget')) ? object.drop(1) : [object]), property]);
+      return datumToSyntax(false, [Symbol.for('list-ref'), ...(taggedListP(objectExp, Symbol.for('list-ref')) ? object.drop(1) : [object]), property]);
     } else {
       return datumToSyntax(false, [Symbol.for('oget'), object, property]);
     }
   } else if (optional) {
     return datumToSyntax(false, [Symbol.for('js/?.'), object, property]);
   } else if (propertyExp === Symbol.for('length')) {
-    return datumToSyntax(false, [Symbol.for('js/length'), object]);
+    return datumToSyntax(false, [Symbol.for('length'), object]);
   } else {
     return datumToSyntax(false, [Symbol.for('get-field'), property, object]);
   }
@@ -707,45 +687,9 @@ function decompileForStatement(node: any, options: any = {}): any {
   if ((bindings.length === 1) && (taggedListP(test, Symbol.for('<')) || taggedListP(test, Symbol.for('>')))) {
     const binding: any = bindings[0];
     let i: any = binding[0];
-    const start: any = (Array.isArray(binding) && (binding.length >= 3) && (binding[binding.length - 2] === Symbol.for('.')) && ((): any => {
-      const x: any = lastCdr(binding);
-      return Array.isArray(x) && (x.length === 0);
-    })()) ? ((): any => {
-      let i: any = 1;
-      let result: any = binding;
-      while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-          result = binding[binding.length - 1];
-        } else {
-          result = binding.slice(1);
-        }
-        i--;
-      }
-      if (Array.isArray(result)) {
-        result = result[0];
-      }
-      return result;
-    })() : binding[1];
+    const start: any = binding[1];
     const end: any = test.get(2);
-    const update: any = (Array.isArray(binding) && (binding.length >= 3) && (binding[binding.length - 2] === Symbol.for('.')) && ((): any => {
-      const x: any = lastCdr(binding);
-      return Array.isArray(x) && (x.length === 0);
-    })()) ? ((): any => {
-      let i: any = 2;
-      let result: any = binding;
-      while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-          result = binding[binding.length - 1];
-        } else {
-          result = binding.slice(1);
-        }
-        i--;
-      }
-      if (Array.isArray(result)) {
-        result = result[0];
-      }
-      return result;
-    })() : binding[2];
+    const update: any = binding[2];
     let step: any = syntaxToDatum(update.get(2));
     if (taggedListP(update, Symbol.for('-'))) {
       step = -step;
@@ -773,25 +717,9 @@ function decompileForOfStatement(node: any, options: any = {}): any {
   const body: any = decompileEstree(node.body, options);
   const bodyNodes: any = body.drop(1);
   if (taggedListP(leftExp, Symbol.for('define-values'))) {
-    const sym: any = makeUniqueSymbol(cons(rightExp, (Array.isArray(leftExp) && (leftExp.length >= 3) && (leftExp[leftExp.length - 2] === Symbol.for('.')) && ((): any => {
-      const x: any = lastCdr(leftExp);
-      return Array.isArray(x) && (x.length === 0);
-    })()) ? ((): any => {
-      let i: any = 1;
-      let result: any = leftExp;
-      while (i > 0) {
-        if (Array.isArray(result) && (result.length === 3) && (result[1] === Symbol.for('.'))) {
-          result = leftExp[leftExp.length - 1];
-        } else {
-          result = leftExp.slice(1);
-        }
-        i--;
-      }
-      if (Array.isArray(result)) {
-        result = result[0];
-      }
-      return result;
-    })() : leftExp[1]));
+    const sym: any = makeUniqueSymbol([rightExp, ...((x: any): any => {
+      return Array.isArray(x) ? x : [Symbol.for('.'), x];
+    })(leftExp[1])]);
     bodyNodes.unshift(datumToSyntax(false, [left.get(0), left.get(1), sym]));
     left = datumToSyntax(false, sym);
   }
@@ -871,7 +799,7 @@ function decompileYieldExpression(node: any, options: any = {}): any {
  */
 function decompileNewExpression(node: any, options: any = {}): any {
   const arguments_: any = node.arguments;
-  const isSpread: any = (arguments_.length > 0) && estreeTypeP(arguments_[arguments_.length - 1], 'SpreadElement');
+  const isSpread: any = (arguments_.length > 0) && estreeTypeP(arguments_.at(-1), 'SpreadElement');
   return datumToSyntax(false, [...(isSpread ? [Symbol.for('apply')] : []), Symbol.for('new'), decompileEstree(node.callee, options), ...arguments_.map(function (x: any): any {
     return decompileEstree(x, options);
   })]);
@@ -1026,11 +954,11 @@ function decompileArrayExpression(node: any, options: any = {}): any {
       return Symbol.for('_');
     }
   }
-  if ((elements.length > 0) && elements[elements.length - 1] && estreeTypeP(elements[elements.length - 1], 'RestElement')) {
+  if ((elements.length > 0) && elements.at(-1) && estreeTypeP(elements.at(-1), 'RestElement')) {
     const regularElements: any = elements.slice(0, -1).map(function (x: any): any {
       return decompileElement(x);
     });
-    const restElement: any = decompileElement(elements[elements.length - 1]);
+    const restElement: any = decompileElement(elements.at(-1));
     return datumToSyntax(false, listStar(...[...regularElements, restElement]));
   } else if (findf(function (x: any): any {
     return x && estreeTypeP(x, 'SpreadElement');
@@ -1135,7 +1063,9 @@ function decompileMethodDefinition(node: any, options: any = {}): any {
   const value: any = node.value;
   const valueDecompiled: any = decompileEstree(value, options);
   const defineSymbol: any = value.generator ? Symbol.for('define/generator') : (((node.accessibility === 'private') || (keyDecompiledExp === Symbol.for('constructor'))) ? Symbol.for('define') : Symbol.for('define/public'));
-  return datumToSyntax(false, [defineSymbol, cons(keyDecompiledExp, syntaxToDatum(valueDecompiled)[1]), ...valueDecompiled.drop(2)]);
+  return datumToSyntax(false, [defineSymbol, [keyDecompiledExp, ...((x: any): any => {
+    return Array.isArray(x) ? x : [Symbol.for('.'), x];
+  })(syntaxToDatum(valueDecompiled)[1])], ...valueDecompiled.drop(2)]);
 }
 
 /**
@@ -1307,12 +1237,9 @@ function decompileFunction(node: any, options: any = {}): any {
   let params: any = node.params.map(function (x: any): any {
     return decompileParameter(x, options);
   });
-  if ((params.length > 0) && estreeTypeP(((): any => {
-    const arr: any = node.params;
-    return arr[arr.length - 1];
-  })(), 'RestElement')) {
+  if ((params.length > 0) && estreeTypeP(node.params.at(-1), 'RestElement')) {
     if (params.length === 1) {
-      params = params[params.length - 1];
+      params = params.at(-1);
     } else {
       params = listStar(...params);
     }
@@ -1325,7 +1252,7 @@ function decompileFunction(node: any, options: any = {}): any {
     if (asyncField) {
       return datumToSyntax(false, [Symbol.for('define'), id, [Symbol.for('async'), [lambdaSym, params, ...bodyForms]]]);
     } else {
-      return datumToSyntax(false, [Symbol.for('define'), cons(id, params), ...bodyForms]);
+      return datumToSyntax(false, [Symbol.for('define'), [id, ...(Array.isArray(params) ? params : [Symbol.for('.'), params])], ...bodyForms]);
     }
   } else {
     if (asyncField) {

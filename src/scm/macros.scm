@@ -64,7 +64,7 @@
       `(define-macro ,name-and-args
          ,@body)))
   (define args
-    (js/second macro-fn-form))
+    (second macro-fn-form))
   (define macro-body
     (drop macro-fn-form 2))
   `(begin
@@ -120,18 +120,18 @@
   (cond
    ((list? args)
     (define i 0)
-    (while (< i (js/length args))
+    (while (< i (length args))
       (define arg
-        (aget args i))
+        (list-ref args i))
       (cond
        ((eq? arg '&rest)
-        (set! rest-arg (aget args (+ i 1)))
+        (set! rest-arg (list-ref args (+ i 1)))
         (set! i (+ i 2)))
        ((eq? arg '&whole)
-        (set! exp-arg (aget args (+ i 1)))
+        (set! exp-arg (list-ref args (+ i 1)))
         (set! i (+ i 2)))
        ((eq? arg '&environment)
-        (set! env-arg (aget args (+ i 1)))
+        (set! env-arg (list-ref args (+ i 1)))
         (set! i (+ i 2)))
        (else
         (push-right! macro-args arg)
@@ -182,9 +182,9 @@
 (define-macro (declare_ name &rest specs)
   `(begin
      ,@(map (lambda (spec)
-              `(set-field! ,(js/first spec)
+              `(set-field! ,(first spec)
                            ,name
-                           (quote ,(js/second spec))))
+                           (quote ,(second spec))))
             specs)))
 
 ;;; Expand a `(declare-macro ...)` expression.
@@ -204,7 +204,7 @@
 ;;; [cl:prog1]: http://clhs.lisp.se/Body/m_prog1c.htm
 (define-macro (begin0_ x &rest xs)
   (cond
-   ((= (js/length xs) 0)
+   ((= (length xs) 0)
     x)
    (else
     (define result
@@ -234,7 +234,7 @@
   ;; support for creating a new object on the basis of by-name
   ;; initialization arguments; it only supports by-position
   ;; initialization arguments, which are passed to the constructor.
-  `(make-object ,constructor ,@(map js/second args)))
+  `(make-object ,constructor ,@(map second args)))
 
 ;;; Expand an `(and ...)` expression.
 ;;;
@@ -296,10 +296,10 @@
   `(if ,cond-exp
        ,then-exp
        ,@(cond
-          ((= (js/length else-exps) 0)
+          ((= (length else-exps) 0)
            '())
-          ((= (js/length else-exps) 1)
-           (list (js/first else-exps)))
+          ((= (length else-exps) 1)
+           (list (first else-exps)))
           (else
            (list `(begin ,@else-exps))))))
 
@@ -375,9 +375,9 @@
 ;;; [clj:thread-first]: https://clojuredocs.org/clojure.core/-%3E
 (define-macro (thread-first_ x &rest forms)
   (define hole-marker '_)
-  (when (and (> (js/length forms) 1)
-             (eq? (js/first forms) ':hole-marker))
-    (set! hole-marker (js/second forms))
+  (when (and (> (length forms) 1)
+             (eq? (first forms) ':hole-marker))
+    (set! hole-marker (second forms))
     (set! forms (drop forms 2)))
   (define (f val acc)
     (cond
@@ -387,7 +387,7 @@
                        (eq? x hole-marker))
                      val)
          0)
-      `(,@acc (,(js/first val)
+      `(,@acc (,(first val)
                ,hole-marker
                ,@(rest val))))
      (else
@@ -403,9 +403,9 @@
 ;;; [clj:thread-last]: https://clojuredocs.org/clojure.core/-%3E%3E
 (define-macro (thread-last_ x &rest forms)
   (define hole-marker '_)
-  (when (and (> (js/length forms) 1)
-             (eq? (js/first forms) ':hole-marker))
-    (set! hole-marker (js/second forms))
+  (when (and (> (length forms) 1)
+             (eq? (first forms) ':hole-marker))
+    (set! hole-marker (second forms))
     (set! forms (drop forms 2)))
   (define (f val acc)
     (cond
@@ -446,16 +446,16 @@
   (cond
    ;; For expressions with no bindings, we wrap
    ;; the expansion in `begin`.
-   ((= (js/length bindings) 0)
+   ((= (length bindings) 0)
     (define result
       `(begin
-         (while (not ,(js/first tests))
+         (while (not ,(first tests))
            ,@body)
          ,@(drop tests 1)))
     ;; If there is no finishing expression,
     ;; the code can be simplified further.
-    (when (= (js/length result) 2)
-      (set! result (js/second result)))
+    (when (= (length result) 2)
+      (set! result (second result)))
     result)
    ;; For expressions with bindings, we wrap
    ;; the expansion in `let`.
@@ -465,13 +465,13 @@
     (for ((binding bindings))
       (push-right! let-bindings
                    (take binding 2))
-      (when (= (js/length binding) 3)
+      (when (= (length binding) 3)
         (push-right! setters
-                     `(set! ,(js/first binding)
-                            ,(js/third binding)))))
+                     `(set! ,(first binding)
+                            ,(third binding)))))
     (define result
       `(let ,let-bindings
-         (while (not ,(js/first tests))
+         (while (not ,(first tests))
            ,@body
            ,@setters)
          ,@(drop tests 1)))
@@ -500,28 +500,28 @@
   (cond
    ((tagged-list? val 'range)
     (define start
-      (js/second val))
+      (second val))
     (define end
-      (js/third val))
+      (third val))
     (define step
-      (or (js/fourth val) 1))
+      (or (fourth val) 1))
     (cond
      ;; If `start`, `end` or `step` is a function call,
      ;; then rewrite the expression to a `let` expression
      ;; so that the function is called only once.
-     ((or (array? start)
-          (array? end)
-          (array? step))
+     ((or (pair-or-list? start)
+          (pair-or-list? end)
+          (pair-or-list? step))
       (define start-var
-        (if (array? start)
+        (if (pair-or-list? start)
             (gensym "_start")
             #u))
       (define end-var
-        (if (array? end)
+        (if (pair-or-list? end)
             (gensym "_end")
             #u))
       (define step-var
-        (if (array? step)
+        (if (pair-or-list? step)
             (gensym "_step")
             #u))
       `(let (,@(if start-var
@@ -588,8 +588,8 @@
   (define (complex-value? x)
     (not (simple-value? x)))
   (for ((x clauses))
-    (when (and (not (eq? (js/first x) 'else))
-               (memf? complex-value? (js/first x)))
+    (when (and (not (eq? (first x) 'else))
+               (memf? complex-value? (first x)))
       (set! has-complex-clauses #t)
       (break)))
   (cond
@@ -605,11 +605,11 @@
     (define cond-clauses
       (map (lambda (x)
              (cond
-              ((eq? (js/first x) 'else)
+              ((eq? (first x) 'else)
                x)
               (else
                `((member? ,value-var
-                          ',(js/first x)
+                          ',(first x)
                           equal?)
                  ,@(rest x)))))
            clauses))
@@ -631,8 +631,8 @@
 (define-macro (case-eq_ val &rest clauses)
   (define has-complex-clauses #f)
   (for ((x clauses))
-    (when (and (not (eq? (js/first x) 'else))
-               (> (js/length (js/first x)) 1))
+    (when (and (not (eq? (first x) 'else))
+               (> (length (first x)) 1))
       (set! has-complex-clauses #t)
       (break)))
   (cond
@@ -649,10 +649,10 @@
     (define cond-clauses
       (map (lambda (x)
              (cond
-              ((eq? (js/first x) 'else)
+              ((eq? (first x) 'else)
                x)
               (else
-               `((member? ,value-var ',(js/first x))
+               `((member? ,value-var ',(first x))
                  ,@(rest x)))))
            clauses))
     (define result
@@ -670,10 +670,10 @@
     (define switch-clauses
       (map (lambda (x)
              (cond
-              ((eq? (js/first x) 'else)
+              ((eq? (first x) 'else)
                `(default ,@(rest x)))
               (else
-               `(case ',(js/first (js/first x))
+               `(case ',(first (first x))
                   ,@(rest x)
                   (break)))))
            clauses))
@@ -695,7 +695,7 @@
 ;;; [cl:set]: http://clhs.lisp.se/Body/f_set.htm
 ;;; [el:set]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-set
 (define-macro (set_ sym val)
-  `(set! ,(js/second sym) ,val))
+  `(set! ,(second sym) ,val))
 
 ;;; Expand a `(setq ...)` expression.
 ;;;
@@ -706,14 +706,14 @@
 ;;; [el:setq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html#index-setq
 (define-macro (setq_ &rest bindings)
   (define bindings1 '())
-  (for ((i (range 0 (js/length bindings) 2)))
+  (for ((i (range 0 (length bindings) 2)))
     (define sym
-      (aget bindings i))
+      (list-ref bindings i))
     (define val
-      (aget bindings (+ i 1)))
+      (list-ref bindings (+ i 1)))
     (push-right! bindings1 `(set! ,sym ,val)))
-  (if (= (js/length bindings1) 1)
-      (js/first bindings1)
+  (if (= (length bindings1) 1)
+      (first bindings1)
       `(begin ,@bindings1)))
 
 ;;; Expand a `(new/apply ...)` expression.
@@ -746,13 +746,13 @@
       (push-right! finalizer-clauses x))
      (else
       (push-right! body-exps x))))
-  (when (> (js/length clj-catch-clauses) 0)
+  (when (> (length clj-catch-clauses) 0)
     (define exception
       (second (first clj-catch-clauses)))
     (define sym
       (third (first clj-catch-clauses)))
     (cond
-     ((and (= (js/length clj-catch-clauses) 1)
+     ((and (= (length clj-catch-clauses) 1)
            (memq? exception
                   '(_
                     js/Object
@@ -799,7 +799,7 @@
      ((symbol? pat)
       (list
        `(define ,pat ,exp)))
-     ((array? pat)
+     ((pair-or-list? pat)
       (cond
        ((null? pat)
         '())
@@ -807,10 +807,10 @@
         '())
        ((tagged-list? pat 'var)
         (list
-         `(define ,(js/second pat)
+         `(define ,(second pat)
             ,exp)))
        ((tagged-list? pat 'cons)
-        (pattern-bind `(list* ,@(js/rest pat)) exp))
+        (pattern-bind `(list* ,@(rest pat)) exp))
        ((tagged-list? pat '(list list*))
         (list
          `(define-values ,(list-expression->pattern pat)
@@ -822,18 +822,18 @@
   (define (pattern-match pat exp (make-let #t))
     (cond
      ((and make-let
-           (array? exp))
+           (pair-or-list? exp))
       (let ((pattern-match-val (gensym "pattern-match-val")))
         `(let ((,pattern-match-val ,exp))
            ,(pattern-match pat pattern-match-val))))
      ((symbol? pat)
       #t)
-     ((array? pat)
+     ((pair-or-list? pat)
       (cond
        ((null? pat)
         `(null? ,exp))
        ((tagged-list? pat 'quote)
-        `(,(if (array? (js/second pat))
+        `(,(if (pair-or-list? (second pat))
                'equal?
                'eq?)
           ,exp
@@ -841,44 +841,44 @@
        ((tagged-list? pat 'var)
         #t)
        ((tagged-list? pat 'not)
-        `(not ,(pattern-match (js/second pat) exp #f)))
+        `(not ,(pattern-match (second pat) exp #f)))
        ((tagged-list? pat 'and)
         (apply combine-expressions
                '(and)
                (map (lambda (x)
                       (pattern-match x exp #f))
-                    (js/rest pat))))
+                    (rest pat))))
        ((tagged-list? pat 'or)
         (apply combine-expressions
                '(or)
                (map (lambda (x)
                       (pattern-match x exp #f))
-                    (js/rest pat))))
+                    (rest pat))))
        ((tagged-list? pat 'cons)
-        (pattern-match `(list* ,@(js/rest pat)) exp #f))
-        ((tagged-list? pat 'list)
+        (pattern-match `(list* ,@(rest pat)) exp #f))
+       ((tagged-list? pat 'list)
         (cond
-         ((eq? (js/last pat) '...)
+         ((eq? (last pat) '...)
           (define head
             (~> (drop pat 1)
                 (drop-right _ 2)))
           (define tail
-            (aget pat (- (js/length pat) 2)))
+            (list-ref pat (- (length pat) 2)))
           (define pat1
             `(list* ,@head ,tail))
           (pattern-match pat1 exp #f))
          (else
           (define len
-            (- (js/length pat) 1))
+            (- (length pat) 1))
           (define result
-            `(and (array? ,exp)
-                  (= (js/length ,exp)
+            `(and (pair-or-list? ,exp)
+                  (= (length ,exp)
                      ,len)))
-          (for ((i (range 1 (js/length pat))))
+          (for ((i (range 1 (length pat))))
             (define pat1
-              (aget pat i))
+              (list-ref pat i))
             (define exp1
-              `(aget ,exp ,(- i 1)))
+              `(list-ref ,exp ,(- i 1)))
             (define result1
               (pattern-match pat1 exp1 #f))
             (set! result (combine-expressions result result1)))
@@ -888,18 +888,18 @@
           (~> (drop pat 1)
               (drop-right _ 1)))
         (define tail
-          (js/last pat))
+          (last pat))
         (define len
-          (js/length head))
+          (length head))
         (define result
-          `(and (array? ,exp)
-                (>= (js/length ,exp)
-                    ,(js/length head))))
-        (for ((i (range 0 (js/length head))))
+          `(and (pair-or-list? ,exp)
+                (>= (length ,exp)
+                    ,(length head))))
+        (for ((i (range 0 (length head))))
           (define pat1
-            (aget head i))
+            (list-ref head i))
           (define exp1
-            `(aget ,exp ,i))
+            `(list-ref ,exp ,i))
           (define result1
             (pattern-match pat1 exp1 #f))
           (set! result (combine-expressions result result1)))
@@ -914,7 +914,7 @@
        ((tagged-list? pat '?)
         (apply combine-expressions
                '(and)
-               `(,(js/second pat) ,exp)
+               `(,(second pat) ,exp)
                (map (lambda (x)
                       (pattern-match x exp #f))
                     (drop pat 2))))
@@ -922,10 +922,10 @@
         (define pats
           (drop pat 2))
         (define exp1
-          `(,(js/second pat) ,exp))
+          `(,(second pat) ,exp))
         (cond
-         ((= (js/length pats) 1)
-          (pattern-match (js/first pats) exp1 #f))
+         ((= (length pats) 1)
+          (pattern-match (first pats) exp1 #f))
          (else
           (pattern-match `(and ,@pats) exp1))))
        (else
@@ -935,13 +935,13 @@
   (define (combine-expressions . exps)
     (foldl (lambda (x acc)
              (cond
-              ((not (array? acc))
+              ((not (pair-or-list? acc))
                acc)
               ((tagged-list? x 'and)
-               (for ((x1 (js/rest x)))
+               (for ((x1 (rest x)))
                  (push-right! acc x1))
                acc)
-              ((array? x)
+              ((pair-or-list? x)
                (push-right! acc x)
                acc)
               ((and (eq? x #t)
@@ -952,10 +952,10 @@
                #f)
               (else
                acc)))
-           (js/first exps)
-           (js/rest exps)))
+           (first exps)
+           (rest exps)))
   (cond
-   ((array? exp)
+   ((pair-or-list? exp)
     (let ((match-val (gensym "match-val")))
       `(let ((,match-val ,exp))
          (match ,match-val
@@ -964,16 +964,16 @@
     (define cond-clauses
       (map (lambda (x)
              (define pat
-               (js/first x))
+               (first x))
              (define body
-               (js/rest x))
+               (rest x))
              `(,(pattern-match pat exp)
                ,@(pattern-bind pat exp)
                ,@body))
            clauses))
     (define last-cond-clause
-      (js/last cond-clauses))
-    (when (eq? (js/first last-cond-clause) #t)
+      (last cond-clauses))
+    (when (eq? (first last-cond-clause) #t)
       (set-car! last-cond-clause 'else))
     `(cond
       ,@cond-clauses))))

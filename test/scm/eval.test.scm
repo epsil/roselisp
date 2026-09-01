@@ -61,9 +61,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `eval_`
- > (describe "eval_")
- _
+ :describe "eval_"
  > (eval_ #t lisp-1-environment)
  #t
  > (eval_ (js/tag sexp "true") lisp-1-environment)
@@ -79,9 +77,7 @@
  > (eval_ (js/tag sexp "#f") lisp-1-environment)
  #f
 
- ;; `eval-syntax`
- > (describe "eval-syntax")
- _
+ :describe "eval-syntax"
  > (eval-syntax (datum->syntax #f #t)
                 lisp-1-environment)
  #t
@@ -89,9 +85,7 @@
                 lisp-1-environment)
  #f
 
- ;; `eval-estree`
- > (describe "eval-estree")
- _
+ :describe "eval-estree"
  > (it "#t"
        (eval-estree
         (new Literal #t)

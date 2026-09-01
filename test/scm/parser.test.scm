@@ -20,9 +20,7 @@
 (declare test-macro)
 
 (test-macro
- ;; `tokenize`
- > (describe "tokenize")
- _
+ :describe "tokenize"
  > (tokenize "")
  '()
  > (tokenize "1")
@@ -186,9 +184,7 @@ bar)"
        (new SymbolToken "this")
        (new SymbolToken ")"))
 
- ;; `parse-syntax`
- > (describe "parse-syntax")
- _
+ :describe "parse-syntax"
  > (syntax->datum
     (parse-syntax (list (new SymbolToken "exp"))))
  'exp
@@ -306,9 +302,7 @@ bar)"
                         (new SymbolToken "foo"))))
  '(unquote-splicing foo)
 
- ;; `read`
- > (describe "read")
- _
+ :describe "read"
  > (read "(foo) ;comment")
  (list 'foo)
  > (read "(foo) ;; this is a comment")
@@ -355,9 +349,7 @@ test"
  > (read "(define foo `(,bar))")
  '(define foo (quasiquote ((unquote bar))))
 
- ;; `read-syntax`
- > (describe "read-syntax")
- _
+ :describe "read-syntax"
  > (syntax->datum
     (read-syntax ";; comment
 (foo)"))
@@ -375,7 +367,6 @@ test"
         (send actual getProperty "comments")
         (list (new LeadingCommentToken
                    ";; comment\n"))))
- _
  > (it ";; comment
 `(foo), comments"
        (define actual
@@ -390,14 +381,11 @@ test"
         (send actual getProperty "comments")
         (list (new LeadingCommentToken
                    ";; comment\n"))))
- _
  > (syntax->datum
     (read-syntax "(foo) ;comment"))
  (list 'foo)
 
- ;; `sexp`
- > (describe "sexp")
- _
+ :describe "sexp"
  > (js/tag sexp "")
  '()
  > (js/tag sexp "()")

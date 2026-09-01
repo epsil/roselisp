@@ -9,15 +9,11 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `curried`
- > (describe "curried")
- _
+ :describe "curried"
  > (define-fields (C Y)
      curried)
- _
  > (define (subtraction x y)
      (- x y))
- _
  > (subtraction 1 2)
  -1
  > (C subtraction 1 2)
@@ -30,25 +26,20 @@
      (if (eq? x 0)
          1
          (* x (factorial (- x 1)))))
- _
  > (define factorialY
      (Y (fn (factorial)
           (fn (x)
             (if (eq? x 0)
                 1
                 (* x (factorial (- x 1))))))))
- _
  > (factorial 6)
  (* 1 2 3 4 5 6)
  > (factorialY 6)
  (* 1 2 3 4 5 6)
 
- ;; `variadic`
- > (describe "variadic")
- _
+ :describe "variadic"
  > (define-fields (A B I Q T)
      variadic)
- _
  > (A I 1)
  1
  > (A (fn (x) (+ x 4)) 1)

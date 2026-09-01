@@ -23,7 +23,7 @@ function arrayp_(x: any): any {
   return Array.isArray(x);
 }
 
-arrayp_.fsource = [Symbol.for('define'), [Symbol.for('array?_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('x')]];
+arrayp_.fsource = [Symbol.for('define'), [Symbol.for('array?_'), Symbol.for('x')], [Symbol.for('js/array?'), Symbol.for('x')]];
 
 /**
  * Return the length of an array.

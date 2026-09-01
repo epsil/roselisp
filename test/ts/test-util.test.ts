@@ -18,6 +18,12 @@ describe('test-macro', function (): any {
   it('(funcall test-macro \'(test-macro > (describe "foo") _) #u)', function (): any {
     return assertEqual(testMacro([Symbol.for('test-macro'), Symbol.for('>'), [Symbol.for('describe'), 'foo'], Symbol.for('_')], undefined), [Symbol.for('begin'), [Symbol.for('describe'), 'foo', [Symbol.for('fn'), []]]]);
   });
+  it('(funcall test-macro \'(test-macro :describe "foo" > (foo) "foo") #u)', function (): any {
+    return assertEqual(testMacro([Symbol.for('test-macro'), Symbol.for(':describe'), 'foo', Symbol.for('>'), [Symbol.for('foo')], 'foo'], undefined), [Symbol.for('begin'), [Symbol.for('describe'), 'foo', [Symbol.for('fn'), [], [Symbol.for('it'), '(foo)', [Symbol.for('fn'), [], [Symbol.for('assert-equal'), [Symbol.for('foo')], 'foo']]]]]]);
+  });
+  it('(funcall test-macro \'(test-macro > (describe "foo") > (foo) "foo") #u)', function (): any {
+    return assertEqual(testMacro([Symbol.for('test-macro'), Symbol.for('>'), [Symbol.for('describe'), 'foo'], Symbol.for('>'), [Symbol.for('foo')], 'foo'], undefined), [Symbol.for('begin'), [Symbol.for('describe'), 'foo', [Symbol.for('fn'), [], [Symbol.for('it'), '(foo)', [Symbol.for('fn'), [], [Symbol.for('assert-equal'), [Symbol.for('foo')], 'foo']]]]]]);
+  });
   it('(funcall test-macro \'(test-macro > (describe "foo") _ > (foo) "foo") #u)', function (): any {
     return assertEqual(testMacro([Symbol.for('test-macro'), Symbol.for('>'), [Symbol.for('describe'), 'foo'], Symbol.for('_'), Symbol.for('>'), [Symbol.for('foo')], 'foo'], undefined), [Symbol.for('begin'), [Symbol.for('describe'), 'foo', [Symbol.for('fn'), [], [Symbol.for('it'), '(foo)', [Symbol.for('fn'), [], [Symbol.for('assert-equal'), [Symbol.for('foo')], 'foo']]]]]]);
   });

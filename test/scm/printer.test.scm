@@ -45,9 +45,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `print-estree`
- > (describe "print-estree")
- _
+ :describe "print-estree"
  > (it "foo"
        (print-estree (new Identifier "foo")))
  "foo"
@@ -627,9 +625,7 @@ baz`;
         (js/obj :language "javascript")))
  "export * from 'foo';"
 
- ;; `write-to-string`
- > (describe "write-to-string")
- _
+ :describe "write-to-string"
  > (write-to-string 1)
  "1"
  > (write-to-string 'foo)

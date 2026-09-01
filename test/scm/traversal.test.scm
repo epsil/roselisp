@@ -8,9 +8,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `map-rose`
- > (describe "map-rose")
- _
+ :describe "map-rose"
  > (it "()"
        (let ((expressions '()))
          (map-rose (fn (x)

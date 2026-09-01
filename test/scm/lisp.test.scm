@@ -11,15 +11,11 @@
 (test-macro
  :repl #t
 
- ;; `set`
- > (describe "set")
- _
+ :describe "set"
  > (compile '(set 'x 1))
  "x = 1;"
 
- ;; `setq`
- > (describe "setq")
- _
+ :describe "setq"
  > (compile '(setq x 1))
  "x = 1;"
  > (compile '(setq x 1
@@ -28,9 +24,7 @@
 
 y = 2;"
 
- ;; `destructuring-bind`
- > (describe "destructuring-bind")
- _
+ :describe "destructuring-bind"
  > (destructuring-bind (x)
                        '(1)
                        (list x))
@@ -64,9 +58,7 @@ y = 2;"
 
 [x, y];"
 
- ;; `multiple-values-bind`
- > (describe "multiple-values-bind")
- _
+ :describe "multiple-values-bind"
  > (multiple-values-bind (x y)
                          (values 1 2)
                          (list x y))
@@ -78,9 +70,7 @@ y = 2;"
 
 [x, y];"
 
- ;; `cl/listp`
- > (describe "cl/listp")
- _
+ :describe "cl/listp"
  > (cl/listp #t)
  #f
  > (cl/listp '())
@@ -90,9 +80,7 @@ y = 2;"
  > (cl/listp '(1 2 3))
  #t
 
- ;; `el/listp`
- > (describe "el/listp")
- _
+ :describe "el/listp"
  > (el/listp #t)
  #f
  > (el/listp '())
@@ -102,9 +90,7 @@ y = 2;"
  > (el/listp '(1 2 3))
  #t
 
- ;; `el/if`
- > (describe "el/if")
- _
+ :describe "el/if"
  > (el/if #t 1 2)
  1
  > (el/if #f 1 2)
@@ -114,9 +100,7 @@ y = 2;"
  > (el/if #f 1 2 3 4)
  4
 
- ;; `defun`
- > (describe "defun")
- _
+ :describe "defun"
  > ((lambda ()
       (defun my-add (x y)
         (+ x y))
@@ -135,9 +119,7 @@ y = 2;"
         (my-add-2 1 2 3))))
  6
 
- ;; `defmacro`
- > (describe "defmacro")
- _
+ :describe "defmacro"
  > ((lambda ()
       (defmacro my-macro (x)
         x)
@@ -520,9 +502,7 @@ baz.ftype = 'macro';
 
 let quux = 'foo';"
 
- ;; `unwind-protect`
- > (describe "unwind-protect")
- _
+ :describe "unwind-protect"
  > (unwind-protect 1 2 3)
  1
  > (compile '(unwind-protect (foo) (bar)))
@@ -532,9 +512,7 @@ let quux = 'foo';"
   bar();
 }"
 
- ;; `clj/try`
- > (describe "clj/try")
- _
+ :describe "clj/try"
  > (clj/try
     (/ 1 2)
     (catch Exception e

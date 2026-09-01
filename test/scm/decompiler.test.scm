@@ -13,9 +13,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `decompile`
- > (describe "decompile")
- _
+ :describe "decompile"
  > (decompile "true;")
  #t
  > (decompile "false")

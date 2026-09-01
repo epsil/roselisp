@@ -21,9 +21,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; Global environment
- > (describe "Global environment")
- _
+ :describe "Global environment"
  > (compile '(module m scheme
                (define lst
                  `(,symbol? ,boolean?)))
@@ -199,9 +197,7 @@ function myIntersection(x, y) {
   return intersection(x, y);
 }"
 
- ;; `compile-modules`
- > (describe "compile-modules")
- _
+ :describe "compile-modules"
  > (it "(module ... (define ...) ...)"
        (compile-modules
         (list '(module m scheme
@@ -363,9 +359,7 @@ function bar(x) {
   return x;
 }")
 
- ;; `--fsemicolon false`
- > (describe "--fsemicolon false")
- _
+ :describe "--fsemicolon false"
  > (compile '(begin x y z)
             :fsemicolon #f)
  "x
@@ -374,9 +368,7 @@ y
 
 z"
 
- ;; `compile-with-environment`
- > (describe "compile-with-environment")
- _
+ :describe "compile-with-environment"
  > (it "compiledEnvironment"
        (define options
          (js/obj))
@@ -1257,9 +1249,7 @@ foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
 
 foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
 
- ;; `definition->macro`
- > (describe "definition->macro")
- _
+ :describe "definition->macro"
  > (definition->macro
      '(define (inc x)
         (+ x 1))
@@ -1293,9 +1283,7 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
      (* x x))
    (+ 1 1))
 
- ;; `define-macro->lambda-form`
- > (describe "define-macro->lambda-form")
- _
+ :describe "define-macro->lambda-form"
  > (define-macro->lambda-form
      '(define-macro (foo x)
         x)
@@ -1341,9 +1329,7 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
       (rest exp))
     x)
 
- ;; `split-comments`
- > (describe "split-comments")
- _
+ :describe "split-comments"
  > (split-comments ";;; Foo\n")
  '(";;; Foo\n")
  xit> (split-comments ";;; Foo")

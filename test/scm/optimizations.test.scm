@@ -21,9 +21,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `optimize-sexp`
- > (describe "optimize-sexp")
- _
+ :describe "optimize-sexp"
  > (optimize-sexp '() lisp-environment)
  '()
  xit> (optimize-sexp
@@ -83,9 +81,7 @@
          (let-values ((,args (rest exp)))
            ,@body))))
 
- ;; `let-vars-to-const-vars`
- > (describe "let-vars-to-const-vars")
- _
+ :describe "let-vars-to-const-vars"
  > (it "empty program"
        (let-vars-to-const-vars
         (new Program)))

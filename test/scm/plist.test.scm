@@ -12,8 +12,7 @@
 (declare-macro test-macro)
 
 (test-macro
- > (describe "Property lists")
- _
+ :describe "Property lists"
  > (let ((plst '()))
      (plist-set! plst :foo 'bar)
      plst)

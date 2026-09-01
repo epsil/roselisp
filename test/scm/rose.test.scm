@@ -9,9 +9,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `Rose`
- > (describe "Rose")
- _
+ :describe "Rose"
  > (it "insert"
        (let ((foo (new Rose "foo"))
              (bar (new Rose "bar")))
@@ -21,11 +19,8 @@
           (send (new Forest bar)
                 set-parent
                 foo))))
- _
 
- ;; `wrap-sexp-in-rose`
- > (describe "wrap-sexp-in-rose")
- _
+ :describe "wrap-sexp-in-rose"
  > (wrap-sexp-in-rose 1)
  (new Rose 1)
  > (wrap-sexp-in-rose "1")

@@ -15,9 +15,7 @@
                   test-macro))
 
 (test-macro
- ;; `Environment`
- > (describe "Environment")
- _
+ :describe "Environment"
  > (it "find-frame"
        (define env
          (new Environment
@@ -25,7 +23,6 @@
        (assert-equal
         (send env find-frame 'foo)
         env))
- _
  > (it "find-frame, nonexistant binding"
        (define env
          (new Environment
@@ -297,11 +294,8 @@
        (assert-equal
         (send env get 'foo)
         "quux"))
- _
 
- ;; `TypedEnvironment`
- > (describe "TypedEnvironment")
- _
+ :describe "TypedEnvironment"
  > (it "get"
        (define env
          (new TypedEnvironment
@@ -558,11 +552,8 @@
        (assert-equal
         (send env get 'foo)
         "quux"))
- _
 
- ;; `LispEnvironment`
- > (describe "LispEnvironment")
- _
+ :describe "LispEnvironment"
  > (it "get"
        (define env
          (new LispEnvironment
@@ -811,11 +802,8 @@
        (assert-equal
         (send env get 'foo)
         "quux"))
- _
 
- ;; `EnvironmentStack`
- > (describe "EnvironmentStack")
- _
+ :describe "EnvironmentStack"
  > (it "get"
        (define env
          (new EnvironmentStack
@@ -975,7 +963,6 @@
        (assert-equal
         (send env1 get 'foo)
         "bar"))
- _
  > (it "set!, two environments, previously defined in second"
        (define env1
          (new LispEnvironment))
@@ -996,7 +983,6 @@
        (assert-equal
         (send env2 get 'foo)
         "bar"))
- _
  > (it "set-entry!, two environments, previously defined in second"
        (define env1
          (new LispEnvironment))
@@ -1017,11 +1003,8 @@
        (assert-equal
         (send env2 get 'foo)
         "foo"))
- _
 
- ;; `EnvironmentPipe`
- > (describe "EnvironmentPipe")
- _
+ :describe "EnvironmentPipe"
  > (it "get"
        (define env
          (new EnvironmentPipe
@@ -1145,9 +1128,7 @@
        (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
 
- ;; `EnvironmentComposition`
- > (describe "EnvironmentComposition")
- _
+ :describe "EnvironmentComposition"
  > (it "get"
        (define env
          (new EnvironmentComposition
@@ -1275,9 +1256,7 @@
        (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
 
- ;; `ThunkedEnvironment`
- > (describe "ThunkedEnvironment")
- _
+ :describe "ThunkedEnvironment"
  > (it "get"
        (define env
          (new ThunkedEnvironment
@@ -1380,9 +1359,7 @@
        (send env has-local-thunk? 'bar))
  #f
 
- ;; `JavaScriptEnvironment`
- > (describe "JavaScriptEnvironment")
- _
+ :describe "JavaScriptEnvironment"
  > (it "get"
        (define env
          (new JavaScriptEnvironment))

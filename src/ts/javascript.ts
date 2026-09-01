@@ -695,15 +695,6 @@ function jsUnsignedBitwiseShiftRight_(...args: any[]): any {
 
 jsUnsignedBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/unsigned-bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('>>>'), Symbol.for('args')]];
 
-/**
- * Immediately invoked function expression (IIFE).
- */
-function jsIife_(f: any, args: any): any {
-  return f(...args);
-}
-
-jsIife_.fsource = [Symbol.for('define'), [Symbol.for('js/iife_'), Symbol.for('f'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]];
-
 export {
   jsAbs_,
   jsAnd_,
@@ -724,7 +715,6 @@ export {
   jsGet_,
   jsGt_,
   jsGte_,
-  jsIife_,
   jsIn_,
   jsInstanceOfP_,
   jsKeys_,

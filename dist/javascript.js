@@ -18,8 +18,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsSlice_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReturn_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjSpread_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsKeys_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsIife_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFindIndex_ = exports.jsEval_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
-exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeOf_ = exports.jsTaggedTemplate_ = exports.jsStringP_ = exports.jsStringObjectP_ = exports.jsStringLiteralP_ = exports.jsStringConcat_ = exports.jsStrictlyEqualP_ = void 0;
+exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReturn_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjSpread_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsKeys_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFindIndex_ = exports.jsEval_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
+exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeOf_ = exports.jsTaggedTemplate_ = exports.jsStringP_ = exports.jsStringObjectP_ = exports.jsStringLiteralP_ = exports.jsStringConcat_ = void 0;
 /**
  * JavaScript's [`eval` function][js:eval].
  *
@@ -646,11 +646,3 @@ function jsUnsignedBitwiseShiftRight_(...args) {
 }
 exports.jsUnsignedBitwiseShiftRight_ = jsUnsignedBitwiseShiftRight_;
 jsUnsignedBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/unsigned-bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('>>>'), Symbol.for('args')]];
-/**
- * Immediately invoked function expression (IIFE).
- */
-function jsIife_(f, args) {
-    return f(...args);
-}
-exports.jsIife_ = jsIife_;
-jsIife_.fsource = [Symbol.for('define'), [Symbol.for('js/iife_'), Symbol.for('f'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]];

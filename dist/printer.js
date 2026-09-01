@@ -1126,9 +1126,10 @@ function printIfStatement(node, options = {}) {
     let testPrinted = printNode(test, options);
     let testPrintedStr = docValueString(testPrinted);
     // It is customary to wrap assignment expressions
-    // in an extra set of parentheses when used as a
-    // condition, so as to distinguish them from
-    // comparisons (`((x = y))` vs. `(x === y)`).
+    // in an extra set of parentheses to indicate that
+    // that is what is really intended, distinguishing
+    // them from comparisons (`if ((x = y)) { ... }`
+    // vs. `if (x === y) { ... }`).
     if ((0, estree_1.estreeTypeP)(test, 'AssignmentExpression')) {
         testPrintedStr = docWrap(testPrinted, options);
     }
@@ -1160,12 +1161,12 @@ function printConditionalExpression(node, options = {}) {
     if (!estreeSimpleP(consequent)) {
         consequentPrinted = docWrap(consequentPrinted, options);
     }
-    if (!((0, estree_1.estreeTypeP)(alternate, 'SequenceExpression') || estreeSimpleP(alternate))) {
+    if (!estreeSimpleP(alternate)) {
         alternatePrinted = docWrap(alternatePrinted, options);
     }
     return [testPrinted, space, '?', space, consequentPrinted, space, ':', space, alternatePrinted];
 }
-printConditionalExpression.fsource = [Symbol.for('define'), [Symbol.for('print-conditional-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('print-node'), Symbol.for('consequent'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('alternate'), [Symbol.for('get-estree-field'), 'alternate', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('alternate-printed'), [Symbol.for('print-node'), Symbol.for('alternate'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('estree-simple?'), Symbol.for('test')], [Symbol.for('set!'), Symbol.for('test-printed'), [Symbol.for('doc-wrap'), Symbol.for('test-printed'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('estree-simple?'), Symbol.for('consequent')], [Symbol.for('set!'), Symbol.for('consequent-printed'), [Symbol.for('doc-wrap'), Symbol.for('consequent-printed'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('or'), [Symbol.for('estree-type?'), Symbol.for('alternate'), 'SequenceExpression'], [Symbol.for('estree-simple?'), Symbol.for('alternate')]], [Symbol.for('set!'), Symbol.for('alternate-printed'), [Symbol.for('doc-wrap'), Symbol.for('alternate-printed'), Symbol.for('options')]]], [Symbol.for('list'), Symbol.for('test-printed'), Symbol.for('space'), '?', Symbol.for('space'), Symbol.for('consequent-printed'), Symbol.for('space'), ':', Symbol.for('space'), Symbol.for('alternate-printed')]];
+printConditionalExpression.fsource = [Symbol.for('define'), [Symbol.for('print-conditional-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('print-node'), Symbol.for('consequent'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('alternate'), [Symbol.for('get-estree-field'), 'alternate', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('alternate-printed'), [Symbol.for('print-node'), Symbol.for('alternate'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('estree-simple?'), Symbol.for('test')], [Symbol.for('set!'), Symbol.for('test-printed'), [Symbol.for('doc-wrap'), Symbol.for('test-printed'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('estree-simple?'), Symbol.for('consequent')], [Symbol.for('set!'), Symbol.for('consequent-printed'), [Symbol.for('doc-wrap'), Symbol.for('consequent-printed'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('estree-simple?'), Symbol.for('alternate')], [Symbol.for('set!'), Symbol.for('alternate-printed'), [Symbol.for('doc-wrap'), Symbol.for('alternate-printed'), Symbol.for('options')]]], [Symbol.for('list'), Symbol.for('test-printed'), Symbol.for('space'), '?', Symbol.for('space'), Symbol.for('consequent-printed'), Symbol.for('space'), ':', Symbol.for('space'), Symbol.for('alternate-printed')]];
 /**
  * Print a `WhileStatement` ESTree node to a `Doc` object.
  */

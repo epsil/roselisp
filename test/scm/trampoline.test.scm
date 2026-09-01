@@ -8,21 +8,17 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `trampoline`
- > (describe "trampoline")
- _
+ :describe "trampoline"
  > (trampoline (fn (x) x) 1)
  1
  > (define (add x y)
      (+ x y))
- _
  > (define (fibonacci n)
      (if (< n 2)
          n
          (tcall add
                 (tcall fibonacci (- n 1))
                 (tcall fibonacci (- n 2)))))
- _
  > (trampoline fibonacci 0)
  0
  > (trampoline fibonacci 1)
@@ -47,14 +43,12 @@
  55
  > (define (sub x y)
      (- x y))
- _
  > (define (sequence n)
      (if (< n 2)
          n
          (tcall sub
                 (tcall sequence (- n 1))
                 (tcall sequence (- n 2)))))
- _
  > (trampoline sequence 0)
  0
  > (trampoline sequence 1)

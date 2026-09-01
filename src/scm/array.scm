@@ -16,7 +16,7 @@
 
 ;;; Whether something is an array.
 (define (array?_ x)
-  (send Array isArray x))
+  (js/array? x))
 
 ;;; Return the length of an array.
 (define (array-length_ arr)

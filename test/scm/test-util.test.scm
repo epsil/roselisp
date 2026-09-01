@@ -12,9 +12,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `test-macro`
- > (describe "test-macro")
- _
+ :describe "test-macro"
  > (funcall test-macro
             '(test-macro
               > (describe "foo")
@@ -23,6 +21,34 @@
  '(begin
     (describe "foo"
       (fn ())))
+ > (funcall test-macro
+            '(test-macro
+              :describe "foo"
+              > (foo)
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (it "(foo)"
+            (fn ()
+              (assert-equal
+               (foo)
+               "foo"))))))
+ > (funcall test-macro
+            '(test-macro
+              > (describe "foo")
+              > (foo)
+              "foo")
+            #u)
+ '(begin
+    (describe "foo"
+      (fn ()
+        (it "(foo)"
+            (fn ()
+              (assert-equal
+               (foo)
+               "foo"))))))
  > (funcall test-macro
             '(test-macro
               > (describe "foo")
@@ -146,63 +172,52 @@
                  > (foo)
                  "foo")))))))
 
- ;; `test-repl`
- > (describe "test-repl")
- _
+ :describe "test-repl"
  > (it "(> ...)"
        (test-repl
         '(> (+ 1 1)
             2)))
- _
  > (it "(_ > ...)"
        (test-repl
         '(_
           > (+ 1 1)
           2)))
- _
  > (it "(repl > ...)"
        (test-repl
         '(repl
           > (+ 1 1)
           2)))
- _
  > (it "(shell > ...)"
        (test-repl
         '(shell
           > (+ 1 1)
           2)))
- _
  > (it "(roselisp > ...)"
        (test-repl
         '(roselisp
           > (+ 1 1)
           2)))
- _
  > (it "($ roselisp > ...)"
        (test-repl
         '($ roselisp
             ;; Roselisp REPL.
             > (+ 1 1)
             2)))
- _
  > (it "(+ 2 2)"
        (test-repl
         '(roselisp
           > (+ 2 2)
           4)))
- _
  > (it "(list 1 2 3 4)"
        (test-repl
         '(roselisp
           > (list 1 2 3 4)
           '(1 2 3 4))))
- _
  > (it "1 + 1"
        (test-repl
         '(node
           > "1 + 1"
           "2")))
- _
  xit> (it "const n = 1"
           (test-repl
            '(node
@@ -210,11 +225,8 @@
              "undefined"
              > "n + 1"
              "2")))
- _
 
- ;; `compile-repl-form`
- > (describe "compile-repl-form")
- _
+ :describe "compile-repl-form"
  > (it "(roselisp > (+ 1 1) 2)"
        (compile-repl-form
         '(roselisp
@@ -256,9 +268,7 @@
   return 2;
 })()")
 
- ;; `simplify-repl-form`
- > (describe "simplify-repl-form")
- _
+ :describe "simplify-repl-form"
  > (it "(roselisp > (+ 1 1) 2)"
        (simplify-repl-form
         '(roselisp

@@ -11,9 +11,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `memoize`
- > (describe "memoize")
- _
+ :describe "memoize"
  > (it "cache"
        (let ((I-m (memoize I)))
          (instance-of? (get-field cache I-m)

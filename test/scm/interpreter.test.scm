@@ -18,9 +18,7 @@
 (test-macro
  :repl #t
 
- ;; Boolean values
- > (describe "boolean values")
- _
+ :describe "boolean values"
  > true
  #t
  > t
@@ -32,9 +30,7 @@
  > #f
  #f
 
- ;; `truep`
- > (describe "truep")
- _
+ :describe "truep"
  > (truep true)
  #t
  > (truep false)
@@ -44,9 +40,7 @@
  > (truep true)
  #t
 
- ;; `falsep`
- > (describe "falsep")
- _
+ :describe "falsep"
  > (falsep true)
  #f
  > (falsep false)
@@ -54,45 +48,35 @@
  > (falsep undefined)
  #t
 
- ;; `define`
- > (describe "define")
- _
+ :describe "define"
  > (begin
      (define ((my-add x) y)
        (+ x y))
      (my-add 2 3))
  5
 
- ;; `lambda`
- > (describe "lambda")
- _
+ :describe "lambda"
  > ((lambda (x y)
       (+ x y))
     1
     1)
  2
 
- ;; `eq?`
- > (describe "eq?")
- _
+ :describe "eq?"
  > (begin
      (define (my-unit x)
        x)
      (my-unit 'foo))
  'foo
 
- ;; `send`
- > (describe "send")
- _
+ :describe "send"
  > (send (make-hash
           '(("foo" . "foo")))
          has
          '("foo"))
  #f
 
- ;; `dot`
- > (describe "dot")
- _
+ :describe "dot"
  > (let ((obj (js/obj "add1" (lambda (x) (+ x 1)))))
      (. obj add1 1))
  2
@@ -110,9 +94,7 @@
      (.-prop obj))
  "foo"
 
- ;; `new`
- > (describe "new")
- _
+ :describe "new"
  > (let (quux)
      (set! quux
            (new (class (Object)
@@ -125,9 +107,7 @@
      (.bar quux))
  2
 
- ;; `class`
- > (describe "class")
- _
+ :describe "class"
  > (it "(defclass Foo ...) with constructor and new"
        (let (quux)
          (defclass Foo ()
@@ -140,9 +120,7 @@
          (.bar quux)))
  "xyzzy"
 
- ;; `clj/try`
- > (describe "clj/try")
- _
+ :describe "clj/try"
  > (clj/try
     (throw (new Error "an error"))
     (catch Error e
@@ -151,9 +129,7 @@
       (display "finally")))
  "there was an error"
 
- ;; `+`
- > (describe "+")
- _
+ :describe "+"
  > (+ 1 1)
  2
  > (let ((x 1))
@@ -162,9 +138,7 @@
  > (+ (+ 1 1) (+ 1 1))
  4
 
- ;; String functions
- > (describe "String functions")
- _
+ :describe "String functions"
  > (string-split "foo bar baz" " ")
  '("foo" "bar" "baz")
  > (string-trim "_foo bar  baz_" "_")
@@ -174,15 +148,11 @@
  > (string-trim "  foo bar  baz \r\n\t" " " :repeat? #t)
  "foo bar  baz \r\n\t"
 
- ;; `apply`
- > (describe "apply")
- _
+ :describe "apply"
  > (apply new make-hash '())
  (new Map)
 
- ;; Y combinator
- > (describe "Y combinator")
- _
+ :describe "Y combinator"
  > (let ((Y
           (lambda (f)
             ((lambda (future)
@@ -199,32 +169,24 @@
       6))
  720
 
- ;; `current-environment`
- > (describe "current-environment")
- _
+ :describe "current-environment"
  > ((lambda (x)
       (send (current-environment) get 'x))
     1)
  1
 
- ;; `js/eval`
- > (describe "js/eval")
- _
+ :describe "js/eval"
  > (js/eval "1")
  1
  > (interpret '(js/eval "1") #u (js/obj :eval #t))
  1
 
- ;; `interpret`
- > (describe "interpret")
- _
+ :describe "interpret"
  > (interpret 't)
- #t)
+ #t
 
-(test-macro
- ;; `interpret`
- > (describe "interpret")
- _
+ :repl #f
+ :describe "interpret"
  > (interpret 't)
  #t
  > (interpret 't
@@ -243,9 +205,7 @@
        (new LispEnvironment))
  #t
 
- ;; `lisp`
- > (describe "lisp")
- _
+ :describe "lisp"
  > (lisp "(quote foo)")
  'foo
  > (lisp "(identity1 \"foo\")"
@@ -275,9 +235,7 @@
                  "function"))))
  4
 
- ;; `Map`
- > (describe "Map")
- _
+ :describe "Map"
  > (~> (interpret
         '(new Map)
         (new LispEnvironment
@@ -292,16 +250,13 @@
           (send Array from _))
  '((1 2))
 
- ;; `error`
- > (describe "error")
- _
+ :describe "error"
  > (it "(error)"
        (assert-throws
         (lambda ()
           (interpret
            '(error)
            (new LispEnvironment)))))
- _
  > (it "(error \"foo\")"
        (assert-throws
         (lambda ()

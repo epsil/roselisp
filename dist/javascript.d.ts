@@ -477,11 +477,4 @@ declare function jsUnsignedBitwiseShiftRight_(...args: any[]): any;
 declare namespace jsUnsignedBitwiseShiftRight_ {
     var fsource: (symbol | symbol[])[];
 }
-/**
- * Immediately invoked function expression (IIFE).
- */
-declare function jsIife_(f: any, args: any): any;
-declare namespace jsIife_ {
-    var fsource: (symbol | symbol[])[];
-}
-export { jsAbs_, jsAnd_, jsArrayP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIife_, jsIn_, jsInstanceOfP_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsTypeOf_, jsUnsignedBitwiseShiftRight_, jsYield_ };
+export { jsAbs_, jsAnd_, jsArrayP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceOfP_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsTypeOf_, jsUnsignedBitwiseShiftRight_, jsYield_ };

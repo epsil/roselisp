@@ -380,10 +380,6 @@
 (define (js/unsigned-bitwise-shift-right_ . args)
   (js/op/apply >>> args))
 
-;;; Immediately invoked function expression (IIFE).
-(define (js/iife_ f args)
-  (apply f args))
-
 (provide
   js/abs_
   js/and_
@@ -404,7 +400,6 @@
   js/get_
   js/gt_
   js/gte_
-  js/iife_
   js/in_
   js/instance-of?_
   js/keys_

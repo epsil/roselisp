@@ -348,100 +348,113 @@
 ;;; Macro for expanding tests written in "REPL style"
 ;;; to Mocha tests.
 (define-macro (test-macro &rest body)
-  ;; Parse options.
-  (define options
-    (js/obj))
-  (define body-exps '())
-  (for ((i (range 0 (length body) 2)))
-    (define exp
-      (aget body i))
-    (cond
-     ((keyword? exp)
-      (define key
-        (~> exp
-            (symbol->string _)
-            (regexp-replace (regexp "^:") _ "")))
-      (define val
-        (aget body (+ i 1)))
-      (oset! options key val))
-     (else
-      (set! body-exps (drop body i))
-      (break))))
-  (define repl-option
-    (oget options :repl))
-  ;; Create tests.
+  (define (prompt? exp)
+    (or (eq? exp '>)
+        (only-prompt? exp)
+        (xit-prompt? exp)))
+  (define (only-prompt? exp)
+    (memq? exp '(only> it.only>)))
+  (define (xit-prompt? exp)
+    (eq? exp 'xit>))
+  (define repl-option #f)
   (define group '())
   (define groups '())
   (define only #f)
-  (for ((i (range 0 (length body-exps) 3)))
-    (define prompt
-      (aget body-exps i))
+  (define i 0)
+  (define offset 3)
+  (define len
+    (length body))
+  (while (< i len)
     (define exp
-      (aget body-exps (+ i 1)))
-    (define expected
-      (aget body-exps (+ i 2)))
+      (list-ref body i))
     (cond
-     ((and (array? exp)
-           (>= (length exp) 2)
-           (eq? (first exp) 'describe))
+     ((eq? exp ':repl)
+      (set! offset 2)
+      (set! repl-option
+            (list-ref body (+ i 1))))
+     ((eq? exp ':describe)
+      (set! offset 2)
+      (define description
+        (list-ref body (+ i 1)))
       (when (> (length group) 0)
         (push-right groups group)
         (set! group '()))
-      (define description
-        (second exp))
       (push-right! group description))
-     ((and (array? exp)
-           (>= (length exp) 1)
-           (eq? (first exp) 'only))
-      (set! only #t))
      (else
-      (define f
-        (cond
-         ((eq? prompt 'xit>)
-          '(xit))
-         ((or only
-              (memq? prompt '(it.only> only>)))
-          '(send it only))
-         (else
-          '(it))))
-      (define description "")
-      (define actual #u)
+      (set! offset 3)
+      (define prompt exp)
+      (define expression
+        (list-ref body (+ i 1)))
+      (define expected
+        (list-ref body (+ i 2)))
+      (when (or (prompt? expected)
+                (and (keyword? expected)
+                     (not (prompt? (list-ref body (+ i 3))))))
+        (set! expected '_)
+        (set! offset 2))
       (cond
-       ((tagged-list? exp 'it)
-        (set! description (second exp))
-        (set! actual
-              (if (> (length exp) 3)
-                  `(begin ,@(drop exp 2))
-                  (third exp))))
+       ((and (array? expression)
+             (>= (length expression) 2)
+             (eq? (first expression) 'describe))
+        (when (> (length group) 0)
+          (push-right groups group)
+          (set! group '()))
+        (define description
+          (second expression))
+        (push-right! group description))
+       ((and (array? expression)
+             (>= (length expression) 1)
+             (eq? (first expression) 'only))
+        (set! only #t))
        (else
-        (set! description (print-sexp exp))
-        (set! actual exp)))
-      (define test
+        (define f
+          (cond
+           ((xit-prompt? prompt)
+            '(xit))
+           ((or only
+                (only-prompt? prompt))
+            '(send it only))
+           (else
+            '(it))))
+        (define description "")
+        (define actual #u)
         (cond
-         ((and (eq? expected '_)
-               (not (tagged-list? exp 'it)))
-          actual)
+         ((tagged-list? expression 'it)
+          (set! description (second expression))
+          (set! actual
+                (if (> (length expression) 3)
+                    `(begin ,@(drop expression 2))
+                    (third expression))))
          (else
-          `(,@f
-            ,description
-            (fn ()
-              ,@(cond
-                 (repl-option
-                  `((test-repl
-                     '(roselisp
-                       ,prompt
+          (set! description (print-sexp expression))
+          (set! actual expression)))
+        (define test
+          (cond
+           ((and (eq? expected '_)
+                 (not (tagged-list? expression 'it)))
+            actual)
+           (else
+            `(,@f
+              ,description
+              (fn ()
+                ,@(cond
+                   (repl-option
+                    `((test-repl
+                       '(roselisp
+                         ,prompt
+                         ,actual
+                         ,expected))))
+                   ((eq? expected '_)
+                    (if (tagged-list? actual 'begin)
+                        (drop actual 1)
+                        (list actual)))
+                   (else
+                    `((assert-equal
                        ,actual
-                       ,expected))))
-                 ((eq? expected '_)
-                  (if (tagged-list? actual 'begin)
-                      (drop actual 1)
-                      (list actual)))
-                 (else
-                  `((assert-equal
-                     ,actual
-                     ,expected)))))))))
-      (push-right! group test)
-      (set! only #f))))
+                       ,expected)))))))))
+        (push-right! group test)
+        (set! only #f)))))
+    (set! i (+ i offset)))
   (when (> (length group) 0)
     (push-right groups group))
   (define tests

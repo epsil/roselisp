@@ -19,9 +19,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `macroexpand`
- > (describe "macroexpand")
- _
+ :describe "macroexpand"
  > (macroexpand
     '(foo bar)
     (new LispEnvironment
@@ -32,9 +30,7 @@
     (new LispEnvironment))
  '(+ 1 1)
 
- ;; `macroexpand*`
- > (describe "macroexpand*")
- _
+ :describe "macroexpand*"
  > (macroexpand*
     '(foo bar)
     (new LispEnvironment
@@ -45,9 +41,7 @@
     (new LispEnvironment))
  (values '(+ 1 1) #f)
 
- ;; `macroexpand-1`
- > (describe "macroexpand-1")
- _
+ :describe "macroexpand-1"
  > (macroexpand-1
     '(~> "a b c d"
          .toUpperCase
@@ -82,9 +76,7 @@
     (take 10 _)
     (reduce + _))
 
- ;; `macroexpand-all`
- > (describe "macroexpand-all")
- _
+ :describe "macroexpand-all"
  > (macroexpand-all
     '(~> "a b c d"
          .toUpperCase
@@ -132,9 +124,7 @@
        (.toUpperCase "x"))
       " ")))
 
- ;; `as->`
- > (describe "as->")
- _
+ :describe "as->"
  > (thread-as_ '(as~> x _))
  'x
  > (thread-as_
@@ -174,9 +164,7 @@
     (set! _ (+ _ _))
     _)
 
- ;; `~>`
- > (describe "~>")
- _
+ :describe "~>"
  > (thread-first_
     '(~> x
          foo))
@@ -199,9 +187,7 @@
  '(as~> x *
     (foo *))
 
- ;; `~>>`
- > (describe "~>>")
- _
+ :describe "~>>"
  > (thread-last_
     '(~>> x
           foo))
@@ -224,9 +210,7 @@
  '(as~> x *
     (foo *))
 
- ;; `case/eq`
- > (describe "case/eq")
- _
+ :describe "case/eq"
  > (case-eq_
     '(case/eq x
               (("foo")
@@ -269,9 +253,7 @@
      (assert-equal actual expected))
  #u
 
- ;; `case`
- > (describe "case")
- _
+ :describe "case"
  > (case_
     '(case x
        (("foo")
@@ -293,14 +275,10 @@
    ((member? x '(("foo")) equal?)
     foo)
    (else
-    bar)))
+    bar))
 
-(test-macro
  :repl #t
-
- ;; `case`
- > (describe "case")
- _
+ :describe "case"
  > (case 'foo
      ((foo)
       1))

@@ -11,8 +11,7 @@
 (declare-macro test-macro)
 
 (test-macro
- > (describe "REPL")
- _
+ :describe "REPL"
  > (rep "#t")
  "#t"
  > (rep "\"string\"")

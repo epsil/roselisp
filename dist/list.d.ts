@@ -525,7 +525,7 @@ declare namespace last_ {
  */
 declare function lastPair_(lst: any): any;
 declare namespace lastPair_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | undefined)[])[])[])[];
 }
 /**
  * Return the last cdr of a list, i.e., the terminating empty list.

@@ -11,12 +11,9 @@
 
 (test-macro
  :repl #t
+ :describe "To do"
 
- > (describe "To do")
- _
-
- > (describe "Dotted lists")
- _
+ :describe "Dotted lists"
  xit> '(1 . 2)
  '(1 . 2)
  xit> '(1 . ())
@@ -53,9 +50,7 @@ function normalizeList(x) {
   normalizeList1([1, Symbol.for('.'), x);
 }"
 
- ;; `js/iife`
- > (describe "js/iife")
- _
+ :describe "js/iife"
  xit> (compile '(js/iife (js/arrow (x . y)
                            (+ x (first y)))
                          (list* a b))
@@ -66,9 +61,7 @@ let y = b;
 
 x + y[0];"
 
- ;; `gensym`
- > (describe "gensym")
- _
+ :describe "gensym"
  xit> (compile `(module m scheme
                   (define ,(gensym "length")
                     length)))
@@ -78,9 +71,7 @@ x + y[0];"
 
 let length1 = length;"
 
- ;; `for-each`
- > (describe "for-each")
- _
+ :describe "for-each"
  xit> (compile '(for-each (lambda (x)
                             x)
                           lst))
@@ -88,15 +79,12 @@ let length1 = length;"
   return x;
 });"
 
- ;; `interpret`
- > (describe "interpret")
- _
+ :describe "interpret"
  xit> (interpret '(length '(1 . ()))
                  :fdottedlists #t)
  1
 
- > (describe "Assignment operators")
- _
+ :describe "Assignment operators"
  xit> (compile '(js/+= x y))
  "x += y;"
  xit> (compile '(js/-= x y))
@@ -118,9 +106,7 @@ let length1 = length;"
  xit> (compile '(js/>>>= x y))
  "x >>>= y;"
 
- ;; `define-syntax`
- > (describe "define-syntax")
- _
+ :describe "define-syntax"
  xit> (compile '(module m scheme
                   (define x 1)
                   (define-syntax (foo x)
@@ -145,24 +131,21 @@ let x1 = 2;
 
 x1;"
 
- ;; > (describe "Other tests")
- ;; _
+ ;; :describe "Other tests"
  ;; xit> (list? '(1 . ()))
  ;; #t
  ;; xit> (list? '(1 . (2 . ())))
  ;; #t
- ;; ;; Cons dot
- ;; > (describe "Cons dot")
- ;; _
+ ;;
+ ;; :describe "Cons dot"
  ;; > *cons-dot*
  ;; '.
  ;; > (cons-dot)
  ;; '.
  ;; > (cons-dot? *cons-dot*)
  ;; #t
- ;; ;; `array-list?`
- ;; > (describe "array-list?")
- ;; _
+ ;;
+ ;; :describe "array-list?"
  ;; > (array-list? '())
  ;; #t
  ;; > (array-list? '(1 . 2))
@@ -171,9 +154,8 @@ x1;"
  ;; #t
  ;; > (array-list? '(1 2 3))
  ;; #t
- ;; ;; `array-list-length`
- ;; > (describe "array-list-length")
- ;; _
+ ;;
+ ;; :describe "array-list-length"
  ;; > (compile '(array-list-length x))
  ;; "x.length;"
  ;; xit> (compile "\\t")
@@ -546,9 +528,8 @@ x1;"
  ;;  #u
  ;;  xit> (interpret 'js/eval #u (js/obj :eval #f))
  ;;  #u
- ;; ;; `linked-list?`
- ;; > (describe "linked-list?")
- ;; _
+ ;;
+ ;; :describe "linked-list?"
  ;; > (linked-list? '())
  ;; #f
  ;; > (linked-list? '(1 . 2))
@@ -559,10 +540,8 @@ x1;"
  ;; #t
  ;; > (linked-list? '(1 2 . (3 . ())))
  ;; #t
-
- ;; ;; `linked-list-link?`
- ;; > (describe "linked-list-link?")
- ;; _
+ ;;
+ ;; :describe "linked-list-link?"
  ;; > (linked-list-link? '())
  ;; #f
  ;; > (linked-list-link? '(1 . 2))

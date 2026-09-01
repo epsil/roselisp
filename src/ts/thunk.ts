@@ -86,6 +86,18 @@ function thunk(f: any): any {
 thunk.fsource = [Symbol.for('define'), [Symbol.for('thunk'), Symbol.for('f')], [Symbol.for('new'), Symbol.for('Thunk'), Symbol.for('f')]];
 
 /**
+ * Delay a piece of code with a thunk.
+ */
+function delay(exp: any, env: any): any {
+  const body: any = exp.slice(1);
+  return [Symbol.for('thunk'), [Symbol.for('lambda'), [], ...body]];
+}
+
+delay.fsource = [Symbol.for('define'), [Symbol.for('delay'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('thunk'), [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+
+delay.ftype = 'macro';
+
+/**
  * Whether something is a thunk.
  */
 function thunkp(x: any): any {
@@ -143,9 +155,9 @@ class ThunkedMap extends Map {
 }
 
 export {
-  thunk as delay,
   Thunk,
   ThunkedMap,
+  delay,
   force,
   thunk,
   thunkp,

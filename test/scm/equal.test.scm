@@ -7,9 +7,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `equal?`
- > (describe "equal?")
- _
+ :describe "equal?"
  > (equal?_ ""
             "")
  #t

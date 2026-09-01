@@ -1434,9 +1434,10 @@
   (define test-printed-str
     (doc-value-string test-printed))
   ;; It is customary to wrap assignment expressions
-  ;; in an extra set of parentheses when used as a
-  ;; condition, so as to distinguish them from
-  ;; comparisons (`((x = y))` vs. `(x === y)`).
+  ;; in an extra set of parentheses to indicate that
+  ;; that is what is really intended, distinguishing
+  ;; them from comparisons (`if ((x = y)) { ... }`
+  ;; vs. `if (x === y) { ... }`).
   (when (estree-type? test "AssignmentExpression")
     (set! test-printed-str
           (doc-wrap test-printed options)))
@@ -1488,8 +1489,7 @@
   (unless (estree-simple? consequent)
     (set! consequent-printed
           (doc-wrap consequent-printed options)))
-  (unless (or (estree-type? alternate "SequenceExpression")
-              (estree-simple? alternate))
+  (unless (estree-simple? alternate)
     (set! alternate-printed
           (doc-wrap alternate-printed options)))
   (list

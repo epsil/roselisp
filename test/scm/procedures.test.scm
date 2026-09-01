@@ -12,9 +12,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `string?`
- > (describe "string?")
- _
+ :describe "string?"
  > (string? "foo")
  #t
  > (string? (new String "foo"))
@@ -22,9 +20,7 @@
  > (string? 'foo)
  #f
 
- ;; `compose`
- > (describe "compose")
- _
+ :describe "compose"
  > (it "g . f"
        (let ((f (lambda (x)
                   (+ x 1)))
@@ -42,9 +38,7 @@
          ((compose h g f) 1)))
  7
 
- ;; `pipe`
- > (describe "pipe")
- _
+ :describe "pipe"
  > (it "f ; g"
        (let ((f (lambda (x)
                   (+ x 1)))

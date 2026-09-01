@@ -220,7 +220,6 @@
                   js/get_
                   js/gt_
                   js/gte_
-                  js/iife_
                   js/in_
                   js/instance-of?_
                   js/keys_
@@ -515,6 +514,7 @@
                   symbol?_))
 (require (only-in "./thunk"
                   ThunkedMap
+                  delay
                   force
                   thunk
                   thunk?))
@@ -725,8 +725,6 @@
          (,ann_ ,compile-ann (compiler-> Any * Any))
          (,append_ ,compile-append (compiler-> Any * Any))
          (,apply_ ,compile-apply (compiler-> Any * Any))
-         (,array-push-left!_ ,compile-array-push-left (compiler-> Any * Any))
-         (,array-push-right!_ ,compile-array-push-right (compiler-> Any * Any))
          (,begin_ ,compile-begin (compiler-> Any * Any))
          (,break_ ,compile-break (compiler-> Any * Any))
          (,class_ ,compile-class (compiler-> Any * Any))
@@ -763,7 +761,6 @@
          (,js/gt_ ,compile-greater-than (compiler-> Any * Any))
          (,js/gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
          (,js/if_ ,compile-js/if (compiler-> Any * Any))
-         (,js/iife_ ,compile-js/iife (compiler-> Any * Any))
          (,js/in_ ,compile-js/in (compiler-> Any * Any))
          (,js/instance-of?_ ,compile-js/instance-of (compiler-> Any * Any))
          (,js/loosely-equal?_ ,compile-js/loosely-equal (compiler-> Any * Any))
@@ -781,6 +778,7 @@
          (,js/raw_ ,compile-js/raw (compiler-> Any * Any))
          (,js/return_ ,compile-return (compiler-> Any * Any))
          (,js/sequence_ ,compile-js/sequence (compiler-> Any * Any))
+         (,js/statement-or-expression_ ,compile-js/statement-or-expression (compiler-> Any * Any))
          (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
          (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
          (,js/tagged-template_ ,compile-js/tagged-template (compiler-> Any * Any))
@@ -818,9 +816,11 @@
 ;;; Compiler macros mapping environment.
 (define compilation-macro-mapping-env
   (new CompilationEnvironment
-       `((,array-drop-right_ ,compile-array-drop-right-macro (macro-> Any * Any))
-         (,array-concat_ ,compile-array-concat-macro (macro-> Any * Any))
+       `((,array-concat_ ,compile-array-concat-macro (macro-> Any * Any))
+         (,array-drop-right_ ,compile-array-drop-right-macro (macro-> Any * Any))
          (,array-drop_ ,compile-array-drop-macro (macro-> Any * Any))
+         (,array-push-left!_ ,compile-array-push-left!-macro (macro-> Any * Any))
+         (,array-push-right!_ ,compile-array-push-right!-macro (macro-> Any * Any))
          (,array-ref_ ,compile-array-ref-macro (macro-> Any * Any))
          (,array-set!_ ,compile-array-set!-macro (macro-> Any * Any))
          (,assert_ ,compile-assert-macro (macro-> Any * Any))
@@ -1159,21 +1159,20 @@
                file)
     (hash-set! module-expression-map
                module-name
-               (thunk
-                (lambda ()
-                  (define data
-                    (~> file
-                        (readFileSync _ (js/obj :encoding "utf8"))
-                        (regexp-replace (regexp "^#!.*") _ "")
-                        (string-append
-                         "(module m scheme\n"
-                         _
-                         "\n)")))
-                  (define node
-                    (read-syntax data
-                                 (js/obj :comments
-                                         comments-option)))
-                  node)))
+               (delay
+                 (define data
+                   (~> file
+                       (readFileSync _ (js/obj :encoding "utf8"))
+                       (regexp-replace (regexp "^#!.*") _ "")
+                       (string-append
+                        "(module m scheme\n"
+                        _
+                        "\n)")))
+                 (define node
+                   (read-syntax data
+                                (js/obj :comments
+                                        comments-option)))
+                 node))
     (cond
      (quick-option
       (define should-compile #f)
@@ -1545,6 +1544,9 @@
 ;;; Convert an ESTree node to an expression.
 (define (make-expression node (options (js/obj)))
   (cond
+   ((thunk? node)
+    (delay
+      (make-expression (force node) options)))
    ((estree-type? node "ExpressionStatement")
     (get-field expression node))
    (else
@@ -1558,6 +1560,9 @@
   (define expression-type
     (oget options :expression-type))
   (cond
+   ((thunk? node)
+    (delay
+      (make-statement (force node) options)))
    ((not (is-a? node Expression))
     node)
    ((eq? expression-type "return")
@@ -1568,6 +1573,9 @@
 ;;; Convert an ESTree node to a return statement.
 (define (make-return-statement node (options (js/obj)))
   (cond
+   ((thunk? node)
+    (delay
+      (make-return-statement (force node) options)))
    ((estree-type? node "ReturnStatement")
     node)
    (else
@@ -2608,17 +2616,16 @@
     (send env
           set-local!
           sym
-          (thunk
-           (lambda ()
-             (define result #u)
-             (try
-               (set! result
-                     (interpret `(begin ,exp ,sym)
-                                env))
-               (catch Error e
-                 ;; Do nothing
-                 ))
-             result))
+          (delay
+            (define result #u)
+            (try
+              (set! result
+                    (interpret `(begin ,exp ,sym)
+                               env))
+              (catch Error e
+                ;; Do nothing
+                ))
+            result)
           type_)
     (define result
       (compile-js/function
@@ -2687,16 +2694,15 @@
                 sym
                 (js/obj :not-found 'Any)))
     (define val-thunk
-      (thunk
-       (lambda ()
-         (define result #u)
-         (try
-           (set! result
-                 (interpret val env))
-           (catch Error e
-             ;; Do nothing
-             ))
-         result)))
+      (delay
+        (define result #u)
+        (try
+          (set! result
+                (interpret val env))
+          (catch Error e
+            ;; Do nothing
+            ))
+        result))
     (send env set-local! sym val-thunk type_)
     (define result
       (assignment-expression->variable-declaration
@@ -2950,23 +2956,15 @@
 
 ;;; Compiler macro for `(cons ...)` expressions.
 (define-macro (compile-cons-macro x y)
-  ;; TODO: Terser way of expressing this.
   (cond
    ((self-evaluating? y)
-    (list 'quasiquote
-          (list
-           (list 'unquote x)
-           '|.|
-           (list 'unquote y))))
+    ``(,,x . ,,y))
    ((or (tagged-list? y 'list)
         (and (tagged-list? y 'list*)
              (> (length y) 2))
         (and (tagged-list? y '(quote quasiquote))
              (pair-or-list? (second y))))
-    (list 'quasiquote
-          (list
-           (list 'unquote x)
-           (list 'unquote-splicing y))))
+    ``(,,x ,@,y))
    (else
     (definition->macro
       (source cons_)
@@ -3073,26 +3071,32 @@
 ;;; Compiler macro for `(array-drop-right ...)` expressions.
 (define-macro (compile-array-drop-right-macro arr n)
   (cond
-   ;; Edge case: `(array-slice arr 0 (- n))` works well most
-   ;; of the time, but not when `n` is zero, in which case
-   ;; `(array-slice arr 0 0)` returns an empty array (and
-   ;; not the full array, as expected). To deal with this,
-   ;; the value of `n` must be inspected. If it can be
-   ;; determined at compile time, then the whole expression
-   ;; can be expanded to just `arr` if the value is zero.
    ((number? n)
     (cond
      ((= n 0)
       arr)
      (else
       `(array-slice ,arr 0 (- ,n)))))
-   ;; Otherwise, if `n` is a variable or an expression,
-   ;; then its value must be checked at runtime instead.
    (else
     (definition->macro
-      '(define (array-drop-right_ arr n)
-         (array-slice arr 0 (or (- n) #u)))
+      (source array-drop-right_)
       (list arr n)))))
+
+;;; Compiler macro for `(array-push-left! ...)` expressions.
+(define-macro (compile-array-push-left!-macro arr x)
+  `(js/statement-or-expression
+    :statement (send ,arr unshift ,x)
+    :expression ,(definition->macro
+                   (source array-push-left!_)
+                   (list arr x))))
+
+;;; Compiler macro for `(array-push-right! ...)` expressions.
+(define-macro (compile-array-push-right!-macro arr x)
+  `(js/statement-or-expression
+    :statement (send ,arr push ,x)
+    :expression ,(definition->macro
+                   (source array-push-right!_)
+                   (list arr x))))
 
 ;;; Compiler macro for `(array-concat ...)` expressions.
 (define-macro (compile-array-concat-macro &rest args)
@@ -3394,6 +3398,9 @@
     (oget settings :operator))
   (define logical
     (oget settings :logical))
+  (define fold
+    (or (oget options :fold)
+        'left))
   (define operands
     (send node drop 1))
   (cond
@@ -3419,20 +3426,24 @@
               arg env
               options))
            operands))
+    (define (combine right left)
+      (if logical
+          (new LogicalExpression
+               operator
+               left
+               right)
+          (new BinaryExpression
+               operator
+               left
+               right)))
+    (define init
+      (first compiled-operands))
+    (define operands1
+      (rest compiled-operands))
     (make-expression-or-statement
-     ;; TODO: Option for toggling right fold?
-     (foldl (lambda (right left)
-              (if logical
-                  (new LogicalExpression
-                       operator
-                       left
-                       right)
-                  (new BinaryExpression
-                       operator
-                       left
-                       right)))
-            (first compiled-operands)
-            (rest compiled-operands))
+     (if (eq? fold 'right)
+         (foldr combine init operands1)
+         (foldl combine init operands1))
      options))))
 
 ;;; Compile a logical expression.
@@ -3721,112 +3732,154 @@
                      settings
                      (js/obj :function-type 'js/arrow))))
 
-;;; Compile a `(js/iife ...)` expression.
-(define (compile-js/iife node env (options (js/obj)) (settings (js/obj)))
-  (define expression-type
-    (oget options :expression-type))
-  (define f
-    (send node get 1))
-  (define args
-    (send node get 2))
+;;; Expand a `(js/iife ...)` expression.
+(define-macro (js/iife_ f args)
   (define args-list
-    (send args drop 1))
+    (drop args 1))
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
         'funcall))
-  (cond
-   ((memq? expression-type '("statement" "return"))
-    (define f-exp
-      (syntax->datum f))
-    (define params
-      (second f-exp))
-    (define-values (regular-params rest-param)
-      (parse-params-list params))
-    (when rest-param
-      (set! params
-            (append regular-params
-                    (list rest-param))))
-    (define params-list
-      (map (lambda (x)
-             (if (pair-or-list? x)
-                 (first x)
-                 x))
-           params))
-    (define regular-args '())
-    (define rest-arg '(list))
-    (for ((i (range 0 (length args-list))))
-      (define arg
-        (list-ref args-list i))
+  (define params
+    (second f))
+  (define-values (regular-params rest-param)
+    (parse-params-list params))
+  (when rest-param
+    (set! params
+          (append regular-params
+                  (list rest-param))))
+  (define params-list
+    (map (lambda (x)
+           (if (pair-or-list? x)
+               (first x)
+               x))
+         params))
+  (define regular-args '())
+  (define rest-arg '(list))
+  (for ((i (range 0 (length args-list))))
+    (define arg
+      (list-ref args-list i))
+    (cond
+     ((< i (length regular-params))
+      (push-right! regular-args arg))
+     (rest-param
+      (push-right! rest-arg arg))))
+  (define args-list-1
+    (append regular-args
+            (if (and rest-param
+                     (> (length rest-arg 1)))
+                (list rest-arg)
+                '())))
+  (define body
+    (drop f 2))
+  (define renamings '())
+  (define defs '())
+  (for ((i (range 0 (length params-list))))
+    (define arg-exp
       (cond
-       ((< i (length regular-params))
-        (push-right! regular-args arg))
-       (rest-param
-        (push-right! rest-arg arg))))
-    (set! args-list
-          (append regular-args
-                  (if (and rest-param
-                           (> (length rest-arg 1)))
-                      (list rest-arg)
-                      '())))
-    (define body
-      (drop f-exp 2))
-    (define let-bindings-env '())
-    (define gensym-param-map
-      (make-hash))
-    (for ((i (range 0 (length params-list))))
-      (define arg-exp
-        (cond
-         ((< i (length args-list))
-          (list-ref args-list i))
-         (else
-          (define current-param
-            (list-ref params i))
-          (cond
-           ((pair-or-list? current-param)
-            (second current-param))
-           (else
-            #u)))))
-      (define param-exp
-        (list-ref params-list i))
-      (define param
-        (if (pair-or-list? param-exp)
-            (first param-exp)
-            param-exp))
-      (cond
-       ((symbol? arg-exp)
-        (hash-set! gensym-param-map param arg-exp))
+       ((< i (length args-list-1))
+        (list-ref args-list-1 i))
        (else
-        (define param-gensym
-          (gensym (symbol->string param)))
-        (hash-set! gensym-param-map param param-gensym)
-        (push-right! let-bindings-env
-                     (list param-gensym arg-exp)))))
-    ;; FIXME: This might not handle quoted expressions
-    ;; correctly. E.g., in `(list 'x x)`, `'x` should
-    ;; never be substituted.
-    (define let-body
-      (map-tree (lambda (x)
-                  (cond
-                   ((and (symbol? x)
-                         (hash-has-key? gensym-param-map x))
-                    (hash-ref gensym-param-map x))
-                   (else
-                    x)))
-                body))
-    (compile-syntax
-     (datum->syntax
-      node
-      `(let* ,let-bindings-env
-         ,@let-body))
+        (define current-param
+          (list-ref params i))
+        (cond
+         ((pair-or-list? current-param)
+          (second current-param))
+         (else
+          #u)))))
+    (define param-exp
+      (list-ref params-list i))
+    (define param
+      (if (pair-or-list? param-exp)
+          (first param-exp)
+          param-exp))
+    (cond
+     ;; Rename parameter symbol to argument symbol. This presupposes
+     ;; that the function does not mutate its parameter bindings
+     ;; (it may mutate internal variables, and modify the data
+     ;; structures the variables point to, but the parameter binding
+     ;; must remain unchanged).
+     ((symbol? arg-exp)
+      (unless (eq? param arg-exp)
+        (push-right! renamings (list param arg-exp))))
+     ;; Otherwise, define a `gensym`'ed variable for storing the value
+     ;; of the argument expression, and rename the parameter to that.
+     (else
+      (define gsym
+        (gensym (symbol->string param)))
+      (push-right! defs `(define ,gsym ,arg-exp))
+      (push-right! renamings (list param gsym)))))
+  (define rename-form
+    `(begin
+       ,@defs
+       (js/rename ,renamings
+                  ,@body)))
+  (define apply-form
+    `(,fapply
+      ,f
+      ,@args-list))
+  `(js/statement-or-expression
+    :statement ,rename-form
+    :return ,rename-form
+    :expression ,apply-form))
+
+;;; Expand a `(js/rename ...)` expression.
+(define-macro (js/rename_ renamings &rest body)
+  ;; FIXME: This is not perfect. For example, it might not handle
+  ;; quoted expressions correctly---in `(list 'x x)`, say, `'x`
+  ;; should never be substituted. What we probably want to do is
+  ;; to integrate renamings into the environment and have the
+  ;; compiler deal with them as it compiles the code, which would
+  ;; also handle macro expansion correctly.
+  (let ((renaming-map (new Map renamings)))
+    `(begin
+       ,@(map-tree (lambda (x)
+                     (cond
+                      ((and (symbol? x)
+                            (hash-has-key? renaming-map x))
+                       (hash-ref renaming-map x))
+                      (else
+                       x)))
+                   body))))
+
+;;; Compile a `(js/statement-or-expression ...)` expression.
+(define (compile-js/statement-or-expression node env (options (js/obj)))
+  (define expression-type
+    (oget options :expression-type))
+  (define plist
+    (map (lambda (x)
+           (define exp
+             (syntax->datum x))
+           (if (keyword? exp)
+               exp
+               x))
+         (send node drop 1)))
+  (define expression
+    (plist-get_ plist :expression))
+  (define statement
+    (plist-get_ plist :statement))
+  (define return-statement
+    (plist-get_ plist :return))
+  (cond
+   ((eq? expression-type "expression")
+    (compile-expression expression env options))
+   ((eq? expression-type "return")
+    (compile-statement-or-return-statement
+     (cond
+      (return-statement
+       return-statement)
+      (expression
+       expression)
+      (else
+       statement))
      env options))
    (else
-    (compile-syntax
-     (datum->syntax
-      node
-      `(,fapply
-        ,f
-        ,@args-list))
+    (compile-statement
+     (cond
+      (statement
+       statement)
+      (else
+       expression))
      env options))))
 
 ;;; Compile a `(< ...)` expression.
@@ -4067,16 +4120,15 @@
           (~> node
               (send _ get 4))))
   (define expression-thunk
-    (thunk
-     (lambda ()
-       (define result '())
-       (try
-         (set! result
-               (interpret expression env))
-         (catch Error e
-           ;; Do nothing
-           ))
-       result)))
+    (delay
+      (define result '())
+      (try
+        (set! result
+              (interpret expression env))
+        (catch Error e
+          ;; Do nothing
+          ))
+      result))
   (define i 0)
   (cond
    ((symbol? variables)
@@ -4096,32 +4148,29 @@
       (unless (eq? x hole-marker)
         (define idx i)
         (define var-thunk
-          (thunk
-           (lambda ()
-             (define result '())
-             (try
-               (set! result
-                     (list-ref (force expression-thunk)
-                               idx))
-               (catch Error e
-                 ;; Do nothing
-                 ))
-             result)))
+          (delay
+            (define result '())
+            (try
+              (set! result
+                    (list-ref (force expression-thunk) idx))
+              (catch Error e
+                ;; Do nothing
+                ))
+            result))
         (send env set-local! x var-thunk 'Any))
       (set! i (+ i 1)))
     (when rest-var
       (define idx i)
       (define rest-var-thunk
-        (thunk
-         (lambda ()
-           (define result '())
-           (try
-             (set! result
-                   (drop (force expression-thunk) idx))
-             (catch Error e
-               ;; Do nothing
-               ))
-           result)))
+        (delay
+          (define result '())
+          (try
+            (set! result
+                  (drop (force expression-thunk) idx))
+            (catch Error e
+              ;; Do nothing
+              ))
+          result))
       (send env set-local! rest-var rest-var-thunk 'Any))))
   (assignment-expression->variable-declaration
    (compile-set-values
@@ -4265,16 +4314,15 @@
   (define obj-exp
     (syntax->datum obj))
   (define obj-thunk
-    (thunk
-     (lambda ()
-       (define result (js/obj))
-       (try
-         (set! result
-               (interpret obj-exp env))
-         (catch Error e
-           ;; Do nothing
-           ))
-       result)))
+    (delay
+      (define result (js/obj))
+      (try
+        (set! result
+              (interpret obj-exp env))
+        (catch Error e
+          ;; Do nothing
+          ))
+      result))
   (for ((f fields-exp))
     (define is-array
       (pair-or-list? f))
@@ -4289,16 +4337,15 @@
     (define prop-str
       (symbol->string prop))
     (define prop-thunk
-      (thunk
-       (lambda ()
-         (define result #u)
-         (try
-           (set! result
-                 (oget (force obj-thunk) prop-str))
-           (catch Error e
-             ;; Do nothing
-             ))
-         result)))
+      (delay
+        (define result #u)
+        (try
+          (set! result
+                (oget (force obj-thunk) prop-str))
+          (catch Error e
+            ;; Do nothing
+            ))
+        result))
     (send env set-local! sym prop-thunk 'Any))
   (assignment-expression->variable-declaration
    (compile-set-fields
@@ -4823,18 +4870,38 @@
        (send node get 1)
        env options))
      (else
-      (compile-expression
-       (make-iife node)
-       env options))))
+      (define statements
+        (compile-statements
+         body env
+         (make-statement-options options)))
+      (define only-expressions #t)
+      (define expressions '())
+      (for ((x statements))
+        (cond
+         ((estree-type? x "ExpressionStatement")
+          (push-right! expressions
+                       (get-field expression x)))
+         (else
+          (set! only-expressions #f)
+          (break))))
+      ;; Compile to a `SequenceExpression` if possible;
+      ;; otherwise, compile to an IIFE.
+      (cond
+       (only-expressions
+        (new SequenceExpression expressions))
+       (else
+        (compile-expression
+         (make-iife node)
+         env options))))))
    (else
-    (define body-statements
+    (define statements
       (compile-statements body env options))
     ;; Note that this returns a `Program` node, but in
     ;; some contexts, a `BlockStatement` node is wanted.
     ;; One can convert a `Program` node to a
     ;; `BlockStatement` node with
     ;; `wrap-in-block-statement`.
-    (make-program-fragment body-statements))))
+    (make-program-fragment statements))))
 
 ;;; Compile a `(js/block ...)` expression.
 (define (compile-js/block node env (options (js/obj)))
@@ -5113,42 +5180,82 @@
 (define (compile-quasiquote node env (options (js/obj)))
   (make-expression-or-statement
    (compile-quasiquote-helper
-    (send node get 1) env options)
+    1
+    (send node get 1)
+    env options)
    options))
 
 ;;; Helper function for `compile-quasiquote`.
-(define (compile-quasiquote-helper node env (options (js/obj)))
-  (define exp
-    (syntax->datum node))
+(define (compile-quasiquote-helper level node env (options (js/obj)))
   (cond
-   ((not (pair-or-list? exp))
-    (compile-expression
-     (datum->syntax
-      #f
-      `(quote ,exp))
-     env options))
+   ((zero? level)
+    (compile-expression node env options))
    (else
-    (new ArrayExpression
-         (map (lambda (x)
-                (define exp
-                  (syntax->datum x))
-                (cond
-                 ((tagged-list? exp 'quasiquote)
-                  (compile-quote
-                   (datum->syntax #f `(quote ,exp))
-                   env
-                   (make-expression-options options)))
-                 ((tagged-list? exp 'unquote)
-                  (compile-expression
-                   (send x get 1) env options))
-                 ((tagged-list? exp 'unquote-splicing)
-                  (new SpreadElement
-                       (compile-expression
-                        (send x get 1) env options)))
-                 (else
-                  (compile-quasiquote-helper
-                   x env options))))
-              (send node get-nodes))))))
+    (define exp
+      (syntax->datum node))
+    (cond
+     ((pair-or-list? exp)
+      (cond
+       ((tagged-list? exp 'quasiquote)
+        (new ArrayExpression
+             (list
+              (compile-symbol
+               (send node get 0)
+               env options
+               (js/obj :quoted-symbol #t))
+              (compile-quasiquote-helper
+               (+ level 1)
+               (send node get 1)
+               env options))))
+       ((tagged-list? exp 'unquote)
+        (cond
+         ((> level 1)
+          (new ArrayExpression
+               (list
+                (compile-symbol
+                 (send node get 0)
+                 env options
+                 (js/obj :quoted-symbol #t))
+                (compile-quasiquote-helper
+                 (- level 1)
+                 (send node get 1)
+                 env options))))
+         (else
+          (compile-quasiquote-helper
+           (- level 1)
+           (send node get 1)
+           env options))))
+       ((tagged-list? exp 'unquote-splicing)
+        (cond
+         ((> level 1)
+          (new ArrayExpression
+               (list
+                (compile-symbol
+                 (send node get 0)
+                 env options
+                 (js/obj :quoted-symbol #t))
+                (compile-quasiquote-helper
+                 (- level 1)
+                 (send node get 1)
+                 env options))))
+         (else
+          (new SpreadElement
+               (compile-quasiquote-helper
+                (- level 1)
+                (send node get 1)
+                env options)))))
+       (else
+        (new ArrayExpression
+             (map (lambda (x)
+                    (compile-quasiquote-helper
+                     level x env options))
+                  (send node get-nodes))))))
+     ((symbol? exp)
+      (compile-symbol
+       node env options
+       (js/obj :quoted-symbol #t)))
+     (else
+      (compile-expression node env options))))))
 
 ;;; Compile a `(require ...)` expression.
 (define (compile-require node env (options (js/obj)))
@@ -5532,57 +5639,61 @@
             (eq? str "."))
     (set! quoted-symbol-option #t))
   (cond
-   (quoted-symbol-option
-    (compile-expression
-     (datum->syntax
-      #f
-      `(string->symbol ,str))
-     env options))
    (gensymed-symbol
     (define gensym-map
       (oget options :gensym-map))
     (unless gensym-map
       (set! gensym-map (make-hash))
       (oset! options :gensym-map gensym-map))
+    (define gensym-name-thunk #u)
     (cond
      ((hash-has-key? gensym-map exp)
-      (define gensym-name-thunk
-        (hash-ref gensym-map exp))
-      (define identifier-thunk
-        (thunk
-         (lambda ()
-           (new Identifier (force gensym-name-thunk)))))
-      identifier-thunk)
+      (set! gensym-name-thunk
+            (hash-ref gensym-map exp)))
      (else
       ;; In order to prevent naming conflicts, use a thunk
       ;; to delay the task of translating a `gensym`'ed
       ;; symbol to a JavaScript identifier.
-      (define gensym-name-thunk
-        (thunk
-         (lambda ()
-           (define name
-             (make-identifier-string str options))
-           (define gensym-name name)
-           (define i 1)
-           (define regular-sym
-             (string->symbol gensym-name))
-           (while (send env
-                        has?
-                        regular-sym
-                        (js/obj :filter lang-filter))
-             (set! gensym-name
-                   (string-append name (number->string i)))
-             (set! regular-sym
-                   (string->symbol gensym-name))
-             (set! i (+ i 1)))
-           (send env set-local! regular-sym #u 'Any)
-           gensym-name)))
-      (hash-set! gensym-map exp gensym-name-thunk)
-      (define identifier-thunk
-        (thunk
-         (lambda ()
-           (new Identifier (force gensym-name-thunk)))))
-      identifier-thunk)))
+      (set! gensym-name-thunk
+            (delay
+              (define name
+                (make-identifier-string str options))
+              (define gensym-name name)
+              (define i 1)
+              (define regular-sym
+                (string->symbol gensym-name))
+              (while (send env
+                           has?
+                           regular-sym
+                           (js/obj :filter lang-filter))
+                (set! gensym-name
+                      (string-append name (number->string i)))
+                (set! regular-sym
+                      (string->symbol gensym-name))
+                (set! i (+ i 1)))
+              (send env set-local! regular-sym #u 'Any)
+              gensym-name))
+      (hash-set! gensym-map exp gensym-name-thunk)))
+    (cond
+     (quoted-symbol-option
+      (delay
+        (new CallExpression
+             (new MemberExpression
+                  (new Identifier "Symbol")
+                  (new Identifier "for"))
+             (list
+              (new Literal
+                   (force gensym-name-thunk))))))
+     (else
+      (delay
+        (new Identifier
+             (force gensym-name-thunk))))))
+   (quoted-symbol-option
+    (compile-expression
+     (datum->syntax
+      #f
+      `(string->symbol ,str))
+     env options))
    (literal-symbol-option
     (define name
       (make-identifier-string str options))
@@ -6109,17 +6220,16 @@
     (send env
           set-local!
           class-name
-          (thunk
-           (lambda ()
-             (define result #u)
-             (try
-               (set! result
-                     (interpret `(begin ,exp ,class-name)
-                                env))
-               (catch Error e
-                 ;; Do nothing
-                 ))
-             result))
+          (delay
+            (define result #u)
+            (try
+              (set! result
+                    (interpret `(begin ,exp ,class-name)
+                               env))
+              (catch Error e
+                ;; Do nothing
+                ))
+            result)
           'Any))
   (if has-name
       (new ClassDeclaration
@@ -6322,95 +6432,6 @@
         handler
         finalizer)
    options))
-
-;;; Compile an `(array-push-left! ...)` expression.
-(define (compile-array-push-left node env (options (js/obj)))
-  ;; `.unshift()` returns the length of the array,
-  ;; while `push!()` returns the list.
-  (compile-array-push-helper
-   (datum->syntax
-    #f
-    `(send ,(send node get 1)
-           unshift
-           ,(send node get 2)))
-   (datum->syntax
-    #f
-    `((lambda (arr x)
-        (send arr unshift x)
-        arr)
-      ,(send node get 1)
-      ,(send node get 2)))
-   node env options))
-
-;;; Compile an `(array-push-right! ...)` expression.
-(define (compile-array-push-right node env (options (js/obj)))
-  ;; `.push()` returns the length of the array,
-  ;; while `push-right!()` returns the list.
-  (compile-array-push-helper
-   (datum->syntax
-    #f
-    `(send ,(send node get 1)
-           push
-           ,(send node get 2)))
-   (datum->syntax
-    #f
-    `((lambda (arr x)
-        (send arr push x)
-        arr)
-      ,(send node get 1)
-      ,(send node get 2)))
-   node env options))
-
-;;; Helper function for `compile-array-push-left`
-;;; and `compile-array-push-right`.
-(define (compile-array-push-helper statement-exp
-                                   expression-exp
-                                   node
-                                   env
-                                   (options (js/obj)))
-  ;; TODO: Separate out helper function for
-  ;; `statement-exp`/`expression-exp` pattern.
-  (define expression-type
-    (oget options :expression-type))
-  (cond
-   ;; When compiled as a return statement, create a program fragment
-   ;; if the list expression is a symbol. Otherwise, reuse the
-   ;; expression logic and wrap in `(return ...)`.
-   ((eq? expression-type "return")
-    (cond
-     ((symbol? (syntax->datum (send node get 1)))
-      (new Program
-           (list
-            (compile-statement
-             statement-exp env options)
-            (compile-return-statement
-             (send node get 1)
-             env options))))
-     (else
-      (compile-syntax
-       (datum->syntax
-        #f
-        `(return ,node))
-       env options))))
-   ;; When compiled as a statement, the return
-   ;; type does not matter.
-   ((eq? expression-type "statement")
-    (compile-statement-or-return-statement
-     statement-exp env options))
-   ;; When compiled as an expression, we can use the comma
-   ;; operator if the list expression is a symbol.
-   ((symbol? (syntax->datum (send node get 1)))
-    (new SequenceExpression
-         (list
-          (compile-expression
-           statement-exp env options)
-          (compile-expression
-           (send node get 1)
-           env options))))
-   ;; In more complicated cases, we compile to
-   ;; a lambda expression.
-   (else
-    (compile-expression expression-exp env options))))
 
 ;;; Compile a `(declare ...)` expression.
 (define (compile-declare node env (options (js/obj)))
@@ -7060,6 +7081,7 @@
 ;;; [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
 ;;; [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
 (define-syntax (cond_ stx)
+  (define cond-var #u)
   (define clauses
     (~> (send stx drop 1)
         (drop-right _ 1)))
@@ -7074,13 +7096,27 @@
          x
          `(begin ,@(send x drop 1)))))
   (define (transform-clause x (acc #u))
-    (datum->syntax
-     #f
-     `(if ,(send x get 0)
-          ,(wrap-clause-body x)
-          ,@(if acc
-                (list acc)
-                '()))))
+    (cond
+     ((and (= (send x size) 3)
+           (eq? (syntax->datum (send x get 1))
+                '=>))
+      (unless cond-var
+        (set! cond-var (gensym "_cond-var")))
+      (datum->syntax
+       #f
+       `(if (set! ,cond-var ,(send x get 0))
+            (,(send x get 2) ,cond-var)
+            ,@(if acc
+                  (list acc)
+                  '()))))
+     (else
+      (datum->syntax
+       #f
+       `(if ,(send x get 0)
+            ,(wrap-clause-body x)
+            ,@(if acc
+                  (list acc)
+                  '()))))))
   (define (transform-last-clause x)
     (if (tagged-list? x 'else)
         (wrap-clause-body x)
@@ -7089,6 +7125,12 @@
     (foldr transform-clause
            (transform-last-clause last-clause)
            clauses))
+  (when cond-var
+    (set! result
+          (datum->syntax
+           #f
+           `(let (,cond-var)
+              ,result))))
   (transfer-comments stx result))
 
 ;;; Call a method on an object.
@@ -7178,6 +7220,14 @@
 
 ;;; Expand a `(js/try ...)` expression.
 (define-macro (js/try_ &whole exp &environment env)
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(js/statement-or-expression ...)` expression.
+(define-macro (js/statement-or-expression_ &whole exp &environment env)
+  ;; TODO: `js/statement`, `js/expression`.
   (compile-sexp
    exp
    env
@@ -8413,19 +8463,18 @@
         (send module-env
               set-local!
               name
-              (thunk
-               (lambda ()
-                 (define result #u)
-                 (try
-                   (define begin-exp
-                     `(begin ,exp ,name))
-                   (set! result
-                         (interpret begin-exp
-                                    module-interpretation-env))
-                   (catch Error e
-                     ;; Do nothing
-                     ))
-                 result))
+              (delay
+                (define result #u)
+                (try
+                  (define begin-exp
+                    `(begin ,exp ,name))
+                  (set! result
+                        (interpret begin-exp
+                                   module-interpretation-env))
+                  (catch Error e
+                    ;; Do nothing
+                    ))
+                result)
               typ))))
     module-env)
 
@@ -8460,17 +8509,16 @@
     (send module-map
           set
           key
-          (thunk
-           (lambda ()
-             (define val
-               (send module-expression-map get key))
-             (define m
-               (if (is-a? val Module)
-                   val
-                   (module-expression->module-object
-                    val env)))
-             (send m set-module-map module-map)
-             m))))
+          (delay
+            (define val
+              (send module-expression-map get key))
+            (define m
+              (if (is-a? val Module)
+                  val
+                  (module-expression->module-object
+                   val env)))
+            (send m set-module-map module-map)
+            m)))
   module-map)
 
 ;;; Convert a `(module ...)` expression to a
@@ -8614,9 +8662,8 @@
 (define (set-type node typ)
   (cond
    ((thunk? node)
-    (thunk
-     (lambda ()
-       (set-type (force node) typ))))
+    (delay
+      (set-type (force node) typ)))
    (else
     (send node set-type typ)
     node)))
@@ -8986,7 +9033,6 @@
          (js/function? ,js/function?_ (-> Any * Any))
          (js/get ,js/get_ (-> Any * Any))
          (js/in ,js/in_ (-> Any * Any))
-         (js/iife ,js/iife_ (-> Any * Any))
          (js/instance-of ,js/instance-of?_ (-> Any * Any))
          (js/instance-of? ,js/instance-of?_ (-> Any * Any))
          (js/instanceof ,js/instance-of?_ (-> Any * Any))
@@ -9286,17 +9332,20 @@
          (js/for-of ,js/for-of_ (macro-> Any * Any))
          (js/function ,js/function_ (macro-> Any * Any))
          (js/if ,js/if_ (macro-> Any * Any))
+         (js/iife ,js/iife_ (macro-> Any * Any))
          (js/op ,js/op_ (macro-> Any * Any))
          (js/op/apply ,js/op/apply_ (macro-> Any * Any))
          (js/operator ,js/op_ (macro-> Any * Any))
+         (js/rename ,js/rename_ (macro-> Any * Any))
          (js/sequence ,js/sequence_ (macro-> Any * Any))
+         (js/statement-or-expression ,js/statement-or-expression_ (macro-> Any * Any))
          (js/switch ,js/switch_ (macro-> Any * Any))
          (js/try ,js/try_ (macro-> Any * Any))
          (js/while ,js/while_ (macro-> Any * Any))
-         (λ ,lambda_ (macro-> Any * Any))
          (lambda ,lambda_ (macro-> Any * Any))
          (let ,let-star_ (macro-> Any * Any))
          (let* ,let-star_ (macro-> Any * Any))
+         (λ ,lambda_ (macro-> Any * Any))
          (let*-values ,let-values_ (macro-> Any * Any))
          (let-env ,let-env_ (macro-> Any * Any))
          (let-fields ,let-fields_ (macro-> Any * Any))

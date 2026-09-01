@@ -9,9 +9,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; `s`
- > (describe "s")
- _
+ :describe "s"
  > (s "foo")
  'foo
  > (js/tag s "foo")
@@ -21,8 +19,6 @@
  > (js/tag s "${'foo'}")
  'foo
 
- ;; `symbolp`
- > (describe "symbolp")
- _
+ :describe "symbolp"
  > (symbolp_ 'foo)
  #t)

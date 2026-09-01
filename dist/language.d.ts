@@ -72,7 +72,7 @@ declare namespace compileModuleMap {
  */
 declare function compileFilesX(files: any, options?: any): any;
 declare namespace compileFilesX {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | symbol[])[])[])[])[];
 }
 /**
  * Compile a file.
@@ -474,7 +474,7 @@ declare namespace lambda_ {
  */
 declare function cond_(stx: any): any;
 declare namespace cond_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[])[])[])[];
     var ftype: symbol[];
 }
 /**
@@ -800,7 +800,7 @@ declare class Module {
  */
 declare function makeModuleMap(moduleExpressionMap: any, env: any): any;
 declare namespace makeModuleMap {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
 }
 /**
  * Convert a `(module ...)` expression to a

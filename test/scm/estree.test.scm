@@ -9,9 +9,7 @@
 (declare-macro test-macro)
 
 (test-macro
- ;; ESTree
- > (describe "ESTree")
- _
+ :describe "ESTree"
  xit> (it "const hello: string = 'world';"
           (let* ((code "const hello: string = 'world';")
                  (ast (parse code (js/obj :loc #t

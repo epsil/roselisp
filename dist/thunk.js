@@ -19,7 +19,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.thunkishp = exports.thunkablep = exports.thunkp = exports.thunk = exports.force = exports.ThunkedMap = exports.Thunk = exports.delay = void 0;
+exports.thunkishp = exports.thunkablep = exports.thunkp = exports.thunk = exports.force = exports.delay = exports.ThunkedMap = exports.Thunk = void 0;
 /**
  * Thunk class.
  *
@@ -76,9 +76,18 @@ exports.Thunk = Thunk;
 function thunk(f) {
     return new Thunk(f);
 }
-exports.delay = thunk;
 exports.thunk = thunk;
 thunk.fsource = [Symbol.for('define'), [Symbol.for('thunk'), Symbol.for('f')], [Symbol.for('new'), Symbol.for('Thunk'), Symbol.for('f')]];
+/**
+ * Delay a piece of code with a thunk.
+ */
+function delay(exp, env) {
+    const body = exp.slice(1);
+    return [Symbol.for('thunk'), [Symbol.for('lambda'), [], ...body]];
+}
+exports.delay = delay;
+delay.fsource = [Symbol.for('define'), [Symbol.for('delay'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('thunk'), [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+delay.ftype = 'macro';
 /**
  * Whether something is a thunk.
  */

@@ -60,6 +60,10 @@
 (define (thunk f)
   (new Thunk f))
 
+;;; Delay a piece of code with a thunk.
+(define-macro (delay &rest body)
+  `(thunk (lambda () ,@body)))
+
 ;;; Whether something is a thunk.
 (define (thunk? x)
   (is-a? x Thunk))
@@ -97,9 +101,10 @@
       val))))
 
 (provide
-  (rename-out (thunk delay))
+  ;; (rename-out (thunk delay))
   Thunk
   ThunkedMap
+  delay
   force
   thunk
   thunk?

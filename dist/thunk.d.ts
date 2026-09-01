@@ -61,6 +61,14 @@ declare namespace thunk {
     var fsource: (symbol | symbol[])[];
 }
 /**
+ * Delay a piece of code with a thunk.
+ */
+declare function delay(exp: any, env: any): any;
+declare namespace delay {
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+    var ftype: string;
+}
+/**
  * Whether something is a thunk.
  */
 declare function thunkp(x: any): any;
@@ -99,4 +107,4 @@ declare namespace force {
 declare class ThunkedMap extends Map {
     get(x: any): any;
 }
-export { thunk as delay, Thunk, ThunkedMap, force, thunk, thunkp, thunkablep, thunkishp };
+export { Thunk, ThunkedMap, delay, force, thunk, thunkp, thunkablep, thunkishp };

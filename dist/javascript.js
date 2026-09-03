@@ -18,8 +18,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsStrictlyEqualP_ = exports.jsSlice_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReturn_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjSpread_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsKeys_ = exports.jsInstanceOfP_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFindIndex_ = exports.jsEval_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
-exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeOf_ = exports.jsTaggedTemplate_ = exports.jsStringP_ = exports.jsStringObjectP_ = exports.jsStringLiteralP_ = exports.jsStringConcat_ = void 0;
+exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPromise_ = exports.jsPromiseP_ = exports.jsPlus_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsObjectTypeP_ = exports.jsObj_ = exports.jsObjP_ = exports.jsObjSpread_ = exports.jsObjAppend_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNew_ = exports.jsNanP_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsKeys_ = exports.jsInstanceof_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsGet_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFindIndex_ = exports.jsEval_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrowP_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = exports.jsTypeOf_ = exports.jsInstanceOfP_ = void 0;
+exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeof_ = exports.jsToString_ = exports.jsTaggedTemplate_ = exports.jsStringP_ = exports.jsStringObjectP_ = exports.jsStringLiteralP_ = exports.jsStringConcat_ = exports.jsStrictlyEqualP_ = exports.jsSource_ = exports.jsSlice_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReturn_ = void 0;
 /**
  * JavaScript's [`eval` function][js:eval].
  *
@@ -77,11 +77,11 @@ jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js/same-value-ze
 /**
  * Whether something is JavaScript's `null`.
  */
-function jsNullP_(obj) {
-    return obj === null;
+function jsNullP_(x) {
+    return x === null;
 }
 exports.jsNullP_ = jsNullP_;
-jsNullP_.fsource = [Symbol.for('define'), [Symbol.for('js/null?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), null]];
+jsNullP_.fsource = [Symbol.for('define'), [Symbol.for('js/null?_'), Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('x'), null]];
 /**
  * Whether a number is JavaScript's [NaN][js:nan].
  *
@@ -93,55 +93,78 @@ function jsNanP_(x, y) {
 exports.jsNanP_ = jsNanP_;
 jsNanP_.fsource = [Symbol.for('define'), [Symbol.for('js/nan?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isNaN'), Symbol.for('x')]];
 /**
- * Whether `obj` is a JavaScript function.
+ * Whether `x` is a JavaScript function.
  */
-function jsFunctionP_(obj) {
+function jsFunctionP_(x) {
     // In JavaScript, every function is a
     // [`Function` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function).
-    return obj instanceof Function;
+    return x instanceof Function;
 }
 exports.jsFunctionP_ = jsFunctionP_;
-jsFunctionP_.fsource = [Symbol.for('define'), [Symbol.for('js/function?_'), Symbol.for('obj')], [Symbol.for('js/function-object?'), Symbol.for('obj')]];
+jsFunctionP_.fsource = [Symbol.for('define'), [Symbol.for('js/function?_'), Symbol.for('x')], [Symbol.for('js/function-object?'), Symbol.for('x')]];
 /**
  * Whether `obj` is a [`Function`][js:Function] object.
  *
  * [js:Function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
  */
-function jsFunctionObjectP_(obj) {
-    return obj instanceof Function;
+function jsFunctionObjectP_(x) {
+    return x instanceof Function;
 }
 exports.jsFunctionObjectP_ = jsFunctionObjectP_;
-jsFunctionObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-object?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('Function')]];
+jsFunctionObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-object?_'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Function')]];
 /**
  * Whether `obj` is of type `"function"`.
  */
-function jsFunctionTypeP_(obj) {
-    return typeof obj === 'function';
+function jsFunctionTypeP_(x) {
+    return typeof x === 'function';
 }
 exports.jsFunctionTypeP_ = jsFunctionTypeP_;
-jsFunctionTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-type?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'function']];
+jsFunctionTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-type?_'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'function']];
+/**
+ * Whether `obj` is an arrow function.
+ */
+function jsArrowP_(x) {
+    if ((x instanceof Function) && (x + '').match(new RegExp('^(\\([^)]*\\)|[^=]*) *=>'))) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+exports.jsArrowP_ = jsArrowP_;
+jsArrowP_.fsource = [Symbol.for('define'), [Symbol.for('js/arrow?_'), Symbol.for('x')], [Symbol.for('true?'), [Symbol.for('and'), [Symbol.for('js/function?'), Symbol.for('x')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^(\\([^)]*\\)|[^=]*) *=>'], [Symbol.for('js/source'), Symbol.for('x')]]]]];
+/**
+ * Returns the JavaScript source of a function.
+ */
+function jsSource_(f) {
+    return f + '';
+}
+exports.jsSource_ = jsSource_;
+jsSource_.fsource = [Symbol.for('define'), [Symbol.for('js/source_'), Symbol.for('f')], [Symbol.for('js/to-string'), Symbol.for('f')]];
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
  * as a function.
  *
  * [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
  */
-function jsTypeOf_(x) {
+function jsTypeof_(x) {
     return typeof x;
 }
-exports.jsTypeOf_ = jsTypeOf_;
-jsTypeOf_.fsource = [Symbol.for('define'), [Symbol.for('js/type-of_'), Symbol.for('x')], [Symbol.for('js/type-of'), Symbol.for('x')]];
+exports.jsTypeOf_ = jsTypeof_;
+exports.jsTypeof_ = jsTypeof_;
+jsTypeof_.fsource = [Symbol.for('define'), [Symbol.for('js/typeof_'), Symbol.for('x')], [Symbol.for('js/op'), Symbol.for('typeof'), Symbol.for('x')]];
 /**
  * JavaScript's [`instanceof`][js:instanceof] operator,
  * as a function.
  *
  * [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
  */
-function jsInstanceOfP_(x, y) {
+function jsInstanceof_(x, y) {
     return x instanceof y;
 }
-exports.jsInstanceOfP_ = jsInstanceOfP_;
-jsInstanceOfP_.fsource = [Symbol.for('define'), [Symbol.for('js/instance-of?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/instance-of?'), Symbol.for('x'), Symbol.for('y')]];
+exports.jsInstanceOfP_ = jsInstanceof_;
+exports.jsInstanceof_ = jsInstanceof_;
+jsInstanceof_.fsource = [Symbol.for('define'), [Symbol.for('js/instanceof_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/op'), Symbol.for('instanceof'), Symbol.for('x'), Symbol.for('y')]];
 /**
  * JavaScript's [`in`][js:in] operator,
  * as a function.
@@ -288,6 +311,7 @@ function jsDelete_(x) {
     // This function does nothing by itself, but a call to it
     // will be compiled to a `UnaryExpression` ESTree node
     // invoking `delete`.
+    // TODO: Define as a fexpr instead.
     return undefined;
 }
 exports.jsDelete_ = jsDelete_;
@@ -403,6 +427,14 @@ function jsStringConcat_(...args) {
 }
 exports.jsStringConcat_ = jsStringConcat_;
 jsStringConcat_.fsource = [Symbol.for('define'), [Symbol.for('js/string-concat_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), '']], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/op'), Symbol.for('+'), Symbol.for('result'), Symbol.for('x')]]], Symbol.for('result')]];
+/**
+ * Convert `x` to a string.
+ */
+function jsToString_(x) {
+    return x + '';
+}
+exports.jsToString_ = jsToString_;
+jsToString_.fsource = [Symbol.for('define'), [Symbol.for('js/to-string_'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('x'), '']];
 /**
  * Create a JavaScript regular expression.
  */
@@ -646,3 +678,19 @@ function jsUnsignedBitwiseShiftRight_(...args) {
 }
 exports.jsUnsignedBitwiseShiftRight_ = jsUnsignedBitwiseShiftRight_;
 jsUnsignedBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/unsigned-bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('>>>'), Symbol.for('args')]];
+/**
+ * Create a JavaScript `Promise`.
+ */
+function jsPromise_(f) {
+    return new Promise(f);
+}
+exports.jsPromise_ = jsPromise_;
+jsPromise_.fsource = [Symbol.for('define'), [Symbol.for('js/promise_'), Symbol.for('f')], [Symbol.for('new'), Symbol.for('Promise'), Symbol.for('f')]];
+/**
+ * Whether something is a JavaScript `Promise`.
+ */
+function jsPromiseP_(x) {
+    return x instanceof Promise;
+}
+exports.jsPromiseP_ = jsPromiseP_;
+jsPromiseP_.fsource = [Symbol.for('define'), [Symbol.for('js/promise?_'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Promise')]];

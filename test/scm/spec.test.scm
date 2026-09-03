@@ -329,6 +329,27 @@ let x2 = 1;"
  "let foo = test;
 
 let bar = test1;"
+ > (compile `(define x
+               ,(gensym "x")))
+ "let x = x1;"
+ > (compile `(define x
+               ',(gensym "x")))
+ "let x = Symbol.for('x1');"
+ > (compile `(let ((x ,(gensym "x")))
+               (foo)))
+ "let x = x1;
+
+foo();"
+ > (compile `(let ((x (quote ,(gensym "x"))))
+               (foo)))
+ "let x = Symbol.for('x1');
+
+foo();"
+ > (compile `(let ((x ',(gensym "x")))
+               (foo)))
+ "let x = Symbol.for('x1');
+
+foo();"
 
  :describe "Keywords"
  > :foo
@@ -467,15 +488,15 @@ x[length];"
  > (compile '(cons "1" "2"))
  "['1', Symbol.for('.'), '2'];"
  > (compile '(cons x (list y)))
- "[x, ...[y]];"
+ "[x, y];"
  > (compile '(cons x '(y)))
- "[x, ...[Symbol.for('y')]];"
+ "[x, Symbol.for('y')];"
  > (compile '(cons x `(y)))
- "[x, ...[Symbol.for('y')]];"
+ "[x, Symbol.for('y')];"
  > (compile '(cons x `(,y)))
- "[x, ...[y]];"
+ "[x, y];"
  > (compile '(cons x `(,@y)))
- "[x, ...[...y]];"
+ "[x, ...y];"
  > (compile '(cons x y))
  "[x, ...(Array.isArray(y) ? y : [Symbol.for('.'), y])];"
  > (compile '(cons (x) y))
@@ -1465,7 +1486,7 @@ rest(x);"
  > `(1 ```,,@,,@(list (+ 1 2)) 4)
  '(1 ```,,@,3 4)
  > ``(,,@(list 1 2 3))
- '`((unquote 1 2 3))
+ '`((unquote 1) (unquote 2) (unquote 3))
  > (let ((lst '(foo bar baz)))
      ``(,,@lst))
  '`((unquote foo bar baz))
@@ -1477,6 +1498,10 @@ rest(x);"
  "[1];"
  > (compile '(quasiquote ((1))))
  "[[1]];"
+ > (compile '(quasiquote (1 (unquote 2))))
+ "[1, 2];"
+ > (compile '(quasiquote (1 (unquote 2 3))))
+ "[1, 2, 3];"
  > (compile '(quasiquote (1 . 2)))
  "[1, Symbol.for('.'), 2];"
  > (compile '(quasiquote ((1 . 2))))
@@ -1487,17 +1512,26 @@ rest(x);"
  "[1];"
  > (compile '(quasiquote ((,1))))
  "[[1]];"
+ > (compile '(quasiquote (1 (unquote-splicing (list 2)))))
+ "[1, 2];"
  > (compile '(quasiquote (,@(list 1 2 3))))
- "[...[1, 2, 3]];"
+ "[1, 2, 3];"
  > (compile '(quasiquote ((1 . (unquote 2)))))
  "[[1, Symbol.for('.'), 2]];"
  > (compile '(quasiquote ((1 . (unquote 2))
                           (3 . (unquote 4)))))
  "[[1, Symbol.for('.'), 2], [3, Symbol.for('.'), 4]];"
- > (compile '(define test-map-1
-               `(("foo" . ,test-fn)
-                 ("bar" . ,test-fn))))
- "let testMap1 = [['foo', Symbol.for('.'), testFn], ['bar', Symbol.for('.'), testFn]];"
+ > (compile '(quasiquote (1 (unquote-splicing (list 2) (list 3)))))
+ "[1, 2, 3];"
+ > (compile '(quasiquote ((unquote-splicing x))))
+ "[...x];"
+ > (compile '(quasiquote ((unquote-splicing x)
+                          (unquote-splicing y))))
+ "[...x, ...y];"
+ > (compile '(quasiquote (quasiquote (1 (unquote (unquote-splicing (list 2)))))))
+ "[Symbol.for('quasiquote'), [1, [Symbol.for('unquote'), 2]]];"
+ > (compile '(quasiquote (quasiquote (1 (unquote (unquote-splicing (list 2 3)))))))
+ "[Symbol.for('quasiquote'), [1, [Symbol.for('unquote'), 2], [Symbol.for('unquote'), 3]]];"
  > (compile '(quasiquote (x y (unquote z))))
  "[Symbol.for('x'), Symbol.for('y'), z];"
  > (compile '(quasiquote (x y (unquote-splicing z))))
@@ -1510,11 +1544,10 @@ rest(x);"
  "[Symbol.for('x'), Symbol.for('y'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('z')]]]];"
  > (compile '(quasiquote (x y (quasiquote ((unquote-splicing z))))))
  "[Symbol.for('x'), Symbol.for('y'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('z')]]]];"
- > (compile '(quasiquote ((unquote-splicing x))))
- "[...x];"
- > (compile '(quasiquote ((unquote-splicing x)
-                          (unquote-splicing y))))
- "[...x, ...y];"
+ > (compile '(define test-map-1
+               `(("foo" . ,test-fn)
+                 ("bar" . ,test-fn))))
+ "let testMap1 = [['foo', Symbol.for('.'), testFn], ['bar', Symbol.for('.'), testFn]];"
  > (compile '(set! let-exp
                    (quasiquote
                     (let (((unquote arg-list)
@@ -1820,6 +1853,30 @@ let K = curryN(2, function (x, y) {
                (class Bar)))
  "class Foo extends Bar {
 }"
+
+ :describe "js/var"
+ > (compile '(js/var x))
+ "var x;"
+ > (compile '(js/var x 0))
+ "var x = 0;"
+ > (compile '(js/var x 0 y 0))
+ "var x = 0, y = 0;"
+
+ :describe "js/let"
+ > (compile '(js/let x))
+ "let x;"
+ > (compile '(js/let x 0))
+ "let x = 0;"
+ > (compile '(js/let x 0 y 0))
+ "let x = 0, y = 0;"
+
+ :describe "js/const"
+ > (compile '(js/const x))
+ "const x;"
+ > (compile '(js/const x 0))
+ "const x = 0;"
+ > (compile '(js/const x 0 y 0))
+ "const x = 0, y = 0;"
 
  :describe "define-syntax"
  > (compile '(module m scheme
@@ -2322,6 +2379,41 @@ prop;"
   return 0;
 }"
 
+ :describe "this"
+ > (compile '(lambda (this)
+               #u))
+ "function () {
+  return undefined;
+};"
+ > (compile '(lambda (this)
+               #u)
+            :to 'typescript)
+ "function (this: any): any {
+  return undefined;
+};"
+ > (compile '(lambda (this arg)
+               arg))
+ "function (arg) {
+  return arg;
+};"
+ > (compile '(lambda (this arg)
+               arg)
+            :to 'typescript)
+ "function (this: any, arg: any): any {
+  return arg;
+};"
+ > (compile '(lambda (this . args)
+               args))
+ "function (...args) {
+  return args;
+};"
+ > (compile '(lambda (this . args)
+               args)
+            :to 'typescript)
+ "function (this: any, ...args: any[]): any {
+  return args;
+};"
+
  :describe "js/arrow"
  > (compile '(js/arrow ()
                0))
@@ -2345,6 +2437,18 @@ prop;"
                        0)
             :to 'typescript)
  "let foo: any = (): number => {
+  return 0;
+};"
+
+ :describe "js/arrow?"
+ > (js/arrow? (js/arrow (x) x))
+ #t
+ > (js/arrow? (lambda (x) x))
+ #f
+
+ :describe "js/=>"
+ > (compile '(js/=> () 0))
+ "() => {
   return 0;
 };"
 
@@ -2389,37 +2493,65 @@ let y = 2;
 
 return x + y;"
 
- :describe "this"
- > (compile '(lambda (this arg)
-               arg)
-            :to 'typescript)
- "function (this: any, arg: any): any {
-  return arg;
-};"
- > (compile '(lambda (this . args)
-               args)
-            :to 'typescript)
- "function (this: any, ...args: any[]): any {
-  return args;
-};"
- > (compile '(lambda (this arg)
-               arg)
-            :to 'typescript)
- "function (this: any, arg: any): any {
-  return arg;
-};"
- > (compile '(lambda (this . args)
-               args)
-            :to 'typescript)
- "function (this: any, ...args: any[]): any {
-  return args;
-};"
+ :describe "thunk"
+ > (procedure? (thunk 1))
+ #t
+ > (thunk? (thunk 1))
+ #t
+ > (arity (thunk 1))
+ 0
+ > ((thunk 1))
+ 1
+ > ((thunk 1 2))
+ 2
+ > ((thunk 1 2 3))
+ 3
 
- :describe "js/=>"
- > (compile '(js/=> () 0))
- "() => {
-  return 0;
-};"
+ :describe "delay"
+ > (force (delay 1))
+ 1
+ > (force (delay 1 2))
+ 2
+ > (force (delay 1 2 3))
+ 3
+
+ :describe "lazy"
+ > (force (lazy 1))
+ 1
+ > (force (lazy 1 2))
+ 2
+ > (force (lazy 1 2 3))
+ 3
+ > (force (lazy (delay 1)))
+ 1
+ > (force (lazy (lazy 1)))
+ 1
+ > (force (lazy (lazy (lazy 1))))
+ 1
+
+ :describe "promise?"
+ > (promise? (delay 1))
+ #t
+ > (promise? (lazy 1))
+ #t
+
+ :describe "promise-forced?"
+ > (promise-forced? (delay 1))
+ #f
+ > (let ((p (delay 1)))
+     (force p)
+     (promise-forced? p))
+ #t
+
+ :describe "arity"
+ > (arity (lambda () 1))
+ 0
+ > (arity (lambda (x) x))
+ 1
+ > (arity (lambda (x y) x))
+ 2
+ > (compile '(arity f))
+ "f.length;"
 
  :describe "funcall"
  > (compile '(funcall f))
@@ -3690,6 +3822,47 @@ for (let i: any = _start; i < _end; i++) {
  "for (i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {
   foo();
 }"
+ > (compile '(js/for ((js/define i 0 j 0)
+                      (and (< i 10) (< j 10))
+                      (begin (set! i (+ i 1)) (set! j (+ j 1))))
+                     (foo)))
+ "for (let i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {
+  foo();
+}"
+ > (compile '(for ((i (range 0 10))
+                   (j (range 0 10)))
+               (foo)))
+ "for (let i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {
+  foo();
+}"
+ > (compile '(for ((x foo)
+                   (y bar))
+               (foo)))
+ "let _end = foo.length;
+
+let _end1 = bar.length;
+
+for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
+  let x = foo[i];
+  let y = bar[j];
+  foo();
+}"
+ > (compile '(for ((x (foo))
+                   (y (bar)))
+               (foo)))
+ "let _val = foo();
+
+let _end = _val.length;
+
+let _val1 = bar();
+
+let _end1 = _val1.length;
+
+for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
+  let x = _val[i];
+  let y = _val1[j];
+  foo();
+}"
 
  :describe "js/for-in"
  > (compile '(js/for-in ((i obj))
@@ -3704,6 +3877,14 @@ for (let i: any = _start; i < _end; i++) {
  "for (let i of lst) {
   foo();
 }"
+
+ :describe "for-each"
+ > (compile '(for-each (lambda (x)
+                         x)
+                       lst))
+ "lst.forEach(function (x) {
+  return x;
+});"
 
  :describe "break"
  > ((lambda ()

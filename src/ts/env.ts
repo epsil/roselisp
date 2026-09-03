@@ -22,9 +22,7 @@ import {
 } from './lookup';
 
 import {
-  force,
-  Thunk,
-  thunkp
+  InternalPromise
 } from './thunk';
 
 /**
@@ -551,9 +549,11 @@ class TypedEnvironment extends Environment {
 /**
  * Thunked environment.
  *
- * A typed environment storing thunks that are forced upon request.
+ * A typed environment storing promises that are forced upon request.
+ * The promises must be instances of the class `InternalPromise`;
+ * regular promises created with `delay` are not forced.
  */
-class ThunkedEnvironment extends TypedEnvironment {
+class PromiseEnvironment extends TypedEnvironment {
   /**
    * Get the binding defined by the current environment frame,
    * if any, as a tuple `(binding found)`.
@@ -563,8 +563,8 @@ class ThunkedEnvironment extends TypedEnvironment {
     let [binding, found]: any[] = tuple;
     if (found) {
       let [val, typ]: any[] = binding;
-      if (thunkp(val)) {
-        val = force(val);
+      if (val instanceof InternalPromise) {
+        val = val.force();
         this.setLocalX(key, val, typ);
         binding = [val, typ];
         tuple = [binding, found];
@@ -590,7 +590,7 @@ class ThunkedEnvironment extends TypedEnvironment {
       };
       for (let frame of this.getFrames(inheritedOptions)) {
         if (frame.hasLocalP(key, options)) {
-          return (frame instanceof ThunkedEnvironment) ? frame.getUnforcedLocalTuple(key, options) : frame.getLocalTuple(key, options);
+          return (frame instanceof PromiseEnvironment) ? frame.getUnforcedLocalTuple(key, options) : frame.getLocalTuple(key, options);
         }
       }
       return [notFound, false];
@@ -639,30 +639,30 @@ class ThunkedEnvironment extends TypedEnvironment {
   }
 
   /**
-   * Whether `key` is bound to a thunk.
+   * Whether `key` is bound to a promise.
    */
-  hasThunkP(key: any, options: any = {}): any {
+  hasPromiseP(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
     let tuple: any = this.getUnforcedTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
       let [val]: any[] = binding;
-      return thunkp(val);
+      return val instanceof InternalPromise;
     } else {
       return false;
     }
   }
 
   /**
-   * Whether `key` is locally bound to a thunk.
+   * Whether `key` is locally bound to a promise.
    */
-  hasLocalThunkP(key: any, options: any = {}): any {
+  hasLocalPromiseP(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
     let tuple: any = this.getUnforcedLocalTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
       let [val]: any[] = binding;
-      return thunkp(val);
+      return val instanceof InternalPromise;
     } else {
       return false;
     }
@@ -706,7 +706,7 @@ class ThunkedEnvironment extends TypedEnvironment {
  *
  * A typed, thunked environment.
  */
-class LispEnvironment extends ThunkedEnvironment {
+class LispEnvironment extends PromiseEnvironment {
 }
 
 /**
@@ -1231,6 +1231,7 @@ function prefixBindings(prefix: any, bindings: any): any {
 prefixBindings.fsource = [Symbol.for('define'), [Symbol.for('prefix-bindings'), Symbol.for('prefix'), Symbol.for('bindings')], [Symbol.for('define'), [Symbol.for('prefix-binding'), Symbol.for('binding')], [Symbol.for('~>'), [Symbol.for('first'), Symbol.for('binding')], [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('string-append'), Symbol.for('prefix'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('_')], [Symbol.for('rest'), Symbol.for('binding')]]]], [Symbol.for('map'), Symbol.for('prefix-binding'), Symbol.for('bindings')]];
 
 export {
+  PromiseEnvironment as ThunkedEnvironment,
   currentEnvironment_ as currentEnvironment,
   withEnvironmentF as withCurrentEnvironment,
   withEnvironmentF as withEnvironment,
@@ -1241,7 +1242,7 @@ export {
   EnvironmentStack,
   JavaScriptEnvironment,
   LispEnvironment,
-  ThunkedEnvironment,
+  PromiseEnvironment,
   TypedEnvironment,
   currentEnvironmentPointer,
   currentEnvironment_,

@@ -66,7 +66,7 @@ declare namespace jsSameValueZeroP_ {
 /**
  * Whether something is JavaScript's `null`.
  */
-declare function jsNullP_(obj: any): any;
+declare function jsNullP_(x: any): any;
 declare namespace jsNullP_ {
     var fsource: (symbol | (symbol | null)[])[];
 }
@@ -80,9 +80,9 @@ declare namespace jsNanP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
- * Whether `obj` is a JavaScript function.
+ * Whether `x` is a JavaScript function.
  */
-declare function jsFunctionP_(obj: any): any;
+declare function jsFunctionP_(x: any): any;
 declare namespace jsFunctionP_ {
     var fsource: (symbol | symbol[])[];
 }
@@ -91,16 +91,30 @@ declare namespace jsFunctionP_ {
  *
  * [js:Function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
  */
-declare function jsFunctionObjectP_(obj: any): any;
+declare function jsFunctionObjectP_(x: any): any;
 declare namespace jsFunctionObjectP_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
  * Whether `obj` is of type `"function"`.
  */
-declare function jsFunctionTypeP_(obj: any): any;
+declare function jsFunctionTypeP_(x: any): any;
 declare namespace jsFunctionTypeP_ {
     var fsource: (symbol | (string | symbol | symbol[])[])[];
+}
+/**
+ * Whether `obj` is an arrow function.
+ */
+declare function jsArrowP_(x: any): any;
+declare namespace jsArrowP_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[];
+}
+/**
+ * Returns the JavaScript source of a function.
+ */
+declare function jsSource_(f: any): any;
+declare namespace jsSource_ {
+    var fsource: (symbol | symbol[])[];
 }
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
@@ -108,8 +122,8 @@ declare namespace jsFunctionTypeP_ {
  *
  * [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
  */
-declare function jsTypeOf_(x: any): any;
-declare namespace jsTypeOf_ {
+declare function jsTypeof_(x: any): any;
+declare namespace jsTypeof_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -118,8 +132,8 @@ declare namespace jsTypeOf_ {
  *
  * [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
  */
-declare function jsInstanceOfP_(x: any, y: any): any;
-declare namespace jsInstanceOfP_ {
+declare function jsInstanceof_(x: any, y: any): any;
+declare namespace jsInstanceof_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -321,6 +335,13 @@ declare namespace jsStringConcat_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[][])[])[];
 }
 /**
+ * Convert `x` to a string.
+ */
+declare function jsToString_(x: any): any;
+declare namespace jsToString_ {
+    var fsource: (symbol | (string | symbol)[])[];
+}
+/**
  * Create a JavaScript regular expression.
  */
 declare function jsRegexp_(input: any, flags?: any): any;
@@ -477,4 +498,18 @@ declare function jsUnsignedBitwiseShiftRight_(...args: any[]): any;
 declare namespace jsUnsignedBitwiseShiftRight_ {
     var fsource: (symbol | symbol[])[];
 }
-export { jsAbs_, jsAnd_, jsArrayP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceOfP_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsTypeOf_, jsUnsignedBitwiseShiftRight_, jsYield_ };
+/**
+ * Create a JavaScript `Promise`.
+ */
+declare function jsPromise_(f: any): any;
+declare namespace jsPromise_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Whether something is a JavaScript `Promise`.
+ */
+declare function jsPromiseP_(x: any): any;
+declare namespace jsPromiseP_ {
+    var fsource: (symbol | symbol[])[];
+}
+export { jsInstanceof_ as jsInstanceOfP_, jsTypeof_ as jsTypeOf_, jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };

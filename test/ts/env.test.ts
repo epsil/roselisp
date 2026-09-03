@@ -5,13 +5,13 @@ import {
   EnvironmentStack,
   JavaScriptEnvironment,
   LispEnvironment,
-  ThunkedEnvironment,
+  PromiseEnvironment,
   TypedEnvironment,
   extendEnvironment
 } from '../../src/ts/env';
 
 import {
-  thunk
+  InternalPromise
 } from '../../src/ts/thunk';
 
 import {
@@ -1252,28 +1252,67 @@ describe('EnvironmentComposition', function (): any {
   });
 });
 
-describe('ThunkedEnvironment', function (): any {
+describe('PromiseEnvironment', function (): any {
   it('get', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]]);
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]]);
       return env.get(Symbol.for('foo'));
-    })(), 'bar');
+    })(), 'foo');
   });
   it('get, nonexistant binding', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]]);
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]]);
       return env.get(Symbol.for('quux'));
     })(), undefined);
   });
   it('get, nonexistant binding, notFound option', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]]);
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]]);
       return env.get(Symbol.for('quux'), {
         notFound: false
       });
@@ -1281,9 +1320,22 @@ describe('ThunkedEnvironment', function (): any {
   });
   it('get, filter option', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]]);
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]]);
       function filter(x: any): any {
         return false;
       }
@@ -1294,11 +1346,37 @@ describe('ThunkedEnvironment', function (): any {
   });
   it('get, parent environment, filter option', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]], new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'baz';
-      }), Symbol.for('Any')]]));
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF1: any = function (): any {
+          if (promiseF1.forced) {
+            return promiseF1.value;
+          } else {
+            promiseF1.forced = undefined;
+            promiseF1.value = 'bar';
+            promiseF1.forced = true;
+            return promiseF1.value;
+          }
+        };
+        promiseF1.value = undefined as any;
+        promiseF1.forced = false as any;
+        promiseF1.ftype = 'thunk';
+        return promiseF1;
+      })()), Symbol.for('Any')]]));
       function filter(x: any): any {
         return x !== env;
       }
@@ -1307,50 +1385,154 @@ describe('ThunkedEnvironment', function (): any {
       });
     })(), undefined);
   });
-  it('has-thunk?, true', function (): any {
+  it('has-promise?, true', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'foo';
-      }), Symbol.for('Any')]]);
-      return env.hasThunkP(Symbol.for('foo'));
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]]);
+      return env.hasPromiseP(Symbol.for('foo'));
     })(), true);
   });
-  it('has-thunk?, parent environment, true', function (): any {
+  it('has-promise?, parent environment, true', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'foo';
-      }), Symbol.for('Any')]], new ThunkedEnvironment([[Symbol.for('bar'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]]));
-      return env.hasThunkP(Symbol.for('bar'));
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('bar'), new InternalPromise(((): any => {
+        const promiseF1: any = function (): any {
+          if (promiseF1.forced) {
+            return promiseF1.value;
+          } else {
+            promiseF1.forced = undefined;
+            promiseF1.value = 'bar';
+            promiseF1.forced = true;
+            return promiseF1.value;
+          }
+        };
+        promiseF1.value = undefined as any;
+        promiseF1.forced = false as any;
+        promiseF1.ftype = 'thunk';
+        return promiseF1;
+      })()), Symbol.for('Any')]]));
+      return env.hasPromiseP(Symbol.for('bar'));
     })(), true);
   });
-  it('has-thunk?, false', function (): any {
+  it('has-promise?, false', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'foo';
-      }), Symbol.for('Any')], [Symbol.for('bar'), 'bar', Symbol.for('Any')]]);
-      return env.hasThunkP(Symbol.for('bar'));
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')], [Symbol.for('bar'), 'bar', Symbol.for('Any')]]);
+      return env.hasPromiseP(Symbol.for('bar'));
     })(), false);
   });
-  it('has-local-thunk?, true', function (): any {
+  it('has-local-promise?, true', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'foo';
-      }), Symbol.for('Any')]], new ThunkedEnvironment([[Symbol.for('bar'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]]));
-      return env.hasLocalThunkP(Symbol.for('foo'));
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('bar'), new InternalPromise(((): any => {
+        const promiseF1: any = function (): any {
+          if (promiseF1.forced) {
+            return promiseF1.value;
+          } else {
+            promiseF1.forced = undefined;
+            promiseF1.value = 'bar';
+            promiseF1.forced = true;
+            return promiseF1.value;
+          }
+        };
+        promiseF1.value = undefined as any;
+        promiseF1.forced = false as any;
+        promiseF1.ftype = 'thunk';
+        return promiseF1;
+      })()), Symbol.for('Any')]]));
+      return env.hasLocalPromiseP(Symbol.for('foo'));
     })(), true);
   });
-  return it('has-local-thunk?, false', function (): any {
+  return it('has-local-promise?, false', function (): any {
     return assertEqual(((): any => {
-      const env: any = new ThunkedEnvironment([[Symbol.for('foo'), thunk(function (): any {
-        return 'foo';
-      }), Symbol.for('Any')]], new ThunkedEnvironment([[Symbol.for('bar'), thunk(function (): any {
-        return 'bar';
-      }), Symbol.for('Any')]]));
-      return env.hasLocalThunkP(Symbol.for('bar'));
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('bar'), new InternalPromise(((): any => {
+        const promiseF1: any = function (): any {
+          if (promiseF1.forced) {
+            return promiseF1.value;
+          } else {
+            promiseF1.forced = undefined;
+            promiseF1.value = 'bar';
+            promiseF1.forced = true;
+            return promiseF1.value;
+          }
+        };
+        promiseF1.value = undefined as any;
+        promiseF1.forced = false as any;
+        promiseF1.ftype = 'thunk';
+        return promiseF1;
+      })()), Symbol.for('Any')]]));
+      return env.hasLocalPromiseP(Symbol.for('bar'));
     })(), false);
   });
 });

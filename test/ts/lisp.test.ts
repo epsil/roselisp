@@ -1,7 +1,8 @@
 /**
  * # Lisp tests
  *
- * Tests of some non-Scheme Lisp constructs.
+ * Tests of some non-Scheme Lisp constructs. Intended to exercise the
+ * language's capability to implement other Lisp dialects.
  */
 
 import {
@@ -482,5 +483,59 @@ describe('clj/try', function (): any {
       '} finally {\n' +
       '  console.log(\'cleanup\');\n' +
       '}']);
+  });
+});
+
+describe('cl/loop', function (): any {
+  it('(compile \'(cl/loop for n in names collect (foo)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('foo')]]]], 'let result = [];\n' +
+      '\n' +
+      'for (let n of names) {\n' +
+      '  result.push(foo());\n' +
+      '}\n' +
+      '\n' +
+      'result;']);
+  });
+  return it('(compile \'(cl/loop for g in gensyms for n in names collect (list g n)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('list'), Symbol.for('g'), Symbol.for('n')]]]], 'let result = [];\n' +
+      '\n' +
+      'let _end = gensyms.length;\n' +
+      '\n' +
+      'let _end1 = names.length;\n' +
+      '\n' +
+      'for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {\n' +
+      '  let g = gensyms[i];\n' +
+      '  let n = names[j];\n' +
+      '  result.push([g, n]);\n' +
+      '}\n' +
+      '\n' +
+      'result;']);
+  });
+});
+
+describe('with-gensyms', function (): any {
+  return it('(compile \'(with-gensyms (x) x))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('with-gensyms'), [Symbol.for('x')], Symbol.for('x')]]], 'let x = Symbol(\'g\');\n' +
+      '\n' +
+      'x;']);
+  });
+});
+
+describe('once-only', function (): any {
+  return it('(compile \'(begin (define-macro (my-square x) (once-only (x) `(* ,x ,x))) (my-square (+ 1 1))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-macro'), [Symbol.for('my-square'), Symbol.for('x')], [Symbol.for('once-only'), [Symbol.for('x')], [Symbol.for('quasiquote'), [Symbol.for('*'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('x')]]]]], [Symbol.for('my-square'), [Symbol.for('+'), 1, 1]]]]], 'function mySquare(exp, env) {\n' +
+      '  let [x] = exp.slice(1);\n' +
+      '  let g = Symbol(\'g\');\n' +
+      '  return [Symbol.for(\'let\'), [[g, x]], (() => {\n' +
+      '    let x = g;\n' +
+      '    return [Symbol.for(\'*\'), x, x];\n' +
+      '  })()];\n' +
+      '}\n' +
+      '\n' +
+      'mySquare.ftype = \'macro\';\n' +
+      '\n' +
+      'let g = 1 + 1;\n' +
+      '\n' +
+      'g * g;']);
   });
 });

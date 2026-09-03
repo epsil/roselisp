@@ -38,6 +38,7 @@
  * [github:estree-types]: https://github.com/estree/estree/blob/master/extensions/type-annotations.md
  * [npm:typescript-estree] https://www.npmjs.com/package/@typescript-eslint/typescript-estree
  */
+import { InternalPromise } from './thunk';
 /**
  * Node
  *
@@ -1270,10 +1271,11 @@ declare namespace estreeQuote {
     var fsource: (symbol | symbol[])[];
 }
 /**
- * Get a field on an ESTree node, forcing it if it is a thunk.
+ * Get a field on an ESTree node,
+ * forcing it if it is a thunk.
  */
 declare function getEstreeField(field: any, node: any): any;
 declare namespace getEstreeField {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | undefined)[])[])[];
 }
-export { Expression as ESTreeExpression, Node as ESTreeNode, Statement as ESTreeStatement, TSNode as TSESTreeNode, estreeTypeP as estreeIsP, ArrayExpression, ArrayPattern, ArrowFunctionExpression, AssignmentExpression, AssignmentPattern, AwaitExpression, BinaryExpression, BlockComment, BlockStatement, BreakStatement, CallExpression, CatchClause, ChainElement, ChainExpression, ClassBody, ClassDeclaration, ClassExpression, Comment, ConditionalExpression, ContinueStatement, DoWhileStatement, ExportAllDeclaration, ExportNamedDeclaration, ExportSpecifier, Expression, ExpressionStatement, ForInStatement, ForOfStatement, ForStatement, Function, FunctionDeclaration, FunctionExpression, Identifier, IfStatement, ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, LeadingComment, Literal, LogicalExpression, MemberExpression, MethodDefinition, NewExpression, Node, ObjectExpression, ObjectPattern, Program, Property, PropertyDefinition, RegExpLiteral, RestElement, ReturnStatement, SequenceExpression, SpreadElement, Statement, SwitchCase, SwitchStatement, TSAnyKeyword, TSArrayType, TSAsExpression, TSBooleanKeyword, TSFunctionType, TSIdentifier, TSLiteralType, TSNode, TSNumberKeyword, TSStringKeyword, TSTupleType, TSTypeAliasDeclaration, TSTypeAnnotation, TSTypeParameterInstantiation, TSTypeReference, TSUndefinedKeyword, TSUnionType, TSVoidKeyword, TaggedTemplateExpression, TemplateElement, TemplateLiteral, ThisExpression, ThrowStatement, TrailingComment, TryStatement, UnaryExpression, UpdateExpression, VariableDeclaration, VariableDeclarator, WhileStatement, XRawJavaScript, YieldExpression, estreeQuote, estreeType, estreeTypeP, estreep, getEstreeField, wrapInEstree };
+export { Expression as ESTreeExpression, Node as ESTreeNode, Statement as ESTreeStatement, TSNode as TSESTreeNode, estreeTypeP as estreeIsP, ArrayExpression, ArrayPattern, ArrowFunctionExpression, AssignmentExpression, AssignmentPattern, AwaitExpression, BinaryExpression, BlockComment, BlockStatement, BreakStatement, CallExpression, CatchClause, ChainElement, ChainExpression, ClassBody, ClassDeclaration, ClassExpression, Comment, ConditionalExpression, ContinueStatement, DoWhileStatement, InternalPromise, ExportAllDeclaration, ExportNamedDeclaration, ExportSpecifier, Expression, ExpressionStatement, ForInStatement, ForOfStatement, ForStatement, Function, FunctionDeclaration, FunctionExpression, Identifier, IfStatement, ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, LeadingComment, Literal, LogicalExpression, MemberExpression, MethodDefinition, NewExpression, Node, ObjectExpression, ObjectPattern, Program, Property, PropertyDefinition, RegExpLiteral, RestElement, ReturnStatement, SequenceExpression, SpreadElement, Statement, SwitchCase, SwitchStatement, TSAnyKeyword, TSArrayType, TSAsExpression, TSBooleanKeyword, TSFunctionType, TSIdentifier, TSLiteralType, TSNode, TSNumberKeyword, TSStringKeyword, TSTupleType, TSTypeAliasDeclaration, TSTypeAnnotation, TSTypeParameterInstantiation, TSTypeReference, TSUndefinedKeyword, TSUnionType, TSVoidKeyword, TaggedTemplateExpression, TemplateElement, TemplateLiteral, ThisExpression, ThrowStatement, TrailingComment, TryStatement, UnaryExpression, UpdateExpression, VariableDeclaration, VariableDeclarator, WhileStatement, XRawJavaScript, YieldExpression, estreeQuote, estreeType, estreeTypeP, estreep, getEstreeField, wrapInEstree };

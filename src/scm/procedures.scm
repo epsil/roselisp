@@ -39,6 +39,10 @@
 (define (funcall_ f . args)
   (send/apply f call #n args))
 
+;;; Return the arity of the function `f`.
+(define (arity_ f)
+  (js/length f))
+
 ;;; Whether `obj` is a procedure (i.e., a function).
 ;;;
 ;;; Similar to [`procedure?` in Racket][rkt:procedurep] and
@@ -146,6 +150,10 @@
 ;;; [cl:mapcar]: http://clhs.lisp.se/Body/f_mapc_.htm#mapcar
 (define (map_ f seq)
   (map f seq))
+
+;;; Call a procedure on each element of a list.
+(define (for-each_ f lst)
+  (send lst forEach f))
 
 ;;; Less than operator.
 ;;;
@@ -730,7 +738,7 @@
 ;;;
 ;;; [cl:type-of]: http://clhs.lisp.se/Body/f_tp_of.htm#type-of
 (define (type-of_ x)
-  (js/type-of x))
+  (js/typeof x))
 
 ;;; Whether `obj` is an instance of `cls`.
 ;;;
@@ -738,7 +746,7 @@
 ;;;
 ;;; [rkt:is-a-p]: https://docs.racket-lang.org/reference/objectutils.html#%28def._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._is-a~3f%29%29
 (define (is-a?_ obj cls)
-  (js/instance-of? obj cls))
+  (js/instanceof obj cls))
 
 ;;; Return the absolute value of `x`.
 (define (abs_ x)
@@ -817,6 +825,7 @@
   add1_
   add_
   apply_
+  arity_
   assert_
   atom?_
   boolean?_
@@ -835,6 +844,7 @@
   findf_
   foldl_
   foldr_
+  for-each_
   funcall_
   gt_
   gte_

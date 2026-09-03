@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
 // inline-lisp-sources: true
 /**
- * # Thunks
+ * # Thunks and promises
  *
- * Thunk implementation.
+ * Implementation of thunks and promises.
  *
  * ## Description
  *
- * Defines a `Thunk` class for thunks, which can be forced by calling
- * the `.force()` method. Also provides functions for creating and
- * forcing thunks.
+ * A thunk is a function of zero arguments. A promise is like a thunk,
+ * but is only evaluated once. (A promise, in this context, is not to
+ * be confused with a JavaScript `Promise`, which is a different
+ * construct.)
  *
  * ## License
  *
@@ -19,133 +20,103 @@
  */
 
 /**
- * Thunk class.
- *
- * This class is a wrapper around a function `f` that is called with
- * zero arguments. The function `f` is passed to the constructor, and
- * is called only once, when the `.force` method is invoked for the
- * first time; subsequent invocations return a cached value.
- */
-class Thunk {
-  /**
-   * Thunk function.
-   */
-  private f: any;
-
-  /**
-   * Whether the thunk has been forced yet.
-   */
-  private forced: any = false;
-
-  /**
-   * Cached value.
-   */
-  private value: any = undefined;
-
-  /**
-   * Create a new thunk.
-   * `f` should be a function of zero arguments.
-   */
-  constructor(f: any) {
-    this.f = f;
-  }
-
-  /**
-   * Get the value of the thunk.
-   * Alias for `.force()`
-   */
-  getValue(): any {
-    return this.force();
-  }
-
-  /**
-   * Force the thunk.
-   */
-  force(): any {
-    if (this.forced) {
-      return this.value;
-    } else {
-      this.forced = true;
-      const f: any = this.f;
-      const value: any = f();
-      this.value = value;
-      return value;
-    }
-  }
-}
-
-/**
  * Make a thunk.
- *
- * `f` should be a function of zero arguments.
  */
-function thunk(f: any): any {
-  return new Thunk(f);
-}
-
-thunk.fsource = [Symbol.for('define'), [Symbol.for('thunk'), Symbol.for('f')], [Symbol.for('new'), Symbol.for('Thunk'), Symbol.for('f')]];
-
-/**
- * Delay a piece of code with a thunk.
- */
-function delay(exp: any, env: any): any {
+function thunk_(exp: any, env: any): any {
   const body: any = exp.slice(1);
-  return [Symbol.for('thunk'), [Symbol.for('lambda'), [], ...body]];
+  return [Symbol.for('lambda'), [], ...body];
 }
 
-delay.fsource = [Symbol.for('define'), [Symbol.for('delay'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('thunk'), [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+thunk_.fsource = [Symbol.for('define'), [Symbol.for('thunk_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 
-delay.ftype = 'macro';
+thunk_.ftype = 'macro';
 
 /**
  * Whether something is a thunk.
  */
-function thunkp(x: any): any {
-  return x instanceof Thunk;
+function thunkp_(x: any): any {
+  return (x instanceof Function) && (x.length === 0);
 }
 
-thunkp.fsource = [Symbol.for('define'), [Symbol.for('thunk?'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Thunk')]];
+thunkp_.fsource = [Symbol.for('define'), [Symbol.for('thunk?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('x')], [Symbol.for('zero?'), [Symbol.for('arity'), Symbol.for('x')]]]];
 
 /**
- * Whether something appears to be a thunk.
+ * Make a promise.
  */
-function thunkishp(x: any): any {
-  return (x !== null) && (typeof x === 'object') && (x.force instanceof Function);
+function delay_(exp: any, env: any): any {
+  const body: any = exp.slice(1);
+  const sym: any = Symbol('promise-f');
+  return [Symbol.for('begin'), [Symbol.for('define'), sym, [Symbol.for('thunk'), [Symbol.for('cond'), [[Symbol.for('get-field'), Symbol.for('forced'), sym], [Symbol.for('get-field'), Symbol.for('value'), sym]], [Symbol.for('else'), [Symbol.for('set-field!'), Symbol.for('forced'), sym, undefined], [Symbol.for('set-field!'), Symbol.for('value'), sym, [Symbol.for('begin'), ...body]], [Symbol.for('set-field!'), Symbol.for('forced'), sym, true], [Symbol.for('get-field'), Symbol.for('value'), sym]]]]], [Symbol.for('set-field!'), Symbol.for('value'), sym, [Symbol.for('ann'), undefined, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('forced'), sym, [Symbol.for('ann'), false, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('ftype'), sym, 'thunk'], sym];
 }
 
-thunkishp.fsource = [Symbol.for('define'), [Symbol.for('thunkish?'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('object?'), Symbol.for('x')], [Symbol.for('procedure?'), [Symbol.for('get-field'), Symbol.for('force'), Symbol.for('x')]]]];
+delay_.fsource = [Symbol.for('define'), [Symbol.for('delay_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('let'), [[Symbol.for('sym'), [Symbol.for('gensym'), 'promise-f']]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('thunk'), [Symbol.for('cond'), [[Symbol.for('get-field'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')]], [Symbol.for('get-field'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')]]], [Symbol.for('else'), [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], undefined], [Symbol.for('set-field!'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], true], [Symbol.for('get-field'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')]]]]]], [Symbol.for('set-field!'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('ann'), undefined, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('ann'), false, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('ftype'), [Symbol.for('unquote'), Symbol.for('sym')], 'thunk'], [Symbol.for('unquote'), Symbol.for('sym')]]]]];
+
+delay_.ftype = 'macro';
 
 /**
- * Whether something is a thunk,
- * or appears to be a thunk.
+ * Make a composable promise.
  */
-function thunkablep(x: any): any {
-  return thunkp(x) || thunkishp(x);
+function lazy_(exp: any, env: any): any {
+  const body: any = exp.slice(1);
+  return [Symbol.for('delay'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('begin'), ...body]], [Symbol.for('when'), [Symbol.for('promise?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('force'), Symbol.for('result')]]], Symbol.for('result')];
 }
 
-thunkablep.fsource = [Symbol.for('define'), [Symbol.for('thunkable?'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('thunk?'), Symbol.for('x')], [Symbol.for('thunkish?'), Symbol.for('x')]]];
+lazy_.fsource = [Symbol.for('define'), [Symbol.for('lazy_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('delay'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('when'), [Symbol.for('promise?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('force'), Symbol.for('result')]]], Symbol.for('result')]]];
+
+lazy_.ftype = 'macro';
 
 /**
- * Force a thunk.
+ * Whether something is a promise.
  */
-function force(x: any): any {
-  return x.force();
+function promisep_(x: any): any {
+  return (typeof x === 'function') && ((x as any).ftype === 'thunk');
 }
 
-force.fsource = [Symbol.for('define'), [Symbol.for('force'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('x'), Symbol.for('force')]];
+promisep_.fsource = [Symbol.for('define'), [Symbol.for('promise?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('js/function-type?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]], 'thunk']]];
 
 /**
- * Map for storing thunks in.
+ * Force a promise.
+ */
+function force_(x: any): any {
+  return (x as any)();
+}
+
+force_.fsource = [Symbol.for('define'), [Symbol.for('force_'), Symbol.for('x')], [[Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]]];
+
+/**
+ * Whether a promise has been forced.
+ */
+function promiseForcedP_(x: any): any {
+  if (x.forced) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+promiseForcedP_.fsource = [Symbol.for('define'), [Symbol.for('promise-forced?_'), Symbol.for('x')], [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')], true, false]];
+
+/**
+ * Whether a promise is running.
+ */
+function promiseRunningP_(x: any): any {
+  return x.forced === undefined;
+}
+
+promiseRunningP_.fsource = [Symbol.for('define'), [Symbol.for('promise-running?_'), Symbol.for('x')], [Symbol.for('undefined?'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')]]];
+
+/**
+ * Map for storing promises in.
  *
- * Like [`Map`][js:Map], but stores thunked values transparently.
+ * Like [`Map`][js:Map], but stores promised values transparently.
  *
  * [js:Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
  */
-class ThunkedMap extends Map {
+class PromiseMap extends Map {
   get(x: any): any {
     let val: any = super.get(x);
-    if (thunkp(val)) {
-      val = force(val);
+    if ((typeof val === 'function') && ((val as any).ftype === 'thunk')) {
+      val = (val as any)();
       super.set(x, val);
       return val;
     } else {
@@ -154,13 +125,38 @@ class ThunkedMap extends Map {
   }
 }
 
+/**
+ * Promise wrapper, for use within the language implementation
+ * in a way that does not interfere with user-defined promises.
+ */
+class InternalPromise {
+  private promise: any;
+
+  constructor(promise: any) {
+    this.promise = promise;
+  }
+
+  force(): any {
+    return (this.promise as any)();
+  }
+}
+
 export {
-  Thunk,
-  ThunkedMap,
-  delay,
-  force,
-  thunk,
-  thunkp,
-  thunkablep,
-  thunkishp
+  delay_ as delay,
+  force_ as force,
+  lazy_ as lazy,
+  promiseForcedP_ as promiseForcedP,
+  promiseRunningP_ as promiseRunningP,
+  promisep_ as promisep,
+  thunkp_ as thunk,
+  InternalPromise,
+  PromiseMap,
+  delay_,
+  force_,
+  lazy_,
+  promiseForcedP_,
+  promiseRunningP_,
+  promisep_,
+  thunkp_,
+  thunk_
 };

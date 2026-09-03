@@ -1,13 +1,14 @@
 /**
- * # Thunks
+ * # Thunks and promises
  *
- * Thunk implementation.
+ * Implementation of thunks and promises.
  *
  * ## Description
  *
- * Defines a `Thunk` class for thunks, which can be forced by calling
- * the `.force()` method. Also provides functions for creating and
- * forcing thunks.
+ * A thunk is a function of zero arguments. A promise is like a thunk,
+ * but is only evaluated once. (A promise, in this context, is not to
+ * be confused with a JavaScript `Promise`, which is a different
+ * construct.)
  *
  * ## License
  *
@@ -16,95 +17,81 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 /**
- * Thunk class.
- *
- * This class is a wrapper around a function `f` that is called with
- * zero arguments. The function `f` is passed to the constructor, and
- * is called only once, when the `.force` method is invoked for the
- * first time; subsequent invocations return a cached value.
- */
-declare class Thunk {
-    /**
-     * Thunk function.
-     */
-    private f;
-    /**
-     * Whether the thunk has been forced yet.
-     */
-    private forced;
-    /**
-     * Cached value.
-     */
-    private value;
-    /**
-     * Create a new thunk.
-     * `f` should be a function of zero arguments.
-     */
-    constructor(f: any);
-    /**
-     * Get the value of the thunk.
-     * Alias for `.force()`
-     */
-    getValue(): any;
-    /**
-     * Force the thunk.
-     */
-    force(): any;
-}
-/**
  * Make a thunk.
- *
- * `f` should be a function of zero arguments.
  */
-declare function thunk(f: any): any;
-declare namespace thunk {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Delay a piece of code with a thunk.
- */
-declare function delay(exp: any, env: any): any;
-declare namespace delay {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
+declare function thunk_(exp: any, env: any): any;
+declare namespace thunk_ {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
 }
 /**
  * Whether something is a thunk.
  */
-declare function thunkp(x: any): any;
-declare namespace thunkp {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Whether something appears to be a thunk.
- */
-declare function thunkishp(x: any): any;
-declare namespace thunkishp {
+declare function thunkp_(x: any): any;
+declare namespace thunkp_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
- * Whether something is a thunk,
- * or appears to be a thunk.
+ * Make a promise.
  */
-declare function thunkablep(x: any): any;
-declare namespace thunkablep {
+declare function delay_(exp: any, env: any): any;
+declare namespace delay_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | undefined)[] | (boolean | symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Make a composable promise.
+ */
+declare function lazy_(exp: any, env: any): any;
+declare namespace lazy_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * Whether something is a promise.
+ */
+declare function promisep_(x: any): any;
+declare namespace promisep_ {
+    var fsource: (symbol | (symbol | (string | symbol | (symbol | symbol[])[])[])[])[];
+}
+/**
+ * Force a promise.
+ */
+declare function force_(x: any): any;
+declare namespace force_ {
+    var fsource: (symbol | symbol[] | symbol[][])[];
+}
+/**
+ * Whether a promise has been forced.
+ */
+declare function promiseForcedP_(x: any): any;
+declare namespace promiseForcedP_ {
+    var fsource: (symbol | (boolean | symbol | symbol[])[])[];
+}
+/**
+ * Whether a promise is running.
+ */
+declare function promiseRunningP_(x: any): any;
+declare namespace promiseRunningP_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
- * Force a thunk.
- */
-declare function force(x: any): any;
-declare namespace force {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Map for storing thunks in.
+ * Map for storing promises in.
  *
- * Like [`Map`][js:Map], but stores thunked values transparently.
+ * Like [`Map`][js:Map], but stores promised values transparently.
  *
  * [js:Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
  */
-declare class ThunkedMap extends Map {
+declare class PromiseMap extends Map {
     get(x: any): any;
 }
-export { Thunk, ThunkedMap, delay, force, thunk, thunkp, thunkablep, thunkishp };
+/**
+ * Promise wrapper, for use within the language implementation
+ * in a way that does not interfere with user-defined promises.
+ */
+declare class InternalPromise {
+    private promise;
+    constructor(promise: any);
+    force(): any;
+}
+export { delay_ as delay, force_ as force, lazy_ as lazy, promiseForcedP_ as promiseForcedP, promiseRunningP_ as promiseRunningP, promisep_ as promisep, thunkp_ as thunk, InternalPromise, PromiseMap, delay_, force_, lazy_, promiseForcedP_, promiseRunningP_, promisep_, thunkp_, thunk_ };

@@ -58,7 +58,7 @@
 ;;;
 ;;; [rkt:gensym]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._gensym%29%29
 ;;; [cl:gensym]: http://clhs.lisp.se/Body/f_gensym.htm#gensym
-(define (gensym_ str)
+(define (gensym_ (str "g"))
   ;; `Symbol()` returns a unique symbol for any string,
   ;; similar to `gensym`.
   (Symbol str))

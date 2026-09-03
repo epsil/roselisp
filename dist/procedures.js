@@ -19,8 +19,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = void 0;
+exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.forEach_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.arity_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.sub_ = exports.sub1_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = void 0;
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
         if (x === y) {
@@ -119,6 +119,14 @@ function funcall_(f, ...args) {
 exports.funcall = funcall_;
 exports.funcall_ = funcall_;
 funcall_.fsource = [Symbol.for('define'), [Symbol.for('funcall_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('f'), Symbol.for('call'), null, Symbol.for('args')]];
+/**
+ * Return the arity of the function `f`.
+ */
+function arity_(f) {
+    return f.length;
+}
+exports.arity_ = arity_;
+arity_.fsource = [Symbol.for('define'), [Symbol.for('arity_'), Symbol.for('f')], [Symbol.for('js/length'), Symbol.for('f')]];
 /**
  * Whether `obj` is a procedure (i.e., a function).
  *
@@ -299,6 +307,14 @@ exports.map = map_;
 exports.mapcar = map_;
 exports.map_ = map_;
 map_.fsource = [Symbol.for('define'), [Symbol.for('map_'), Symbol.for('f'), Symbol.for('seq')], [Symbol.for('map'), Symbol.for('f'), Symbol.for('seq')]];
+/**
+ * Call a procedure on each element of a list.
+ */
+function forEach_(f, lst) {
+    return lst.forEach(f);
+}
+exports.forEach_ = forEach_;
+forEach_.fsource = [Symbol.for('define'), [Symbol.for('for-each_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('forEach'), Symbol.for('f')]];
 /**
  * Less than operator.
  *
@@ -1175,7 +1191,7 @@ function typeOf_(x) {
 }
 exports.typeOf = typeOf_;
 exports.typeOf_ = typeOf_;
-typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/type-of'), Symbol.for('x')]];
+typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
 /**
  * Whether `obj` is an instance of `cls`.
  *
@@ -1193,7 +1209,7 @@ exports.instanceOf_ = isAP_;
 exports.instanceofp = isAP_;
 exports.isAP = isAP_;
 exports.isAP_ = isAP_;
-isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instance-of?'), Symbol.for('obj'), Symbol.for('cls')]];
+isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instanceof'), Symbol.for('obj'), Symbol.for('cls')]];
 /**
  * Return the absolute value of `x`.
  */

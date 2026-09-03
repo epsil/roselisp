@@ -40,8 +40,7 @@
 ;;; [npm:typescript-estree] https://www.npmjs.com/package/@typescript-eslint/typescript-estree
 
 (require (only-in "./thunk"
-                  force
-                  thunk?))
+                  InternalPromise))
 
 ;;; Node
 ;;;
@@ -1421,7 +1420,7 @@
    ((not node)
     "")
    ;; Do not force thunks.
-   ((thunk? node)
+   ((is-a? node InternalPromise)
     "")
    ;; Otherwise, if `node` is an ESTree node proper,
    ;; then its type is stored in the `type` field.
@@ -1433,7 +1432,7 @@
   (cond
    ((not node)
     #f)
-   ((thunk? node)
+   ((is-a? node InternalPromise)
     #f)
    ((list? typ)
     (memf? (lambda (x)
@@ -1464,17 +1463,18 @@
 (define (estree-quote x)
   (new Literal x))
 
-;;; Get a field on an ESTree node, forcing it if it is a thunk.
+;;; Get a field on an ESTree node,
+;;; forcing it if it is a thunk.
 (define (get-estree-field field node)
   (unless node
     (return #u))
   (define node-val node)
-  (when (thunk? node-val)
-    (set! node-val (force node-val)))
+  (when (is-a? node-val InternalPromise)
+    (set! node-val (send node-val force)))
   (define field-val
     (oget node-val field))
-  (when (thunk? field-val)
-    (set! field-val (force field-val)))
+  (when (is-a? field-val InternalPromise)
+    (set! field-val (send field-val force)))
   field-val)
 
 (provide
@@ -1504,6 +1504,7 @@
   ConditionalExpression
   ContinueStatement
   DoWhileStatement
+  InternalPromise
   ExportAllDeclaration
   ExportNamedDeclaration
   ExportSpecifier

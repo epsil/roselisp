@@ -18,7 +18,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withEnvironmentF = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.TypedEnvironment = exports.ThunkedEnvironment = exports.LispEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = void 0;
+exports.withEnvironmentF = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.TypedEnvironment = exports.PromiseEnvironment = exports.LispEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = exports.ThunkedEnvironment = void 0;
 const lookup_1 = require("./lookup");
 const thunk_1 = require("./thunk");
 /**
@@ -483,9 +483,11 @@ exports.TypedEnvironment = TypedEnvironment;
 /**
  * Thunked environment.
  *
- * A typed environment storing thunks that are forced upon request.
+ * A typed environment storing promises that are forced upon request.
+ * The promises must be instances of the class `InternalPromise`;
+ * regular promises created with `delay` are not forced.
  */
-class ThunkedEnvironment extends TypedEnvironment {
+class PromiseEnvironment extends TypedEnvironment {
     /**
      * Get the binding defined by the current environment frame,
      * if any, as a tuple `(binding found)`.
@@ -495,8 +497,8 @@ class ThunkedEnvironment extends TypedEnvironment {
         let [binding, found] = tuple;
         if (found) {
             let [val, typ] = binding;
-            if ((0, thunk_1.thunkp)(val)) {
-                val = (0, thunk_1.force)(val);
+            if (val instanceof thunk_1.InternalPromise) {
+                val = val.force();
                 this.setLocalX(key, val, typ);
                 binding = [val, typ];
                 tuple = [binding, found];
@@ -520,7 +522,7 @@ class ThunkedEnvironment extends TypedEnvironment {
             const inheritedOptions = Object.assign(Object.assign({}, options), { offset: 1 });
             for (let frame of this.getFrames(inheritedOptions)) {
                 if (frame.hasLocalP(key, options)) {
-                    return (frame instanceof ThunkedEnvironment) ? frame.getUnforcedLocalTuple(key, options) : frame.getLocalTuple(key, options);
+                    return (frame instanceof PromiseEnvironment) ? frame.getUnforcedLocalTuple(key, options) : frame.getLocalTuple(key, options);
                 }
             }
             return [notFound, false];
@@ -567,30 +569,30 @@ class ThunkedEnvironment extends TypedEnvironment {
         }
     }
     /**
-     * Whether `key` is bound to a thunk.
+     * Whether `key` is bound to a promise.
      */
-    hasThunkP(key, options = {}) {
+    hasPromiseP(key, options = {}) {
         // Obtain the type without forcing the thunk.
         let tuple = this.getUnforcedTuple(key, options);
         let [binding, found] = tuple;
         if (found) {
             let [val] = binding;
-            return (0, thunk_1.thunkp)(val);
+            return val instanceof thunk_1.InternalPromise;
         }
         else {
             return false;
         }
     }
     /**
-     * Whether `key` is locally bound to a thunk.
+     * Whether `key` is locally bound to a promise.
      */
-    hasLocalThunkP(key, options = {}) {
+    hasLocalPromiseP(key, options = {}) {
         // Obtain the type without forcing the thunk.
         let tuple = this.getUnforcedLocalTuple(key, options);
         let [binding, found] = tuple;
         if (found) {
             let [val] = binding;
-            return (0, thunk_1.thunkp)(val);
+            return val instanceof thunk_1.InternalPromise;
         }
         else {
             return false;
@@ -621,13 +623,14 @@ class ThunkedEnvironment extends TypedEnvironment {
         return this.setLocalX(key, val, typ);
     }
 }
-exports.ThunkedEnvironment = ThunkedEnvironment;
+exports.ThunkedEnvironment = PromiseEnvironment;
+exports.PromiseEnvironment = PromiseEnvironment;
 /**
  * Lisp environment.
  *
  * A typed, thunked environment.
  */
-class LispEnvironment extends ThunkedEnvironment {
+class LispEnvironment extends PromiseEnvironment {
 }
 exports.LispEnvironment = LispEnvironment;
 /**

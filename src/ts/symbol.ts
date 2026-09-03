@@ -76,13 +76,13 @@ stringToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('string->symbol_'),
  * [rkt:gensym]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._gensym%29%29
  * [cl:gensym]: http://clhs.lisp.se/Body/f_gensym.htm#gensym
  */
-function gensym_(str: any): any {
+function gensym_(str: any = 'g'): any {
   // `Symbol()` returns a unique symbol for any string,
   // similar to `gensym`.
   return Symbol(str);
 }
 
-gensym_.fsource = [Symbol.for('define'), [Symbol.for('gensym_'), Symbol.for('str')], [Symbol.for('Symbol'), Symbol.for('str')]];
+gensym_.fsource = [Symbol.for('define'), [Symbol.for('gensym_'), [Symbol.for('str'), 'g']], [Symbol.for('Symbol'), Symbol.for('str')]];
 
 /**
  * Whether something is a unique symbol.

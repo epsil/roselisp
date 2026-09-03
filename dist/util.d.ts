@@ -154,4 +154,12 @@ declare function defineMethod(genericFunction: any, arglist: any, functionDefini
  * or `(list* ...)` to a list expression pattern.
  */
 declare function listExpressionToPattern(exp: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineGeneric, defineMethod, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };
+/**
+ * Convert a number to a letter.
+ *
+ * Counting starts at zero. `0` corresponds to
+ * `a`, `1` to `b`, etc., unless a different
+ * starting letter is specified with `start`.
+ */
+declare function numberToLetter(n: any, start?: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineGeneric, defineMethod, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };

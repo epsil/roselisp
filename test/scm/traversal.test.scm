@@ -1,6 +1,6 @@
 (require (only-in "../../src/ts/language"
                   lisp-environment
-                  map-rose))
+                  map-syntax))
 (require (only-in "./test-util"
                   assert-equal
                   test-macro))
@@ -8,34 +8,34 @@
 (declare-macro test-macro)
 
 (test-macro
- :describe "map-rose"
+ :describe "map-syntax"
  > (it "()"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '()
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '()
+                     lisp-environment)
          expressions))
  '(())
  > (it "(f x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(f x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(f x)
+                     lisp-environment)
          expressions))
  '(f
    x
    (f x))
  > (it "(f (g x) y)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(f (g x) y)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(f (g x) y)
+                     lisp-environment)
          expressions))
  '(f
    g
@@ -45,13 +45,13 @@
    (f (g x) y))
  > (it "(begin x y)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(begin
-                      x
-                      y)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(begin
+                        x
+                        y)
+                     lisp-environment)
          expressions))
  '(x
    y
@@ -60,12 +60,12 @@
      y))
  > (it "(begin0 x y)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(begin0 x
-                      y)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(begin0 x
+                        y)
+                     lisp-environment)
          expressions))
  '(x
    y
@@ -73,12 +73,12 @@
      y))
  > (it "(let ((x 1)) x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(let ((x 1))
-                      x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(let ((x 1))
+                        x)
+                     lisp-environment)
          expressions))
  '(x
    1
@@ -87,12 +87,12 @@
      x))
  > (it "(let-values (((x) (foo))) x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(let-values (((x) (foo)))
-                      x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(let-values (((x) (foo)))
+                        x)
+                     lisp-environment)
          expressions))
  '(x
    foo
@@ -102,13 +102,13 @@
      x))
  > (it "(cond ((foo bar) (baz quux)))"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(cond
-                     ((foo bar)
-                      (baz quux)))
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(cond
+                       ((foo bar)
+                        (baz quux)))
+                     lisp-environment)
          expressions))
  '(foo
    bar
@@ -121,13 +121,13 @@
      (baz quux))))
  > (it "(cond ((foo bar) (baz quux)))"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(cond
-                     ((foo bar)
-                      (baz quux)))
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(cond
+                       ((foo bar)
+                        (baz quux)))
+                     lisp-environment)
          expressions))
  '(foo
    bar
@@ -140,12 +140,12 @@
      (baz quux))))
  > (it "(lambda (x) x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(lambda (x)
-                      x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(lambda (x)
+                        x)
+                     lisp-environment)
          expressions))
  '(x
    x
@@ -153,12 +153,12 @@
      x))
  > (it "(lambda (x (y 1)) x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(lambda (x (y 1))
-                      x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(lambda (x (y 1))
+                        x)
+                     lisp-environment)
          expressions))
  '(x
    y
@@ -168,12 +168,12 @@
      x))
  > (it "(define (I x) x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(define (I x)
-                      x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(define (I x)
+                        x)
+                     lisp-environment)
          expressions))
  '(I
    x
@@ -182,13 +182,13 @@
      x))
  > (it "(define I (lambda (x) x))"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(define I
-                      (lambda (x)
-                        x))
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(define I
+                        (lambda (x)
+                          x))
+                     lisp-environment)
          expressions))
  '(I
    x
@@ -200,42 +200,42 @@
        x)))
  > (it "(quasiquote x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(quasiquote x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(quasiquote x)
+                     lisp-environment)
          expressions))
  '((quasiquote x))
  > (it "(quasiquote (x))"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(quasiquote (x))
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(quasiquote (x))
+                     lisp-environment)
          expressions))
  '((quasiquote (x)))
  > (it "(quasiquote (unquote x))"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(quasiquote (unquote x))
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(quasiquote (unquote x))
+                     lisp-environment)
          expressions))
  '(x
    (quasiquote (unquote x)))
  > (it "(quasiquote (x (unquote y) (unquote-splicing z)))"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(quasiquote
-                     (x
-                      (unquote y)
-                      (unquote-splicing z)))
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(quasiquote
+                       (x
+                        (unquote y)
+                        (unquote-splicing z)))
+                     lisp-environment)
          expressions))
  '(y
    z
@@ -245,12 +245,12 @@
      (unquote-splicing z))))
  > (it "(defmacro f (x) x)"
        (let ((expressions '()))
-         (map-rose (fn (x)
-                     (push-right! expressions x)
-                     x)
-                   '(defmacro f (x)
-                      x)
-                   lisp-environment)
+         (map-syntax (fn (x)
+                       (push-right! expressions x)
+                       x)
+                     '(defmacro f (x)
+                        x)
+                     lisp-environment)
          expressions))
  '(f
    x

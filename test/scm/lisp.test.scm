@@ -1,6 +1,7 @@
 ;;; # Lisp tests
 ;;;
-;;; Tests of some non-Scheme Lisp constructs.
+;;; Tests of some non-Scheme Lisp constructs. Intended to exercise the
+;;; language's capability to implement other Lisp dialects.
 
 (require (only-in "./test-util"
                   test-repl
@@ -621,4 +622,61 @@ let quux = 'foo';"
   return false;
 } finally {
   console.log('cleanup');
-}")
+}"
+
+ :describe "cl/loop"
+ > (compile '(cl/loop
+              for n in names
+              collect (foo)))
+ "let result = [];
+
+for (let n of names) {
+  result.push(foo());
+}
+
+result;"
+ > (compile '(cl/loop
+              for g in gensyms
+              for n in names
+              collect (list g n)))
+ "let result = [];
+
+let _end = gensyms.length;
+
+let _end1 = names.length;
+
+for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
+  let g = gensyms[i];
+  let n = names[j];
+  result.push([g, n]);
+}
+
+result;"
+
+ :describe "with-gensyms"
+ > (compile '(with-gensyms (x)
+                           x))
+ "let x = Symbol('g');
+
+x;"
+
+ :describe "once-only"
+ > (compile '(begin
+               (define-macro (my-square x)
+                 (once-only (x)
+                            `(* ,x ,x)))
+               (my-square (+ 1 1))))
+ "function mySquare(exp, env) {
+  let [x] = exp.slice(1);
+  let g = Symbol('g');
+  return [Symbol.for('let'), [[g, x]], (() => {
+    let x = g;
+    return [Symbol.for('*'), x, x];
+  })()];
+}
+
+mySquare.ftype = 'macro';
+
+let g = 1 + 1;
+
+g * g;")

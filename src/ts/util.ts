@@ -262,7 +262,7 @@ function formp(exp: any, f: any, env: any): any {
       const op: any = exp[0];
       if (typeof op !== 'symbol') {
         return false;
-      } else if (env.hasThunkP(op)) {
+      } else if (env.hasPromiseP(op)) {
         // If the operator is bound to a thunk,
         // it is a user-defined binding.
         return false;
@@ -512,6 +512,17 @@ function listExpressionToPattern(exp: any): any {
   }
 }
 
+/**
+ * Convert a number to a letter.
+ *
+ * Counting starts at zero. `0` corresponds to
+ * `a`, `1` to `b`, etc., unless a different
+ * starting letter is specified with `start`.
+ */
+function numberToLetter(n: any, start: any = 'a'): any {
+  return String.fromCharCode(start.charCodeAt(0) + n);
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
@@ -533,6 +544,7 @@ export {
   mapHasP,
   mapSetX,
   mapTree,
+  numberToLetter,
   quasiquotep,
   quotep,
   taggedListP,

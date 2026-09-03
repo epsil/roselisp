@@ -16,10 +16,17 @@
 
 (require (only-in "./eval"
                   eval_))
+(require (only-in "./plist"
+                  plist-get_))
+(require (only-in "./rose"
+                  datum->syntax
+                  syntax->datum
+                  transfer-comments))
 (require (only-in "./util"
                   count-tree
                   list-expression->pattern
                   map-tree
+                  number->letter
                   tagged-list?))
 
 ;;; Expand a `(defun ...)` expression.
@@ -124,7 +131,7 @@
       (define arg
         (list-ref args i))
       (cond
-       ((eq? arg '&rest)
+       ((memq? arg '(&body &rest))
         (set! rest-arg (list-ref args (+ i 1)))
         (set! i (+ i 2)))
        ((eq? arg '&whole)
@@ -245,8 +252,14 @@
 ;;; [guile:and]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-and
 ;;; [cl:and]: http://clhs.lisp.se/Body/m_and.htm
 ;;; [el:and]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-and
-(define-macro (and_ &rest args)
-  `(js/&& ,@args))
+(define-syntax (and_ stx)
+  (datum->syntax
+   stx
+   `(js/&& ,@(send stx drop 1))))
+
+;; (define-macro (and-1_ &rest args)
+;;   ;; TODO: Rewrite to use `define-syntax`.
+;;   `(js/&& ,@args))
 
 ;;; Expand an `(or ...)` expression.
 ;;;
@@ -257,8 +270,74 @@
 ;;; [guile:or]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-or
 ;;; [cl:or]: http://clhs.lisp.se/Body/m_or.htm
 ;;; [el:or]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-or
-(define-macro (or_ &rest args)
-  `(js/\|\| ,@args))
+(define-syntax (or_ stx)
+  (datum->syntax
+   stx
+   `(js/\|\| ,@(send stx drop 1))))
+
+;; (define-macro (or-1_ &rest args)
+;;   ;; TODO: Rewrite to use `define-syntax`.
+;;   `(js/\|\| ,@args))
+
+;;; Expand a `(cond ...)` expression.
+;;;
+;;; Similar to [`cond` in Racket][rkt:cond] and
+;;; [`cond` in Guile][guile:cond].
+;;;
+;;; [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
+;;; [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
+(define-syntax (cond_ stx)
+  (define cond-var #u)
+  (define clauses
+    (~> (send stx drop 1)
+        (drop-right _ 1)))
+  (define last-clause
+    (send stx last))
+  (define (wrap-clause-body x)
+    (if (= (send x size) 2)
+        (transfer-comments
+         x
+         (send x get 1))
+        (datum->syntax
+         x
+         `(begin ,@(send x drop 1)))))
+  (define (transform-clause x (acc #u))
+    (cond
+     ((and (= (send x size) 3)
+           (eq? (syntax->datum (send x get 1))
+                '=>))
+      (unless cond-var
+        (set! cond-var (gensym "_cond-var")))
+      (datum->syntax
+       #f
+       `(if (set! ,cond-var ,(send x get 0))
+            (,(send x get 2) ,cond-var)
+            ,@(if acc
+                  (list acc)
+                  '()))))
+     (else
+      (datum->syntax
+       #f
+       `(if ,(send x get 0)
+            ,(wrap-clause-body x)
+            ,@(if acc
+                  (list acc)
+                  '()))))))
+  (define (transform-last-clause x)
+    (if (tagged-list? x 'else)
+        (wrap-clause-body x)
+        (transform-clause x)))
+  (define result
+    (foldr transform-clause
+           (transform-last-clause last-clause)
+           clauses))
+  (when cond-var
+    (set! result
+          (datum->syntax
+           #f
+           `(let (,cond-var)
+              ,result))))
+  (transfer-comments stx result))
 
 ;;; Expand a `(when ...)` expression.
 ;;;
@@ -269,9 +348,16 @@
 ;;; [guile:when]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-when-1
 ;;; [cl:when]: http://clhs.lisp.se/Body/m_when_.htm
 ;;; [el:when]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-when
-(define-macro (when_ condition &rest body)
-  `(if ,condition
-       (begin ,@body)))
+(define-syntax (when_ stx)
+  (datum->syntax
+   stx
+   `(if ,(send stx get 1)
+        (begin ,@(send stx drop 2)))))
+
+;; (define-macro (when-1_ condition &rest body)
+;;   ;; TODO: Rewrite to use `define-syntax`.
+;;   `(if ,condition
+;;        (begin ,@body)))
 
 ;;; Expand an `(unless ...)` expression.
 ;;;
@@ -282,9 +368,16 @@
 ;;; [guile:unless]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-unless-1
 ;;; [cl:unless]: http://clhs.lisp.se/Body/m_when_.htm
 ;;; [el:unless]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-unless
-(define-macro (unless_ condition &rest body)
-  `(if (not ,condition)
-       (begin ,@body)))
+(define-syntax (unless_ stx)
+  (datum->syntax
+   stx
+   `(if (not ,(send stx get 1))
+        (begin ,@(send stx drop 2)))))
+
+;; (define-macro (unless-1_ condition &rest body)
+;;   ;; TODO: Rewrite to use `define-syntax`.
+;;   `(if (not ,condition)
+;;        (begin ,@body)))
 
 ;;; Expand an `(el/if ...)` expression.
 ;;;
@@ -485,6 +578,7 @@
 ;;; [guile:while]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-while
 ;;; [el:while]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Iteration.html#index-while
 (define-macro (while_ test &rest body)
+  ;; TODO: Rewrite to use `define-syntax`.
   `(js/while ,test ,@body))
 
 ;;; Expand a `(for ...)` expression.
@@ -493,85 +587,122 @@
 ;;;
 ;;; [rkt:for]: https://docs.racket-lang.org/reference/for.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._for%29%29
 (define-macro (for_ args &rest body)
-  (define-values (decl)
-    args)
-  (define-values (sym val)
-    decl)
-  (cond
-   ((tagged-list? val 'range)
-    (define start
-      (second val))
-    (define end
-      (third val))
-    (define step
-      (or (fourth val) 1))
+  (define (combine-inits init1 init2)
     (cond
-     ;; If `start`, `end` or `step` is a function call,
-     ;; then rewrite the expression to a `let` expression
-     ;; so that the function is called only once.
-     ((or (pair-or-list? start)
-          (pair-or-list? end)
-          (pair-or-list? step))
-      (define start-var
-        (if (pair-or-list? start)
-            (gensym "_start")
-            #u))
-      (define end-var
-        (if (pair-or-list? end)
-            (gensym "_end")
-            #u))
-      (define step-var
-        (if (pair-or-list? step)
-            (gensym "_step")
-            #u))
-      `(let (,@(if start-var
-                   `((,start-var ,start))
-                   '())
-             ,@(if end-var
-                   `((,end-var ,end))
-                   '())
-             ,@(if step-var
-                   `((,step-var ,step))
-                   '()))
-         (for ((,sym
-                (range ,(if start-var
-                            start-var
-                            start)
-                       ,(if end-var
-                            end-var
-                            end)
-                       ,(if step-var
-                            step-var
-                            step))))
-           ,@body)))
-     ;; Otherwise, proceed to create a `js/for` loop.
+     ((not init1)
+      init2)
      (else
-      (define init
-        `(,sym ,start))
-      (define test
-        (cond
-         ((number? step)
-          (if (< step 0)
-              `(> ,sym ,end)
-              `(< ,sym ,end)))
-         (else
-          `(if (< ,step 0)
-               (> ,sym ,end)
-               (< ,sym ,end)))))
-      (define update
-        (cond
-         ((number? step)
-          (if (< step 0)
-              `(- ,sym ,(abs step))
-              `(+ ,sym ,step)))
-         (else
-          `(+ ,sym ,step))))
-      `(js/for (,init ,test ,update)
-               ,@body))))
-   ;; If the loop cannot easily be expressed as a
-   ;; `js/for` loop, create a `js/for-of` loop instead.
+      `(js/let ,@(rest init1) ,@(rest init2)))))
+  (define (combine-tests test1 test2)
+    (cond
+     ((not test1)
+      test2)
+     (else
+      `(and ,test1 ,test2))))
+  (define (combine-updates update1 update2)
+    (cond
+     ((not update1)
+      update2)
+     (else
+      `(begin ,update1 ,update2))))
+  (define let-bindings '())
+  (define result #u)
+  (define definitions '())
+  (cond
+   ;; If the loop can easily be expressed as a
+   ;; `js/for-of` loop, do that.
+   ((and (= (length args) 1)
+         (not (tagged-list? (second (first args))
+                            'range)))
+    (set! result
+          `(js/for-of ,args ,@body)))
+   ;; Otherwise, create a `js/for` loop.
    (else
-    `(js/for-of ,args ,@body))))
+    (define init #u)
+    (define test #u)
+    (define update #u)
+    (for ((i (range 0 (length args))))
+      (define decl
+        (list-ref args i))
+      (define-values (sym val)
+        decl)
+      (unless (tagged-list? val 'range)
+        (unless (symbol? val)
+          (define val-var
+            (gensym "_val"))
+          (push-right! let-bindings
+                       `(,val-var ,val))
+          (set! val val-var))
+        (define range-exp
+          `(range 0 (length ,val)))
+        (define index
+          (gensym (number->letter i "i")))
+        (define definition-exp
+          `(define ,sym (list-ref ,val ,index)))
+        (push-right! definitions definition-exp)
+        (set! sym index)
+        (set! val range-exp))
+      (define start
+        (second val))
+      (define end
+        (third val))
+      (define step
+        (or (fourth val) 1))
+      ;; If `start`, `end` or `step` is a function call,
+      ;; then rewrite the expression to a `let` expression
+      ;; so that the function is called only once.
+      (when (pair-or-list? start)
+        (define start-var
+          (gensym "_start"))
+        (push-right! let-bindings
+                     `(,start-var ,start))
+        (set! start start-var))
+      (when (pair-or-list? end)
+        (define end-var
+          (gensym "_end"))
+        (push-right! let-bindings
+                     `(,end-var ,end))
+        (set! end end-var))
+      (when (pair-or-list? step)
+        (define step-var
+          (gensym "_step"))
+        (push-right! let-bindings
+                     `(,step-var ,step))
+        (set! step step-var))
+      (set! init
+            (combine-inits
+             init
+             `(js/let ,sym ,start)))
+      (set! test
+            (combine-tests
+             test
+             (cond
+              ((number? step)
+               (if (< step 0)
+                   `(> ,sym ,end)
+                   `(< ,sym ,end)))
+              (else
+               `(if (< ,step 0)
+                    (> ,sym ,end)
+                    (< ,sym ,end))))))
+      (set! update
+            (combine-updates
+             update
+             (cond
+              ((number? step)
+               (if (< step 0)
+                   `(set! ,sym (- ,sym ,(abs step)))
+                   `(set! ,sym (+ ,sym ,step))))
+              (else
+               `(set! ,sym (+ ,sym ,step)))))))
+    (set! result
+          `(js/for (,init ,test ,update)
+                   ,@definitions
+                   ,@body))))
+  (when (> (length let-bindings) 0)
+    (set! result
+          `(let ,let-bindings ,result)))
+  result)
 
 ;;; Expand a `(case ...)` expression.
 ;;;
@@ -978,12 +1109,84 @@
     `(cond
       ,@cond-clauses))))
 
+;;; Expand a `(cl/loop ...)` expression.
+;;;
+;;; Similar to [`loop` in Common Lisp][cl:loop].
+;;;
+;;; [cl:loop]: http://clhs.lisp.se/Body/m_loop.htm#loop
+(define-macro (cl/loop_ &rest body)
+  ;; Currently just a very simple implementation of a
+  ;; tiny subset of Common Lisp's `loop` macro. Useful
+  ;; for testing purposes.
+  (define plists '())
+  (define plist '())
+  (for ((x body))
+    (when (memq? x '(for collect))
+      (unless (null? plist)
+        (push-right! plists plist))
+      (set! plist '()))
+    (push-right! plist x))
+  (unless (null? plist)
+    (push-right! plists plist))
+  (define for-plists '())
+  (define accumulation-plist '())
+  (for ((plist plists))
+    (cond
+     ((tagged-list? plist 'for)
+      (push-right! for-plists plist))
+     ((tagged-list? plist 'collect)
+      (set! accumulation-plist plist))))
+  (define result-var #u)
+  (define let-bindings '())
+  (define body1 '())
+  (unless (null? accumulation-plist)
+    (set! result-var (gensym "result"))
+    (push-right! let-bindings `(,result-var '()))
+    (define result-exp
+      `(push-right ,result-var
+                   ,(plist-get_ accumulation-plist
+                                'collect)))
+    (push-right! body1 result-exp))
+  (define result
+    `(for ,(map (lambda (x)
+                  `(,(plist-get_ x 'for)
+                    ,(plist-get_ x 'in)))
+                for-plists)
+       ,@body1))
+  (unless (null? let-bindings)
+    (set! result
+          `(let ,let-bindings
+             ,result
+             ,result-var)))
+  result)
+
+;;; `with-gensyms` macro as defined in
+;;; Peter Seibel's [*Practical Common Lisp*][book:pcl].
+;;;
+;;; [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
+(define-macro (with-gensyms_ names &rest body)
+  `(let ,(cl/loop for n in names collect `(,n (gensym)))
+     ,@body))
+
+;;; `once-only` macro as defined in
+;;; Peter Seibel's [*Practical Common Lisp*][book:pcl].
+;;;
+;;; [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
+(define-macro (once-only_ names &rest body)
+  (let ((gensyms (cl/loop for n in names collect (gensym))))
+    `(let (,@(cl/loop for g in gensyms collect `(,g (gensym))))
+       `(let (,,@(cl/loop for g in gensyms for n in names collect ``(,,g ,,n)))
+          ,(let (,@(cl/loop for n in names for g in gensyms collect `(,n ,g)))
+             ,@body)))))
+
 (provide
   and_
   begin0_
   case-eq_
   case_
+  cl/loop_
   clj/try_
+  cond_
   declare-fexpr_
   declare-macro_
   declare_
@@ -1004,6 +1207,7 @@
   match_
   multiple-value-bind_
   new/apply_
+  once-only_
   or_
   quasisyntax_
   rkt/new_
@@ -1017,4 +1221,5 @@
   unless_
   unwind-protect_
   when_
+  with-gensyms_
   while_)

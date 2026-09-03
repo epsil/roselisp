@@ -69,11 +69,10 @@
                   text-of-quotation
                   unquote-splicing?
                   unquote?))
-
-;; (require (only-in "./trampoline"
-;;                   tcall))
 (require (only-in "./procedures"
                   (funcall tcall)))
+;; (require (only-in "./trampoline"
+;;                   tcall))
 
 ;;; Evaluate a `(quote ...)` form.
 (define (quote-special_ exp env)

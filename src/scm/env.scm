@@ -18,9 +18,7 @@
 (require (only-in "./lookup"
                   lookup-js-value))
 (require (only-in "./thunk"
-                  force
-                  Thunk
-                  thunk?))
+                  InternalPromise))
 
 ;;; Environment.
 ;;;
@@ -483,8 +481,10 @@
 
 ;;; Thunked environment.
 ;;;
-;;; A typed environment storing thunks that are forced upon request.
-(define-class ThunkedEnvironment (TypedEnvironment)
+;;; A typed environment storing promises that are forced upon request.
+;;; The promises must be instances of the class `InternalPromise`;
+;;; regular promises created with `delay` are not forced.
+(define-class PromiseEnvironment (TypedEnvironment)
   ;;; Get the binding defined by the current environment frame,
   ;;; if any, as a tuple `(binding found)`.
   (define/public (get-local-tuple key (options (js/obj)))
@@ -495,8 +495,8 @@
     (when found
       (define-values (val typ)
         binding)
-      (when (thunk? val)
-        (set! val (force val))
+      (when (is-a? val InternalPromise)
+        (set! val (send val force))
         (send this set-local! key val typ)
         (set! binding (list val typ))
         (set! tuple (list binding found))))
@@ -521,7 +521,7 @@
       (for ((frame (send this get-frames inherited-options)))
         (when (send frame has-local? key options)
           (return
-           (if (is-a? frame ThunkedEnvironment)
+           (if (is-a? frame PromiseEnvironment)
                (send frame get-unforced-local-tuple key options)
                (send frame get-local-tuple key options)))))
       (values not-found #f))))
@@ -568,8 +568,8 @@
      (else
       not-found)))
 
-  ;;; Whether `key` is bound to a thunk.
-  (define/public (has-thunk? key (options (js/obj)))
+  ;;; Whether `key` is bound to a promise.
+  (define/public (has-promise? key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-tuple key options))
@@ -579,12 +579,12 @@
      (found
       (define-values (val)
         binding)
-      (thunk? val))
+      (is-a? val InternalPromise))
      (else
       #f)))
 
-  ;;; Whether `key` is locally bound to a thunk.
-  (define/public (has-local-thunk? key (options (js/obj)))
+  ;;; Whether `key` is locally bound to a promise.
+  (define/public (has-local-promise? key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define tuple
       (send this get-unforced-local-tuple key options))
@@ -594,7 +594,7 @@
      (found
       (define-values (val)
         binding)
-      (thunk? val))
+      (is-a? val InternalPromise))
      (else
       #f)))
 
@@ -633,7 +633,7 @@
 ;;; Lisp environment.
 ;;;
 ;;; A typed, thunked environment.
-(define-class LispEnvironment (ThunkedEnvironment))
+(define-class LispEnvironment (PromiseEnvironment))
 
 ;;; Environment class for stacking environments.
 ;;;
@@ -1050,6 +1050,7 @@
   (map prefix-binding bindings))
 
 (provide
+  (rename-out (PromiseEnvironment ThunkedEnvironment))
   (rename-out (current-environment_ current-environment))
   (rename-out (with-environment-f with-current-environment))
   (rename-out (with-environment-f with-environment))
@@ -1060,7 +1061,7 @@
   EnvironmentStack
   JavaScriptEnvironment
   LispEnvironment
-  ThunkedEnvironment
+  PromiseEnvironment
   TypedEnvironment
   current-environment-pointer
   current-environment_

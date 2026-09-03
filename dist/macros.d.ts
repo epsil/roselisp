@@ -211,10 +211,10 @@ declare namespace rktNew_ {
  * [cl:and]: http://clhs.lisp.se/Body/m_and.htm
  * [el:and]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-and
  */
-declare function and_(exp: any, env: any): any;
+declare function and_(stx: any): any;
 declare namespace and_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
+    var ftype: symbol[];
 }
 /**
  * Expand an `(or ...)` expression.
@@ -227,10 +227,24 @@ declare namespace and_ {
  * [cl:or]: http://clhs.lisp.se/Body/m_or.htm
  * [el:or]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-or
  */
-declare function or_(exp: any, env: any): any;
+declare function or_(stx: any): any;
 declare namespace or_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
+    var ftype: symbol[];
+}
+/**
+ * Expand a `(cond ...)` expression.
+ *
+ * Similar to [`cond` in Racket][rkt:cond] and
+ * [`cond` in Guile][guile:cond].
+ *
+ * [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
+ * [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
+ */
+declare function cond_(stx: any): any;
+declare namespace cond_ {
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[])[])[])[];
+    var ftype: symbol[];
 }
 /**
  * Expand a `(when ...)` expression.
@@ -243,10 +257,10 @@ declare namespace or_ {
  * [cl:when]: http://clhs.lisp.se/Body/m_when_.htm
  * [el:when]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-when
  */
-declare function when_(exp: any, env: any): any;
+declare function when_(stx: any): any;
 declare namespace when_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
+    var ftype: symbol[];
 }
 /**
  * Expand an `(unless ...)` expression.
@@ -259,10 +273,10 @@ declare namespace when_ {
  * [cl:unless]: http://clhs.lisp.se/Body/m_when_.htm
  * [el:unless]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-unless
  */
-declare function unless_(exp: any, env: any): any;
+declare function unless_(stx: any): any;
 declare namespace unless_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
-    var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
+    var ftype: symbol[];
 }
 /**
  * Expand an `(el/if ...)` expression.
@@ -363,7 +377,7 @@ declare namespace while_ {
  */
 declare function for_(exp: any, env: any): any;
 declare namespace for_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | ((symbol | (number | symbol | symbol[])[])[] | (symbol | ((symbol | (symbol | (string | symbol)[] | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][][])[])[])[][] | (symbol | symbol[] | (symbol | (symbol | symbol[])[])[][][])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[][] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[])[])[])[])[];
     var ftype: string;
 }
 /**
@@ -468,4 +482,38 @@ declare namespace match_ {
     var fsource: (symbol | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol[])[] | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (boolean | symbol)[] | (boolean | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[])[])[][] | (boolean | symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][] | (symbol | ((boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[][] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[][])[] | (symbol | (number | symbol)[] | (symbol | (boolean | symbol)[])[])[])[][] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((number | symbol | symbol[])[] | (boolean | symbol | symbol[])[])[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (symbol | (boolean | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
     var ftype: string;
 }
-export { and_, begin0_, caseEq_, case_, cljTry_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, elIf_, for_, letEnv_, match_, multipleValueBind_, newApply_, or_, quasisyntax_, rktNew_, set_, setq_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_ };
+/**
+ * Expand a `(cl/loop ...)` expression.
+ *
+ * Similar to [`loop` in Common Lisp][cl:loop].
+ *
+ * [cl:loop]: http://clhs.lisp.se/Body/m_loop.htm#loop
+ */
+declare function clLoop_(exp: any, env: any): any;
+declare namespace clLoop_ {
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * `with-gensyms` macro as defined in
+ * Peter Seibel's [*Practical Common Lisp*][book:pcl].
+ *
+ * [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
+ */
+declare function withGensyms_(exp: any, env: any): any;
+declare namespace withGensyms_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
+    var ftype: string;
+}
+/**
+ * `once-only` macro as defined in
+ * Peter Seibel's [*Practical Common Lisp*][book:pcl].
+ *
+ * [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
+ */
+declare function onceOnly_(exp: any, env: any): any;
+declare namespace onceOnly_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[][] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[][])[])[])[][])[])[])[])[])[])[])[])[];
+    var ftype: string;
+}
+export { and_, begin0_, caseEq_, case_, clLoop_, cljTry_, cond_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, elIf_, for_, letEnv_, match_, multipleValueBind_, newApply_, onceOnly_, or_, quasisyntax_, rktNew_, set_, setq_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, withGensyms_, while_ };

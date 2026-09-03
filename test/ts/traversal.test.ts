@@ -1,6 +1,6 @@
 import {
   lispEnvironment,
-  mapRose
+  mapSyntax
 } from '../../src/ts/language';
 
 import {
@@ -10,11 +10,11 @@ import {
 
 testMacro.ftype = 'macro';
 
-describe('map-rose', function (): any {
+describe('map-syntax', function (): any {
   it('()', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [], lispEnvironment);
@@ -24,7 +24,7 @@ describe('map-rose', function (): any {
   it('(f x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('f'), Symbol.for('x')], lispEnvironment);
@@ -34,7 +34,7 @@ describe('map-rose', function (): any {
   it('(f (g x) y)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('f'), [Symbol.for('g'), Symbol.for('x')], Symbol.for('y')], lispEnvironment);
@@ -44,7 +44,7 @@ describe('map-rose', function (): any {
   it('(begin x y)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y')], lispEnvironment);
@@ -54,7 +54,7 @@ describe('map-rose', function (): any {
   it('(begin0 x y)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('begin0'), Symbol.for('x'), Symbol.for('y')], lispEnvironment);
@@ -64,7 +64,7 @@ describe('map-rose', function (): any {
   it('(let ((x 1)) x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')], lispEnvironment);
@@ -74,7 +74,7 @@ describe('map-rose', function (): any {
   it('(let-values (((x) (foo))) x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('let-values'), [[[Symbol.for('x')], [Symbol.for('foo')]]], Symbol.for('x')], lispEnvironment);
@@ -84,7 +84,7 @@ describe('map-rose', function (): any {
   it('(cond ((foo bar) (baz quux)))', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('cond'), [[Symbol.for('foo'), Symbol.for('bar')], [Symbol.for('baz'), Symbol.for('quux')]]], lispEnvironment);
@@ -94,7 +94,7 @@ describe('map-rose', function (): any {
   it('(cond ((foo bar) (baz quux)))', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('cond'), [[Symbol.for('foo'), Symbol.for('bar')], [Symbol.for('baz'), Symbol.for('quux')]]], lispEnvironment);
@@ -104,7 +104,7 @@ describe('map-rose', function (): any {
   it('(lambda (x) x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], lispEnvironment);
@@ -114,7 +114,7 @@ describe('map-rose', function (): any {
   it('(lambda (x (y 1)) x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('lambda'), [Symbol.for('x'), [Symbol.for('y'), 1]], Symbol.for('x')], lispEnvironment);
@@ -124,7 +124,7 @@ describe('map-rose', function (): any {
   it('(define (I x) x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')], lispEnvironment);
@@ -134,7 +134,7 @@ describe('map-rose', function (): any {
   it('(define I (lambda (x) x))', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('define'), Symbol.for('I'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]], lispEnvironment);
@@ -144,7 +144,7 @@ describe('map-rose', function (): any {
   it('(quasiquote x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('quasiquote'), Symbol.for('x')], lispEnvironment);
@@ -154,7 +154,7 @@ describe('map-rose', function (): any {
   it('(quasiquote (x))', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('quasiquote'), [Symbol.for('x')]], lispEnvironment);
@@ -164,7 +164,7 @@ describe('map-rose', function (): any {
   it('(quasiquote (unquote x))', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('quasiquote'), [Symbol.for('unquote'), Symbol.for('x')]], lispEnvironment);
@@ -174,7 +174,7 @@ describe('map-rose', function (): any {
   it('(quasiquote (x (unquote y) (unquote-splicing z)))', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('quasiquote'), [Symbol.for('x'), [Symbol.for('unquote'), Symbol.for('y')], [Symbol.for('unquote-splicing'), Symbol.for('z')]]], lispEnvironment);
@@ -184,7 +184,7 @@ describe('map-rose', function (): any {
   return it('(defmacro f (x) x)', function (): any {
     return assertEqual(((): any => {
       const expressions: any = [];
-      mapRose(function (x: any): any {
+      mapSyntax(function (x: any): any {
         expressions.push(x);
         return x;
       }, [Symbol.for('defmacro'), Symbol.for('f'), [Symbol.for('x')], Symbol.for('x')], lispEnvironment);

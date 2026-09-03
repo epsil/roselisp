@@ -77,14 +77,13 @@ import {
 } from './rose';
 
 import {
+  InternalPromise
+} from './thunk';
+
+import {
   makeVisitor,
   visit
 } from './visitor';
-
-import {
-  force,
-  thunkp
-} from './thunk';
 
 const [findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedurep, pairOrListP]: any[] = ((): any => {
   function findf_(proc: any, lst: any, notFound: any = false): any {
@@ -104,8 +103,8 @@ const [findf, symbolp, booleanp, undefinedp, jsNullP, stringp, procedurep, pairO
   function undefinedp_(obj: any): any {
     return obj === undefined;
   }
-  function jsNullP_(obj: any): any {
-    return obj === null;
+  function jsNullP_(x: any): any {
+    return x === null;
   }
   function stringp_(x: any): any {
     return (typeof x === 'string') || (x instanceof String);
@@ -774,9 +773,9 @@ function printVisitor(node: any, options: any): any {
     // because it is used by some ESTree classes to
     // represent optional values.
     return empty;
-  } else if (thunkp(node)) {
+  } else if (node instanceof InternalPromise) {
     // Handle thunks within ESTree trees.
-    return printVisitor(force(node), options);
+    return printVisitor((node as any)(), options);
   } else {
     // Otherwise, if `node` is an ESTree node proper,
     // then inspect its type and call the
@@ -792,7 +791,7 @@ function printVisitor(node: any, options: any): any {
   }
 }
 
-printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symbol.for('node'), Symbol.for('options')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], Symbol.for('empty')], [[Symbol.for('thunk?'), Symbol.for('node')], [Symbol.for('print-visitor'), [Symbol.for('force'), Symbol.for('node')], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('type'), [Symbol.for('estree-type'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':comments')]], [Symbol.for('define'), Symbol.for('printer'), [Symbol.for('or'), [Symbol.for('hash-ref'), Symbol.for('printer-map'), Symbol.for('type')], Symbol.for('default-printer')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('printer'), Symbol.for('node'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('attach-comments'), Symbol.for('result'), Symbol.for('node'), Symbol.for('options')]]], Symbol.for('result')]]];
+printVisitor.fsource = [Symbol.for('define'), [Symbol.for('print-visitor'), Symbol.for('node'), Symbol.for('options')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], Symbol.for('empty')], [[Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('InternalPromise')], [Symbol.for('print-visitor'), [Symbol.for('force'), Symbol.for('node')], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('type'), [Symbol.for('estree-type'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('comments'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':comments')]], [Symbol.for('define'), Symbol.for('printer'), [Symbol.for('or'), [Symbol.for('hash-ref'), Symbol.for('printer-map'), Symbol.for('type')], Symbol.for('default-printer')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('printer'), Symbol.for('node'), Symbol.for('options')]], [Symbol.for('when'), Symbol.for('comments'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('attach-comments'), Symbol.for('result'), Symbol.for('node'), Symbol.for('options')]]], Symbol.for('result')]]];
 
 /**
  * Print an `ExpressionStatement` ESTree node to a `Doc` object.

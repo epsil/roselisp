@@ -13,6 +13,98 @@
  :repl #t
  :describe "To do"
 
+ :describe "Assignment operators"
+ xit> (compile '(js/+= x y))
+ "x += y;"
+ xit> (compile '(js/-= x y))
+ "x -= y;"
+ xit> (compile '(js/*= x y))
+ "x *= y;"
+ xit> (compile '(js//= x y))
+ "x /= y;"
+ xit> (compile '(js/^= x y))
+ "x ^= y;"
+ xit> (compile '(js/&= x y))
+ "x &= y;"
+ xit> (compile '(js/\|= x y))
+ "x |= y;"
+ xit> (compile '(js/<<= x y))
+ "x <<= y;"
+ xit> (compile '(js/>>= x y))
+ "x >>= y;"
+ xit> (compile '(js/>>>= x y))
+ "x >>>= y;"
+
+ :describe "js/iife"
+ xit> (compile '(js/iife (js/arrow (x . y)
+                           (+ x (first y)))
+                         (list* a b))
+               :as 'statement)
+ "let x = a;
+
+let y = b;
+
+x + y[0];"
+
+ :describe "parse"
+ > (parse "foo")
+ 'foo
+ > (parse "(foo)")
+ '(foo)
+ xit> (parse "foo;" :as 'javascript)
+ (js/obj
+  "type"
+  "Program"
+  "body"
+  (list
+   (js/obj "type"
+           "ExpressionStatement"
+           "expression"
+           (js/obj "type"
+                   "Identifier"
+                   "name"
+                   "foo"))))
+
+ :describe "interpret"
+ xit> (interpret '(length '(1 . ()))
+                 :fdottedlists #t)
+ 1
+
+ :describe "gensym"
+ xit> (compile `(module m scheme
+                  (define ,(gensym "length")
+                    length)))
+ "import {
+  length
+} from 'roselisp';
+
+let length1 = length;"
+
+ :describe "define-syntax"
+ xit> (compile '(module m scheme
+                  (define x 1)
+                  (define-syntax (foo x)
+                    (syntax
+                     (begin
+                       (define x 2)
+                       x)))
+                  (foo)))
+ "import {
+  datumToSyntax
+} from 'roselisp';
+
+let x = 1;
+
+function foo(x) {
+  return datumToSyntax(false, [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 2], Symbol.for('x')]);
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+let x1 = 2;
+
+x1;"
+
  :describe "Dotted lists"
  xit> '(1 . 2)
  '(1 . 2)
@@ -49,87 +141,6 @@ normalizeList([1, Symbol.for('.'), []);"
 function normalizeList(x) {
   normalizeList1([1, Symbol.for('.'), x);
 }"
-
- :describe "js/iife"
- xit> (compile '(js/iife (js/arrow (x . y)
-                           (+ x (first y)))
-                         (list* a b))
-               :as 'statement)
- "let x = a;
-
-let y = b;
-
-x + y[0];"
-
- :describe "gensym"
- xit> (compile `(module m scheme
-                  (define ,(gensym "length")
-                    length)))
- "import {
-  length
-} from 'roselisp';
-
-let length1 = length;"
-
- :describe "for-each"
- xit> (compile '(for-each (lambda (x)
-                            x)
-                          lst))
- "lst.forEach(function (x) {
-  return x;
-});"
-
- :describe "interpret"
- xit> (interpret '(length '(1 . ()))
-                 :fdottedlists #t)
- 1
-
- :describe "Assignment operators"
- xit> (compile '(js/+= x y))
- "x += y;"
- xit> (compile '(js/-= x y))
- "x -= y;"
- xit> (compile '(js/*= x y))
- "x *= y;"
- xit> (compile '(js//= x y))
- "x /= y;"
- xit> (compile '(js/^= x y))
- "x ^= y;"
- xit> (compile '(js/&= x y))
- "x &= y;"
- xit> (compile '(js/\|= x y))
- "x |= y;"
- xit> (compile '(js/<<= x y))
- "x <<= y;"
- xit> (compile '(js/>>= x y))
- "x >>= y;"
- xit> (compile '(js/>>>= x y))
- "x >>>= y;"
-
- :describe "define-syntax"
- xit> (compile '(module m scheme
-                  (define x 1)
-                  (define-syntax (foo x)
-                    (syntax
-                     (begin
-                       (define x 2)
-                       x)))
-                  (foo)))
- "import {
-  datumToSyntax
-} from 'roselisp';
-
-let x = 1;
-
-function foo(x) {
-  return datumToSyntax(false, [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 2], Symbol.for('x')]);
-}
-
-foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
-
-let x1 = 2;
-
-x1;"
 
  ;; :describe "Other tests"
  ;; xit> (list? '(1 . ()))
@@ -194,12 +205,6 @@ x1;"
  ;; };"
  ;;  xit> (compile '(apply send obj method args))
  ;;  "obj.method(...args);"
- ;;  xit> (compile '(for ((i (range 0 10))
- ;;                       (j (range 0 10)))
- ;;                   (foo)))
- ;;  "for (i = 0, j = 0; (i < 10) && (j < 10); i++, j++) {
- ;;   foo();
- ;; }"
  ;;  xit> (compile '(do ((*do-result* (display result)))
  ;;                     ((not (< (array-list-length result) 3)))))
  ;;  "do {

@@ -82,8 +82,6 @@ import {
   unquotep
 } from './util';
 
-// (require (only-in "./trampoline"
-//                   tcall))
 import {
   funcall as tcall
 } from './procedures';
@@ -112,6 +110,9 @@ const [flatten, nthcdr]: any[] = ((): any => {
   }
   return [flatten_, nthcdr_];
 })();
+
+// (require (only-in "./trampoline"
+//                   tcall))
 
 /**
  * Evaluate a `(quote ...)` form.

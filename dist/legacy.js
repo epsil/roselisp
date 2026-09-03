@@ -76,6 +76,8 @@ const [flatten, nthcdr] = (() => {
     }
     return [flatten_, nthcdr_];
 })();
+// (require (only-in "./trampoline"
+//                   tcall))
 /**
  * Evaluate a `(quote ...)` form.
  */

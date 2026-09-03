@@ -16,7 +16,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
 /**
@@ -262,7 +262,7 @@ function formp(exp, f, env) {
             if (typeof op !== 'symbol') {
                 return false;
             }
-            else if (env.hasThunkP(op)) {
+            else if (env.hasPromiseP(op)) {
                 // If the operator is bound to a thunk,
                 // it is a user-defined binding.
                 return false;
@@ -531,3 +531,14 @@ function listExpressionToPattern(exp) {
     }
 }
 exports.listExpressionToPattern = listExpressionToPattern;
+/**
+ * Convert a number to a letter.
+ *
+ * Counting starts at zero. `0` corresponds to
+ * `a`, `1` to `b`, etc., unless a different
+ * starting letter is specified with `start`.
+ */
+function numberToLetter(n, start = 'a') {
+    return String.fromCharCode(start.charCodeAt(0) + n);
+}
+exports.numberToLetter = numberToLetter;

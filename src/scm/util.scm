@@ -260,7 +260,7 @@
         #f)
        ;; If the operator is bound to a thunk,
        ;; it is a user-defined binding.
-       ((send env has-thunk? op)
+       ((send env has-promise? op)
         #f)
        (else
         (define val
@@ -477,6 +477,16 @@
    (else
     exp)))
 
+;;; Convert a number to a letter.
+;;;
+;;; Counting starts at zero. `0` corresponds to
+;;; `a`, `1` to `b`, etc., unless a different
+;;; starting letter is specified with `start`.
+(define (number->letter n (start "a"))
+  (~> (send start charCodeAt 0)
+      (+ _ n)
+      (send String fromCharCode _)))
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
@@ -498,6 +508,7 @@
   map-has?
   map-set!
   map-tree
+  number->letter
   quasiquote?
   quote?
   tagged-list?

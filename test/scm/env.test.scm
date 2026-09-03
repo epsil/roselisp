@@ -5,11 +5,11 @@
                   EnvironmentStack
                   JavaScriptEnvironment
                   LispEnvironment
-                  ThunkedEnvironment
+                  PromiseEnvironment
                   TypedEnvironment
                   extend-environment))
 (require (only-in "../../src/ts/thunk"
-                  thunk))
+                  InternalPromise))
 (require (only-in "./test-util"
                   assert-equal
                   test-macro))
@@ -1256,36 +1256,40 @@
        (send env get-typed-value 'foo (js/obj :filter filter)))
  '(#u Undefined)
 
- :describe "ThunkedEnvironment"
+ :describe "PromiseEnvironment"
  > (it "get"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "bar"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))))
        (send env get 'foo))
- "bar"
+ "foo"
  > (it "get, nonexistant binding"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "bar"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))))
        (send env get 'quux))
  #u
  > (it "get, nonexistant binding, notFound option"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "bar"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))))
        (send env get 'quux (js/obj :not-found #f)))
  #f
  > (it "get, filter option"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "bar"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))))
        (define (filter x)
          #f)
@@ -1293,70 +1297,80 @@
  #u
  > (it "get, parent environment, filter option"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "bar"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))
-              (new ThunkedEnvironment
+              (new PromiseEnvironment
                    `((foo
-                      ,(thunk (lambda () "baz"))
+                      ,(new InternalPromise
+                            (delay "bar"))
                       Any)))))
        (define (filter x)
          (not (eq? x env)))
        (send env get 'foo (js/obj :filter filter)))
  #u
- > (it "has-thunk?, true"
+ > (it "has-promise?, true"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "foo"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))))
-       (send env has-thunk? 'foo))
+       (send env has-promise? 'foo))
  #t
- > (it "has-thunk?, parent environment, true"
+ > (it "has-promise?, parent environment, true"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "foo"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))
-              (new ThunkedEnvironment
+              (new PromiseEnvironment
                    `((bar
-                      ,(thunk (lambda () "bar"))
+                      ,(new InternalPromise
+                            (delay "bar"))
                       Any)))))
-       (send env has-thunk? 'bar))
+       (send env has-promise? 'bar))
  #t
- > (it "has-thunk?, false"
+ > (it "has-promise?, false"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "foo"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any)
                 (bar "bar" Any))))
-       (send env has-thunk? 'bar))
+       (send env has-promise? 'bar))
  #f
- > (it "has-local-thunk?, true"
+ > (it "has-local-promise?, true"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "foo"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))
-              (new ThunkedEnvironment
+              (new PromiseEnvironment
                    `((bar
-                      ,(thunk (lambda () "bar"))
+                      ,(new InternalPromise
+                            (delay "bar"))
                       Any)))))
-       (send env has-local-thunk? 'foo))
+       (send env has-local-promise? 'foo))
  #t
- > (it "has-local-thunk?, false"
+ > (it "has-local-promise?, false"
        (define env
-         (new ThunkedEnvironment
+         (new PromiseEnvironment
               `((foo
-                 ,(thunk (lambda () "foo"))
+                 ,(new InternalPromise
+                       (delay "foo"))
                  Any))
-              (new ThunkedEnvironment
+              (new PromiseEnvironment
                    `((bar
-                      ,(thunk (lambda () "bar"))
+                      ,(new InternalPromise
+                            (delay "bar"))
                       Any)))))
-       (send env has-local-thunk? 'bar))
+       (send env has-local-promise? 'bar))
  #f
 
  :describe "JavaScriptEnvironment"

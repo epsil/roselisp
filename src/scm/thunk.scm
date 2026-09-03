@@ -1,14 +1,15 @@
 ;; SPDX-License-Identifier: MPL-2.0
 ;; inline-lisp-sources: true
-;;; # Thunks
+;;; # Thunks and promises
 ;;;
-;;; Thunk implementation.
+;;; Implementation of thunks and promises.
 ;;;
 ;;; ## Description
 ;;;
-;;; Defines a `Thunk` class for thunks, which can be forced by calling
-;;; the `.force()` method. Also provides functions for creating and
-;;; forcing thunks.
+;;; A thunk is a function of zero arguments. A promise is like a thunk,
+;;; but is only evaluated once. (A promise, in this context, is not to
+;;; be confused with a JavaScript `Promise`, which is a different
+;;; construct.)
 ;;;
 ;;; ## License
 ;;;
@@ -16,97 +17,106 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-;;; Thunk class.
-;;;
-;;; This class is a wrapper around a function `f` that is called with
-;;; zero arguments. The function `f` is passed to the constructor, and
-;;; is called only once, when the `.force` method is invoked for the
-;;; first time; subsequent invocations return a cached value.
-(define-class Thunk ()
-  ;;; Thunk function.
-  (define f)
-  ;;; Whether the thunk has been forced yet.
-  (define forced #f)
-  ;;; Cached value.
-  (define value #u)
-
-  ;;; Create a new thunk.
-  ;;; `f` should be a function of zero arguments.
-  (define/public (constructor f)
-    (set-field! f this f))
-
-  ;;; Get the value of the thunk.
-  ;;; Alias for `.force()`
-  (define/public (get-value)
-    (send this force))
-
-  ;;; Force the thunk.
-  (define/public (force)
-    (cond
-     ((get-field forced this)
-      (get-field value this))
-     (else
-      (set-field! forced this #t)
-      (define f
-        (get-field f this))
-      (define value
-        (f))
-      (set-field! value this value)
-      value))))
-
 ;;; Make a thunk.
-;;;
-;;; `f` should be a function of zero arguments.
-(define (thunk f)
-  (new Thunk f))
-
-;;; Delay a piece of code with a thunk.
-(define-macro (delay &rest body)
-  `(thunk (lambda () ,@body)))
+(define-macro (thunk_ &rest body)
+  `(lambda ()
+     ,@body))
 
 ;;; Whether something is a thunk.
-(define (thunk? x)
-  (is-a? x Thunk))
+(define (thunk?_ x)
+  (and (procedure? x)
+       (zero? (arity x))))
 
-;;; Whether something appears to be a thunk.
-(define (thunkish? x)
-  (and (object? x)
-       (procedure? (get-field force x))))
+;;; Make a promise.
+(define-macro (delay_ &rest body)
+  (let ((sym (gensym "promise-f")))
+    `(begin
+       (define ,sym
+         (thunk
+          (cond
+           ((get-field forced ,sym)
+            (get-field value ,sym))
+           (else
+            (set-field! forced ,sym #u)
+            (set-field! value ,sym (begin ,@body))
+            (set-field! forced ,sym #t)
+            (get-field value ,sym)))))
+       (set-field! value ,sym (ann #u Any))
+       (set-field! forced ,sym (ann #f Any))
+       (set-field! ftype ,sym "thunk")
+       ,sym)))
 
-;;; Whether something is a thunk,
-;;; or appears to be a thunk.
-(define (thunkable? x)
-  (or (thunk? x)
-      (thunkish? x)))
+;;; Make a composable promise.
+(define-macro (lazy_ &rest body)
+  `(delay
+     (define result
+       (begin ,@body))
+     (when (promise? result)
+       (set! result (force result)))
+     result))
 
-;;; Force a thunk.
-(define (force x)
-  (send x force))
+;;; Whether something is a promise.
+(define (promise?_ x)
+  (and (js/function-type? x)
+       (eq? (get-field ftype (ann x Any))
+            "thunk")))
 
-;;; Map for storing thunks in.
+;;; Force a promise.
+(define (force_ x)
+  ((ann x Any)))
+
+;;; Whether a promise has been forced.
+(define (promise-forced?_ x)
+  (if (get-field forced x) #t #f))
+
+;;; Whether a promise is running.
+(define (promise-running?_ x)
+  (undefined? (get-field forced x)))
+
+;;; Map for storing promises in.
 ;;;
-;;; Like [`Map`][js:Map], but stores thunked values transparently.
+;;; Like [`Map`][js:Map], but stores promised values transparently.
 ;;;
 ;;; [js:Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-(define-class ThunkedMap (Map)
+(define-class PromiseMap (Map)
   (define/public (get x)
     (define val
       (send super get x))
     (cond
-     ((thunk? val)
+     ((promise? val)
       (set! val (force val))
       (send super set x val)
       val)
      (else
       val))))
 
+;;; Promise wrapper, for use within the language implementation
+;;; in a way that does not interfere with user-defined promises.
+(define-class InternalPromise ()
+  (define promise)
+
+  (define/public (constructor promise)
+    (set-field! promise this promise))
+
+  (define/public (force)
+    (force (get-field promise this))))
+
 (provide
-  ;; (rename-out (thunk delay))
-  Thunk
-  ThunkedMap
-  delay
-  force
-  thunk
-  thunk?
-  thunkable?
-  thunkish?)
+  (rename-out (delay_ delay))
+  (rename-out (force_ force))
+  (rename-out (lazy_ lazy))
+  (rename-out (promise-forced?_ promise-forced?))
+  (rename-out (promise-running?_ promise-running?))
+  (rename-out (promise?_ promise?))
+  (rename-out (thunk?_ thunk))
+  (rename-out (thunk_ thunk))
+  InternalPromise
+  PromiseMap
+  delay_
+  force_
+  lazy_
+  promise-forced?_
+  promise-running?_
+  promise?_
+  thunk?_
+  thunk_)

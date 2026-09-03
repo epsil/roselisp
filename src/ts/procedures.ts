@@ -109,6 +109,15 @@ function funcall_(f: any, ...args: any[]): any {
 funcall_.fsource = [Symbol.for('define'), [Symbol.for('funcall_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('f'), Symbol.for('call'), null, Symbol.for('args')]];
 
 /**
+ * Return the arity of the function `f`.
+ */
+function arity_(f: any): any {
+  return f.length;
+}
+
+arity_.fsource = [Symbol.for('define'), [Symbol.for('arity_'), Symbol.for('f')], [Symbol.for('js/length'), Symbol.for('f')]];
+
+/**
  * Whether `obj` is a procedure (i.e., a function).
  *
  * Similar to [`procedure?` in Racket][rkt:procedurep] and
@@ -327,6 +336,15 @@ function map_(f: any, seq: any): any {
 }
 
 map_.fsource = [Symbol.for('define'), [Symbol.for('map_'), Symbol.for('f'), Symbol.for('seq')], [Symbol.for('map'), Symbol.for('f'), Symbol.for('seq')]];
+
+/**
+ * Call a procedure on each element of a list.
+ */
+function forEach_(f: any, lst: any): any {
+  return lst.forEach(f);
+}
+
+forEach_.fsource = [Symbol.for('define'), [Symbol.for('for-each_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('forEach'), Symbol.for('f')]];
 
 /**
  * Less than operator.
@@ -1192,7 +1210,7 @@ function typeOf_(x: any): any {
   return typeof x;
 }
 
-typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/type-of'), Symbol.for('x')]];
+typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
 
 /**
  * Whether `obj` is an instance of `cls`.
@@ -1205,7 +1223,7 @@ function isAP_(obj: any, cls: any): any {
   return obj instanceof cls;
 }
 
-isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instance-of?'), Symbol.for('obj'), Symbol.for('cls')]];
+isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instanceof'), Symbol.for('obj'), Symbol.for('cls')]];
 
 /**
  * Return the absolute value of `x`.
@@ -1289,6 +1307,7 @@ export {
   add1_,
   add_,
   apply_,
+  arity_,
   assert_,
   atomp_,
   booleanp_,
@@ -1306,6 +1325,7 @@ export {
   findf_,
   foldl_,
   foldr_,
+  forEach_,
   funcall_,
   gt_,
   gte_,

@@ -42,10 +42,11 @@
  * [npm:typescript-estree] https://www.npmjs.com/package/@typescript-eslint/typescript-estree
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Node = exports.NewExpression = exports.MethodDefinition = exports.MemberExpression = exports.LogicalExpression = exports.Literal = exports.LeadingComment = exports.ImportSpecifier = exports.ImportNamespaceSpecifier = exports.ImportDefaultSpecifier = exports.ImportDeclaration = exports.IfStatement = exports.Identifier = exports.FunctionExpression = exports.FunctionDeclaration = exports.Function = exports.ForStatement = exports.ForOfStatement = exports.ForInStatement = exports.ExpressionStatement = exports.Expression = exports.ExportSpecifier = exports.ExportNamedDeclaration = exports.ExportAllDeclaration = exports.DoWhileStatement = exports.ContinueStatement = exports.ConditionalExpression = exports.Comment = exports.ClassExpression = exports.ClassDeclaration = exports.ClassBody = exports.ChainExpression = exports.ChainElement = exports.CatchClause = exports.CallExpression = exports.BreakStatement = exports.BlockStatement = exports.BlockComment = exports.BinaryExpression = exports.AwaitExpression = exports.AssignmentPattern = exports.AssignmentExpression = exports.ArrowFunctionExpression = exports.ArrayPattern = exports.ArrayExpression = exports.estreeIsP = exports.TSESTreeNode = exports.ESTreeStatement = exports.ESTreeNode = exports.ESTreeExpression = void 0;
-exports.getEstreeField = exports.estreep = exports.estreeTypeP = exports.estreeType = exports.estreeQuote = exports.YieldExpression = exports.XRawJavaScript = exports.WhileStatement = exports.VariableDeclarator = exports.VariableDeclaration = exports.UpdateExpression = exports.UnaryExpression = exports.TryStatement = exports.TrailingComment = exports.ThrowStatement = exports.ThisExpression = exports.TemplateLiteral = exports.TemplateElement = exports.TaggedTemplateExpression = exports.TSVoidKeyword = exports.TSUnionType = exports.TSUndefinedKeyword = exports.TSTypeReference = exports.TSTypeParameterInstantiation = exports.TSTypeAnnotation = exports.TSTypeAliasDeclaration = exports.TSTupleType = exports.TSStringKeyword = exports.TSNumberKeyword = exports.TSNode = exports.TSLiteralType = exports.TSIdentifier = exports.TSFunctionType = exports.TSBooleanKeyword = exports.TSAsExpression = exports.TSArrayType = exports.TSAnyKeyword = exports.SwitchStatement = exports.SwitchCase = exports.Statement = exports.SpreadElement = exports.SequenceExpression = exports.ReturnStatement = exports.RestElement = exports.RegExpLiteral = exports.PropertyDefinition = exports.Property = exports.Program = exports.ObjectPattern = exports.ObjectExpression = void 0;
-exports.wrapInEstree = void 0;
+exports.NewExpression = exports.MethodDefinition = exports.MemberExpression = exports.LogicalExpression = exports.Literal = exports.LeadingComment = exports.ImportSpecifier = exports.ImportNamespaceSpecifier = exports.ImportDefaultSpecifier = exports.ImportDeclaration = exports.IfStatement = exports.Identifier = exports.FunctionExpression = exports.FunctionDeclaration = exports.Function = exports.ForStatement = exports.ForOfStatement = exports.ForInStatement = exports.ExpressionStatement = exports.Expression = exports.ExportSpecifier = exports.ExportNamedDeclaration = exports.ExportAllDeclaration = exports.InternalPromise = exports.DoWhileStatement = exports.ContinueStatement = exports.ConditionalExpression = exports.Comment = exports.ClassExpression = exports.ClassDeclaration = exports.ClassBody = exports.ChainExpression = exports.ChainElement = exports.CatchClause = exports.CallExpression = exports.BreakStatement = exports.BlockStatement = exports.BlockComment = exports.BinaryExpression = exports.AwaitExpression = exports.AssignmentPattern = exports.AssignmentExpression = exports.ArrowFunctionExpression = exports.ArrayPattern = exports.ArrayExpression = exports.estreeIsP = exports.TSESTreeNode = exports.ESTreeStatement = exports.ESTreeNode = exports.ESTreeExpression = void 0;
+exports.estreep = exports.estreeTypeP = exports.estreeType = exports.estreeQuote = exports.YieldExpression = exports.XRawJavaScript = exports.WhileStatement = exports.VariableDeclarator = exports.VariableDeclaration = exports.UpdateExpression = exports.UnaryExpression = exports.TryStatement = exports.TrailingComment = exports.ThrowStatement = exports.ThisExpression = exports.TemplateLiteral = exports.TemplateElement = exports.TaggedTemplateExpression = exports.TSVoidKeyword = exports.TSUnionType = exports.TSUndefinedKeyword = exports.TSTypeReference = exports.TSTypeParameterInstantiation = exports.TSTypeAnnotation = exports.TSTypeAliasDeclaration = exports.TSTupleType = exports.TSStringKeyword = exports.TSNumberKeyword = exports.TSNode = exports.TSLiteralType = exports.TSIdentifier = exports.TSFunctionType = exports.TSBooleanKeyword = exports.TSAsExpression = exports.TSArrayType = exports.TSAnyKeyword = exports.SwitchStatement = exports.SwitchCase = exports.Statement = exports.SpreadElement = exports.SequenceExpression = exports.ReturnStatement = exports.RestElement = exports.RegExpLiteral = exports.PropertyDefinition = exports.Property = exports.Program = exports.ObjectPattern = exports.ObjectExpression = exports.Node = void 0;
+exports.wrapInEstree = exports.getEstreeField = void 0;
 const thunk_1 = require("./thunk");
+Object.defineProperty(exports, "InternalPromise", { enumerable: true, get: function () { return thunk_1.InternalPromise; } });
 /**
  * Node
  *
@@ -1575,7 +1576,7 @@ function estreeType(node) {
         // represent optional values.
         return '';
     }
-    else if ((0, thunk_1.thunkp)(node)) {
+    else if (node instanceof thunk_1.InternalPromise) {
         // Do not force thunks.
         return '';
     }
@@ -1586,7 +1587,7 @@ function estreeType(node) {
     }
 }
 exports.estreeType = estreeType;
-estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], ''], [[Symbol.for('thunk?'), Symbol.for('node')], ''], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]]]];
+estreeType.fsource = [Symbol.for('define'), [Symbol.for('estree-type'), Symbol.for('node')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], ''], [[Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('InternalPromise')], ''], [Symbol.for('else'), [Symbol.for('get-field'), Symbol.for('type'), Symbol.for('node')]]]];
 /**
  * Whether the type of the ESTree node `node` is `typ`.
  */
@@ -1594,7 +1595,7 @@ function estreeTypeP(node, typ) {
     if (!node) {
         return false;
     }
-    else if ((0, thunk_1.thunkp)(node)) {
+    else if (node instanceof thunk_1.InternalPromise) {
         return false;
     }
     else if (Array.isArray(typ) && !((typ.length >= 3) && (typ.at(-2) === Symbol.for('.')) && !Array.isArray(typ.at(-1)))) {
@@ -1608,7 +1609,7 @@ function estreeTypeP(node, typ) {
 }
 exports.estreeIsP = estreeTypeP;
 exports.estreeTypeP = estreeTypeP;
-estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], false], [[Symbol.for('thunk?'), Symbol.for('node')], false], [[Symbol.for('list?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
+estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('typ')], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], false], [[Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('InternalPromise')], false], [[Symbol.for('list?'), Symbol.for('typ')], [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('estree-type?'), Symbol.for('node'), Symbol.for('x')]], Symbol.for('typ')]], [Symbol.for('else'), [Symbol.for('eq?'), [Symbol.for('estree-type'), Symbol.for('node')], Symbol.for('typ')]]]];
 /**
  * Wrap a value in an ESTree node.
  *
@@ -1639,21 +1640,22 @@ function estreeQuote(x) {
 exports.estreeQuote = estreeQuote;
 estreeQuote.fsource = [Symbol.for('define'), [Symbol.for('estree-quote'), Symbol.for('x')], [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]];
 /**
- * Get a field on an ESTree node, forcing it if it is a thunk.
+ * Get a field on an ESTree node,
+ * forcing it if it is a thunk.
  */
 function getEstreeField(field, node) {
     if (!node) {
         return undefined;
     }
     let nodeVal = node;
-    if ((0, thunk_1.thunkp)(nodeVal)) {
-        nodeVal = (0, thunk_1.force)(nodeVal);
+    if (nodeVal instanceof thunk_1.InternalPromise) {
+        nodeVal = nodeVal.force();
     }
     let fieldVal = nodeVal[field];
-    if ((0, thunk_1.thunkp)(fieldVal)) {
-        fieldVal = (0, thunk_1.force)(fieldVal);
+    if (fieldVal instanceof thunk_1.InternalPromise) {
+        fieldVal = fieldVal.force();
     }
     return fieldVal;
 }
 exports.getEstreeField = getEstreeField;
-getEstreeField.fsource = [Symbol.for('define'), [Symbol.for('get-estree-field'), Symbol.for('field'), Symbol.for('node')], [Symbol.for('unless'), Symbol.for('node'), [Symbol.for('return'), undefined]], [Symbol.for('define'), Symbol.for('node-val'), Symbol.for('node')], [Symbol.for('when'), [Symbol.for('thunk?'), Symbol.for('node-val')], [Symbol.for('set!'), Symbol.for('node-val'), [Symbol.for('force'), Symbol.for('node-val')]]], [Symbol.for('define'), Symbol.for('field-val'), [Symbol.for('oget'), Symbol.for('node-val'), Symbol.for('field')]], [Symbol.for('when'), [Symbol.for('thunk?'), Symbol.for('field-val')], [Symbol.for('set!'), Symbol.for('field-val'), [Symbol.for('force'), Symbol.for('field-val')]]], Symbol.for('field-val')];
+getEstreeField.fsource = [Symbol.for('define'), [Symbol.for('get-estree-field'), Symbol.for('field'), Symbol.for('node')], [Symbol.for('unless'), Symbol.for('node'), [Symbol.for('return'), undefined]], [Symbol.for('define'), Symbol.for('node-val'), Symbol.for('node')], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('node-val'), Symbol.for('InternalPromise')], [Symbol.for('set!'), Symbol.for('node-val'), [Symbol.for('send'), Symbol.for('node-val'), Symbol.for('force')]]], [Symbol.for('define'), Symbol.for('field-val'), [Symbol.for('oget'), Symbol.for('node-val'), Symbol.for('field')]], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('field-val'), Symbol.for('InternalPromise')], [Symbol.for('set!'), Symbol.for('field-val'), [Symbol.for('send'), Symbol.for('field-val'), Symbol.for('force')]]], Symbol.for('field-val')];

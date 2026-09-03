@@ -241,9 +241,11 @@ declare class TypedEnvironment extends Environment {
 /**
  * Thunked environment.
  *
- * A typed environment storing thunks that are forced upon request.
+ * A typed environment storing promises that are forced upon request.
+ * The promises must be instances of the class `InternalPromise`;
+ * regular promises created with `delay` are not forced.
  */
-declare class ThunkedEnvironment extends TypedEnvironment {
+declare class PromiseEnvironment extends TypedEnvironment {
     /**
      * Get the binding defined by the current environment frame,
      * if any, as a tuple `(binding found)`.
@@ -268,13 +270,13 @@ declare class ThunkedEnvironment extends TypedEnvironment {
      */
     getLocalType(key: any, options?: any): any;
     /**
-     * Whether `key` is bound to a thunk.
+     * Whether `key` is bound to a promise.
      */
-    hasThunkP(key: any, options?: any): any;
+    hasPromiseP(key: any, options?: any): any;
     /**
-     * Whether `key` is locally bound to a thunk.
+     * Whether `key` is locally bound to a promise.
      */
-    hasLocalThunkP(key: any, options?: any): any;
+    hasLocalPromiseP(key: any, options?: any): any;
     /**
      * Set the type of `key` to `typ`.
      * Does not force any thunks.
@@ -291,7 +293,7 @@ declare class ThunkedEnvironment extends TypedEnvironment {
  *
  * A typed, thunked environment.
  */
-declare class LispEnvironment extends ThunkedEnvironment {
+declare class LispEnvironment extends PromiseEnvironment {
 }
 /**
  * Environment class for stacking environments.
@@ -476,7 +478,7 @@ declare namespace withEnvironmentF {
  */
 declare function makeEnvironment(variables?: any, parent?: any, isLisp2?: any): any;
 declare namespace makeEnvironment {
-    var fsource: (symbol | (symbol | (boolean | symbol)[] | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[] | (boolean | symbol)[])[])[];
 }
 /**
  * Extend the environment `env` with `parent` as its parent
@@ -516,4 +518,4 @@ declare function prefixBindings(prefix: any, bindings: any): any;
 declare namespace prefixBindings {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
-export { currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, withEnvironmentF as withEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, ThunkedEnvironment, TypedEnvironment, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withEnvironmentF };
+export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, withEnvironmentF as withEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withEnvironmentF };

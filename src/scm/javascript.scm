@@ -52,8 +52,8 @@
            (js/nan? y))))
 
 ;;; Whether something is JavaScript's `null`.
-(define (js/null?_ obj)
-  (eq? obj #n))
+(define (js/null?_ x)
+  (eq? x #n))
 
 ;;; Whether a number is JavaScript's [NaN][js:nan].
 ;;;
@@ -61,35 +61,46 @@
 (define (js/nan?_ x y)
   (send Number isNaN x))
 
-;;; Whether `obj` is a JavaScript function.
-(define (js/function?_ obj)
+;;; Whether `x` is a JavaScript function.
+(define (js/function?_ x)
   ;; In JavaScript, every function is a
   ;; [`Function` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function).
-  (js/function-object? obj))
+  (js/function-object? x))
 
 ;;; Whether `obj` is a [`Function`][js:Function] object.
 ;;;
 ;;; [js:Function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
-(define (js/function-object?_ obj)
-  (is-a? obj Function))
+(define (js/function-object?_ x)
+  (is-a? x Function))
 
 ;;; Whether `obj` is of type `"function"`.
-(define (js/function-type?_ obj)
-  (eq? (type-of obj) "function"))
+(define (js/function-type?_ x)
+  (eq? (type-of x) "function"))
+
+;;; Whether `obj` is an arrow function.
+(define (js/arrow?_ x)
+  (true?
+   (and (js/function? x)
+        (regexp-match (regexp "^(\\([^)]*\\)|[^=]*) *=>")
+                      (js/source x)))))
+
+;;; Returns the JavaScript source of a function.
+(define (js/source_ f)
+  (js/to-string f))
 
 ;;; JavaScript's [`typeof`][js:typeof] operator,
 ;;; as a function.
 ;;;
 ;;; [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
-(define (js/type-of_ x)
-  (js/type-of x))
+(define (js/typeof_ x)
+  (js/op typeof x))
 
 ;;; JavaScript's [`instanceof`][js:instanceof] operator,
 ;;; as a function.
 ;;;
 ;;; [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
-(define (js/instance-of?_ x y)
-  (js/instance-of? x y))
+(define (js/instanceof_ x y)
+  (js/op instanceof x y))
 
 ;;; JavaScript's [`in`][js:in] operator,
 ;;; as a function.
@@ -190,6 +201,8 @@
   ;; This function does nothing by itself, but a call to it
   ;; will be compiled to a `UnaryExpression` ESTree node
   ;; invoking `delete`.
+
+  ;; TODO: Define as a fexpr instead.
   #u)
 
 ;;; Whether something is a JavaScript array.
@@ -252,6 +265,10 @@
     (for ((x args))
       (set! result (js/op + result x)))
     result))
+
+;;; Convert `x` to a string.
+(define (js/to-string_ x)
+  (js/+ x ""))
 
 ;;; Create a JavaScript regular expression.
 (define (js/regexp_ input (flags #u))
@@ -380,10 +397,21 @@
 (define (js/unsigned-bitwise-shift-right_ . args)
   (js/op/apply >>> args))
 
+;;; Create a JavaScript `Promise`.
+(define (js/promise_ f)
+  (new Promise f))
+
+;;; Whether something is a JavaScript `Promise`.
+(define (js/promise?_ x)
+  (is-a? x Promise))
+
 (provide
+  (rename-out (js/instanceof_ js/instance-of?_))
+  (rename-out (js/typeof_ js/type-of_))
   js/abs_
   js/and_
   js/array?_
+  js/arrow?_
   js/bitwise-and_
   js/bitwise-not_
   js/bitwise-or_
@@ -401,7 +429,7 @@
   js/gt_
   js/gte_
   js/in_
-  js/instance-of?_
+  js/instanceof_
   js/keys_
   js/length_
   js/loosely-equal?_
@@ -420,6 +448,8 @@
   js/optional-chaining_
   js/or_
   js/plus_
+  js/promise?_
+  js/promise_
   js/reduce-right_
   js/reduce_
   js/regexp-match_
@@ -430,12 +460,14 @@
   js/same-value-zero?_
   js/same-value?_
   js/slice_
+  js/source_
   js/strictly-equal?_
   js/string-concat_
   js/string-literal?_
   js/string-object?_
   js/string?_
   js/tagged-template_
-  js/type-of_
+  js/to-string_
+  js/typeof_
   js/unsigned-bitwise-shift-right_
   js/yield_)

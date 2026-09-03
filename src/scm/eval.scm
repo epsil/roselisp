@@ -68,8 +68,7 @@
                   syntax->datum
                   syntax?))
 (require (only-in "./thunk"
-                  force
-                  thunk?))
+                  InternalPromise))
 (require (only-in "./util"
                   tagged-list?))
 
@@ -134,8 +133,8 @@
   (with-environment
    env
    (cond
-    ((thunk? exp)
-     (eval-sexp (force exp) env options))
+    ((is-a? exp InternalPromise)
+     (eval-sexp (send exp force) env options))
     ((null? exp)
      exp)
     ((list? exp)
@@ -276,8 +275,8 @@
   (cond
    ((not node)
     #u)
-   ((thunk? node)
-    (eval-estree (force node) env options))
+   ((is-a? node InternalPromise)
+    (eval-estree (send node force) env options))
    (else
     (define type_
       (estree-type node))
@@ -1111,8 +1110,8 @@
         (define x
           (list-ref elements i))
         (define x1
-          (if (thunk? x)
-              (force x)
+          (if (is-a? x InternalPromise)
+              (send x force)
               x))
         (cond
          ((not x1)
@@ -1159,56 +1158,148 @@
     (oget settings :arrow))
   (define params
     (get-estree-field "params" node))
+  (define rest-param
+    (if (and (> (length params) 0)
+             (estree-type? (last params) "RestElement"))
+        (last params)
+        #u))
   (define body
     (get-estree-field "body" node))
   (cond
    (arrow-setting
-    (lambda args
-      (define result #u)
-      (try
-        (set! result
-              (eval-estree
-               (if (= (length params) 0)
-                   body
-                   (new BlockStatement
-                        `(,(new VariableDeclaration
-                                (list
-                                 (new VariableDeclarator
-                                      (new ArrayPattern params)
-                                      (estree-quote args)))
-                                "let")
-                          ,@(get-estree-field "body" body))))
-               env
-               options))
-        (catch ReturnException e
-          (set! result
-                (get-estree-field "value" e))))
-      result))
-   (else
-    (lambda (this . args)
-      (with-this-value
-       this
-       (lambda ()
-         (define result #u)
-         (try
+    (make-arity-function
+     (js/arrow args
+       (define result #u)
+       (try
+         (set! result
+               (eval-estree
+                (if (= (length params) 0)
+                    body
+                    (new BlockStatement
+                         `(,(new VariableDeclaration
+                                 (list
+                                  (new VariableDeclarator
+                                       (new ArrayPattern params)
+                                       (estree-quote args)))
+                                 "let")
+                           ,@(get-estree-field "body" body))))
+                env
+                options))
+         (catch ReturnException e
            (set! result
-                 (eval-estree
-                  (if (= (length params) 0)
-                      body
-                      (new BlockStatement
-                           `(,(new VariableDeclaration
-                                   (list
-                                    (new VariableDeclarator
-                                         (new ArrayPattern params)
-                                         (estree-quote args)))
-                                   "let")
-                             ,@(get-estree-field "body" body))))
-                  env
-                  options))
-           (catch ReturnException e
-             (set! result
-                   (get-estree-field "value" e))))
-         result))))))
+                 (get-estree-field "value" e))))
+       result)
+     (if rest-param
+         #u
+         (length params))
+     #t))
+   (else
+    (make-arity-function
+     (lambda (this . args)
+       (with-this-value
+        this
+        (lambda ()
+          (define result #u)
+          (try
+            (set! result
+                  (eval-estree
+                   (if (= (length params) 0)
+                       body
+                       (new BlockStatement
+                            `(,(new VariableDeclaration
+                                    (list
+                                     (new VariableDeclarator
+                                          (new ArrayPattern params)
+                                          (estree-quote args)))
+                                    "let")
+                              ,@(get-estree-field "body" body))))
+                   env
+                   options))
+            (catch ReturnException e
+              (set! result
+                    (get-estree-field "value" e))))
+          result)))
+     (if rest-param
+         #u
+         (length params))))))
+
+;;; Make a function of the specified arity.
+(define (make-arity-function fun (n #u) (arrow #f))
+  (cond
+   (arrow
+    (case n
+      ((0)
+       (js/arrow ()
+         (fun)))
+      ((1)
+       (js/arrow (a)
+         (fun a)))
+      ((2)
+       (js/arrow (a b)
+         (fun a b)))
+      ((3)
+       (js/arrow (a b c)
+         (fun a b c)))
+      ((4)
+       (js/arrow (a b c d)
+         (fun a b c d)))
+      ((5)
+       (js/arrow (a b c d e)
+         (fun a b c d e)))
+      ((6)
+       (js/arrow (a b c d e f)
+         (fun a b c d e f)))
+      ((7)
+       (js/arrow (a b c d e f g)
+         (fun a b c d e f g)))
+      ((8)
+       (js/arrow (a b c d e f g h)
+         (fun a b c d e f g h)))
+      ((9)
+       (js/arrow (a b c d e f g h i)
+         (fun a b c d e f g h i)))
+      ((10)
+       (js/arrow (a b c d e f g h i j)
+         (fun a b c d e f g h i j)))
+      (else
+       fun)))
+   (else
+    (case n
+      ((0)
+       (lambda (this)
+         (send fun apply this arguments)))
+      ((1)
+       (lambda (this a)
+         (send fun apply this arguments)))
+      ((2)
+       (lambda (this a b)
+         (send fun apply this arguments)))
+      ((3)
+       (lambda (this a b c)
+         (send fun apply this arguments)))
+      ((4)
+       (lambda (this a b c d)
+         (send fun apply this arguments)))
+      ((5)
+       (lambda (this a b c d e)
+         (send fun apply this arguments)))
+      ((6)
+       (lambda (this a b c d e fun)
+         (send fun apply this arguments)))
+      ((7)
+       (lambda (this a b c d e f g)
+         (send fun apply this arguments)))
+      ((8)
+       (lambda (this a b c d e f g h)
+         (send fun apply this arguments)))
+      ((9)
+       (lambda (this a b c d e f g h i)
+         (send fun apply this arguments)))
+      ((10)
+       (lambda (this a b c d e f g h i j)
+         (send fun apply this arguments)))
+      (else
+       fun)))))
 
 ;;; Mapping from ESTree node types to evaluator functions.
 (define eval-estree-map

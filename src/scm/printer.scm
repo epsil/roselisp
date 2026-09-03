@@ -70,12 +70,11 @@
 (require (only-in "./rose"
                   syntax->datum
                   syntax?))
+(require (only-in "./thunk"
+                  InternalPromise))
 (require (only-in "./visitor"
                   make-visitor
                   visit))
-(require (only-in "./thunk"
-                  force
-                  thunk?))
 
 ;;; `Doc` type.
 ;;;
@@ -757,7 +756,7 @@
    ((not node)
     empty)
    ;; Handle thunks within ESTree trees.
-   ((thunk? node)
+   ((is-a? node InternalPromise)
     (print-visitor (force node) options))
    ;; Otherwise, if `node` is an ESTree node proper,
    ;; then inspect its type and call the

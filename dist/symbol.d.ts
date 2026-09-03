@@ -65,9 +65,9 @@ declare namespace stringToSymbol_ {
  * [rkt:gensym]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._gensym%29%29
  * [cl:gensym]: http://clhs.lisp.se/Body/f_gensym.htm#gensym
  */
-declare function gensym_(str: any): any;
+declare function gensym_(str?: any): any;
 declare namespace gensym_ {
-    var fsource: (symbol | symbol[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Whether something is a unique symbol.

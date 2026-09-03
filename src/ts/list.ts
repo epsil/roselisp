@@ -34,12 +34,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import {
-  CallExpression,
-  Identifier,
-  Literal,
-  MemberExpression
-} from './estree';
+// (require (only-in "./estree"
+//                   CallExpression
+//                   Identifier
+//                   Literal
+//                   MemberExpression))
 
 const [lastCdr, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListLength, dottedListLast]: any[] = ((): any => {
   function lastCdr_(lst: any): any {

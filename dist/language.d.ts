@@ -72,7 +72,7 @@ declare namespace compileModuleMap {
  */
 declare function compileFilesX(files: any, options?: any): any;
 declare namespace compileFilesX {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | string[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | string[])[])[])[])[])[])[];
 }
 /**
  * Compile a file.
@@ -742,6 +742,7 @@ declare const optimizations: any;
  */
 declare class Module {
     name: any;
+    modulePath: any;
     headerExpressions: any;
     headerNodes: any;
     requireExpressions: any;
@@ -759,7 +760,7 @@ declare class Module {
     interpretationEnvironment: any;
     moduleMap: any;
     symbolMap: any;
-    constructor(nodes?: any, parent?: any, name?: any);
+    constructor(nodes?: any, parent?: any, name?: any, modulePath?: any);
     getContinuationEnv(): any;
     getExpressions(): any;
     getEnvironment(): any;

@@ -114,7 +114,12 @@ promiseRunningP_.fsource = [Symbol.for('define'), [Symbol.for('promise-running?_
 class PromiseMap extends Map {
     get(x) {
         let val = super.get(x);
-        if ((typeof val === 'function') && (val.ftype === 'thunk')) {
+        if (val instanceof InternalPromise) {
+            val = val.force();
+            super.set(x, val);
+            return val;
+        }
+        else if ((typeof val === 'function') && (val.ftype === 'thunk')) {
             val = val();
             super.set(x, val);
             return val;

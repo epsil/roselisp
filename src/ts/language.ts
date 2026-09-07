@@ -27,8 +27,10 @@ import {
 
 import {
   basename,
+  dirname,
   extname,
-  join
+  join,
+  relative
 } from 'path';
 
 import {
@@ -860,25 +862,28 @@ compileWithEnvironment.fsource = [Symbol.for('define'), [Symbol.for('compile-wit
  * The modules may reference one another.
  */
 function compileModules(modules: any, env: any, options: any = {}): any {
-  let moduleMap: any = new Map();
-  let compiledModuleMap: any;
-  let moduleName: any;
+  const moduleMap: any = new Map();
   for (let module of modules) {
     if (!syntaxp(module)) {
       module = datumToSyntax(false, module);
     }
-    moduleName = syntaxToDatum(module.get(1));
+    let moduleName: any = syntaxToDatum(module.get(1));
     if (typeof moduleName === 'symbol') {
       moduleName = moduleName.description as string;
     }
     moduleName = moduleName.replace(new RegExp('^\\./'), '');
-    moduleMap.set(moduleName, module);
+    let modulePath: any = syntaxToDatum(module.get(2));
+    if (typeof modulePath === 'symbol') {
+      modulePath = modulePath.description as string;
+    }
+    const fullModuleName: any = './' + join(modulePath, moduleName);
+    moduleMap.set(fullModuleName, module);
   }
-  compiledModuleMap = compileModuleMap(moduleMap, env, options);
+  const compiledModuleMap: any = compileModuleMap(moduleMap, env, options);
   return [...compiledModuleMap.values()];
 }
 
-compileModules.fsource = [Symbol.for('define'), [Symbol.for('compile-modules'), Symbol.for('modules'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('module-map'), [Symbol.for('make-hash')]], [Symbol.for('define'), Symbol.for('compiled-module-map')], [Symbol.for('define'), Symbol.for('module-name')], [Symbol.for('for'), [[Symbol.for('module'), Symbol.for('modules')]], [Symbol.for('unless'), [Symbol.for('syntax?'), Symbol.for('module')], [Symbol.for('set!'), Symbol.for('module'), [Symbol.for('datum->syntax'), false, Symbol.for('module')]]], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('~>'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get'), 1], [Symbol.for('syntax->datum'), Symbol.for('_')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('module-name')], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('symbol->string'), Symbol.for('module-name')]]], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\./'], Symbol.for('module-name'), '']], [Symbol.for('hash-set!'), Symbol.for('module-map'), Symbol.for('module-name'), Symbol.for('module')]], [Symbol.for('set!'), Symbol.for('compiled-module-map'), [Symbol.for('compile-module-map'), Symbol.for('module-map'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('append'), [Symbol.for('send'), Symbol.for('compiled-module-map'), Symbol.for('values')]]];
+compileModules.fsource = [Symbol.for('define'), [Symbol.for('compile-modules'), Symbol.for('modules'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('module-map'), [Symbol.for('make-hash')]], [Symbol.for('for'), [[Symbol.for('module'), Symbol.for('modules')]], [Symbol.for('unless'), [Symbol.for('syntax?'), Symbol.for('module')], [Symbol.for('set!'), Symbol.for('module'), [Symbol.for('datum->syntax'), false, Symbol.for('module')]]], [Symbol.for('define'), Symbol.for('module-name'), [Symbol.for('~>'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get'), 1], [Symbol.for('syntax->datum'), Symbol.for('_')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('module-name')], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('symbol->string'), Symbol.for('module-name')]]], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\./'], Symbol.for('module-name'), '']], [Symbol.for('define'), Symbol.for('module-path'), [Symbol.for('~>'), [Symbol.for('send'), Symbol.for('module'), Symbol.for('get'), 2], [Symbol.for('syntax->datum'), Symbol.for('_')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('module-path')], [Symbol.for('set!'), Symbol.for('module-path'), [Symbol.for('symbol->string'), Symbol.for('module-path')]]], [Symbol.for('define'), Symbol.for('full-module-name'), [Symbol.for('~>'), Symbol.for('module-name'), [Symbol.for('join'), Symbol.for('module-path'), Symbol.for('_')], [Symbol.for('string-append'), './', Symbol.for('_')]]], [Symbol.for('hash-set!'), Symbol.for('module-map'), Symbol.for('full-module-name'), Symbol.for('module')]], [Symbol.for('define'), Symbol.for('compiled-module-map'), [Symbol.for('compile-module-map'), Symbol.for('module-map'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('hash-values'), Symbol.for('compiled-module-map')]];
 
 /**
  * Compile a module map.
@@ -955,7 +960,7 @@ compileModuleObject.fsource = [Symbol.for('define'), [Symbol.for('compile-module
  */
 function compileFilesX(files: any, options: any = {}): any {
   const moduleExpressionMap: any = new PromiseMap();
-  const filenameMap: any = new PromiseMap();
+  const filenameMap: any = new Map();
   const indentOption: any = options['indent'];
   const languageOption: any = options['language'] || defaultLanguage;
   const outDirOption: any = options['outDir'] || '';
@@ -967,33 +972,29 @@ function compileFilesX(files: any, options: any = {}): any {
     language: languageOption
   };
   const extension: any = (languageOption === 'typescript') ? '.ts' : '.js';
-  let code: any;
-  let data: any;
-  let module: any;
-  let moduleName: any;
-  const moduleNames: any = [];
-  let moduleMap: any;
-  let node: any;
-  let outFile: any;
+  const fullModuleNames: any = [];
   for (let file of files) {
-    moduleName = basename(file, extname(file));
-    filenameMap.set(moduleName, file);
-    moduleExpressionMap.set(moduleName, ((): any => {
+    let moduleName: any = basename(file, extname(file));
+    let modulePath: any = './' + relative('', dirname(file));
+    const fullModuleName: any = './' + join(modulePath, moduleName);
+    let id: any = Symbol.for(moduleName);
+    const readModulePromise: any = ((): any => {
       const promiseF: any = function (): any {
         if (promiseF.forced) {
           return promiseF.value;
         } else {
           promiseF.forced = undefined;
           promiseF.value = ((): any => {
-            const data: any = '(module m scheme\n' +
+            const data: any = '(begin\n' +
               readFileSync(file, {
                 encoding: 'utf8'
               }).replace(new RegExp('^#!.*'), '') + '\n' +
               ')';
-            let node: any = readSyntax(data, {
+            const beginStx: any = readSyntax(data, {
               comments: commentsOption
             });
-            return node;
+            const moduleStx: any = datumToSyntax(false, [Symbol.for('module'), id, modulePath, ...beginStx.drop(1)]);
+            return moduleStx;
           })();
           promiseF.forced = true;
           return promiseF.value;
@@ -1003,13 +1004,15 @@ function compileFilesX(files: any, options: any = {}): any {
       promiseF.forced = false as any;
       promiseF.ftype = 'thunk';
       return promiseF;
-    })());
+    })();
+    filenameMap.set(fullModuleName, file);
+    moduleExpressionMap.set(fullModuleName, readModulePromise);
     if (quickOption) {
       let shouldCompile: any = false;
       try {
-        const inFile: any = file;
+        let inFile: any = file;
         const inStats: any = fstatSync(openSync(inFile, 'r'));
-        let outFile: any = join(outDirOption, moduleName + extension);
+        let outFile: any = ['', '.'].includes(outDirOption) ? (fullModuleName + extension) : join(outDirOption, moduleName + extension);
         const outStats: any = fstatSync(openSync(outFile, 'r'));
         if (inStats.mtimeMs > outStats.mtimeMs) {
           shouldCompile = true;
@@ -1022,30 +1025,33 @@ function compileFilesX(files: any, options: any = {}): any {
         }
       }
       if (shouldCompile) {
-        moduleNames.push(moduleName);
+        fullModuleNames.push(fullModuleName);
       }
     } else {
-      moduleNames.push(moduleName);
+      fullModuleNames.push(fullModuleName);
     }
   }
-  moduleMap = makeModuleMap(moduleExpressionMap, langEnvironment);
-  for (let moduleName of moduleNames) {
-    module = moduleMap.get(moduleName);
-    code = compileWithEnvironment(module, langEnvironment, compilationOptions);
-    outFile = join(outDirOption, moduleName + extension);
+  const moduleMap: any = makeModuleMap(moduleExpressionMap, langEnvironment);
+  for (let fullModuleName of fullModuleNames) {
+    let module: any = moduleMap.get(fullModuleName);
+    const code: any = compileWithEnvironment(module, langEnvironment, compilationOptions);
+    let inFile: any = filenameMap.get(fullModuleName);
+    inFile = inFile.replace(new RegExp('^\\./'), '');
+    let outFile: any = ['', '.'].includes(outDirOption) ? (fullModuleName + extension) : join(outDirOption, basename(fullModuleName) + extension);
+    outFile = outFile.replace(new RegExp('^\\./'), '');
     mkdirSync(outDirOption, {
       recursive: true
     });
     writeFileSync(outFile, code, {
       encoding: 'utf8'
     });
-    console.log('Compiled ' + filenameMap.get(moduleName) + ' to ' + outFile);
+    console.log('Compiled ' + inFile + ' to ' + outFile);
   }
   return moduleMap;
 }
 
-compileFilesX.fsource = [Symbol.for('define'), [Symbol.for('compile-files!'), Symbol.for('files'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('module-expression-map'), [Symbol.for('new'), Symbol.for('PromiseMap')]], [Symbol.for('define'), Symbol.for('filename-map'), [Symbol.for('new'), Symbol.for('PromiseMap')]], [Symbol.for('define'), Symbol.for('indent-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':indent')]], [Symbol.for('define'), Symbol.for('language-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':language')], Symbol.for('default-language')]], [Symbol.for('define'), Symbol.for('out-dir-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':out-dir')], '']], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':comments')]], [Symbol.for('define'), Symbol.for('quick-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':quick')]], [Symbol.for('define'), Symbol.for('compilation-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':expression-type'), 'statement', Symbol.for(':language'), Symbol.for('language-option')]]], [Symbol.for('define'), Symbol.for('extension'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language-option'), 'typescript'], '.ts', '.js']], [Symbol.for('define'), Symbol.for('code')], [Symbol.for('define'), Symbol.for('data')], [Symbol.for('define'), Symbol.for('module')], [Symbol.for('define'), Symbol.for('module-name')], [Symbol.for('define'), Symbol.for('module-names'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('module-map')], [Symbol.for('define'), Symbol.for('node')], [Symbol.for('define'), Symbol.for('out-file')], [Symbol.for('for'), [[Symbol.for('file'), Symbol.for('files')]], [Symbol.for('set!'), Symbol.for('module-name'), [Symbol.for('basename'), Symbol.for('file'), [Symbol.for('extname'), Symbol.for('file')]]], [Symbol.for('hash-set!'), Symbol.for('filename-map'), Symbol.for('module-name'), Symbol.for('file')], [Symbol.for('hash-set!'), Symbol.for('module-expression-map'), Symbol.for('module-name'), [Symbol.for('delay'), [Symbol.for('define'), Symbol.for('data'), [Symbol.for('~>'), Symbol.for('file'), [Symbol.for('readFileSync'), Symbol.for('_'), [Symbol.for('js/obj'), Symbol.for(':encoding'), 'utf8']], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^#!.*'], Symbol.for('_'), ''], [Symbol.for('string-append'), '(module m scheme\n', Symbol.for('_'), '\n' +
-  ')']]], [Symbol.for('define'), Symbol.for('node'), [Symbol.for('read-syntax'), Symbol.for('data'), [Symbol.for('js/obj'), Symbol.for(':comments'), Symbol.for('comments-option')]]], Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('quick-option'), [Symbol.for('define'), Symbol.for('should-compile'), false], [Symbol.for('try'), [Symbol.for('define'), Symbol.for('in-file'), Symbol.for('file')], [Symbol.for('define'), Symbol.for('in-stats'), [Symbol.for('fstatSync'), [Symbol.for('openSync'), Symbol.for('in-file'), 'r']]], [Symbol.for('define'), Symbol.for('out-file'), [Symbol.for('join'), Symbol.for('out-dir-option'), [Symbol.for('string-append'), Symbol.for('module-name'), Symbol.for('extension')]]], [Symbol.for('define'), Symbol.for('out-stats'), [Symbol.for('fstatSync'), [Symbol.for('openSync'), Symbol.for('out-file'), 'r']]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('get-field'), Symbol.for('mtimeMs'), Symbol.for('in-stats')], [Symbol.for('get-field'), Symbol.for('mtimeMs'), Symbol.for('out-stats')]], [Symbol.for('set!'), Symbol.for('should-compile'), true]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('err'), [Symbol.for('set!'), Symbol.for('should-compile'), true]]], [Symbol.for('when'), Symbol.for('should-compile'), [Symbol.for('push-right!'), Symbol.for('module-names'), Symbol.for('module-name')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('module-names'), Symbol.for('module-name')]]]], [Symbol.for('set!'), Symbol.for('module-map'), [Symbol.for('make-module-map'), Symbol.for('module-expression-map'), Symbol.for('lang-environment')]], [Symbol.for('for'), [[Symbol.for('module-name'), Symbol.for('module-names')]], [Symbol.for('set!'), Symbol.for('module'), [Symbol.for('send'), Symbol.for('module-map'), Symbol.for('get'), Symbol.for('module-name')]], [Symbol.for('set!'), Symbol.for('code'), [Symbol.for('compile-with-environment'), Symbol.for('module'), Symbol.for('lang-environment'), Symbol.for('compilation-options')]], [Symbol.for('set!'), Symbol.for('out-file'), [Symbol.for('join'), Symbol.for('out-dir-option'), [Symbol.for('string-append'), Symbol.for('module-name'), Symbol.for('extension')]]], [Symbol.for('mkdirSync'), Symbol.for('out-dir-option'), [Symbol.for('js/obj'), Symbol.for(':recursive'), true]], [Symbol.for('writeFileSync'), Symbol.for('out-file'), Symbol.for('code'), [Symbol.for('js/obj'), Symbol.for(':encoding'), 'utf8']], [Symbol.for('display'), [Symbol.for('string-append'), 'Compiled ', [Symbol.for('hash-ref'), Symbol.for('filename-map'), Symbol.for('module-name')], ' to ', Symbol.for('out-file')]]], Symbol.for('module-map')];
+compileFilesX.fsource = [Symbol.for('define'), [Symbol.for('compile-files!'), Symbol.for('files'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('module-expression-map'), [Symbol.for('new'), Symbol.for('PromiseMap')]], [Symbol.for('define'), Symbol.for('filename-map'), [Symbol.for('make-hash')]], [Symbol.for('define'), Symbol.for('indent-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':indent')]], [Symbol.for('define'), Symbol.for('language-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':language')], Symbol.for('default-language')]], [Symbol.for('define'), Symbol.for('out-dir-option'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':out-dir')], '']], [Symbol.for('define'), Symbol.for('comments-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':comments')]], [Symbol.for('define'), Symbol.for('quick-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':quick')]], [Symbol.for('define'), Symbol.for('compilation-options'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':expression-type'), 'statement', Symbol.for(':language'), Symbol.for('language-option')]]], [Symbol.for('define'), Symbol.for('extension'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('language-option'), 'typescript'], '.ts', '.js']], [Symbol.for('define'), Symbol.for('full-module-names'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('file'), Symbol.for('files')]], [Symbol.for('define'), Symbol.for('module-name'), [Symbol.for('basename'), Symbol.for('file'), [Symbol.for('extname'), Symbol.for('file')]]], [Symbol.for('define'), Symbol.for('module-path'), [Symbol.for('~>'), Symbol.for('file'), [Symbol.for('dirname'), Symbol.for('_')], [Symbol.for('relative'), '', Symbol.for('_')], [Symbol.for('string-append'), './', Symbol.for('_')]]], [Symbol.for('define'), Symbol.for('full-module-name'), [Symbol.for('~>'), Symbol.for('module-name'), [Symbol.for('join'), Symbol.for('module-path'), Symbol.for('_')], [Symbol.for('string-append'), './', Symbol.for('_')]]], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('string->symbol'), Symbol.for('module-name')]], [Symbol.for('define'), Symbol.for('read-module-promise'), [Symbol.for('delay'), [Symbol.for('define'), Symbol.for('data'), [Symbol.for('~>'), Symbol.for('file'), [Symbol.for('readFileSync'), Symbol.for('_'), [Symbol.for('js/obj'), Symbol.for(':encoding'), 'utf8']], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^#!.*'], Symbol.for('_'), ''], [Symbol.for('string-append'), '(begin\n', Symbol.for('_'), '\n' +
+  ')']]], [Symbol.for('define'), Symbol.for('begin-stx'), [Symbol.for('read-syntax'), Symbol.for('data'), [Symbol.for('js/obj'), Symbol.for(':comments'), Symbol.for('comments-option')]]], [Symbol.for('define'), Symbol.for('module-stx'), [Symbol.for('datum->syntax'), false, [Symbol.for('quasiquote'), [Symbol.for('module'), [Symbol.for('unquote'), Symbol.for('id')], [Symbol.for('unquote'), Symbol.for('module-path')], [Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('begin-stx'), Symbol.for('drop'), 1]]]]]], Symbol.for('module-stx')]], [Symbol.for('hash-set!'), Symbol.for('filename-map'), Symbol.for('full-module-name'), Symbol.for('file')], [Symbol.for('hash-set!'), Symbol.for('module-expression-map'), Symbol.for('full-module-name'), Symbol.for('read-module-promise')], [Symbol.for('cond'), [Symbol.for('quick-option'), [Symbol.for('define'), Symbol.for('should-compile'), false], [Symbol.for('try'), [Symbol.for('define'), Symbol.for('in-file'), Symbol.for('file')], [Symbol.for('define'), Symbol.for('in-stats'), [Symbol.for('fstatSync'), [Symbol.for('openSync'), Symbol.for('in-file'), 'r']]], [Symbol.for('define'), Symbol.for('out-file'), [Symbol.for('if'), [Symbol.for('memq?'), Symbol.for('out-dir-option'), [Symbol.for('quote'), ['', '.']]], [Symbol.for('string-append'), Symbol.for('full-module-name'), Symbol.for('extension')], [Symbol.for('join'), Symbol.for('out-dir-option'), [Symbol.for('string-append'), Symbol.for('module-name'), Symbol.for('extension')]]]], [Symbol.for('define'), Symbol.for('out-stats'), [Symbol.for('fstatSync'), [Symbol.for('openSync'), Symbol.for('out-file'), 'r']]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('get-field'), Symbol.for('mtimeMs'), Symbol.for('in-stats')], [Symbol.for('get-field'), Symbol.for('mtimeMs'), Symbol.for('out-stats')]], [Symbol.for('set!'), Symbol.for('should-compile'), true]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('err'), [Symbol.for('set!'), Symbol.for('should-compile'), true]]], [Symbol.for('when'), Symbol.for('should-compile'), [Symbol.for('push-right!'), Symbol.for('full-module-names'), Symbol.for('full-module-name')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('full-module-names'), Symbol.for('full-module-name')]]]], [Symbol.for('define'), Symbol.for('module-map'), [Symbol.for('make-module-map'), Symbol.for('module-expression-map'), Symbol.for('lang-environment')]], [Symbol.for('for'), [[Symbol.for('full-module-name'), Symbol.for('full-module-names')]], [Symbol.for('define'), Symbol.for('module'), [Symbol.for('send'), Symbol.for('module-map'), Symbol.for('get'), Symbol.for('full-module-name')]], [Symbol.for('define'), Symbol.for('code'), [Symbol.for('compile-with-environment'), Symbol.for('module'), Symbol.for('lang-environment'), Symbol.for('compilation-options')]], [Symbol.for('define'), Symbol.for('in-file'), [Symbol.for('hash-ref'), Symbol.for('filename-map'), Symbol.for('full-module-name')]], [Symbol.for('set!'), Symbol.for('in-file'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\./'], Symbol.for('in-file'), '']], [Symbol.for('define'), Symbol.for('out-file'), [Symbol.for('if'), [Symbol.for('memq?'), Symbol.for('out-dir-option'), [Symbol.for('quote'), ['', '.']]], [Symbol.for('string-append'), Symbol.for('full-module-name'), Symbol.for('extension')], [Symbol.for('join'), Symbol.for('out-dir-option'), [Symbol.for('string-append'), [Symbol.for('basename'), Symbol.for('full-module-name')], Symbol.for('extension')]]]], [Symbol.for('set!'), Symbol.for('out-file'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^\\./'], Symbol.for('out-file'), '']], [Symbol.for('mkdirSync'), Symbol.for('out-dir-option'), [Symbol.for('js/obj'), Symbol.for(':recursive'), true]], [Symbol.for('writeFileSync'), Symbol.for('out-file'), Symbol.for('code'), [Symbol.for('js/obj'), Symbol.for(':encoding'), 'utf8']], [Symbol.for('display'), [Symbol.for('string-append'), 'Compiled ', Symbol.for('in-file'), ' to ', Symbol.for('out-file')]]], Symbol.for('module-map')];
 
 /**
  * Compile a file.
@@ -3600,8 +3606,8 @@ function compileFunction(node: any, env: any, options: any = {}, settings: any =
   }
   if (regularArgs) {
     // TypeScript-ism: TypeScript permits the type of `this` to be
-    // specified with `this` as the first parameter, which is since
-    // compiled away by the TypeScript compiler.
+    // specified with a pseudo-parameter, which is since compiled
+    // away by the TypeScript compiler. Do the same here.
     if ((language !== 'typescript') && (regularArgs.length > 0) && ((regularArgs[0] === Symbol.for('this')) || taggedListP(regularArgs[0], Symbol.for('this')))) {
       regularArgs = ((regularArgs.length === 3) && (regularArgs[1] === Symbol.for('.'))) ? regularArgs[2] : regularArgs.slice(1);
     }
@@ -7977,6 +7983,8 @@ const optimizations: any = [];
 class Module {
   name: any = '';
 
+  modulePath: any = '';
+
   headerExpressions: any = [];
 
   headerNodes: any = [];
@@ -8011,9 +8019,10 @@ class Module {
 
   symbolMap: any = new Map();
 
-  constructor(nodes: any = [], parent: any = langEnvironment, name: any = '') {
+  constructor(nodes: any = [], parent: any = langEnvironment, name: any = '', modulePath: any = '') {
     this.parentEnvironment = parent;
     this.name = name;
+    this.modulePath = modulePath;
     this.initializeNodes(nodes);
   }
 
@@ -8207,11 +8216,6 @@ class Module {
   makeEnvironment(parent: any = undefined): any {
     const moduleEnv: any = new LispEnvironment([], parent);
     const moduleInterpretationEnv: any = new EnvironmentStack(moduleEnv, jsEnvironment);
-    let imported: any;
-    let local: any;
-    let module: any;
-    let env: any;
-    let moduleName: any;
     this.parentEnvironment = parent;
     this.environment = moduleEnv;
     this.interpretationEnvironment = moduleInterpretationEnv;
@@ -8222,20 +8226,28 @@ class Module {
     let node of this.requireNodes) {
       // Iterate over `require-nodes`, importing definitions
       // from other modules.
+      // TODO: Create thunk for doing this on demand.
       let exp: any = syntaxToDatum(node);
+      // TODO: `require` forms that do not contain `only-in`.
       if (taggedListP(exp, Symbol.for('require')) && (exp.length > 1) && taggedListP(exp[1], Symbol.for('only-in'))) {
-        moduleName = exp[1][1];
+        let moduleName: any = exp[1][1];
         if (typeof moduleName === 'symbol') {
           moduleName = moduleName.description as string;
         }
         moduleName = moduleName.replace(new RegExp('^\\./'), '');
-        if (this.moduleMap && this.moduleMap.has(moduleName)) {
-          module = this.moduleMap.get(moduleName);
+        let modulePath: any = this.modulePath;
+        if (!modulePath.match(new RegExp('^\\.\\/'))) {
+          modulePath = './' + modulePath;
+        }
+        const fullModuleName: any = './' + join(modulePath, moduleName);
+        let env: any = undefined;
+        if (this.moduleMap && this.moduleMap.has(fullModuleName)) {
+          let module: any = this.moduleMap.get(fullModuleName);
           env = module.getEnvironment();
-        } else {
-          env = undefined;
         }
         for (let exp1 of exp[1].slice(2)) {
+          let imported: any;
+          let local: any;
           if (Array.isArray(exp1)) {
             local = exp1[0];
             imported = exp1[1];
@@ -8334,7 +8346,7 @@ class Module {
  * interlinking them in the process.
  */
 function makeModuleMap(moduleExpressionMap: any, env: any): any {
-  let moduleMap: any = new PromiseMap();
+  const moduleMap: any = new PromiseMap();
   for (let key of moduleExpressionMap.keys()) {
     moduleMap.set(key, ((): any => {
       const promiseF: any = function (): any {
@@ -8372,10 +8384,14 @@ function moduleExpressionToModuleObject(node: any, env: any): any {
   if (typeof name === 'symbol') {
     name = name.description as string;
   }
-  return new Module(node.drop(3), env, name);
+  let modulePath: any = syntaxToDatum(node.get(2));
+  if (typeof modulePath === 'symbol') {
+    modulePath = modulePath.description as string;
+  }
+  return new Module(node.drop(3), env, name, modulePath);
 }
 
-moduleExpressionToModuleObject.fsource = [Symbol.for('define'), [Symbol.for('module-expression->module-object'), Symbol.for('node'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('_'), Symbol.for('get'), 1], [Symbol.for('syntax->datum'), Symbol.for('_')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('name')], [Symbol.for('set!'), Symbol.for('name'), [Symbol.for('symbol->string'), Symbol.for('name')]]], [Symbol.for('new'), Symbol.for('Module'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 3], Symbol.for('env'), Symbol.for('name')]];
+moduleExpressionToModuleObject.fsource = [Symbol.for('define'), [Symbol.for('module-expression->module-object'), Symbol.for('node'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('_'), Symbol.for('get'), 1], [Symbol.for('syntax->datum'), Symbol.for('_')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('name')], [Symbol.for('set!'), Symbol.for('name'), [Symbol.for('symbol->string'), Symbol.for('name')]]], [Symbol.for('define'), Symbol.for('module-path'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('send'), Symbol.for('_'), Symbol.for('get'), 2], [Symbol.for('syntax->datum'), Symbol.for('_')]]], [Symbol.for('when'), [Symbol.for('symbol?'), Symbol.for('module-path')], [Symbol.for('set!'), Symbol.for('module-path'), [Symbol.for('symbol->string'), Symbol.for('module-path')]]], [Symbol.for('new'), Symbol.for('Module'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('drop'), 3], Symbol.for('env'), Symbol.for('name'), Symbol.for('module-path')]];
 
 /**
  * Whether `env` extends the Lisp environment.

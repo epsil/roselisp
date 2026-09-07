@@ -23,8 +23,10 @@
                   writeFileSync))
 (require (only-in "path"
                   basename
+                  dirname
                   extname
-                  join))
+                  join
+                  relative))
 (require (only-in "./array"
                   array-copy_
                   array-drop-right_
@@ -1041,23 +1043,31 @@
 (define (compile-modules modules env (options (js/obj)))
   (define module-map
     (make-hash))
-  (define compiled-module-map)
-  (define module-name)
   (for ((module modules))
     (unless (syntax? module)
       (set! module (datum->syntax #f module)))
-    (set! module-name
-          (~> (send module get 1)
-              (syntax->datum _)))
+    (define module-name
+      (~> (send module get 1)
+          (syntax->datum _)))
     (when (symbol? module-name)
       (set! module-name
             (symbol->string module-name)))
     (set! module-name
           (regexp-replace (regexp "^\\./") module-name ""))
-    (hash-set! module-map module-name module))
-  (set! compiled-module-map
-        (compile-module-map module-map env options))
-  (append (send compiled-module-map values)))
+    (define module-path
+      (~> (send module get 2)
+          (syntax->datum _)))
+    (when (symbol? module-path)
+      (set! module-path
+            (symbol->string module-path)))
+    (define full-module-name
+      (~> module-name
+          (join module-path _)
+          (string-append "./" _)))
+    (hash-set! module-map full-module-name module))
+  (define compiled-module-map
+    (compile-module-map module-map env options))
+  (hash-values compiled-module-map))
 
 ;;; Compile a module map.
 ;;; Returns a new map containing compiled modules.
@@ -1151,7 +1161,7 @@
   (define module-expression-map
     (new PromiseMap))
   (define filename-map
-    (new PromiseMap))
+    (make-hash))
   (define indent-option
     (oget options :indent))
   (define language-option
@@ -1172,36 +1182,44 @@
     (if (eq? language-option "typescript")
         ".ts"
         ".js"))
-  (define code)
-  (define data)
-  (define module)
-  (define module-name)
-  (define module-names '())
-  (define module-map)
-  (define node)
-  (define out-file)
+  (define full-module-names '())
   (for ((file files))
-    (set! module-name
-          (basename file (extname file)))
-    (hash-set! filename-map
-               module-name
-               file)
+    (define module-name
+      (basename file (extname file)))
+    (define module-path
+      (~> file
+          (dirname _)
+          (relative "" _)
+          (string-append "./" _)))
+    (define full-module-name
+      (~> module-name
+          (join module-path _)
+          (string-append "./" _)))
+    (define id
+      (string->symbol module-name))
+    (define read-module-promise
+      (delay
+        (define data
+          (~> file
+              (readFileSync _ (js/obj :encoding "utf8"))
+              (regexp-replace (regexp "^#!.*") _ "")
+              (string-append
+               "(begin\n"
+               _
+               "\n)")))
+        (define begin-stx
+          (read-syntax data
+                       (js/obj :comments comments-option)))
+        (define module-stx
+          (datum->syntax
+           #f
+           `(module ,id ,module-path
+              ,@(send begin-stx drop 1))))
+        module-stx))
+    (hash-set! filename-map full-module-name file)
     (hash-set! module-expression-map
-               module-name
-               (delay
-                 (define data
-                   (~> file
-                       (readFileSync _ (js/obj :encoding "utf8"))
-                       (regexp-replace (regexp "^#!.*") _ "")
-                       (string-append
-                        "(module m scheme\n"
-                        _
-                        "\n)")))
-                 (define node
-                   (read-syntax data
-                                (js/obj :comments
-                                        comments-option)))
-                 node))
+               full-module-name
+               read-module-promise)
     (cond
      (quick-option
       (define should-compile #f)
@@ -1210,9 +1228,10 @@
         (define in-stats
           (fstatSync (openSync in-file "r")))
         (define out-file
-          (join out-dir-option
-                (string-append module-name
-                               extension)))
+          (if (memq? out-dir-option '("" "."))
+              (string-append full-module-name extension)
+              (join out-dir-option
+                    (string-append module-name extension))))
         (define out-stats
           (fstatSync (openSync out-file "r")))
         (when (> (get-field mtimeMs in-stats)
@@ -1221,33 +1240,33 @@
         (catch Error err
           (set! should-compile #t)))
       (when should-compile
-        (push-right! module-names module-name)))
+        (push-right! full-module-names full-module-name)))
      (else
-      (push-right! module-names module-name))))
-  (set! module-map
-        (make-module-map module-expression-map
-                         lang-environment))
-  (for ((module-name module-names))
-    (set! module
-          (send module-map get module-name))
-    (set! code
-          (compile-with-environment module
-                                    lang-environment
-                                    compilation-options))
-    (set! out-file
+      (push-right! full-module-names full-module-name))))
+  (define module-map
+    (make-module-map module-expression-map lang-environment))
+  (for ((full-module-name full-module-names))
+    (define module
+      (send module-map get full-module-name))
+    (define code
+      (compile-with-environment module
+                                lang-environment
+                                compilation-options))
+    (define in-file
+      (hash-ref filename-map full-module-name))
+    (set! in-file (regexp-replace (regexp "^\\./") in-file ""))
+    (define out-file
+      (if (memq? out-dir-option '("" "."))
+          (string-append full-module-name extension)
           (join out-dir-option
-                (string-append module-name
-                               extension)))
-    (mkdirSync out-dir-option
-               (js/obj :recursive #t))
-    (writeFileSync out-file
-                   code
-                   (js/obj :encoding "utf8"))
+                (string-append
+                 (basename full-module-name)
+                 extension))))
+    (set! out-file (regexp-replace (regexp "^\\./") out-file ""))
+    (mkdirSync out-dir-option (js/obj :recursive #t))
+    (writeFileSync out-file code (js/obj :encoding "utf8"))
     (display
-     (string-append "Compiled "
-                    (hash-ref filename-map module-name)
-                    " to "
-                    out-file)))
+     (string-append "Compiled " in-file " to " out-file)))
   module-map)
 
 ;;; Compile a file.
@@ -3693,8 +3712,8 @@
     (set! regular-args (second exp))))
   (when regular-args
     ;; TypeScript-ism: TypeScript permits the type of `this` to be
-    ;; specified with `this` as the first parameter, which is since
-    ;; compiled away by the TypeScript compiler.
+    ;; specified with a pseudo-parameter, which is since compiled
+    ;; away by the TypeScript compiler. Do the same here.
     (when (and (not (eq? language "typescript"))
                (> (length regular-args) 0)
                (or (eq? (first regular-args) 'this)
@@ -8247,46 +8266,32 @@
 ;;; Module class.
 (define-class Module ()
   (define/public name "")
-
+  (define/public module-path "")
   (define/public header-expressions '())
-
   (define/public header-nodes '())
-
   (define/public require-expressions '())
-
   (define/public require-nodes '())
-
   (define/public provide-expressions '())
-
   (define/public provide-nodes '())
-
   (define/public main-expressions '())
-
   (define/public main-nodes '())
-
   (define/public expressions '())
-
   (define/public nodes '())
-
   (define/public inline-lisp-sources-flag #f)
-
   (define/public seen-modules '())
-
   (define/public environment)
-
   (define/public parent-environment)
-
   (define/public interpretation-environment)
-
   (define/public module-map)
-
   (define/public symbol-map (make-hash))
 
   (define/public (constructor (nodes '())
                               (parent lang-environment)
-                              (name ""))
+                              (name "")
+                              (module-path ""))
     (set-field! parent-environment this parent)
     (set-field! name this name)
+    (set-field! module-path this module-path)
     (send this initialize-nodes nodes))
 
   (define/public (get-continuation-env)
@@ -8505,11 +8510,6 @@
       (new EnvironmentStack
            module-env
            js/environment))
-    (define imported)
-    (define local)
-    (define module)
-    (define env)
-    (define module-name)
     (set-field! parent-environment this parent)
     (set-field! environment this module-env)
     (set-field! interpretation-environment
@@ -8518,28 +8518,36 @@
     ;; Iterate over `require-nodes`, importing definitions
     ;; from other modules.
     (for ((node (get-field require-nodes this)))
+      ;; TODO: Create thunk for doing this on demand.
       (define exp
         (syntax->datum node))
-      (cond
-       ((and (tagged-list? exp 'require)
-             (> (length exp) 1)
-             (tagged-list? (second exp) 'only-in))
-        (set! module-name (second (second exp)))
+      ;; TODO: `require` forms that do not contain `only-in`.
+      (when (and (tagged-list? exp 'require)
+                 (> (length exp) 1)
+                 (tagged-list? (second exp) 'only-in))
+        (define module-name (second (second exp)))
         (when (symbol? module-name)
           (set! module-name
                 (symbol->string module-name)))
         (set! module-name
-              (regexp-replace (regexp "^\\./")
-                              module-name
-                              ""))
-        (cond
-         ((and (get-field module-map this)
-               (send (get-field module-map this) has module-name))
-          (set! module (send (get-field module-map this) get module-name))
+              (regexp-replace (regexp "^\\./") module-name ""))
+        (define module-path
+          (get-field module-path this))
+        (unless (regexp-match (regexp "^\\.\\/") module-path)
+          (set! module-path (string-append "./" module-path)))
+        (define full-module-name
+          (string-append
+           "./"
+           (join module-path module-name)))
+        (define env #u)
+        (when (and (get-field module-map this)
+                   (send (get-field module-map this) has full-module-name))
+          (define module
+            (send (get-field module-map this) get full-module-name))
           (set! env (send module get-environment)))
-         (else
-          (set! env #u)))
         (for ((exp1 (drop (second exp) 2)))
+          (define imported)
+          (define local)
           (cond
            ((pair-or-list? exp1)
             (set! local (first exp1))
@@ -8552,7 +8560,7 @@
             (define-values (f f-type)
               (send env get-typed-value local))
             (unless (undefined-type? f-type)
-              (send module-env set-local! imported f f-type)))))))
+              (send module-env set-local! imported f f-type))))))
     ;; Iterate over `main-nodes`, evaluating definition forms
     ;; in the module environment.
     (for ((node (get-field main-nodes this)))
@@ -8642,12 +8650,18 @@
         (send _ get 1)
         (syntax->datum _)))
   (when (symbol? name)
-    (set! name
-          (symbol->string name)))
+    (set! name (symbol->string name)))
+  (define module-path
+    (~> node
+        (send _ get 2)
+        (syntax->datum _)))
+  (when (symbol? module-path)
+    (set! module-path (symbol->string module-path)))
   (new Module
        (send node drop 3)
        env
-       name))
+       name
+       module-path))
 
 ;;; Whether `env` extends the Lisp environment.
 (define (extends-lisp-environment? env)

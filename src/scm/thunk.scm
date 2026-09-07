@@ -83,6 +83,10 @@
     (define val
       (send super get x))
     (cond
+     ((is-a? val InternalPromise)
+      (set! val (send val force))
+      (send super set x val)
+      val)
      ((promise? val)
       (set! val (force val))
       (send super set x val)

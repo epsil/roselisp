@@ -21,14 +21,14 @@ describe('#t', function (): any {
   it('(compile #t)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true], 'true;']);
   });
-  it('(compile #t :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'true;']);
+  it('(compile #t :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':as'), 'statement'], 'true;']);
   });
-  it('(compile #t :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'true']);
+  it('(compile #t :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':as'), 'expression'], 'true']);
   });
-  return it('(compile #t :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return true;']);
+  return it('(compile #t :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':as'), 'return'], 'return true;']);
   });
 });
 
@@ -42,14 +42,14 @@ describe('#f', function (): any {
   it('(compile #f)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), false], 'false;']);
   });
-  it('(compile #f :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), false, Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'false;']);
+  it('(compile #f :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), false, Symbol.for(':as'), 'statement'], 'false;']);
   });
-  it('(compile #f :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), false, Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'false']);
+  it('(compile #f :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), false, Symbol.for(':as'), 'expression'], 'false']);
   });
-  return it('(compile #f :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), false, Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return false;']);
+  return it('(compile #f :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), false, Symbol.for(':as'), 'return'], 'return false;']);
   });
 });
 
@@ -2016,14 +2016,14 @@ describe('define', function (): any {
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(define x) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: any;']);
+  it('(compile \'(define x) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x')]], Symbol.for(':to'), 'typescript'], 'let x: any;']);
   });
   it('(compile \'(define x 1))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), 1]]], 'let x = 1;']);
   });
-  it('(compile \'(define x 1) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), 1]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: any = 1;']);
+  it('(compile \'(define x 1) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), 1]], Symbol.for(':to'), 'typescript'], 'let x: any = 1;']);
   });
   it('(compile \'(define I (lambda (x) x)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], 'let I = function (x) {\n' +
@@ -2075,8 +2075,8 @@ describe('define', function (): any {
       '  return f(...args);\n' +
       '}']);
   });
-  it('(compile \'(define (A f . args) (apply f args)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('A'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function A(f: any, ...args: any[]): any {\n' +
+  it('(compile \'(define (A f . args) (apply f args)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('A'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]]], Symbol.for(':to'), 'typescript'], 'function A(f: any, ...args: any[]): any {\n' +
       '  return f(...args);\n' +
       '}']);
   });
@@ -2350,29 +2350,29 @@ describe('let', function (): any {
   it('(compile \'(let (x)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')]]]], 'let x;']);
   });
-  it('(compile \'(let (x) x) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'let x;\n' +
+  it('(compile \'(let (x) x) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), 'return'], 'let x;\n' +
       '\n' +
       'return x;']);
   });
-  it('(compile \'(let (x) x) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '(() => {\n' +
+  it('(compile \'(let (x) x) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), 'expression'], '(() => {\n' +
       '  let x;\n' +
       '  return x;\n' +
       '})()']);
   });
-  it('(compile \'(let (x) x) :as \'return :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: any;\n' +
+  it('(compile \'(let (x) x) :as "return" :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), 'return', Symbol.for(':to'), 'typescript'], 'let x: any;\n' +
       '\n' +
       'return x;']);
   });
-  it('(compile \'(let ((x 1)) x) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'let x = 1;\n' +
+  it('(compile \'(let ((x 1)) x) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')]], Symbol.for(':as'), 'return'], 'let x = 1;\n' +
       '\n' +
       'return x;']);
   });
-  it('(compile \'(let ((x 1)) x) :as \'return :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: any = 1;\n' +
+  it('(compile \'(let ((x 1)) x) :as "return" :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')]], Symbol.for(':as'), 'return', Symbol.for(':to'), 'typescript'], 'let x: any = 1;\n' +
       '\n' +
       'return x;']);
   });
@@ -2425,8 +2425,8 @@ describe('let', function (): any {
       '  console.log(x);\n' +
       '}']);
   });
-  it('(compile \'(cond (foo bar) (else x (let ((x 1)) x))) :as \'return :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('foo'), Symbol.for('bar')], [Symbol.for('else'), Symbol.for('x'), [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')]]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'if (foo) {\n' +
+  it('(compile \'(cond (foo bar) (else x (let ((x 1)) x))) :as "return" :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('foo'), Symbol.for('bar')], [Symbol.for('else'), Symbol.for('x'), [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')]]]], Symbol.for(':as'), 'return', Symbol.for(':to'), 'typescript'], 'if (foo) {\n' +
       '  return bar;\n' +
       '} else {\n' +
       '  x;\n' +
@@ -2434,16 +2434,16 @@ describe('let', function (): any {
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(define make-compilation-evaluator (memoize (lambda (env (options (js/obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('make-compilation-evaluator'), [Symbol.for('memoize'), [Symbol.for('lambda'), [Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('let'), [[Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']]], [Symbol.for('set!'), Symbol.for('language'), [Symbol.for('or'), Symbol.for('language'), Symbol.for('default-language')]], [Symbol.for('let'), [[Symbol.for('compilation-env'), [Symbol.for('or'), [Symbol.for('.get'), Symbol.for('compilation-map'), Symbol.for('language')], Symbol.for('javascript-env')]]], [Symbol.for('new'), Symbol.for('CompilationEvaluator'), Symbol.for('env'), Symbol.for('compilation-env'), Symbol.for('options')]]]]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {\n' +
+  it('(compile \'(define make-compilation-evaluator (memoize (lambda (env (options (js/obj))) (let ((language (oget options "language"))) (set! language (or language default-language)) (let ((compilation-env (or (.get compilation-map language) javascript-env))) (new CompilationEvaluator env compilation-env options)))))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('make-compilation-evaluator'), [Symbol.for('memoize'), [Symbol.for('lambda'), [Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('let'), [[Symbol.for('language'), [Symbol.for('oget'), Symbol.for('options'), 'language']]], [Symbol.for('set!'), Symbol.for('language'), [Symbol.for('or'), Symbol.for('language'), Symbol.for('default-language')]], [Symbol.for('let'), [[Symbol.for('compilation-env'), [Symbol.for('or'), [Symbol.for('.get'), Symbol.for('compilation-map'), Symbol.for('language')], Symbol.for('javascript-env')]]], [Symbol.for('new'), Symbol.for('CompilationEvaluator'), Symbol.for('env'), Symbol.for('compilation-env'), Symbol.for('options')]]]]]]], Symbol.for(':to'), 'typescript'], 'let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {\n' +
       '  let language: any = options[\'language\'];\n' +
       '  language = language || defaultLanguage;\n' +
       '  let compilationEnv: any = compilationMap.get(language) || javascriptEnv;\n' +
       '  return new CompilationEvaluator(env, compilationEnv, options);\n' +
       '});']);
   });
-  return it('(compile \'(cond (foo (let ((x #t)) x)) (else #f)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('foo'), [Symbol.for('let'), [[Symbol.for('x'), true]], Symbol.for('x')]], [Symbol.for('else'), false]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (foo) {\n' +
+  return it('(compile \'(cond (foo (let ((x #t)) x)) (else #f)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('foo'), [Symbol.for('let'), [[Symbol.for('x'), true]], Symbol.for('x')]], [Symbol.for('else'), false]]], Symbol.for(':as'), 'return'], 'if (foo) {\n' +
       '  let x = true;\n' +
       '  return x;\n' +
       '} else {\n' +
@@ -2470,18 +2470,18 @@ describe('let-values', function (): any {
       '\n' +
       'let z = x + y;']);
   });
-  it('(compile \'(let-values ((value (foo bar baz))) value) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[Symbol.for('value'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'let value = foo(bar, baz);\n' +
+  it('(compile \'(let-values ((value (foo bar baz))) value) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[Symbol.for('value'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), 'return'], 'let value = foo(bar, baz);\n' +
       '\n' +
       'return value;']);
   });
-  it('(compile \'(let-values (((value) (foo bar baz))) value) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'let [value] = foo(bar, baz);\n' +
+  it('(compile \'(let-values (((value) (foo bar baz))) value) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), 'return'], 'let [value] = foo(bar, baz);\n' +
       '\n' +
       'return value;']);
   });
-  it('(compile \'(let-values (((value) (foo bar baz))) value) :as \'return :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let [value]: any[] = foo(bar, baz);\n' +
+  it('(compile \'(let-values (((value) (foo bar baz))) value) :as "return" :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), 'return', Symbol.for(':to'), 'typescript'], 'let [value]: any[] = foo(bar, baz);\n' +
       '\n' +
       'return value;']);
   });
@@ -2492,22 +2492,22 @@ describe('let-values', function (): any {
       '  return f(acc);\n' +
       '}, x);']);
   });
-  it('(compile \'(let-values (((x . fs) args)) (.reduce fs (lambda (acc f) (f acc)) x)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')], Symbol.for('args')]], [Symbol.for('.reduce'), Symbol.for('fs'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('f')], [Symbol.for('f'), Symbol.for('acc')]], Symbol.for('x')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let [x, ...fs]: any[] = args;\n' +
+  it('(compile \'(let-values (((x . fs) args)) (.reduce fs (lambda (acc f) (f acc)) x)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('x'), Symbol.for('.'), Symbol.for('fs')], Symbol.for('args')]], [Symbol.for('.reduce'), Symbol.for('fs'), [Symbol.for('lambda'), [Symbol.for('acc'), Symbol.for('f')], [Symbol.for('f'), Symbol.for('acc')]], Symbol.for('x')]]], Symbol.for(':to'), 'typescript'], 'let [x, ...fs]: any[] = args;\n' +
       '\n' +
       'fs.reduce(function (acc: any, f: any): any {\n' +
       '  return f(acc);\n' +
       '}, x);']);
   });
-  it('(compile \'(let-values (((value1) (foo bar)) ((value2) (bar baz))) (list value1 value2)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('value1')], [Symbol.for('foo'), Symbol.for('bar')]], [[Symbol.for('value2')], [Symbol.for('bar'), Symbol.for('baz')]]], [Symbol.for('list'), Symbol.for('value1'), Symbol.for('value2')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'let [value1] = foo(bar);\n' +
+  it('(compile \'(let-values (((value1) (foo bar)) ((value2) (bar baz))) (list value1 value2)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('value1')], [Symbol.for('foo'), Symbol.for('bar')]], [[Symbol.for('value2')], [Symbol.for('bar'), Symbol.for('baz')]]], [Symbol.for('list'), Symbol.for('value1'), Symbol.for('value2')]]], Symbol.for(':as'), 'return'], 'let [value1] = foo(bar);\n' +
       '\n' +
       'let [value2] = bar(baz);\n' +
       '\n' +
       'return [value1, value2];']);
   });
-  return it('(compile \'(begin value (let-values ((value (foo bar baz))) value)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), Symbol.for('value'), [Symbol.for('let-values'), [[Symbol.for('value'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'value;\n' +
+  return it('(compile \'(begin value (let-values ((value (foo bar baz))) value)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), Symbol.for('value'), [Symbol.for('let-values'), [[Symbol.for('value'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]]], Symbol.for(':as'), 'return'], 'value;\n' +
       '\n' +
       'let value = foo(bar, baz);\n' +
       '\n' +
@@ -2563,8 +2563,8 @@ describe('lambda', function (): any {
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(lambda (x) x) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (x: any): any {\n' +
+  it('(compile \'(lambda (x) x) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':to'), 'typescript'], 'function (x: any): any {\n' +
       '  return x;\n' +
       '};']);
   });
@@ -2602,13 +2602,13 @@ describe('lambda', function (): any {
       '  return \'Hello, \' + given + \' \' + surname;\n' +
       '};']);
   });
-  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('given'), [Symbol.for('surname'), 'Smith']], [Symbol.for('string-append'), 'Hello, ', Symbol.for('given'), ' ', Symbol.for('surname')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (given: any, surname: any = \'Smith\'): any {\n' +
+  it('(compile \'(lambda (given (surname "Smith")) (string-append "Hello, " given " " surname)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('given'), [Symbol.for('surname'), 'Smith']], [Symbol.for('string-append'), 'Hello, ', Symbol.for('given'), ' ', Symbol.for('surname')]]], Symbol.for(':to'), 'typescript'], 'function (given: any, surname: any = \'Smith\'): any {\n' +
       '  return \'Hello, \' + given + \' \' + surname;\n' +
       '};']);
   });
-  return it('(compile \'(lambda (arg (options (js/obj))) arg) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('arg'), [Symbol.for('options'), [Symbol.for('js/obj')]]], Symbol.for('arg')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (arg: any, options: any = {}): any {\n' +
+  return it('(compile \'(lambda (arg (options (js/obj))) arg) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('arg'), [Symbol.for('options'), [Symbol.for('js/obj')]]], Symbol.for('arg')]], Symbol.for(':to'), 'typescript'], 'function (arg: any, options: any = {}): any {\n' +
       '  return arg;\n' +
       '};']);
   });
@@ -2620,8 +2620,8 @@ describe('js/function', function (): any {
       '  return 0;\n' +
       '};']);
   });
-  it('(compile \'(js/function () : Number 0) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [], Symbol.for(':'), Symbol.for('Number'), 0]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (): number {\n' +
+  it('(compile \'(js/function () : Number 0) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [], Symbol.for(':'), Symbol.for('Number'), 0]], Symbol.for(':to'), 'typescript'], 'function (): number {\n' +
       '  return 0;\n' +
       '};']);
   });
@@ -2630,8 +2630,8 @@ describe('js/function', function (): any {
       '  return 0;\n' +
       '}']);
   });
-  return it('(compile \'(js/function () : Number :name foo 0) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [], Symbol.for(':'), Symbol.for('Number'), Symbol.for(':name'), Symbol.for('foo'), 0]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function foo(): number {\n' +
+  return it('(compile \'(js/function () : Number :name foo 0) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [], Symbol.for(':'), Symbol.for('Number'), Symbol.for(':name'), Symbol.for('foo'), 0]], Symbol.for(':to'), 'typescript'], 'function foo(): number {\n' +
       '  return 0;\n' +
       '}']);
   });
@@ -2643,8 +2643,8 @@ describe('this', function (): any {
       '  return undefined;\n' +
       '};']);
   });
-  it('(compile \'(lambda (this) #u) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('this')], undefined]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (this: any): any {\n' +
+  it('(compile \'(lambda (this) #u) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('this')], undefined]], Symbol.for(':to'), 'typescript'], 'function (this: any): any {\n' +
       '  return undefined;\n' +
       '};']);
   });
@@ -2653,8 +2653,8 @@ describe('this', function (): any {
       '  return arg;\n' +
       '};']);
   });
-  it('(compile \'(lambda (this arg) arg) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('arg')], Symbol.for('arg')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (this: any, arg: any): any {\n' +
+  it('(compile \'(lambda (this arg) arg) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('arg')], Symbol.for('arg')]], Symbol.for(':to'), 'typescript'], 'function (this: any, arg: any): any {\n' +
       '  return arg;\n' +
       '};']);
   });
@@ -2663,8 +2663,8 @@ describe('this', function (): any {
       '  return args;\n' +
       '};']);
   });
-  return it('(compile \'(lambda (this . args) args) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (this: any, ...args: any[]): any {\n' +
+  return it('(compile \'(lambda (this . args) args) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]], Symbol.for(':to'), 'typescript'], 'function (this: any, ...args: any[]): any {\n' +
       '  return args;\n' +
       '};']);
   });
@@ -2676,8 +2676,8 @@ describe('js/arrow', function (): any {
       '  return 0;\n' +
       '};']);
   });
-  it('(compile \'(js/arrow () : Number 0) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [], Symbol.for(':'), Symbol.for('Number'), 0]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], '(): number => {\n' +
+  it('(compile \'(js/arrow () : Number 0) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [], Symbol.for(':'), Symbol.for('Number'), 0]], Symbol.for(':to'), 'typescript'], '(): number => {\n' +
       '  return 0;\n' +
       '};']);
   });
@@ -2686,8 +2686,8 @@ describe('js/arrow', function (): any {
       '  return 0;\n' +
       '};']);
   });
-  return it('(compile \'(js/arrow () : Number :name foo 0) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [], Symbol.for(':'), Symbol.for('Number'), Symbol.for(':name'), Symbol.for('foo'), 0]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let foo: any = (): number => {\n' +
+  return it('(compile \'(js/arrow () : Number :name foo 0) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [], Symbol.for(':'), Symbol.for('Number'), Symbol.for(':name'), Symbol.for('foo'), 0]], Symbol.for(':to'), 'typescript'], 'let foo: any = (): number => {\n' +
       '  return 0;\n' +
       '};']);
   });
@@ -2711,30 +2711,30 @@ describe('js/=>', function (): any {
 });
 
 describe('js/iife', function (): any {
-  it('(compile \'(js/iife (js/arrow (x y) (+ x y)) (list 1 2)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), 1, 2]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '((x, y) => {\n' +
+  it('(compile \'(js/iife (js/arrow (x y) (+ x y)) (list 1 2)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), 1, 2]]], Symbol.for(':as'), 'expression'], '((x, y) => {\n' +
       '  return x + y;\n' +
       '})(1, 2)']);
   });
-  it('(compile \'(js/iife (js/arrow (x . y) (+ x (first y))) (list* a b)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), [Symbol.for('first'), Symbol.for('y')]]], [Symbol.for('list*'), Symbol.for('a'), Symbol.for('b')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '((x, ...y) => {\n' +
+  it('(compile \'(js/iife (js/arrow (x . y) (+ x (first y))) (list* a b)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), [Symbol.for('first'), Symbol.for('y')]]], [Symbol.for('list*'), Symbol.for('a'), Symbol.for('b')]]], Symbol.for(':as'), 'expression'], '((x, ...y) => {\n' +
       '  return x + y[0];\n' +
       '})(a, ...b)']);
   });
-  it('(compile \'(js/iife (js/arrow (x y) (+ x y)) (list 1 2)) :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), 1, 2]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'let x = 1;\n' +
+  it('(compile \'(js/iife (js/arrow (x y) (+ x y)) (list 1 2)) :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), 1, 2]]], Symbol.for(':as'), 'statement'], 'let x = 1;\n' +
       '\n' +
       'let y = 2;\n' +
       '\n' +
       'x + y;']);
   });
-  it('(compile \'(js/iife (js/arrow (x . y) (+ x (first y))) (list a b c)) :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), [Symbol.for('first'), Symbol.for('y')]]], [Symbol.for('list'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'let y = [b, c];\n' +
+  it('(compile \'(js/iife (js/arrow (x . y) (+ x (first y))) (list a b c)) :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), [Symbol.for('first'), Symbol.for('y')]]], [Symbol.for('list'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')]]], Symbol.for(':as'), 'statement'], 'let y = [b, c];\n' +
       '\n' +
       'a + y[0];']);
   });
-  return it('(compile \'(js/iife (js/arrow (x y) (+ x y)) (list 1 2)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), 1, 2]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'let x = 1;\n' +
+  return it('(compile \'(js/iife (js/arrow (x y) (+ x y)) (list 1 2)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), 1, 2]]], Symbol.for(':as'), 'return'], 'let x = 1;\n' +
       '\n' +
       'let y = 2;\n' +
       '\n' +
@@ -2992,11 +2992,11 @@ describe('begin', function (): any {
       '\n' +
       'z;']);
   });
-  it('(compile `(begin x y) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quasiquote'), [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x, y']);
+  it('(compile `(begin x y) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quasiquote'), [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y')]], Symbol.for(':as'), 'expression'], 'x, y']);
   });
-  it('(compile \'(begin x y z) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x, y, z']);
+  it('(compile \'(begin x y z) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'expression'], 'x, y, z']);
   });
   return it('(compile \'(begin (define (and x y) (or x y)) (define (or x y) x) (and x (or y z))))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('define'), [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')], Symbol.for('x')], [Symbol.for('and'), Symbol.for('x'), [Symbol.for('or'), Symbol.for('y'), Symbol.for('z')]]]]], 'function and(x, y) {\n' +
@@ -3116,22 +3116,22 @@ describe('if', function (): any {
       '  bar();\n' +
       '}']);
   });
-  it('(compile \'(if #t (foo) (bar)) :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'if (true) {\n' +
+  it('(compile \'(if #t (foo) (bar)) :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]]], Symbol.for(':as'), 'statement'], 'if (true) {\n' +
       '  foo();\n' +
       '} else {\n' +
       '  bar();\n' +
       '}']);
   });
-  it('(compile \'(if #t (foo) (bar)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (true) {\n' +
+  it('(compile \'(if #t (foo) (bar)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]]], Symbol.for(':as'), 'return'], 'if (true) {\n' +
       '  return foo();\n' +
       '} else {\n' +
       '  return bar();\n' +
       '}']);
   });
-  it('(compile \'(if #t (foo) (bar)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'true ? foo() : bar()']);
+  it('(compile \'(if #t (foo) (bar)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')]]], Symbol.for(':as'), 'expression'], 'true ? foo() : bar()']);
   });
   it('(compile \'(if #t (foo) (bar) (baz)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), true, [Symbol.for('foo')], [Symbol.for('bar')], [Symbol.for('baz')]]]], 'if (true) {\n' +
@@ -3140,24 +3140,24 @@ describe('if', function (): any {
       '  bar();\n' +
       '}']);
   });
-  it('(compile \'(if x y) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), Symbol.for('y')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x ? y : undefined']);
+  it('(compile \'(if x y) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), Symbol.for('y')]], Symbol.for(':as'), 'expression'], 'x ? y : undefined']);
   });
-  it('(compile \'(if x y z) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x ? y : z']);
+  it('(compile \'(if x y z) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'expression'], 'x ? y : z']);
   });
-  it('(compile \'(if x y z) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (x) {\n' +
+  it('(compile \'(if x y z) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'return'], 'if (x) {\n' +
       '  return y;\n' +
       '} else {\n' +
       '  return z;\n' +
       '}']);
   });
-  it('(compile \'(if "foo" "bar" "baz") :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), 'foo', 'bar', 'baz']], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '\'foo\' ? \'bar\' : \'baz\'']);
+  it('(compile \'(if "foo" "bar" "baz") :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), 'foo', 'bar', 'baz']], Symbol.for(':as'), 'expression'], '\'foo\' ? \'bar\' : \'baz\'']);
   });
-  it('(compile \'(if x (begin y z) w) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')], Symbol.for('w')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (x) {\n' +
+  it('(compile \'(if x (begin y z) w) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), Symbol.for('x'), [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')], Symbol.for('w')]], Symbol.for(':as'), 'return'], 'if (x) {\n' +
       '  y;\n' +
       '  return z;\n' +
       '} else {\n' +
@@ -3171,8 +3171,8 @@ describe('if', function (): any {
       '  w;\n' +
       '}']);
   });
-  it('(compile \'(if (set! x y) z w) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), [Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')], Symbol.for('z'), Symbol.for('w')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if ((x = y)) {\n' +
+  it('(compile \'(if (set! x y) z w) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('if'), [Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')], Symbol.for('z'), Symbol.for('w')]], Symbol.for(':as'), 'return'], 'if ((x = y)) {\n' +
       '  return z;\n' +
       '} else {\n' +
       '  return w;\n' +
@@ -3285,50 +3285,50 @@ describe('cond', function (): any {
       '  baz();\n' +
       '}']);
   });
-  it('(compile \'(cond (#f (foo)) (else (bar))) :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [false, [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')]]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'if (false) {\n' +
+  it('(compile \'(cond (#f (foo)) (else (bar))) :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [false, [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')]]]], Symbol.for(':as'), 'statement'], 'if (false) {\n' +
       '  foo();\n' +
       '} else {\n' +
       '  bar();\n' +
       '}']);
   });
-  it('(compile \'(cond (x y)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (x) {\n' +
+  it('(compile \'(cond (x y)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]]], Symbol.for(':as'), 'return'], 'if (x) {\n' +
       '  return y;\n' +
       '}']);
   });
-  it('(compile \'(cond (#f (foo)) (else (bar))) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [false, [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')]]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (false) {\n' +
+  it('(compile \'(cond (#f (foo)) (else (bar))) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [false, [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')]]]], Symbol.for(':as'), 'return'], 'if (false) {\n' +
       '  return foo();\n' +
       '} else {\n' +
       '  return bar();\n' +
       '}']);
   });
-  it('(compile \'(cond (x y) (else z)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('else'), Symbol.for('z')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (x) {\n' +
+  it('(compile \'(cond (x y) (else z)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('else'), Symbol.for('z')]]], Symbol.for(':as'), 'return'], 'if (x) {\n' +
       '  return y;\n' +
       '} else {\n' +
       '  return z;\n' +
       '}']);
   });
-  it('(compile \'(cond ((set! x y) z) (else w)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [[Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')], Symbol.for('z')], [Symbol.for('else'), Symbol.for('w')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if ((x = y)) {\n' +
+  it('(compile \'(cond ((set! x y) z) (else w)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [[Symbol.for('set!'), Symbol.for('x'), Symbol.for('y')], Symbol.for('z')], [Symbol.for('else'), Symbol.for('w')]]], Symbol.for(':as'), 'return'], 'if ((x = y)) {\n' +
       '  return z;\n' +
       '} else {\n' +
       '  return w;\n' +
       '}']);
   });
-  it('(compile \'(cond (x y)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x ? y : undefined']);
+  it('(compile \'(cond (x y)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')]]], Symbol.for(':as'), 'expression'], 'x ? y : undefined']);
   });
-  it('(compile \'(cond (x y) (else z)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('else'), Symbol.for('z')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x ? y : z']);
+  it('(compile \'(cond (x y) (else z)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('else'), Symbol.for('z')]]], Symbol.for(':as'), 'expression'], 'x ? y : z']);
   });
-  it('(compile \'(cond (#f (foo)) (else (bar))) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [false, [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')]]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'false ? foo() : bar()']);
+  it('(compile \'(cond (#f (foo)) (else (bar))) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [false, [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')]]]], Symbol.for(':as'), 'expression'], 'false ? foo() : bar()']);
   });
-  it('(compile \'(cond (x y) (else w z)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('else'), Symbol.for('w'), Symbol.for('z')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x ? y : (w, z)']);
+  it('(compile \'(cond (x y) (else w z)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('else'), Symbol.for('w'), Symbol.for('z')]]], Symbol.for(':as'), 'expression'], 'x ? y : (w, z)']);
   });
   it('(compile \'(cond (#t => y) (else #f)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('cond'), [true, Symbol.for('=>'), Symbol.for('y')], [Symbol.for('else'), false]]]], 'let _condVar;\n' +
@@ -3368,14 +3368,14 @@ describe('js/?', function (): any {
   it('(compile \'(js/? x y (js/? z w)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/?'), Symbol.for('x'), Symbol.for('y'), [Symbol.for('js/?'), Symbol.for('z'), Symbol.for('w')]]]], 'x ? y : (z ? w : undefined);']);
   });
-  it('(compile \'(js/? x y z) :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/?'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'x ? y : z;']);
+  it('(compile \'(js/? x y z) :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/?'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'statement'], 'x ? y : z;']);
   });
-  it('(compile \'(js/? x y z) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/?'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return x ? y : z;']);
+  it('(compile \'(js/? x y z) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/?'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'return'], 'return x ? y : z;']);
   });
-  return it('(compile \'(js/? x y z) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/?'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], 'x ? y : z']);
+  return it('(compile \'(js/? x y z) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/?'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'expression'], 'x ? y : z']);
   });
 });
 
@@ -3399,22 +3399,22 @@ describe('js/if', function (): any {
       '  w;\n' +
       '}']);
   });
-  it('(compile \'(js/if x y z) :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'if (x) {\n' +
+  it('(compile \'(js/if x y z) :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'statement'], 'if (x) {\n' +
       '  y;\n' +
       '} else {\n' +
       '  z;\n' +
       '}']);
   });
-  it('(compile \'(js/if x y z) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'if (x) {\n' +
+  it('(compile \'(js/if x y z) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'return'], 'if (x) {\n' +
       '  return y;\n' +
       '} else {\n' +
       '  return z;\n' +
       '}']);
   });
-  return it('(compile \'(js/if x y z) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('it>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '(() => {\n' +
+  return it('(compile \'(js/if x y z) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('it>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/if'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'expression'], '(() => {\n' +
       '  if (x) {\n' +
       '    return y;\n' +
       '  } else {\n' +
@@ -3439,8 +3439,8 @@ describe('js/switch', function (): any {
       '  }\n' +
       '}']);
   });
-  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/switch'), Symbol.for('x'), [Symbol.for('case'), 'foo', [Symbol.for('display'), 'foo'], [Symbol.for('break')]], [Symbol.for('default'), [Symbol.for('display'), 'bar']]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'switch (x) {\n' +
+  it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/switch'), Symbol.for('x'), [Symbol.for('case'), 'foo', [Symbol.for('display'), 'foo'], [Symbol.for('break')]], [Symbol.for('default'), [Symbol.for('display'), 'bar']]]], Symbol.for(':as'), 'return'], 'switch (x) {\n' +
       '  case \'foo\': {\n' +
       '    return console.log(\'foo\');\n' +
       '    break;\n' +
@@ -3450,8 +3450,8 @@ describe('js/switch', function (): any {
       '  }\n' +
       '}']);
   });
-  it('(compile \'(js/switch x (case "foo" (display "foo")) (default (display "bar"))) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/switch'), Symbol.for('x'), [Symbol.for('case'), 'foo', [Symbol.for('display'), 'foo']], [Symbol.for('default'), [Symbol.for('display'), 'bar']]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'switch (x) {\n' +
+  it('(compile \'(js/switch x (case "foo" (display "foo")) (default (display "bar"))) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/switch'), Symbol.for('x'), [Symbol.for('case'), 'foo', [Symbol.for('display'), 'foo']], [Symbol.for('default'), [Symbol.for('display'), 'bar']]]], Symbol.for(':as'), 'return'], 'switch (x) {\n' +
       '  case \'foo\': {\n' +
       '    console.log(\'foo\');\n' +
       '  }\n' +
@@ -3460,8 +3460,8 @@ describe('js/switch', function (): any {
       '  }\n' +
       '}']);
   });
-  return it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/switch'), Symbol.for('x'), [Symbol.for('case'), 'foo', [Symbol.for('display'), 'foo'], [Symbol.for('break')]], [Symbol.for('default'), [Symbol.for('display'), 'bar']]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '(() => {\n' +
+  return it('(compile \'(js/switch x (case "foo" (display "foo") (break)) (default (display "bar"))) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/switch'), Symbol.for('x'), [Symbol.for('case'), 'foo', [Symbol.for('display'), 'foo'], [Symbol.for('break')]], [Symbol.for('default'), [Symbol.for('display'), 'bar']]]], Symbol.for(':as'), 'expression'], '(() => {\n' +
       '  switch (x) {\n' +
       '    case \'foo\': {\n' +
       '      return console.log(\'foo\');\n' +
@@ -3977,8 +3977,8 @@ describe('for', function (): any {
       '  console.log(x);\n' +
       '}']);
   });
-  it('(compile \'(for ((i (range 0 10))) (display x)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, 10]]], [Symbol.for('display'), Symbol.for('x')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'for (let i: any = 0; i < 10; i++) {\n' +
+  it('(compile \'(for ((i (range 0 10))) (display x)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, 10]]], [Symbol.for('display'), Symbol.for('x')]]], Symbol.for(':to'), 'typescript'], 'for (let i: any = 0; i < 10; i++) {\n' +
       '  console.log(x);\n' +
       '}']);
   });
@@ -4026,8 +4026,8 @@ describe('for', function (): any {
       '  console.log(i);\n' +
       '}']);
   });
-  it('(compile \'(for ((i (range (+ 1 1) (+ 2 2)))) (display i)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]], [Symbol.for('display'), Symbol.for('i')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let _start: any = 1 + 1;\n' +
+  it('(compile \'(for ((i (range (+ 1 1) (+ 2 2)))) (display i)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]], [Symbol.for('display'), Symbol.for('i')]]], Symbol.for(':to'), 'typescript'], 'let _start: any = 1 + 1;\n' +
       '\n' +
       'let _end: any = 2 + 2;\n' +
       '\n' +
@@ -4035,8 +4035,8 @@ describe('for', function (): any {
       '  console.log(i);\n' +
       '}']);
   });
-  it('(compile \'(let ((_start 0) (_end 0)) (for ((i (range (+ 1 1) (+ 2 2)))) (display i))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [[Symbol.for('_start'), 0], [Symbol.for('_end'), 0]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]], [Symbol.for('display'), Symbol.for('i')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let _start: any = 0;\n' +
+  it('(compile \'(let ((_start 0) (_end 0)) (for ((i (range (+ 1 1) (+ 2 2)))) (display i))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [[Symbol.for('_start'), 0], [Symbol.for('_end'), 0]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]], [Symbol.for('display'), Symbol.for('i')]]]], Symbol.for(':to'), 'typescript'], 'let _start: any = 0;\n' +
       '\n' +
       'let _end: any = 0;\n' +
       '\n' +
@@ -4048,8 +4048,8 @@ describe('for', function (): any {
       '  console.log(i);\n' +
       '}']);
   });
-  it('(compile \'(for ((i (range (+ 1 1) (+ 2 2)))) (for ((j (range (+ 3 3) (+ 4 4)))) (display j))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]], [Symbol.for('for'), [[Symbol.for('j'), [Symbol.for('range'), [Symbol.for('+'), 3, 3], [Symbol.for('+'), 4, 4]]]], [Symbol.for('display'), Symbol.for('j')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let _start: any = 1 + 1;\n' +
+  it('(compile \'(for ((i (range (+ 1 1) (+ 2 2)))) (for ((j (range (+ 3 3) (+ 4 4)))) (display j))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]], [Symbol.for('for'), [[Symbol.for('j'), [Symbol.for('range'), [Symbol.for('+'), 3, 3], [Symbol.for('+'), 4, 4]]]], [Symbol.for('display'), Symbol.for('j')]]]], Symbol.for(':to'), 'typescript'], 'let _start: any = 1 + 1;\n' +
       '\n' +
       'let _end: any = 2 + 2;\n' +
       '\n' +
@@ -4239,8 +4239,8 @@ describe('async', function (): any {
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(define foo (async (lambda (x) x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'async function foo(x: any): Promise<any> {\n' +
+  it('(compile \'(define foo (async (lambda (x) x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'async function foo(x: any): Promise<any> {\n' +
       '  return x;\n' +
       '}']);
   });
@@ -4601,8 +4601,8 @@ describe('define-class', function (): any {
       '  }\n' +
       '}']);
   });
-  it('(compile \'(define-class Foo () (define x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'class Foo {\n' +
+  it('(compile \'(define-class Foo () (define x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
       '  private x: any;\n' +
       '\n' +
       '  constructor(x: any) {\n' +
@@ -4615,8 +4615,8 @@ describe('define-class', function (): any {
       '  }\n' +
       '}']);
   });
-  it('(compile \'(define-class Foo () (define/public x) (define/public (constructor . args) (super) (set! (.-stack this) args)) (define/public (bar) (.-x this))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-stack'), Symbol.for('this')], Symbol.for('args')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'class Foo {\n' +
+  it('(compile \'(define-class Foo () (define/public x) (define/public (constructor . args) (super) (set! (.-stack this) args)) (define/public (bar) (.-x this))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-stack'), Symbol.for('this')], Symbol.for('args')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
       '  x: any;\n' +
       '\n' +
       '  constructor(...args: any[]) {\n' +
@@ -4657,8 +4657,8 @@ describe('define-class', function (): any {
       '  }\n' +
       '}']);
   });
-  it('(compile \'(define-class Foo (Object) (define/private x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/private (bar) (.-x this))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/private'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/private'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'class Foo extends Object {\n' +
+  it('(compile \'(define-class Foo (Object) (define/private x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/private (bar) (.-x this))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/private'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/private'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo extends Object {\n' +
       '  private x: any;\n' +
       '\n' +
       '  constructor(x: any) {\n' +
@@ -4671,8 +4671,8 @@ describe('define-class', function (): any {
       '  }\n' +
       '}']);
   });
-  it('(compile \'(define-class Foo () (public x) (define x) (public constructor) (define (constructor x) (super) (set! (.-x this) x)) (public bar) (define (bar) (.-x this))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('public'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('public'), Symbol.for('constructor')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('public'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'class Foo {\n' +
+  it('(compile \'(define-class Foo () (public x) (define x) (public constructor) (define (constructor x) (super) (set! (.-x this) x)) (public bar) (define (bar) (.-x this))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('public'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('public'), Symbol.for('constructor')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('public'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
       '  x: any;\n' +
       '\n' +
       '  constructor(x: any) {\n' +
@@ -4685,8 +4685,8 @@ describe('define-class', function (): any {
       '  }\n' +
       '}']);
   });
-  it('(compile \'(define-class Foo () (private x) (define x) (define (constructor x) (super) (set! (.-x this) x)) (private bar) (define (bar) (.-x this))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('private'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('private'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'class Foo {\n' +
+  it('(compile \'(define-class Foo () (private x) (define x) (define (constructor x) (super) (set! (.-x this) x)) (private bar) (define (bar) (.-x this))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('private'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('private'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
       '  private x: any;\n' +
       '\n' +
       '  constructor(x: any) {\n' +
@@ -4898,30 +4898,30 @@ describe('js/obj', function (): any {
       '  }\n' +
       '});']);
   });
-  it('(compile \'(js/obj) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '{}']);
+  it('(compile \'(js/obj) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj')]], Symbol.for(':as'), 'expression'], '{}']);
   });
-  it('(compile \'(js/obj "foo" "bar") :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 'bar']], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '{\n' +
+  it('(compile \'(js/obj "foo" "bar") :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 'bar']], Symbol.for(':as'), 'expression'], '{\n' +
       '  foo: \'bar\'\n' +
       '}']);
   });
-  it('(compile \'(js/obj "foo" 1 "bar" 2) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '{\n' +
+  it('(compile \'(js/obj "foo" 1 "bar" 2) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]], Symbol.for(':as'), 'expression'], '{\n' +
       '  foo: 1,\n' +
       '  bar: 2\n' +
       '}']);
   });
-  it('(compile \'(js/obj) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj')]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return {};']);
+  it('(compile \'(js/obj) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj')]], Symbol.for(':as'), 'return'], 'return {};']);
   });
-  it('(compile \'(js/obj "foo" "bar") :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 'bar']], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return {\n' +
+  it('(compile \'(js/obj "foo" "bar") :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 'bar']], Symbol.for(':as'), 'return'], 'return {\n' +
       '  foo: \'bar\'\n' +
       '};']);
   });
-  return it('(compile \'(js/obj "foo" 1 "bar" 2) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return {\n' +
+  return it('(compile \'(js/obj "foo" 1 "bar" 2) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/obj'), 'foo', 1, 'bar', 2]], Symbol.for(':as'), 'return'], 'return {\n' +
       '  foo: 1,\n' +
       '  bar: 2\n' +
       '};']);
@@ -5019,13 +5019,13 @@ describe('module', function (): any {
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(module m scheme (define (foo length) length)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('length')], Symbol.for('length')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function foo(length: any): any {\n' +
+  it('(compile \'(module m scheme (define (foo length) length)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('length')], Symbol.for('length')]]], Symbol.for(':to'), 'typescript'], 'function foo(length: any): any {\n' +
       '  return length;\n' +
       '}']);
   });
-  it('(compile \'(module m scheme (define (foo (length : Number)) : Number length)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), [Symbol.for('length'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for(':'), Symbol.for('Number'), Symbol.for('length')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function foo(length: number): number {\n' +
+  it('(compile \'(module m scheme (define (foo (length : Number)) : Number length)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), [Symbol.for('length'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for(':'), Symbol.for('Number'), Symbol.for('length')]]], Symbol.for(':to'), 'typescript'], 'function foo(length: number): number {\n' +
       '  return length;\n' +
       '}']);
   });
@@ -5224,20 +5224,20 @@ describe('define-values', function (): any {
   it('(compile \'(define-values (value) (foo bar baz)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]]], 'let [value] = foo(bar, baz);']);
   });
-  it('(compile \'(define-values (value) (foo bar baz)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let [value]: any[] = foo(bar, baz);']);
+  it('(compile \'(define-values (value) (foo bar baz)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), 'typescript'], 'let [value]: any[] = foo(bar, baz);']);
   });
-  it('(compile \'(define-values (#f #f value) (foo bar baz)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [false, false, Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let [, , value]: any[] = foo(bar, baz);']);
+  it('(compile \'(define-values (#f #f value) (foo bar baz)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [false, false, Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), 'typescript'], 'let [, , value]: any[] = foo(bar, baz);']);
   });
-  it('(compile \'(define-values (_ _ value) (foo bar baz)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('_'), Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let [, , value]: any[] = foo(bar, baz);']);
+  it('(compile \'(define-values (_ _ value) (foo bar baz)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('_'), Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), 'typescript'], 'let [, , value]: any[] = foo(bar, baz);']);
   });
-  it('(compile \'(define-values (_ __ value) :hole-marker __ (foo bar baz)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('__'), Symbol.for('value')], Symbol.for(':hole-marker'), Symbol.for('__'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let [_, , value]: any[] = foo(bar, baz);']);
+  it('(compile \'(define-values (_ __ value) :hole-marker __ (foo bar baz)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('__'), Symbol.for('value')], Symbol.for(':hole-marker'), Symbol.for('__'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for(':to'), 'typescript'], 'let [_, , value]: any[] = foo(bar, baz);']);
   });
-  return it('(compile \'(module m scheme (define (foo) (define xs \'(1 2 3 4)) (define-values (x . rest) xs) (append rest \'(5)))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('xs'), [Symbol.for('quote'), [1, 2, 3, 4]]], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('rest')], Symbol.for('xs')], [Symbol.for('append'), Symbol.for('rest'), [Symbol.for('quote'), [5]]]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function foo(): any {\n' +
+  return it('(compile \'(module m scheme (define (foo) (define xs \'(1 2 3 4)) (define-values (x . rest) xs) (append rest \'(5)))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('xs'), [Symbol.for('quote'), [1, 2, 3, 4]]], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('rest')], Symbol.for('xs')], [Symbol.for('append'), Symbol.for('rest'), [Symbol.for('quote'), [5]]]]]], Symbol.for(':to'), 'typescript'], 'function foo(): any {\n' +
       '  let xs: any = [1, 2, 3, 4];\n' +
       '  let [x, ...rest]: any[] = xs;\n' +
       '  return [...rest, 5];\n' +
@@ -5277,15 +5277,15 @@ describe('define-fields', function (): any {
       '  foo: \'bar\'\n' +
       '};']);
   });
-  it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields (x rest) obj) (append rest \'(5)))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [Symbol.for('x'), Symbol.for('rest')], Symbol.for('obj')], [Symbol.for('append'), Symbol.for('rest'), [Symbol.for('quote'), [5]]]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function foo(): any {\n' +
+  it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields (x rest) obj) (append rest \'(5)))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [Symbol.for('x'), Symbol.for('rest')], Symbol.for('obj')], [Symbol.for('append'), Symbol.for('rest'), [Symbol.for('quote'), [5]]]]]], Symbol.for(':to'), 'typescript'], 'function foo(): any {\n' +
       '  let obj: any = {};\n' +
       '  let {x, rest} = obj;\n' +
       '  return [...rest, 5];\n' +
       '}']);
   });
-  return it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields ((rest r) x) obj) (list r x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [[Symbol.for('rest'), Symbol.for('r')], Symbol.for('x')], Symbol.for('obj')], [Symbol.for('list'), Symbol.for('r'), Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function foo(): any {\n' +
+  return it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields ((rest r) x) obj) (list r x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [[Symbol.for('rest'), Symbol.for('r')], Symbol.for('x')], Symbol.for('obj')], [Symbol.for('list'), Symbol.for('r'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'function foo(): any {\n' +
       '  let obj: any = {};\n' +
       '  let {rest: r, x} = obj;\n' +
       '  return [r, x];\n' +
@@ -5300,20 +5300,20 @@ describe('set!', function (): any {
   it('(compile \'(set! (aref args 0) 1))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), [Symbol.for('aref'), Symbol.for('args'), 0], 1]]], 'args[0] = 1;']);
   });
-  it('(compile \'(set! x (add1 x)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('add1'), Symbol.for('x')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '++x']);
+  it('(compile \'(set! x (add1 x)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('add1'), Symbol.for('x')]]], Symbol.for(':as'), 'expression'], '++x']);
   });
-  it('(compile \'(set! x (sub1 x)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('sub1'), Symbol.for('x')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '--x']);
+  it('(compile \'(set! x (sub1 x)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('sub1'), Symbol.for('x')]]], Symbol.for(':as'), 'expression'], '--x']);
   });
-  it('(compile \'(set! x (+ x 1)) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('+'), Symbol.for('x'), 1]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '++x']);
+  it('(compile \'(set! x (+ x 1)) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('+'), Symbol.for('x'), 1]]], Symbol.for(':as'), 'expression'], '++x']);
   });
   it('(compile \'(set! x (+ x 1)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('+'), Symbol.for('x'), 1]]]], 'x++;']);
   });
-  return it('(compile \'(set! x (+ x 1)) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('+'), Symbol.for('x'), 1]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return ++x;']);
+  return it('(compile \'(set! x (+ x 1)) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('+'), Symbol.for('x'), 1]]], Symbol.for(':as'), 'return'], 'return ++x;']);
   });
 });
 
@@ -6674,192 +6674,192 @@ describe('ann', function (): any {
   it('(compile \'(ann #t Any))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]]], 'true;']);
   });
-  it('(compile \'(ann #t Any) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'true as any;']);
+  it('(compile \'(ann #t Any) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]], Symbol.for(':to'), 'typescript'], 'true as any;']);
   });
-  it('(compile \'(ann 1 Number) :to \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), 1, Symbol.for('Number')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('javascript')]], '1;']);
+  it('(compile \'(ann 1 Number) :to "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), 1, Symbol.for('Number')]], Symbol.for(':to'), 'javascript'], '1;']);
   });
-  it('(compile \'(ann 1 Number) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), 1, Symbol.for('Number')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], '1 as number;']);
+  it('(compile \'(ann 1 Number) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), 1, Symbol.for('Number')]], Symbol.for(':to'), 'typescript'], '1 as number;']);
   });
-  it('(compile \'(ann (list) Any) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), [Symbol.for('list')], Symbol.for('Any')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], '[] as any;']);
+  it('(compile \'(ann (list) Any) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), [Symbol.for('list')], Symbol.for('Any')]], Symbol.for(':to'), 'typescript'], '[] as any;']);
   });
-  it('(compile \'(ann \'() Any) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), [Symbol.for('quote'), []], Symbol.for('Any')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], '[] as any;']);
+  it('(compile \'(ann \'() Any) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), [Symbol.for('quote'), []], Symbol.for('Any')]], Symbol.for(':to'), 'typescript'], '[] as any;']);
   });
-  it('(compile \'(ann x (List Any)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('List'), Symbol.for('Any')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'x as [any];']);
+  it('(compile \'(ann x (List Any)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('List'), Symbol.for('Any')]]], Symbol.for(':to'), 'typescript'], 'x as [any];']);
   });
-  it('(compile \'(ann x (List Number Any)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('List'), Symbol.for('Number'), Symbol.for('Any')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'x as [number, any];']);
+  it('(compile \'(ann x (List Number Any)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('List'), Symbol.for('Number'), Symbol.for('Any')]]], Symbol.for(':to'), 'typescript'], 'x as [number, any];']);
   });
-  it('(compile \'(ann x NN) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), Symbol.for('NN')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'x as NN;']);
+  it('(compile \'(ann x NN) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), Symbol.for('NN')]], Symbol.for(':to'), 'typescript'], 'x as NN;']);
   });
-  it('(compile \'(ann x (NN Any)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('NN'), Symbol.for('Any')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'x as NN<any>;']);
+  it('(compile \'(ann x (NN Any)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('NN'), Symbol.for('Any')]]], Symbol.for(':to'), 'typescript'], 'x as NN<any>;']);
   });
-  it('(compile \'(ann x (NN Any Any)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('NN'), Symbol.for('Any'), Symbol.for('Any')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'x as NN<any,any>;']);
+  it('(compile \'(ann x (NN Any Any)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), Symbol.for('x'), [Symbol.for('NN'), Symbol.for('Any'), Symbol.for('Any')]]], Symbol.for(':to'), 'typescript'], 'x as NN<any,any>;']);
   });
-  it('(compile \'((ann (lambda (x) x) Any) 1) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [[Symbol.for('ann'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], Symbol.for('Any')], 1]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], '(function (x: any): any {\n' +
+  it('(compile \'((ann (lambda (x) x) Any) 1) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [[Symbol.for('ann'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], Symbol.for('Any')], 1]], Symbol.for(':to'), 'typescript'], '(function (x: any): any {\n' +
       '  return x;\n' +
       '} as any)(1);']);
   });
-  return it('(compile \'(lambda (x) (ann (send x foo) Any)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('ann'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('foo')], Symbol.for('Any')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function (x: any): any {\n' +
+  return it('(compile \'(lambda (x) (ann (send x foo) Any)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('ann'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('foo')], Symbol.for('Any')]]], Symbol.for(':to'), 'typescript'], 'function (x: any): any {\n' +
       '  return x.foo() as any;\n' +
       '};']);
   });
 });
 
 describe(':', function (): any {
-  it('(compile \'(begin (: x Any) (define x 1)) :to \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Any')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('javascript')]], 'let x = 1;']);
+  it('(compile \'(begin (: x Any) (define x 1)) :to "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Any')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'javascript'], 'let x = 1;']);
   });
-  it('(compile \'(begin (: x Any) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Any')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: any = 1;']);
+  it('(compile \'(begin (: x Any) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Any')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: any = 1;']);
   });
-  it('(compile \'(begin (: x String) (define x "1")) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('String')], [Symbol.for('define'), Symbol.for('x'), '1']]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: string = \'1\';']);
+  it('(compile \'(begin (: x String) (define x "1")) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('String')], [Symbol.for('define'), Symbol.for('x'), '1']]], Symbol.for(':to'), 'typescript'], 'let x: string = \'1\';']);
   });
-  it('(compile \'(begin (: x Number) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Number')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number = 1;']);
+  it('(compile \'(begin (: x Number) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Number')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: number = 1;']);
   });
-  it('(compile \'(begin (: x Integer) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Integer')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number = 1;']);
+  it('(compile \'(begin (: x Integer) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Integer')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: number = 1;']);
   });
-  it('(compile \'(begin (: x Natural) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Natural')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number = 1;']);
+  it('(compile \'(begin (: x Natural) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Natural')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: number = 1;']);
   });
-  it('(compile \'(begin (: x Real) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Real')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number = 1;']);
+  it('(compile \'(begin (: x Real) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Real')], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: number = 1;']);
   });
-  it('(compile \'(begin (: x Symbol) (define x \'x)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Symbol')], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: Symbol = Symbol.for(\'x\');']);
+  it('(compile \'(begin (: x Symbol) (define x \'x)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Symbol')], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'let x: Symbol = Symbol.for(\'x\');']);
   });
-  it('(compile \'(begin (: x Boolean) (define x #t)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Boolean')], [Symbol.for('define'), Symbol.for('x'), true]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: boolean = true;']);
+  it('(compile \'(begin (: x Boolean) (define x #t)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Boolean')], [Symbol.for('define'), Symbol.for('x'), true]]], Symbol.for(':to'), 'typescript'], 'let x: boolean = true;']);
   });
-  it('(compile \'(begin (: x True) (define x #t)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('True')], [Symbol.for('define'), Symbol.for('x'), true]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: true = true;']);
+  it('(compile \'(begin (: x True) (define x #t)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('True')], [Symbol.for('define'), Symbol.for('x'), true]]], Symbol.for(':to'), 'typescript'], 'let x: true = true;']);
   });
-  it('(compile \'(begin (: x False) (define x #f)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('False')], [Symbol.for('define'), Symbol.for('x'), false]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: false = false;']);
+  it('(compile \'(begin (: x False) (define x #f)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('False')], [Symbol.for('define'), Symbol.for('x'), false]]], Symbol.for(':to'), 'typescript'], 'let x: false = false;']);
   });
-  it('(compile \'(begin (: x (U Number String)) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('U'), Symbol.for('Number'), Symbol.for('String')]], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number | string = 1;']);
+  it('(compile \'(begin (: x (U Number String)) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('U'), Symbol.for('Number'), Symbol.for('String')]], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: number | string = 1;']);
   });
-  it('(compile \'(begin (: x (U Number String Boolean)) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('U'), Symbol.for('Number'), Symbol.for('String'), Symbol.for('Boolean')]], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number | string | boolean = 1;']);
+  it('(compile \'(begin (: x (U Number String Boolean)) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('U'), Symbol.for('Number'), Symbol.for('String'), Symbol.for('Boolean')]], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: number | string | boolean = 1;']);
   });
-  it('(compile \'(begin (: x (U Number (U String Boolean))) (define x 1)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('U'), Symbol.for('Number'), [Symbol.for('U'), Symbol.for('String'), Symbol.for('Boolean')]]], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number | (string | boolean) = 1;']);
+  it('(compile \'(begin (: x (U Number (U String Boolean))) (define x 1)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('U'), Symbol.for('Number'), [Symbol.for('U'), Symbol.for('String'), Symbol.for('Boolean')]]], [Symbol.for('define'), Symbol.for('x'), 1]]], Symbol.for(':to'), 'typescript'], 'let x: number | (string | boolean) = 1;']);
   });
-  it('(compile \'(begin (: x (Listof Number)) (define x (list 1))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('Listof'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('list'), 1]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: number[] = [1];']);
+  it('(compile \'(begin (: x (Listof Number)) (define x (list 1))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('Listof'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('list'), 1]]]], Symbol.for(':to'), 'typescript'], 'let x: number[] = [1];']);
   });
-  it('(compile \'(begin (: x (Pairof Number)) (define x \'(1 . 2))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('Pairof'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: (number | Symbol)[] = [1, Symbol.for(\'.\'), 2];']);
+  it('(compile \'(begin (: x (Pairof Number)) (define x \'(1 . 2))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), [Symbol.for('Pairof'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]]]]], Symbol.for(':to'), 'typescript'], 'let x: (number | Symbol)[] = [1, Symbol.for(\'.\'), 2];']);
   });
-  it('(compile \'(begin (: hello-world (-> Void)) (define (hello-world) (display "Hello world!"))) :to \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('hello-world'), [Symbol.for('->'), Symbol.for('Void')]], [Symbol.for('define'), [Symbol.for('hello-world')], [Symbol.for('display'), 'Hello world!']]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('javascript')]], 'function helloWorld() {\n' +
+  it('(compile \'(begin (: hello-world (-> Void)) (define (hello-world) (display "Hello world!"))) :to "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('hello-world'), [Symbol.for('->'), Symbol.for('Void')]], [Symbol.for('define'), [Symbol.for('hello-world')], [Symbol.for('display'), 'Hello world!']]]], Symbol.for(':to'), 'javascript'], 'function helloWorld() {\n' +
       '  console.log(\'Hello world!\');\n' +
       '}']);
   });
-  it('(compile \'(begin (: hello-world (-> Void)) (define (hello-world) (display "Hello world!"))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('hello-world'), [Symbol.for('->'), Symbol.for('Void')]], [Symbol.for('define'), [Symbol.for('hello-world')], [Symbol.for('display'), 'Hello world!']]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function helloWorld(): void {\n' +
+  it('(compile \'(begin (: hello-world (-> Void)) (define (hello-world) (display "Hello world!"))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('hello-world'), [Symbol.for('->'), Symbol.for('Void')]], [Symbol.for('define'), [Symbol.for('hello-world')], [Symbol.for('display'), 'Hello world!']]]], Symbol.for(':to'), 'typescript'], 'function helloWorld(): void {\n' +
       '  console.log(\'Hello world!\');\n' +
       '}']);
   });
-  it('(compile \'(begin (: f (-> Number Number)) (define (f x) x)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x')], Symbol.for('x')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function f(x: number): number {\n' +
+  it('(compile \'(begin (: f (-> Number Number)) (define (f x) x)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x')], Symbol.for('x')]]], Symbol.for(':to'), 'typescript'], 'function f(x: number): number {\n' +
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(begin (: f (-> Number Number)) (define f (lambda (x) x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: (a: number) => number = function (x: any): any {\n' +
+  it('(compile \'(begin (: f (-> Number Number)) (define f (lambda (x) x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'let f: (a: number) => number = function (x: any): any {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(begin (: f (-> Number Number)) (define f (foo (lambda (x) x)))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('foo'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: (a: number) => number = foo(function (x: any): any {\n' +
+  it('(compile \'(begin (: f (-> Number Number)) (define f (foo (lambda (x) x)))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('foo'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]]], Symbol.for(':to'), 'typescript'], 'let f: (a: number) => number = foo(function (x: any): any {\n' +
       '  return x;\n' +
       '});']);
   });
-  it('(compile \'(begin (: f (-> Number Number Number)) (define (f x (y 1)) x)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x'), [Symbol.for('y'), 1]], Symbol.for('x')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function f(x: number, y: number = 1): number {\n' +
+  it('(compile \'(begin (: f (-> Number Number Number)) (define (f x (y 1)) x)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for('define'), [Symbol.for('f'), Symbol.for('x'), [Symbol.for('y'), 1]], Symbol.for('x')]]], Symbol.for(':to'), 'typescript'], 'function f(x: number, y: number = 1): number {\n' +
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(begin (: f (->* (Number) (Number) Number)) (define f (lambda (x (y 1)) x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->*'), [Symbol.for('Number')], [Symbol.for('Number')], Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x'), [Symbol.for('y'), 1]], Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: (a: number, b?: number) => number = function (x: any, y: any = 1): any {\n' +
+  it('(compile \'(begin (: f (->* (Number) (Number) Number)) (define f (lambda (x (y 1)) x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->*'), [Symbol.for('Number')], [Symbol.for('Number')], Symbol.for('Number')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x'), [Symbol.for('y'), 1]], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'let f: (a: number, b?: number) => number = function (x: any, y: any = 1): any {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(begin (: f (-> Any * Any)) (define f (lambda x x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: (...a: any) => any = function (...x: any[]): any {\n' +
+  it('(compile \'(begin (: f (-> Any * Any)) (define f (lambda x x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'let f: (...a: any) => any = function (...x: any[]): any {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(begin (: f (-> :rest Any Any)) (define f (lambda x x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: (...a: any) => any = function (...x: any[]): any {\n' +
+  it('(compile \'(begin (: f (-> :rest Any Any)) (define f (lambda x x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'let f: (...a: any) => any = function (...x: any[]): any {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(begin (: f (->* :rest Any Any)) (define f (lambda x x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: (...a: any) => any = function (...x: any[]): any {\n' +
+  it('(compile \'(begin (: f (->* :rest Any Any)) (define f (lambda x x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'let f: (...a: any) => any = function (...x: any[]): any {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(begin (: f (->* :rest (Listof Any) Any)) (define f (lambda x x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->*'), Symbol.for(':rest'), [Symbol.for('Listof'), Symbol.for('Any')], Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: (...a: any[]) => any = function (...x: any[]): any {\n' +
+  it('(compile \'(begin (: f (->* :rest (Listof Any) Any)) (define f (lambda x x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('f'), [Symbol.for('->*'), Symbol.for(':rest'), [Symbol.for('Listof'), Symbol.for('Any')], Symbol.for('Any')]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), Symbol.for('x'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'let f: (...a: any[]) => any = function (...x: any[]): any {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(begin (: x Foo) (define x (new Foo))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Foo')], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('new'), Symbol.for('Foo')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let x: Foo = new Foo();']);
+  it('(compile \'(begin (: x Foo) (define x (new Foo))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for(':'), Symbol.for('x'), Symbol.for('Foo')], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('new'), Symbol.for('Foo')]]]], Symbol.for(':to'), 'typescript'], 'let x: Foo = new Foo();']);
   });
-  it('(compile \'(define f (lambda ((x : Number)) x)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for('x')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: any = function (x: number): any {\n' +
+  it('(compile \'(define f (lambda ((x : Number)) x)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for('x')]]], Symbol.for(':to'), 'typescript'], 'let f: any = function (x: number): any {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(define f (js/arrow ((x : Number)) x)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('f'), [Symbol.for('js/arrow'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for('x')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'let f: any = (x: number): any => {\n' +
+  it('(compile \'(define f (js/arrow ((x : Number)) x)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('f'), [Symbol.for('js/arrow'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for('x')]]], Symbol.for(':to'), 'typescript'], 'let f: any = (x: number): any => {\n' +
       '  return x;\n' +
       '};']);
   });
-  it('(compile \'(define (f (x : Number)) x) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for('x')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function f(x: number): any {\n' +
+  it('(compile \'(define (f (x : Number)) x) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for('x')]], Symbol.for(':to'), 'typescript'], 'function f(x: number): any {\n' +
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(define (f (x : Number) . args) x) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')], Symbol.for('.'), Symbol.for('args')], Symbol.for('x')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function f(x: number, ...args: any[]): any {\n' +
+  it('(compile \'(define (f (x : Number) . args) x) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')], Symbol.for('.'), Symbol.for('args')], Symbol.for('x')]], Symbol.for(':to'), 'typescript'], 'function f(x: number, ...args: any[]): any {\n' +
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(define (id (x : Number)) : Number x) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('id'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for(':'), Symbol.for('Number'), Symbol.for('x')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function id(x: number): number {\n' +
+  it('(compile \'(define (id (x : Number)) : Number x) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('id'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], Symbol.for(':'), Symbol.for('Number'), Symbol.for('x')]], Symbol.for(':to'), 'typescript'], 'function id(x: number): number {\n' +
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(define (f (x : Number 1)) : Number x) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number'), 1]], Symbol.for(':'), Symbol.for('Number'), Symbol.for('x')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function f(x: number = 1): number {\n' +
+  it('(compile \'(define (f (x : Number 1)) : Number x) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number'), 1]], Symbol.for(':'), Symbol.for('Number'), Symbol.for('x')]], Symbol.for(':to'), 'typescript'], 'function f(x: number = 1): number {\n' +
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(define (f (options : Any (js/obj))) : Any x) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('options'), Symbol.for(':'), Symbol.for('Any'), [Symbol.for('js/obj')]]], Symbol.for(':'), Symbol.for('Any'), Symbol.for('x')]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'function f(options: any = {}): any {\n' +
+  it('(compile \'(define (f (options : Any (js/obj))) : Any x) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('f'), [Symbol.for('options'), Symbol.for(':'), Symbol.for('Any'), [Symbol.for('js/obj')]]], Symbol.for(':'), Symbol.for('Any'), Symbol.for('x')]], Symbol.for(':to'), 'typescript'], 'function f(options: any = {}): any {\n' +
       '  return x;\n' +
       '}']);
   });
-  it('(compile \'(define Foo (class object% (define/public x) (define (constructor (x : Number)) (set-field! x this x)))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('Foo'), [Symbol.for('class'), Symbol.for('object%'), [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], [Symbol.for('set-field!'), Symbol.for('x'), Symbol.for('this'), Symbol.for('x')]]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'class Foo {\n' +
+  it('(compile \'(define Foo (class object% (define/public x) (define (constructor (x : Number)) (set-field! x this x)))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('Foo'), [Symbol.for('class'), Symbol.for('object%'), [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')]], [Symbol.for('set-field!'), Symbol.for('x'), Symbol.for('this'), Symbol.for('x')]]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
       '  x: any;\n' +
       '\n' +
       '  constructor(x: number) {\n' +
@@ -6867,8 +6867,8 @@ describe(':', function (): any {
       '  }\n' +
       '}']);
   });
-  return it('(compile \'(define Foo (class object% (define/public x) (define (constructor (x : Number) . args) (set-field! x this x)))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('Foo'), [Symbol.for('class'), Symbol.for('object%'), [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')], Symbol.for('.'), Symbol.for('args')], [Symbol.for('set-field!'), Symbol.for('x'), Symbol.for('this'), Symbol.for('x')]]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'class Foo {\n' +
+  return it('(compile \'(define Foo (class object% (define/public x) (define (constructor (x : Number) . args) (set-field! x this x)))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('Foo'), [Symbol.for('class'), Symbol.for('object%'), [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')], Symbol.for('.'), Symbol.for('args')], [Symbol.for('set-field!'), Symbol.for('x'), Symbol.for('this'), Symbol.for('x')]]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
       '  x: any;\n' +
       '\n' +
       '  constructor(x: number, ...args: any[]) {\n' +
@@ -6879,19 +6879,19 @@ describe(':', function (): any {
 });
 
 describe('define-type', function (): any {
-  it('(compile \'(define-type NN (-> Number Number)) :to \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('javascript')]], '']);
+  it('(compile \'(define-type NN (-> Number Number)) :to "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]]], Symbol.for(':to'), 'javascript'], '']);
   });
-  it('(compile \'(define-type NN (-> Number Number)) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'type NN = (a: number) => number;']);
+  it('(compile \'(define-type NN (-> Number Number)) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]]], Symbol.for(':to'), 'typescript'], 'type NN = (a: number) => number;']);
   });
-  it('(compile \'(begin (define-type NN (-> Number Number)) (: f NN) (define f (lambda (x) x))) :to \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for(':'), Symbol.for('f'), Symbol.for('NN')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('javascript')]], 'let f = function (x) {\n' +
+  it('(compile \'(begin (define-type NN (-> Number Number)) (: f NN) (define f (lambda (x) x))) :to "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for(':'), Symbol.for('f'), Symbol.for('NN')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'javascript'], 'let f = function (x) {\n' +
       '  return x;\n' +
       '};']);
   });
-  return it('(compile \'(begin (define-type NN (-> Number Number)) (: f NN) (define f (lambda (x) x))) :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for(':'), Symbol.for('f'), Symbol.for('NN')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'type NN = (a: number) => number;\n' +
+  return it('(compile \'(begin (define-type NN (-> Number Number)) (: f NN) (define f (lambda (x) x))) :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for(':'), Symbol.for('f'), Symbol.for('NN')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'type NN = (a: number) => number;\n' +
       '\n' +
       'let f: NN = function (x: any): any {\n' +
       '  return x;\n' +
@@ -6906,20 +6906,20 @@ describe('js/rename', function (): any {
 });
 
 describe('js/statement-or-expression', function (): any {
-  it('(compile \'(js/statement-or-expression :statement 1 :expression 2) :as \'statement)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], '1;']);
+  it('(compile \'(js/statement-or-expression :statement 1 :expression 2) :as "statement")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2]], Symbol.for(':as'), 'statement'], '1;']);
   });
-  it('(compile \'(js/statement-or-expression :statement 1 :expression 2) :as \'expression)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('expression')]], '2']);
+  it('(compile \'(js/statement-or-expression :statement 1 :expression 2) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2]], Symbol.for(':as'), 'expression'], '2']);
   });
-  it('(compile \'(js/statement-or-expression :statement 1 :expression 2 :return 3) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2, Symbol.for(':return'), 3]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return 3;']);
+  it('(compile \'(js/statement-or-expression :statement 1 :expression 2 :return 3) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2, Symbol.for(':return'), 3]], Symbol.for(':as'), 'return'], 'return 3;']);
   });
-  it('(compile \'(js/statement-or-expression :statement 1 :expression 2) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return 2;']);
+  it('(compile \'(js/statement-or-expression :statement 1 :expression 2) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2]], Symbol.for(':as'), 'return'], 'return 2;']);
   });
-  return it('(compile \'(js/statement-or-expression :statement 1) :as \'return)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('return')]], 'return 1;']);
+  return it('(compile \'(js/statement-or-expression :statement 1) :as "return")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1]], Symbol.for(':as'), 'return'], 'return 1;']);
   });
 });
 
@@ -7287,23 +7287,23 @@ describe('compile', function (): any {
   it('(compile #t)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true], 'true;']);
   });
-  it('(compile #t :to \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('javascript')]], 'true;']);
+  it('(compile #t :to "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':to'), 'javascript'], 'true;']);
   });
-  it('(compile #t :from \'roselisp :to \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('roselisp')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('javascript')]], 'true;']);
+  it('(compile #t :from \'roselisp :to "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), true, Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('roselisp')], Symbol.for(':to'), 'javascript'], 'true;']);
   });
-  it('(compile \'(ann #t Any) :from \'roselisp :to \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]], Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('roselisp')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('typescript')]], 'true as any;']);
+  it('(compile \'(ann #t Any) :from "roselisp" :to "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]], Symbol.for(':from'), 'roselisp', Symbol.for(':to'), 'typescript'], 'true as any;']);
   });
-  it('(compile "true" :to \'roselisp)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), 'true', Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('roselisp')]], true]);
+  it('(compile "true" :to "roselisp")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), 'true', Symbol.for(':to'), 'roselisp'], true]);
   });
-  it('(compile "true" :from \'javascript :to \'roselisp)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), 'true', Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('javascript')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('roselisp')]], true]);
+  it('(compile "true" :from "javascript" :to "roselisp")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), 'true', Symbol.for(':from'), 'javascript', Symbol.for(':to'), 'roselisp'], true]);
   });
-  return it('(compile "true as any" :from \'typescript :to \'roselisp)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), 'true as any', Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('typescript')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('roselisp')]], [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]]]);
+  return it('(compile "true as any" :from "typescript" :to "roselisp")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), 'true as any', Symbol.for(':from'), 'typescript', Symbol.for(':to'), 'roselisp'], [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]]]);
   });
 });
 
@@ -7311,17 +7311,17 @@ describe('decompile', function (): any {
   it('(decompile "true")', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true'], true]);
   });
-  it('(decompile "true" :from \'javascript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true', Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('javascript')]], true]);
+  it('(decompile "true" :from "javascript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true', Symbol.for(':from'), 'javascript'], true]);
   });
-  it('(decompile "true" :from \'javascript :to \'roselisp)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true', Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('javascript')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('roselisp')]], true]);
+  it('(decompile "true" :from "javascript" :to "roselisp")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true', Symbol.for(':from'), 'javascript', Symbol.for(':to'), 'roselisp'], true]);
   });
-  it('(decompile "true as any" :from \'typescript)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true as any', Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('typescript')]], [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]]]);
+  it('(decompile "true as any" :from "typescript")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true as any', Symbol.for(':from'), 'typescript'], [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]]]);
   });
-  return it('(decompile "true as any" :from \'typescript :to \'roselisp)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true as any', Symbol.for(':from'), [Symbol.for('quote'), Symbol.for('typescript')], Symbol.for(':to'), [Symbol.for('quote'), Symbol.for('roselisp')]], [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]]]);
+  return it('(decompile "true as any" :from "typescript" :to "roselisp")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('decompile'), 'true as any', Symbol.for(':from'), 'typescript', Symbol.for(':to'), 'roselisp'], [Symbol.for('quote'), [Symbol.for('ann'), true, Symbol.for('Any')]]]);
   });
 });
 

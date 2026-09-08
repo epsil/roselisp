@@ -175,79 +175,79 @@ describe('print-estree', function (): any {
   });
   it('const x: number = 1;', function (): any {
     return assertEqual(printEstree(new TSTypeAliasDeclaration(new Identifier('X'), new TSNumberKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'type X = number;');
   });
   it('1 as number', function (): any {
     return assertEqual(printEstree(new TSAsExpression(new Literal(1), new TSNumberKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), '1 as number');
   });
   it('x as any', function (): any {
     return assertEqual(printEstree(new TSAsExpression(new Identifier('x'), new TSAnyKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'x as any');
   });
   it('x as Foo', function (): any {
     return assertEqual(printEstree(new TSAsExpression(new Identifier('x'), new TSTypeReference(new Identifier('Foo'))), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'x as Foo');
   });
   it('x as Promise<any>', function (): any {
     return assertEqual(printEstree(new TSAsExpression(new Identifier('x'), new TSTypeReference(new Identifier('Promise'), new TSTypeParameterInstantiation([new TSAnyKeyword()]))), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'x as Promise<any>');
   });
   it('const x: number = 1;', function (): any {
     return assertEqual(printEstree(new VariableDeclaration([new VariableDeclarator(new Identifier('x').setType(new TSNumberKeyword()), new Literal(1))], 'const'), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'const x: number = 1;');
   });
   it('function (x: number): number { return x; }', function (): any {
     return assertEqual(printEstree(new FunctionExpression([new Identifier('x').setType(new TSNumberKeyword())], new BlockStatement([new ReturnStatement(new Identifier('x'))])).setType(new TSNumberKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'function (x: number): number {\n' +
       '  return x;\n' +
       '}');
   });
   it('function (x: number = 1): number { return x; }', function (): any {
     return assertEqual(printEstree(new FunctionExpression([new AssignmentPattern(new Identifier('x').setType(new TSNumberKeyword()), new Literal(1))], new BlockStatement([new ReturnStatement(new Identifier('x'))])).setType(new TSNumberKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'function (x: number = 1): number {\n' +
       '  return x;\n' +
       '}');
   });
   it('function (x: number = y): number { return x; }', function (): any {
     return assertEqual(printEstree(new FunctionExpression([new AssignmentPattern(new Identifier('x').setType(new TSNumberKeyword()), new Identifier('y'))], new BlockStatement([new ReturnStatement(new Identifier('x'))])).setType(new TSNumberKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'function (x: number = y): number {\n' +
       '  return x;\n' +
       '}');
   });
   it('function (x: number): number { return x; }', function (): any {
     return assertEqual(printEstree(new ArrowFunctionExpression([new Identifier('x').setType(new TSNumberKeyword())], new BlockStatement([new ReturnStatement(new Identifier('x'))])).setType(new TSNumberKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), '(x: number): number => {\n' +
       '  return x;\n' +
       '}');
   });
   it('const f: (a: any) => any = (x: any): any => { return x; };', function (): any {
     return assertEqual(printEstree(new VariableDeclaration([new VariableDeclarator(new Identifier('f').setType(new TSFunctionType([new Identifier('a').setType(new TSAnyKeyword())], new TSTypeAnnotation(new TSAnyKeyword()))), new ArrowFunctionExpression([new Identifier('x')], new BlockStatement([new ReturnStatement(new Identifier('x'))])))], 'const'), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'const f: (a: any) => any = (x: any): any => {\n' +
       '  return x;\n' +
       '};');
   });
   it('`foo`', function (): any {
     return assertEqual(printEstree(new TemplateLiteral([new TemplateElement(true, 'foo')]), {
-      language: 'typescript'
+      to: 'typescript'
     }), '`foo`');
   });
   it('`foo\n' +
     'bar`', function (): any {
     return assertEqual(printEstree(new TemplateLiteral([new TemplateElement(true, 'foo\n' +
       'bar')]), {
-      language: 'typescript'
+      to: 'typescript'
     }), '`foo\n' +
       'bar`');
   });
@@ -255,7 +255,7 @@ describe('print-estree', function (): any {
     '\\`bar`', function (): any {
     return assertEqual(printEstree(new TemplateLiteral([new TemplateElement(true, 'foo\n' +
       '`bar')]), {
-      language: 'typescript'
+      to: 'typescript'
     }), '`foo\n' +
       '\\`bar`');
   });
@@ -263,7 +263,7 @@ describe('print-estree', function (): any {
     'bar`; }', function (): any {
     return assertEqual(printEstree(new FunctionExpression([], new BlockStatement([new ReturnStatement(new TemplateLiteral([new TemplateElement(true, 'foo\n' +
       'bar')]))])).setType(new TSAnyKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'function (): any {\n' +
       '  return `foo\n' +
       'bar`;\n' +
@@ -271,14 +271,14 @@ describe('print-estree', function (): any {
   });
   it('foo`bar`', function (): any {
     return assertEqual(printEstree(new TaggedTemplateExpression(new Identifier('foo'), new TemplateLiteral([new TemplateElement(true, 'bar')])), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'foo`bar`');
   });
   it('foo`bar\n' +
     'baz`', function (): any {
     return assertEqual(printEstree(new TaggedTemplateExpression(new Identifier('foo'), new TemplateLiteral([new TemplateElement(true, 'bar\n' +
       'baz')])), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'foo`bar\n' +
       'baz`');
   });
@@ -286,7 +286,7 @@ describe('print-estree', function (): any {
     'baz`; }', function (): any {
     return assertEqual(printEstree(new FunctionExpression([], new BlockStatement([new ReturnStatement(new TaggedTemplateExpression(new Identifier('foo'), new TemplateLiteral([new TemplateElement(true, 'bar\n' +
       'baz')])))])).setType(new TSAnyKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'function (): any {\n' +
       '  return foo`bar\n' +
       'baz`;\n' +
@@ -296,7 +296,7 @@ describe('print-estree', function (): any {
     'baz`; }; }', function (): any {
     return assertEqual(printEstree(new FunctionExpression([], new BlockStatement([new ReturnStatement(new FunctionExpression([], new BlockStatement([new ReturnStatement(new TaggedTemplateExpression(new Identifier('foo'), new TemplateLiteral([new TemplateElement(true, 'bar\n' +
       'baz')])))])).setType(new TSAnyKeyword()))])).setType(new TSAnyKeyword()), {
-      language: 'typescript'
+      to: 'typescript'
     }), 'function (): any {\n' +
       '  return function (): any {\n' +
       '    return foo`bar\n' +
@@ -306,7 +306,7 @@ describe('print-estree', function (): any {
   });
   return it('export * from "foo";', function (): any {
     return assertEqual(printEstree(new ExportAllDeclaration(new Literal('foo')), {
-      language: 'javascript'
+      to: 'javascript'
     }), 'export * from \'foo\';');
   });
 });

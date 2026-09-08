@@ -18,11 +18,11 @@
  #t
  > (compile #t)
  "true;"
- > (compile #t :as 'statement)
+ > (compile #t :as "statement")
  "true;"
- > (compile #t :as 'expression)
+ > (compile #t :as "expression")
  "true"
- > (compile #t :as 'return)
+ > (compile #t :as "return")
  "return true;"
 
  :describe "#f"
@@ -32,11 +32,11 @@
  #f
  > (compile #f)
  "false;"
- > (compile #f :as 'statement)
+ > (compile #f :as "statement")
  "false;"
- > (compile #f :as 'expression)
+ > (compile #f :as "expression")
  "false"
- > (compile #f :as 'return)
+ > (compile #f :as "return")
  "return false;"
 
  :describe "#u"
@@ -1636,12 +1636,12 @@ rest(x);"
   return x;
 };"
  > (compile '(define x)
-            :to 'typescript)
+            :to "typescript")
  "let x: any;"
  > (compile '(define x 1))
  "let x = 1;"
  > (compile '(define x 1)
-            :to 'typescript)
+            :to "typescript")
  "let x: any = 1;"
  > (compile '(define I
                (lambda (x)
@@ -1698,7 +1698,7 @@ rest(x);"
 }"
  > (compile '(define (A f . args)
                (apply f args))
-            :to 'typescript)
+            :to "typescript")
  "function A(f: any, ...args: any[]): any {
   return f(...args);
 }"
@@ -2024,34 +2024,34 @@ let bar = foo(Symbol.for('x'));"
  "let x;"
  > (compile '(let (x)
                x)
-            :as 'return)
+            :as "return")
  "let x;
 
 return x;"
  > (compile '(let (x)
                x)
-            :as 'expression)
+            :as "expression")
  "(() => {
   let x;
   return x;
 })()"
  > (compile '(let (x)
                x)
-            :as 'return
-            :to 'typescript)
+            :as "return"
+            :to "typescript")
  "let x: any;
 
 return x;"
  > (compile '(let ((x 1))
                x)
-            :as 'return)
+            :as "return")
  "let x = 1;
 
 return x;"
  > (compile '(let ((x 1))
                x)
-            :as 'return
-            :to 'typescript)
+            :as "return"
+            :to "typescript")
  "let x: any = 1;
 
 return x;"
@@ -2123,8 +2123,8 @@ console.log(x);
                x
                (let ((x 1))
                  x)))
-            :as 'return
-            :to 'typescript)
+            :as "return"
+            :to "typescript")
  "if (foo) {
   return bar;
 } else {
@@ -2145,7 +2145,7 @@ console.log(x);
                    env
                    compilation-env
                    options))))))
-    :to 'typescript)
+    :to "typescript")
  "let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {
   let language: any = options['language'];
   language = language || defaultLanguage;
@@ -2158,7 +2158,7 @@ console.log(x);
                  x))
               (else
                #f))
-            :as 'return)
+            :as "return")
  "if (foo) {
   let x = true;
   return x;
@@ -2186,20 +2186,20 @@ console.log(x);
 let z = x + y;"
  > (compile '(let-values ((value (foo bar baz)))
                value)
-            :as 'return)
+            :as "return")
  "let value = foo(bar, baz);
 
 return value;"
  > (compile '(let-values (((value) (foo bar baz)))
                value)
-            :as 'return)
+            :as "return")
  "let [value] = foo(bar, baz);
 
 return value;"
  > (compile '(let-values (((value) (foo bar baz)))
                value)
-            :as 'return
-            :to 'typescript)
+            :as "return"
+            :to "typescript")
  "let [value]: any[] = foo(bar, baz);
 
 return value;"
@@ -2212,7 +2212,7 @@ fs.reduce(function (acc, f) {
 }, x);"
  > (compile '(let-values (((x . fs) args))
                (.reduce fs (lambda (acc f) (f acc)) x))
-            :to 'typescript)
+            :to "typescript")
  "let [x, ...fs]: any[] = args;
 
 fs.reduce(function (acc: any, f: any): any {
@@ -2221,7 +2221,7 @@ fs.reduce(function (acc: any, f: any): any {
  > (compile '(let-values (((value1) (foo bar))
                           ((value2) (bar baz)))
                (list value1 value2))
-            :as 'return)
+            :as "return")
  "let [value1] = foo(bar);
 
 let [value2] = bar(baz);
@@ -2231,7 +2231,7 @@ return [value1, value2];"
                value
                (let-values ((value (foo bar baz)))
                  value))
-            :as 'return)
+            :as "return")
  "value;
 
 let value = foo(bar, baz);
@@ -2292,7 +2292,7 @@ prop;"
 };"
  > (compile '(lambda (x)
                x)
-            :to 'typescript)
+            :to "typescript")
  "function (x: any): any {
   return x;
 };"
@@ -2342,13 +2342,13 @@ prop;"
                 given
                 " "
                 surname))
-            :to 'typescript)
+            :to "typescript")
  "function (given: any, surname: any = 'Smith'): any {
   return 'Hello, ' + given + ' ' + surname;
 };"
  > (compile '(lambda (arg (options (js/obj)))
                arg)
-            :to 'typescript)
+            :to "typescript")
  "function (arg: any, options: any = {}): any {
   return arg;
 };"
@@ -2361,7 +2361,7 @@ prop;"
 };"
  > (compile '(js/function () : Number
                           0)
-            :to 'typescript)
+            :to "typescript")
  "function (): number {
   return 0;
 };"
@@ -2374,7 +2374,7 @@ prop;"
  > (compile '(js/function () : Number
                           :name foo
                           0)
-            :to 'typescript)
+            :to "typescript")
  "function foo(): number {
   return 0;
 }"
@@ -2387,7 +2387,7 @@ prop;"
 };"
  > (compile '(lambda (this)
                #u)
-            :to 'typescript)
+            :to "typescript")
  "function (this: any): any {
   return undefined;
 };"
@@ -2398,7 +2398,7 @@ prop;"
 };"
  > (compile '(lambda (this arg)
                arg)
-            :to 'typescript)
+            :to "typescript")
  "function (this: any, arg: any): any {
   return arg;
 };"
@@ -2409,7 +2409,7 @@ prop;"
 };"
  > (compile '(lambda (this . args)
                args)
-            :to 'typescript)
+            :to "typescript")
  "function (this: any, ...args: any[]): any {
   return args;
 };"
@@ -2422,7 +2422,7 @@ prop;"
 };"
  > (compile '(js/arrow () : Number
                        0)
-            :to 'typescript)
+            :to "typescript")
  "(): number => {
   return 0;
 };"
@@ -2435,7 +2435,7 @@ prop;"
  > (compile '(js/arrow () : Number
                        :name foo
                        0)
-            :to 'typescript)
+            :to "typescript")
  "let foo: any = (): number => {
   return 0;
 };"
@@ -2456,21 +2456,21 @@ prop;"
  > (compile '(js/iife (js/arrow (x y)
                         (+ x y))
                       (list 1 2))
-            :as 'expression)
+            :as "expression")
  "((x, y) => {
   return x + y;
 })(1, 2)"
  > (compile '(js/iife (js/arrow (x . y)
                         (+ x (first y)))
                       (list* a b))
-            :as 'expression)
+            :as "expression")
  "((x, ...y) => {
   return x + y[0];
 })(a, ...b)"
  > (compile '(js/iife (js/arrow (x y)
                         (+ x y))
                       (list 1 2))
-            :as 'statement)
+            :as "statement")
  "let x = 1;
 
 let y = 2;
@@ -2479,14 +2479,14 @@ x + y;"
  > (compile '(js/iife (js/arrow (x . y)
                         (+ x (first y)))
                       (list a b c))
-            :as 'statement)
+            :as "statement")
  "let y = [b, c];
 
 a + y[0];"
  > (compile '(js/iife (js/arrow (x y)
                         (+ x y))
                       (list 1 2))
-            :as 'return)
+            :as "return")
  "let x = 1;
 
 let y = 2;
@@ -2689,10 +2689,10 @@ y;
 
 z;"
  > (compile `(begin x y)
-            :as 'expression)
+            :as "expression")
  "x, y"
  > (compile '(begin x y z)
-            :as 'expression)
+            :as "expression")
  "x, y, z"
  > (compile
     '(begin
@@ -2796,20 +2796,20 @@ z;"
   bar();
 }"
  > (compile '(if #t (foo) (bar))
-            :as 'statement)
+            :as "statement")
  "if (true) {
   foo();
 } else {
   bar();
 }"
  > (compile '(if #t (foo) (bar))
-            :as 'return)
+            :as "return")
  "if (true) {
   return foo();
 } else {
   return bar();
 }"
- > (compile '(if #t (foo) (bar)) :as 'expression)
+ > (compile '(if #t (foo) (bar)) :as "expression")
  "true ? foo() : bar()"
  > (compile '(if #t (foo) (bar) (baz)))
  "if (true) {
@@ -2819,15 +2819,15 @@ z;"
 }"
  > (compile '(if x
                  y)
-            :as 'expression)
+            :as "expression")
  "x ? y : undefined"
  > (compile '(if x y z)
-            :as 'expression)
+            :as "expression")
  "x ? y : z"
  > (compile '(if x
                  y
                  z)
-            :as 'return)
+            :as "return")
  "if (x) {
   return y;
 } else {
@@ -2836,14 +2836,14 @@ z;"
  > (compile '(if "foo"
                  "bar"
                  "baz")
-            :as 'expression)
+            :as "expression")
  "'foo' ? 'bar' : 'baz'"
  > (compile '(if x
                  (begin
                    y
                    z)
                  w)
-            :as 'return)
+            :as "return")
  "if (x) {
   y;
   return z;
@@ -2861,7 +2861,7 @@ z;"
  > (compile '(if (set! x y)
                  z
                  w)
-            :as 'return)
+            :as "return")
  "if ((x = y)) {
   return z;
 } else {
@@ -3039,7 +3039,7 @@ z;"
                (foo))
               (else
                (bar)))
-            :as 'statement)
+            :as "statement")
  "if (false) {
   foo();
 } else {
@@ -3048,7 +3048,7 @@ z;"
  > (compile '(cond
               (x
                y))
-            :as 'return)
+            :as "return")
  "if (x) {
   return y;
 }"
@@ -3057,7 +3057,7 @@ z;"
                (foo))
               (else
                (bar)))
-            :as 'return)
+            :as "return")
  "if (false) {
   return foo();
 } else {
@@ -3068,7 +3068,7 @@ z;"
                y)
               (else
                z))
-            :as 'return)
+            :as "return")
  "if (x) {
   return y;
 } else {
@@ -3079,7 +3079,7 @@ z;"
                z)
               (else
                w))
-            :as 'return)
+            :as "return")
  "if ((x = y)) {
   return z;
 } else {
@@ -3088,21 +3088,21 @@ z;"
  > (compile '(cond
               (x
                y))
-            :as 'expression)
+            :as "expression")
  "x ? y : undefined"
  > (compile '(cond
               (x
                y)
               (else
                z))
-            :as 'expression)
+            :as "expression")
  "x ? y : z"
  > (compile '(cond
               (#f
                (foo))
               (else
                (bar)))
-            :as 'expression)
+            :as "expression")
  "false ? foo() : bar()"
  > (compile '(cond
               (x
@@ -3110,7 +3110,7 @@ z;"
               (else
                w
                z))
-            :as 'expression)
+            :as "expression")
  "x ? y : (w, z)"
  > (compile '(cond
               (#t => y)
@@ -3156,13 +3156,13 @@ if ((_condVar1 = true)) {
  > (compile '(js/? x y (js/? z w)))
  "x ? y : (z ? w : undefined);"
  > (compile '(js/? x y z)
-            :as 'statement)
+            :as "statement")
  "x ? y : z;"
  > (compile '(js/? x y z)
-            :as 'return)
+            :as "return")
  "return x ? y : z;"
  > (compile '(js/? x y z)
-            :as 'expression)
+            :as "expression")
  "x ? y : z"
 
  :describe "js/if"
@@ -3183,21 +3183,21 @@ if ((_condVar1 = true)) {
   w;
 }"
  > (compile '(js/if x y z)
-            :as 'statement)
+            :as "statement")
  "if (x) {
   y;
 } else {
   z;
 }"
  > (compile '(js/if x y z)
-            :as 'return)
+            :as "return")
  "if (x) {
   return y;
 } else {
   return z;
 }"
  it> (compile '(js/if x y z)
-              :as 'expression)
+              :as "expression")
  "(() => {
   if (x) {
     return y;
@@ -3240,7 +3240,7 @@ if ((_condVar1 = true)) {
                   (break))
                 (default
                   (display "bar")))
-    :as 'return)
+    :as "return")
  "switch (x) {
   case 'foo': {
     return console.log('foo');
@@ -3256,7 +3256,7 @@ if ((_condVar1 = true)) {
                   (display "foo"))
                 (default
                   (display "bar")))
-    :as 'return)
+    :as "return")
  "switch (x) {
   case 'foo': {
     console.log('foo');
@@ -3272,7 +3272,7 @@ if ((_condVar1 = true)) {
                   (break))
                 (default
                   (display "bar")))
-    :as 'expression)
+    :as "expression")
  "(() => {
   switch (x) {
     case 'foo': {
@@ -3693,7 +3693,7 @@ for (let i = 0; i < _end; i++) {
 }"
  > (compile '(for ((i (range 0 10)))
                (display x))
-            :to 'typescript)
+            :to "typescript")
  "for (let i: any = 0; i < 10; i++) {
   console.log(x);
 }"
@@ -3746,7 +3746,7 @@ for (let i = _start; i < _end; i++) {
 }"
  > (compile '(for ((i (range (+ 1 1) (+ 2 2))))
                (display i))
-            :to 'typescript)
+            :to "typescript")
  "let _start: any = 1 + 1;
 
 let _end: any = 2 + 2;
@@ -3758,7 +3758,7 @@ for (let i: any = _start; i < _end; i++) {
                    (_end 0))
                (for ((i (range (+ 1 1) (+ 2 2))))
                  (display i)))
-            :to 'typescript)
+            :to "typescript")
  "let _start: any = 0;
 
 let _end: any = 0;
@@ -3773,7 +3773,7 @@ for (let i: any = _start1; i < _end1; i++) {
  > (compile '(for ((i (range (+ 1 1) (+ 2 2))))
                (for ((j (range (+ 3 3) (+ 4 4))))
                  (display j)))
-            :to 'typescript)
+            :to "typescript")
  "let _start: any = 1 + 1;
 
 let _end: any = 2 + 2;
@@ -3976,7 +3976,7 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
 }"
  > (compile '(define foo
                (async (lambda (x) x)))
-            :to 'typescript)
+            :to "typescript")
  "async function foo(x: any): Promise<any> {
   return x;
 }"
@@ -4356,7 +4356,7 @@ let bar = foo && ('bazBaz' in foo);"
                  (set! (.-x this) x))
                (define/public (bar)
                  (.-x this)))
-            :to 'typescript)
+            :to "typescript")
  "class Foo {
   private x: any;
 
@@ -4376,7 +4376,7 @@ let bar = foo && ('bazBaz' in foo);"
                  (set! (.-stack this) args))
                (define/public (bar)
                  (.-x this)))
-            :to 'typescript)
+            :to "typescript")
  "class Foo {
   x: any;
 
@@ -4434,7 +4434,7 @@ let bar = foo && ('bazBaz' in foo);"
                  (set! (.-x this) x))
                (define/private (bar)
                  (.-x this)))
-            :to 'typescript)
+            :to "typescript")
  "class Foo extends Object {
   private x: any;
 
@@ -4457,7 +4457,7 @@ let bar = foo && ('bazBaz' in foo);"
                (public bar)
                (define (bar)
                  (.-x this)))
-            :to 'typescript)
+            :to "typescript")
  "class Foo {
   x: any;
 
@@ -4479,7 +4479,7 @@ let bar = foo && ('bazBaz' in foo);"
                (private bar)
                (define (bar)
                  (.-x this)))
-            :to 'typescript)
+            :to "typescript")
  "class Foo {
   private x: any;
 
@@ -4684,29 +4684,29 @@ let bar = foo && ('bazBaz' in foo);"
   }
 });"
  > (compile '(js/obj)
-            :as 'expression)
+            :as "expression")
  "{}"
  > (compile '(js/obj "foo" "bar")
-            :as 'expression)
+            :as "expression")
  "{
   foo: 'bar'
 }"
  > (compile '(js/obj "foo" 1 "bar" 2)
-            :as 'expression)
+            :as "expression")
  "{
   foo: 1,
   bar: 2
 }"
  > (compile '(js/obj)
-            :as 'return)
+            :as "return")
  "return {};"
  > (compile '(js/obj "foo" "bar")
-            :as 'return)
+            :as "return")
  "return {
   foo: 'bar'
 };"
  > (compile '(js/obj "foo" 1 "bar" 2)
-            :as 'return)
+            :as "return")
  "return {
   foo: 1,
   bar: 2
@@ -4797,14 +4797,14 @@ let K = function (x, y) {
  > (compile '(module m scheme
                (define (foo length)
                  length))
-            :to 'typescript)
+            :to "typescript")
  "function foo(length: any): any {
   return length;
 }"
  > (compile '(module m scheme
                (define (foo (length : Number)) : Number
                  length))
-            :to 'typescript)
+            :to "typescript")
  "function foo(length: number): number {
   return length;
 }"
@@ -5076,23 +5076,23 @@ let y = 2;"
  > (compile
     '(define-values (value)
        (foo bar baz))
-    :to 'typescript)
+    :to "typescript")
  "let [value]: any[] = foo(bar, baz);"
  > (compile
     '(define-values (#f #f value)
        (foo bar baz))
-    :to 'typescript)
+    :to "typescript")
  "let [, , value]: any[] = foo(bar, baz);"
  > (compile
     '(define-values (_ _ value)
        (foo bar baz))
-    :to 'typescript)
+    :to "typescript")
  "let [, , value]: any[] = foo(bar, baz);"
  > (compile
     '(define-values (_ __ value)
        :hole-marker __
        (foo bar baz))
-    :to 'typescript)
+    :to "typescript")
  "let [_, , value]: any[] = foo(bar, baz);"
  > (compile
     '(module m scheme
@@ -5102,7 +5102,7 @@ let y = 2;"
          (define-values (x . rest)
            xs)
          (append rest '(5))))
-    :to 'typescript)
+    :to "typescript")
  "function foo(): any {
   let xs: any = [1, 2, 3, 4];
   let [x, ...rest]: any[] = xs;
@@ -5151,7 +5151,7 @@ let y = 2;"
          (define-fields (x rest)
            obj)
          (append rest '(5))))
-    :to 'typescript)
+    :to "typescript")
  "function foo(): any {
   let obj: any = {};
   let {x, rest} = obj;
@@ -5165,7 +5165,7 @@ let y = 2;"
          (define-fields ((rest r) x)
            obj)
          (list r x)))
-    :to 'typescript)
+    :to "typescript")
  "function foo(): any {
   let obj: any = {};
   let {rest: r, x} = obj;
@@ -5178,18 +5178,18 @@ let y = 2;"
  > (compile '(set! (aref args 0) 1))
  "args[0] = 1;"
  > (compile '(set! x (add1 x))
-            :as 'expression)
+            :as "expression")
  "++x"
  > (compile '(set! x (sub1 x))
-            :as 'expression)
+            :as "expression")
  "--x"
  > (compile '(set! x (+ x 1))
-            :as 'expression)
+            :as "expression")
  "++x"
  > (compile '(set! x (+ x 1)))
  "x++;"
  > (compile '(set! x (+ x 1))
-            :as 'return)
+            :as "return")
  "return ++x;"
 
  :describe "set!-values"
@@ -6216,42 +6216,42 @@ reverse(lst);"
  #u
  > (compile '(ann #t Any))
  "true;"
- > (compile '(ann #t Any) :to 'typescript)
+ > (compile '(ann #t Any) :to "typescript")
  "true as any;"
  > (compile '(ann 1 Number)
-            :to 'javascript)
+            :to "javascript")
  "1;"
  > (compile '(ann 1 Number)
-            :to 'typescript)
+            :to "typescript")
  "1 as number;"
  > (compile '(ann (list) Any)
-            :to 'typescript)
+            :to "typescript")
  "[] as any;"
  > (compile '(ann '() Any)
-            :to 'typescript)
+            :to "typescript")
  "[] as any;"
  > (compile '(ann x (List Any))
-            :to 'typescript)
+            :to "typescript")
  "x as [any];"
  > (compile '(ann x (List Number Any))
-            :to 'typescript)
+            :to "typescript")
  "x as [number, any];"
  > (compile '(ann x NN)
-            :to 'typescript)
+            :to "typescript")
  "x as NN;"
  > (compile '(ann x (NN Any))
-            :to 'typescript)
+            :to "typescript")
  "x as NN<any>;"
  > (compile '(ann x (NN Any Any))
-            :to 'typescript)
+            :to "typescript")
  "x as NN<any,any>;"
  > (compile '((ann (lambda (x) x) Any) 1)
-            :to 'typescript)
+            :to "typescript")
  "(function (x: any): any {
   return x;
 } as any)(1);"
  > (compile '(lambda (x) (ann (send x foo) Any))
-            :to 'typescript)
+            :to "typescript")
  "function (x: any): any {
   return x.foo() as any;
 };"
@@ -6260,88 +6260,88 @@ reverse(lst);"
  > (compile '(begin
                (: x Any)
                (define x 1))
-            :to 'javascript)
+            :to "javascript")
  "let x = 1;"
  > (compile '(begin
                (: x Any)
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: any = 1;"
  > (compile '(begin
                (: x String)
                (define x "1"))
-            :to 'typescript)
+            :to "typescript")
  "let x: string = '1';"
  > (compile '(begin
                (: x Number)
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: number = 1;"
  > (compile '(begin
                (: x Integer)
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: number = 1;"
  > (compile '(begin
                (: x Natural)
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: number = 1;"
  > (compile '(begin
                (: x Real)
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: number = 1;"
  > (compile '(begin
                (: x Symbol)
                (define x 'x))
-            :to 'typescript)
+            :to "typescript")
  "let x: Symbol = Symbol.for('x');"
  > (compile '(begin
                (: x Boolean)
                (define x #t))
-            :to 'typescript)
+            :to "typescript")
  "let x: boolean = true;"
  > (compile '(begin
                (: x True)
                (define x #t))
-            :to 'typescript)
+            :to "typescript")
  "let x: true = true;"
  > (compile '(begin
                (: x False)
                (define x #f))
-            :to 'typescript)
+            :to "typescript")
  "let x: false = false;"
  > (compile '(begin
                (: x (U Number String))
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: number | string = 1;"
  > (compile '(begin
                (: x (U Number String Boolean))
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: number | string | boolean = 1;"
  > (compile '(begin
                (: x (U Number (U String Boolean)))
                (define x 1))
-            :to 'typescript)
+            :to "typescript")
  "let x: number | (string | boolean) = 1;"
  > (compile '(begin
                (: x (Listof Number))
                (define x (list 1)))
-            :to 'typescript)
+            :to "typescript")
  "let x: number[] = [1];"
  > (compile '(begin
                (: x (Pairof Number))
                (define x '(1 . 2)))
-            :to 'typescript)
+            :to "typescript")
  "let x: (number | Symbol)[] = [1, Symbol.for('.'), 2];"
  > (compile '(begin
                (: hello-world (-> Void))
                (define (hello-world)
                  (display "Hello world!")))
-            :to 'javascript)
+            :to "javascript")
  "function helloWorld() {
   console.log('Hello world!');
 }"
@@ -6349,7 +6349,7 @@ reverse(lst);"
                (: hello-world (-> Void))
                (define (hello-world)
                  (display "Hello world!")))
-            :to 'typescript)
+            :to "typescript")
  "function helloWorld(): void {
   console.log('Hello world!');
 }"
@@ -6357,7 +6357,7 @@ reverse(lst);"
                (: f (-> Number Number))
                (define (f x)
                  x))
-            :to 'typescript)
+            :to "typescript")
  "function f(x: number): number {
   return x;
 }"
@@ -6366,7 +6366,7 @@ reverse(lst);"
                (define f
                  (lambda (x)
                    x)))
-            :to 'typescript)
+            :to "typescript")
  "let f: (a: number) => number = function (x: any): any {
   return x;
 };"
@@ -6376,7 +6376,7 @@ reverse(lst);"
                  (foo
                   (lambda (x)
                     x))))
-            :to 'typescript)
+            :to "typescript")
  "let f: (a: number) => number = foo(function (x: any): any {
   return x;
 });"
@@ -6384,7 +6384,7 @@ reverse(lst);"
                (: f (-> Number Number Number))
                (define (f x (y 1))
                  x))
-            :to 'typescript)
+            :to "typescript")
  "function f(x: number, y: number = 1): number {
   return x;
 }"
@@ -6393,7 +6393,7 @@ reverse(lst);"
                (define f
                  (lambda (x (y 1))
                    x)))
-            :to 'typescript)
+            :to "typescript")
  "let f: (a: number, b?: number) => number = function (x: any, y: any = 1): any {
   return x;
 };"
@@ -6402,7 +6402,7 @@ reverse(lst);"
                (define f
                  (lambda x
                    x)))
-            :to 'typescript)
+            :to "typescript")
  "let f: (...a: any) => any = function (...x: any[]): any {
   return x;
 };"
@@ -6411,7 +6411,7 @@ reverse(lst);"
                (define f
                  (lambda x
                    x)))
-            :to 'typescript)
+            :to "typescript")
  "let f: (...a: any) => any = function (...x: any[]): any {
   return x;
 };"
@@ -6420,7 +6420,7 @@ reverse(lst);"
                (define f
                  (lambda x
                    x)))
-            :to 'typescript)
+            :to "typescript")
  "let f: (...a: any) => any = function (...x: any[]): any {
   return x;
 };"
@@ -6429,7 +6429,7 @@ reverse(lst);"
                (define f
                  (lambda x
                    x)))
-            :to 'typescript)
+            :to "typescript")
  "let f: (...a: any[]) => any = function (...x: any[]): any {
   return x;
 };"
@@ -6437,49 +6437,49 @@ reverse(lst);"
                (: x Foo)
                (define x
                  (new Foo)))
-            :to 'typescript)
+            :to "typescript")
  "let x: Foo = new Foo();"
  > (compile '(define f
                (lambda ((x : Number))
                  x))
-            :to 'typescript)
+            :to "typescript")
  "let f: any = function (x: number): any {
   return x;
 };"
  > (compile '(define f
                (js/arrow ((x : Number))
                  x))
-            :to 'typescript)
+            :to "typescript")
  "let f: any = (x: number): any => {
   return x;
 };"
  > (compile '(define (f (x : Number))
                x)
-            :to 'typescript)
+            :to "typescript")
  "function f(x: number): any {
   return x;
 }"
  > (compile '(define (f (x : Number) . args)
                x)
-            :to 'typescript)
+            :to "typescript")
  "function f(x: number, ...args: any[]): any {
   return x;
 }"
  > (compile '(define (id (x : Number)) : Number
                x)
-            :to 'typescript)
+            :to "typescript")
  "function id(x: number): number {
   return x;
 }"
  > (compile '(define (f (x : Number 1)) : Number
                x)
-            :to 'typescript)
+            :to "typescript")
  "function f(x: number = 1): number {
   return x;
 }"
  > (compile '(define (f (options : Any (js/obj))) : Any
                x)
-            :to 'typescript)
+            :to "typescript")
  "function f(options: any = {}): any {
   return x;
 }"
@@ -6488,7 +6488,7 @@ reverse(lst);"
                  (define/public x)
                  (define (constructor (x : Number))
                    (set-field! x this x))))
-            :to 'typescript)
+            :to "typescript")
  "class Foo {
   x: any;
 
@@ -6501,7 +6501,7 @@ reverse(lst);"
                  (define/public x)
                  (define (constructor (x : Number) . args)
                    (set-field! x this x))))
-            :to 'typescript)
+            :to "typescript")
  "class Foo {
   x: any;
 
@@ -6512,10 +6512,10 @@ reverse(lst);"
 
  :describe "define-type"
  > (compile '(define-type NN (-> Number Number))
-            :to 'javascript)
+            :to "javascript")
  ""
  > (compile '(define-type NN (-> Number Number))
-            :to 'typescript)
+            :to "typescript")
  "type NN = (a: number) => number;"
  > (compile '(begin
                (define-type NN (-> Number Number))
@@ -6523,7 +6523,7 @@ reverse(lst);"
                (define f
                  (lambda (x)
                    x)))
-            :to 'javascript)
+            :to "javascript")
  "let f = function (x) {
   return x;
 };"
@@ -6533,7 +6533,7 @@ reverse(lst);"
                (define f
                  (lambda (x)
                    x)))
-            :to 'typescript)
+            :to "typescript")
  "type NN = (a: number) => number;
 
 let f: NN = function (x: any): any {
@@ -6549,27 +6549,27 @@ let f: NN = function (x: any): any {
  > (compile '(js/statement-or-expression
               :statement 1
               :expression 2)
-            :as 'statement)
+            :as "statement")
  "1;"
  > (compile '(js/statement-or-expression
               :statement 1
               :expression 2)
-            :as 'expression)
+            :as "expression")
  "2"
  > (compile '(js/statement-or-expression
               :statement 1
               :expression 2
               :return 3)
-            :as 'return)
+            :as "return")
  "return 3;"
  > (compile '(js/statement-or-expression
               :statement 1
               :expression 2)
-            :as 'return)
+            :as "return")
  "return 2;"
  > (compile '(js/statement-or-expression
               :statement 1)
-            :as 'return)
+            :as "return")
  "return 1;"
 
  :describe "match"
@@ -6950,29 +6950,29 @@ export {
  :describe "compile"
  > (compile #t)
  "true;"
- > (compile #t :to 'javascript)
+ > (compile #t :to "javascript")
  "true;"
- > (compile #t :from 'roselisp :to 'javascript)
+ > (compile #t :from 'roselisp :to "javascript")
  "true;"
- > (compile '(ann #t Any) :from 'roselisp :to 'typescript)
+ > (compile '(ann #t Any) :from "roselisp" :to "typescript")
  "true as any;"
- > (compile "true" :to 'roselisp)
+ > (compile "true" :to "roselisp")
  #t
- > (compile "true" :from 'javascript :to 'roselisp)
+ > (compile "true" :from "javascript" :to "roselisp")
  #t
- > (compile "true as any" :from 'typescript :to 'roselisp)
+ > (compile "true as any" :from "typescript" :to "roselisp")
  '(ann #t Any)
 
  :describe "decompile"
  > (decompile "true")
  #t
- > (decompile "true" :from 'javascript)
+ > (decompile "true" :from "javascript")
  #t
- > (decompile "true" :from 'javascript :to 'roselisp)
+ > (decompile "true" :from "javascript" :to "roselisp")
  #t
- > (decompile "true as any" :from 'typescript)
+ > (decompile "true as any" :from "typescript")
  '(ann #t Any)
- > (decompile "true as any" :from 'typescript :to 'roselisp)
+ > (decompile "true as any" :from "typescript" :to "roselisp")
  '(ann #t Any)
 
  :describe "license"

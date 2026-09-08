@@ -65,7 +65,7 @@ const [listStar, findf] = (() => {
  * Decompile a JavaScript or TypeScript program.
  */
 function decompile(x, options = {}) {
-    switch (options['language']) {
+    switch (options['to']) {
         case 'typescript': {
             return decompileTs(x, options);
             break;
@@ -84,15 +84,15 @@ function decompileFileX(file, options = {}) {
     // TODO: Refactor to `(compile-file in-file out-file options)`?
     const extension = (0, path_1.extname)(file);
     const stem = (0, path_1.basename)(file, extension);
-    let language = options['language'];
+    let toLanguage = options['to'];
     const inDir = (0, path_1.dirname)(file);
     const outDir = options['outDir'] || inDir;
     const outExtension = '.scm';
     const outFile = (0, path_1.join)(outDir, stem + outExtension);
     let code;
     let data;
-    language = (language.match(new RegExp('^typescript$', 'i')) || (extension === '.ts')) ? 'typescript' : 'javascript';
-    options = Object.assign(Object.assign({}, options), { language, module: true, noModuleForm: true, pretty: true });
+    toLanguage = ((toLanguage.toLowerCase() === 'typescript') || (extension === '.ts')) ? 'typescript' : 'javascript';
+    options = Object.assign(Object.assign({}, options), { to: toLanguage, module: true, noModuleForm: true, pretty: true });
     data = (0, fs_1.readFileSync)(file, {
         encoding: 'utf8'
     });
@@ -1263,8 +1263,8 @@ function removeReturnTailCall(node) {
  * Default decompiler function.
  */
 function defaultDecompiler(node, options = {}) {
-    let language = options['language'];
-    const raw = (language === 'typescript') ? Symbol.for('ts/raw') : Symbol.for('js/raw');
+    let toLanguage = options['to'];
+    const raw = (toLanguage === 'typescript') ? Symbol.for('ts/raw') : Symbol.for('js/raw');
     const nodePrinted = (0, printer_1.printEstree)(node, options);
     const comment = ';; ' + (0, estree_1.estreeType)(node) + ' not supported yet';
     return (0, rose_1.datumToSyntax)(false, [raw, nodePrinted]).setProperty('comments', [comment]);

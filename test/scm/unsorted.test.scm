@@ -13,6 +13,92 @@
  :repl #t
  :describe "To do"
 
+ :describe "sqrt"
+ xit> (sqrt 4)
+ 2
+ xit> (compile '(sqrt 4))
+ "Math.sqrt(4);"
+
+ :describe "expt"
+ xit> (expt 2 3)
+ 8
+ xit> (compile '(expt 2 3))
+ "2 ** 3;"
+
+ :describe "pow"
+ xit> (pow 2 3)
+ 8
+ xit> (compile '(pow 2 3))
+ "2 ** 3;"
+
+ :describe "js/**"
+ xit> (js/** 2 3)
+ 8
+ xit> (compile '(js/** 2 3))
+ "2 ** 3;"
+
+ :describe "js/eval"
+ > (js/eval "1 + 1;")
+ 2
+ > (compile '(js/eval "1 + 1;"))
+ "eval('1 + 1;');"
+ > (compile '(js/eval "1  +  1;"))
+ "eval('1  +  1;');"
+ > (compile '(js/eval "1 + 1;")
+            :to "javascript")
+ "eval('1 + 1;');"
+ > (compile '(js/eval "1 + 1;")
+            :to "typescript")
+ "eval('1 + 1;');"
+
+ :describe "js/raw"
+ > (js/raw "1 + 1;")
+ 2
+ > (compile '(js/raw "1 + 1;"))
+ "1 + 1;"
+ > (compile '(js/raw "1  +  1;"))
+ "1  +  1;"
+ > (compile '(js/raw "1 + 1;")
+            :to "javascript")
+ "1 + 1;"
+ > (compile '(js/raw "1 + 1;")
+            :to "typescript")
+ "1 + 1;"
+
+ :describe "interpret"
+ > (interpret 1)
+ 1
+ > (interpret ''foo)
+ 'foo
+ > (interpret '(second '(1 . (2 . ())))
+              :fdottedlists #t)
+ 2
+ > (compile '(module m scheme
+               (interpret 1)))
+ "import {
+  interpret
+} from 'roselisp';
+
+interpret(1);"
+ > (compile '(module m scheme
+               (eval 1)))
+ "import {
+  interpret
+} from 'roselisp';
+
+interpret(1);"
+ > (compile '(module m scheme
+               (js/eval "1;")))
+ "eval('1;');"
+
+ :describe "Dot"
+ > '|.|
+ '|.|
+ > (array-ref '(1 . 2) 1)
+ '|.|
+ > (compile '|.|)
+ "Symbol.for('.');"
+
  :describe "Assignment operators"
  xit> (compile '(js/+= x y))
  "x += y;"
@@ -264,7 +350,7 @@ function normalizeList(x) {
  ;;                   (: f NN)
  ;;                   (define (f x)
  ;;                     x))
- ;;                :to 'typescript)
+ ;;                :to "typescript")
  ;;  "type NN = (a: number) => number;
  ;;
  ;; function f(x: number): number {

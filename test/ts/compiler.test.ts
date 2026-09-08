@@ -329,7 +329,7 @@ describe('compile-with-environment', function (): any {
     return assertEqual(compileWithEnvironment(readSyntax(';; comment\n' +
       '(foo)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// comment\n' +
       'foo();');
@@ -341,7 +341,7 @@ describe('compile-with-environment', function (): any {
       ';; comment\n' +
       '(foo)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// multi-line\n' +
       '// comment\n' +
@@ -356,7 +356,7 @@ describe('compile-with-environment', function (): any {
       ';; comment\n' +
       '(foo)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// multi-line\n' +
       '//\n' +
@@ -372,7 +372,7 @@ describe('compile-with-environment', function (): any {
       ';; comments\n' +
       '(foo)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// multiple\n' +
       '\n' +
@@ -390,7 +390,7 @@ describe('compile-with-environment', function (): any {
       '            ;; bar\n' +
       '            bar)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '(\n' +
       ' // foo\n' +
@@ -410,7 +410,7 @@ describe('compile-with-environment', function (): any {
       '      ;; baz\n' +
       '      baz)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '[\n' +
       ' foo,\n' +
@@ -431,7 +431,7 @@ describe('compile-with-environment', function (): any {
       '            ;; bar\n' +
       '            bar)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '(\n' +
       ' // foo\n' +
@@ -445,7 +445,7 @@ describe('compile-with-environment', function (): any {
     return assertEqual(compileWithEnvironment(readSyntax(';; comment\n' +
       '(foo)'), compilationEnvironment, {
       expressionType: 'statement',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// comment\n' +
       'foo();');
@@ -459,7 +459,7 @@ describe('compile-with-environment', function (): any {
       '  ;;; K combinator.\n' +
       '  (define (K x y)\n' +
       '    x))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * I combinator.\n' +
@@ -482,7 +482,7 @@ describe('compile-with-environment', function (): any {
       '  (define (A f . args)\n' +
       '    ;; Apply f to args.\n' +
       '    (apply f args)))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * A combinator.\n' +
@@ -498,7 +498,7 @@ describe('compile-with-environment', function (): any {
       '  (define (A f . args)\n' +
       '    ;; Apply f to args.\n' +
       '    (apply f args)))'), compilationEnvironment, {
-      language: 'typescript',
+      to: 'typescript',
       optimize: true
     }), '/**\n' +
       ' * A combinator.\n' +
@@ -517,7 +517,7 @@ describe('compile-with-environment', function (): any {
       '      ;; Right-to-left function composition\n' +
       '      ;; corresponds to a right fold.\n' +
       '      (foldr A x fs))))'), compilationEnvironment, {
-      language: 'typescript',
+      to: 'typescript',
       optimize: true
     }), '/**\n' +
       ' * B2 combinator.\n' +
@@ -540,7 +540,7 @@ describe('compile-with-environment', function (): any {
       '    (let ((y 1))\n' +
       '      ;; Return y.\n' +
       '      y)))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Foo.\n' +
@@ -561,7 +561,7 @@ describe('compile-with-environment', function (): any {
       '        #t\n' +
       '      ;; If x is falsey, return false.\n' +
       '      #f)))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Whether x is a truish value.\n' +
@@ -587,7 +587,7 @@ describe('compile-with-environment', function (): any {
       '      ;; If x is falsey, return false.\n' +
       '      (else\n' +
       '       #f))))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Whether x is a truish value.\n' +
@@ -609,7 +609,7 @@ describe('compile-with-environment', function (): any {
       '    ;; Return x wrapped in a list.\n' +
       '    `(,x)))'), compilationEnvironment, {
       case: 'camelcase',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Wrap a value in a list.\n' +
@@ -635,7 +635,7 @@ describe('compile-with-environment', function (): any {
       '       ;; else case.\n' +
       '       (else\n' +
       '        "baz")))))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * test function.\n' +
@@ -667,7 +667,7 @@ describe('compile-with-environment', function (): any {
       '    (define/public (constructor n)\n' +
       '      ;; Set bar to n.\n' +
       '      (set! (.-this bar) n))))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Foo class.\n' +
@@ -695,7 +695,7 @@ describe('compile-with-environment', function (): any {
       '    (define/public (foo)\n' +
       '      ;; this\n' +
       '      this)))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Foo class.\n' +
@@ -719,7 +719,7 @@ describe('compile-with-environment', function (): any {
       '      (define/public (bar)\n' +
       '        ;; this\n' +
       '        this))))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Foo class.\n' +
@@ -747,7 +747,7 @@ describe('compile-with-environment', function (): any {
       '      (define/generator ((get-field iterator Symbol))\n' +
       '        (for ((x (list 1 2 3 4)))\n' +
       '          (yield x))))))'), compilationEnvironment, {
-      language: 'typescript',
+      to: 'typescript',
       optimize: true
     }), '/**\n' +
       ' * Foo class.\n' +
@@ -777,7 +777,7 @@ describe('compile-with-environment', function (): any {
       '  (define (hello-world)\n' +
       '    (display "hello, world")))'), compilationEnvironment, {
       case: 'camelcase',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Hello, world.\n' +
@@ -790,7 +790,7 @@ describe('compile-with-environment', function (): any {
     return assertEqual(compileWithEnvironment(readSyntax(';;; Foo\n' +
       '\n' +
       '(require "foo")'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Foo\n' +
@@ -803,7 +803,7 @@ describe('compile-with-environment', function (): any {
       '\n' +
       ';;; Bar\n' +
       '(require "foo")'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// Foo\n' +
       '\n' +
@@ -817,7 +817,7 @@ describe('compile-with-environment', function (): any {
       ';;; Bar\n' +
       '\n' +
       '(require "foo")'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// Foo\n' +
       '/**\n' +
@@ -832,7 +832,7 @@ describe('compile-with-environment', function (): any {
     return assertEqual(compileWithEnvironment(readSyntax('(define foo\n' +
       '  ;; bar\n' +
       '  bar)'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), 'const foo =\n' +
       '  // bar\n' +
@@ -844,7 +844,7 @@ describe('compile-with-environment', function (): any {
     return assertEqual(compileWithEnvironment(readSyntax('(set! foo\n' +
       '  ;; bar\n' +
       '  bar)'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       expressionType: 'statement',
       optimize: true
     }), 'foo =\n' +
@@ -853,7 +853,7 @@ describe('compile-with-environment', function (): any {
   });
   xit('x, camelCase', function (): any {
     return assertEqual(compileWithEnvironment(Symbol.for('x'), new LispEnvironment([['x', 1, 'variable']]), {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '1');
   });
@@ -865,7 +865,7 @@ describe('compile-with-environment', function (): any {
       '    (apply + \'(1 1))))'), compilationEnvironment, {
       case: 'camelcase',
       finlineFunctions: true,
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Module header.\n' +
@@ -893,7 +893,7 @@ describe('compile-with-environment', function (): any {
       '    (apply + \'(1 1))))'), compilationEnvironment, {
       case: 'camelcase',
       finlineFunctions: true,
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Module header.\n' +
@@ -933,7 +933,7 @@ describe('compile-with-environment', function (): any {
       '     2))))'), compilationEnvironment, {
       case: 'camelcase',
       finlineFunctions: true,
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '/**\n' +
       ' * Module header.\n' +
@@ -961,7 +961,7 @@ describe('compile-with-environment', function (): any {
     return assertEqual(compileWithEnvironment([Symbol.for('I'), Symbol.for('x')], new LispEnvironment([['I', function (x: any): any {
       return x;
     }, 'function']]), {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '(function {\n' +
       '   let I = function(x) {\n' +
@@ -973,14 +973,14 @@ describe('compile-with-environment', function (): any {
   it('(truep x)', function (): any {
     return assertEqual(compileWithEnvironment([Symbol.for('truep'), Symbol.for('x')], compilationEnvironment, {
       case: 'camelcase',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), 'x ? true : false');
   });
   it('(falsep x)', function (): any {
     return assertEqual(compileWithEnvironment([Symbol.for('falsep'), Symbol.for('x')], compilationEnvironment, {
       case: 'camelcase',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), 'x ? false : true');
   });
@@ -988,7 +988,7 @@ describe('compile-with-environment', function (): any {
     return assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
       '  (define foo\n' +
       '    `(foo)))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), 'const foo = [Symbol.for(\'foo\')];');
   });
@@ -997,7 +997,7 @@ describe('compile-with-environment', function (): any {
       '  (define foo 1)\n' +
       '  (define bar\n' +
       '    `(,foo)))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), 'const foo = 1;\n' +
       '\n' +
@@ -1010,7 +1010,7 @@ describe('compile-with-environment', function (): any {
       '  (define quux\n' +
       '    `(("foo" . ,foo)\n' +
       '       ("bar" . ,bar))))'), compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), 'const foo = 1;\n' +
       '\n' +
@@ -1024,7 +1024,7 @@ describe('compile-with-environment', function (): any {
       '\n' +
       '  (define (I x) x))'), compilationEnvironment, {
       case: 'camelcase',
-      language: 'javascript',
+      to: 'javascript',
       optimize: true
     }), '// inline-lisp-sources: true\n' +
       '\n' +
@@ -1042,7 +1042,7 @@ describe('compile-with-environment', function (): any {
       '  (define f\n' +
       '    (lambda (x)\n' +
       '      x)))'), compilationEnvironment, {
-      language: 'typescript',
+      to: 'typescript',
       expressionType: 'statement',
       optimize: true
     }), '// NN type alias.\n' +
@@ -1052,9 +1052,9 @@ describe('compile-with-environment', function (): any {
       '  return x;\n' +
       '};');
   });
-  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj :language "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
+  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
     return assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')]], compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       inlineLispSources: true,
       optimize: true
     }), 'function foo(x) {\n' +
@@ -1063,9 +1063,9 @@ describe('compile-with-environment', function (): any {
       '\n' +
       'foo.fsource = [Symbol.for(\'define\'), [Symbol.for(\'foo\'), Symbol.for(\'x\')], Symbol.for(\'x\')];');
   });
-  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj :language "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
+  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
     return assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       inlineLispSources: true,
       optimize: true
     }), 'const foo = function (x) {\n' +
@@ -1074,9 +1074,9 @@ describe('compile-with-environment', function (): any {
       '\n' +
       'foo.fsource = [Symbol.for(\'lambda\'), [Symbol.for(\'x\')], Symbol.for(\'x\')];');
   });
-  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj :language "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
+  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', function (): any {
     return assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], compilationEnvironment, {
-      language: 'javascript',
+      to: 'javascript',
       inlineLispSources: true,
       optimize: true
     }), 'async function foo(x) {\n' +

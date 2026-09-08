@@ -679,4 +679,27 @@ mySquare.ftype = 'macro';
 
 let g = 1 + 1;
 
-g * g;")
+g * g;"
+ > (compile '(begin
+               (define-macro (my-plus x y)
+                 (once-only (x y)
+                            `(+ ,x ,y)))
+               (my-plus (+ 1 1) (+ 2 2))))
+ "function myPlus(exp, env) {
+  let [x, y] = exp.slice(1);
+  let g = Symbol('g');
+  let g1 = Symbol('g');
+  return [Symbol.for('let'), [[g, x], [g1, y]], (() => {
+    let x = g;
+    let y = g1;
+    return [Symbol.for('+'), x, y];
+  })()];
+}
+
+myPlus.ftype = 'macro';
+
+let g = 1 + 1;
+
+let g1 = 2 + 2;
+
+g + g1;")

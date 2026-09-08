@@ -99,6 +99,10 @@ const cliOptions: any = {
     default: false,
     type: 'boolean'
   },
+  from: {
+    default: 'roselisp',
+    type: 'string'
+  },
   help: {
     alias: 'h',
     default: false,
@@ -109,7 +113,7 @@ const cliOptions: any = {
     type: 'number'
   },
   language: {
-    default: 'javascript',
+    default: '',
     type: 'string'
   },
   optimize: {
@@ -130,6 +134,10 @@ const cliOptions: any = {
     alias: 'i',
     default: false,
     type: 'boolean'
+  },
+  to: {
+    default: 'javascript',
+    type: 'string'
   }
 };
 
@@ -178,10 +186,11 @@ const helpMessage: any = 'Lisp interpreter and transpiler in JavaScript\n' +
  * Normalize CLI options.
  */
 function normalizeCliOptions(options: any): any {
-  const language: any = options['language'].toLowerCase();
+  const languageOption: any = options['language'].toLowerCase();
+  const toOption: any = (languageOption === '') ? options['to'] : languageOption;
   return {
     ...options,
-    language
+    to: toOption
   };
 }
 

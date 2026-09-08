@@ -76,7 +76,7 @@
                   curry-n
                   dashify))
 (require (only-in "./decompiler"
-                  (decompile decompile1)))
+                  (decompile decompile-internal)))
 (require (only-in "./env"
                   Environment
                   EnvironmentPipe
@@ -703,6 +703,7 @@
    regexp-replace_
    regexp?_
    reverse!_
+   scm/eval_
    string->number_
    string->symbol_
    string-downcase_
@@ -925,14 +926,14 @@
 ;;; in a rose tree, or a module object.
 ;;; `args` may be a property list or, if called with
 ;;; two arguments, a JavaScript object.
-(define (compile exp . args)
-  (define options
-    (normalize-options args))
+(define (compile_ exp . options)
+  (define options1
+    (normalize-options options))
   (define from-language
-    (or (oget options :from)
+    (or (oget options1 :from)
         "roselisp"))
   (define to-language
-    (or (oget options :to)
+    (or (oget options1 :to)
         default-language))
   (cond
    ((eq? to-language "roselisp")
@@ -940,47 +941,47 @@
       (js/obj-append
        (js/obj :language from-language
                :sexp #t)
-       options))
-    (decompile1 exp inherited-options))
+       options1))
+    (decompile-internal exp inherited-options))
    (else
     (define expression-type
-      (or (oget options :as)
+      (or (oget options1 :as)
           "statement"))
     (define case-option
-      (or (oget options :case)
+      (or (oget options1 :case)
           "camelcase"))
     (define inherited-options
       (js/obj-append
        (js/obj :case case-option
                :language to-language
                :expression-type expression-type)
-       options))
+       options1))
     (define env
-      (or (oget options :environment)
+      (or (oget options1 :environment)
           (new LispEnvironment)))
     (compile-with-environment
      exp env inherited-options))))
 
 ;;; Decompile a JavaScript or TypeScript string to
 ;;; a Lisp expression. The inverse of `compile`.
-(define (decompile exp . args)
+(define (decompile_ exp . options)
   ;; This function is little more than a wrapper
   ;; around `compile` that defaults to Roselisp
   ;; as the target language.
-  (define options
-    (normalize-options args))
+  (define options1
+    (normalize-options options))
   (define from-language
-    (or (oget options :from)
+    (or (oget options1 :from)
         default-language))
   (define to-language
-    (or (oget options :to)
+    (or (oget options1 :to)
         "roselisp"))
   (define inherited-options
     (js/obj-append
-     options
+     options1
      (js/obj :from from-language
              :to to-language)))
-  (compile exp inherited-options))
+  (compile_ exp inherited-options))
 
 ;;; Compile a Lisp expression to JavaScript or TypeScript
 ;;; in the context of a given environment, `env`.
@@ -988,8 +989,8 @@
 (define (compile-with-environment exp
                                   (env (new LispEnvironment))
                                   (options (js/obj)))
-  (define language-option
-    (or (oget options :language)
+  (define to-language-option
+    (or (oget options :to)
         default-language))
   (define estree-option
     (oget options :estree))
@@ -1002,7 +1003,7 @@
              env
              lang-environment)))
   (define mapping-env
-    (or (hash-ref compilation-map language-option)
+    (or (hash-ref compilation-map to-language-option)
         compilation-mapping-env))
   (define compilation-options
     (add-default-options options #t))
@@ -1164,8 +1165,8 @@
     (make-hash))
   (define indent-option
     (oget options :indent))
-  (define language-option
-    (or (oget options :language)
+  (define to-language-option
+    (or (oget options :to)
         default-language))
   (define out-dir-option
     (or (oget options :out-dir) ""))
@@ -1177,9 +1178,9 @@
     (js/obj-append
      options
      (js/obj :expression-type "statement"
-             :language language-option)))
+             :to to-language-option)))
   (define extension
-    (if (eq? language-option "typescript")
+    (if (eq? to-language-option "typescript")
         ".ts"
         ".js"))
   (define full-module-names '())
@@ -1464,19 +1465,28 @@
   ;; toggleable, though.)
   result)
 
-;;; Evaluate a Lisp expression `exp` with environment `env`.
+;;; Evaluate a Lisp expression `exp`.
 ;;;
-;;; `env`, if specified, must be a Lisp environment as returned
-;;; by {@link Environment}. The expression is evaluated in
-;;; context of a basic Lisp environment defining such constructs
-;;; as `(if ...)`, `(cond ...)`, and so on.
-(define (interpret exp (env (default-environment)) (options (js/obj)))
+;;; The environment can be specified with the `:environment` option;
+;;; if unspecified, it defaults to the current environment.
+(define (interpret_ exp . options)
+  ;; TODO: Rename to `interpret_`.
+  (define options1
+    (if (and (>= (length options) 1)
+             (is-a? (first options) Environment))
+        (js/obj-append
+         (js/obj :environment (first options))
+         (normalize-options (rest options)))
+        (normalize-options options)))
+  (define env
+    (or (oget options1 :environment)
+        (default-environment)))
   (define expression-type
-    (or (oget options :expression-type)
+    (or (oget options1 :expression-type)
         "statement"))
   (define inherited-options
     (js/obj-append
-     options
+     options1
      (js/obj
       :case "none"
       :expression-type expression-type
@@ -1491,29 +1501,16 @@
     (eval-estree ast environment inherited-options))
   result)
 
-;;; Evaluate a Lisp expression `exp` with environment `env`.
-;;;
-;;; `env`, if specified, must be a Lisp environment as returned
-;;; by {@link Environment}. The expression is evaluated in
-;;; context of a basic Lisp environment defining such constructs
-;;; as `(if ...)`, `(cond ...)`, and so on.
-(define interpret1
-  (dashify
-   (lambda (exp (env (default-environment)) (options (js/obj)))
-     (define evaluator
-       (or (oget options :evaluator)
-           eval_
-           default-evaluator))
-     (define environment
-       (make-interpretation-environment env options))
-     (call-evaluator evaluator
-                     exp
-                     environment
-                     options))))
+;;; Evaluate a Lisp expression `exp`.
+(define (scm/eval_ exp . options)
+  (apply interpret exp options))
 
 ;;; Interpret a string of Lisp code.
 (define (interpret-string str (env #u) (options (js/obj)))
-  (interpret (read-sexp str) env options))
+  (interpret_ (read-sexp str)
+              (js/obj-append
+               options
+               (js/obj :environment env))))
 
 ;;; Interpret a list of files.
 (define (interpret-files files (env #u) (options (js/obj)))
@@ -2056,12 +2053,12 @@
 
 ;;; Compile an `(ann ...)` expression.
 (define (compile-ann node env (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define e_
     (send node get 1))
   (cond
-   ((eq? language "typescript")
+   ((eq? to-language "typescript")
     (define t_
       (send node get 2))
     (make-expression-or-statement
@@ -2074,10 +2071,10 @@
 
 ;;; Compile a `(define-type ...)` expression.
 (define (compile-define-type node env (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (cond
-   ((eq? language "typescript")
+   ((eq? to-language "typescript")
     (define id
       (compile-expression
        (send node get 1) env options))
@@ -2327,8 +2324,8 @@
 
 ;;; Compile a `(js/get ...)` expression.
 (define (compile-js/get node env (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define variable
     (send node get 1))
   (define indices
@@ -2359,7 +2356,7 @@
          indices))
   ;; Kludge: prevent TypeScript errors with expressions
   ;; like `x[y]`, where `y` is `any`-typed.
-  (when (and (eq? language "typescript")
+  (when (and (eq? to-language "typescript")
              (not (form? variable ann_ env))
              (not (estree-type? (first indices-compiled)
                                 '("Literal"
@@ -2609,8 +2606,8 @@
     (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define inline-lisp-sources
     (oget options :inline-lisp-sources))
   (define exp
@@ -2667,8 +2664,8 @@
                  (define result #u)
                  (try
                    (set! result
-                         (interpret `(begin ,exp ,sym)
-                                    env))
+                         (interpret_ `(begin ,exp ,sym)
+                                     :environment env))
                    (catch Error e
                      ;; Do nothing
                      ))
@@ -2726,8 +2723,8 @@
     (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define inline-lisp-sources
     (oget options :inline-lisp-sources))
   (define exp
@@ -2773,7 +2770,8 @@
                (define result #u)
                (try
                  (set! result
-                       (interpret val-exp env))
+                       (interpret_ val-exp
+                                   :environment env))
                  (catch Error e
                    ;; Do nothing
                    ))
@@ -3686,8 +3684,8 @@
             #u)))
   (define generator
     (oget settings :generator))
-  (define language
-    (oget inherited-options :language))
+  (define to-language
+    (oget inherited-options :to))
   (define params '())
   (define language-env
     (oget inherited-options :language-environment))
@@ -3714,7 +3712,7 @@
     ;; TypeScript-ism: TypeScript permits the type of `this` to be
     ;; specified with a pseudo-parameter, which is since compiled
     ;; away by the TypeScript compiler. Do the same here.
-    (when (and (not (eq? language "typescript"))
+    (when (and (not (eq? to-language "typescript"))
                (> (length regular-args) 0)
                (or (eq? (first regular-args) 'this)
                    (tagged-list? (first regular-args) 'this)))
@@ -4233,7 +4231,8 @@
       (define result '())
       (try
         (set! result
-              (interpret expression env))
+              (interpret_ expression
+                          :environment env))
         (catch Error e
           ;; Do nothing
           ))
@@ -4434,7 +4433,8 @@
       (define result (js/obj))
       (try
         (set! result
-              (interpret obj-exp env))
+              (interpret_ obj-exp
+                          :environment env))
         (catch Error e
           ;; Do nothing
           ))
@@ -4792,8 +4792,8 @@
              (send node drop 2)))
      env options))
    (else
-    (define language
-      (oget options :language))
+    (define to-language
+      (oget options :to))
     (define obj
       (send node get 1))
     (define prop
@@ -4818,7 +4818,7 @@
     ;; Kludge: prevent TypeScript errors with expressions
     ;; like `x[y]`, where `y` is `any`-typed.
     (when (and computed
-               (eq? language "typescript")
+               (eq? to-language "typescript")
                (not (form? obj ann_ env))
                (not (estree-type? prop-compiled
                                   '("Literal"
@@ -5734,18 +5734,19 @@
     (oget options :current-module))
   (define exp (syntax->datum node))
   (unless (or quoted-symbol
-              literal-symbol)
+              literal-symbol
+              (keyword? exp)
+              (eq? exp '|.|))
     (when (should-import? exp env options)
       (cond
        (current-module
-        (add-referenced-symbol exp env options)
         ;; TODO: Use a global rather than a local binding.
         ;; Fetch the module's import environment and
         ;; set it there.
         ;; (define-values (val typ)
         ;;   (send env get-typed-value exp))
         ;; (send env set-local! exp val typ)
-        )
+        (add-referenced-symbol exp env options))
        (else
         ;; Inlined expression. The symbol references a value
         ;; that is defined in the language environment.
@@ -5766,7 +5767,6 @@
 
 ;;; Compile a symbol expression.
 (define (compile-symbol node env (options (js/obj)) (settings (js/obj)))
-  ;; TODO: Better handling of gensym'ed symbols.
   (define literal-symbol-option
     (or (oget settings :literal-symbol) #f))
   (define quoted-symbol-option
@@ -6339,8 +6339,8 @@
                  (define result #u)
                  (try
                    (set! result
-                         (interpret `(begin ,exp ,class-name)
-                                    env))
+                         (interpret_ `(begin ,exp ,class-name)
+                                     :environment env))
                    (catch Error e
                      ;; Do nothing
                      ))
@@ -6819,7 +6819,8 @@
   ;; TODO: Disable if `eval-option` is `#f`.
   (define eval-option
     (oget options :feval-bindings))
-  ;; FIXME: Kludge.
+  ;; FIXME: Kludge. This should look at the `:to` option
+  ;; instead.
   (define compiling-to-js
     (valid-js-casing-style? (oget options :case)))
   (define eval-f
@@ -8590,8 +8591,9 @@
                        (define begin-exp
                          `(begin ,exp ,name))
                        (set! result
-                             (interpret begin-exp
-                                        module-interpretation-env))
+                             (interpret_ begin-exp
+                                         :environment
+                                         module-interpretation-env))
                        (catch Error e
                          ;; Do nothing
                          ))
@@ -8808,7 +8810,7 @@
     (~> file-contents
         (string-append "(module m scheme\n" _ "\n)")
         (read-syntax _)))
-  (interpret exp))
+  (interpret_ exp))
 
 ;;; Rewrite `[...[x]]` to `[x]`, recursively.
 (define (insert-into-array-exp! x arr)
@@ -9006,7 +9008,7 @@
          (circular-list-p ,circular-list?_ (-> Any * Any))
          (circular-list? ,circular-list?_ (-> Any * Any))
          (cl/listp ,pair-or-list?_ (-> Any * Any))
-         (compile ,compile (-> Any * Any))
+         (compile ,compile_ (-> Any * Any))
          (cons ,cons_ (-> Any * Any))
          (cons* ,list-star_ (-> Any * Any))
          (cons-or-list? ,pair-or-list?_ (-> Any * Any))
@@ -9019,7 +9021,7 @@
          (curry ,curry (-> Any * Any))
          (curry-n ,curry-n (-> Any * Any))
          (datum->syntax ,datum->syntax (-> Any * Any))
-         (decompile ,decompile (-> Any * Any))
+         (decompile ,decompile_ (-> Any * Any))
          (delete ,js/delete_ (-> Any * Any))
          (display ,display_ (-> Any * Any))
          (div ,div_ (-> Any * Any))
@@ -9555,10 +9557,11 @@
 ;;; Evaluation environment.
 (define eval-environment
   (new LispEnvironment
-       `((eval ,interpret (-> Any * Any))
-         (interpret ,interpret (-> Any * Any))
+       `((eval ,scm/eval_ (-> Any * Any))
+         (evaluate ,scm/eval_ (-> Any * Any))
+         (interpret ,interpret_ (-> Any * Any))
          (js/eval ,js/eval_ (-> Any * Any))
-         (scm/eval ,interpret (-> Any * Any))
+         (scm/eval ,scm/eval_ (-> Any * Any))
          (seval ,eval_ (-> Any * Any)))))
 
 ;;; JavaScript environment.
@@ -9634,7 +9637,9 @@
   (rename-out (compile-syntax compile-rose))
   (rename-out (compile-with-environment compile-lisp))
   (rename-out (compile-with-environment compile-lisp-to-javascript))
+  (rename-out (compile_ compile))
   (rename-out (cond_ cond))
+  (rename-out (decompile_ decompile))
   (rename-out (define-async_ define/async))
   (rename-out (define-class_ define-class))
   (rename-out (define-fields_ define-fields))
@@ -9647,6 +9652,7 @@
   (rename-out (define_ define))
   (rename-out (dot_ dot))
   (rename-out (get-field_ get-field))
+  (rename-out (interpret_ interpret))
   (rename-out (js/async_ async))
   (rename-out (js/async_ async_))
   (rename-out (js/async_ js-async))
@@ -9709,15 +9715,15 @@
   clj/try_
   colon_
   compilation-environment
-  compile
   compile-file!
   compile-files!
   compile-module-map
   compile-modules
   compile-with-environment
+  compile_
   cond_
   continue_
-  decompile
+  decompile_
   define->define-class
   define-async_
   define-fields_
@@ -9731,9 +9737,9 @@
   find-estree
   for_
   get-field_
-  interpret
   interpret-files
   interpret-string
+  interpret_
   interpretation-environment
   is-a?_
   iterate-rose

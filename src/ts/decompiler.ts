@@ -91,7 +91,7 @@ const [listStar, findf]: any[] = ((): any => {
  * Decompile a JavaScript or TypeScript program.
  */
 function decompile(x: any, options: any = {}): any {
-  switch (options['language']) {
+  switch (options['to']) {
     case 'typescript': {
       return decompileTs(x, options);
       break;
@@ -110,17 +110,17 @@ function decompileFileX(file: any, options: any = {}): any {
   // TODO: Refactor to `(compile-file in-file out-file options)`?
   const extension: any = extname(file);
   const stem: any = basename(file, extension);
-  let language: any = options['language'];
+  let toLanguage: any = options['to'];
   const inDir: any = dirname(file);
   const outDir: any = options['outDir'] || inDir;
   const outExtension: any = '.scm';
   const outFile: any = join(outDir, stem + outExtension);
   let code: any;
   let data: any;
-  language = (language.match(new RegExp('^typescript$', 'i')) || (extension === '.ts')) ? 'typescript' : 'javascript';
+  toLanguage = ((toLanguage.toLowerCase() === 'typescript') || (extension === '.ts')) ? 'typescript' : 'javascript';
   options = {
     ...options,
-    language,
+    to: toLanguage,
     module: true,
     noModuleForm: true,
     pretty: true
@@ -1311,8 +1311,8 @@ function removeReturnTailCall(node: any): any {
  * Default decompiler function.
  */
 function defaultDecompiler(node: any, options: any = {}): any {
-  let language: any = options['language'];
-  const raw: any = (language === 'typescript') ? Symbol.for('ts/raw') : Symbol.for('js/raw');
+  let toLanguage: any = options['to'];
+  const raw: any = (toLanguage === 'typescript') ? Symbol.for('ts/raw') : Symbol.for('js/raw');
   const nodePrinted: any = printEstree(node, options);
   const comment: any = ';; ' + estreeType(node) + ' not supported yet';
   return datumToSyntax(false, [raw, nodePrinted]).setProperty('comments', [comment]);

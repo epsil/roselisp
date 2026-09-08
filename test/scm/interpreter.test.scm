@@ -178,7 +178,7 @@
  :describe "js/eval"
  > (js/eval "1")
  1
- > (interpret '(js/eval "1") #u (js/obj :eval #t))
+ > (interpret '(js/eval "1") :eval #t)
  1
 
  :describe "interpret"
@@ -189,21 +189,20 @@
  :describe "interpret"
  > (interpret 't)
  #t
- > (interpret 't
-              (new LispEnvironment))
+ > (interpret 't :environment (new LispEnvironment))
  #t
- xit> ((interpret 't
-                  __)
-       (new LispEnvironment))
- #t
- xit> ((interpret __
-                  (new LispEnvironment))
-       't)
- #t
- xit> (((interpret __ __)
-        't)
-       (new LispEnvironment))
- #t
+ ;; xit> ((interpret 't
+ ;;                  __)
+ ;;       (new LispEnvironment))
+ ;; #t
+ ;; xit> ((interpret __
+ ;;                  (new LispEnvironment))
+ ;;       't)
+ ;; #t
+ ;; xit> (((interpret __ __)
+ ;;        't)
+ ;;       (new LispEnvironment))
+ ;; #t
 
  :describe "lisp"
  > (lisp "(quote foo)")
@@ -236,16 +235,16 @@
  4
 
  :describe "Map"
- > (~> (interpret
-        '(new Map)
-        (new LispEnvironment
-             `((Map ,Map "function"))))
-       (instance-of? Map))
+ > (~> (interpret '(new Map)
+                  :environment
+                  (new LispEnvironment
+                       `((Map ,Map "function"))))
+       (instance-of? _ Map))
  #t
- xit> (~> (interpret
-           '(new Map '((1 2)))
-           (new LispEnvironment
-                `((Map ,Map "function"))))
+ xit> (~> (interpret '(new Map '((1 2)))
+                     :environment
+                     (new LispEnvironment
+                          `((Map ,Map "function"))))
           (send entries)
           (send Array from _))
  '((1 2))
@@ -254,13 +253,12 @@
  > (it "(error)"
        (assert-throws
         (lambda ()
-          (interpret
-           '(error)
-           (new LispEnvironment)))))
+          (interpret '(error)
+                     :environment
+                     (new LispEnvironment)))))
  > (it "(error \"foo\")"
        (assert-throws
         (lambda ()
-          (interpret
-           '(error "foo")
-           (new LispEnvironment)))))
- _)
+          (interpret '(error "foo")
+                     :environment
+                     (new LispEnvironment))))))

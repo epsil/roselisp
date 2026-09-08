@@ -47,7 +47,7 @@
 
 ;;; Decompile a JavaScript or TypeScript program.
 (define (decompile x (options (js/obj)))
-  (case (oget options :language)
+  (case (oget options :to)
     (("typescript")
      (decompile-ts x options))
     (else
@@ -61,8 +61,8 @@
     (extname file))
   (define stem
     (basename file extension))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define in-dir
     (dirname file))
   (define out-dir
@@ -76,16 +76,16 @@
            out-extension)))
   (define code)
   (define data)
-  (set! language
-        (if (or (regexp-match (regexp "^typescript$" "i")
-                              language)
+  (set! to-language
+        (if (or (eq? (string-downcase to-language)
+                     "typescript")
                 (eq? extension ".ts"))
             "typescript"
             "javascript"))
   (set! options
         (js/obj-append
          options
-         (js/obj :language language
+         (js/obj :to to-language
                  :module #t
                  :no-module-form #t
                  :pretty #t)))
@@ -1738,10 +1738,10 @@
 
 ;;; Default decompiler function.
 (define (default-decompiler node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define raw
-    (if (eq? language "typescript")
+    (if (eq? to-language "typescript")
         'ts/raw
         'js/raw))
   (define node-printed

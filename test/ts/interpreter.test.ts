@@ -182,8 +182,8 @@ describe('js/eval', function (): any {
   it('(js/eval "1")', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/eval'), '1'], 1]);
   });
-  return it('(interpret \'(js/eval "1") #u (js/obj :eval #t))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1']], undefined, [Symbol.for('js/obj'), Symbol.for(':eval'), true]], 1]);
+  return it('(interpret \'(js/eval "1") :eval #t)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1']], Symbol.for(':eval'), true], 1]);
   });
 });
 
@@ -197,17 +197,8 @@ describe('interpret', function (): any {
   it('(interpret \'t)', function (): any {
     return assertEqual(interpret(Symbol.for('t')), true);
   });
-  it('(interpret \'t (new LispEnvironment))', function (): any {
-    return assertEqual(interpret(Symbol.for('t'), new LispEnvironment()), true);
-  });
-  xit('((interpret \'t __) (new LispEnvironment))', function (): any {
-    return assertEqual(interpret(Symbol.for('t'), __)(new LispEnvironment()), true);
-  });
-  xit('((interpret __ (new LispEnvironment)) \'t)', function (): any {
-    return assertEqual(interpret(__, new LispEnvironment())(Symbol.for('t')), true);
-  });
-  return xit('(((interpret __ __) \'t) (new LispEnvironment))', function (): any {
-    return assertEqual(interpret(__, __)(Symbol.for('t'))(new LispEnvironment()), true);
+  return it('(interpret \'t :environment (new LispEnvironment))', function (): any {
+    return assertEqual(interpret(Symbol.for('t'), Symbol.for(':environment'), new LispEnvironment()), true);
   });
 });
 
@@ -236,23 +227,23 @@ describe('lisp', function (): any {
 });
 
 describe('Map', function (): any {
-  it('(~> (interpret \'(new Map) (new LispEnvironment `((Map ,Map "function")))) (instance-of? Map))', function (): any {
-    return assertEqual(interpret([Symbol.for('new'), Symbol.for('Map')], new LispEnvironment([[Symbol.for('Map'), Map, 'function']])) instanceof Map, true);
+  it('(~> (interpret \'(new Map) :environment (new LispEnvironment `((Map ,Map "function")))) (instance-of? _ Map))', function (): any {
+    return assertEqual(interpret([Symbol.for('new'), Symbol.for('Map')], Symbol.for(':environment'), new LispEnvironment([[Symbol.for('Map'), Map, 'function']])) instanceof Map, true);
   });
-  return xit('(~> (interpret \'(new Map \'((1 2))) (new LispEnvironment `((Map ,Map "function")))) (send entries) (send Array from _))', function (): any {
-    return assertEqual(Array.from(interpret([Symbol.for('new'), Symbol.for('Map'), [Symbol.for('quote'), [[1, 2]]]], new LispEnvironment([[Symbol.for('Map'), Map, 'function']])).entries()), [[1, 2]]);
+  return xit('(~> (interpret \'(new Map \'((1 2))) :environment (new LispEnvironment `((Map ,Map "function")))) (send entries) (send Array from _))', function (): any {
+    return assertEqual(Array.from(interpret([Symbol.for('new'), Symbol.for('Map'), [Symbol.for('quote'), [[1, 2]]]], Symbol.for(':environment'), new LispEnvironment([[Symbol.for('Map'), Map, 'function']])).entries()), [[1, 2]]);
   });
 });
 
 describe('error', function (): any {
   it('(error)', function (): any {
     return assertThrows(function (): any {
-      return interpret([Symbol.for('error')], new LispEnvironment());
+      return interpret([Symbol.for('error')], Symbol.for(':environment'), new LispEnvironment());
     });
   });
   return it('(error "foo")', function (): any {
     return assertThrows(function (): any {
-      return interpret([Symbol.for('error'), 'foo'], new LispEnvironment());
+      return interpret([Symbol.for('error'), 'foo'], Symbol.for(':environment'), new LispEnvironment());
     });
   });
 });

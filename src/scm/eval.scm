@@ -146,9 +146,9 @@
          (symbol->string op))
        (define match)
        (cond
+        ;; Method call expression
         ((set! match
                (regexp-match (regexp "^\\.(.+)$") name))
-         ;; Method call expression
          (define method
            (second match))
          (define-values
@@ -163,36 +163,34 @@
          (define-values (f binding-type)
            (send env get-typed-value op))
          (cond
+          ;; Macros are implemented with a macro function that
+          ;; has the signature `(exp, env) => value`. The arguments
+          ;; to the macro are *not* evaluated, but the macro's
+          ;; return value---the macro expansion---*is* evaluated:
+          ;; that is, it is pushed back on the expressions stack
+          ;; for further evaluation.
           ((macro-type? binding-type)
-           ;; Macros are implemented with a macro function that
-           ;; has the signature `(exp, env) => value`. The arguments
-           ;; to the macro are *not* evaluated, but the macro's
-           ;; return value---the macro expansion---*is* evaluated:
-           ;; that is, it is pushed back on the expressions stack
-           ;; for further evaluation.
            (define expansion
              (f exp env))
            (eval-sexp expansion env options))
+          ;; A fexpr is a function that receives its arguments
+          ;; unevaluated, like a macro. However, unlike a macro,
+          ;; the return value is not re-evaluated---it is simply
+          ;; returned.
           ((fexpr-type? binding-type)
-           ;; A fexpr is a function that receives its arguments
-           ;; unevaluated, like a macro. However, unlike a macro,
-           ;; the return value is not re-evaluated---it is simply
-           ;; returned.
            (apply f args))
+          ;; Special form
           ((special-type? binding-type)
-           ;; Special form
            (f exp env))
+          ;; Function call
           ((or (procedure-type? binding-type)
                (and (variable-type? binding-type)
                     (procedure? f)))
-           ;; Function call
            (cond
             ((fexpr? f)
              (apply f args))
             ;; Macro function
             ((macro? f)
-             ;; (eq? (get-field ftype f)
-             ;;      "macro")
              (define expansion
                (f exp env))
              (eval-sexp expansion env options))
@@ -204,38 +202,41 @@
                          args)))))))))
       ((not op)
        #u)
+      ;; `(<fn> ...)` call. The first element is a
+      ;; function object. If it is a fexpr call, the function
+      ;; is called with its arguments unevaluated. Otherwise,
+      ;; the arguments have to be evaluated first.
       ((procedure? op)
-       ;; `(<fn> ...)` call. The first element is a
-       ;; function object. If it is a fexpr call, the function
-       ;; is called with its arguments unevaluated. Otherwise,
-       ;; the arguments have to be evaluated first.
        (define f op)
        (cond
+        ;; Fexpr call. The function is called with its
+        ;; arguments unevaluated.
         ((or (= (length args) 0)
              (fexpr? f))
-         ;; Fexpr call. The function is called with its
-         ;; arguments unevaluated.
          (apply f args))
+        ;; Regular call. The arguments are evaluated,
+        ;; and the values are passed to the function.
         (else
-         ;; Regular call. The arguments are evaluated,
-         ;; and the values are passed to the function.
          (apply f
                 (map (lambda (arg)
                        (eval-sexp arg env options))
                      args)))))
+      ;; `((...) ...)` call. The first element is a expression
+      ;; that has to be evaluated before function application
+      ;; can proceed.
       (else
-       ;; `((...) ...)` call. The first element is a expression
-       ;; that has to be evaluated before function application
-       ;; can proceed.
        (eval-sexp (cons (eval-sexp op env options)
                         args)
                   env
                   options))))
+    ;; Keyword
     ((keyword? exp)
-     ;; Keyword
      exp)
+    ;; Dot
+    ((eq? exp '|.|)
+     exp)
+    ;; Variable
     ((symbol? exp)
-     ;; Variable
      (define name
        (symbol->string exp))
      (define binding
@@ -250,14 +251,14 @@
         (string-append
          "Could not find symbol: "
          (symbol->string exp))))))
+    ;; String
     ((string? exp)
-     ;; String
      exp)
+    ;; ESTree
     ((estree? exp)
-     ;; ESTree
      (eval-estree exp env))
+    ;; Self-evaluating value
     (else
-     ;; Self-evaluating value
      exp))))
 
 ;;; Evaluate a syntax object.
@@ -1020,10 +1021,9 @@
 ;;; Evaluate an ESTree `XRawJavaScript` node.
 ;;; This is an unofficial ESTree extension.
 (define (eval-estree-x-raw-javascript node env (options (js/obj)))
-  (define str
+  (define js
     (get-estree-field "js" node))
-  (set! str (string-append "(" str ")"))
-  (js/eval str))
+  (js/eval js))
 
 ;;; Global variable used for storing the value of `this`.
 ;;; Used for evaluating `ThisExpression`.

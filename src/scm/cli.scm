@@ -35,73 +35,100 @@
 ;;; [npm:minimist-options]: https://www.npmjs.com/package/minimist-options
 (define cli-options
   (js/obj
-   :case (js/obj
-          :default "camelcase"
-          :type "string")
-   :comments (js/obj
-              :default #t
-              :type "boolean")
-   :compile (js/obj
-             :alias "c"
-             :default #f
-             :type "boolean")
-   :decompile (js/obj
-               :alias "d"
-               :default #f
-               :type "boolean")
-   :eval (js/obj
-          :alias "e"
-          :default ""
-          :type "string")
-   :fcommonjs (js/obj
-               :default #f
-               :type "boolean")
-   :fes-module-interop (js/obj
-                        :alias "fes-module-interop"
-                        :default #f
-                        :type "boolean")
-   :feval-bindings (js/obj
-                    :alias "feval-bindings"
-                    :default #f
-                    :type "boolean")
-   :finline-functions (js/obj
-                       :alias "finline-functions"
-                       :default #f
-                       :type "boolean")
-   :fdottedlists (js/obj
-                  :default #f
-                  :type "boolean")
-   :fsemicolon (js/obj
-                :default #t
-                :type "boolean")
-   :fstringobjects (js/obj
-                    :default #f
-                    :type "boolean")
-   :help (js/obj
-          :alias "h"
-          :default #f
-          :type "boolean")
-   :indent (js/obj
-            :default 2
-            :type "number")
-   :language (js/obj
-              :default "javascript"
-              :type "string")
-   :optimize (js/obj
-              :default #t
-              :type "boolean")
-   :out-dir (js/obj
-             :alias "out-dir"
-             :default "."
-             :type "string")
-   :quick (js/obj
-           :alias "q"
-           :default #f
-           :type "boolean")
-   :repl (js/obj
-          :alias "i"
-          :default #f
-          :type "boolean")))
+   :case
+   (js/obj
+    :default "camelcase"
+    :type "string")
+   :comments
+   (js/obj
+    :default #t
+    :type "boolean")
+   :compile
+   (js/obj
+    :alias "c"
+    :default #f
+    :type "boolean")
+   :decompile
+   (js/obj
+    :alias "d"
+    :default #f
+    :type "boolean")
+   :eval
+   (js/obj
+    :alias "e"
+    :default ""
+    :type "string")
+   :fcommonjs
+   (js/obj
+    :default #f
+    :type "boolean")
+   :fes-module-interop
+   (js/obj
+    :alias "fes-module-interop"
+    :default #f
+    :type "boolean")
+   :feval-bindings
+   (js/obj
+    :alias "feval-bindings"
+    :default #f
+    :type "boolean")
+   :finline-functions
+   (js/obj
+    :alias "finline-functions"
+    :default #f
+    :type "boolean")
+   :fdottedlists
+   (js/obj
+    :default #f
+    :type "boolean")
+   :fsemicolon
+   (js/obj
+    :default #t
+    :type "boolean")
+   :fstringobjects
+   (js/obj
+    :default #f
+    :type "boolean")
+   :from
+   (js/obj
+    :default "roselisp"
+    :type "string")
+   :help
+   (js/obj
+    :alias "h"
+    :default #f
+    :type "boolean")
+   :indent
+   (js/obj
+    :default 2
+    :type "number")
+   :language
+   (js/obj
+    :default ""
+    :type "string")
+   :optimize
+   (js/obj
+    :default #t
+    :type "boolean")
+   :out-dir
+   (js/obj
+    :alias "out-dir"
+    :default "."
+    :type "string")
+   :quick
+   (js/obj
+    :alias "q"
+    :default #f
+    :type "boolean")
+   :repl
+   (js/obj
+    :alias "i"
+    :default #f
+    :type "boolean")
+   :to
+   (js/obj
+    :default "javascript"
+    :type "string")))
 
 ;;; Help message. Displayed when the program
 ;;; is invoked with `-h` or `--help`.
@@ -145,11 +172,15 @@ Options:
 
 ;;; Normalize CLI options.
 (define (normalize-cli-options options)
-  (define language
+  (define language-option
     (string-downcase (oget options :language)))
+  (define to-option
+    (if (eq? language-option "")
+        (oget options :to)
+        language-option))
   (js/obj-append
    options
-   (js/obj :language language)))
+   (js/obj :to to-option)))
 
 ;;; `main` function. Invoked when the program is
 ;;; run from the command line.

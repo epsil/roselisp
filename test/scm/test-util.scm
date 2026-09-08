@@ -387,7 +387,8 @@
         (list-ref body (+ i 1)))
       (define expected
         (list-ref body (+ i 2)))
-      (when (or (prompt? expected)
+      (when (or (>= (+ i 2) len)
+                (prompt? expected)
                 (and (keyword? expected)
                      (not (prompt? (list-ref body (+ i 3))))))
         (set! expected '_)

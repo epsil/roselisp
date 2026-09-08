@@ -404,7 +404,7 @@ function testMacro(exp: any, env: any): any {
       const prompt: any = exp;
       const expression: any = body[i + 1];
       let expected: any = body[i + 2];
-      if (promptp(expected) || (keywordp(expected) && !promptp(body[i + 3]))) {
+      if (((i + 2) >= len) || promptp(expected) || (keywordp(expected) && !promptp(body[i + 3]))) {
         expected = Symbol.for('_');
         offset = 2;
       }

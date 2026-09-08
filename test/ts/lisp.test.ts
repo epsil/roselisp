@@ -522,7 +522,7 @@ describe('with-gensyms', function (): any {
 });
 
 describe('once-only', function (): any {
-  return it('(compile \'(begin (define-macro (my-square x) (once-only (x) `(* ,x ,x))) (my-square (+ 1 1))))', function (): any {
+  it('(compile \'(begin (define-macro (my-square x) (once-only (x) `(* ,x ,x))) (my-square (+ 1 1))))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-macro'), [Symbol.for('my-square'), Symbol.for('x')], [Symbol.for('once-only'), [Symbol.for('x')], [Symbol.for('quasiquote'), [Symbol.for('*'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('x')]]]]], [Symbol.for('my-square'), [Symbol.for('+'), 1, 1]]]]], 'function mySquare(exp, env) {\n' +
       '  let [x] = exp.slice(1);\n' +
       '  let g = Symbol(\'g\');\n' +
@@ -537,5 +537,25 @@ describe('once-only', function (): any {
       'let g = 1 + 1;\n' +
       '\n' +
       'g * g;']);
+  });
+  return it('(compile \'(begin (define-macro (my-plus x y) (once-only (x y) `(+ ,x ,y))) (my-plus (+ 1 1) (+ 2 2))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-macro'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('once-only'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]], [Symbol.for('my-plus'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]]], 'function myPlus(exp, env) {\n' +
+      '  let [x, y] = exp.slice(1);\n' +
+      '  let g = Symbol(\'g\');\n' +
+      '  let g1 = Symbol(\'g\');\n' +
+      '  return [Symbol.for(\'let\'), [[g, x], [g1, y]], (() => {\n' +
+      '    let x = g;\n' +
+      '    let y = g1;\n' +
+      '    return [Symbol.for(\'+\'), x, y];\n' +
+      '  })()];\n' +
+      '}\n' +
+      '\n' +
+      'myPlus.ftype = \'macro\';\n' +
+      '\n' +
+      'let g = 1 + 1;\n' +
+      '\n' +
+      'let g1 = 2 + 2;\n' +
+      '\n' +
+      'g + g1;']);
   });
 });

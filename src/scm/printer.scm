@@ -896,8 +896,8 @@
 
 ;;; Print an `Identifier` ESTree node to a `Doc` object.
 (define (print-identifier node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define no-implicit-any
     (oget options :no-implicit-any))
   (define type_
@@ -906,7 +906,7 @@
     (set! type_ (new TSAnyKeyword)))
   (list
    (get-estree-field "name" node)
-   (if (and (eq? language "typescript")
+   (if (and (eq? to-language "typescript")
             type_)
        (list
         (if (get-estree-field "optional" node) "?:" ":")
@@ -1112,8 +1112,8 @@
 ;;; Print an `AssignmentExpression` ESTree node to a `Doc` object.
 (define (print-assignment-expression node (options (js/obj)))
   ;; TODO: Break up statement if one of the sides have comments.
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define operator
     (get-estree-field "operator" node))
   (define operator-printed operator)
@@ -1230,8 +1230,8 @@
 
 ;;; Print a `MemberExpression` ESTree node to a `Doc` object.
 (define (print-member-expression node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define object
     (get-estree-field "object" node))
   (define object-printed
@@ -1274,8 +1274,8 @@
 
 ;;; Print a `SpreadElement` ESTree node to a `Doc` object.
 (define (print-spread-element node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define no-implicit-any
     (oget options :no-implicit-any))
   (define argument
@@ -1295,7 +1295,7 @@
   (list
    "..."
    argument-printed
-   (if (and (eq? language "typescript")
+   (if (and (eq? to-language "typescript")
             type_)
        (list
         ":"
@@ -1310,8 +1310,8 @@
 ;;; Print a function declaration or function expression to a
 ;;; `Doc` object. Also handles arrow functions.
 (define (print-function node (options (js/obj)) (settings (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define arrow
     (oget settings :arrow))
   (define async_
@@ -1353,7 +1353,7 @@
             _)
        (join (list "," space) _))
    ")"
-   (if (and (eq? language "typescript")
+   (if (and (eq? to-language "typescript")
             (not (eq? return-type-printed "")))
        (list ":" space return-type-printed)
        empty)
@@ -1393,8 +1393,8 @@
 
 ;;; Print a `VariableDeclarator` ESTree node to a `Doc` object.
 (define (print-variable-declarator node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define id
     (get-estree-field "id" node))
   (define id-printed
@@ -1598,8 +1598,8 @@
 
 ;;; Print a `ForOfStatement` ESTree node to a `Doc` object.
 (define (print-for-of-statement node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define left
     (get-estree-field "left" node))
   (define left-printed
@@ -1617,7 +1617,7 @@
     (print-node body options))
   (define result-str)
   ;; FIXME: Kludge.
-  (when (eq? language "typescript")
+  (when (eq? to-language "typescript")
     (set! left-printed
           (~> left-printed
               (print-doc _)
@@ -1639,8 +1639,8 @@
 
 ;;; Print a `ForInStatement` ESTree node to a `Doc` object.
 (define (print-for-in-statement node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define left
     (get-estree-field "left" node))
   (define left-printed
@@ -1664,7 +1664,7 @@
    "in"
    space
    right-printed
-   (if (eq? language "typescript")
+   (if (eq? to-language "typescript")
        " as any[]"
        empty)
    ")"
@@ -1777,8 +1777,8 @@
 (define (print-property-definition node (options (js/obj)))
   (define fsemicolon
     (oget options :fsemicolon))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define key
     (get-estree-field "key" node))
   (define value
@@ -1788,13 +1788,13 @@
   (define accessibility
     (get-estree-field "accessibility" node))
   (list
-   (if (and (eq? language "typescript")
+   (if (and (eq? to-language "typescript")
             (eq? accessibility "private"))
        (list "private" space)
        empty)
    (if static-flag (list "static" space) empty)
    (print-node key options)
-   (if (eq? language "typescript")
+   (if (eq? to-language "typescript")
        (list ":" space "any")
        empty)
    (if value
@@ -1810,8 +1810,8 @@
 
 ;;; Print a `MethodDefinition` ESTree node to a `Doc` object.
 (define (print-method-definition node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define key
     (get-estree-field "key" node))
   (define key-printed
@@ -1841,7 +1841,7 @@
   (define accessibility
     (get-estree-field "accessibility" node))
   (list
-   (if (and (eq? language "typescript")
+   (if (and (eq? to-language "typescript")
             (eq? accessibility "private"))
        (list "private" space)
        empty)
@@ -1858,8 +1858,8 @@
 
 ;;; Print an `ArrayExpression` ESTree node to a `Doc` object.
 (define (print-array-expression node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define no-implicit-any
     (oget options :no-implicit-any))
   (define type_
@@ -1905,7 +1905,7 @@
     (set! type_
           (new TSArrayType (new TSAnyKeyword))))
   (when (and type_
-             (eq? language "typescript"))
+             (eq? to-language "typescript"))
     (set! result
           (append
            result
@@ -2117,8 +2117,8 @@
 
 ;;; Print a `Property` ESTree node to a `Doc` object.
 (define (print-property node (options (js/obj)))
-  (define language
-    (oget options :language))
+  (define to-language
+    (oget options :to))
   (define key
     (get-estree-field "key" node))
   (define key-printed
@@ -2134,7 +2134,7 @@
           (list
            "["
            key-printed
-           (if (eq? language "typescript")
+           (if (eq? to-language "typescript")
                (list space "as any")
                empty)
            "]")))

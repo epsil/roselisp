@@ -1,7 +1,7 @@
 ;;; # Lisp tests
 ;;;
-;;; Tests of some non-Scheme Lisp constructs. Intended to exercise the
-;;; language's capability to implement other Lisp dialects.
+;;; Tests of some non-Scheme Lisp constructs. Intended to exercise
+;;; the language's capability to implement other Lisp dialects.
 
 (require (only-in "./test-util"
                   test-repl
@@ -11,6 +11,297 @@
 
 (test-macro
  :repl #t
+
+ :describe "nil"
+ > nil
+ '()
+ > (list? nil)
+ #t
+ > (length nil)
+ 0
+ > (compile 'nil)
+ "[];"
+
+ :describe "intern"
+ > (intern "foo")
+ 'foo
+
+ :describe "gensym"
+ > (symbol? (gensym "foo"))
+ #t
+ > (eq? (gensym "foo") 'foo)
+ #f
+ > (eq? (gensym "foo") (gensym "foo"))
+ #f
+ > (compile '(gensym "foo"))
+ "Symbol('foo');"
+ > (compile `(begin ,(gensym "x")))
+ "x;"
+ > (compile `(define ,(gensym "x") 1))
+ "let x = 1;"
+ > (compile `(let ((x 0))
+               (define ,(gensym "x") 1)))
+ "let x = 0;
+
+let x1 = 1;"
+ > (compile `(let ((x 1))
+               (define y
+                 (quote ,(gensym "x")))))
+ "let x = 1;
+
+let y = Symbol.for('x1');"
+ > (compile `(let ((x 0))
+               (define ,(gensym "x") 1)
+               (let ((x1 0)))))
+ "let x = 0;
+
+let x2 = 1;
+
+let x1 = 0;"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)))
+ "let x = 1;
+
+let x1 = 2;"
+ > (compile `(begin
+               (define x 1)
+               (define x1 2)
+               (define ,(gensym "x") 3)))
+ "let x = 1;
+
+let x1 = 2;
+
+let x2 = 3;"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)
+               (define x1 3)))
+ "let x = 1;
+
+let x2 = 2;
+
+let x1 = 3;"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)
+               (define-values (x1)
+                 (list 3))))
+ "let x = 1;
+
+let x2 = 2;
+
+let [x1] = [3];"
+ > (compile `(begin
+               (define x 1)
+               (define (,(gensym "x"))
+                 2)
+               (define-values (x1)
+                 (list 3))))
+ "let x = 1;
+
+function x2() {
+  return 2;
+}
+
+let [x1] = [3];"
+ > (compile `(begin
+               (define x 1)
+               (define ,(gensym "x") 2)
+               (define ,(gensym "x") 3)
+               (define x1 4)
+               (define x2 5)))
+ "let x = 1;
+
+let x3 = 2;
+
+let x4 = 3;
+
+let x1 = 4;
+
+let x2 = 5;"
+ > (compile (let ((gensym-x (gensym "x")))
+              `(let ((x 0))
+                 (define ,gensym-x 1)
+                 (let ((x1 0))
+                   (define ,gensym-x 1)))))
+ "let x = 0;
+
+let x2 = 1;
+
+let x1 = 0;
+
+let x2 = 1;"
+ > (compile `(begin
+               (define foo
+                 ,(gensym "test"))
+               (define bar
+                 ,(gensym "test"))))
+ "let foo = test;
+
+let bar = test1;"
+ > (compile `(define x
+               ,(gensym "x")))
+ "let x = x1;"
+ > (compile `(define x
+               ',(gensym "x")))
+ "let x = Symbol.for('x1');"
+ > (compile `(let ((x ,(gensym "x")))
+               (foo)))
+ "let x = x1;
+
+foo();"
+ > (compile `(let ((x (quote ,(gensym "x"))))
+               (foo)))
+ "let x = Symbol.for('x1');
+
+foo();"
+ > (compile `(let ((x ',(gensym "x")))
+               (foo)))
+ "let x = Symbol.for('x1');
+
+foo();"
+
+ :describe "Keywords"
+ > :foo
+ ':foo
+ > ':foo
+ ':foo
+ > (keyword? ':foo)
+ #t
+ > (keyword? 'foo)
+ #f
+ > (compile ':foo)
+ "Symbol.for(':foo');"
+
+ :describe "nth"
+ > (nth 0 '(1))
+ 1
+ > (nth 1 '(1 2))
+ 2
+ > (nth 2 '(1 2 3))
+ 3
+ > (funcall nth 1 '(1 . (2 . ())))
+ 2
+ > (funcall nth 1 '(1 2 . (3 . ())))
+ 2
+ > (compile '(nth n x))
+ "x[n];"
+ > (compile '(module m scheme
+               (nth n x))
+            :fdottedlists #f)
+ "x[n];"
+ > (compile '(module m scheme
+               (nth n x))
+            :fdottedlists #t)
+ "import {
+  nth
+} from 'roselisp';
+
+nth(n, x);"
+
+ :describe "aref"
+ > (compile '(aref args 0))
+ "args[0];"
+ > (compile '(aref args 0 1))
+ "args[0][1];"
+
+ :describe "aget"
+ > (compile '(aget args 0))
+ "args[0];"
+ > (compile '(aget args 0 1))
+ "args[0][1];"
+
+ :describe "aset!"
+ > (compile '(aset! args 0 1))
+ "args[0] = 1;"
+
+ :describe "nthcdr"
+ > (nthcdr 0 '(1 2 3))
+ '(1 2 3)
+ > (nthcdr 1 '(1 2 3))
+ '(2 3)
+ > (nthcdr 2 '(1 2 3))
+ '(3)
+ > (nthcdr 3 '(1 2 3))
+ '()
+ > (nthcdr 1 '(1 . 2))
+ 2
+ > (compile '(module m scheme
+               (nthcdr n x))
+            :fdottedlists #f)
+ "import {
+  nthcdr
+} from 'roselisp';
+
+nthcdr(n, x);"
+ > (compile '(module m scheme
+               (nthcdr n x))
+            :fdottedlists #t)
+ "import {
+  nthcdr
+} from 'roselisp';
+
+nthcdr(n, x);"
+
+ :describe "funcall"
+ > (compile '(funcall f))
+ "f();"
+ > (compile '(funcall f x))
+ "f(x);"
+ > (compile '(funcall f x y))
+ "f(x, y);"
+ > (compile '(module m scheme
+               (funcall length x)))
+ "import {
+  length
+} from 'roselisp';
+
+length(x);"
+
+ :describe "while"
+ > (let ((result '()))
+     (while (< (length result) 3)
+       (set! result (cons 1 result)))
+     result)
+ '(1 1 1)
+ > (compile '(while (> x 0)
+               (set! x (- x 1))))
+ "while (x > 0) {
+  x--;
+}"
+
+ :describe "defclass"
+ > ((lambda ()
+      (defclass Foo ()
+        (define/public (bar)
+          "bar"))
+      (define foo
+        (new Foo))
+      (send foo bar)))
+ "bar"
+ > (compile '(defclass Foo ()
+               (define/public (bar)
+                 "bar")))
+ "class Foo {
+  bar() {
+    return 'bar';
+  }
+}"
+
+ :describe "->"
+ > (compile '(-> x
+                 (.foo "bar")
+                 (.baz)))
+ "x.foo('bar').baz();"
+ > (compile '(-> regular-args
+                 (.map (lambda (arg)
+                         (compile-expression
+                          arg env inherited-options)))
+                 (.join ", ")))
+ "regularArgs.map(function (arg) {
+  return compileExpression(arg, env, inheritedOptions);
+}).join(', ');"
 
  :describe "set"
  > (compile '(set 'x 1))

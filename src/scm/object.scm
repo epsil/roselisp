@@ -28,7 +28,7 @@
 ;;;
 ;;; [rkt:object-get]: https://docs.racket-lang.org/javascript/runtime.html#%28def._%28%28lib._javascript%2Fruntime..rkt%29._object-get%29%29
 ;;; [cljs:oget]: https://github.com/binaryage/cljs-oops#object-operations
-(define (object-ref_ obj key)
+(define-inline (object-ref_ obj key)
   (js/get obj key))
 
 ;;; Set the property `key` in `obj` to `val`.
@@ -41,12 +41,16 @@
 (define (object-set!_ obj key val)
   (oset! obj key val))
 
+;;; Compiler macro for `(object-set! ...)` expressions.
+(define-compiler-macro (object-set!_ obj key val)
+  `(js/= (js/get ,obj ,key) ,val))
+
 ;;; Return the keys for an object.
 ;;;
 ;;; Similar to [`field-names` in Racket][rkt:field-names].
 ;;;
 ;;; [rkt:field-names]: https://docs.racket-lang.org/reference/objectutils.html#%28def._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._field-names%29%29
-(define (field-names_ obj)
+(define-inline (field-names_ obj)
   (js/keys obj))
 
 (provide

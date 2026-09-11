@@ -26,6 +26,7 @@ import { jsObj_, jsObjP_, jsObjectTypeP_, jsObjAppend_, jsKeys_ } from './javasc
 declare function objectRef_(obj: any, key: any): any;
 declare namespace objectRef_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Set the property `key` in `obj` to `val`.
@@ -39,6 +40,7 @@ declare namespace objectRef_ {
 declare function objectSetX_(obj: any, key: any, val: any): any;
 declare namespace objectSetX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the keys for an object.
@@ -50,5 +52,6 @@ declare namespace objectSetX_ {
 declare function fieldNames_(obj: any): any;
 declare namespace fieldNames_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 export { objectRef_ as objectGet_, objectRef_ as oget_, objectSetX_ as objectSet_, objectSetX_ as osetx_, objectSetX_ as oset_, fieldNames_, jsKeys_, jsObjAppend_, jsObjP_, jsObj_, jsObjectTypeP_, objectRef_, objectSetX_ };

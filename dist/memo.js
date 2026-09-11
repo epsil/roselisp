@@ -113,7 +113,7 @@ setCacheX.fsource = [Symbol.for('define'), [Symbol.for('set-cache!'), Symbol.for
  */
 function memoizeWithArg(f, arity = f.length) {
     function memoizedF(...args) {
-        const map = args.at(-1);
+        const map = args[args.length - 1];
         if ((args.length === arity) && (map instanceof Map)) {
             const args1 = args.slice(0, -1);
             const path = makePath(args1);

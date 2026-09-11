@@ -159,7 +159,7 @@ function B2(...args: any[]): any {
     }
     default: {
       const fs: any = args.slice(0, -1);
-      const x: any = args.at(-1);
+      const x: any = args[args.length - 1];
       // Right-to-left function composition
       // corresponds to a right fold.
       return (
@@ -264,7 +264,7 @@ function C3(f: any, ...args: any[]): any {
   if (args.length < 2) {
     return f(...args);
   } else {
-    return f(...[args.at(-1), ...args.slice(0, -1)]);
+    return f(...[args[args.length - 1], ...args.slice(0, -1)]);
   }
 }
 
@@ -503,7 +503,7 @@ function Q2(...args: any[]): any {
     }
     default: {
       const fs: any = args.slice(0, -1);
-      const x: any = args.at(-1);
+      const x: any = args[args.length - 1];
       // Left-to-right function composition
       // corresponds to a left fold.
       return (

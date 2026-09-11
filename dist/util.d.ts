@@ -162,4 +162,19 @@ declare function listExpressionToPattern(exp: any): any;
  * starting letter is specified with `start`.
  */
 declare function numberToLetter(n: any, start?: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineGeneric, defineMethod, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };
+/**
+ * Given a binary function expression, produce a new
+ * function expression that flips the argument order.
+ */
+declare function flipFunctionExpression(exp: any, x?: any, y?: any): any;
+/**
+ * Parse a parameter list into regular parameters
+ * and rest parameter, if any.
+ */
+declare function parseParamsList(params: any): any;
+/**
+ * Convert a `(define ...)` expression to
+ * a `(define-macro ...)` expression.
+ */
+declare function defineToDefineMacro(x: any, onceOnly?: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };

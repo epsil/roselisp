@@ -4,6 +4,8 @@
                   thread-as_
                   thread-first_
                   thread-last_))
+(require (only-in "../../src/ts/util"
+                  define->define-macro))
 (require (only-in "../../src/ts"
                   LispEnvironment
                   macroexpand
@@ -277,9 +279,59 @@
    (else
     bar))
 
- :repl #t
- :describe "case"
- > (case 'foo
-     ((foo)
-      1))
- 1)
+ :describe "define->define-macro"
+ > (define->define-macro
+     '(define (foo x)
+        "bar"))
+ '(define-macro (foo x)
+    "bar")
+ > (define->define-macro
+     '(define (foo x)
+        x))
+ '(define-macro (foo x)
+    x)
+ > (define->define-macro
+     '(define (foo x)
+        (bar x)))
+ '(define-macro (foo x)
+    `(bar ,x))
+ > (define->define-macro
+     '(define (foo (x 1))
+        (bar x)))
+ '(define-macro (foo (x 1))
+    `(bar ,x))
+ > (define->define-macro
+     '(define (foo (x 1) (options (js/obj)))
+        (bar x options)))
+ '(define-macro (foo (x 1) (options '(js/obj)))
+    `(bar ,x ,options))
+ > (define->define-macro
+     '(define (foo f . args)
+        (apply f args)))
+ '(define-macro (foo f &rest args)
+    `(apply ,f (list ,@args)))
+ > (define->define-macro
+     '(define (foo x)
+        (bar x)
+        (baz x)))
+ '(define-macro (foo x)
+    `(begin
+       (bar ,x)
+       (baz ,x)))
+ > (define->define-macro
+     '(define (foo x)
+        (bar x)
+        (baz x))
+     #t)
+ '(define-macro (foo x)
+    (once-only*
+     (x)
+     `(begin
+        (bar ,x)
+        (baz ,x))))
+ > (define->define-macro
+     '(define (foo x)
+        (bar x))
+     #t)
+ '(define-macro (foo x)
+    `(bar ,x)))

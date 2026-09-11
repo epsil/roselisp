@@ -641,7 +641,7 @@
 ;;; environment. The environment at the top of the stack---i.e., the
 ;;; first element of the underlying array---is tried first, with the
 ;;; other environments serving as parent environments.
-(define-class EnvironmentStack (TypedEnvironment)
+(define-class EnvironmentStack (PromiseEnvironment)
   ;;; Environment stack.
   ;;;
   ;;; `stack[0]` is the top of the stack, i.e., the environment
@@ -749,23 +749,27 @@
     (drop frames offset))
 
   ;;; Get the binding for `key` as a tuple `(value found)`.
-  (define/public (get-tuple key (options (js/obj)))
+  (define/public (get-unforced-tuple key (options (js/obj)))
     (define not-found
       (oget options :not-found))
     (define env
       (send this find-frame key options))
     (if env
-        (send env get-tuple key options)
+        (if (is-a? env PromiseEnvironment)
+            (send env get-unforced-tuple key options)
+            (send env get-tuple key options))
         (values not-found #f)))
 
   ;;; Get the local binding for `key` as a tuple `(value found)`.
-  (define/public (get-local-tuple key (options (js/obj)))
+  (define/public (get-unforced-local-tuple key (options (js/obj)))
     (define not-found
       (oget options :not-found))
     (define env
       (send this find-local-frame key options))
     (if env
-        (send env get-tuple key options)
+        (if (is-a? env PromiseEnvironment)
+            (send env get-unforced-tuple key options)
+            (send env get-tuple key options))
         (values not-found #f)))
 
   ;;; Whether the stack contains an environment that binds `key`.
@@ -946,47 +950,6 @@
   (define/public (constructor)
     (super lookup-js-value)))
 
-;;; Pointer to the current environment.
-;;; Used by {@link currentEnvironment}.
-(define current-environment-pointer #u)
-
-;;; Return the current environment.
-(define (current-environment_)
-  current-environment-pointer)
-
-;;; Return an empty environment.
-(define (empty-environment)
-  (new LispEnvironment))
-
-;;; Return the default environment.
-;;;
-;;; The default environment is defined as follows: use
-;;; the current environment if there is one, and if not,
-;;; use the empty environment.
-(define (default-environment)
-  (or (current-environment_)
-      (empty-environment)))
-
-;;; Run `f` with `currentEnvironmentPointer` bound to `env`.
-;;; This makes the current environment available through the
-;;; function {@link currentEnvironment}. The original value
-;;; of `currentEnvironmentPointer` is restored afterwards.
-(define (with-environment-f env f)
-  (define result #u)
-  (define tmp current-environment-pointer)
-  (try
-    (set! current-environment-pointer env)
-    (set! result (f))
-    (finally
-      (set! current-environment-pointer tmp)))
-  result)
-
-;;; Macro for `with-environment-f`.
-(define-macro (with-environment environment &rest body)
-  `(with-environment-f
-    ,environment
-    (js/arrow () ,@body)))
-
 ;;; Make an environment.
 (define (make-environment (variables #u)
                           (parent #u)
@@ -1049,6 +1012,68 @@
         (append (list _) (rest binding))))
   (map prefix-binding bindings))
 
+;;; Pointer to the current environment.
+;;; Used by {@link currentEnvironment}.
+(define current-environment-pointer #u)
+
+;;; Return the current environment.
+(define (current-environment_)
+  current-environment-pointer)
+
+;;; Return an empty environment.
+(define (empty-environment)
+  (new LispEnvironment))
+
+;;; Return the default environment.
+;;;
+;;; The default environment is defined as follows: use
+;;; the current environment if there is one, and if not,
+;;; use the empty environment.
+(define (default-environment)
+  (or (current-environment_)
+      (empty-environment)))
+
+;;; Run `f` with `currentEnvironmentPointer` bound to `env`.
+;;; This makes the current environment available through the
+;;; function {@link currentEnvironment}. The original value
+;;; of `currentEnvironmentPointer` is restored afterwards.
+(define (with-environment-f env f)
+  (define result #u)
+  (define tmp current-environment-pointer)
+  (try
+    (set! current-environment-pointer env)
+    (set! result (f))
+    (finally
+      (set! current-environment-pointer tmp)))
+  result)
+
+;;; Macro for `with-environment-f`.
+(define-macro (with-environment environment &rest body)
+  `(with-environment-f
+    ,environment
+    (js/arrow () ,@body)))
+
+;;; Pointer to the current compilation options.
+(define current-compilation-options-pointer
+  (js/obj) ; default-compilation-options
+  )
+
+;;; Return the current compilation options.
+(define (current-compilation-options)
+  current-compilation-options-pointer)
+
+;;; Run `f` with `current-compilation-options-pointer` bound to `options`.
+;;; The return value is the result of invoking `f`.
+(define (with-compilation-options options f)
+  (let ((result #u)
+        (tmp current-compilation-options-pointer))
+    (try
+      (set! current-compilation-options-pointer options)
+      (set! result (f))
+      (finally
+        (set! current-compilation-options-pointer tmp)))
+    result))
+
 (provide
   (rename-out (PromiseEnvironment ThunkedEnvironment))
   (rename-out (current-environment_ current-environment))
@@ -1063,6 +1088,7 @@
   LispEnvironment
   PromiseEnvironment
   TypedEnvironment
+  current-compilation-options
   current-environment-pointer
   current-environment_
   default-environment
@@ -1072,5 +1098,6 @@
   link-environment-frames
   make-environment
   prefix-bindings
+  with-compilation-options
   with-environment
   with-environment-f)

@@ -18,7 +18,6 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.plistp_ = exports.plistSet_ = exports.plistSetX_ = exports.plistHasP_ = exports.plistGet_ = exports.plistCopy_ = exports.plistToObject_ = exports.plistMap_ = exports.plistToAlist_ = exports.plistp = exports.plistSet = exports.plistSetX = exports.plistHas_ = exports.plistHasP = exports.plistRef_ = exports.plistGet = exports.plistCopy = exports.plistToObject = exports.plistMap = exports.plistToAlist = void 0;
-const procedures_1 = require("./procedures");
 const util_1 = require("./util");
 /**
  * Whether something is a property list.
@@ -35,6 +34,22 @@ function plistp_(obj) {
 exports.plistp = plistp_;
 exports.plistp_ = plistp_;
 plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('obj')], [Symbol.for('even?'), [Symbol.for('length'), Symbol.for('obj')]]]];
+plistp_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [obj] = exp.slice(1);
+        if (!(Array.isArray(obj) && (obj.length > 0))) {
+            return [Symbol.for('and'), [Symbol.for('pair-or-list?'), obj], [Symbol.for('even?'), [Symbol.for('length'), obj]]];
+        }
+        else {
+            const obj1 = Symbol('obj');
+            return [Symbol.for('let'), [[obj1, obj]], ((obj) => {
+                    return [Symbol.for('and'), [Symbol.for('pair-or-list?'), obj], [Symbol.for('even?'), [Symbol.for('length'), obj]]];
+                })(obj1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Copy a property list.
  */
@@ -43,7 +58,15 @@ function plistCopy_(plst) {
 }
 exports.plistCopy = plistCopy_;
 exports.plistCopy_ = plistCopy_;
-plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('plst')]]]];
+plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('array-copy'), Symbol.for('plst')]];
+plistCopy_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [plst] = exp.slice(1);
+        return [Symbol.for('array-copy'), plst];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the value of a property in a property list.
  * Returns `#u` if not found.
@@ -177,7 +200,7 @@ function plistToObject_(plst, options = {}) {
     for (let i = 0; i < _end; i = i + 2) {
         const prop = plst[i];
         let val = plst[i + 1];
-        const key = (0, util_1.makeIdentifierString)((0, procedures_1.keywordToString)(prop), options);
+        const key = (0, util_1.makeIdentifierString)(prop.description.replace(new RegExp('^:'), ''), options);
         result[key] = val;
     }
     return result;

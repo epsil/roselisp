@@ -4,7 +4,7 @@ import {
   StringToken,
   SymbolToken,
   TrailingCommentToken,
-  parseSyntax,
+  parse,
   read,
   readSyntax,
   tokenize
@@ -162,57 +162,57 @@ describe('tokenize', function (): any {
   });
 });
 
-describe('parse-syntax', function (): any {
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "exp"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('exp')])), Symbol.for('exp'));
+describe('parse', function (): any {
+  it('(parse (list (new SymbolToken "exp")))', function (): any {
+    return assertEqual(parse([new SymbolToken('exp')]), Symbol.for('exp'));
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken(')')])), []);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken(')')]), []);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('('), new SymbolToken(')'), new SymbolToken(')')])), [[]]);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken ")") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('('), new SymbolToken(')'), new SymbolToken(')')]), [[]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')])), [Symbol.for('foo')]);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')]), [Symbol.for('foo')]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "lambda") (new SymbolToken "(") (new SymbolToken "x") (new SymbolToken ")") (new SymbolToken "x") (new SymbolToken ")") (new StringToken "Lisp") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('('), new SymbolToken('lambda'), new SymbolToken('('), new SymbolToken('x'), new SymbolToken(')'), new SymbolToken('x'), new SymbolToken(')'), new StringToken('Lisp'), new SymbolToken(')')])), [[Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], 'Lisp']);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "lambda") (new SymbolToken "(") (new SymbolToken "x") (new SymbolToken ")") (new SymbolToken "x") (new SymbolToken ")") (new StringToken "Lisp") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('('), new SymbolToken('lambda'), new SymbolToken('('), new SymbolToken('x'), new SymbolToken(')'), new SymbolToken('x'), new SymbolToken(')'), new StringToken('Lisp'), new SymbolToken(')')]), [[Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], 'Lisp']);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "foo"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('\''), new SymbolToken('foo')])), [Symbol.for('quote'), Symbol.for('foo')]);
+  it('(parse (list (new SymbolToken "\'") (new SymbolToken "foo")))', function (): any {
+    return assertEqual(parse([new SymbolToken('\''), new SymbolToken('foo')]), [Symbol.for('quote'), Symbol.for('foo')]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('\''), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')])), [Symbol.for('quote'), [Symbol.for('foo')]]);
+  it('(parse (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('\''), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')]), [Symbol.for('quote'), [Symbol.for('foo')]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('\''), new SymbolToken('('), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken(')')])), [Symbol.for('quote'), [[Symbol.for('foo')]]]);
+  it('(parse (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('\''), new SymbolToken('('), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken(')')]), [Symbol.for('quote'), [[Symbol.for('foo')]]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('\''), new SymbolToken('('), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken('('), new SymbolToken('bar'), new SymbolToken(')'), new SymbolToken(')')])), [Symbol.for('quote'), [[Symbol.for('foo')], [Symbol.for('bar')]]]);
+  it('(parse (list (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('\''), new SymbolToken('('), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken('('), new SymbolToken('bar'), new SymbolToken(')'), new SymbolToken(')')]), [Symbol.for('quote'), [[Symbol.for('foo')], [Symbol.for('bar')]]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "quote") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('quote'), new SymbolToken('('), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken('('), new SymbolToken('bar'), new SymbolToken(')'), new SymbolToken(')'), new SymbolToken(')')])), [Symbol.for('quote'), [[Symbol.for('foo')], [Symbol.for('bar')]]]);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "quote") (new SymbolToken "(") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken "(") (new SymbolToken "bar") (new SymbolToken ")") (new SymbolToken ")") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('quote'), new SymbolToken('('), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken('('), new SymbolToken('bar'), new SymbolToken(')'), new SymbolToken(')'), new SymbolToken(')')]), [Symbol.for('quote'), [[Symbol.for('foo')], [Symbol.for('bar')]]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('\''), new SymbolToken('foo'), new SymbolToken(')')])), [Symbol.for('truep'), [Symbol.for('quote'), Symbol.for('foo')]]);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "foo") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('\''), new SymbolToken('foo'), new SymbolToken(')')]), [Symbol.for('truep'), [Symbol.for('quote'), Symbol.for('foo')]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('\''), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken(')')])), [Symbol.for('truep'), [Symbol.for('quote'), [Symbol.for('foo')]]]);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "\'") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('\''), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken(')')]), [Symbol.for('truep'), [Symbol.for('quote'), [Symbol.for('foo')]]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "foo") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('`'), new SymbolToken('foo'), new SymbolToken(')')])), [Symbol.for('truep'), [Symbol.for('quasiquote'), Symbol.for('foo')]]);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "foo") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('`'), new SymbolToken('foo'), new SymbolToken(')')]), [Symbol.for('truep'), [Symbol.for('quasiquote'), Symbol.for('foo')]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('`'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken(')')])), [Symbol.for('truep'), [Symbol.for('quasiquote'), [Symbol.for('foo')]]]);
+  it('(parse (list (new SymbolToken "(") (new SymbolToken "truep") (new SymbolToken "`") (new SymbolToken "(") (new SymbolToken "foo") (new SymbolToken ")") (new SymbolToken ")")))', function (): any {
+    return assertEqual(parse([new SymbolToken('('), new SymbolToken('truep'), new SymbolToken('`'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new SymbolToken(')')]), [Symbol.for('truep'), [Symbol.for('quasiquote'), [Symbol.for('foo')]]]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken "`") (new SymbolToken "foo"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken('`'), new SymbolToken('foo')])), [Symbol.for('quasiquote'), Symbol.for('foo')]);
+  it('(parse (list (new SymbolToken "`") (new SymbolToken "foo")))', function (): any {
+    return assertEqual(parse([new SymbolToken('`'), new SymbolToken('foo')]), [Symbol.for('quasiquote'), Symbol.for('foo')]);
   });
-  it('(syntax->datum (parse-syntax (list (new SymbolToken ",") (new SymbolToken "foo"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken(','), new SymbolToken('foo')])), [Symbol.for('unquote'), Symbol.for('foo')]);
+  it('(parse (list (new SymbolToken ",") (new SymbolToken "foo")))', function (): any {
+    return assertEqual(parse([new SymbolToken(','), new SymbolToken('foo')]), [Symbol.for('unquote'), Symbol.for('foo')]);
   });
-  return it('(syntax->datum (parse-syntax (list (new SymbolToken ",@") (new SymbolToken "foo"))))', function (): any {
-    return assertEqual(syntaxToDatum(parseSyntax([new SymbolToken(',@'), new SymbolToken('foo')])), [Symbol.for('unquote-splicing'), Symbol.for('foo')]);
+  return it('(parse (list (new SymbolToken ",@") (new SymbolToken "foo")))', function (): any {
+    return assertEqual(parse([new SymbolToken(',@'), new SymbolToken('foo')]), [Symbol.for('unquote-splicing'), Symbol.for('foo')]);
   });
 });
 
@@ -440,12 +440,12 @@ describe('sexp', function (): any {
   });
   it('(dotted-list? (js/tag sexp "(1 . 2)"))', function (): any {
     return assertEqual(((x: any): any => {
-      return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'));
+      return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'));
     })(sexp`(1 . 2)`), true);
   });
   it('(dotted-list? (js/tag sexp "(1 \'. 2)"))', function (): any {
     return assertEqual(((x: any): any => {
-      return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'));
+      return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'));
     })(sexp`(1 '. 2)`), false);
   });
   it('(js/tag sexp "(+ 2 2)")', function (): any {

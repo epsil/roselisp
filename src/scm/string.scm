@@ -14,6 +14,9 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "./env"
+                  current-compilation-options))
+
 ;;; Whether something is a string.
 ;;;
 ;;; Similar to [`string?` in Racket][rkt:stringp] and
@@ -24,8 +27,18 @@
 (define (string?_ x)
   (js/string? x))
 
+;;; Compiler macro for `(string? ...)` expressions.
+(define-compiler-macro (string?_ x)
+  (define-fields (fstringobjects)
+    (current-compilation-options))
+  (cond
+   (fstringobjects
+    `(funcall string? ,x))
+   (else
+    `(js/string-literal? ,x))))
+
 ;;; The length of a string.
-(define (string-length_ x)
+(define-inline (string-length_ x)
   (js/length x))
 
 ;;; Concatenate one or more strings together.
@@ -39,12 +52,16 @@
       (set! result (js/string-concat result x)))
     result))
 
+;;; Compiler macro for `(string-append ...)` expressions.
+(define-compiler-macro (string-append_ &rest args)
+  `(js/string-concat ,@args))
+
 ;;; Get the character at a particular position in a string.
 ;;;
 ;;; Similar to [`string-ref` in Racket][rkt:string-ref].
 ;;;
 ;;; [rkt:string-ref]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-ref%29%29
-(define (string-ref_ str n)
+(define-inline (string-ref_ str n)
   (send str charAt n))
 
 ;;; Trim whitespace from the beginning and end of a string.
@@ -69,8 +86,16 @@
    (else
     (send str trim))))
 
+;;; Compiler macro for `(string-trim ...)` expressions.
+(define-compiler-macro (string-trim_ str &rest args)
+  (cond
+   ((null? args)
+    `(send ,str trim))
+   (else
+    `(funcall string-trim ,str ,@args))))
+
 ;;; Repeat a string `n` times.
-(define (string-repeat_ str n)
+(define-inline (string-repeat_ str n)
   (send str repeat n))
 
 ;;; Join a list of strings, using `sep` as the separator.
@@ -78,7 +103,7 @@
 ;;; Similar to [`string-join` in Racket][rkt:string-join].
 ;;;
 ;;; [rkt:string-join]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28lib._racket%2Fstring..rkt%29._string-join%29%29
-(define (string-join_ lst (sep " "))
+(define-inline (string-join_ lst (sep " "))
   (send lst join sep))
 
 ;;; Split a string into a list of strings.
@@ -86,7 +111,7 @@
 ;;; Similar to [`string-split` in Racket][rkt:string-split].
 ;;;
 ;;; [rkt:string-split]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28lib._racket%2Fstring..rkt%29._string-split%29%29
-(define (string-split_ str (sep (regexp "\\s+" "g")))
+(define-inline (string-split_ str (sep (regexp "\\s+" "g")))
   (send str split sep))
 
 ;;; Return a copy of `str` where `from` is replaced with `to`.
@@ -102,7 +127,7 @@
 ;;; Similar to [`string-upcase` in Racket][rkt:string-upcase].
 ;;;
 ;;; [rkt:string-upcase]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-upcase%29%29
-(define (string-upcase_ str)
+(define-inline (string-upcase_ str)
   (send str toUpperCase))
 
 ;;; Convert string to lower case.
@@ -110,7 +135,7 @@
 ;;; Similar to [`string-downcase` in Racket][rkt:string-downcase].
 ;;;
 ;;; [rkt:string-downcase]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-downcase%29%29
-(define (string-downcase_ str)
+(define-inline (string-downcase_ str)
   (send str toLowerCase))
 
 ;;; Return a substring of `str`, from `start` to `end`.
@@ -121,37 +146,25 @@
 (define (substring_ str start (end #u))
   (send str substring start end))
 
+;;; Compiler macro for `(substring ...)` expressions.
+(define-compiler-macro (substring_ str &rest args)
+  `(send ,str substring ,@args))
+
 ;;; Convert a string to a number.
 ;;;
 ;;; Similar to [`string->number` in Racket][rkt:string-to-number].
 ;;;
 ;;; [rkt:string-to-number]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._string-~3enumber%29%29
-(define (string->number_ str)
-  (parseFloat str))
+(define-inline (string->number_ str)
+  (js/parse-float str))
 
 ;;; Convert a number to a string.
 ;;;
 ;;; Similar to [`number->string` in Racket][rkt:number-to-string].
 ;;;
 ;;; [rkt:number-to-string]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._number-~3estring%29%29
-(define (number->string_ n)
-  (js/string-concat n ""))
-
-;;; Indent a string by prepending each line with `n` spaces.
-(define (indent-string str (n 2) (options (js/obj)))
-  (define whitespace-option
-    (oget options :whitespace))
-  (define whitespace
-    (or whitespace-option " "))
-  (define include-empty-lines-option
-    (oget options :include-empty-lines))
-  (define pattern
-    (if include-empty-lines-option
-        (regexp "^" "gm")
-        (regexp "^(?!\s*$)" "gm")))
-  (define indentation
-    (string-repeat whitespace n))
-  (regexp-replace pattern str indentation))
+(define-inline (number->string_ n)
+  (send n toString))
 
 (provide
   (rename-out (number->string_ number->string))
@@ -160,7 +173,6 @@
   (rename-out (string-replace_ string-replace))
   (rename-out (string?_ string?))
   (rename-out (substring_ substring))
-  indent-string
   number->string_
   string-append_
   string-downcase_

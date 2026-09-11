@@ -115,6 +115,17 @@ declare class Rose {
      */
     dropRightForest(n: any): any;
     /**
+     * Return the list of nodes obtained by
+     * taking the first `n` nodes from
+     * the forest.
+     */
+    take(n: any): any;
+    /**
+     * Return the forest obtained by taking
+     * the first `n` nodes from the forest.
+     */
+    takeForest(n: any): any;
+    /**
      * Return the first node in the forest,
      * or `#u` if there is none.
      */
@@ -337,6 +348,16 @@ declare class Forest {
      */
     dropRightForest(n: any): any;
     /**
+     * Return the list of nodes obtained by
+     * taking the first `n` nodes.
+     */
+    take(n: any): any;
+    /**
+     * Return the forest obtained by taking
+     * the first `n` nodes.
+     */
+    takeForest(n: any): any;
+    /**
      * Return the first node,
      * or `#u` if there is none.
      */
@@ -455,23 +476,22 @@ declare function rosep(obj: any): any;
  */
 declare function forestp(obj: any): any;
 /**
- * Wrap a list of rose tree-wrapped S-expressions in
- * a `(begin ...)` form.
+ * Wrap a list of syntax objects in a `(begin ...)` form.
  *
  * Legacy function, but still used in a few places.
  */
-declare function beginWrapRose(nodes: any): any;
+declare function beginWrapStx(stxs: any): any;
 /**
- * Wrap a list of rose tree-wrapped S-expressions in
- * a `(begin ...)` form. Does not wrap singleton lists.
+ * Wrap a list of syntax objects in a `(begin ...)` form.
+ * Does not wrap singleton lists.
  *
  * Legacy function, but still used in a few places.
  */
-declare function beginWrapRoseSmart(nodes: any): any;
+declare function beginWrapStxSmart(stxs: any): any;
 /**
  * Legacy function, but still used in a few places.
  */
-declare function beginWrapRoseSmart1(nodes: any): any;
+declare function beginWrapStxSmart1(stxs: any): any;
 /**
  * Make a rose tree-wrapped S-expression.
  *
@@ -495,12 +515,6 @@ declare function makeListRose(expressions?: any): any;
  * Make a rose tree-wrapped S-expression.
  */
 declare function makeSexpRose(exp?: any): any;
-/**
- * Slice a list wrapped in a rose tree.
- * Returns a new rose tree node containing
- * the sliced list.
- */
-declare function sliceRose(node: any, n: any): any;
 /**
  * Wrap an S-expression in a rose tree.
  */
@@ -555,4 +569,10 @@ declare function syntaxToList(stx: any): any;
  * [rkt:syntax-e]: https://docs.racket-lang.org/reference/stxops.html#%28def._%28%28quote._~23~25kernel%29._syntax-e%29%29
  */
 declare function syntaxE(stx: any): any;
-export { Rose as Syntax, RoseSplice as SyntaxSplice, roseToMap as makeRoseMap, sexpToRose as makeRose, Forest, Rose, RoseSplice, beginWrapRose, beginWrapRoseSmart, beginWrapRoseSmart1, datumToSyntax, forestp, makeListRose, makeRoseNonrecursive, makeSexpRose, roseToMap, roseToSexp, rosep, sexpToRose, sliceRose, syntaxToDatum, syntaxToList, syntaxE, syntaxp, transferComments, wrapSexpInRose };
+/**
+ * Slice a list wrapped in a syntax object.
+ * Returns a new syntax object containing
+ * the sliced list.
+ */
+declare function sliceStx(stx: any, n: any): any;
+export { Rose as Syntax, RoseSplice as SyntaxSplice, roseToMap as makeRoseMap, sexpToRose as makeRose, sliceStx as sliceRose, beginWrapStx as beginWrapNode, beginWrapStxSmart as beginWrapNodeSmart, beginWrapStxSmart1 as beginWrapNodeSmart1, Forest, Rose, RoseSplice, beginWrapStx, beginWrapStxSmart, beginWrapStxSmart1, datumToSyntax, forestp, makeListRose, makeRoseNonrecursive, makeSexpRose, roseToMap, roseToSexp, rosep, sexpToRose, sliceStx, syntaxToDatum, syntaxToList, syntaxE, syntaxp, transferComments, wrapSexpInRose };

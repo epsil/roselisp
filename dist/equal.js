@@ -36,6 +36,14 @@ exports.eqp = eqp_;
 exports.eq_ = eqp_;
 exports.eqp_ = eqp_;
 eqp_.fsource = [Symbol.for('define'), [Symbol.for('eq?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
+eqp_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x, y] = exp.slice(1);
+        return [Symbol.for('js/==='), x, y];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Loose equality.
  *
@@ -57,6 +65,14 @@ exports.eqvp = eqvp_;
 exports.eqv_ = eqvp_;
 exports.eqvp_ = eqvp_;
 eqvp_.fsource = [Symbol.for('define'), [Symbol.for('eqv?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/same-value?'), Symbol.for('x'), Symbol.for('y')]];
+eqvp_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x, y] = exp.slice(1);
+        return [Symbol.for('js/same-value?'), x, y];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Structural equality.
  *
@@ -67,14 +83,17 @@ eqvp_.fsource = [Symbol.for('define'), [Symbol.for('eqv?_'), Symbol.for('x'), Sy
  * [cl:equal]: http://clhs.lisp.se/Body/f_equal.htm#equal
  */
 function equalp_(x, y) {
+    // TODO: Define compiler macro for this function. Many cases
+    // can be compiled to code that does not invoke `equal?` at all
+    // (e.g., `(equal x '())` is the same as `(null? x)`).
     if (x === y) {
         // Compare equivalent values.
         return true;
     }
-    else if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && Array.isArray(y)) {
+    else if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && Array.isArray(y)) {
         // Compare dotted lists.
         const cdrX = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
-        if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX.at(-2) === Symbol.for('.')))) {
+        if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX[cdrX.length - 2] === Symbol.for('.')))) {
             return false;
         }
         else if (equalp_(x[0], y[0])) {
@@ -84,7 +103,7 @@ function equalp_(x, y) {
             return false;
         }
     }
-    else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y.at(-2) === Symbol.for('.'))) {
+    else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y[y.length - 2] === Symbol.for('.'))) {
         return equalp_(y, x);
     }
     else if (Array.isArray(x) && Array.isArray(y)) {

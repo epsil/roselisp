@@ -345,6 +345,9 @@
    ;; has to be handled here.
    ((eq? name "undefined")
     #u)
+   ;; Likewise, `NaN` is also parsed as an identifier.
+   ((eq? name "NaN")
+    NaN)
    (else
     (define sym
       (string->symbol name))

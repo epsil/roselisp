@@ -27,6 +27,48 @@ import {
   syntaxToDatum
 } from './rose';
 
+const [selfEvaluatingP, buildList]: any[] = ((): any => {
+  function selfEvaluatingP_(x: any): any {
+    return (typeof x === 'boolean') || Number.isFinite(x) || (typeof x === 'string') || ((): any => {
+      function keywordp_(obj: any): any {
+        return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+      }
+      return keywordp_;
+    })()(x) || (x === null) || (x === undefined);
+  }
+  function buildList_(n: any, proc: any): any {
+    return ((): any => {
+      function range_(start: any, end: any = undefined, step: any = undefined): any {
+        const startN: any = (end === undefined) ? 0 : start;
+        const endN: any = (end === undefined) ? start : end;
+        const stepN: any = step || 1;
+        let result: any = [];
+        for (let i: any = startN; (stepN < 0) ? (i > endN) : (i < endN); i = i + stepN) {
+          result.push(i);
+        }
+        return result;
+      }
+      return range_;
+    })()(0, n).map(function (x: any): any {
+      return proc(x);
+    });
+  }
+  function keywordp_(obj: any): any {
+    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+  }
+  function range_(start: any, end: any = undefined, step: any = undefined): any {
+    const startN: any = (end === undefined) ? 0 : start;
+    const endN: any = (end === undefined) ? start : end;
+    const stepN: any = step || 1;
+    let result: any = [];
+    for (let i: any = startN; (stepN < 0) ? (i > endN) : (i < endN); i = i + stepN) {
+      result.push(i);
+    }
+    return result;
+  }
+  return [selfEvaluatingP_, buildList_];
+})();
+
 /**
  * Get the value stored under `path` in the map `map`.
  */
@@ -69,7 +111,7 @@ function mapHasP(map: any, path: any): any {
 function mapSetX(map: any, path: any, value: any): any {
   const mapConstructor: any = map.constructor;
   const mapPath: any = path.slice(0, -1);
-  const mapKey: any = path.at(-1);
+  const mapKey: any = path[path.length - 1];
   let currentMap: any = map;
   for (let key of mapPath) {
     let currentValue: any = currentMap.get(key);
@@ -128,7 +170,7 @@ function makeUniqueSymbol(lst: any = [], prefix: any = Symbol.for('x')): any {
   const name: any = result.description as string;
   let i: any = 1;
   while (lst.includes(result)) {
-    result = Symbol.for(name + i + '');
+    result = Symbol.for(name + i.toString());
     i++;
   }
   return result;
@@ -369,7 +411,7 @@ function countTree(f: any, x: any): any {
  * Wrap a list of expressions in a `(begin ...)` expression.
  */
 function beginWrap(expressions: any): any {
-  if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions.at(-2) === Symbol.for('.')) && !Array.isArray(expressions.at(-1))))) {
+  if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions[expressions.length - 2] === Symbol.for('.')) && !Array.isArray(expressions[expressions.length - 1])))) {
     return expressions;
   } else {
     return [Symbol.for('begin'), ...expressions];
@@ -382,7 +424,7 @@ function beginWrap(expressions: any): any {
  * no wrapping is necessary.
  */
 function beginWrapSmart(expressions: any): any {
-  if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions.at(-2) === Symbol.for('.')) && !Array.isArray(expressions.at(-1))))) {
+  if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions[expressions.length - 2] === Symbol.for('.')) && !Array.isArray(expressions[expressions.length - 1])))) {
     return expressions;
   } else if (expressions.length === 1) {
     return expressions[0];
@@ -485,7 +527,7 @@ function argsMatchesParamsP(args: any, params: any): any {
 function listExpressionToPattern(exp: any): any {
   if (Array.isArray(exp)) {
     if (taggedListP(exp, [Symbol.for('list'), Symbol.for('values')])) {
-      if (exp.at(-1) === Symbol.for('...')) {
+      if (exp[exp.length - 1] === Symbol.for('...')) {
         const head: any = exp.slice(1).slice(0, -2);
         const tail: any = exp[exp.length - 2];
         return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
@@ -496,7 +538,7 @@ function listExpressionToPattern(exp: any): any {
       }
     } else if (taggedListP(exp, Symbol.for('list*'))) {
       const head: any = exp.slice(1).slice(0, -1);
-      const tail: any = exp.at(-1);
+      const tail: any = exp[exp.length - 1];
       if (head.length === 0) {
         return listExpressionToPattern(tail);
       } else {
@@ -523,6 +565,128 @@ function numberToLetter(n: any, start: any = 'a'): any {
   return String.fromCharCode(start.charCodeAt(0) + n);
 }
 
+/**
+ * Given a binary function expression, produce a new
+ * function expression that flips the argument order.
+ */
+function flipFunctionExpression(exp: any, x: any = Symbol.for('x'), y: any = Symbol.for('y')): any {
+  if (typeof exp === 'symbol') {
+    // Function expression is a symbol:
+    // wrap it in a `lambda` form that reverses
+    // the order of application.
+    return [Symbol.for('lambda'), [y, x], [exp, x, y]];
+  } else if (taggedListP(exp, [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]) && (exp[1].length >= 2)) {
+    // Function expression is a `lambda` form:
+    // swap the two first arguments.
+    return [Symbol.for('lambda'), [exp[1][1], exp[1][0], ...exp[1].slice(2)], ...exp.slice(2)];
+  } else {
+    // Function expression is a function call:
+    // pass it to a function that will
+    // swap the arguments.
+    // Curried **C** combinator, also known as `flip`.
+    // Only the first argument is curried here, but
+    // otherwise, this behaves similarly to Haskell's
+    // `flip`.
+    const CExp: any = [Symbol.for('lambda'), [Symbol.for('f')], [Symbol.for('lambda'), [y, x], [Symbol.for('f'), x, y]]];
+    return [CExp, exp];
+  }
+}
+
+/**
+ * Parse a parameter list into regular parameters
+ * and rest parameter, if any.
+ */
+function parseParamsList(params: any): any {
+  let regularParams: any = [];
+  let restParam: any = undefined;
+  if (typeof params === 'symbol') {
+    restParam = params;
+  } else if (Array.isArray(params) && (params.length >= 3) && (params[params.length - 2] === Symbol.for('.'))) {
+    regularParams = params.slice(0, -2);
+    restParam = params[params.length - 1];
+  } else {
+    regularParams = params;
+  }
+  return [regularParams, restParam];
+}
+
+/**
+ * Convert a `(define ...)` expression to
+ * a `(define-macro ...)` expression.
+ */
+function defineToDefineMacro(x: any, onceOnly: any = false): any {
+  const nameAndParams: any = x[1];
+  const name: any = nameAndParams[0];
+  const params: any = ((nameAndParams.length === 3) && (nameAndParams[1] === Symbol.for('.'))) ? nameAndParams[2] : nameAndParams.slice(1);
+  let [regularParams, restParam]: any[] = parseParamsList(params);
+  const macroParams: any = [...regularParams.map(function (x: any): any {
+    if (Array.isArray(x)) {
+      const param: any = x[0];
+      let value: any = x[1];
+      return [param, selfEvaluatingP(value) ? value : [Symbol.for('quote'), value]];
+    } else {
+      return x;
+    }
+  }), ...(restParam ? [Symbol.for('&rest'), restParam] : [])];
+  const macroNameAndParams: any = [name, ...(Array.isArray(macroParams) ? macroParams : [Symbol.for('.'), macroParams])];
+  const params1: any = [...regularParams.map(function (x: any): any {
+    if (Array.isArray(x)) {
+      return x[0];
+    } else {
+      return x;
+    }
+  }), ...(restParam ? [restParam] : [])];
+  const counts: any = buildList(params1.length, function (...args: any[]): any {
+    return 0;
+  });
+  const bodyForms: any = x.slice(2);
+  const macroBodyForms: any = mapTree(function (x: any): any {
+    if (typeof x === 'symbol') {
+      if (restParam && (x === restParam)) {
+        return [Symbol.for('list'), [Symbol.for('unquote-splicing'), x]];
+      } else if (params1.includes(x)) {
+        const idx: any = ((idx: any): any => {
+          if (idx >= 0) {
+            return idx;
+          } else {
+            return false;
+          }
+        })(params1.findIndex(function (y: any): any {
+          return y === x;
+        }));
+        if (idx >= 0) {
+          const count: any = (counts as any)[idx];
+          (counts as any)[idx] = count + 1;
+        }
+        return [Symbol.for('unquote'), x];
+      } else {
+        return x;
+      }
+    } else {
+      return x;
+    }
+  }, bodyForms);
+  const beginForm: any = (macroBodyForms.length === 1) ? macroBodyForms[0] : [Symbol.for('begin'), ...macroBodyForms];
+  const quasiquoteForm: any = !(Array.isArray(beginForm) && (beginForm.length > 0)) ? beginForm : (taggedListP(beginForm, Symbol.for('unquote')) ? beginForm[1] : [Symbol.for('quasiquote'), beginForm]);
+  let macroBody: any = quasiquoteForm;
+  if (onceOnly) {
+    const names: any = [];
+    const _end: any = counts.length;
+    for (let i: any = 0; i < _end; i++) {
+      const count: any = (counts as any)[i];
+      if (count > 1) {
+        const param: any = (params1 as any)[i];
+        names.push(param);
+      }
+    }
+    if (names.length > 0) {
+      const onceOnlyForm: any = [Symbol.for('once-only*'), names, quasiquoteForm];
+      macroBody = onceOnlyForm;
+    }
+  }
+  return [Symbol.for('define-macro'), macroNameAndParams, macroBody];
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
@@ -530,8 +694,10 @@ export {
   beginWrapSmart,
   colonFormP,
   countTree,
+  defineToDefineMacro,
   defineGeneric,
   defineMethod,
+  flipFunctionExpression,
   formp,
   kebabCaseToCamelCase,
   kebabCaseToSnakeCase,
@@ -545,6 +711,7 @@ export {
   mapSetX,
   mapTree,
   numberToLetter,
+  parseParamsList,
   quasiquotep,
   quotep,
   taggedListP,

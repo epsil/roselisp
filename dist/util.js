@@ -16,9 +16,50 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.defineMethod = exports.defineGeneric = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
+const [selfEvaluatingP, buildList] = (() => {
+    function selfEvaluatingP_(x) {
+        return (typeof x === 'boolean') || Number.isFinite(x) || (typeof x === 'string') || (() => {
+            function keywordp_(obj) {
+                return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+            }
+            return keywordp_;
+        })()(x) || (x === null) || (x === undefined);
+    }
+    function buildList_(n, proc) {
+        return (() => {
+            function range_(start, end = undefined, step = undefined) {
+                const startN = (end === undefined) ? 0 : start;
+                const endN = (end === undefined) ? start : end;
+                const stepN = step || 1;
+                let result = [];
+                for (let i = startN; (stepN < 0) ? (i > endN) : (i < endN); i = i + stepN) {
+                    result.push(i);
+                }
+                return result;
+            }
+            return range_;
+        })()(0, n).map(function (x) {
+            return proc(x);
+        });
+    }
+    function keywordp_(obj) {
+        return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+    }
+    function range_(start, end = undefined, step = undefined) {
+        const startN = (end === undefined) ? 0 : start;
+        const endN = (end === undefined) ? start : end;
+        const stepN = step || 1;
+        let result = [];
+        for (let i = startN; (stepN < 0) ? (i > endN) : (i < endN); i = i + stepN) {
+            result.push(i);
+        }
+        return result;
+    }
+    return [selfEvaluatingP_, buildList_];
+})();
 /**
  * Get the value stored under `path` in the map `map`.
  */
@@ -63,7 +104,7 @@ exports.mapHasP = mapHasP;
 function mapSetX(map, path, value) {
     const mapConstructor = map.constructor;
     const mapPath = path.slice(0, -1);
-    const mapKey = path.at(-1);
+    const mapKey = path[path.length - 1];
     let currentMap = map;
     for (let key of mapPath) {
         let currentValue = currentMap.get(key);
@@ -119,7 +160,7 @@ function makeUniqueSymbol(lst = [], prefix = Symbol.for('x')) {
     const name = result.description;
     let i = 1;
     while (lst.includes(result)) {
-        result = Symbol.for(name + i + '');
+        result = Symbol.for(name + i.toString());
         i++;
     }
     return result;
@@ -374,7 +415,7 @@ exports.countTree = countTree;
  * Wrap a list of expressions in a `(begin ...)` expression.
  */
 function beginWrap(expressions) {
-    if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions.at(-2) === Symbol.for('.')) && !Array.isArray(expressions.at(-1))))) {
+    if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions[expressions.length - 2] === Symbol.for('.')) && !Array.isArray(expressions[expressions.length - 1])))) {
         return expressions;
     }
     else {
@@ -388,7 +429,7 @@ exports.beginWrap = beginWrap;
  * no wrapping is necessary.
  */
 function beginWrapSmart(expressions) {
-    if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions.at(-2) === Symbol.for('.')) && !Array.isArray(expressions.at(-1))))) {
+    if (!(Array.isArray(expressions) && !((expressions.length >= 3) && (expressions[expressions.length - 2] === Symbol.for('.')) && !Array.isArray(expressions[expressions.length - 1])))) {
         return expressions;
     }
     else if (expressions.length === 1) {
@@ -499,7 +540,7 @@ function argsMatchesParamsP(args, params) {
 function listExpressionToPattern(exp) {
     if (Array.isArray(exp)) {
         if (taggedListP(exp, [Symbol.for('list'), Symbol.for('values')])) {
-            if (exp.at(-1) === Symbol.for('...')) {
+            if (exp[exp.length - 1] === Symbol.for('...')) {
                 const head = exp.slice(1).slice(0, -2);
                 const tail = exp[exp.length - 2];
                 return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
@@ -512,7 +553,7 @@ function listExpressionToPattern(exp) {
         }
         else if (taggedListP(exp, Symbol.for('list*'))) {
             const head = exp.slice(1).slice(0, -1);
-            const tail = exp.at(-1);
+            const tail = exp[exp.length - 1];
             if (head.length === 0) {
                 return listExpressionToPattern(tail);
             }
@@ -542,3 +583,135 @@ function numberToLetter(n, start = 'a') {
     return String.fromCharCode(start.charCodeAt(0) + n);
 }
 exports.numberToLetter = numberToLetter;
+/**
+ * Given a binary function expression, produce a new
+ * function expression that flips the argument order.
+ */
+function flipFunctionExpression(exp, x = Symbol.for('x'), y = Symbol.for('y')) {
+    if (typeof exp === 'symbol') {
+        // Function expression is a symbol:
+        // wrap it in a `lambda` form that reverses
+        // the order of application.
+        return [Symbol.for('lambda'), [y, x], [exp, x, y]];
+    }
+    else if (taggedListP(exp, [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]) && (exp[1].length >= 2)) {
+        // Function expression is a `lambda` form:
+        // swap the two first arguments.
+        return [Symbol.for('lambda'), [exp[1][1], exp[1][0], ...exp[1].slice(2)], ...exp.slice(2)];
+    }
+    else {
+        // Function expression is a function call:
+        // pass it to a function that will
+        // swap the arguments.
+        // Curried **C** combinator, also known as `flip`.
+        // Only the first argument is curried here, but
+        // otherwise, this behaves similarly to Haskell's
+        // `flip`.
+        const CExp = [Symbol.for('lambda'), [Symbol.for('f')], [Symbol.for('lambda'), [y, x], [Symbol.for('f'), x, y]]];
+        return [CExp, exp];
+    }
+}
+exports.flipFunctionExpression = flipFunctionExpression;
+/**
+ * Parse a parameter list into regular parameters
+ * and rest parameter, if any.
+ */
+function parseParamsList(params) {
+    let regularParams = [];
+    let restParam = undefined;
+    if (typeof params === 'symbol') {
+        restParam = params;
+    }
+    else if (Array.isArray(params) && (params.length >= 3) && (params[params.length - 2] === Symbol.for('.'))) {
+        regularParams = params.slice(0, -2);
+        restParam = params[params.length - 1];
+    }
+    else {
+        regularParams = params;
+    }
+    return [regularParams, restParam];
+}
+exports.parseParamsList = parseParamsList;
+/**
+ * Convert a `(define ...)` expression to
+ * a `(define-macro ...)` expression.
+ */
+function defineToDefineMacro(x, onceOnly = false) {
+    const nameAndParams = x[1];
+    const name = nameAndParams[0];
+    const params = ((nameAndParams.length === 3) && (nameAndParams[1] === Symbol.for('.'))) ? nameAndParams[2] : nameAndParams.slice(1);
+    let [regularParams, restParam] = parseParamsList(params);
+    const macroParams = [...regularParams.map(function (x) {
+            if (Array.isArray(x)) {
+                const param = x[0];
+                let value = x[1];
+                return [param, selfEvaluatingP(value) ? value : [Symbol.for('quote'), value]];
+            }
+            else {
+                return x;
+            }
+        }), ...(restParam ? [Symbol.for('&rest'), restParam] : [])];
+    const macroNameAndParams = [name, ...(Array.isArray(macroParams) ? macroParams : [Symbol.for('.'), macroParams])];
+    const params1 = [...regularParams.map(function (x) {
+            if (Array.isArray(x)) {
+                return x[0];
+            }
+            else {
+                return x;
+            }
+        }), ...(restParam ? [restParam] : [])];
+    const counts = buildList(params1.length, function (...args) {
+        return 0;
+    });
+    const bodyForms = x.slice(2);
+    const macroBodyForms = mapTree(function (x) {
+        if (typeof x === 'symbol') {
+            if (restParam && (x === restParam)) {
+                return [Symbol.for('list'), [Symbol.for('unquote-splicing'), x]];
+            }
+            else if (params1.includes(x)) {
+                const idx = ((idx) => {
+                    if (idx >= 0) {
+                        return idx;
+                    }
+                    else {
+                        return false;
+                    }
+                })(params1.findIndex(function (y) {
+                    return y === x;
+                }));
+                if (idx >= 0) {
+                    const count = counts[idx];
+                    counts[idx] = count + 1;
+                }
+                return [Symbol.for('unquote'), x];
+            }
+            else {
+                return x;
+            }
+        }
+        else {
+            return x;
+        }
+    }, bodyForms);
+    const beginForm = (macroBodyForms.length === 1) ? macroBodyForms[0] : [Symbol.for('begin'), ...macroBodyForms];
+    const quasiquoteForm = !(Array.isArray(beginForm) && (beginForm.length > 0)) ? beginForm : (taggedListP(beginForm, Symbol.for('unquote')) ? beginForm[1] : [Symbol.for('quasiquote'), beginForm]);
+    let macroBody = quasiquoteForm;
+    if (onceOnly) {
+        const names = [];
+        const _end = counts.length;
+        for (let i = 0; i < _end; i++) {
+            const count = counts[i];
+            if (count > 1) {
+                const param = params1[i];
+                names.push(param);
+            }
+        }
+        if (names.length > 0) {
+            const onceOnlyForm = [Symbol.for('once-only*'), names, quasiquoteForm];
+            macroBody = onceOnlyForm;
+        }
+    }
+    return [Symbol.for('define-macro'), macroNameAndParams, macroBody];
+}
+exports.defineToDefineMacro = defineToDefineMacro;

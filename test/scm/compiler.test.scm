@@ -8,7 +8,7 @@
                   compile
                   compile-modules
                   compile-with-environment
-                  definition->macro
+                  ;; definition->macro
                   split-comments))
 (require (only-in "../../src/ts/macros"
                   define-macro->lambda-form))
@@ -1249,46 +1249,13 @@ foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
 
 foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];"
 
- :describe "definition->macro"
- > (definition->macro
-     '(define (inc x)
-        (+ x 1))
-     '(1))
- '(+ 1 1)
- > (definition->macro
-     '(define (logical-or x)
-        (or x x))
-     '(#t))
- '(or #t #t)
- > (definition->macro
-     '(define (repeat x)
-        (string-append x x))
-     '("1"))
- '(string-append "1" "1")
- > (definition->macro
-     '(define (square x)
-        (* x x))
-     '(1))
- '(* 1 1)
- > (definition->macro
-     '(define (square x)
-        (* x x))
-     '(x))
- '(* x x)
- xit> (definition->macro
-        '(define (square x)
-           (* x x))
-        '((+ 1 1)))
- '((lambda (x)
-     (* x x))
-   (+ 1 1))
-
  :describe "define-macro->lambda-form"
  > (define-macro->lambda-form
      '(define-macro (foo x)
         x)
      (js/obj :exp 'exp :env 'env))
  '(lambda (exp env)
+    (declare (ftype "macro"))
     (define-values (x)
       (rest exp))
     x)
@@ -1297,6 +1264,7 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
         x)
      (js/obj :env 'env))
  '(lambda (expression env)
+    (declare (ftype "macro"))
     (define-values (x)
       (rest expression))
     x)
@@ -1304,11 +1272,13 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
      '(define-macro (foo &whole exp &environment env)
         exp))
  '(lambda (exp env)
+    (declare (ftype "macro"))
     exp)
  > (define-macro->lambda-form
      '(define-macro (foo &whole exp &environment env x)
         x))
  '(lambda (exp env)
+    (declare (ftype "macro"))
     (define-values (x)
       (rest exp))
     x)
@@ -1317,6 +1287,7 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
         x)
      (js/obj :exp 'exp :env 'env))
  '(lambda (exp env)
+    (declare (ftype "macro"))
     (define-values x
       (rest exp))
     x)
@@ -1325,8 +1296,20 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
         x)
      (js/obj :exp 'exp :env 'env))
  '(lambda (exp env)
+    (declare (ftype "macro"))
     (define-values (x . y)
       (rest exp))
+    x)
+ > (define-macro->lambda-form
+     '(define-macro (foo (x 1))
+        x)
+     (js/obj :exp 'exp :env 'env))
+ '(lambda (exp env)
+    (declare (ftype "macro"))
+    (define-values (x)
+      (rest exp))
+    (when (undefined? x)
+      (set! x 1))
     x)
 
  :describe "split-comments"

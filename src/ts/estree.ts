@@ -1968,7 +1968,7 @@ function estreeTypeP(node: any, typ: any): any {
     return false;
   } else if (node instanceof InternalPromise) {
     return false;
-  } else if (Array.isArray(typ) && !((typ.length >= 3) && (typ.at(-2) === Symbol.for('.')) && !Array.isArray(typ.at(-1)))) {
+  } else if (Array.isArray(typ) && !((typ.length >= 3) && (typ[typ.length - 2] === Symbol.for('.')) && !Array.isArray(typ[typ.length - 1]))) {
     return typ.findIndex(function (x: any): any {
       return estreeTypeP(node, x);
     }) >= 0;
@@ -1987,7 +1987,7 @@ estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol
  * Otherwise, a `Literal` is used.
  */
 function wrapInEstree(x: any, recursive: any = false): any {
-  if (recursive && Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !Array.isArray(x.at(-1)))) {
+  if (recursive && Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1]))) {
     return new ArrayExpression(x.map(function (x: any): any {
       return wrapInEstree(x, recursive);
     }));

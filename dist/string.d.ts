@@ -25,6 +25,7 @@
 declare function stringp_(x: any): any;
 declare namespace stringp_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * The length of a string.
@@ -32,6 +33,7 @@ declare namespace stringp_ {
 declare function stringLength_(x: any): any;
 declare namespace stringLength_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Concatenate one or more strings together.
@@ -43,6 +45,7 @@ declare namespace stringLength_ {
 declare function stringAppend_(...args: any[]): any;
 declare namespace stringAppend_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[][])[])[];
+    var compilerMacro: any;
 }
 /**
  * Get the character at a particular position in a string.
@@ -54,6 +57,7 @@ declare namespace stringAppend_ {
 declare function stringRef_(str: any, n: any): any;
 declare namespace stringRef_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Trim whitespace from the beginning and end of a string.
@@ -65,6 +69,7 @@ declare namespace stringRef_ {
 declare function stringTrim_(str: any, sep?: any, ...options: any[]): any;
 declare namespace stringTrim_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (string | symbol)[])[])[])[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Repeat a string `n` times.
@@ -72,6 +77,7 @@ declare namespace stringTrim_ {
 declare function stringRepeat_(str: any, n: any): any;
 declare namespace stringRepeat_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Join a list of strings, using `sep` as the separator.
@@ -83,6 +89,7 @@ declare namespace stringRepeat_ {
 declare function stringJoin_(lst: any, sep?: any): any;
 declare namespace stringJoin_ {
     var fsource: (symbol | (symbol | (string | symbol)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Split a string into a list of strings.
@@ -94,6 +101,7 @@ declare namespace stringJoin_ {
 declare function stringSplit_(str: any, sep?: any): any;
 declare namespace stringSplit_ {
     var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return a copy of `str` where `from` is replaced with `to`.
@@ -116,6 +124,7 @@ declare namespace stringReplace_ {
 declare function stringUpcase_(str: any): any;
 declare namespace stringUpcase_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Convert string to lower case.
@@ -127,6 +136,7 @@ declare namespace stringUpcase_ {
 declare function stringDowncase_(str: any): any;
 declare namespace stringDowncase_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return a substring of `str`, from `start` to `end`.
@@ -138,6 +148,7 @@ declare namespace stringDowncase_ {
 declare function substring_(str: any, start: any, end?: any): any;
 declare namespace substring_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Convert a string to a number.
@@ -149,6 +160,7 @@ declare namespace substring_ {
 declare function stringToNumber_(str: any): any;
 declare namespace stringToNumber_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Convert a number to a string.
@@ -159,13 +171,7 @@ declare namespace stringToNumber_ {
  */
 declare function numberToString_(n: any): any;
 declare namespace numberToString_ {
-    var fsource: (symbol | (string | symbol)[])[];
+    var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
-/**
- * Indent a string by prepending each line with `n` spaces.
- */
-declare function indentString(str: any, n?: any, options?: any): any;
-declare namespace indentString {
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
-}
-export { numberToString_ as numberToString, stringToNumber_ as stringToNumber, stringAppend_ as stringAppend, stringReplace_ as stringReplace, stringp_ as stringp, substring_ as substring, indentString, numberToString_, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringToNumber_, stringTrim_, stringUpcase_, stringp_, substring_ };
+export { numberToString_ as numberToString, stringToNumber_ as stringToNumber, stringAppend_ as stringAppend, stringReplace_ as stringReplace, stringp_ as stringp, substring_ as substring, numberToString_, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringToNumber_, stringTrim_, stringUpcase_, stringp_, substring_ };

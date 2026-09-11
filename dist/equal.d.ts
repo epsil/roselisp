@@ -26,6 +26,7 @@
 declare function eqp_(x: any, y: any): any;
 declare namespace eqp_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Loose equality.
@@ -39,6 +40,7 @@ declare namespace eqp_ {
 declare function eqvp_(x: any, y: any): any;
 declare namespace eqvp_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Structural equality.

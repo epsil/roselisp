@@ -32,6 +32,15 @@ function eqp_(x: any, y: any): any {
 
 eqp_.fsource = [Symbol.for('define'), [Symbol.for('eq?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
 
+eqp_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [x, y]: any[] = exp.slice(1);
+    return [Symbol.for('js/==='), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 /**
  * Loose equality.
  *
@@ -47,6 +56,15 @@ function eqvp_(x: any, y: any): any {
 
 eqvp_.fsource = [Symbol.for('define'), [Symbol.for('eqv?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/same-value?'), Symbol.for('x'), Symbol.for('y')]];
 
+eqvp_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [x, y]: any[] = exp.slice(1);
+    return [Symbol.for('js/same-value?'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 /**
  * Structural equality.
  *
@@ -57,20 +75,23 @@ eqvp_.fsource = [Symbol.for('define'), [Symbol.for('eqv?_'), Symbol.for('x'), Sy
  * [cl:equal]: http://clhs.lisp.se/Body/f_equal.htm#equal
  */
 function equalp_(x: any, y: any): any {
+  // TODO: Define compiler macro for this function. Many cases
+  // can be compiled to code that does not invoke `equal?` at all
+  // (e.g., `(equal x '())` is the same as `(null? x)`).
   if (x === y) {
     // Compare equivalent values.
     return true;
-  } else if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && Array.isArray(y)) {
+  } else if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && Array.isArray(y)) {
     // Compare dotted lists.
     const cdrX: any = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
-    if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX.at(-2) === Symbol.for('.')))) {
+    if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX[cdrX.length - 2] === Symbol.for('.')))) {
       return false;
     } else if (equalp_(x[0], y[0])) {
       return equalp_(cdrX, ((y.length === 3) && (y[1] === Symbol.for('.'))) ? y[2] : y.slice(1));
     } else {
       return false;
     }
-  } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y.at(-2) === Symbol.for('.'))) {
+  } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y[y.length - 2] === Symbol.for('.'))) {
     return equalp_(y, x);
   } else if (Array.isArray(x) && Array.isArray(y)) {
     // Compare lists.

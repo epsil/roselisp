@@ -38,21 +38,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.popRightX = exports.popLeftX = exports.popx_ = exports.popx = exports.pairp = exports.consp_ = exports.consp = exports.nullp = exports.nthcdr = exports.dottedListNthcdr_ = exports.dottedListNthcdr = exports.nth = exports.dottedListNth_ = exports.dottedListNth = exports.ninth = exports.nbutlast = exports.makePair = exports.makeList = exports.makeDottedList = exports.list = exports.properListP = exports.listp = exports.listStar = exports.length = exports.last = exports.lastPair = exports.lastCons_ = exports.lastCdr = exports.dottedListLastCdr_ = exports.improperListP = exports.fourth = exports.flatten = exports.head_ = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.drop = exports.dropRight = exports.dottedListP = exports.cons = exports.circularListP = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.buildList = exports.append = void 0;
 exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedProperListP_ = exports.dottedPairP_ = exports.dottedPairCdr_ = exports.dottedListP_ = exports.dottedListThird_ = exports.dottedListLink_ = exports.dottedListTenth_ = exports.dottedListTail_ = exports.dottedListSixth_ = exports.dottedListSeventh_ = exports.dottedListSet_ = exports.dottedListSetX_ = exports.dottedListSecond_ = exports.dottedListRef_ = exports.dottedListParse_ = exports.dottedListNinth_ = exports.dottedListLength_ = exports.dottedListLast_ = exports.dottedListHead_ = exports.dottedListFourth_ = exports.dottedListFirst_ = exports.dottedListFifth_ = exports.dottedListEighth_ = exports.dottedListToList_ = exports.dottedImproperListP_ = exports.cons_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.append_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = void 0;
 exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.reversex_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.pairp_ = exports.pairOrListP_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = exports.list_ = exports.listp_ = exports.listTail_ = exports.listStar_ = exports.listSet_ = exports.listSetX_ = exports.listRef_ = exports.listToDottedList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = void 0;
-const [lastCdr, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListLength, dottedListLast] = (() => {
+const env_1 = require("./env");
+const util_1 = require("./util");
+const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListLength, dottedListLast] = (() => {
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
             return undefined;
         }
-        else if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+        else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
             let result = lst;
-            while (Array.isArray(result) && (result.length >= 3) && (result.at(-2) === Symbol.for('.'))) {
-                result = result.at(-1);
+            while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
+                result = result[result.length - 1];
             }
             return result;
         }
         else {
             return [];
         }
+    }
+    function selfEvaluatingP_(x) {
+        return (typeof x === 'boolean') || Number.isFinite(x) || (typeof x === 'string') || (() => {
+            function keywordp_(obj) {
+                return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+            }
+            return keywordp_;
+        })()(x) || (x === null) || (x === undefined);
     }
     function range_(start, end = undefined, step = undefined) {
         const startN = (end === undefined) ? 0 : start;
@@ -94,26 +104,29 @@ const [lastCdr, range, dottedListSecond, dottedListThird, dottedListFourth, dott
     function dottedListLength_(lst) {
         let len = 0;
         let current = lst;
-        while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
+        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
             len = len + (lst.length - 2);
-            current = current.at(-1);
+            current = current[current.length - 1];
         }
         return len;
     }
     function dottedListLast_(lst) {
         let current = lst;
         let result = undefined;
-        while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.')) && !((x) => {
+        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => {
             return Array.isArray(x) && (x.length === 0);
         })(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
             current = ((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1);
         }
-        if (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
+        if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
             result = current[current.length - 3];
         }
         return result;
     }
-    return [lastCdr_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListLength_, dottedListLast_];
+    function keywordp_(obj) {
+        return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+    }
+    return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListLength_, dottedListLast_];
 })();
 /**
  * Whether something is a pair, i.e., a cons cell.
@@ -133,6 +146,22 @@ exports.consp_ = pairp_;
 exports.pairp = pairp_;
 exports.pairp_ = pairp_;
 pairp_.fsource = [Symbol.for('define'), [Symbol.for('pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
+pairp_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        if (!(Array.isArray(x) && (x.length > 0))) {
+            return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>'), [Symbol.for('array-length'), x], 0]];
+        }
+        else {
+            const x1 = Symbol('x');
+            return [Symbol.for('let'), [[x1, x]], ((x) => {
+                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>'), [Symbol.for('array-length'), x], 0]];
+                })(x1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Whether something is the empty list.
  *
@@ -146,6 +175,22 @@ function nullp_(x) {
 exports.nullp = nullp_;
 exports.nullp_ = nullp_;
 nullp_.fsource = [Symbol.for('define'), [Symbol.for('null?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
+nullp_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        if (!(Array.isArray(x) && (x.length > 0))) {
+            return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 0]];
+        }
+        else {
+            const x1 = Symbol('x');
+            return [Symbol.for('let'), [[x1, x]], ((x) => {
+                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 0]];
+                })(x1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Whether something is a list.
  *
@@ -166,6 +211,31 @@ exports.properListP = listp_;
 exports.listp_ = listp_;
 listp_.fsource = [Symbol.for('define'), [Symbol.for('list?_'), Symbol.for('x')], [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]];
 /**
+ * Compiler macro for `(list? ...)` expressions.
+ */
+listp_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('list?'), x];
+        }
+        else {
+            if (!(Array.isArray(x) && (x.length > 0))) {
+                return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('not'), [Symbol.for('array?'), [Symbol.for('array-last'), x]]]]]];
+            }
+            else {
+                const x1 = Symbol('x');
+                return [Symbol.for('let'), [[x1, x]], ((x) => {
+                        return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('not'), [Symbol.for('array?'), [Symbol.for('array-last'), x]]]]]];
+                    })(x1)];
+            }
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Whether something is a pair or a list.
  *
  * Similar to [`listp` in Common Lisp][cl:listp] and
@@ -180,6 +250,17 @@ function pairOrListP_(x) {
 }
 exports.pairOrListP_ = pairOrListP_;
 pairOrListP_.fsource = [Symbol.for('define'), [Symbol.for('pair-or-list?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('pair?'), Symbol.for('x')], [Symbol.for('null?'), Symbol.for('x')]]];
+/**
+ * Compiler macro for `(pair-or-list? ...)` expressions.
+ */
+pairOrListP_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        return [Symbol.for('array?'), x];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Make a list.
  *
@@ -213,6 +294,25 @@ exports.cons = cons_;
 exports.cons_ = cons_;
 cons_.fsource = [Symbol.for('define'), [Symbol.for('cons_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote-splicing'), [Symbol.for('dotted-list-link'), Symbol.for('y')]]]]];
 /**
+ * Compiler macro for `(cons ...)` expressions.
+ */
+cons_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x, y] = exp.slice(1);
+        if (selfEvaluatingP(y)) {
+            return [Symbol.for('quasiquote'), [[Symbol.for('unquote'), x], Symbol.for('.'), [Symbol.for('unquote'), y]]];
+        }
+        else if ((0, util_1.taggedListP)(y, Symbol.for('list')) || ((0, util_1.taggedListP)(y, Symbol.for('list*')) && (y.length > 2)) || ((0, util_1.taggedListP)(y, [Symbol.for('quote'), Symbol.for('quasiquote')]) && Array.isArray(y[1]))) {
+            return [Symbol.for('quasiquote'), [[Symbol.for('unquote'), x], [Symbol.for('unquote-splicing'), y]]];
+        }
+        else {
+            return [Symbol.for('quasiquote'), [[Symbol.for('unquote'), x], [Symbol.for('unquote-splicing'), [Symbol.for('dotted-list-link'), y]]]];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Make a dotted list. Like `list`, but the final argument
  * is used as the tail, instead of as the final element.
  *
@@ -236,7 +336,7 @@ function listStar_(...args) {
         return args[0];
     }
     else {
-        const tailLst = args.at(-1);
+        const tailLst = args[args.length - 1];
         const headLst = args.slice(0, -1);
         if (Array.isArray(tailLst)) {
             // Make a proper list if possible.
@@ -343,6 +443,23 @@ exports.head_ = first_;
 exports.first_ = first_;
 first_.fsource = [Symbol.for('define'), [Symbol.for('first_'), Symbol.for('lst')], [Symbol.for('array-first'), Symbol.for('lst')]];
 /**
+ * Compiler macro for `(first ...)` expressions.
+ */
+first_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('first'), x];
+        }
+        else {
+            return [Symbol.for('array-first'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the second element of a list.
  *
  * Similar to [`second` in Racket][rkt:second].
@@ -350,7 +467,7 @@ first_.fsource = [Symbol.for('define'), [Symbol.for('first_'), Symbol.for('lst')
  * [rkt:second]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._second%29%29
  */
 function second_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListSecond(lst);
     }
     else {
@@ -362,6 +479,23 @@ exports.second = second_;
 exports.second_ = second_;
 second_.fsource = [Symbol.for('define'), [Symbol.for('second_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-second'), Symbol.for('lst')], [Symbol.for('array-second'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(second ...)` expressions.
+ */
+second_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('second'), x];
+        }
+        else {
+            return [Symbol.for('array-second'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the third element of a list.
  *
  * Similar to [`third` in Racket][rkt:third].
@@ -369,7 +503,7 @@ second_.fsource = [Symbol.for('define'), [Symbol.for('second_'), Symbol.for('lst
  * [rkt:third]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._third%29%29
  */
 function third_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListThird(lst);
     }
     else {
@@ -380,6 +514,23 @@ exports.third = third_;
 exports.third_ = third_;
 third_.fsource = [Symbol.for('define'), [Symbol.for('third_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-third'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(third ...)` expressions.
+ */
+third_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('third'), x];
+        }
+        else {
+            return [Symbol.for('array-third'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the fourth element of a list.
  *
  * Similar to [`fourth` in Racket][rkt:fourth].
@@ -387,7 +538,7 @@ third_.fsource = [Symbol.for('define'), [Symbol.for('third_'), Symbol.for('lst')
  * [rkt:fourth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._fourth%29%29
  */
 function fourth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListFourth(lst);
     }
     else {
@@ -398,6 +549,23 @@ exports.fourth = fourth_;
 exports.fourth_ = fourth_;
 fourth_.fsource = [Symbol.for('define'), [Symbol.for('fourth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-fourth'), Symbol.for('lst')], [Symbol.for('array-fourth'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(fourth ...)` expressions.
+ */
+fourth_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('fourth'), x];
+        }
+        else {
+            return [Symbol.for('array-fourth'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the fifth element of a list.
  *
  * Similar to [`fifth` in Racket][rkt:fifth].
@@ -405,7 +573,7 @@ fourth_.fsource = [Symbol.for('define'), [Symbol.for('fourth_'), Symbol.for('lst
  * [rkt:fifth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._fifth%29%29
  */
 function fifth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListFifth(lst);
     }
     else {
@@ -416,6 +584,23 @@ exports.fifth = fifth_;
 exports.fifth_ = fifth_;
 fifth_.fsource = [Symbol.for('define'), [Symbol.for('fifth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-fifth'), Symbol.for('lst')], [Symbol.for('array-fifth'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(fifth ...)` expressions.
+ */
+fifth_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('fifth'), x];
+        }
+        else {
+            return [Symbol.for('array-fifth'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the sixth element of a list.
  *
  * Similar to [`sixth` in Racket][rkt:sixth].
@@ -423,7 +608,7 @@ fifth_.fsource = [Symbol.for('define'), [Symbol.for('fifth_'), Symbol.for('lst')
  * [rkt:sixth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._sixth%29%29
  */
 function sixth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListSixth(lst);
     }
     else {
@@ -434,6 +619,23 @@ exports.sixth = sixth_;
 exports.sixth_ = sixth_;
 sixth_.fsource = [Symbol.for('define'), [Symbol.for('sixth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-sixth'), Symbol.for('lst')], [Symbol.for('array-sixth'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(sixth ...)` expressions.
+ */
+sixth_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('sixth'), x];
+        }
+        else {
+            return [Symbol.for('array-sixth'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the seventh element of a list.
  *
  * Similar to [`seventh` in Racket][rkt:seventh].
@@ -441,7 +643,7 @@ sixth_.fsource = [Symbol.for('define'), [Symbol.for('sixth_'), Symbol.for('lst')
  * [rkt:seventh]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._seventh%29%29
  */
 function seventh_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListSeventh(lst);
     }
     else {
@@ -452,6 +654,23 @@ exports.seventh = seventh_;
 exports.seventh_ = seventh_;
 seventh_.fsource = [Symbol.for('define'), [Symbol.for('seventh_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-seventh'), Symbol.for('lst')], [Symbol.for('array-seventh'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(seventh ...)` expressions.
+ */
+seventh_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('seventh'), x];
+        }
+        else {
+            return [Symbol.for('array-seventh'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the eighth element of a list.
  *
  * Similar to [`eighth` in Racket][rkt:eighth].
@@ -459,7 +678,7 @@ seventh_.fsource = [Symbol.for('define'), [Symbol.for('seventh_'), Symbol.for('l
  * [rkt:eighth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._eighth%29%29
  */
 function eighth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListEighth(lst);
     }
     else {
@@ -470,6 +689,23 @@ exports.eighth = eighth_;
 exports.eighth_ = eighth_;
 eighth_.fsource = [Symbol.for('define'), [Symbol.for('eighth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-eighth'), Symbol.for('lst')], [Symbol.for('array-eighth'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(eighth ...)` expressions.
+ */
+eighth_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('eighth'), x];
+        }
+        else {
+            return [Symbol.for('array-eighth'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the ninth element of a list.
  *
  * Similar to [`ninth` in Racket][rkt:ninth].
@@ -477,7 +713,7 @@ eighth_.fsource = [Symbol.for('define'), [Symbol.for('eighth_'), Symbol.for('lst
  * [rkt:ninth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._ninth%29%29
  */
 function ninth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListNinth(lst);
     }
     else {
@@ -488,6 +724,23 @@ exports.ninth = ninth_;
 exports.ninth_ = ninth_;
 ninth_.fsource = [Symbol.for('define'), [Symbol.for('ninth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-ninth'), Symbol.for('lst')], [Symbol.for('array-ninth'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(ninth ...)` expressions.
+ */
+ninth_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('ninth'), x];
+        }
+        else {
+            return [Symbol.for('array-ninth'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the tenth element of a list.
  *
  * Similar to [`tenth` in Racket][rkt:tenth].
@@ -495,7 +748,7 @@ ninth_.fsource = [Symbol.for('define'), [Symbol.for('ninth_'), Symbol.for('lst')
  * [rkt:tenth]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._tenth%29%29
  */
 function tenth_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListTenth(lst);
     }
     else {
@@ -505,6 +758,23 @@ function tenth_(lst) {
 exports.tenth = tenth_;
 exports.tenth_ = tenth_;
 tenth_.fsource = [Symbol.for('define'), [Symbol.for('tenth_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-tenth'), Symbol.for('lst')], [Symbol.for('array-tenth'), Symbol.for('lst')]]];
+/**
+ * Compiler macro for `(tenth ...)` expressions.
+ */
+tenth_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('tenth'), x];
+        }
+        else {
+            return [Symbol.for('array-tenth'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the tail of a list.
  *
@@ -531,6 +801,31 @@ exports.tail_ = cdr_;
 exports.cdr_ = cdr_;
 cdr_.fsource = [Symbol.for('define'), [Symbol.for('cdr_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-pair?'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')], [Symbol.for('array-rest'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(cdr ...)` expressions.
+ */
+cdr_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('cdr'), x];
+        }
+        else {
+            if (!(Array.isArray(x) && (x.length > 0))) {
+                return [Symbol.for('js/?'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]], [Symbol.for('array-third'), x], [Symbol.for('array-rest'), x]];
+            }
+            else {
+                const x1 = Symbol('x');
+                return [Symbol.for('let'), [[x1, x]], ((x) => {
+                        return [Symbol.for('js/?'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]], [Symbol.for('array-third'), x], [Symbol.for('array-rest'), x]];
+                    })(x1)];
+            }
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the tail of a list.
  *
  * Similar to [`rest` in Racket][rkt:rest].
@@ -549,11 +844,28 @@ exports.rest = rest_;
 exports.rest_ = rest_;
 rest_.fsource = [Symbol.for('define'), [Symbol.for('rest_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-pair?'), Symbol.for('lst')], [Symbol.for('array-third'), Symbol.for('lst')], [Symbol.for('array-rest'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(rest ...)` expressions.
+ */
+rest_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('rest'), x];
+        }
+        else {
+            return [Symbol.for('array-rest'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Access the list element indicated by
  * one or more `indices`.
  */
 function listRef_(lst, ...indices) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListRef_(lst, ...indices);
     }
     else {
@@ -566,6 +878,23 @@ function listRef_(lst, ...indices) {
 }
 exports.listRef_ = listRef_;
 listRef_.fsource = [Symbol.for('define'), [Symbol.for('list-ref_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-ref_'), Symbol.for('lst'), Symbol.for('indices')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-ref'), Symbol.for('lst'), Symbol.for('i')]]], Symbol.for('result')]]];
+/**
+ * Compiler macro for `(list-ref ...)` expressions.
+ */
+listRef_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, ...indices] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('list-ref'), lst, ...indices];
+        }
+        else {
+            return [Symbol.for('array-ref'), lst, ...indices];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the `n`-th element of a list.
  *
@@ -584,11 +913,28 @@ exports.nth = nth_;
 exports.nth_ = nth_;
 nth_.fsource = [Symbol.for('define'), [Symbol.for('nth_'), Symbol.for('n'), Symbol.for('lst')], [Symbol.for('list-ref_'), Symbol.for('lst'), Symbol.for('n')]];
 /**
+ * Compiler macro for `(nth ...)` expressions.
+ */
+nth_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [n, lst] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('nth'), n, lst];
+        }
+        else {
+            return [Symbol.for('list-ref'), lst, n];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Set a list position to a given value.
  * Returns a new list.
  */
 function listSet_(lst, ...indicesAndValue) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListSet_(lst, ...indicesAndValue);
     }
     else {
@@ -611,14 +957,14 @@ listSet_.fsource = [Symbol.for('define'), [Symbol.for('list-set_'), Symbol.for('
  * Modifies the original list.
  */
 function listSetX_(lst, ...indicesAndValue) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListSetX_(lst, ...indicesAndValue);
     }
     else {
         const indices = indicesAndValue.slice(0, -1);
         const firstIndices = indices.slice(0, -1);
-        let lastIndex = indices.at(-1);
-        const value = indicesAndValue.at(-1);
+        let lastIndex = indices[indices.length - 1];
+        const value = indicesAndValue[indicesAndValue.length - 1];
         let lst1 = lst;
         for (let i of firstIndices) {
             lst1 = lst1[i];
@@ -629,6 +975,23 @@ function listSetX_(lst, ...indicesAndValue) {
 }
 exports.listSetX_ = listSetX_;
 listSetX_.fsource = [Symbol.for('define'), [Symbol.for('list-set!_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-set!_'), Symbol.for('lst'), Symbol.for('indices-and-value')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('drop-right'), Symbol.for('indices-and-value'), 1]], [Symbol.for('define'), Symbol.for('first-indices'), [Symbol.for('drop-right'), Symbol.for('indices'), 1]], [Symbol.for('define'), Symbol.for('last-index'), [Symbol.for('last'), Symbol.for('indices')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('last'), Symbol.for('indices-and-value')]], [Symbol.for('define'), Symbol.for('lst1'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('first-indices')]], [Symbol.for('set!'), Symbol.for('lst1'), [Symbol.for('list-ref'), Symbol.for('lst1'), Symbol.for('i')]]], [Symbol.for('array-set!'), Symbol.for('lst1'), Symbol.for('last-index'), Symbol.for('value')], Symbol.for('value')]]];
+/**
+ * Compiler macro for `(list-set! ...)` expressions.
+ */
+listSetX_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, ...indicesAndValue] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('list-set!'), lst, ...indicesAndValue];
+        }
+        else {
+            return [Symbol.for('array-set!'), lst, ...indicesAndValue];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the `n`-th CDR element of a list.
  */
@@ -678,6 +1041,34 @@ exports.take = take_;
 exports.take_ = take_;
 take_.fsource = [Symbol.for('define'), [Symbol.for('take_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('drop-right'), Symbol.for('lst'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('lst')], Symbol.for('n')]]];
 /**
+ * Compiler macro for `(take ...)` expressions.
+ */
+take_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, n] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('take'), lst, n];
+        }
+        else if (n === 0) {
+            return [];
+        }
+        else {
+            if (!(Array.isArray(lst) && (lst.length > 0))) {
+                return [Symbol.for('drop-right'), lst, [Symbol.for('-'), [Symbol.for('length'), lst], n]];
+            }
+            else {
+                const lst1 = Symbol('lst');
+                return [Symbol.for('let'), [[lst1, lst]], ((lst) => {
+                        return [Symbol.for('drop-right'), lst, [Symbol.for('-'), [Symbol.for('length'), lst], n]];
+                    })(lst1)];
+            }
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the list obtained by dropping
  * the first `n` elements from `lst`.
  *
@@ -691,6 +1082,23 @@ function drop_(lst, n) {
 exports.drop = drop_;
 exports.drop_ = drop_;
 drop_.fsource = [Symbol.for('define'), [Symbol.for('drop_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop'), Symbol.for('lst'), Symbol.for('n')]];
+/**
+ * Compiler macro for `(drop ...)` expressions.
+ */
+drop_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, n] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('drop'), lst, n];
+        }
+        else {
+            return [Symbol.for('array-drop'), lst, n];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the list obtained by dropping
  * the last `n` elements from `lst`.
@@ -706,6 +1114,23 @@ exports.dropRight = dropRight_;
 exports.dropRight_ = dropRight_;
 dropRight_.fsource = [Symbol.for('define'), [Symbol.for('drop-right_'), Symbol.for('lst'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('lst'), Symbol.for('n')]];
 /**
+ * Compiler macro for `(drop-right ...)` expressions.
+ */
+dropRight_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, n] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('drop-right'), lst, n];
+        }
+        else {
+            return [Symbol.for('array-drop-right'), lst, n];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Reverse the order of a list.
  * Returns a new list.
  *
@@ -720,6 +1145,23 @@ exports.reverse = reverse_;
 exports.reverse_ = reverse_;
 reverse_.fsource = [Symbol.for('define'), [Symbol.for('reverse_'), Symbol.for('lst')], [Symbol.for('array-reverse'), Symbol.for('lst')]];
 /**
+ * Compiler macro for `(reverse ...)` expressions.
+ */
+reverse_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('reverse'), lst];
+        }
+        else {
+            return [Symbol.for('array-reverse'), lst];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Reverse the order of a list.
  */
 function reversex_(lst) {
@@ -727,6 +1169,14 @@ function reversex_(lst) {
 }
 exports.reversex_ = reversex_;
 reversex_.fsource = [Symbol.for('define'), [Symbol.for('reverse!_'), Symbol.for('lst')], [Symbol.for('array-reverse!'), Symbol.for('lst')]];
+reversex_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst] = exp.slice(1);
+        return [Symbol.for('array-reverse!'), lst];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return a list where the last `n` conses have been omitted.
  *
@@ -780,6 +1230,14 @@ exports.popx_ = popLeftX_;
 exports.popLeftX = popLeftX_;
 exports.popLeftX_ = popLeftX_;
 popLeftX_.fsource = [Symbol.for('define'), [Symbol.for('pop-left!_'), Symbol.for('lst')], [Symbol.for('array-pop-left!'), Symbol.for('lst')]];
+popLeftX_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst] = exp.slice(1);
+        return [Symbol.for('array-pop-left!'), lst];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Pop an element off the end of a list.
  *
@@ -793,6 +1251,14 @@ function popRightX_(lst) {
 exports.popRightX = popRightX_;
 exports.popRightX_ = popRightX_;
 popRightX_.fsource = [Symbol.for('define'), [Symbol.for('pop-right!_'), Symbol.for('lst')], [Symbol.for('array-pop-right!'), Symbol.for('lst')]];
+popRightX_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst] = exp.slice(1);
+        return [Symbol.for('array-pop-right!'), lst];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Push an element onto the beginning of a list.
  *
@@ -808,6 +1274,14 @@ exports.pushx = pushLeftX_;
 exports.pushLeftX = pushLeftX_;
 exports.pushLeftX_ = pushLeftX_;
 pushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('push-left!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-left!'), Symbol.for('lst'), Symbol.for('x')]];
+pushLeftX_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, x] = exp.slice(1);
+        return [Symbol.for('array-push-left!'), lst, x];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Push an element onto the end of a list.
  *
@@ -823,6 +1297,14 @@ exports.appendToList = pushRightX_;
 exports.pushRightX = pushRightX_;
 exports.pushRightX_ = pushRightX_;
 pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-right!'), Symbol.for('lst'), Symbol.for('x')]];
+pushRightX_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, x] = exp.slice(1);
+        return [Symbol.for('array-push-right!'), lst, x];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the length of a list.
  *
@@ -833,7 +1315,7 @@ pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol
  * [cl:length]: http://clhs.lisp.se/Body/f_length.htm#length
  */
 function length_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListLength(lst);
     }
     else {
@@ -844,6 +1326,23 @@ exports.length = length_;
 exports.length_ = length_;
 length_.fsource = [Symbol.for('define'), [Symbol.for('length_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-length'), Symbol.for('lst')], [Symbol.for('array-length'), Symbol.for('lst')]]];
 /**
+ * Compiler macro for `(length ...)` expressions.
+ */
+length_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('length'), x];
+        }
+        else {
+            return [Symbol.for('js/length'), x];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the last element of a list.
  *
  * Similar to [`last` in Racket][rkt:last].
@@ -851,16 +1350,33 @@ length_.fsource = [Symbol.for('define'), [Symbol.for('length_'), Symbol.for('lst
  * [rkt:last]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._last%29%29
  */
 function last_(lst) {
-    if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         return dottedListLast(lst);
     }
     else {
-        return lst.at(-1);
+        return lst[lst.length - 1];
     }
 }
 exports.last = last_;
 exports.last_ = last_;
 last_.fsource = [Symbol.for('define'), [Symbol.for('last_'), Symbol.for('lst')], [Symbol.for('if'), [Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('dotted-list-last'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]]];
+/**
+ * Compiler macro for `(last ...)` expressions.
+ */
+last_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst] = exp.slice(1);
+        const { fdottedlists } = (0, env_1.currentCompilationOptions)();
+        if (fdottedlists) {
+            return [Symbol.for('funcall'), Symbol.for('last'), lst];
+        }
+        else {
+            return [Symbol.for('array-last'), lst];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the last pair of a list.
  *
@@ -877,13 +1393,13 @@ function lastPair_(lst) {
     else if (Array.isArray(lst) && (lst.length === 0)) {
         return lst;
     }
-    else if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         let current = lst;
         let result = undefined;
-        while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.')) && !((x) => {
+        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => {
             return Array.isArray(x) && (x.length === 0);
-        })(current.at(-1))) {
-            current = current.at(-1);
+        })(current[current.length - 1])) {
+            current = current[current.length - 1];
         }
         return result;
     }
@@ -902,10 +1418,10 @@ function lastCdr_(lst) {
     if (!Array.isArray(lst)) {
         return undefined;
     }
-    else if (Array.isArray(lst) && (lst.length >= 3) && (lst.at(-2) === Symbol.for('.'))) {
+    else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         let result = lst;
-        while (Array.isArray(result) && (result.length >= 3) && (result.at(-2) === Symbol.for('.'))) {
-            result = result.at(-1);
+        while (Array.isArray(result) && (result.length >= 3) && (result[result.length - 2] === Symbol.for('.'))) {
+            result = result[result.length - 1];
         }
         return result;
     }
@@ -944,7 +1460,7 @@ function setCdrX_(x, y) {
     if (Array.isArray(x) && (x.length === 0)) {
     }
     else if (x === y) {
-        if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'))) {
+        if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'))) {
             x[x.length - 1] = y;
         }
         else {
@@ -979,11 +1495,27 @@ setCdrX_.fsource = [Symbol.for('define'), [Symbol.for('set-cdr!_'), Symbol.for('
  * [rkt:dotted-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#dotted-list-p
  */
 function dottedListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'));
+    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'));
 }
 exports.dottedListP = dottedListP_;
 exports.dottedListP_ = dottedListP_;
 dottedListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]]]];
+dottedListP_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        if (!(Array.isArray(x) && (x.length > 0))) {
+            return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]]];
+        }
+        else {
+            const x1 = Symbol('x');
+            return [Symbol.for('let'), [[x1, x]], ((x) => {
+                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]]];
+                })(x1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Whether something is a dotted pair.
  */
@@ -992,12 +1524,28 @@ function dottedPairP_(x) {
 }
 exports.dottedPairP_ = dottedPairP_;
 dottedPairP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), Symbol.for('x'), 1], [Symbol.for('quote'), Symbol.for('.')]]]];
+dottedPairP_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        if (!(Array.isArray(x) && (x.length > 0))) {
+            return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]];
+        }
+        else {
+            const x1 = Symbol('x');
+            return [Symbol.for('let'), [[x1, x]], ((x) => {
+                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]];
+                })(x1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Whether something is a proper dotted list.
  */
 function dottedProperListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && ((x) => {
-        return Array.isArray(x) && (x.length === 0);
+    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && ((x1) => {
+        return Array.isArray(x1) && (x1.length === 0);
     })(lastCdr(x));
 }
 exports.dottedProperListP_ = dottedProperListP_;
@@ -1006,8 +1554,8 @@ dottedProperListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-proper-l
  * Whether something is an improper dotted list.
  */
 function dottedImproperListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !((x) => {
-        return Array.isArray(x) && (x.length === 0);
+    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !((x1) => {
+        return Array.isArray(x1) && (x1.length === 0);
     })(lastCdr(x));
 }
 exports.dottedImproperListP_ = dottedImproperListP_;
@@ -1020,14 +1568,30 @@ function dottedListHead_(lst) {
 }
 exports.dottedListHead_ = dottedListHead_;
 dottedListHead_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-head_'), Symbol.for('lst')], [Symbol.for('array-drop-right'), Symbol.for('lst'), 2]];
+dottedListHead_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst] = exp.slice(1);
+        return [Symbol.for('array-drop-right'), lst, 2];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the tail of a dotted list.
  */
 function dottedListTail_(lst) {
-    return lst.at(-1);
+    return lst[lst.length - 1];
 }
 exports.dottedListTail_ = dottedListTail_;
 dottedListTail_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tail_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
+dottedListTail_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst] = exp.slice(1);
+        return [Symbol.for('array-last'), lst];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Create a dotted list link.
  */
@@ -1041,6 +1605,33 @@ function dottedListLink_(x) {
 }
 exports.dottedListLink_ = dottedListLink_;
 dottedListLink_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-link_'), Symbol.for('x')], [Symbol.for('if'), [Symbol.for('pair-or-list?'), Symbol.for('x')], Symbol.for('x'), [Symbol.for('list'), [Symbol.for('quote'), Symbol.for('.')], Symbol.for('x')]]];
+/**
+ * Compiler macro for `(dotted-list-link ...)` expressions.
+ */
+dottedListLink_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        if (selfEvaluatingP(x)) {
+            return [Symbol.for('.'), x];
+        }
+        else if ((0, util_1.taggedListP)(x, Symbol.for('list')) || ((0, util_1.taggedListP)(x, Symbol.for('list*')) && (x.length > 2)) || ((0, util_1.taggedListP)(x, [Symbol.for('quote'), Symbol.for('quasiquote')]) && Array.isArray(x[1]))) {
+            return x;
+        }
+        else {
+            if (!(Array.isArray(x) && (x.length > 0))) {
+                return [Symbol.for('js/?'), [Symbol.for('pair-or-list?'), x], x, [Symbol.for('list'), [Symbol.for('quote'), Symbol.for('.')], x]];
+            }
+            else {
+                const x1 = Symbol('x');
+                return [Symbol.for('let'), [[x1, x]], ((x) => {
+                        return [Symbol.for('js/?'), [Symbol.for('pair-or-list?'), x], x, [Symbol.for('list'), [Symbol.for('quote'), Symbol.for('.')], x]];
+                    })(x1)];
+            }
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Return the CDR of a dotted pair.
  */
@@ -1063,9 +1654,9 @@ dottedListParse_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-parse
 function dottedListLength_(lst) {
     let len = 0;
     let current = lst;
-    while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
+    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
         len = len + (lst.length - 2);
-        current = current.at(-1);
+        current = current[current.length - 1];
     }
     return len;
 }
@@ -1084,7 +1675,7 @@ function dottedListRef_(lst, ...indices) {
             }
             else {
                 i = i - (result.length - 2);
-                result = result.at(-1);
+                result = result[result.length - 1];
             }
         }
         if (Array.isArray(result)) {
@@ -1108,7 +1699,7 @@ function dottedListSet_(lst, ...indicesAndValue) {
             return result;
         }
         else {
-            return [...lst.slice(0, -1), dottedListSet_(lst.at(-1), [pos - (lst.length - 2), ...indicesAndValue1])];
+            return [...lst.slice(0, -1), dottedListSet_(lst[lst.length - 1], [pos - (lst.length - 2), ...indicesAndValue1])];
         }
     }
     else {
@@ -1119,7 +1710,7 @@ function dottedListSet_(lst, ...indicesAndValue) {
             return result;
         }
         else {
-            return [...lst.slice(0, -1), dottedListSet_(lst.at(-1), pos - (lst.length - 2), val)];
+            return [...lst.slice(0, -1), dottedListSet_(lst[lst.length - 1], pos - (lst.length - 2), val)];
         }
     }
 }
@@ -1132,8 +1723,8 @@ dottedListSet_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-set_'),
 function dottedListSetX_(lst, ...indicesAndValue) {
     const indices = indicesAndValue.slice(0, -1);
     const indices1 = indices.slice(0, -1);
-    let lastIndex = indices.at(-1);
-    const value = indicesAndValue.at(-1);
+    let lastIndex = indices[indices.length - 1];
+    const value = indicesAndValue[indicesAndValue.length - 1];
     let lst1 = lst;
     for (let i of indices1) {
         while (i > 0) {
@@ -1142,7 +1733,7 @@ function dottedListSetX_(lst, ...indicesAndValue) {
             }
             else {
                 i = i - (lst1.length - 2);
-                lst1 = lst1.at(-1);
+                lst1 = lst1[lst1.length - 1];
             }
         }
         if (Array.isArray(lst1)) {
@@ -1155,7 +1746,7 @@ function dottedListSetX_(lst, ...indicesAndValue) {
         }
         else {
             lastIndex = lastIndex - (lst1.length - 2);
-            lst1 = lst1.at(-1);
+            lst1 = lst1[lst1.length - 1];
         }
     }
     lst1[lastIndex] = value;
@@ -1249,12 +1840,12 @@ dottedListTenth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tenth
 function dottedListLast_(lst) {
     let current = lst;
     let result = undefined;
-    while (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.')) && !((x) => {
+    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => {
         return Array.isArray(x) && (x.length === 0);
     })(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
         current = ((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1);
     }
-    if (Array.isArray(current) && (current.length >= 3) && (current.at(-2) === Symbol.for('.'))) {
+    if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
         result = current[current.length - 3];
     }
     return result;
@@ -1303,8 +1894,8 @@ properListP_.fsource = [Symbol.for('define'), [Symbol.for('proper-list?_'), Symb
  * [rkt:dotted-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#dotted-list-p
  */
 function improperListP_(x) {
-    return !((x) => {
-        return Array.isArray(x) && (x.length === 0);
+    return !((x1) => {
+        return Array.isArray(x1) && (x1.length === 0);
     })(lastCdr(x));
 }
 exports.improperListP = improperListP_;
@@ -1318,7 +1909,7 @@ improperListP_.fsource = [Symbol.for('define'), [Symbol.for('improper-list?_'), 
  * [rkt:circular-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#circular-list-p
  */
 function circularListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.at(-1) === x);
+    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x[x.length - 1] === x);
 }
 exports.circularListP = circularListP_;
 exports.circularListP_ = circularListP_;
@@ -1327,7 +1918,7 @@ circularListP_.fsource = [Symbol.for('define'), [Symbol.for('circular-list?_'), 
  * Convert an array list to a linked list.
  */
 function listToDottedList_(x) {
-    return [...x.slice(0, -1), Symbol.for('.'), x.at(-1)];
+    return [...x.slice(0, -1), Symbol.for('.'), x[x.length - 1]];
 }
 exports.listToDottedList_ = listToDottedList_;
 listToDottedList_.fsource = [Symbol.for('define'), [Symbol.for('list->dotted-list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('array-drop-right'), Symbol.for('x'), 1]], Symbol.for('.'), [Symbol.for('unquote'), [Symbol.for('array-last'), Symbol.for('x')]]]]];
@@ -1335,7 +1926,7 @@ listToDottedList_.fsource = [Symbol.for('define'), [Symbol.for('list->dotted-lis
  * Convert a linked list to an array list.
  */
 function dottedListToList_(x) {
-    return [...x.slice(0, -2), x.at(-1)];
+    return [...x.slice(0, -2), x[x.length - 1]];
 }
 exports.dottedListToList_ = dottedListToList_;
 dottedListToList_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list->list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('dotted-list-head'), Symbol.for('x')]], [Symbol.for('unquote'), [Symbol.for('dotted-list-tail'), Symbol.for('x')]]]]];

@@ -23,13 +23,15 @@
 declare function plistp_(obj: any): any;
 declare namespace plistp_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Copy a property list.
  */
 declare function plistCopy_(plst: any): any;
 declare namespace plistCopy_ {
-    var fsource: (symbol | (symbol | symbol[][])[])[];
+    var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the value of a property in a property list.

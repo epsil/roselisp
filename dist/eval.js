@@ -121,7 +121,7 @@ function evalSexp(exp, env, options = {}) {
         else if (Array.isArray(exp) && (exp.length === 0)) {
             return exp;
         }
-        else if (Array.isArray(exp) && !((exp.length >= 3) && (exp.at(-2) === Symbol.for('.')) && !Array.isArray(exp.at(-1)))) {
+        else if (Array.isArray(exp) && !((exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && !Array.isArray(exp[exp.length - 1]))) {
             const [op, ...args] = exp;
             if (typeof op === 'symbol') {
                 const name = op.description;
@@ -347,12 +347,16 @@ function evalEstreeIdentifier(node, env, options = {}) {
         // has to be handled here.
         return undefined;
     }
+    else if (name === 'NaN') {
+        // Likewise, `NaN` is also parsed as an identifier.
+        return NaN;
+    }
     else {
         const sym = Symbol.for(name);
         return env.get(sym);
     }
 }
-evalEstreeIdentifier.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-identifier'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('get-estree-field'), 'name', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('name'), 'undefined'], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), Symbol.for('name')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get'), Symbol.for('sym')]]]];
+evalEstreeIdentifier.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-identifier'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('get-estree-field'), 'name', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('name'), 'undefined'], undefined], [[Symbol.for('eq?'), Symbol.for('name'), 'NaN'], Symbol.for('NaN')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), Symbol.for('name')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get'), Symbol.for('sym')]]]];
 /**
  * Evaluate an ESTree [`MemberExpression`][estree:memberexpression] node.
  *
@@ -1194,7 +1198,7 @@ evalEstreeArrayExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('ev
 function evalEstreeFunctionExpressionHelper(node, env, options = {}, settings = {}) {
     const arrowSetting = settings['arrow'];
     const params = (0, estree_1.getEstreeField)('params', node);
-    const restParam = ((params.length > 0) && (0, estree_1.estreeTypeP)(params.at(-1), 'RestElement')) ? params.at(-1) : undefined;
+    const restParam = ((params.length > 0) && (0, estree_1.estreeTypeP)(params[params.length - 1], 'RestElement')) ? params[params.length - 1] : undefined;
     const body = (0, estree_1.getEstreeField)('body', node);
     if (arrowSetting) {
         return makeArityFunction((...args) => {

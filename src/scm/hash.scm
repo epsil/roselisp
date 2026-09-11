@@ -17,12 +17,15 @@
 ;;;
 ;;; [js:Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
 
+(require (only-in "./util"
+                  tagged-list?))
+
 ;;; Whether something is a hash map.
 ;;;
 ;;; Similar to [`hash?` in Racket][rkt:hashp].
 ;;;
 ;;; [rkt:hashp]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash~3f%29%29
-(define (hash?_ v)
+(define-inline (hash?_ v)
   (is-a? v Map))
 
 ;;; Make a hash map from a list of `(key . value)` pairs.
@@ -31,14 +34,64 @@
 ;;;
 ;;; [rkt:make-hash]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._make-hash%29%29
 (define (make-hash_ (assocs '()))
+  ;; TODO: Instead of `(map flatten ...)`, define a converter function
+  ;; `alist->tuples` and call that here. That function can then be given
+  ;; a compiler macro that deals with quasiquoted association lists and
+  ;; the like.
   (new Map (map flatten assocs)))
+
+;;; Compiler macro for `(make-hash ...)` expressions.
+(define-compiler-macro (make-hash_ assocs)
+  (cond
+   (assocs
+    (cond
+     ((and (or (tagged-list? assocs 'quasiquote)
+               (tagged-list? assocs 'quote))
+           (list? (second assocs))
+           (= (length
+               (filter
+                (lambda (x)
+                  ;; TODO: Use `match` here.
+                  (or (not (pair-or-list? x))
+                      (and (= (length x) 2)
+                           (or (tagged-list? x 'unquote)
+                               (and (tagged-list? x 'unquote-splicing)
+                                    (not (tagged-list?
+                                          (second x)
+                                          'hash->list)))))))
+                (second assocs)))
+              0))
+      ;; If we have a quoted list of pairs, rewrite it to a simpler
+      ;; expression that does not call `flatten`.
+      `(new Map
+            (ann (,(first assocs)
+                  ,(map (lambda (x)
+                          (cond
+                           ;; TODO: Use `match` here.
+                           ((and (tagged-list? x 'unquote-splicing)
+                                 (tagged-list? (second x) 'hash->list))
+                            (cons (first x)
+                                  (list `(send
+                                          ,(second (second x))
+                                          entries))))
+                           (else
+                            (list (car x) (cdr x)))))
+                        (second assocs)))
+                 Any)))
+     (else
+      ;; If the `assocs` form is not simple, then we have map
+      ;; `flatten` over it in order to convert a list of pairs to a
+      ;; list of lists.
+      `(new Map (map flatten ,assocs)))))
+   (else
+    `(new Map))))
 
 ;;; Set `key` to `v` in the hash map `ht`.
 ;;;
 ;;; Similar to [`hash-set!` in Racket][rkt:hash-set-x].
 ;;;
 ;;; [rkt:hash-set-x]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-set%21%29%29
-(define (hash-set!_ ht key v)
+(define-inline (hash-set!_ ht key v)
   (send ht set key v))
 
 ;;; Set `key` to `v` in the hash map `ht`,
@@ -67,12 +120,24 @@
    (else
     (send ht get key))))
 
+;;; Compiler macro for `(hash-ref ...)` expressions.
+(define-compiler-macro (hash-ref_ ht key failure-result)
+  (cond
+   ((undefined? failure-result)
+    `(send ,ht get ,key))
+   (else
+    (once-only*
+     (ht key)
+     `(if (hash-has-key? ,ht ,key)
+          (hash-ref ,ht ,key)
+          ,failure-result)))))
+
 ;;; Whether a hash map has a value for a given key.
 ;;;
 ;;; Similar to [`hash-has-key?` in Racket][rkt:hash-has-key-p].
 ;;;
 ;;; [rkt-hash-has-key-p]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fmore-scheme..rkt%29._hash-has-key~3f%29%29
-(define (hash-has-key?_ ht key)
+(define-inline (hash-has-key?_ ht key)
   (send ht has key))
 
 ;;; Remove the value for a given key in a hash map
@@ -85,17 +150,25 @@
     (hash-remove! result key)
     result))
 
+;;; Compiler macro for `(hash-remove! ...)` expressions.
+(define-compiler-macro (hash-remove!_ ht key)
+  (once-only*
+   (ht)
+   `(begin
+      (send ,ht delete ,key)
+      ,ht)))
+
 ;;; Remove the value for a given key in a hash map,
 ;;; returning a new hash map.
 ;;;
 ;;; Similar to [`hash-remove` in Racket][rkt:hash-remove].
 ;;;
 ;;; [rkt:hash-remove]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-remove%29%29
-(define (hash-remove!_ ht key)
+(define-inline (hash-remove!_ ht key)
   (send ht delete key))
 
 ;;; Return the number of keys in a hash table.
-(define (hash-size_ ht)
+(define-inline (hash-size_ ht)
   (get-field size ht))
 
 ;;; Clone a hash map.
@@ -103,7 +176,7 @@
 ;;; Similar to [`hash-copy` in Racket][rkt:hash-copy].
 ;;;
 ;;; [rkt:hash-copy]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-copy%29%29
-(define (hash-copy_ ht)
+(define-inline (hash-copy_ ht)
   (new Map ht))
 
 ;;; Delete all entries in a hash map,
@@ -121,14 +194,25 @@
 ;;;
 ;;; [rkt:hash-clear-x]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-clear%21%29%29
 (define (hash-clear!_ ht)
-  (send ht clear))
+  (send ht clear)
+  ht)
+
+;;; Compiler macro for `(hash-clear ...)` expressions.
+(define-compiler-macro (hash-clear!_ ht)
+  `(js/statement-or-expression
+    :statement (send ,ht clear)
+    :expression ,(once-only*
+                  (ht)
+                  `(begin
+                     (send ,ht clear)
+                     ,ht))))
 
 ;;; Return a list of all the keys in a hash map.
 ;;;
 ;;; Similar to [`hash-keys` in Racket][rkt:hash-keys].
 ;;;
 ;;; [rkt:hash-keys]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-keys%29%29
-(define (hash-keys_ ht)
+(define-inline (hash-keys_ ht)
   `(,@(send ht keys)))
 
 ;;; Return a list of all the values in a hash map.
@@ -136,11 +220,11 @@
 ;;; Similar to [`hash-values` in Racket][rkt:hash-values].
 ;;;
 ;;; [rkt:hash-values]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-keys%29%29
-(define (hash-values_ ht)
+(define-inline (hash-values_ ht)
   `(,@(send ht values)))
 
 ;;; Convert a hash map to a list of `(key value)` tuples.
-(define (hash-entries_ ht)
+(define-inline (hash-entries_ ht)
   `(,@(send ht entries)))
 
 ;;; Convert a hash map to a list of `(key . value)` pairs.
@@ -148,7 +232,7 @@
 ;;; Similar to [`hash->list` in Racket][rkt:hash-to-list].
 ;;;
 ;;; [rkt:hash-to-list]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-~3elist%29%29
-(define (hash->list_ ht)
+(define-inline (hash->list_ ht)
   (map (lambda (x)
          (cons (first x) (second x)))
        (hash-entries ht)))

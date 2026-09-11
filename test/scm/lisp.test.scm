@@ -37,10 +37,33 @@
  "Symbol('foo');"
  > (compile `(begin ,(gensym "x")))
  "x;"
- > (compile `(define ,(gensym "x") 1))
+ > (compile `(define ,(gensym "x")
+               1))
  "let x = 1;"
+ > (compile `(define x
+               ,(gensym "x")))
+ "let x = x1;"
+ > (compile `(define x
+               ',(gensym "x")))
+ "let x = Symbol.for('x1');"
+ > (compile `(let ((x ,(gensym "x")))
+               (foo)))
+ "let x = x1;
+
+foo();"
+ > (compile `(let ((x (quote ,(gensym "x"))))
+               (foo)))
+ "let x = Symbol.for('x1');
+
+foo();"
+ > (compile `(let ((x ',(gensym "x")))
+               (foo)))
+ "let x = Symbol.for('x1');
+
+foo();"
  > (compile `(let ((x 0))
-               (define ,(gensym "x") 1)))
+               (define ,(gensym "x")
+                 1)))
  "let x = 0;
 
 let x1 = 1;"
@@ -51,7 +74,8 @@ let x1 = 1;"
 
 let y = Symbol.for('x1');"
  > (compile `(let ((x 0))
-               (define ,(gensym "x") 1)
+               (define ,(gensym "x")
+                 1)
                (let ((x1 0)))))
  "let x = 0;
 
@@ -60,14 +84,16 @@ let x2 = 1;
 let x1 = 0;"
  > (compile `(begin
                (define x 1)
-               (define ,(gensym "x") 2)))
+               (define ,(gensym "x")
+                 2)))
  "let x = 1;
 
 let x1 = 2;"
  > (compile `(begin
                (define x 1)
                (define x1 2)
-               (define ,(gensym "x") 3)))
+               (define ,(gensym "x")
+                 3)))
  "let x = 1;
 
 let x1 = 2;
@@ -75,7 +101,8 @@ let x1 = 2;
 let x2 = 3;"
  > (compile `(begin
                (define x 1)
-               (define ,(gensym "x") 2)
+               (define ,(gensym "x")
+                 2)
                (define x1 3)))
  "let x = 1;
 
@@ -84,7 +111,8 @@ let x2 = 2;
 let x1 = 3;"
  > (compile `(begin
                (define x 1)
-               (define ,(gensym "x") 2)
+               (define ,(gensym "x")
+                 2)
                (define-values (x1)
                  (list 3))))
  "let x = 1;
@@ -107,8 +135,10 @@ function x2() {
 let [x1] = [3];"
  > (compile `(begin
                (define x 1)
-               (define ,(gensym "x") 2)
-               (define ,(gensym "x") 3)
+               (define ,(gensym "x")
+                 2)
+               (define ,(gensym "x")
+                 3)
                (define x1 4)
                (define x2 5)))
  "let x = 1;
@@ -140,38 +170,23 @@ let x2 = 1;"
  "let foo = test;
 
 let bar = test1;"
- > (compile `(define x
-               ,(gensym "x")))
- "let x = x1;"
- > (compile `(define x
-               ',(gensym "x")))
- "let x = Symbol.for('x1');"
- > (compile `(let ((x ,(gensym "x")))
-               (foo)))
- "let x = x1;
-
-foo();"
- > (compile `(let ((x (quote ,(gensym "x"))))
-               (foo)))
- "let x = Symbol.for('x1');
-
-foo();"
- > (compile `(let ((x ',(gensym "x")))
-               (foo)))
- "let x = Symbol.for('x1');
-
-foo();"
 
  :describe "Keywords"
  > :foo
  ':foo
  > ':foo
  ':foo
- > (keyword? ':foo)
- #t
  > (keyword? 'foo)
  #f
+ > (keyword? ':foo)
+ #t
+ > (keyword? '#:foo)
+ #t
+ > (eq? '#:foo ':foo)
+ #t
  > (compile ':foo)
+ "Symbol.for(':foo');"
+ > (compile '#:foo)
  "Symbol.for(':foo');"
 
  :describe "nth"
@@ -410,6 +425,22 @@ y = 2;"
           (my-add x y z))
         (my-add-2 1 2 3))))
  6
+
+ :describe "defsubst"
+ > (compile '(defsubst my-plus (x y)
+               (+ x y)))
+ "function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();"
 
  :describe "defmacro"
  > ((lambda ()
@@ -794,6 +825,50 @@ baz.ftype = 'macro';
 
 let quux = 'foo';"
 
+ :describe "macro"
+ > (compile '(macro (x y)
+               `(+ ,x ,y)))
+ "let f = function (exp, env) {
+  let [x, y] = exp.slice(1);
+  return [Symbol.for('+'), x, y];
+};
+
+f.ftype = 'macro';
+
+f;"
+ > (compile '(define f
+               (macro (x y)
+                 `(+ ,x ,y))))
+ "let f = (() => {
+  let f1 = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f1.ftype = 'macro';
+  return f1;
+})();"
+
+ :describe "nlambda"
+ > (compile '(nlambda (x y)
+                      `(+ ,x ,y)))
+ "let f = function (x, y) {
+  return [Symbol.for('+'), x, y];
+};
+
+f.ftype = 'fexpr';
+
+f;"
+ > (compile '(define f
+               (nlambda (x y)
+                        `(+ ,x ,y))))
+ "let f = (() => {
+  let f1 = function (x, y) {
+    return [Symbol.for('+'), x, y];
+  };
+  f1.ftype = 'fexpr';
+  return f1;
+})();"
+
  :describe "unwind-protect"
  > (unwind-protect 1 2 3)
  1
@@ -959,18 +1034,17 @@ x;"
                (my-square (+ 1 1))))
  "function mySquare(exp, env) {
   let [x] = exp.slice(1);
-  let g = Symbol('g');
-  return [Symbol.for('let'), [[g, x]], (() => {
-    let x = g;
+  let x1 = Symbol('x');
+  return [Symbol.for('let'), [[x1, x]], ((x) => {
     return [Symbol.for('*'), x, x];
-  })()];
+  })(x1)];
 }
 
 mySquare.ftype = 'macro';
 
-let g = 1 + 1;
+let x = 1 + 1;
 
-g * g;"
+x * x;"
  > (compile '(begin
                (define-macro (my-plus x y)
                  (once-only (x y)
@@ -978,19 +1052,56 @@ g * g;"
                (my-plus (+ 1 1) (+ 2 2))))
  "function myPlus(exp, env) {
   let [x, y] = exp.slice(1);
-  let g = Symbol('g');
-  let g1 = Symbol('g');
-  return [Symbol.for('let'), [[g, x], [g1, y]], (() => {
-    let x = g;
-    let y = g1;
+  let x1 = Symbol('x');
+  let y1 = Symbol('y');
+  return [Symbol.for('let'), [[x1, x], [y1, y]], ((x, y) => {
     return [Symbol.for('+'), x, y];
-  })()];
+  })(x1, y1)];
 }
 
 myPlus.ftype = 'macro';
 
-let g = 1 + 1;
+let x = 1 + 1;
 
-let g1 = 2 + 2;
+let y = 2 + 2;
 
-g + g1;")
+x + y;"
+
+ :describe "once-only*"
+ > (compile '(module m scheme
+               (define-macro (my-plus x y)
+                 (once-only* (x y)
+                             `(+ ,x ,y)))
+               (my-plus (+ 1 1) 2)))
+ "function myPlus(exp, env) {
+  let [x, y] = exp.slice(1);
+  if (!(Array.isArray(x) && (x.length > 0))) {
+    if (!(Array.isArray(y) && (y.length > 0))) {
+      return [Symbol.for('+'), x, y];
+    } else {
+      let y1 = Symbol('y');
+      return [Symbol.for('let'), [[y1, y]], ((y) => {
+        return [Symbol.for('+'), x, y];
+      })(y1)];
+    }
+  } else {
+    if (!(Array.isArray(y) && (y.length > 0))) {
+      let x1 = Symbol('x');
+      return [Symbol.for('let'), [[x1, x]], ((x) => {
+        return [Symbol.for('+'), x, y];
+      })(x1)];
+    } else {
+      let x2 = Symbol('x');
+      let y2 = Symbol('y');
+      return [Symbol.for('let'), [[x2, x], [y2, y]], ((x, y) => {
+        return [Symbol.for('+'), x, y];
+      })(x2, y2)];
+    }
+  }
+}
+
+myPlus.ftype = 'macro';
+
+let x = 1 + 1;
+
+x + 2;")

@@ -53,6 +53,7 @@ declare namespace jsLooselyEqualP_ {
 declare function jsSameValueP_(x: any, y: any): any;
 declare namespace jsSameValueP_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * JavaScript [sameValueZero][js:same-value-zero] equality.
@@ -69,15 +70,17 @@ declare namespace jsSameValueZeroP_ {
 declare function jsNullP_(x: any): any;
 declare namespace jsNullP_ {
     var fsource: (symbol | (symbol | null)[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a number is JavaScript's [NaN][js:nan].
  *
  * [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
  */
-declare function jsNanP_(x: any, y: any): any;
-declare namespace jsNanP_ {
+declare function jsIsNaN_(x: any): any;
+declare namespace jsIsNaN_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `x` is a JavaScript function.
@@ -85,6 +88,7 @@ declare namespace jsNanP_ {
 declare function jsFunctionP_(x: any): any;
 declare namespace jsFunctionP_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `obj` is a [`Function`][js:Function] object.
@@ -94,6 +98,7 @@ declare namespace jsFunctionP_ {
 declare function jsFunctionObjectP_(x: any): any;
 declare namespace jsFunctionObjectP_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `obj` is of type `"function"`.
@@ -101,6 +106,7 @@ declare namespace jsFunctionObjectP_ {
 declare function jsFunctionTypeP_(x: any): any;
 declare namespace jsFunctionTypeP_ {
     var fsource: (symbol | (string | symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `obj` is an arrow function.
@@ -115,6 +121,7 @@ declare namespace jsArrowP_ {
 declare function jsSource_(f: any): any;
 declare namespace jsSource_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
@@ -125,6 +132,7 @@ declare namespace jsSource_ {
 declare function jsTypeof_(x: any): any;
 declare namespace jsTypeof_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * JavaScript's [`instanceof`][js:instanceof] operator,
@@ -135,6 +143,7 @@ declare namespace jsTypeof_ {
 declare function jsInstanceof_(x: any, y: any): any;
 declare namespace jsInstanceof_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * JavaScript's [`in`][js:in] operator,
@@ -145,6 +154,7 @@ declare namespace jsInstanceof_ {
 declare function jsIn_(prop: any, obj: any): any;
 declare namespace jsIn_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Make a JavaScript object.
@@ -163,6 +173,7 @@ declare namespace jsObj_ {
 declare function jsObjP_(x: any): any;
 declare namespace jsObjP_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something types as a JavaScript object.
@@ -172,6 +183,7 @@ declare namespace jsObjP_ {
 declare function jsObjectTypeP_(x: any): any;
 declare namespace jsObjectTypeP_ {
     var fsource: (symbol | (string | symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Combine multiple JavaScript objects into a new JavaScript object.
@@ -198,6 +210,7 @@ declare namespace jsObjSpread_ {
 declare function jsKeys_(obj: any): any;
 declare namespace jsKeys_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Variadic version of JavaScript's `+` operator.
@@ -218,6 +231,7 @@ declare namespace jsPlus_ {
 declare function jsAbs_(x: any): any;
 declare namespace jsAbs_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -228,6 +242,7 @@ declare namespace jsAbs_ {
 declare function jsFindIndex_(proc: any, seq: any): any;
 declare namespace jsFindIndex_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Placeholder function for JavaScript's
@@ -255,6 +270,7 @@ declare namespace jsDelete_ {
 declare function jsArrayP_(x: any): any;
 declare namespace jsArrayP_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the length of a JavaScript string or array.
@@ -262,6 +278,7 @@ declare namespace jsArrayP_ {
 declare function jsLength_(x: any): any;
 declare namespace jsLength_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Look up the property `key` in the JavaScript object `obj`.
@@ -291,6 +308,7 @@ declare namespace jsOptionalChaining_ {
 declare function jsSlice_(arr: any, ...args: any[]): any;
 declare namespace jsSlice_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Fold up a JavaScript array left to right.
@@ -298,6 +316,7 @@ declare namespace jsSlice_ {
 declare function jsReduce_(arr: any, ...args: any[]): any;
 declare namespace jsReduce_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Fold up a JavaScript array right to left.
@@ -305,6 +324,7 @@ declare namespace jsReduce_ {
 declare function jsReduceRight_(arr: any, ...args: any[]): any;
 declare namespace jsReduceRight_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a JavaScript string.
@@ -312,6 +332,7 @@ declare namespace jsReduceRight_ {
 declare function jsStringP_(x: any): any;
 declare namespace jsStringP_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a JavaScript string literal.
@@ -319,6 +340,7 @@ declare namespace jsStringP_ {
 declare function jsStringLiteralP_(x: any): any;
 declare namespace jsStringLiteralP_ {
     var fsource: (symbol | (string | symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a JavaScript string object.
@@ -326,6 +348,7 @@ declare namespace jsStringLiteralP_ {
 declare function jsStringObjectP_(x: any): any;
 declare namespace jsStringObjectP_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Concatenate two or more JavaScript strings together.
@@ -333,6 +356,7 @@ declare namespace jsStringObjectP_ {
 declare function jsStringConcat_(...args: any[]): any;
 declare namespace jsStringConcat_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (string | symbol)[][])[])[];
+    var compilerMacro: any;
 }
 /**
  * Convert `x` to a string.
@@ -340,6 +364,7 @@ declare namespace jsStringConcat_ {
 declare function jsToString_(x: any): any;
 declare namespace jsToString_ {
     var fsource: (symbol | (string | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Create a JavaScript regular expression.
@@ -347,6 +372,7 @@ declare namespace jsToString_ {
 declare function jsRegexp_(input: any, flags?: any): any;
 declare namespace jsRegexp_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `obj` is a JavaScript regular expression.
@@ -354,6 +380,7 @@ declare namespace jsRegexp_ {
 declare function jsRegexpP_(obj: any): any;
 declare namespace jsRegexpP_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Match a string or regular expression against
@@ -362,6 +389,7 @@ declare namespace jsRegexpP_ {
 declare function jsRegexpMatch_(str: any, pattern: any): any;
 declare namespace jsRegexpMatch_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Match a string or regular expression against
@@ -371,6 +399,7 @@ declare namespace jsRegexpMatch_ {
 declare function jsRegexpReplace_(str: any, pattern: any, insert: any): any;
 declare namespace jsRegexpReplace_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Create a JavaScript `new` expression.
@@ -441,6 +470,7 @@ declare namespace jsNot_ {
 declare function jsAnd_(...args: any[]): any;
 declare namespace jsAnd_ {
     var fsource: (symbol | (boolean | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Logical OR.
@@ -448,6 +478,7 @@ declare namespace jsAnd_ {
 declare function jsOr_(...args: any[]): any;
 declare namespace jsOr_ {
     var fsource: (symbol | (boolean | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Bitwise NOT.
@@ -455,6 +486,7 @@ declare namespace jsOr_ {
 declare function jsBitwiseNot_(x: any): any;
 declare namespace jsBitwiseNot_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Bitwise AND.
@@ -462,6 +494,7 @@ declare namespace jsBitwiseNot_ {
 declare function jsBitwiseAnd_(...args: any[]): any;
 declare namespace jsBitwiseAnd_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Bitwise OR.
@@ -469,6 +502,7 @@ declare namespace jsBitwiseAnd_ {
 declare function jsBitwiseOr_(...args: any[]): any;
 declare namespace jsBitwiseOr_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Bitwise XOR.
@@ -476,6 +510,7 @@ declare namespace jsBitwiseOr_ {
 declare function jsBitwiseXor_(...args: any[]): any;
 declare namespace jsBitwiseXor_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Bitwise left shift.
@@ -483,6 +518,7 @@ declare namespace jsBitwiseXor_ {
 declare function jsBitwiseShiftLeft_(...args: any[]): any;
 declare namespace jsBitwiseShiftLeft_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Bitwise right shift.
@@ -490,6 +526,7 @@ declare namespace jsBitwiseShiftLeft_ {
 declare function jsBitwiseShiftRight_(...args: any[]): any;
 declare namespace jsBitwiseShiftRight_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Bitwise unsigned right shift.
@@ -497,6 +534,7 @@ declare namespace jsBitwiseShiftRight_ {
 declare function jsUnsignedBitwiseShiftRight_(...args: any[]): any;
 declare namespace jsUnsignedBitwiseShiftRight_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Create a JavaScript `Promise`.
@@ -512,4 +550,12 @@ declare function jsPromiseP_(x: any): any;
 declare namespace jsPromiseP_ {
     var fsource: (symbol | symbol[])[];
 }
-export { jsInstanceof_ as jsInstanceOfP_, jsTypeof_ as jsTypeOf_, jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNanP_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };
+/**
+ * Convert a string to a number.
+ */
+declare function jsParseFloat_(str: any): any;
+declare namespace jsParseFloat_ {
+    var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
+}
+export { jsInstanceof_ as jsInstanceOfP_, jsTypeof_ as jsTypeOf_, jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsIsNaN_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsParseFloat_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };

@@ -1039,7 +1039,7 @@ describe('EnvironmentStack', function (): any {
     assertEqual(env1.get(Symbol.for('foo')), undefined);
     return assertEqual(env2.get(Symbol.for('foo')), 'bar');
   });
-  return it('set-entry!, two environments, previously defined in second', function (): any {
+  it('set-entry!, two environments, previously defined in second', function (): any {
     const env1: any = new LispEnvironment();
     const env2: any = new LispEnvironment([[Symbol.for('foo'), 'foo', Symbol.for('Any')]]);
     const env: any = new EnvironmentStack(env1, env2);
@@ -1047,6 +1047,48 @@ describe('EnvironmentStack', function (): any {
     assertEqual(env.get(Symbol.for('foo')), 'bar');
     assertEqual(env1.get(Symbol.for('foo')), 'bar');
     return assertEqual(env2.get(Symbol.for('foo')), 'foo');
+  });
+  it('has-promise?', function (): any {
+    return assertEqual(((): any => {
+      const env: any = new EnvironmentStack(new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]]));
+      return env.hasPromiseP(Symbol.for('foo'));
+    })(), true);
+  });
+  return it('has-local-promise?', function (): any {
+    return assertEqual(((): any => {
+      const env: any = new EnvironmentStack(new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = 'foo';
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })()), Symbol.for('Any')]]));
+      return env.hasLocalPromiseP(Symbol.for('foo'));
+    })(), true);
   });
 });
 

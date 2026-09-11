@@ -38,17 +38,15 @@ testMacro.ftype = 'macro';
 
 describe('Property lists', function (): any {
   it('(let ((plst \'())) (plist-set! plst :foo \'bar) plst)', function (): any {
-    return assertEqual(((): any => {
-      const plst: any = [];
+    return assertEqual(((plst: any): any => {
       plistSetX(plst, Symbol.for(':foo'), Symbol.for('bar'));
       return plst;
-    })(), [Symbol.for(':foo'), Symbol.for('bar')]);
+    })([]), [Symbol.for(':foo'), Symbol.for('bar')]);
   });
   return it('(let ((plst \'(:foo bar))) (plist-set! plst :foo \'baz) plst)', function (): any {
-    return assertEqual(((): any => {
-      const plst: any = [Symbol.for(':foo'), Symbol.for('bar')];
+    return assertEqual(((plst: any): any => {
       plistSetX(plst, Symbol.for(':foo'), Symbol.for('baz'));
       return plst;
-    })(), [Symbol.for(':foo'), Symbol.for('baz')]);
+    })([Symbol.for(':foo'), Symbol.for('bar')]), [Symbol.for(':foo'), Symbol.for('baz')]);
   });
 });

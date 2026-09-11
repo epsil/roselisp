@@ -84,11 +84,13 @@
                   JavaScriptEnvironment
                   LispEnvironment
                   TypedEnvironment
+                  current-compilation-options
                   current-environment_
                   default-environment
                   empty-environment
                   extend-environment
                   make-environment
+                  with-compilation-options
                   with-environment))
 (require (only-in "./equal"
                   eq?_
@@ -225,13 +227,13 @@
                   js/gte_
                   js/in_
                   js/instanceof_
+                  js/is-NaN_
                   js/keys_
                   js/length_
                   js/loosely-equal?_
                   js/lt_
                   js/lte_
                   js/mod_
-                  js/nan?_
                   js/new_
                   js/not_
                   js/null?_
@@ -242,6 +244,7 @@
                   js/object-type?_
                   js/optional-chaining_
                   js/or_
+                  js/parse-float_
                   js/plus_
                   js/promise?_
                   js/promise_
@@ -355,28 +358,36 @@
                   cond_
                   declare-fexpr_
                   declare-macro_
+                  declare-syntax-macro_
                   declare_
                   defclass_
+                  define-compiler-macro_
                   define-fexpr_
+                  define-inline_
                   define-macro_
                   define-private_
                   define-public_
                   define-syntax_
                   defmacro_
+                  defsubst_
                   defun_
                   do_
                   el/if_
                   for_
                   let-env_
+                  macro_
                   match_
                   multiple-value-bind_
                   new/apply_
+                  nlambda_
                   once-only_
+                  once-only*_
                   or_
                   quasisyntax_
                   rkt/new_
                   set_
                   setq_
+                  syntax-macro_
                   syntax_
                   thread-as_
                   thread-first_
@@ -446,6 +457,7 @@
                   index-where_
                   intersection_
                   is-a?_
+                  keyword->string_
                   keyword->symbol_
                   keyword?_
                   lt_
@@ -470,8 +482,10 @@
                   range_
                   self-evaluating?_
                   special-type?
+                  string->keyword_
                   sub1_
                   sub_
+                  symbol->keyword_
                   syntax-transformer-type?_
                   syntax-transformer?_
                   true?_
@@ -491,11 +505,11 @@
                   regexp_))
 (require (only-in "./rose"
                   Syntax
-                  begin-wrap-rose
-                  begin-wrap-rose-smart
-                  begin-wrap-rose-smart-1
+                  begin-wrap-stx
+                  begin-wrap-stx-smart
+                  begin-wrap-stx-smart-1
                   datum->syntax
-                  slice-rose
+                  slice-stx
                   syntax->datum
                   syntax->list
                   syntax-e
@@ -520,9 +534,11 @@
                   string?_
                   substring_))
 (require (only-in "./symbol"
-                  gensym_
+                  gensym->symbol_
                   gensym?_
+                  gensym_
                   string->symbol_
+                  symbol->gensym_
                   symbol->string_
                   symbol?_))
 (require (only-in "./thunk"
@@ -545,6 +561,7 @@
                   make-identifier-string
                   map-tree
                   number->letter
+                  parse-params-list
                   quote?
                   tagged-list?
                   text-of-quotation
@@ -578,150 +595,6 @@
       (oset! result key (oget default-options key))))
   result)
 
-;;; Inlined functions.
-;;;
-;;; A list of functions whose definition is so simple
-;;; that it might be inlined directly into the call site.
-(define inlined-functions
-  (list
-   abs_
-   add1_
-   arity_
-   array-at_
-   array-copy_
-   array-eighth_
-   array-fifth_
-   array-first_
-   array-fourth_
-   array-last_
-   array-length_
-   array-ninth_
-   array-nlast_
-   array-pop-left!_
-   array-pop-right!_
-   array-rest_
-   array-reverse!_
-   array-reverse_
-   array-second_
-   array-seventh_
-   array-sixth_
-   array-slice_
-   array-take_
-   array-tenth_
-   array-third_
-   array?_
-   atom?_
-   boolean?_
-   const_
-   dotted-list-head_
-   dotted-list-tail_
-   dotted-list?_
-   dotted-pair?_
-   eq?_
-   eqv?_
-   error_
-   even?_
-   false?_
-   field-names_
-   filter_
-   findf-index_
-   for-each_
-   force_
-   gensym?_
-   gensym_
-   hash->list_
-   hash-clear!_
-   hash-copy_
-   hash-entries_
-   hash-has-key?_
-   hash-keys_
-   hash-remove!_
-   hash-set!_
-   hash-size_
-   hash-values_
-   hash?_
-   index-where_
-   is-a?_
-   js/abs_
-   js/and_
-   js/array?_
-   js/bitwise-and_
-   js/bitwise-not_
-   js/bitwise-or_
-   js/bitwise-shift-left_
-   js/bitwise-shift-right_
-   js/bitwise-xor_
-   js/find-index_
-   js/function-object?_
-   js/function-type?_
-   js/function?_
-   js/in_
-   js/instanceof_
-   js/keys_
-   js/length_
-   js/nan?_
-   js/null?_
-   js/obj?_
-   js/object-type?_
-   js/or_
-   js/reduce-right_
-   js/reduce_
-   js/regexp-match_
-   js/regexp-replace_
-   js/regexp?_
-   js/same-value?_
-   js/slice_
-   js/source_
-   js/string-literal?_
-   js/string-object?_
-   js/string?_
-   js/to-string_
-   js/typeof_
-   js/unsigned-bitwise-shift-right_
-   memf?_
-   memq?_
-   null?_
-   number->string_
-   number?_
-   object-ref_
-   odd?_
-   one?_
-   pair?_
-   plist-copy_
-   plist?_
-   pop-left!_
-   pop-right!_
-   procedure?_
-   promise-forced?_
-   promise-running?_
-   promise?_
-   push-left!_
-   push-right!_
-   regexp-match?_
-   regexp-match_
-   regexp-quote_
-   regexp-replace_
-   regexp?_
-   reverse!_
-   scm/eval_
-   string->number_
-   string->symbol_
-   string-downcase_
-   string-join_
-   string-length_
-   string-ref_
-   string-repeat_
-   string-split_
-   string-upcase_
-   sub1_
-   symbol->string_
-   symbol?_
-   thunk?_
-   true?_
-   type-of_
-   undefined?_
-   zero?_))
-
 ;;; Compilation environment class.
 ;;;
 ;;; A compilation environment is a typed environment mapping
@@ -729,195 +602,125 @@
 ;;; or compiler macros.
 (define-class CompilationEnvironment (TypedEnvironment))
 
-;;; Compilation variable environment.
+;;; Compilation variables map.
 ;;;
-;;; An environment mapping various Lisp values to their
+;;; A hashmap from literal Lisp values to their
 ;;; JavaScript equivalents.
-(define compilation-variables-env
-  (new CompilationEnvironment
-       `((,(string->symbol "#f") ,(new Literal #f) Any)
-         (,(string->symbol "#t") ,(new Literal #t) Any)
-         (,(string->symbol "#n") ,(new Literal #n) Any)
-         (,(string->symbol "#u") ,(new Identifier "undefined") Any)
-         (,(string->symbol "js-null") ,(new Literal #n) Any)
-         (,(string->symbol "js-undefined") ,(new Identifier "undefined") Any)
-         (,(string->symbol "js/arguments") ,(new Identifier "arguments") Any)
-         (,(string->symbol "js/null") ,(new Literal #n) Any)
-         (,(string->symbol "js/require") ,(new Identifier "require") Any)
-         (,(string->symbol "js/undefined") ,(new Identifier "undefined") Any)
-         (,(string->symbol "nil") ,(new ArrayExpression) Any)
-         (,(string->symbol "null") ,(new ArrayExpression) Any)
-         (,(string->symbol "t") ,(new Literal #t) Any)
-         (,(string->symbol "undefined") ,(new Identifier "undefined") Any))))
-
-;;; Compiler procedures mapping environment.
-(define compilation-compiler-mapping-env
-  (new CompilationEnvironment
-       `((,add_ ,compile-add (compiler-> Any * Any))
-         (,ann_ ,compile-ann (compiler-> Any * Any))
-         (,append_ ,compile-append (compiler-> Any * Any))
-         (,apply_ ,compile-apply (compiler-> Any * Any))
-         (,begin_ ,compile-begin (compiler-> Any * Any))
-         (,break_ ,compile-break (compiler-> Any * Any))
-         (,class_ ,compile-class (compiler-> Any * Any))
-         (,colon_ ,compile-colon (compiler-> Any * Any))
-         (,continue_ ,compile-continue (compiler-> Any * Any))
-         (,declare_ ,compile-declare (compiler-> Any * Any))
-         (,define-async_ ,compile-define-async (compiler-> Any * Any))
-         (,define-class_ ,compile-define-class (compiler-> Any * Any))
-         (,define-fields_ ,compile-define-fields (compiler-> Any * Any))
-         (,define-generator_ ,compile-define-generator (compiler-> Any * Any))
-         (,define-type_ ,compile-define-type (compiler-> Any * Any))
-         (,define-values_ ,compile-define-values (compiler-> Any * Any))
-         (,define_ ,compile-define (compiler-> Any * Any))
-         (,div_ ,compile-div (compiler-> Any * Any))
-         (,dot_ ,compile-send (compiler-> Any * Any))
-         (,funcall_ ,compile-funcall (compiler-> Any * Any))
-         (,gt_ ,compile-greater-than (compiler-> Any * Any))
-         (,gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
-         (,if_ ,compile-if (compiler-> Any * Any))
-         (,js/arrow_ ,compile-js/arrow (compiler-> Any * Any))
-         (,js/assignment_ ,compile-js/assignment (compiler-> Any * Any))
-         (,js/async_ ,compile-js/async (compiler-> Any * Any))
-         (,js/await_ ,compile-js/await (compiler-> Any * Any))
-         (,js/block_ ,compile-js/block (compiler-> Any * Any))
-         (,js/const_ ,compile-js/const (compiler-> Any * Any))
-         (,js/delete_ ,compile-js/delete (compiler-> Any * Any))
-         (,js/do-while_ ,compile-js/do-while (compiler-> Any * Any))
-         (,js/dot_ ,compile-js/dot (compiler-> Any * Any))
-         (,js/eval_ ,compile-js/eval (compiler-> Any * Any))
-         (,js/for-in_ ,compile-js/for-in (compiler-> Any * Any))
-         (,js/for-of_ ,compile-js/for-of (compiler-> Any * Any))
-         (,js/for_ ,compile-js/for (compiler-> Any * Any))
-         (,js/function_ ,compile-js/function (compiler-> Any * Any))
-         (,js/get_ ,compile-js/get (compiler-> Any * Any))
-         (,js/gt_ ,compile-greater-than (compiler-> Any * Any))
-         (,js/gte_ ,compile-greater-than-or-equal (compiler-> Any * Any))
-         (,js/if_ ,compile-js/if (compiler-> Any * Any))
-         (,js/let_ ,compile-js/let (compiler-> Any * Any))
-         (,js/loosely-equal?_ ,compile-js/loosely-equal (compiler-> Any * Any))
-         (,js/lt_ ,compile-less-than (compiler-> Any * Any))
-         (,js/lte_ ,compile-less-than-or-equal (compiler-> Any * Any))
-         (,js/mod_ ,compile-modulo (compiler-> Any * Any))
-         (,js/new_ ,compile-js/new (compiler-> Any * Any))
-         (,js/not_ ,compile-not (compiler-> Any * Any))
-         (,js/obj-append_ ,compile-js/obj-append (compiler-> Any * Any))
-         (,js/obj-spread_ ,compile-js/obj-spread (compiler-> Any * Any))
-         (,js/obj_ ,compile-js/obj (compiler-> Any * Any))
-         (,js/op_ ,compile-js/op (compiler-> Any * Any))
-         (,js/optional-chaining_ ,compile-js/optional-chaining (compiler-> Any * Any))
-         (,js/plus_ ,compile-add (compiler-> Any * Any))
-         (,js/raw_ ,compile-js/raw (compiler-> Any * Any))
-         (,js/return_ ,compile-return (compiler-> Any * Any))
-         (,js/sequence_ ,compile-js/sequence (compiler-> Any * Any))
-         (,js/statement-or-expression_ ,compile-js/statement-or-expression (compiler-> Any * Any))
-         (,js/strictly-equal?_ ,compile-js/strictly-equal (compiler-> Any * Any))
-         (,js/switch_ ,compile-js/switch (compiler-> Any * Any))
-         (,js/tagged-template_ ,compile-js/tagged-template (compiler-> Any * Any))
-         (,js/ternary-operator_ ,compile-js/ternary-operator (compiler-> Any * Any))
-         (,js/try_ ,compile-js/try (compiler-> Any * Any))
-         (,js/var_ ,compile-js/var (compiler-> Any * Any))
-         (,js/while_ ,compile-js/while (compiler-> Any * Any))
-         (,js/yield_ ,compile-yield (compiler-> Any * Any))
-         (,lambda_ ,compile-lambda (compiler-> Any * Any))
-         (,let-fields_ ,compile-let-fields (compiler-> Any * Any))
-         (,let-star_ ,compile-let (compiler-> Any * Any))
-         (,let-values_ ,compile-let-values (compiler-> Any * Any))
-         (,list_ ,compile-list (compiler-> Any * Any))
-         (,lt_ ,compile-less-than (compiler-> Any * Any))
-         (,lte_ ,compile-less-than-or-equal (compiler-> Any * Any))
-         (,module_ ,compile-module (compiler-> Any * Any))
-         (,modulo_ ,compile-modulo (compiler-> Any * Any))
-         (,mul_ ,compile-mul (compiler-> Any * Any))
-         (,not_ ,compile-not (compiler-> Any * Any))
-         (,provide_ ,compile-provide (compiler-> Any * Any))
-         (,quasiquote_ ,compile-quasiquote (compiler-> Any * Any))
-         (,quote_ ,compile-quote (compiler-> Any * Any))
-         (,require_ ,compile-require (compiler-> Any * Any))
-         (,return_ ,compile-return (compiler-> Any * Any))
-         (,send/apply_ ,compile-send/apply (compiler-> Any * Any))
-         (,send_ ,compile-send (compiler-> Any * Any))
-         (,set!_ ,compile-set (compiler-> Any * Any))
-         (,set-field_ ,compile-set-field (compiler-> Any * Any))
-         (,set-fields_ ,compile-set-fields (compiler-> Any * Any))
-         (,set-values_ ,compile-set-values (compiler-> Any * Any))
-         (,sub_ ,compile-sub (compiler-> Any * Any))
-         (,throw_ ,compile-throw (compiler-> Any * Any))
-         (,yield_ ,compile-yield (compiler-> Any * Any)))))
-
-;;; Compiler macros mapping environment.
-(define compilation-macro-mapping-env
-  (new CompilationEnvironment
-       `((,array-concat_ ,compile-array-concat-macro (macro-> Any * Any))
-         (,array-drop-right_ ,compile-array-drop-right-macro (macro-> Any * Any))
-         (,array-drop_ ,compile-array-drop-macro (macro-> Any * Any))
-         (,array-push-left!_ ,compile-array-push-left!-macro (macro-> Any * Any))
-         (,array-push-right!_ ,compile-array-push-right!-macro (macro-> Any * Any))
-         (,array-ref_ ,compile-array-ref-macro (macro-> Any * Any))
-         (,array-set!_ ,compile-array-set!-macro (macro-> Any * Any))
-         (,assert_ ,compile-assert-macro (macro-> Any * Any))
-         (,cdr_ ,compile-cdr-macro (macro-> Any * Any))
-         (,cons_ ,compile-cons-macro (macro-> Any * Any))
-         (,display_ ,compile-display-macro (macro-> Any * Any))
-         (,dotted-list-link_ ,compile-dotted-list-link-macro (macro-> Any * Any))
-         (,drop-right_ ,compile-drop-right-macro (macro-> Any * Any))
-         (,drop_ ,compile-drop-macro (macro-> Any * Any))
-         (,eighth_ ,compile-eighth-macro (macro-> Any * Any))
-         (,fifth_ ,compile-fifth-macro (macro-> Any * Any))
-         (,first_ ,compile-first-macro (macro-> Any * Any))
-         (,foldl_ ,compile-foldl-macro (macro-> Any * Any))
-         (,foldr_ ,compile-foldr-macro (macro-> Any * Any))
-         (,fourth_ ,compile-fourth-macro (macro-> Any * Any))
-         (,hash-clear_ ,compile-hash-clear-macro (macro-> Any * Any))
-         (,hash-ref_ ,compile-hash-ref-macro (macro-> Any * Any))
-         (,hash-remove!_ ,compile-hash-remove-macro (macro-> Any * Any))
-         (,hash-remove_ ,compile-hash-remove-macro (macro-> Any * Any))
-         (,js/regexp_ ,compile-js/regexp-macro (macro-> Any * Any))
-         (,js/string-concat_ ,compile-js/string-concat-macro (macro-> Any * Any))
-         (,last_ ,compile-last-macro (macro-> Any * Any))
-         (,length_ ,compile-length-macro (macro-> Any * Any))
-         (,list-ref_ ,compile-list-ref-macro (macro-> Any * Any))
-         (,list-set!_ ,compile-list-set!-macro (macro-> Any * Any))
-         (,list?_ ,compile-list?-macro (macro-> Any * Any))
-         (,make-hash_ ,compile-make-hash-macro (macro-> Any * Any))
-         (,map_ ,compile-map-macro (macro-> Any * Any))
-         (,member?_ ,compile-member-p-macro (macro-> Any * Any))
-         (,ninth_ ,compile-ninth-macro (macro-> Any * Any))
-         (,nth_ ,compile-nth-macro (macro-> Any * Any))
-         (,object-set!_ ,compile-object-set!-macro (macro-> Any * Any))
-         (,pair-or-list?_ ,compile-pair-or-list-macro (macro-> Any * Any))
-         (,print ,compile-display-macro (macro-> Any * Any))
-         (,rest_ ,compile-rest-macro (macro-> Any * Any))
-         (,reverse_ ,compile-reverse-macro (macro-> Any * Any))
-         (,second_ ,compile-second-macro (macro-> Any * Any))
-         (,seventh_ ,compile-seventh-macro (macro-> Any * Any))
-         (,sixth_ ,compile-sixth-macro (macro-> Any * Any))
-         (,string-append_ ,compile-string-append-macro (macro-> Any * Any))
-         (,string-trim_ ,compile-string-trim-macro (macro-> Any * Any))
-         (,string?_ ,compile-string?-macro (macro-> Any * Any))
-         (,substring_ ,compile-substring-macro (macro-> Any * Any))
-         (,take_ ,compile-take-macro (macro-> Any * Any))
-         (,tenth_ ,compile-tenth-macro (macro-> Any * Any))
-         (,third_ ,compile-third-macro (macro-> Any * Any))
-         (,values_ ,compile-values-macro (macro-> Any * Any)))))
-
-;;; Compilation mapping environment.
-;;;
-;;; An environment mapping Lisp functions to compiler procedures
-;;; or compiler macros.
-(define compilation-mapping-env
-  (new EnvironmentStack
-       compilation-macro-mapping-env
-       compilation-compiler-mapping-env))
-
-;;; Compilation map.
-;;;
-;;; Map from languages to compilation mapping environments.
-(define compilation-map
-  ;; TODO: Remove.
+(define compilation-variables-map
   (make-hash
-   `(("javascript" . ,compilation-mapping-env)
-     ("typescript" . ,compilation-mapping-env))))
+   `((,(string->symbol "#f") . ,(new Literal #f))
+     (,(string->symbol "#t") . ,(new Literal #t))
+     (,(string->symbol "#n") . ,(new Literal #n))
+     (,(string->symbol "#u") . ,(new Identifier "undefined"))
+     (,(string->symbol "NaN") . ,(new Identifier "NaN"))
+     (,(string->symbol "js-null") . ,(new Literal #n))
+     (,(string->symbol "js-undefined") . ,(new Identifier "undefined"))
+     (,(string->symbol "js/arguments") . ,(new Identifier "arguments"))
+     (,(string->symbol "js/null") . ,(new Literal #n))
+     (,(string->symbol "js/require") . ,(new Identifier "require"))
+     (,(string->symbol "js/undefined") . ,(new Identifier "undefined"))
+     (,(string->symbol "nil") . ,(new ArrayExpression))
+     (,(string->symbol "null") . ,(new ArrayExpression))
+     (,(string->symbol "t") . ,(new Literal #t))
+     (,(string->symbol "undefined") . ,(new Identifier "undefined")))))
+
+;;; Compilation procedures map.
+;;;
+;;; A hashmap from Lisp functions to compiler procedures.
+(define compilation-procedures-map
+  (make-hash
+   `((,add_ . ,compile-add)
+     (,ann_ . ,compile-ann)
+     (,append_ . ,compile-append)
+     (,apply_ . ,compile-apply)
+     (,begin_ . ,compile-begin)
+     (,break_ . ,compile-break)
+     (,class_ . ,compile-class)
+     (,colon_ . ,compile-colon)
+     (,continue_ . ,compile-continue)
+     (,declare_ . ,compile-declare)
+     (,define-async_ . ,compile-define-async)
+     (,define-class_ . ,compile-define-class)
+     (,define-fields_ . ,compile-define-fields)
+     (,define-generator_ . ,compile-define-generator)
+     (,define-type_ . ,compile-define-type)
+     (,define-values_ . ,compile-define-values)
+     (,define_ . ,compile-define)
+     (,div_ . ,compile-div)
+     (,dot_ . ,compile-send)
+     (,funcall_ . ,compile-funcall)
+     (,gt_ . ,compile-greater-than)
+     (,gte_ . ,compile-greater-than-or-equal)
+     (,if_ . ,compile-if)
+     (,js/arrow_ . ,compile-js/arrow)
+     (,js/assignment_ . ,compile-js/assignment)
+     (,js/async_ . ,compile-js/async)
+     (,js/await_ . ,compile-js/await)
+     (,js/block_ . ,compile-js/block)
+     (,js/const_ . ,compile-js/const)
+     (,js/delete_ . ,compile-js/delete)
+     (,js/do-while_ . ,compile-js/do-while)
+     (,js/dot_ . ,compile-js/dot)
+     (,js/eval_ . ,compile-js/eval)
+     (,js/for-in_ . ,compile-js/for-in)
+     (,js/for-of_ . ,compile-js/for-of)
+     (,js/for_ . ,compile-js/for)
+     (,js/function_ . ,compile-js/function)
+     (,js/get_ . ,compile-js/get)
+     (,js/gt_ . ,compile-greater-than)
+     (,js/gte_ . ,compile-greater-than-or-equal)
+     (,js/if_ . ,compile-js/if)
+     (,js/let_ . ,compile-js/let)
+     (,js/loosely-equal?_ . ,compile-js/loosely-equal)
+     (,js/lt_ . ,compile-less-than)
+     (,js/lte_ . ,compile-less-than-or-equal)
+     (,js/mod_ . ,compile-modulo)
+     (,js/new_ . ,compile-js/new)
+     (,js/not_ . ,compile-not)
+     (,js/obj-append_ . ,compile-js/obj-append)
+     (,js/obj-spread_ . ,compile-js/obj-spread)
+     (,js/obj_ . ,compile-js/obj)
+     (,js/op_ . ,compile-js/op)
+     (,js/optional-chaining_ . ,compile-js/optional-chaining)
+     (,js/plus_ . ,compile-add)
+     (,js/raw_ . ,compile-js/raw)
+     (,js/return_ . ,compile-return)
+     (,js/sequence_ . ,compile-js/sequence)
+     (,js/statement-or-expression_ . ,compile-js/statement-or-expression)
+     (,js/strictly-equal?_ . ,compile-js/strictly-equal)
+     (,js/switch_ . ,compile-js/switch)
+     (,js/tagged-template_ . ,compile-js/tagged-template)
+     (,js/ternary-operator_ . ,compile-js/ternary-operator)
+     (,js/try_ . ,compile-js/try)
+     (,js/var_ . ,compile-js/var)
+     (,js/while_ . ,compile-js/while)
+     (,js/yield_ . ,compile-yield)
+     (,lambda_ . ,compile-lambda)
+     (,let-fields_ . ,compile-let-fields)
+     (,let-star_ . ,compile-let-star)
+     (,let-values_ . ,compile-let-values)
+     (,let_ . ,compile-let)
+     (,list_ . ,compile-list)
+     (,lt_ . ,compile-less-than)
+     (,lte_ . ,compile-less-than-or-equal)
+     (,module_ . ,compile-module)
+     (,modulo_ . ,compile-modulo)
+     (,mul_ . ,compile-mul)
+     (,not_ . ,compile-not)
+     (,provide_ . ,compile-provide)
+     (,quasiquote_ . ,compile-quasiquote)
+     (,quote_ . ,compile-quote)
+     (,require_ . ,compile-require)
+     (,return_ . ,compile-return)
+     (,send/apply_ . ,compile-send/apply)
+     (,send_ . ,compile-send)
+     (,set!_ . ,compile-set)
+     (,set-field_ . ,compile-set-field)
+     (,set-fields_ . ,compile-set-fields)
+     (,set-values_ . ,compile-set-values)
+     (,sub_ . ,compile-sub)
+     (,throw_ . ,compile-throw)
+     (,yield_ . ,compile-yield))))
 
 ;;; Compile a Lisp expression to JavaScript or TypeScript.
 ;;; Returns a string of JavaScript or TypeScript code.
@@ -1002,9 +805,6 @@
         (new EnvironmentStack
              env
              lang-environment)))
-  (define mapping-env
-    (or (hash-ref compilation-map to-language-option)
-        compilation-mapping-env))
   (define compilation-options
     (add-default-options options #t))
   (define compiled-env
@@ -1012,11 +812,8 @@
   (define continuation-env
     (new LispEnvironment
          '()
-         lang-env))
+          lang-env))
   (oset! compilation-options :language-environment lang-env)
-  (oset! compilation-options
-         :compilation-mapping-environment
-         mapping-env)
   (oset! compilation-options :compiled-environment compiled-env)
   (set! compilation-options
         (js/obj-append
@@ -1095,9 +892,9 @@
     (compile-module-expression obj env options))))
 
 ;;; Compile a `(module ...)` expression.
-(define (compile-module-expression node env (options (js/obj)))
+(define (compile-module-expression stx env (options (js/obj)))
   (define module
-    (module-expression->module-object node env))
+    (module-expression->module-object stx env))
   (define compilation-options
     (js/obj-append
      options
@@ -1121,26 +918,26 @@
      options))
   (define header-statements
     (compile-statement
-     (begin-wrap-rose
-      (get-field header-nodes module))
+     (begin-wrap-stx
+      (get-field header-stxs module))
      module-environment
      module-options))
   (define require-statements
     (compile-statement
-     (begin-wrap-rose
-      (get-field require-nodes module))
+     (begin-wrap-stx
+      (get-field require-stxs module))
      module-environment
      module-options))
   (define main-statements
     (compile-statement-or-return-statement
-     (begin-wrap-rose
-      (get-field main-nodes module))
+     (begin-wrap-stx
+      (get-field main-stxs module))
      module-environment
      module-options))
   (define provide-statements
     (compile-statement
-     (begin-wrap-rose
-      (get-field provide-nodes module))
+     (begin-wrap-stx
+      (get-field provide-stxs module))
      module-environment
      module-options))
   (define global-environment
@@ -1278,7 +1075,7 @@
   (compile-files! (list infile) options))
 
 ;;; Compile a syntax object.
-(define (compile-syntax node env (options (js/obj)))
+(define (compile-syntax stx env (options (js/obj)))
   (define language-env
     (oget options :language-environment))
   (define (lang-filter x)
@@ -1286,7 +1083,7 @@
   (define comments-option
     (oget options :comments))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define result)
   (cond
    ((pair-or-list? exp)
@@ -1294,7 +1091,7 @@
      ((= (length exp) 0)
       (set! result
             (compile-list
-             node env options)))
+             stx env options)))
      (else
       (define op
         (first exp))
@@ -1302,8 +1099,7 @@
        ((not (symbol? op))
         (set! result
               (compile-function-call
-               node env
-               options)))
+               stx env options)))
        ((send env has-promise? op (js/obj :filter lang-filter))
         (define op-type
           (send env get-type op))
@@ -1312,25 +1108,22 @@
          ((macro-type? op-type)
           (set! result
                 (compile-macro-call
-                 node env
-                 options)))
+                 stx env options)))
          ;; Call to locally defined fexpr.
          ((fexpr-type? op-type)
           (set! result
                 (compile-fexpr-call
-                 node env
-                 options)))
+                 stx env options)))
          ;; Call to locally defined function.
          (else
           (set! result
                 (compile-function-call
-                 node env
-                 options)))))
+                 stx env options)))))
        ((regexp-match (regexp "^\\.")
                       (symbol->string op))
         (set! result
               (compile-dot
-               node env options)))
+               stx env options)))
        (else
         (define-values (f op-type)
           (send env get-typed-value op))
@@ -1338,65 +1131,57 @@
          ((undefined-type? op-type)
           (set! result
                 (compile-function-call
-                 node env options)))
-         ((inlined-function? f)
+                 stx env options)))
+         ;; Compiler function.
+         ((hash-has-key? compilation-procedures-map f)
+          (define compilation-f
+            (hash-ref compilation-procedures-map f))
           (set! result
-                (compile-inlined-function-call
-                 node env options)))
+                (compilation-f
+                 stx env options)))
+         ;; Compiler macro.
+         ((has-compiler-macro? f)
+          (set! result
+                (compile-syntax
+                 (datum->syntax
+                  stx
+                  ((compiler-macro f) exp env))
+                 env
+                 options)))
+         ;; Macro call.
+         ((or (macro?_ f)
+              (macro-type? op-type))
+          (set! result
+                (compile-macro-call
+                 stx env options)))
+         ;; Fexpr call.
+         ((fexpr-type? op-type)
+          (set! result
+                (compile-fexpr-call
+                 stx env options)))
+         ;; Function call.
          (else
-          (define compilation-mapping-environment
-            (oget options :compilation-mapping-environment))
-          (define-values (compilation-f compilation-type)
-            (send compilation-mapping-environment get-typed-value f))
-          (cond
-           ;; Compiler function.
-           ((compiler-type? compilation-type)
-            (set! result
-                  (compilation-f
-                   node env
-                   options)))
-           ;; Compilation macro.
-           ((macro-type? compilation-type)
-            (set! result
-                  (compile-syntax
-                   (datum->syntax
-                    node
-                    (compilation-f exp env))
-                   env
-                   options)))
-           ;; Macro call.
-           ((or (macro?_ f)
-                (macro-type? op-type))
-            (set! result
-                  (compile-macro-call
-                   node env options)))
-           ;; Fexpr call.
-           ((fexpr-type? op-type)
-            (set! result
-                  (compile-fexpr-call
-                   node env options)))
-           (else
-            (set! result
-                  (compile-function-call
-                   node env options)))))))))))
+          (set! result
+                (compile-function-call
+                 stx env options)))))))))
    ((string? exp)
     (set! result
           (compile-string
-           node env options)))
+           stx env options)))
    ((symbol? exp)
     (set! result
           (compile-variable
-           node env options)))
+           stx env options)))
    ((estree? exp)
     (set! result exp))
    (else
     (set! result
           (compile-atom
-           node env options))))
+           stx env options))))
   (when (and comments-option
-             (send node has-property "comments"))
+             (send stx has-property "comments"))
     (define comments
-      (send node get-property "comments"))
+      (send stx get-property "comments"))
     (when (> (length comments) 0)
       (set-field! comments
                   result
@@ -1409,26 +1194,26 @@
       (datum->syntax #f _)
       (compile-syntax _ env options)))
 
-;;; Compile `node` as an expression.
-(define (compile-expression node env (options (js/obj)))
-  (compile-syntax node env (make-expression-options options)))
+;;; Compile `stx` as an expression.
+(define (compile-expression stx env (options (js/obj)))
+  (compile-syntax stx env (make-expression-options options)))
 
-;;; Compile `node` as a regular statement.
-(define (compile-statement node env (options (js/obj)))
-  (compile-syntax node env (make-statement-options options)))
+;;; Compile `stx` as a regular statement.
+(define (compile-statement stx env (options (js/obj)))
+  (compile-syntax stx env (make-statement-options options)))
 
-;;; Compile `node` as a return statement.
-(define (compile-return-statement node env (options (js/obj)))
-  (compile-syntax node env (make-return-statement-options options)))
+;;; Compile `stx` as a return statement.
+(define (compile-return-statement stx env (options (js/obj)))
+  (compile-syntax stx env (make-return-statement-options options)))
 
-;;; Compile `node` as a regular statement or as a return statement,
+;;; Compile `stx` as a regular statement or as a return statement,
 ;;; depending on the value of the `expressionType` option.
-(define (compile-statement-or-return-statement node env (options (js/obj)))
+(define (compile-statement-or-return-statement stx env (options (js/obj)))
   (cond
    ((eq? (oget options :expression-type) "return")
-    (compile-return-statement node env options))
+    (compile-return-statement stx env options))
    (else
-    (compile-statement node env options))))
+    (compile-statement stx env options))))
 
 ;;; Helper function for compiling a list of statements.
 ;;; The last statement is compiled as a `return` statement
@@ -1470,13 +1255,13 @@
 ;;; The environment can be specified with the `:environment` option;
 ;;; if unspecified, it defaults to the current environment.
 (define (interpret_ exp . options)
-  ;; TODO: Rename to `interpret_`.
+  ;; TODO: Memoize compilation?
   (define options1
     (if (and (>= (length options) 1)
              (is-a? (first options) Environment))
         (js/obj-append
-         (js/obj :environment (first options))
-         (normalize-options (rest options)))
+         (normalize-options (rest options))
+         (js/obj :environment (first options)))
         (normalize-options options)))
   (define env
     (or (oget options1 :environment)
@@ -1491,19 +1276,23 @@
       :case "none"
       :expression-type expression-type
       :estree #t
+      :optimize #f
       :should-import #f)))
-  (define environment
+  (define env1
     (make-interpretation-environment env inherited-options))
-  ;; TODO: Memoize compilation?
   (define ast
-    (compile-with-environment exp environment inherited-options))
+    (compile-with-environment exp env1 inherited-options))
   (define result
-    (eval-estree ast environment inherited-options))
+    (eval-estree ast env1 inherited-options))
   result)
 
 ;;; Evaluate a Lisp expression `exp`.
 (define (scm/eval_ exp . options)
-  (apply interpret exp options))
+  (apply interpret_ exp options))
+
+;;; Compiler macro for `(scm/eval ...)` expressions.
+(define-compiler-macro (scm/eval_ exp &rest options)
+  `(interpret ,exp ,@options))
 
 ;;; Interpret a string of Lisp code.
 (define (interpret-string str (env #u) (options (js/obj)))
@@ -1555,15 +1344,6 @@
          (if eval-option
              interpretation-environment
              interpretation-environment-no-eval)))))
-
-;;; Make an environment suitable for expanding macros
-;;; and compiler macros.
-(define (make-macro-environment env)
-  (new EnvironmentStack
-       (new EnvironmentPipe
-            env
-            compilation-macro-mapping-env)
-       env))
 
 ;;; Make compilation options for compiling a form as
 ;;; an expression.
@@ -1639,8 +1419,8 @@
     node)))
 
 ;;; Wraps `node` in a `BlockStatement`.
-(define (wrap-in-block-statement obj)
-  (make-block-statement (list obj)))
+(define (wrap-in-block-statement node)
+  (make-block-statement (list node)))
 
 ;;; Wraps `node` in a `BlockStatement` unless `node` already is
 ;;; a `BlockStatement`. In other words, avoids double wrapping.
@@ -1874,14 +1654,14 @@
 
 ;;; Convert a `(define (...) ...)` form to
 ;;; a `(js/function (...) ...)` form.
-(define (define->function node (options (js/obj)))
+(define (define->function stx (options (js/obj)))
   (define function-type
     (or (oget options :function-type)
         'js/function))
   (define curried-option
     (oget options :curried))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define name-and-params
     (second exp))
   (define name
@@ -1899,7 +1679,7 @@
                (= (length params) 1))
       (set! params (first params))))
   (define body
-    (send node drop 2))
+    (send stx drop 2))
   (define return-type '())
   (when (and (>= (length body) 2)
              (eq? (syntax->datum (first body)) ':))
@@ -1918,117 +1698,13 @@
      ,@plist
      ,@body)))
 
-;;; Convert a function to a macro on the basis
-;;; of its `(define ...)` form.
-(define (definition->macro exp args)
-  (define params
-    (cdr (second exp)))
-  (define-values (regular-params rest-param)
-    (parse-params-list params))
-  (when rest-param
-    (set! params
-          (append regular-params
-                  (list rest-param))))
-  (define params-list
-    (map (lambda (x)
-           (if (pair-or-list? x)
-               (first x)
-               x))
-         params))
-  (define regular-args '())
-  (define rest-arg '(list))
-  (for ((i (range 0 (length args))))
-    (define arg
-      (list-ref args i))
-    (cond
-     ((< i (length regular-params))
-      (push-right! regular-args arg))
-     (rest-param
-      (push-right! rest-arg arg))))
-  (define args-list
-    (append regular-args
-            (if (and rest-param
-                     (> (length rest-arg 1)))
-                (list rest-arg)
-                '())))
-  (define body
-    (drop exp 2))
-  (cond
-   ((= (length params-list) 0)
-    (cond
-     ((= (length body) 1)
-      (first body))
-     (else
-      `(begin ,@body))))
-   (else
-    (define counts
-      (build-list (length args-list)
-                  (const 0)))
-    (define should-make-iife #f)
-    (define result
-      (map (lambda (x)
-             (map-tree
-              (lambda (y)
-                (define idx
-                  (js/find-index
-                   (lambda (z)
-                     (eq? z y))
-                   params-list))
-                (cond
-                 ((>= idx 0)
-                  (list-set! counts
-                             idx
-                             (+ (list-ref counts idx)
-                                1))
-                  (cond
-                   ((< idx (length args-list))
-                    (list-ref args-list idx))
-                   (else
-                    (define current-param
-                      (list-ref params idx))
-                    (cond
-                     ((pair-or-list? current-param)
-                      (second current-param))
-                     (else
-                      #u)))))
-                 (else
-                  y)))
-              x))
-           body))
-    ;; Determine whether a complex argument is referenced
-    ;; more than once. If so, we need to make an IIFE.
-    (for ((i (range 0 (length args-list))))
-      (define count
-        (list-ref counts i))
-      (define arg
-        (list-ref args-list i))
-      (when (and (> count 1)
-                 (not (or (symbol? arg)
-                          (boolean? arg)
-                          (string? arg)
-                          (number? arg))))
-        (set! should-make-iife #t)
-        (break)))
-    (cond
-     ;; If the expression is complex, then make an IIFE.
-     (should-make-iife
-      `(js/iife (js/arrow ,params
-                  ,@body)
-                (list ,@args)))
-     ;; Otherwise, the expression is simple, and no
-     ;; IIFE is needed.
-     ((= (length result) 1)
-      (first result))
-     (else
-      `(begin ,@result))))))
-
 ;;; Convert a `(define ... (class ...))` expression to
 ;;; a `(define-class ...)` expression.
-(define (define->define-class node)
+(define (define->define-class stx)
   (cond
-   ((syntax? node)
+   ((syntax? stx)
     (define superclass
-      (send (send node get 2) get 1))
+      (send stx get 2 1))
     (define superclass-exp
       (syntax->datum superclass))
     (define superclass-list
@@ -2037,30 +1713,30 @@
                    object
                    Object))
           '()
-          (list superclass)))
+           (list superclass)))
     (transfer-comments
-     node
+     stx
      (datum->syntax
       #f
-      `(define-class ,(send node get 1)
+      `(define-class ,(send stx get 1)
          ,(datum->syntax #f superclass-list)
-         ,@(send (send node get 2) drop 2)))))
+         ,@(send (send stx get 2) drop 2)))))
    (else
-    (~> node
+    (~> stx
         (datum->syntax #f _)
         (define->define-class _)
         (syntax->datum _)))))
 
 ;;; Compile an `(ann ...)` expression.
-(define (compile-ann node env (options (js/obj)))
+(define (compile-ann stx env (options (js/obj)))
   (define to-language
     (oget options :to))
   (define e_
-    (send node get 1))
+    (send stx get 1))
   (cond
    ((eq? to-language "typescript")
     (define t_
-      (send node get 2))
+      (send stx get 2))
     (make-expression-or-statement
      (new TSAsExpression
           (compile-expression e_ env options)
@@ -2070,30 +1746,30 @@
     (compile-syntax e_ env options))))
 
 ;;; Compile a `(define-type ...)` expression.
-(define (compile-define-type node env (options (js/obj)))
+(define (compile-define-type stx env (options (js/obj)))
   (define to-language
     (oget options :to))
   (cond
    ((eq? to-language "typescript")
     (define id
       (compile-expression
-       (send node get 1) env options))
+       (send stx get 1) env options))
     (define type_
       (compile-type
-       (send node get 2) env options))
+       (send stx get 2) env options))
     (transfer-and-compile-comments
-     node
+     stx
      (new TSTypeAliasDeclaration id type_)
      options))
    (else
     (empty-program))))
 
 ;;; Compile a type expression.
-(define (compile-type node env (options (js/obj)))
+(define (compile-type stx env (options (js/obj)))
   (define exp
-    (if (syntax? node)
-        (syntax->datum node)
-        node))
+    (if (syntax? stx)
+        (syntax->datum stx)
+        stx))
   (compile-type-exp exp env options))
 
 ;;; Helper function for `compile-type`.
@@ -2248,16 +1924,16 @@
   #u)
 
 ;;; Compile a `(+ ...)` expression.
-(define (compile-add node env (options (js/obj)))
+(define (compile-add stx env (options (js/obj)))
   (compile-binary-expression
-   node env options
+   stx env options
    (js/obj :identity 0
            :operator "+")))
 
 ;;; Compile an `(apply ...)` expression.
-(define (compile-apply node env (options (js/obj)))
+(define (compile-apply stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define f
     (second exp))
   (define is-new
@@ -2323,13 +1999,13 @@
      options))))
 
 ;;; Compile a `(js/get ...)` expression.
-(define (compile-js/get node env (options (js/obj)))
+(define (compile-js/get stx env (options (js/obj)))
   (define to-language
     (oget options :to))
   (define variable
-    (send node get 1))
+    (send stx get 1))
   (define indices
-    (send node drop 2))
+    (send stx drop 2))
   (define indices-compiled
     (map (lambda (x)
            (define x-exp
@@ -2383,11 +2059,11 @@
   (make-expression-or-statement result options))
 
 ;;; Compile a `(js/= ...)` expression.
-(define (compile-js/assignment node env (options (js/obj)))
+(define (compile-js/assignment stx env (options (js/obj)))
   (define left
-    (send node get 1))
+    (send stx get 1))
   (define right
-    (send node get 2))
+    (send stx get 2))
   (cond
    ((tagged-list? left
                   '(aset!
@@ -2401,7 +2077,7 @@
                     set!-values))
     (compile-syntax
      (datum->syntax
-      node
+      stx
       `(,@(syntax->list left) ,right))
      env options))
    (else
@@ -2451,21 +2127,21 @@
      options))))
 
 ;;; Compile a list pattern to an `ArrayPattern`.
-(define (compile-pattern node env (options (js/obj)))
+(define (compile-pattern stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((not exp)
     #n)
    ((symbol? exp)
-    (compile-symbol node env options))
+    (compile-symbol stx env options))
    ((pair-or-list? exp)
     (cond
      ((dotted-list? exp)
       (define head
-        (send node drop-right 2))
+        (send stx drop-right 2))
       (define tail
-        (send node last))
+        (send stx last))
       (new ArrayPattern
            (append
             (map (lambda (x)
@@ -2478,9 +2154,9 @@
       (new ArrayPattern
            (map (lambda (x)
                   (compile-pattern x env options))
-                (syntax->list node))))))
+                (syntax->list stx))))))
    (else
-    (compile-expression node env options))))
+    (compile-expression stx env options))))
 
 ;;; Convert an assignment expression to a
 ;;; variable declaration.
@@ -2501,57 +2177,53 @@
        (get-field left assignment-expression)
        (get-field right assignment-expression)))
 
-;;; Compiler macro for `(object-set! ...)` expressions.
-(define-macro (compile-object-set!-macro obj key val)
-  `(js/= (js/get ,obj ,key) ,val))
-
 ;;; Compile an atomic expression, such as `foo`.
-(define (compile-atom node env (options (js/obj)))
+(define (compile-atom stx env (options (js/obj)))
   (make-expression-or-statement
-   (new Literal (syntax->datum node))
+   (new Literal (syntax->datum stx))
    options))
 
 ;;; Compile a `(: ...)` expression.
-(define (compile-colon node env (options (js/obj)))
+(define (compile-colon stx env (options (js/obj)))
   (define sym
-    (send node get 1))
+    (send stx get 1))
   (define sym-exp
     (syntax->datum sym))
   (define type_
-    (send node get 2))
+    (send stx get 2))
   (define type-exp
     (syntax->datum type_))
   (send env set-local-type! sym-exp type-exp)
-  (compile-nop node env options))
+  (compile-nop stx env options))
 
 ;;; Compile an `(if ...)` expression.
-(define (compile-if node env (options (js/obj)))
+(define (compile-if stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
-    (compile-js/ternary-operator node env options))
+    (compile-js/ternary-operator stx env options))
    (else
-    (compile-js/if node env options))))
+    (compile-js/if stx env options))))
 
 ;;; Compile a `(js/if ...)` expression.
-(define (compile-js/if node env (options (js/obj)))
+(define (compile-js/if stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (make-iife node)
+     (make-iife stx)
      env options))
    (else
     (define condition
-      (send node get 1))
+      (send stx get 1))
     (define then-exp
       (datum->syntax
        #f
-       `(js/block ,(send node get 2))))
+       `(js/block ,(send stx get 2))))
     (define else-exp
-      (send node get 3))
+      (send stx get 3))
     (when (and else-exp
                (not (form? else-exp js/if_ env))
                (not (form? else-exp if_ env)))
@@ -2571,7 +2243,7 @@
            else-exp env options)
           #n))
     (transfer-and-compile-comments
-     node
+     stx
      (new IfStatement
           condition-compiled
           then-compiled
@@ -2579,16 +2251,16 @@
      options))))
 
 ;;; Compile a `(js/? ...)` expression.
-(define (compile-js/ternary-operator node env (options (js/obj)))
+(define (compile-js/ternary-operator stx env (options (js/obj)))
   (define condition
-    (send node get 1))
+    (send stx get 1))
   (define then-exp
-    (send node get 2))
+    (send stx get 2))
   (define else-exp
-    (or (send node get 3)
+    (or (send stx get 3)
         (datum->syntax #f #u)))
   (transfer-and-compile-comments
-   node
+   stx
    (make-expression-or-statement
     (new ConditionalExpression
          (compile-expression
@@ -2601,7 +2273,7 @@
    options))
 
 ;;; Compile a `(define ...)` expression.
-(define (compile-define node env (options (js/obj)))
+(define (compile-define stx env (options (js/obj)))
   (define language-env
     (oget options :language-environment))
   (define (lang-filter x)
@@ -2611,7 +2283,7 @@
   (define inline-lisp-sources
     (oget options :inline-lisp-sources))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define type_ 'Any)
   (cond
    ;; Function definition.
@@ -2621,14 +2293,14 @@
     (when (pair-or-list? sym)
       (set! sym (first (flatten sym))))
     (define function-exp
-      (define->function node))
+      (define->function stx))
     (define return-type
       (cond
-       ((eq? (~> node
+       ((eq? (~> stx
                  (send _ get 2)
                  (syntax->datum _))
              ':)
-        (~> node
+        (~> stx
             (send _ get 3)
             (syntax->datum _)))
        (else
@@ -2673,52 +2345,49 @@
           type_)
     (define result
       (compile-js/function
-       function-exp
-       env
-       (make-expression-options
-        options)
+       function-exp env options
        (js/obj :type type_)))
     (cond
      (inline-lisp-sources
       (define lisp-code-exp
         (compile-sexp
-         `(declare ,sym (fsource ,exp))
+         `(declare ,sym (fsource ',exp))
          env options))
       (new Program (list result lisp-code-exp)))
      (else
       result)))
    ;; Uninitialized variable.
    ((= (length exp) 2)
-    (compile-js/let node env options))
+    (compile-js/let stx env options))
    ;; Asynchronous function definition.
    ((and (form? (third exp) js/async_ env)
          (form? (second (third exp)) lambda_ env))
-    (define lambda-node
-      (send (send node get 2) get 1))
+    (define lambda-stx
+      (send (send stx get 2) get 1))
     (define name
-      (send node get 1))
+      (send stx get 1))
     (define args
-      (syntax->list (send lambda-node get 1)))
+      (syntax->list (send lambda-stx get 1)))
     (define da-form
       (transfer-comments
-       node
+       stx
        (datum->syntax
         #f
         `(define/async
            (,name ,@args)
-           ,@(send lambda-node drop 2)))))
+           ,@(send lambda-stx drop 2)))))
     (compile-define-async da-form env options))
    ;; Class definition.
    ((form? (third exp) class_ env)
     (compile-define-class
-     (define->define-class node)
+     (define->define-class stx)
      env options))
    ;; Initialized variable.
    (else
-    (compile-js/let node env options))))
+    (compile-js/let stx env options))))
 
 ;;; Compile a `(js/var ...)` expression.
-(define (compile-js/var node env (options (js/obj)))
+(define (compile-js/var stx env (options (js/obj)))
   (define language-env
     (oget options :language-environment))
   (define (lang-filter x)
@@ -2728,18 +2397,18 @@
   (define inline-lisp-sources
     (oget options :inline-lisp-sources))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define type_ 'Any)
   (cond
    ;; Uninitialized variable.
    ((= (length exp) 2)
     (define sym
-      (send node get 1))
+      (send stx get 1))
     (define result
       (assignment-expression->variable-declaration
        (compile-js/assignment
         (datum->syntax
-         node
+         stx
          `(js/= ,sym #u))
         env options)))
     (define declarator
@@ -2752,11 +2421,11 @@
     (define declarators '())
     (for ((i (range 1 (length exp) 2)))
       (define sym
-        (send node get i))
+        (send stx get i))
       (define sym-exp
         (syntax->datum sym))
       (define val
-        (send node get (+ i 1)))
+        (send stx get (+ i 1)))
       (define val-exp
         (syntax->datum val))
       (set! type_
@@ -2781,7 +2450,7 @@
         (assignment-expression->variable-declarator
          (compile-js/assignment
           (datum->syntax
-           node
+           stx
            `(js/= ,sym ,val))
           env options)))
       (push-right! declarators declarator))
@@ -2796,25 +2465,25 @@
     result)))
 
 ;;; Compile a `(js/let ...)` expression.
-(define (compile-js/let node env (options (js/obj)))
+(define (compile-js/let stx env (options (js/obj)))
   (define result
-    (compile-js/var node env options))
+    (compile-js/var stx env options))
   (set-field! kind result "let")
   result)
 
 ;;; Compile a `(js/const ...)` expression.
-(define (compile-js/const node env (options (js/obj)))
+(define (compile-js/const stx env (options (js/obj)))
   (define result
-    (compile-js/var node env options))
+    (compile-js/var stx env options))
   (set-field! kind result "const")
   result)
 
 ;;; Compile a `(define/async ...)` expression.
-(define (compile-define-async node env (options (js/obj)))
+(define (compile-define-async stx env (options (js/obj)))
   (define inline-lisp-sources
     (oget options :inline-lisp-sources))
   (define result
-    (compile-define node env options))
+    (compile-define stx env options))
   (define result-f
     (if inline-lisp-sources
         (first (get-field body result))
@@ -2833,41 +2502,41 @@
   result)
 
 ;;; Compile a `(define/generator ...)` expression.
-(define (compile-define-generator node env (options (js/obj)))
+(define (compile-define-generator stx env (options (js/obj)))
   (define result
-    (compile-define node env options))
+    (compile-define stx env options))
   (set-field! generator result #t)
   result)
 
 ;;; Compile a `(/ ...)` expression.
-(define (compile-div node env (options (js/obj)))
+(define (compile-div stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((= (length exp) 1)
     (compile-expression
-     (datum->syntax node #u)
+     (datum->syntax stx #u)
      env options))
    ((= (length exp) 2)
     (compile-div
      (datum->syntax
-      node
-      `(/ 1 ,(send node get 1)))
+      stx
+      `(/ 1 ,(send stx get 1)))
      env options))
    (else
     (compile-binary-expression
-     node env options
+     stx env options
      (js/obj :identity 1
              :operator "/")))))
 
 ;;; Compile a `(send ...)` expression.
-(define (compile-send node env (options (js/obj)))
+(define (compile-send stx env (options (js/obj)))
   (define obj
-    (send node get 1))
+    (send stx get 1))
   (define method
-    (send node get 2))
+    (send stx get 2))
   (define args
-    (send node drop 3))
+    (send stx drop 3))
   (make-expression-or-statement
    (new CallExpression
         (new MemberExpression
@@ -2890,441 +2559,55 @@
    options))
 
 ;;; Compile a `(send/apply ...)` expression.
-(define (compile-send/apply node env (options (js/obj)))
+(define (compile-send/apply stx env (options (js/obj)))
   (define obj
-    (send node get 1))
+    (send stx get 1))
   (define method
-    (send node get 2))
+    (send stx get 2))
   (define args
-    (send node drop 3))
+    (send stx drop 3))
   (make-expression-or-statement
    (compile-expression
     (datum->syntax
-     node
+     stx
      `(apply (get-field ,method ,obj) ,@args))
     env options)
    options))
 
 ;;; Compile a `(js/=== ...)` expression.
-(define (compile-js/strictly-equal node env (options (js/obj)))
+(define (compile-js/strictly-equal stx env (options (js/obj)))
   (compile-binary-expression
-   node env options
+   stx env options
    (js/obj :identity #t
            :operator "===")))
 
 ;;; Compile a `(js/== ...)` expression.
-(define (compile-js/loosely-equal node env (options (js/obj)))
+(define (compile-js/loosely-equal stx env (options (js/obj)))
   (compile-binary-expression
-   node env options
+   stx env options
    (js/obj :identity #t
            :operator "==")))
 
-;;; Compiler macro for `(list? ...)` expressions.
-(define-macro (compile-list?-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall list? ,x))
-   (else
-    (definition->macro
-      '(define (list?_ x)
-         (and (array? x)
-              (not (and (>= (array-length x) 3)
-                        (eq? (array-at x -2) '|.|)
-                        (not (array? (array-last x)))))))
-      (list x)))))
-
-;;; Compiler macro for `(length ...)` expressions.
-(define-macro (compile-length-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall length ,x))
-   (else
-    `(js/length ,x))))
-
-;;; Compiler macro for `(first ...)` expressions.
-(define-macro (compile-first-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall first ,x))
-   (else
-    `(array-first ,x))))
-
-;;; Compiler macro for `(second ...)` expressions.
-(define-macro (compile-second-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall second ,x))
-   (else
-    `(array-second ,x))))
-
-;;; Compiler macro for `(third ...)` expressions.
-(define-macro (compile-third-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall third ,x))
-   (else
-    `(array-third ,x))))
-
-;;; Compiler macro for `(fourth ...)` expressions.
-(define-macro (compile-fourth-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall fourth ,x))
-   (else
-    `(array-fourth ,x))))
-
-;;; Compiler macro for `(fifth ...)` expressions.
-(define-macro (compile-fifth-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall fifth ,x))
-   (else
-    `(array-fifth ,x))))
-
-;;; Compiler macro for `(sixth ...)` expressions.
-(define-macro (compile-sixth-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall sixth ,x))
-   (else
-    `(array-sixth ,x))))
-
-;;; Compiler macro for `(seventh ...)` expressions.
-(define-macro (compile-seventh-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall seventh ,x))
-   (else
-    `(array-seventh ,x))))
-
-;;; Compiler macro for `(eighth ...)` expressions.
-(define-macro (compile-eighth-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall eighth ,x))
-   (else
-    `(array-eighth ,x))))
-
-;;; Compiler macro for `(ninth ...)` expressions.
-(define-macro (compile-ninth-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall ninth ,x))
-   (else
-    `(array-ninth ,x))))
-
-;;; Compiler macro for `(tenth ...)` expressions.
-(define-macro (compile-tenth-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall tenth ,x))
-   (else
-    `(array-tenth ,x))))
-
-;;; Compiler macro for `(pair-or-list? ...)` expressions.
-(define-macro (compile-pair-or-list-macro x)
-  `(array? ,x))
-
-;;; Compiler macro for `(cons ...)` expressions.
-(define-macro (compile-cons-macro x y)
-  (cond
-   ((self-evaluating? y)
-    ``(,,x . ,,y))
-   ((or (tagged-list? y 'list)
-        (and (tagged-list? y 'list*)
-             (> (length y) 2))
-        (and (tagged-list? y '(quote quasiquote))
-             (pair-or-list? (second y))))
-    ``(,,x ,@,y))
-   (else
-    (definition->macro
-      (source cons_)
-      (list x y)))))
-
-;;; Compiler macro for `(dotted-list-link ...)` expressions.
-(define-macro (compile-dotted-list-link-macro x)
-  (cond
-   ((self-evaluating? x)
-    (list '|.| x))
-   ((or (tagged-list? x 'list)
-        (and (tagged-list? x 'list*)
-             (> (length x) 2))
-        (and (tagged-list? x '(quote quasiquote))
-             (pair-or-list? (second x))))
-    x)
-   (else
-    (definition->macro
-      '(define (dotted-list-link_ x)
-         (js/? (pair-or-list? x)
-               x
-               (list '|.| x)))
-      (list x)))))
-
-;;; Compiler macro for `(cdr ...)` expressions.
-(define-macro (compile-cdr-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall cdr ,x))
-   (else
-    (definition->macro
-      '(define (cdr_ x)
-         (js/? (and (= (array-length x) 3)
-                    (eq? (array-ref x 1) '|.|))
-               (array-third x)
-               (array-rest x)))
-      (list x)))))
-
-;;; Compiler macro for `(rest ...)` expressions.
-(define-macro (compile-rest-macro x)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall rest ,x))
-   (else
-    `(array-rest ,x))))
-
-;;; Compiler macro for `(nth ...)` expressions.
-(define-macro (compile-nth-macro n lst)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall nth ,n ,lst))
-   (else
-    `(list-ref ,lst ,n))))
-
-;;; Compiler macro for `(take ...)` expressions.
-(define-macro (compile-take-macro lst n)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall take ,lst ,n))
-   ((eq? n 0)
-    '())
-   (else
-    (definition->macro
-      '(define (take_ lst n)
-         (drop-right lst (- (length lst) n)))
-      (list lst n)))))
-
-;;; Compiler macro for `(drop ...)` expressions.
-(define-macro (compile-drop-macro lst n)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall drop ,lst ,n))
-   (else
-    `(array-drop ,lst ,n))))
-
-;;; Compiler macro for `(drop-right ...)` expressions.
-(define-macro (compile-drop-right-macro lst n)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall drop-right ,lst ,n))
-   (else
-    `(array-drop-right ,lst ,n))))
-
-;;; Compiler macro for `(array-drop ...)` expressions.
-(define-macro (compile-array-drop-macro arr n)
-  (cond
-   ((eq? n 0)
-    arr)
-   (else
-    `(array-slice ,arr ,n))))
-
-;;; Compiler macro for `(array-drop-right ...)` expressions.
-(define-macro (compile-array-drop-right-macro arr n)
-  (cond
-   ((number? n)
-    (cond
-     ((= n 0)
-      arr)
-     (else
-      `(array-slice ,arr 0 (- ,n)))))
-   (else
-    (definition->macro
-      (source array-drop-right_)
-      (list arr n)))))
-
-;;; Compiler macro for `(array-push-left! ...)` expressions.
-(define-macro (compile-array-push-left!-macro arr x)
-  `(js/statement-or-expression
-    :statement (send ,arr unshift ,x)
-    :expression ,(definition->macro
-                   (source array-push-left!_)
-                   (list arr x))))
-
-;;; Compiler macro for `(array-push-right! ...)` expressions.
-(define-macro (compile-array-push-right!-macro arr x)
-  `(js/statement-or-expression
-    :statement (send ,arr push ,x)
-    :expression ,(definition->macro
-                   (source array-push-right!_)
-                   (list arr x))))
-
-;;; Compiler macro for `(array-concat ...)` expressions.
-(define-macro (compile-array-concat-macro &rest args)
-  (cond
-   ((eq? (length args) 0)
-    '())
-   ((eq? (length args) 1)
-    (first args))
-   (else
-    `(send ,(first args) concat ,@(rest args)))))
-
-;;; Compiler macro for `(reverse ...)` expressions.
-(define-macro (compile-reverse-macro lst)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall reverse ,lst))
-   (else
-    `(array-reverse ,lst))))
-
-;;; Compiler macro for `(last ...)` expressions.
-(define-macro (compile-last-macro lst)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall last ,lst))
-   (else
-    `(array-last ,lst))))
-
-;;; Compiler macro for `(list-ref ...)` expressions.
-(define-macro (compile-list-ref-macro lst &rest indices)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall list-ref ,lst ,@indices))
-   (else
-    `(array-ref ,lst ,@indices))))
-
-;;; Compiler macro for `(list-set! ...)` expressions.
-(define-macro (compile-list-set!-macro lst &rest indices-and-value)
-  (define-fields (fdottedlists)
-    (current-compilation-options))
-  (cond
-   (fdottedlists
-    `(funcall list-set! ,lst ,@indices-and-value))
-   (else
-    `(array-set! ,lst ,@indices-and-value))))
-
-;;; Compiler macro for `(array-ref ...)` expressions.
-(define-macro (compile-array-ref-macro arr &rest indices)
-  `(js/get ,arr ,@indices))
-
-;;; Compiler macro for `(array-set! ...)` expressions.
-(define-macro (compile-array-set!-macro arr &rest indices-and-value)
-  (define indices
-    (drop-right indices-and-value 1))
-  (define value
-    (last indices-and-value))
-  `(js/= (js/get ,arr ,@indices) ,value))
-
-;;; Compiler macro for `(foldl ...)` expressions.
-(define-macro (compile-foldl-macro f v lst &environment env)
-  ;; `foldl()` and `.reduce()` invoke the reducing function with
-  ;; opposite argument order, and `.reduce()` passes additional
-  ;; arguments to it. We therefore wrap it in a binary function
-  ;; wrapper that reverses the order of the two first arguments
-  ;; and disregards the other arguments.
-  `(js/reduce ,lst ,(flip-function-expression f env) ,v))
-
-;;; Compiler macro for `(foldr ...)` expressions.
-(define-macro (compile-foldr-macro f v lst &environment env)
-  ;; Like `foldl`, but invokes the `reduceRight` method instead.
-  `(js/reduce-right ,lst ,(flip-function-expression f env) ,v))
-
-;;; Given an expression that designates a binary function,
-;;; produce a new expression that flips the argument order.
-;;; Helper function for `compile-foldl-macro` and
-;;; `compile-foldr-macro`.
-(define (flip-function-expression exp env)
-  (cond
-   ;; Function expression is a symbol:
-   ;; wrap it in a `lambda` form that reverses
-   ;; the order of application.
-   ((symbol? exp)
-    `(lambda (acc x)
-       (,exp x acc)))
-   ;; Function expression is a `lambda` form:
-   ;; swap the two first arguments.
-   ((and (form? exp lambda_ env)
-         (>= (length (second exp)) 2))
-    `(lambda (,(second (second exp))
-              ,(first (second exp))
-              ,@(drop (second exp) 2))
-       ,@(drop exp 2)))
-   ;; Function expression is a function call:
-   ;; pass it to a function that will
-   ;; swap the arguments.
-   (else
-    ;; Curried **C** combinator, also known as `flip`.
-    ;; Only the first argument is curried here, but
-    ;; otherwise, this behaves similarly to Haskell's
-    ;; `flip`.
-    (define C-exp
-      '(lambda (f)
-         (lambda (x y)
-           (f y x))))
-    `(,C-exp ,exp))))
-
 ;;; Compile a `(funcall ...)` expression.
-(define (compile-funcall node env (options (js/obj)))
+(define (compile-funcall stx env (options (js/obj)))
   (define-fields (should-import)
     options)
   (compile-function-call
-   (slice-rose node 1)
+   (slice-stx stx 1)
    env
    options
    (js/obj :should-import should-import)))
 
 ;;; Compile a function call.
-(define (compile-function-call node env (options (js/obj)) (settings (js/obj)))
+(define (compile-function-call stx env (options (js/obj)) (settings (js/obj)))
   (define referenced-symbols
     (oget options :referenced-symbols))
   (define current-module
     (oget options :current-module))
-  (define compilation-mapping-environment
-    (oget options :compilation-mapping-environment))
   (define should-import-setting
     (oget settings :should-import))
   (define callee
-    (send node get 0))
+    (send stx get 0))
   (define op
     (syntax->datum callee))
   (define symbolic-op
@@ -3336,11 +2619,10 @@
              ;; Do not inline the operator if a
              ;; compilation macro is defined for it.
              (not (send env has-promise? op))
-             (not (send compilation-mapping-environment
-                        has?
-                        (send env get op))))))
+             (not (hash-has-key? compilation-procedures-map
+                                 (send env get op))))))
   (define args
-    (send node drop 1))
+    (send stx drop 1))
   (define callee-exp
     (compile-expression
      callee
@@ -3363,23 +2645,11 @@
    (new CallExpression callee-exp args-exps)
    options))
 
-;;; Compile an inlined function call.
-(define (compile-inlined-function-call node env (options (js/obj)))
-  (define exp
-    (syntax->datum node))
-  (define op
-    (first exp))
-  (define f
-    (send env get op))
-  (define inlined-exp
-    (definition->macro (source f) (rest exp)))
-  (define inlined-node
-    (datum->syntax node inlined-exp))
-  (compile-syntax inlined-node env options))
-
 ;;; Whether a function should be inlined.
 (define (inlined-function? f)
-  (memq? f inlined-functions))
+  (and f
+       (get-field inline f)
+       (get-field fsource f)))
 
 ;;; Add symbol `sym` to `referencedSymbols` if it references a value
 ;;; not defined in the current module.
@@ -3409,14 +2679,12 @@
     (not (eq? x language-env)))
   (define (js-filter x)
     (not (eq? x js-environment)))
-  (define compilation-mapping-environment
-    (oget options :compilation-mapping-environment))
   (define current-module
     (oget options :current-module))
   (and (symbol? sym)
        ;; Do not import if the symbol is listed in
-       ;; `compilation-variables-env`.
-       (not (send compilation-variables-env has? sym))
+       ;; `compilation-variables-map`.
+       (not (hash-has-key? compilation-variables-map sym))
        ;; Do not import if there is a local binding for the
        ;; value (e.g., a `let` variable).
        (not (send env has? sym (js/obj :filter lang-filter)))
@@ -3431,10 +2699,10 @@
        (send language-env has? sym (js/obj :filter js-filter))))
 
 ;;; Compile a `(< ...)` expression.
-(define (compile-less-than node env (options (js/obj)))
+(define (compile-less-than stx env (options (js/obj)))
   ;; TODO: Convert to macro.
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((< (length exp) 3)
     (compile-syntax
@@ -3442,7 +2710,7 @@
      env options))
    ((= (length exp) 3)
     (compile-binary-expression
-     node env options
+     stx env options
      (js/obj :identity #t
              :operator "<")))
    (else
@@ -3458,10 +2726,10 @@
      env options))))
 
 ;;; Compile a `(<= ...)` expression.
-(define (compile-less-than-or-equal node env (options (js/obj)))
+(define (compile-less-than-or-equal stx env (options (js/obj)))
   ;; TODO: Convert to macro.
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((< (length exp) 3)
     (compile-syntax
@@ -3469,7 +2737,7 @@
      env options))
    ((= (length exp) 3)
     (compile-binary-expression
-     node env options
+     stx env options
      (js/obj :identity #t
              :operator "<=")))
    (else
@@ -3485,10 +2753,10 @@
      env options))))
 
 ;;; Compile a `(> ...)` expression.
-(define (compile-greater-than node env (options (js/obj)))
+(define (compile-greater-than stx env (options (js/obj)))
   ;; TODO: Convert to macro.
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((< (length exp) 3)
     (compile-syntax
@@ -3496,7 +2764,7 @@
      env options))
    ((= (length exp) 3)
     (compile-binary-expression
-     node env options
+     stx env options
      (js/obj :identity #t
              :operator ">")))
    (else
@@ -3512,10 +2780,10 @@
      env options))))
 
 ;;; Compile a `(>= ...)` expression.
-(define (compile-greater-than-or-equal node env (options (js/obj)))
+(define (compile-greater-than-or-equal stx env (options (js/obj)))
   ;; TODO: Convert to macro.
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((< (length exp) 3)
     (compile-syntax
@@ -3523,7 +2791,7 @@
      env options))
    ((= (length exp) 3)
     (compile-binary-expression
-     node env options
+     stx env options
      (js/obj :identity #t
              :operator ">=")))
    (else
@@ -3541,7 +2809,7 @@
 ;;; Compile a binary expression.
 ;;; Returns a `BinaryExpression`.
 (define (compile-binary-expression
-         node
+         stx
          env
          (options (js/obj))
          (settings (js/obj)))
@@ -3553,7 +2821,7 @@
     (or (oget options :fold)
         'left))
   (define operands
-    (send node drop 1))
+    (send stx drop 1))
   (cond
    ((= (length operands) 0)
     (define identity
@@ -3601,12 +2869,12 @@
 ;;; Like `compile-binary-expression`, but
 ;;; returns a `LogicalExpression` instead.
 (define (compile-logical-expression
-         node
+         stx
          env
          (options (js/obj))
          (settings (js/obj)))
   (compile-binary-expression
-   node env options
+   stx env options
    (js/obj-append
     settings
     (js/obj :logical #t))))
@@ -3614,14 +2882,14 @@
 ;;; Compile an unary expression.
 ;;; Returns an `UnaryExpression`.
 (define (compile-unary-expression
-         node
+         stx
          env
          (options (js/obj))
          (settings (js/obj)))
   (define op
     (oget settings :operator))
   (define arg
-    (send node get 1))
+    (send stx get 1))
   (define arg-compiled
     (compile-expression arg env options))
   (make-expression-or-statement
@@ -3632,44 +2900,40 @@
    options))
 
 ;;; Compile a `(js/op ...)` expression.
-(define (compile-js/op node env (options (js/obj)))
+(define (compile-js/op stx env (options (js/obj)))
   (define op
-    (~> (send node get 1)
+    (~> (send stx get 1)
         (syntax->datum _)))
   (when (symbol? op)
     (set! op (symbol->string op)))
   (define logical
     (memq? op '("&&" "||")))
-  (define node1
+  (define stx1
     (datum->syntax
-     node
-     (send node drop 1)))
+     stx
+     (send stx drop 1)))
   (cond
-   ((= (send node size) 3)
+   ((= (send stx size) 3)
     (compile-unary-expression
-     node1 env options
+     stx1 env options
      (js/obj :operator op)))
    (logical
     (compile-logical-expression
-     node1 env options
+     stx1 env options
      (js/obj :operator op)))
    (else
     (compile-binary-expression
-     node1 env options
+     stx1 env options
      (js/obj :operator op)))))
-
-;;; Compile a `(lambda ...)` expression.
-(define (compile-lambda node env (options (js/obj)))
-  (compile-js/function node env options))
 
 ;;; Compile a function definition or function expression,
 ;;; producing a `FunctionDeclaration`, a `FunctionExpression`
 ;;; or an `ArrowFunctionExpression`.
-(define (compile-function node env (options (js/obj)) (settings (js/obj)))
+(define (compile-function stx env (options (js/obj)) (settings (js/obj)))
   (define inherited-options
     (js/obj-append options))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define name
     (oget settings :name))
   (define function-type
@@ -3708,174 +2972,209 @@
     (set! rest-arg (dotted-list-tail args-list)))
    (else
     (set! regular-args (second exp))))
-  (when regular-args
-    ;; TypeScript-ism: TypeScript permits the type of `this` to be
-    ;; specified with a pseudo-parameter, which is since compiled
-    ;; away by the TypeScript compiler. Do the same here.
-    (when (and (not (eq? to-language "typescript"))
-               (> (length regular-args) 0)
-               (or (eq? (first regular-args) 'this)
-                   (tagged-list? (first regular-args) 'this)))
-      (set! regular-args (cdr regular-args)))
-    (for ((arg regular-args))
-      (cond
-       ((colon-form? arg)
-        (define sym
-          (first arg))
-        (define typ
-          (third arg))
-        (make-type-binding env1 sym 'Any lang-filter)
-        (define result
-          (~> (if (= (length arg) 4)
-                  (new AssignmentPattern
-                       (compile-symbol
-                        (datum->syntax #f sym)
-                        env1 inherited-options)
-                       (compile-expression
-                        (datum->syntax #f (fourth arg))
-                        env1 inherited-options))
-                  (compile-symbol
-                   (datum->syntax #f sym)
-                   env1 inherited-options))
-              (set-type
-               _
-               (compile-type typ env1 options))))
-        (push-right! params result))
-       ((pair-or-list? arg)
-        (make-type-binding env1 (first arg) 'Any lang-filter)
-        (push-right! params
-                     (new AssignmentPattern
-                          (compile-symbol
-                           (datum->syntax
-                            #f
-                            (first arg))
-                           env1
-                           inherited-options
-                           (js/obj :literal-symbol #t))
-                          (compile-expression
-                           (datum->syntax
-                            #f
-                            (second arg))
-                           env1 inherited-options))))
-       (else
-        (make-type-binding env1 arg 'Any lang-filter)
-        (push-right! params
-                     (compile-symbol
-                      (datum->syntax #f arg)
-                      env1
-                      inherited-options
-                      (js/obj :literal-symbol #t)))))))
-  (when rest-arg
-    (make-type-binding env1 rest-arg 'Any lang-filter)
-    (push-right! params
-                 (new RestElement
-                      (compile-expression
-                       (datum->syntax #f rest-arg)
-                       env1 inherited-options))))
+  (define body-offset 2)
   (define body-statements
-    (send node drop 2))
+    (send stx drop body-offset))
   (when (and (>= (length body-statements) 2)
              (eq? (syntax->datum (first body-statements))
                   ':))
     (set! return-type
           (syntax->datum (second body-statements)))
-    (set! body-statements (drop body-statements 2)))
+    (set! body-statements (drop body-statements 2))
+    (set! body-offset (+ body-offset 2)))
   (when (and (>= (length body-statements) 2)
              (eq? (syntax->datum (first body-statements))
                   ':name))
     (set! name
           (syntax->datum (second body-statements)))
-    (set! body-statements (drop body-statements 2)))
-  (define body
-    (compile-statement-or-return-statement
-     (datum->syntax
-      node
-      `(js/block ,@body-statements))
-     env1
-     (js/obj-append
-      inherited-options
-      (js/obj :expression-type
-              (if (eq? return-type 'Void)
-                  "statement"
-                  "return")))))
-  (define result #u)
-  (define result-f #u)
+    (set! body-statements (drop body-statements 2))
+    (set! body-offset (+ body-offset 2)))
   (cond
-   ((and name
-         (not (eq? name "")))
-    (when (string? name)
-      (set! name
-            (string->symbol name)))
-    (define name-compiled
-      (compile-symbol
-       (datum->syntax #f name)
-       env
-       (make-expression-options options)))
-    (cond
-     ((eq? function-type 'js/arrow)
-      (set! result-f
-            (new ArrowFunctionExpression
-                 params
-                 body))
-      (set! result
-            (new VariableDeclaration
-                 (list (new VariableDeclarator
-                            name-compiled
-                            result-f))
-                 "let")))
-     (else
-      (set! result-f
-            (new FunctionDeclaration
-                 name-compiled
-                 params
-                 body))
-      (set! result result-f))))
+   ((and (> (length body-statements) 1)
+         (tagged-list? (first body-statements) 'declare))
+    (define name1
+      (if name
+          name
+          (gensym "f")))
+    (define function-stx
+      (datum->syntax
+       stx
+       `(,@(send stx take body-offset)
+         ,@(send stx drop (+ body-offset 1)))))
+    (define declare-stx
+      `(declare ,name1
+                ,@(send (first body-statements) drop 1)))
+    (return
+     (compile-syntax
+      (datum->syntax
+       stx
+       (if name
+           `(begin
+              ,function-stx
+              ,declare-stx)
+           `(let* ((,name1 ,function-stx))
+              ,declare-stx
+              ,name1)))
+      env options)))
    (else
+    (when regular-args
+      ;; TypeScript-ism: TypeScript permits the type of `this` to be
+      ;; specified with a pseudo-parameter, which is since compiled
+      ;; away by the TypeScript compiler. Do the same here.
+      (when (and (not (eq? to-language "typescript"))
+                 (> (length regular-args) 0)
+                 (or (eq? (first regular-args) 'this)
+                     (tagged-list? (first regular-args) 'this)))
+        (set! regular-args (cdr regular-args)))
+      (for ((arg regular-args))
+        (cond
+         ((colon-form? arg)
+          (define sym
+            (first arg))
+          (define typ
+            (third arg))
+          (make-type-binding env1 sym 'Any lang-filter)
+          (define result
+            (~> (if (= (length arg) 4)
+                    (new AssignmentPattern
+                         (compile-symbol
+                          (datum->syntax #f sym)
+                          env1 inherited-options)
+                         (compile-expression
+                          (datum->syntax #f (fourth arg))
+                          env1 inherited-options))
+                    (compile-symbol
+                     (datum->syntax #f sym)
+                     env1 inherited-options))
+                (set-type
+                 _
+                 (compile-type typ env1 options))))
+          (push-right! params result))
+         ((pair-or-list? arg)
+          (make-type-binding env1 (first arg) 'Any lang-filter)
+          (push-right! params
+                       (new AssignmentPattern
+                            (compile-symbol
+                             (datum->syntax
+                              #f
+                              (first arg))
+                             env1
+                             inherited-options
+                             (js/obj :literal-symbol #t))
+                            (compile-expression
+                             (datum->syntax
+                              #f
+                              (second arg))
+                             env1 inherited-options))))
+         (else
+          (make-type-binding env1 arg 'Any lang-filter)
+          (push-right! params
+                       (compile-symbol
+                        (datum->syntax #f arg)
+                        env1
+                        inherited-options
+                        (js/obj :literal-symbol #t)))))))
+    (when rest-arg
+      (make-type-binding env1 rest-arg 'Any lang-filter)
+      (push-right! params
+                   (new RestElement
+                        (compile-expression
+                         (datum->syntax #f rest-arg)
+                         env1 inherited-options))))
+    (define body
+      (compile-statement-or-return-statement
+       (datum->syntax
+        stx
+        `(js/block ,@body-statements))
+       env1
+       (js/obj-append
+        inherited-options
+        (js/obj :expression-type
+                (if (eq? return-type 'Void)
+                    "statement"
+                    "return")))))
+    (define result #u)
+    (define result-f #u)
     (cond
-     ((eq? function-type 'js/arrow)
-      (set! result-f
-            (new ArrowFunctionExpression
-                 params
-                 body))
-      (set! result result-f))
+     ((and name
+           (not (eq? name "")))
+      (when (string? name)
+        (set! name
+              (string->symbol name)))
+      (define name-compiled
+        (compile-symbol
+         (datum->syntax #f name)
+         env
+         (make-expression-options options)))
+      (cond
+       ((eq? function-type 'js/arrow)
+        (set! result-f
+              (new ArrowFunctionExpression
+                   params
+                   body))
+        (set! result
+              (new VariableDeclaration
+                   (list (new VariableDeclarator
+                              name-compiled
+                              result-f))
+                   "let")))
+       (else
+        (set! result-f
+              (new FunctionDeclaration
+                   name-compiled
+                   params
+                   body))
+        (set! result result-f))))
      (else
-      (set! result-f
-            (new FunctionExpression
-                 params
-                 body))
-      (set! result result-f)))))
-  (when generator
-    (set-field! generator result-f #t))
-  (define type-compiled
-    (if type_
-        (compile-type type_ env options)
-        #u))
-  (when (is-a? type-compiled TSFunctionType)
-    (for ((i (range 0 (length (get-field params result-f)))))
-      (define param
-        (list-ref (get-field params result-f) i))
-      (define type-param
-        (list-ref (get-field params type-compiled) i))
-      (define type-param-annotation
-        (if type-param
-            (get-field typeAnnotation type-param)
-            (new TSAnyKeyword)))
-      (unless (and (estree? param)
-                   (send param has-type))
-        (set! param
-              (set-type param type-param-annotation))))
-    (set-field! returnType
-                result-f
-                (get-field returnType type-compiled)))
-  (when return-type
-    (set-field! returnType
-                result-f
-                (compile-type return-type env options)))
-  (make-expression-or-statement result inherited-options))
+      (cond
+       ((eq? function-type 'js/arrow)
+        (set! result-f
+              (new ArrowFunctionExpression
+                   params
+                   body))
+        (set! result result-f))
+       (else
+        (set! result-f
+              (new FunctionExpression
+                   params
+                   body))
+        (set! result result-f)))))
+    (when generator
+      (set-field! generator result-f #t))
+    (define type-compiled
+      (if type_
+          (compile-type type_ env options)
+          #u))
+    (when (is-a? type-compiled TSFunctionType)
+      (for ((i (range 0 (length (get-field params result-f)))))
+        (define param
+          (list-ref (get-field params result-f) i))
+        (define type-param
+          (list-ref (get-field params type-compiled) i))
+        (define type-param-annotation
+          (if type-param
+              (get-field typeAnnotation type-param)
+              (new TSAnyKeyword)))
+        (unless (and (estree? param)
+                     (send param has-type))
+          (set! param
+                (set-type param type-param-annotation))))
+      (set-field! returnType
+                  result-f
+                  (get-field returnType type-compiled)))
+    (when return-type
+      (set-field! returnType
+                  result-f
+                  (compile-type return-type env options)))
+    (make-expression-or-statement result inherited-options))))
+
+;;; Compile a `(lambda ...)` expression.
+(define (compile-lambda stx env (options (js/obj)))
+  (compile-js/function stx env options))
 
 ;;; Compile a `(js/function ...)` expression.
-(define (compile-js/function node env (options (js/obj)) (settings (js/obj)))
-  (compile-function node
+(define (compile-js/function stx env (options (js/obj)) (settings (js/obj)))
+  (compile-function stx
                     env
                     options
                     (js/obj-append
@@ -3883,8 +3182,8 @@
                      (js/obj :function-type 'js/function))))
 
 ;;; Compile a `(js/arrow ...)` expression.
-(define (compile-js/arrow node env (options (js/obj)) (settings (js/obj)))
-  (compile-function node
+(define (compile-js/arrow stx env (options (js/obj)) (settings (js/obj)))
+  (compile-function stx
                     env
                     options
                     (js/obj-append
@@ -3893,12 +3192,13 @@
 
 ;;; Expand a `(js/iife ...)` expression.
 (define-macro (js/iife_ f args)
+  ;; TODO: Express this in terms of `once-only` instead.
   (define args-list
     (drop args 1))
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-        'funcall))
+         'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -4002,7 +3302,7 @@
                    body))))
 
 ;;; Compile a `(js/statement-or-expression ...)` expression.
-(define (compile-js/statement-or-expression node env (options (js/obj)))
+(define (compile-js/statement-or-expression stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (define plist
@@ -4012,7 +3312,7 @@
            (if (keyword? exp)
                exp
                x))
-         (send node drop 1)))
+         (send stx drop 1)))
   (define expression
     (plist-get_ plist :expression))
   (define statement
@@ -4042,19 +3342,43 @@
      env options))))
 
 ;;; Compile a `(let ...)` expression.
-(define (compile-let node env (options (js/obj)))
-  ;; There is no distinction between `(let ...)` and `(let* ...)`
-  ;; expressions---they are compiled in the same way.
-  (compile-let-star node env options))
+(define (compile-let stx env (options (js/obj)))
+  (define expression-type
+    (oget options :expression-type))
+  (cond
+   ((eq? expression-type "expression")
+    (define params '())
+    (define args '())
+    (for ((binding (syntax->list (send stx get 1))))
+      (cond
+       ((symbol? (syntax->datum binding))
+        (push-right! params binding)
+        (push-right! args (datum->syntax #f #u)))
+       (else
+        (push-right! params (send binding get 0))
+        (push-right! args (send binding get 1)))))
+    (define body
+      (send stx drop 2))
+    (compile-expression
+     (datum->syntax
+      stx
+      `((js/arrow ,params
+          ,@body)
+        ,@args))
+     env options))
+   (else
+    ;; When compiled as a statement, there is no distinction
+    ;; between `(let ...)` and `(let* ...)` expressions.
+    (compile-let-star stx env options))))
 
 ;;; Compile a `(let* ...)` expression.
-(define (compile-let-star node env (options (js/obj)))
+(define (compile-let-star stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (make-iife node)
+     (make-iife stx)
      env options))
    (else
     (define language-env
@@ -4064,13 +3388,13 @@
     (define inherited-options
       (js/obj-append options))
     (define make-block #f)
-    (define let-nodes
-      (~> node
+    (define let-stxs
+      (~> stx
           (send _ get 1)
           (syntax->list _)))
-    (define body-nodes
-      (send node drop 2))
-    (define define-nodes
+    (define body
+      (send stx drop 2))
+    (define definitions
       (map (lambda (x)
              (define exp
                (syntax->datum x))
@@ -4080,7 +3404,7 @@
                  (first exp))
                (when (and (not make-block)
                           (send env
-                                has-local? ; has?
+                                has-local?
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t))
@@ -4092,14 +3416,14 @@
                (define sym exp)
                (when (and (not make-block)
                           (send env
-                                has-local? ; has?
+                                has-local?
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t))
                (datum->syntax
                 x
                 `(define ,x)))))
-           let-nodes))
+           let-stxs))
     (define env1
       (if make-block
           (extend-environment (new LispEnvironment)
@@ -4108,23 +3432,23 @@
     (define result
       (compile-syntax
        (datum->syntax
-        node
+        stx
         `(,(if make-block
                'js/block
-               'begin)
-          ,@define-nodes
-          ,@body-nodes))
+                'begin)
+          ,@definitions
+          ,@body))
        env1 inherited-options))
     result)))
 
 ;;; Compile a `(let-values ...)` expression.
-(define (compile-let-values node env (options (js/obj)))
+(define (compile-let-values stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (make-iife node)
+     (make-iife stx)
      env options))
    (else
     (define language-env
@@ -4134,13 +3458,13 @@
     (define inherited-options
       (js/obj-append options))
     (define make-block #f)
-    (define let-nodes
-      (~> node
+    (define let-stxs
+      (~> stx
           (send _ get 1)
           (syntax->list _)))
-    (define body-nodes
-      (send node drop 2))
-    (define define-nodes
+    (define body
+      (send stx drop 2))
+    (define definitions
       (map (lambda (x)
              (define exp
                (syntax->datum x))
@@ -4149,7 +3473,7 @@
                (define sym exp)
                (when (and (not make-block)
                           (send env
-                                has?
+                                has-local?
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t))
@@ -4166,7 +3490,7 @@
                  (define sym variables)
                  (when (and (not make-block)
                             (send env
-                                  has?
+                                  has-local?
                                   sym
                                   (js/obj :filter lang-filter)))
                    (set! make-block #t)))
@@ -4176,7 +3500,7 @@
                  (unless make-block
                    (for ((sym (flatten variables)))
                      (when (send env
-                                 has?
+                                 has-local?
                                  sym
                                  (js/obj :filter lang-filter))
                        (set! make-block #t)
@@ -4187,7 +3511,7 @@
                 x
                 `(define-values ,(send x get 0)
                    ,(send x get 1))))))
-           let-nodes))
+           let-stxs))
     (define env1
       (if make-block
           (extend-environment (new LispEnvironment)
@@ -4196,35 +3520,35 @@
     (define result
       (compile-syntax
        (datum->syntax
-        node
+        stx
         `(,(if make-block
                'js/block
-               'begin)
-          ,@define-nodes
-          ,@body-nodes))
+                'begin)
+          ,@definitions
+          ,@body))
        env1 inherited-options))
     result)))
 
 ;;; Compile a `(define-values ...)` expression.
-(define (compile-define-values node env (options (js/obj)))
+(define (compile-define-values stx env (options (js/obj)))
   (define hole-marker '_)
   (define variables
-    (~> node
+    (~> stx
         (send _ get 1)
         (syntax->datum _)))
   (define expression
-    (~> node
+    (~> stx
         (send get 2)))
   (define regular-vars '())
   (define rest-var #u)
   (when (eq? (syntax->datum expression)
              ':hole-marker)
     (set! hole-marker
-          (~> node
+          (~> stx
               (send _ get 3)
               (syntax->datum _)))
     (set! expression
-          (~> node
+          (~> stx
               (send _ get 4))))
   (define expression-promise
     (delay
@@ -4288,29 +3612,29 @@
       (send env set-local! rest-var rest-var-promise 'Any))))
   (assignment-expression->variable-declaration
    (compile-set-values
-    node env options)
+    stx env options)
    "let"))
 
 ;;; Compile a `(set!-values ...)` expression.
-(define (compile-set-values node env (options (js/obj)))
+(define (compile-set-values stx env (options (js/obj)))
   (define variables
-    (~> node
+    (~> stx
         (send _ get 1)))
   (define variables-exp
     (syntax-e variables))
   (define left #u)
   (define right
-    (~> node
+    (~> stx
         (send get 2)))
   (define hole-marker '_)
   (when (eq? (syntax->datum right)
              ':hole-marker)
     (set! hole-marker
-          (~> node
+          (~> stx
               (send _ get 3)
               (syntax->datum _)))
     (set! right
-          (~> node
+          (~> stx
               (send _ get 4))))
   (define regular-vars '())
   (define rest-var #u)
@@ -4342,18 +3666,18 @@
       (set! left var-patterns)))))
   (compile-js/assignment
    (datum->syntax
-    node
+    stx
     `(js/= ',left ,right))
    env options))
 
 ;;; Compile a `(let-fields ...)` expression.
-(define (compile-let-fields node env (options (js/obj)))
+(define (compile-let-fields stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (make-iife node)
+     (make-iife stx)
      env options))
    (else
     (define language-env
@@ -4363,13 +3687,13 @@
     (define inherited-options
       (js/obj-append options))
     (define make-block #f)
-    (define let-nodes
-      (~> node
+    (define let-stxs
+      (~> stx
           (send _ get 1)
           (syntax->list _)))
-    (define body-nodes
-      (send node drop 2))
-    (define define-nodes
+    (define body
+      (send stx drop 2))
+    (define definitions
       (map (lambda (x)
              (define fields
                (send x get 0))
@@ -4384,7 +3708,7 @@
                      f))
                (when (and (not make-block)
                           (send env
-                                has?
+                                has-local?
                                 sym
                                 (js/obj :filter lang-filter)))
                  (set! make-block #t)))
@@ -4392,7 +3716,7 @@
               x
               `(define-fields ,fields
                  ,obj)))
-           let-nodes))
+           let-stxs))
     (define env1
       (if make-block
           (extend-environment (new LispEnvironment)
@@ -4401,17 +3725,17 @@
     (define result
       (compile-syntax
        (datum->syntax
-        node
+        stx
         `(,(if make-block
                'js/block
-               'begin)
-          ,@define-nodes
-          ,@body-nodes))
+                'begin)
+          ,@definitions
+          ,@body))
        env1 inherited-options))
     result)))
 
 ;;; Compile a `(define-fields ...)` expression.
-(define (compile-define-fields node env (options (js/obj)))
+(define (compile-define-fields stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (define language-env
@@ -4419,13 +3743,13 @@
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define fields
-    (send node get 1))
+    (send stx get 1))
   (define fields-exp
     (syntax->datum fields))
   (define obj
-    (send node get 2))
+    (send stx get 2))
   (define obj-exp
     (syntax->datum obj))
   (define obj-promise
@@ -4467,19 +3791,19 @@
   (assignment-expression->variable-declaration
    (compile-set-fields
     (datum->syntax
-     node
+     stx
      `(set!-fields ,fields ,obj))
     env
     (make-statement-options options))
    "let"))
 
 ;;; Compile a `(set!-fields ...)` expression.
-(define (compile-set-fields node env (options (js/obj)))
+(define (compile-set-fields stx env (options (js/obj)))
   (define fields
-    (~> (send node get 1)
+    (~> (send stx get 1)
         (syntax->list _)))
   (define expression
-    (send node get 2))
+    (send stx get 2))
   (define properties '())
   (for ((x fields))
     (cond
@@ -4491,40 +3815,40 @@
       (push-right! properties x))))
   (compile-js/assignment
    (datum->syntax
-    node
+    stx
     `(js/= (js/obj ,@properties) ,expression))
    env options))
 
 ;;; Compile a `(list ...)` expression.
-(define (compile-list node env (options (js/obj)))
+(define (compile-list stx env (options (js/obj)))
   (make-expression-or-statement
    (new ArrayExpression
         (map (lambda (x)
                (compile-expression
                 x env options))
-             (send node drop 1)))
+             (send stx drop 1)))
    options))
 
 ;;; Compile a fexpr call.
-(define (compile-fexpr-call node env (options (js/obj)))
+(define (compile-fexpr-call stx env (options (js/obj)))
   (define op
-    (send node get 0))
+    (send stx get 0))
   (define args
-    (send node drop 1))
+    (send stx drop 1))
   (define quoted-args
     (map (lambda (arg)
            (datum->syntax arg `(quote ,arg)))
          args))
   (define call
-    (datum->syntax node `(,op ,@quoted-args)))
+    (datum->syntax stx `(,op ,@quoted-args)))
   (compile-function-call call env options))
 
 ;;; Compile a macro call.
-(define (compile-macro-call node env (options (js/obj)))
+(define (compile-macro-call stx env (options (js/obj)))
   ;; Only expand the macro a single step, as there might be
   ;; compilers defined for the immediate expansion.
   (define expansion
-    (macroexpand-1 node env))
+    (macroexpand-1 stx env))
   (compile-syntax expansion env options))
 
 ;;; Expand the macro call `exp` in `env`, and keep
@@ -4606,12 +3930,12 @@
       (cond
        ((or (syntax-transformer?_ macro-f)
             (syntax-transformer-type?_ typ))
-        (define node
+        (define stx
           (if (syntax? exp)
               exp
               (datum->syntax #f exp)))
         (set! expansion
-              (funcall macro-f node)))
+              (funcall macro-f stx)))
        (else
         (set! expansion
               (funcall macro-f exp1 env1))))
@@ -4710,20 +4034,11 @@
       x)))
   (map-sexp f exp env stack bindings))
 
-;;; Macroexpand all compiler macros.
-;;; This expands regular macros as well.
-(define (macroexpand-compiler-macros exp env)
-  (define compiler-macro-env
-    (make-macro-environment env))
-  (define expansion
-    (macroexpand-all exp compiler-macro-env))
-  expansion)
-
 ;;; Compile a `(. ...)` expression.
 ;;; Also handles `(.method obj ...)` calls.
-(define (compile-dot node env (options (js/obj)))
+(define (compile-dot stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define match
     (regexp-match (regexp "^\\.(.*)$")
                   (symbol->string (first exp))))
@@ -4743,7 +4058,7 @@
       (define field-sym
         (string->symbol field))
       (define obj
-        (send node get 1))
+        (send stx get 1))
       (compile-js/dot
        (datum->syntax
         #f
@@ -4751,10 +4066,10 @@
        env
        options))
      (else
-      (compile-send node env options))))
+      (compile-send stx env options))))
    (else
     (define obj
-      (send node get 1))
+      (send stx get 1))
     (cond
      ;; Member expression:
      ;; `(.-foo bar)` = `(js/. bar foo)`.
@@ -4765,7 +4080,7 @@
         (second match))
       (compile-js/dot
        (datum->syntax
-        node
+        stx
         `(js/. ,obj ,(string->symbol field)))
        env options))
      ;; Method call:
@@ -4773,31 +4088,31 @@
      (else
       (compile-send
        (datum->syntax
-        node
+        stx
         `(send ,obj
                ,(string->symbol method)
-               ,@(send node drop 2)))
+               ,@(send stx drop 2)))
        env options))))))
 
 ;;; Compile a `(js/. ...)` expression.
-(define (compile-js/dot node env (options (js/obj)))
+(define (compile-js/dot stx env (options (js/obj)))
   (cond
-   ((> (send node size) 3)
+   ((> (send stx size) 3)
     (compile-js/dot
      (datum->syntax
-      node
+      stx
       (foldl (lambda (prop obj)
                `(js/. ,obj ,prop))
-             (send node get 1)
-             (send node drop 2)))
+             (send stx get 1)
+             (send stx drop 2)))
      env options))
    (else
     (define to-language
       (oget options :to))
     (define obj
-      (send node get 1))
+      (send stx get 1))
     (define prop
-      (send node get 2))
+      (send stx get 2))
     (define prop-exp
       (syntax->datum prop))
     (define computed
@@ -4844,34 +4159,34 @@
      options))))
 
 ;;; Compile a `(js/?. ...)` expression.
-(define (compile-js/optional-chaining node env (options (js/obj)))
+(define (compile-js/optional-chaining stx env (options (js/obj)))
   (cond
-   ((> (send node size) 3)
+   ((> (send stx size) 3)
     (compile-js/optional-chaining
      (datum->syntax
-      node
+      stx
       (foldl (lambda (prop obj)
                `(js/?. ,obj ,prop))
-             (send node get 1)
-             (send node drop 2)))
+             (send stx get 1)
+             (send stx drop 2)))
      env options))
-   ((= (send node size) 2)
-    (compile-syntax (send node get 1) env options))
+   ((= (send stx size) 2)
+    (compile-syntax (send stx get 1) env options))
    (else
     (define obj
-      (send node get 1))
+      (send stx get 1))
     (define field
-      (send node get 2))
+      (send stx get 2))
     (define result
       (if (pair-or-list? (syntax->datum field))
           (compile-expression
            (datum->syntax
-            node
+            stx
             `(,obj ,@(syntax->list field)))
            env options)
           (compile-expression
            (datum->syntax
-            node
+            stx
             `(js/. ,obj ,field))
            env options)))
     (set-field! optional result #t)
@@ -4879,45 +4194,45 @@
      result options))))
 
 ;;; Compile a `(set-field! ...)` expression.
-(define (compile-set-field node env (options (js/obj)))
+(define (compile-set-field stx env (options (js/obj)))
   (define field
-    (send node get 1))
+    (send stx get 1))
   (define obj
-    (send node get 2))
+    (send stx get 2))
   (define val
-    (send node get 3))
+    (send stx get 3))
   (compile-syntax
    (datum->syntax
-    node
+    stx
     `(set! (get-field ,field ,obj) ,val))
    env options))
 
 ;;; Compile a `(modulo ...)` expression.
-(define (compile-modulo node env (options (js/obj)))
+(define (compile-modulo stx env (options (js/obj)))
   (compile-binary-expression
-   node env options
+   stx env options
    (js/obj :identity 1
            :operator "%")))
 
 ;;; Compile a `(* ...)` expression.
-(define (compile-mul node env (options (js/obj)))
+(define (compile-mul stx env (options (js/obj)))
   (compile-binary-expression
-   node env options
+   stx env options
    (js/obj :identity 1
            :operator "*")))
 
 ;;; "NO-OP" compilation operation.
 ;;; Creates an empty program fragment and does nothing else.
-(define (compile-nop node env (options (js/obj)))
+(define (compile-nop stx env (options (js/obj)))
   (make-program-fragment))
 
 ;;; Compile a `(not ...)` expression.
-(define (compile-not node env (options (js/obj)))
+(define (compile-not stx env (options (js/obj)))
   (define (is-not-expression? x)
     (and (estree-type? x "UnaryExpression")
          (eq? (get-field operator x) "!")))
   (define operand
-    (send node get 1))
+    (send stx get 1))
   (define operand-compiled
     (compile-expression operand env options))
   (define result #u)
@@ -4947,7 +4262,7 @@
   (make-expression-or-statement result options))
 
 ;;; Compile a `(begin ...)` expression.
-(define (compile-begin node env (options (js/obj)))
+(define (compile-begin stx env (options (js/obj)))
   (define language-env
     (oget options :language-environment))
   (define (lang-filter x)
@@ -4955,9 +4270,9 @@
   (define expression-type
     (oget options :expression-type))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define body
-    (send node drop 1))
+    (send stx drop 1))
   (define compiled-body '())
   ;; TODO: Remove kludge that looks ahead and adds defined variables
   ;; to the environment. Should replace this with something better
@@ -4985,7 +4300,7 @@
     (cond
      ((= (length exp) 2)
       (compile-expression
-       (send node get 1)
+       (send stx get 1)
        env options))
      (else
       (define statements
@@ -5009,33 +4324,33 @@
         (new SequenceExpression expressions))
        (else
         (compile-expression
-         (make-iife node)
+         (make-iife stx)
          env options))))))
    (else
     (define statements
       (compile-statements body env options))
-    ;; Note that this returns a `Program` node, but in
-    ;; some contexts, a `BlockStatement` node is wanted.
-    ;; One can convert a `Program` node to a
-    ;; `BlockStatement` node with
+    ;; Note that this returns a `Program` stx, but in
+    ;; some contexts, a `BlockStatement` stx is wanted.
+    ;; One can convert a `Program` stx to a
+    ;; `BlockStatement` stx with
     ;; `wrap-in-block-statement`.
     (make-program-fragment statements))))
 
 ;;; Compile a `(js/block ...)` expression.
-(define (compile-js/block node env (options (js/obj)))
+(define (compile-js/block stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
-    (compile-begin node env options))
+    (compile-begin stx env options))
    (else
     (wrap-in-block-statement
-     (compile-begin node env options)))))
+     (compile-begin stx env options)))))
 
 ;;; Compile a `(js/sequence ...)` expression.
-(define (compile-js/sequence node env (options (js/obj)))
+(define (compile-js/sequence stx env (options (js/obj)))
   (define expressions
-    (send node drop 1))
+    (send stx drop 1))
   (make-expression-or-statement
    (new SequenceExpression
         (map (lambda (x)
@@ -5070,7 +4385,7 @@
   (define env1
     (new LispEnvironment
          '()
-         env))
+          env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -5186,7 +4501,7 @@
     (define env1
       (new LispEnvironment
            '()
-           env))
+            env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -5262,9 +4577,9 @@
     global-environment-exp)))
 
 ;;; Compile a `(quote ...)` expression.
-(define (compile-quote node env (options (js/obj)))
+(define (compile-quote stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define result)
   (cond
    ((pair-or-list? (second exp))
@@ -5281,46 +4596,46 @@
    ((symbol? (second exp))
     (set! result
           (compile-symbol
-           (send node get 1)
+           (send stx get 1)
            env
            options
            (js/obj :quoted-symbol #t))))
    (else
     (set! result
           (compile-expression
-           (send node get 1)
+           (send stx get 1)
            env
            options))))
   (make-expression-or-statement
    result options))
 
 ;;; Compile a `(quasiquote ...)` expression.
-(define (compile-quasiquote node env (options (js/obj)))
+(define (compile-quasiquote stx env (options (js/obj)))
   (make-expression-or-statement
    (compile-quasiquote-helper
     1
-    (send node get 1)
+    (send stx get 1)
     env options)
    options))
 
 ;;; Helper function for `compile-quasiquote`.
 ;;; Keeps track of the quotation level and
 ;;; only escapes if `level` is `0`.
-(define (compile-quasiquote-helper level node env (options (js/obj)))
+(define (compile-quasiquote-helper level stx env (options (js/obj)))
   ;; Compile an `(unquote ...)` or
   ;; `(unquote-splicing ...)` expression.
-  (define (compile-unquote-exp node level (splicing #f))
+  (define (compile-unquote-exp stx level (splicing #f))
     (cond
      ((> level 1)
       (define sym
         (compile-symbol
-         (send node get 0)
+         (send stx get 0)
          env options
          (js/obj :quoted-symbol #t)))
       (define result
         (new ArrayExpression
              (list sym)))
-      (for ((x (send node drop 1)))
+      (for ((x (send stx drop 1)))
         (insert-into-array-exp!
          (compile-quasiquote-helper
           (- level 1)
@@ -5342,11 +4657,11 @@
       result)
      (else
       (cond
-       ((= (send node size) 2)
+       ((= (send stx size) 2)
         (define result
           (compile-quasiquote-helper
            (- level 1)
-           (send node get 1)
+           (send stx get 1)
            env options))
         (when splicing
           (set! result
@@ -5355,7 +4670,7 @@
        (else
         (define result
           (new ArrayExpression '()))
-        (for ((x (send node drop 1)))
+        (for ((x (send stx drop 1)))
           (define element
             (compile-quasiquote-helper
              (- level 1)
@@ -5370,10 +4685,10 @@
         (new SpreadElement result))))))
   (cond
    ((zero? level)
-    (compile-expression node env options))
+    (compile-expression stx env options))
    (else
     (define exp
-      (syntax->datum node))
+      (syntax->datum stx))
     (cond
      ((pair-or-list? exp)
       (cond
@@ -5381,34 +4696,34 @@
         (new ArrayExpression
              (list
               (compile-symbol
-               (send node get 0)
+               (send stx get 0)
                env options
                (js/obj :quoted-symbol #t))
               (compile-quasiquote-helper
                (+ level 1)
-               (send node get 1)
+               (send stx get 1)
                env options))))
        ((tagged-list? exp 'unquote)
-        (compile-unquote-exp node level))
+        (compile-unquote-exp stx level))
        ((tagged-list? exp 'unquote-splicing)
-        (compile-unquote-exp node level #t))
+        (compile-unquote-exp stx level #t))
        (else
         (define result (new ArrayExpression '()))
-        (for ((node1 (send node get-nodes)))
+        (for ((stx1 (send stx get-nodes)))
           (insert-into-array-exp!
            (compile-quasiquote-helper
-            level node1 env options)
+            level stx1 env options)
            result))
         result)))
      ((symbol? exp)
       (compile-symbol
-       node env options
+       stx env options
        (js/obj :quoted-symbol #t)))
      (else
-      (compile-expression node env options))))))
+      (compile-expression stx env options))))))
 
 ;;; Compile a `(require ...)` expression.
-(define (compile-require node env (options (js/obj)))
+(define (compile-require stx env (options (js/obj)))
   (define fcommonjs
     (oget options :fcommonjs))
   (define fes-module-interop
@@ -5417,14 +4732,14 @@
     (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
-  (define x-node
-    (send node get 1))
+  (define x-stx
+    (send stx get 1))
   (define x-exp
-    (syntax->datum x-node))
-  (define y-node
-    (or (send node get 2) x-node))
+    (syntax->datum x-stx))
+  (define y-stx
+    (or (send stx get 2) x-stx))
   (define y-exp
-    (syntax->datum y-node))
+    (syntax->datum y-stx))
   (cond
    (fcommonjs
     (cond
@@ -5442,7 +4757,7 @@
        (datum->syntax
         #f
         `(define ,x-exp
-           (js/require ,y-node)))
+           (js/require ,y-stx)))
        env options))))
    (else
     (define specifiers '())
@@ -5450,7 +4765,7 @@
     (define src #n)
     (cond
      ((tagged-list? x-exp 'only-in)
-      (for ((x (send x-node drop 2)))
+      (for ((x (send x-stx drop 2)))
         (define exp
           (syntax->datum x))
         (cond
@@ -5526,11 +4841,11 @@
            src))))))
 
 ;;; Compile a `(provide ...)` expression.
-(define (compile-provide node env (options (js/obj)))
+(define (compile-provide stx env (options (js/obj)))
   (define fcommonjs
     (oget options :fcommonjs))
   (define expressions
-    (send node drop 1))
+    (send stx drop 1))
   (cond
    (fcommonjs
     (define properties '())
@@ -5625,17 +4940,17 @@
       (make-program-fragment results))))))
 
 ;;; Compile a `(set! ...)` expression.
-(define (compile-set node env (options (js/obj)))
+(define (compile-set stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
-  (define sym-node
-    (send node get 1))
+  (define sym-stx
+    (send stx get 1))
   (define sym-exp
-    (syntax->datum sym-node))
-  (define val-node
-    (send node get 2))
+    (syntax->datum sym-stx))
+  (define val-stx
+    (send stx get 2))
   (define val-exp
-    (syntax->datum val-node))
+    (syntax->datum val-stx))
   (cond
    ((and (form? val-exp add_ env)
          (or (and (eq? (second val-exp) sym-exp)
@@ -5643,14 +4958,14 @@
              (and (eq? (third val-exp) sym-exp)
                   (eq? (second val-exp) 1))))
     (set! val-exp `(add1 ,sym-exp))
-    (set! val-node (datum->syntax #f val-exp)))
+    (set! val-stx (datum->syntax #f val-exp)))
    ((and (form? val-exp sub_ env)
          (or (and (eq? (second val-exp) sym-exp)
                   (eq? (third val-exp) 1))
              (and (eq? (third val-exp) sym-exp)
                   (eq? (second val-exp) 1))))
     (set! val-exp `(sub1 ,sym-exp))
-    (set! val-node (datum->syntax #f val-exp))))
+    (set! val-stx (datum->syntax #f val-exp))))
   (define result "")
   (cond
    ((and (form? val-exp add1_ env)
@@ -5659,7 +4974,7 @@
           (new UpdateExpression
                "++"
                (compile-expression
-                sym-node env options)
+                sym-stx env options)
                (or (eq? expression-type "return")
                    (not (eq? expression-type
                              "statement"))))))
@@ -5669,47 +4984,47 @@
           (new UpdateExpression
                "--"
                (compile-expression
-                sym-node env options)
+                sym-stx env options)
                (or (eq? expression-type "return")
                    (not (eq? expression-type
                              "statement"))))))
    (else
     (set! result
-          (compile-js/assignment node env options))))
+          (compile-js/assignment stx env options))))
   (make-expression-or-statement result options))
 
 ;;; Compile a string expression.
-(define (compile-string node env (options (js/obj)))
+(define (compile-string stx env (options (js/obj)))
   (define str
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((regexp-match (regexp "\\n") str)
     (define lines
       (string-split str (regexp "^" "gm")))
     (cond
      ((<= (length lines) 1)
-      (compile-atom node env options))
+      (compile-atom stx env options))
      (else
       ;; TODO: We could compile to a template literal instead.
       ;; We just have to take care to escape it properly.
       (compile-syntax
        (transfer-comments
-        node
+        stx
         (datum->syntax
-         node
+         stx
          `(string-append ,@lines)))
        env options))))
    (else
-    (compile-atom node env options))))
+    (compile-atom stx env options))))
 
 ;;; Compile a `(- ...)` expression.
-(define (compile-sub node env (options (js/obj)))
+(define (compile-sub stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((= (length exp) 2)
     (define num
-      (send node get 1))
+      (send stx get 1))
     (define num-compiled
       (compile-expression
        num env options))
@@ -5718,21 +5033,19 @@
      options))
    (else
     (compile-binary-expression
-     node env options
+     stx env options
      (js/obj :identity 0
              :operator "-")))))
 
 ;;; Compile a variable expression.
-(define (compile-variable node env (options (js/obj)))
-  (define compilation-mapping-environment
-    (oget options :compilation-mapping-environment))
+(define (compile-variable stx env (options (js/obj)))
   (define literal-symbol
     (oget options :literal-symbol))
   (define quoted-symbol
     (oget options :quoted-symbol))
   (define current-module
     (oget options :current-module))
-  (define exp (syntax->datum node))
+  (define exp (syntax->datum stx))
   (unless (or quoted-symbol
               literal-symbol
               (keyword? exp)
@@ -5762,11 +5075,11 @@
            env options)
           options))))))
   (make-expression-or-statement
-   (compile-symbol node env options)
+   (compile-symbol stx env options)
    options))
 
 ;;; Compile a symbol expression.
-(define (compile-symbol node env (options (js/obj)) (settings (js/obj)))
+(define (compile-symbol stx env (options (js/obj)) (settings (js/obj)))
   (define literal-symbol-option
     (or (oget settings :literal-symbol) #f))
   (define quoted-symbol-option
@@ -5778,7 +5091,7 @@
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define gensymed-symbol
     (gensym? exp))
   (define str
@@ -5801,14 +5114,13 @@
       (set! gensym-name-promise
             (hash-ref gensym-map exp)))
      (else
-      ;; In order to prevent naming conflicts, use a thunk
+      ;; In order to prevent naming conflicts, use a promise
       ;; to delay the task of translating a `gensym`'ed
       ;; symbol to a JavaScript identifier.
       (set! gensym-name-promise
             (new InternalPromise
                  (delay
-                   (define name
-                     (make-identifier-string str options))
+                   (define name str)
                    (define gensym-name name)
                    (define i 1)
                    (define regular-sym
@@ -5825,7 +5137,7 @@
                            (string->symbol gensym-name))
                      (set! i (+ i 1)))
                    (send env set-local! regular-sym #u 'Any)
-                   gensym-name)))
+                   (make-identifier-string gensym-name options))))
       (hash-set! gensym-map exp gensym-name-promise)))
     (cond
      (quoted-symbol-option
@@ -5849,8 +5161,8 @@
     (define name
       (make-identifier-string str options))
     (new Identifier name))
-   ((send compilation-variables-env has? exp)
-    (send compilation-variables-env get exp))
+   ((hash-has-key? compilation-variables-map exp)
+    (hash-ref compilation-variables-map exp))
    ((eq? str "this")
     (new ThisExpression))
    (else
@@ -5869,49 +5181,49 @@
   (form? exp let-star_ env))
 
 ;;; Compile a `(break)` expression.
-(define (compile-break node env (options (js/obj)))
+(define (compile-break stx env (options (js/obj)))
   (new BreakStatement
-       (if (> (send node size) 1)
+       (if (> (send stx size) 1)
            (compile-expression
-            (send node get 1)
+            (send stx get 1)
             env options)
            #n)))
 
 ;;; Compile a `(continue)` expression.
-(define (compile-continue node env (options (js/obj)))
+(define (compile-continue stx env (options (js/obj)))
   (new ContinueStatement
-       (if (> (send node size) 1)
+       (if (> (send stx size) 1)
            (compile-expression
-            (send node get 1)
+            (send stx get 1)
             env options)
            #n)))
 
 ;;; Compile a `(js/new ...)` expression.
-(define (compile-js/new node env (options (js/obj)))
+(define (compile-js/new stx env (options (js/obj)))
   (make-expression-or-statement
    (new NewExpression
         (compile-expression
-         (send node get 1)
+         (send stx get 1)
          env options)
         (map (lambda (x)
                (compile-expression
                 x env options))
-             (send node drop 2)))
+             (send stx drop 2)))
    options))
 
 ;;; Compile a `(js/do-while ...)` expression.
-(define (compile-js/do-while node env (options (js/obj)))
+(define (compile-js/do-while stx env (options (js/obj)))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
   (define body
-    (send node get 1))
+    (send stx get 1))
   (define body-exp
     (datum->syntax
-     node
+     stx
      `(js/block ,@(syntax->list body))))
   (define test
-    (send node get 2))
+    (send stx get 2))
   (new DoWhileStatement
        (compile-expression
         test env1 options)
@@ -5919,14 +5231,14 @@
         body-exp env1 options)))
 
 ;;; Compile a `(js/while ...)` expression.
-(define (compile-js/while node env (options (js/obj)))
+(define (compile-js/while stx env (options (js/obj)))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
   (define test
-    (send node get 1))
+    (send stx get 1))
   (define body
-    (begin-wrap-rose (send node drop 2)))
+    (begin-wrap-stx (send stx drop 2)))
   (new WhileStatement
        (compile-expression
         test env1 options)
@@ -5935,24 +5247,24 @@
          body env1 options))))
 
 ;;; Compile a `(js/for ...)` expression.
-(define (compile-js/for node env (options (js/obj)))
+(define (compile-js/for stx env (options (js/obj)))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
   (define body
     (datum->syntax
-     node
-     `(js/block ,@(send node drop 2))))
+     stx
+     `(js/block ,@(send stx drop 2))))
   (define init
-    (send node get 1 0))
+    (send stx get 1 0))
   (define init-exp
     (syntax->datum init))
   (define test
-    (send node get 1 1))
+    (send stx get 1 1))
   (define test-exp
     (syntax->datum test))
   (define update
-    (send node get 1 2))
+    (send stx get 1 2))
   (define update-exp
     (syntax->datum update))
   (define sym #u)
@@ -6029,20 +5341,20 @@
        body-compiled))
 
 ;;; Compile a `(js/for-in ...)` expression.
-(define (compile-js/for-in node env (options (js/obj)))
+(define (compile-js/for-in stx env (options (js/obj)))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
   (define left
     (datum->syntax
-     node
-     `(define ,(send node get 1 0 0))))
+     stx
+     `(define ,(send stx get 1 0 0))))
   (define right
-    (send node get 1 0 1))
+    (send stx get 1 0 1))
   (define body
     (datum->syntax
-     node
-     `(js/block ,@(send node drop 2))))
+     stx
+     `(js/block ,@(send stx drop 2))))
   (define left-compiled
     (compile-statement left env1 options))
   (define right-compiled
@@ -6055,20 +5367,20 @@
        body-compiled))
 
 ;;; Compile a `(js/for-of ...)` expression.
-(define (compile-js/for-of node env (options (js/obj)))
+(define (compile-js/for-of stx env (options (js/obj)))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
   (define left
     (datum->syntax
-     node
-     `(define ,(send node get 1 0 0))))
+     stx
+     `(define ,(send stx get 1 0 0))))
   (define right
-    (send node get 1 0 1))
+    (send stx get 1 0 1))
   (define body
     (datum->syntax
-     node
-     `(js/block ,@(send node drop 2))))
+     stx
+     `(js/block ,@(send stx drop 2))))
   (define left-compiled
     (compile-statement left env1 options))
   (define right-compiled
@@ -6081,48 +5393,48 @@
        body-compiled))
 
 ;;; Compile a `(yield ...)` expression.
-(define (compile-yield node env (options (js/obj)))
+(define (compile-yield stx env (options (js/obj)))
   (make-expression-or-statement
    (new YieldExpression
-        (if (> (send node size) 1)
+        (if (> (send stx size) 1)
             (compile-expression
-             (send node get 1)
+             (send stx get 1)
              env options)
             #n))
    options))
 
 ;;; Compile a `(throw ...)` expression.
-(define (compile-throw node env (options (js/obj)))
+(define (compile-throw stx env (options (js/obj)))
   (new ThrowStatement
        (compile-expression
-        (send node get 1)
+        (send stx get 1)
         env options)))
 
 ;;; Compile a `(js/delete ...)` expression.
-(define (compile-js/delete node env (options (js/obj)))
+(define (compile-js/delete stx env (options (js/obj)))
   (make-expression-or-statement
    (new UnaryExpression
         "delete"
         #t
         (compile-expression
-         (send node get 1)
+         (send stx get 1)
          env options))
    options))
 
 ;;; Compile a `(return ...)` expression.
-(define (compile-return node env (options (js/obj)))
+(define (compile-return stx env (options (js/obj)))
   (new ReturnStatement
-       (if (> (send node size) 1)
+       (if (> (send stx size) 1)
            (compile-expression
-            (send node get 1)
+            (send stx get 1)
             env options)
            #n)))
 
 ;;; Compile a `(js/async ...)` expression.
-(define (compile-js/async node env (options (js/obj)))
+(define (compile-js/async stx env (options (js/obj)))
   (define result
     (compile-expression
-     (send node get 1)
+     (send stx get 1)
      env options))
   (when (or (estree-type? result "FunctionDeclaration")
             (estree-type? result "FunctionExpression")
@@ -6139,51 +5451,51 @@
    result options))
 
 ;;; Compile a `(js/await ...)` expression.
-(define (compile-js/await node env (options (js/obj)))
+(define (compile-js/await stx env (options (js/obj)))
   (make-expression-or-statement
    (new AwaitExpression
         (compile-expression
-         (send node get 1)
+         (send stx get 1)
          env options))
    options))
 
 ;;; Compile a `(js/string-concat ...)` expression.
-(define (compile-js/string-concat node env (options (js/obj)))
+(define (compile-js/string-concat stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (cond
    ((<= (length exp) 1)
     (compile-syntax
-     (datum->syntax node "")
+     (datum->syntax stx "")
      env options))
    ((= (length exp) 2)
     (compile-syntax
-     (send node get 1)
+     (send stx get 1)
      env options))
    (else
     (compile-binary-expression
-     node env options
+     stx env options
      (js/obj :identity ""
              :operator "+")))))
 
 ;;; Compile a `(class ...)` expression.
-(define (compile-class node env (options (js/obj)))
-  (compile-class-helper node env options))
+(define (compile-class stx env (options (js/obj)))
+  (compile-class-helper stx env options))
 
 ;;; Compile a `(define-class ...)` expression.
-(define (compile-define-class node env (options (js/obj)))
-  (compile-class-helper node env options))
+(define (compile-define-class stx env (options (js/obj)))
+  (compile-class-helper stx env options))
 
 ;;; Helper function for `compile-class` and `compile-define-class`.
-(define (compile-class-helper node env (options (js/obj)))
+(define (compile-class-helper stx env (options (js/obj)))
   (define inherited-options
     (js/obj-append options))
   (define exp
-    (syntax->datum node))
-  (define class-name-node
-    (send node get 1))
+    (syntax->datum stx))
+  (define class-name-stx
+    (send stx get 1))
   (define class-name
-    (syntax->datum class-name-node))
+    (syntax->datum class-name-stx))
   (define has-name
     (symbol? class-name))
   (define super-class
@@ -6191,26 +5503,26 @@
   (define id
     (if has-name
         (compile-symbol
-         class-name-node env inherited-options)
+         class-name-stx env inherited-options)
         #n))
-  (define body-node
+  (define body-stx
     (if (eq? id #n)
-        (slice-rose node 1)
-        (slice-rose node 2)))
+        (slice-stx stx 1)
+        (slice-stx stx 2)))
   (define body-exp
-    (syntax->datum body-node))
+    (syntax->datum body-stx))
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
   (make-type-binding env1 'super 'Any)
   (when (and (pair-or-list? (first body-exp))
              (not (form? (first body-exp) define_ env1)))
-    (define super-classes-node
-      (send body-node get 0))
+    (define super-classes-stx
+      (send body-stx get 0))
     (define super-classes
-      (syntax->datum super-classes-node))
-    (set! body-node (slice-rose body-node 1))
-    (set! body-exp (syntax->datum body-node))
+      (syntax->datum super-classes-stx))
+    (set! body-stx (slice-stx body-stx 1))
+    (set! body-exp (syntax->datum body-stx))
     (when (> (length super-classes) 0)
       (set! super-class
             (compile-expression
@@ -6221,7 +5533,7 @@
   (define body-declarations '())
   (define accessibilities
     (make-hash))
-  (for ((x (syntax->list body-node)))
+  (for ((x (syntax->list body-stx)))
     (define exp
       (syntax->datum x))
     (cond
@@ -6238,7 +5550,7 @@
         (pair-or-list? id))
       (when is-method
         (set! id (first id)))
-      (define id-node
+      (define id-stx
         (if is-method
             (send (send x get 1) get 0)
             (send x get 1)))
@@ -6261,15 +5573,15 @@
       (define return-type
         (if is-constructor
             'Void
-            #u))
+             #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
         (if is-computed
             (compile-expression
-             id-node env1 inherited-options)
+             id-stx env1 inherited-options)
             (compile-symbol
-             id-node env1
+             id-stx env1
              (make-expression-options
               inherited-options))))
       (define init-compiled
@@ -6356,45 +5668,45 @@
            super-class)))
 
 ;;; Compile a `(js/obj ...)` expression.
-(define (compile-js/obj node env (options (js/obj)))
+(define (compile-js/obj stx env (options (js/obj)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define properties '())
   (define i 1)
   (while (< i (length exp))
-    (define key-node
-      (send node get i))
+    (define key-stx
+      (send stx get i))
     (cond
-     ((tagged-list? key-node 'js/obj-spread)
+     ((tagged-list? key-stx 'js/obj-spread)
       (define compiled-key
-        (compile-expression key-node env options))
+        (compile-expression key-stx env options))
       (push-right! properties compiled-key)
       (set! i (+ i 1)))
      (else
       (define key-exp
-        (syntax->datum key-node))
+        (syntax->datum key-stx))
       (define computed
         (not (string? key-exp)))
-      (define val-node
-        (send node get (+ i 1)))
+      (define val-stx
+        (send stx get (+ i 1)))
       (define is-quoted-symbol #f)
       (when (and (quoted-expression? key-exp)
                  (symbol? (second key-exp)))
         (set! key-exp (second key-exp))
-        (set! key-node (datum->syntax key-node key-exp))
+        (set! key-stx (datum->syntax key-stx key-exp))
         (set! is-quoted-symbol #t)
         (set! computed #f))
       (when (keyword? key-exp)
         (set! key-exp (keyword->symbol_ key-exp))
-        (set! key-node (datum->syntax key-node key-exp))
+        (set! key-stx (datum->syntax key-stx key-exp))
         (set! is-quoted-symbol #t)
         (set! computed #f))
       (define compiled-key
         (if is-quoted-symbol
-            (compile-symbol key-node env options)
-            (compile-expression key-node env options)))
+            (compile-symbol key-stx env options)
+            (compile-expression key-stx env options)))
       (define compiled-value
-        (compile-expression val-node env options))
+        (compile-expression val-stx env options))
       (when (and (string? key-exp)
                  (regexp-match (regexp "^[a-z]+$" "i")
                                key-exp))
@@ -6418,9 +5730,9 @@
    options))
 
 ;;; Compile a `(js/obj-append ...)` expression.
-(define (compile-js/obj-append node env (options (js/obj)))
+(define (compile-js/obj-append stx env (options (js/obj)))
   (define args
-    (send node drop 1))
+    (send stx drop 1))
   (define properties '())
   (for ((arg args))
     (define exp
@@ -6435,9 +5747,9 @@
    (new ObjectExpression properties)
    options))
 
-(define (compile-js/obj-spread node env (options (js/obj)))
+(define (compile-js/obj-spread stx env (options (js/obj)))
   (define arg
-    (send node get 1))
+    (send stx get 1))
   (define arg-compiled
     (compile-expression arg env options))
   (make-expression-or-statement
@@ -6445,13 +5757,13 @@
    options))
 
 ;;; Compile a `(js/tag ...)` expression.
-(define (compile-js/tagged-template node env (options (js/obj)))
+(define (compile-js/tagged-template stx env (options (js/obj)))
   (define tag
-    (send node get 1))
+    (send stx get 1))
   (define tag-compiled
     (compile-expression tag env options))
   (define str
-    (send node get 2))
+    (send stx get 2))
   (define str-exp
     (syntax->datum str))
   (make-expression-or-statement
@@ -6465,9 +5777,9 @@
    options))
 
 ;;; Compile an `(append ...)` expression.
-(define (compile-append node env (options (js/obj)))
+(define (compile-append stx env (options (js/obj)))
   (define elements '())
-  (for ((x (send node drop 1)))
+  (for ((x (send stx drop 1)))
     (define el
       (compile-expression
        x env options))
@@ -6489,11 +5801,11 @@
    options))
 
 ;;; Compile a `(js/try ...)` expression.
-(define (compile-js/try node env (options (js/obj)))
+(define (compile-js/try stx env (options (js/obj)))
   (define body-exps '())
   (define catch-clause #n)
   (define finally-clause #n)
-  (for ((x (send node drop 1)))
+  (for ((x (send stx drop 1)))
     (cond
      ((tagged-list? x 'catch)
       (set! catch-clause x))
@@ -6549,13 +5861,13 @@
    options))
 
 ;;; Compile a `(declare ...)` expression.
-(define (compile-declare node env (options (js/obj)))
+(define (compile-declare stx env (options (js/obj)))
   (define language-env
     (oget options :language-environment))
   (define (lang-filter x)
     (not (eq? x language-env)))
   (define exp
-    (syntax->datum node))
+    (syntax->datum stx))
   (define name
     (second exp))
   (define specs
@@ -6572,192 +5884,6 @@
   (define expansion
     (funcall declare_ exp env))
   (compile-sexp expansion env options))
-
-;;; Compiler macro for `(make-hash ...)` expressions.
-(define-macro (compile-make-hash-macro assocs)
-  (cond
-   (assocs
-    (cond
-     ((and (or (tagged-list? assocs 'quasiquote)
-               (tagged-list? assocs 'quote))
-           (list? (second assocs))
-           (= (length
-               (filter
-                (lambda (x)
-                  (or (not (pair-or-list? x))
-                      (and (= (length x) 2)
-                           (or (tagged-list? x 'unquote)
-                               (and (tagged-list? x 'unquote-splicing)
-                                    (not (tagged-list?
-                                          (second x)
-                                          'hash->list)))))))
-                (second assocs)))
-              0))
-      ;; If we have a quoted list of pairs, rewrite it to a simpler
-      ;; expression that does not call `flatten`.
-      `(new Map
-            (ann (,(first assocs)
-                  ,(map (lambda (x)
-                          (cond
-                           ((and (tagged-list? x 'unquote-splicing)
-                                 (tagged-list? (second x) 'hash->list))
-                            (cons (first x)
-                                  (list `(send
-                                          ,(second (second x))
-                                          entries))))
-                           (else
-                            (list (car x) (cdr x)))))
-                        (second assocs)))
-                 Any)))
-     (else
-      ;; If the `assocs` form is not simple, then we have map
-      ;; `flatten` over it in order to convert a list of pairs to a
-      ;; list of lists.
-      `(new Map (map flatten ,assocs)))))
-   (else
-    `(new Map))))
-
-;;; Compiler macro for `(hash-clear ...)` expressions.
-(define-macro (compile-hash-clear-macro ht)
-  (cond
-   ((symbol? ht)
-    `(begin
-       (send ,ht clear)
-       ,ht))
-   (else
-    `((lambda (ht)
-        (send ht clear)
-        ht)
-      ,ht))))
-
-;;; Compiler macro for `(hash-remove! ...)` expressions.
-(define-macro (compile-hash-remove-macro ht key)
-  (cond
-   ((symbol? ht)
-    `(begin
-       (send ,ht delete ,key)
-       ,ht))
-   (else
-    `((lambda (ht key)
-        (send ht delete key)
-        ht)
-      ,ht ,key))))
-
-;;; Compiler macro for `(hash-ref ...)` expressions.
-(define-macro (compile-hash-ref-macro ht key failure-result)
-  (cond
-   ((undefined? failure-result)
-    `(send ,ht get ,key))
-   (else
-    (definition->macro
-      '(define (hash-ref ht key failure-result)
-         (if (send ht has key)
-             (send ht get key)
-             failure-result))
-      (list ht key failure-result)))))
-
-;;; Compiler macro for `(map ...)` expressions.
-(define-macro (compile-map-macro f x)
-  ;; Note that `` `(send ,x map ,f) `` is too simple, as JavaScript's
-  ;; `.map()` method calls the function with multiple arguments. This
-  ;; can lead to unintuitive bugs in cases where the function has an
-  ;; optional second parameter. To avoid this, we enclose `f` in a
-  ;; unary function wrapper.
-  (define f-exp
-    (compile-map-macro-helper f env))
-  `(send ,x map ,f-exp))
-
-;;; Wrap `f-exp` in a unary function wrapper.
-(define (compile-map-macro-helper f-exp env)
-  (cond
-   ;; If `f-exp` is a symbolic expression, then wrap it in a
-   ;; `lambda` expression.
-   ((symbol? f-exp)
-    `(lambda (x)
-       (,f-exp x)))
-   ;; If `f-exp` is an anonymous unary function, then there is
-   ;; no need to wrap it.
-   ((and (or (form? f-exp lambda_ env)
-             (form? f-exp js/function_ env)
-             (form? f-exp js/arrow_ env))
-         (pair-or-list? (second f-exp))
-         (= (length (second f-exp)) 1))
-    f-exp)
-   (else
-    ;; Curried function application, i.e., the **A** combinator
-    ;; defined as a curried function. Calling this function with
-    ;; a single argument produces a unary function wrapper that
-    ;; calls a function with a single argument and disregards any
-    ;; additional arguments.
-    (define A-exp
-      '(lambda (f)
-         (lambda (x)
-           (f x))))
-    `(,A-exp ,f-exp))))
-
-;;; Compiler macro for `(values ...)` expressions.
-(define-macro (compile-values-macro &rest args)
-  `(list ,@args))
-
-;;; Compiler macro for `(string? ...)` expressions.
-(define-macro (compile-string?-macro x)
-  (define-fields (fstringobjects)
-    (current-compilation-options))
-  (cond
-   (fstringobjects
-    `(funcall string? ,x))
-   (else
-    `(js/string-literal? ,x))))
-
-;;; Compiler macro for `(string-append ...)` expressions.
-(define-macro (compile-string-append-macro &rest args)
-  `(js/string-concat ,@args))
-
-;;; Compiler macro for `(js/string-concat ...)` expressions.
-(define-macro (compile-js/string-concat-macro &rest args)
-  `(js/op/apply + (list ,@args) :identity ""))
-
-;;; Compiler macro for `(string-trim ...)` expressions.
-(define-macro (compile-string-trim-macro &rest args)
-  (cond
-   ((= (length args) 1)
-    `(send ,(first args) trim))
-   (else
-    (definition->macro (source string-trim_) args))))
-
-;;; Compiler macro for `(member? ...)` expressions.
-(define-macro (compile-member-p-macro v lst is-equal)
-  (cond
-   ((not is-equal)
-    (definition->macro
-      '(define (member?_ v lst)
-         (memf? (lambda (x)
-                  (equal? v x))
-                lst))
-      (list v lst)))
-   (else
-    (definition->macro
-      '(define (member?_ v lst is-equal)
-         (memf? (lambda (x)
-                  (is-equal v x))
-                lst))
-      (list v lst is-equal)))))
-
-;;; Compiler macro for `(substring ...)` expressions.
-(define-macro (compile-substring-macro str &rest args)
-  `(send ,str substring ,@args))
-
-;;; Compiler macro for `(js/regexp ...)` expressions.
-(define-macro (compile-js/regexp-macro &rest args)
-  `(new RegExp ,@args))
-
-;;; Compiler macro for `(assert ...)` expressions.
-(define-macro (compile-assert-macro &rest args)
-  `(send console assert ,@args))
-
-;;; Compiler macro for `(display ...)` expressions.
-(define-macro (compile-display-macro &rest args)
-  `(send console log ,@args))
 
 ;;; Compiler macro for `(current-environment)` expressions.
 (define-macro (compile-current-environment-macro )
@@ -6794,12 +5920,12 @@
                  (return #f))))))
 
 ;;; Compile a `(js/raw ...)` expression.
-(define (compile-js/raw node env (options (js/obj)))
+(define (compile-js/raw stx env (options (js/obj)))
   (define eval-option
     (oget options :feval-bindings))
   (set! eval-option #t)
   (define str
-    (send node get 1))
+    (send stx get 1))
   (define str-exp
     (syntax->datum str))
   (cond
@@ -6812,10 +5938,10 @@
      (new XRawJavaScript str-exp)
      options))
    (else
-    (compile-js/eval node env options))))
+    (compile-js/eval stx env options))))
 
 ;;; Compile a `(js/eval ...)` expression.
-(define (compile-js/eval node env (options (js/obj)))
+(define (compile-js/eval stx env (options (js/obj)))
   ;; TODO: Disable if `eval-option` is `#f`.
   (define eval-option
     (oget options :feval-bindings))
@@ -6830,7 +5956,7 @@
   ;; TODO: Make `#f` the default.
   (set! eval-option #t)
   (define str
-    (send node get 1))
+    (send stx get 1))
   (define str-exp
     (syntax->datum str))
   (cond
@@ -6916,6 +6042,14 @@
 
 ;;; Expand a `(begin ...)` expression.
 (define-macro (begin_ &whole exp &environment env)
+  ;; TODO: Convert to fexpr.
+  (compile-sexp
+   exp
+   env
+   (current-compilation-options)))
+
+;;; Expand a `(let ...)` expression.
+(define-macro (let_ &whole exp &environment env)
   ;; TODO: Convert to fexpr.
   (compile-sexp
    exp
@@ -7165,7 +6299,7 @@
   (define fold
     (if (eq? (plist-get_ options :fold) 'right)
         'foldr
-        'foldl))
+         'foldl))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
@@ -7384,76 +6518,74 @@
   (and (not (undefined? x))
        (not (undefined? (get-field fsource x)))))
 
-;;; Map the function `f` over the rose tree-wrapped
-;;; S-expression `node`. The S-expression is processed
-;;; in bottom-up order.
+;;; Map the function `f` over the syntax object `stx`.
+;;; The tree is processed in bottom-up order.
 (define (map-syntax f
-                    node
+                    stx
                     (env (new LispEnvironment))
                     (stack '())
                     (bindings (new LispEnvironment)))
-  ;; TODO: Rename to `map-syntax`.
   (cond
-   ((not (syntax? node))
-    (map-sexp f node env stack bindings))
+   ((not (syntax? stx))
+    (map-sexp f stx env stack bindings))
    (else
-    (map-visit-rose f node env stack bindings))))
+    (map-visit-stx f stx env stack bindings))))
 
-;;; Map a function `f` over a rose tree using the Visitor pattern.
-(define (map-visit-rose f
-                        node
-                        (env (new LispEnvironment))
-                        (stack '())
-                        (bindings (new LispEnvironment)))
-  (define (skip-node node stack bindings)
-    node)
-  (define (visit-node node stack bindings)
-    (f node stack bindings))
+;;; Map a function `f` over a syntax object using the Visitor pattern.
+(define (map-visit-stx f
+                       stx
+                       (env (new LispEnvironment))
+                       (stack '())
+                       (bindings (new LispEnvironment)))
+  (define (skip-stx stx stack bindings)
+    stx)
+  (define (visit-stx stx stack bindings)
+    (f stx stack bindings))
   ;; Nonatomic value (i.e., a list form some sort).
-  (define (visit-nonatomic node stack bindings (skip 0))
+  (define (visit-nonatomic stx stack bindings (skip 0))
     (define result
-      (visit-forms-node node `(,@stack ,node) bindings skip))
+      (visit-forms-stx stx `(,@stack ,stx) bindings skip))
     (f result stack bindings))
   ;; Macro call.
-  (define (visit-macro-call-p node)
-    (let ((exp (syntax->datum node)))
+  (define (visit-macro-call? stx)
+    (let ((exp (syntax->datum stx)))
       (macro-call? exp env)))
-  (define visit-macro-call visit-node)
+  (define visit-macro-call visit-stx)
   ;; Special form.
-  (define (visit-special-form-p node)
-    (let ((exp (syntax->datum node)))
+  (define (visit-special-form? stx)
+    (let ((exp (syntax->datum stx)))
       (special-form? exp env)))
-  (define visit-special-form visit-node)
+  (define visit-special-form visit-stx)
   ;; Function call.
-  (define (visit-function-call-p node)
-    (let ((exp (syntax->datum node)))
+  (define (visit-function-call? stx)
+    (let ((exp (syntax->datum stx)))
       (function-call? exp env)))
   (define visit-function-call visit-nonatomic)
-  (define (visit-else-p node)
+  (define (visit-else? stx)
     #t)
-  (define (visit-forms-node-with visitor node stack bindings (skip 0))
-    (define exp (syntax->datum node))
+  (define (visit-forms-node-with visitor stx stack bindings (skip 0))
+    (define exp (syntax->datum stx))
     (unless (pair-or-list? exp)
-      ;; `node` is not a list expression; early return.
-      (return (visit visitor node stack bindings)))
-    (define nodes (syntax->list node))
-    (define result-nodes
-      (visit-forms-list-with visitor nodes stack bindings skip))
+      ;; `stx` is not a list expression; early return.
+      (return (visit visitor stx stack bindings)))
+    (define stxs (syntax->list stx))
+    (define result-stxs
+      (visit-forms-list-with visitor stxs stack bindings skip))
     (cond
-     ((eq? result-nodes nodes)
-      node)
+     ((eq? result-stxs stxs)
+      stx)
      (else
       (define exp '())
       (define result
-        (transfer-comments node (datum->syntax #f exp)))
-      (for ((node result-nodes))
-        (push-right! exp (syntax->datum node))
-        (send result insert node))
+        (transfer-comments stx (datum->syntax #f exp)))
+      (for ((stx result-stxs))
+        (push-right! exp (syntax->datum stx))
+        (send result insert stx))
       result)))
-  (define (visit-forms-list-with visitor nodes stack bindings (skip 0))
-    (unless (pair-or-list? nodes)
-      ;; `nodes` is not a list; early return.
-      (return (visit visitor nodes stack bindings)))
+  (define (visit-forms-list-with visitor stxs stack bindings (skip 0))
+    (unless (pair-or-list? stxs)
+      ;; `stxs` is not a list; early return.
+      (return (visit visitor stxs stack bindings)))
     ;; Keep track of whether any of the expressions are modified
     ;; by visitation. If none of them are, return the original list.
     (define is-modified #f)
@@ -7470,48 +6602,49 @@
                  (set! is-modified #t))
                (set! i (+ i 1))
                x1)))
-           nodes))
+           stxs))
     ;; Return the original list if none of the sub-expressions
     ;; were modified.
     (unless is-modified
-      (set! result nodes))
+      (set! result stxs))
     result)
-  (define (visit-forms-node node stack bindings (skip 0))
-    (visit-forms-node-with visitor node stack bindings skip))
-  (define (visit-forms-list nodes stack bindings (skip 0))
-    (visit-forms-list-with visitor nodes stack bindings skip))
-  (define (visit-clauses-node node stack bindings (skip 0))
-    (visit-forms-node-with visit-forms-node node stack bindings skip))
-  (define (visit-clauses-list nodes stack bindings (skip 0))
-    (visit-forms-list-with visit-forms-node nodes stack bindings skip))
+  (define (visit-forms-stx stx stack bindings (skip 0))
+    (visit-forms-node-with visitor stx stack bindings skip))
+  (define (visit-forms-list stxs stack bindings (skip 0))
+    (visit-forms-list-with visitor stxs stack bindings skip))
+  (define (visit-clauses-stx stx stack bindings (skip 0))
+    (visit-forms-node-with visit-forms-stx stx stack bindings skip))
+  (define (visit-clauses-list stxs stack bindings (skip 0))
+    (visit-forms-list-with visit-forms-stx stxs stack bindings skip))
   ;; `(module ...)` form.
-  (define (visit-module-p node)
-    (form? node module_ env))
-  (define (visit-module node stack bindings)
-    (visit-nonatomic node stack bindings 3))
+  (define (visit-module? stx)
+    (form? stx module_ env))
+  (define (visit-module stx stack bindings)
+    (visit-nonatomic stx stack bindings 3))
   ;; `(begin ...)` form.
-  (define (visit-begin-p node)
-    (form? node begin_ env))
-  (define (visit-begin node stack bindings)
-    (visit-nonatomic node stack bindings 1))
+  (define (visit-begin? stx)
+    (form? stx begin_ env))
+  (define (visit-begin stx stack bindings)
+    (visit-nonatomic stx stack bindings 1))
   ;; `(begin0 ...)` form.
-  (define (visit-begin0-p node)
-    (form? node begin0_ env))
+  (define (visit-begin0? stx)
+    (form? stx begin0_ env))
   (define visit-begin0 visit-begin)
   ;; `(let ...)` form.
-  (define (visit-let-p node)
-    (form? node let-star_ env))
-  (define (visit-let node stack bindings)
-    (define result node)
+  (define (visit-let? stx)
+    (or (form? stx let_ env)
+        (form? stx let-star_ env)))
+  (define (visit-let stx stack bindings)
+    (define result stx)
     (define bindings-2
       (extend-environment (new LispEnvironment)
                           bindings))
     (define sym
-      (~> node
+      (~> stx
           (send _ get 0)
           (syntax->datum _)))
-    (define let-bindings-env (send node get 1))
-    (define body (send node drop 2))
+    (define let-bindings-env (send stx get 1))
+    (define body (send stx drop 2))
     (for ((let-binding (syntax->datum let-bindings-env)))
       (define binding-sym
         (if (pair-or-list? let-binding)
@@ -7519,30 +6652,30 @@
             let-binding))
       (make-type-binding bindings-2 binding-sym 'Any))
     (define visited-let-bindings-env
-      (visit-clauses-node let-bindings-env `(,@stack ,node) bindings-2))
+      (visit-clauses-stx let-bindings-env `(,@stack ,stx) bindings-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-2))
+      (visit-forms-list body `(,@stack ,stx) bindings-2))
     (unless (and (eq? let-bindings-env visited-let-bindings-env)
                  (eq? body visited-body))
       (set! result (transfer-comments
-                    node
+                    stx
                     (datum->syntax
                      #f
                      `(,sym ,visited-let-bindings-env
                             ,@visited-body)))))
     (f result stack bindings))
-  (define (visit-let-values-p node)
-    (form? node let-values_ env))
-  (define (visit-let-values node stack bindings)
-    (define result node)
+  (define (visit-let-values? stx)
+    (form? stx let-values_ env))
+  (define (visit-let-values stx stack bindings)
+    (define result stx)
     (define bindings-2
       (extend-environment (new LispEnvironment) bindings))
     (define sym
-      (~> node
+      (~> stx
           (send _ get 0)
           (syntax->datum _)))
-    (define let-bindings-env (send node get 1))
-    (define body (send node drop 2))
+    (define let-bindings-env (send stx get 1))
+    (define body (send stx drop 2))
     (define visited-let-bindings-env
       (visit-forms-node-with
        (lambda (x)
@@ -7558,9 +6691,9 @@
              (when (symbol? let-binding)
                (make-type-binding bindings-2 let-binding 'Any)))))
          (define visited-ids
-           (visit-forms-node ids `(,@stack ,node) bindings-2))
+           (visit-forms-stx ids `(,@stack ,stx) bindings-2))
          (define visited-val
-           (visit visitor val `(,@stack ,node) bindings-2))
+           (visit visitor val `(,@stack ,stx) bindings-2))
          (unless (and (eq? visited-ids ids)
                       (eq? visited-val val))
            (set! x-result (transfer-comments
@@ -7571,63 +6704,63 @@
                               ,visited-val)))))
          x-result)
        let-bindings-env
-       `(,@stack ,node)
+       `(,@stack ,stx)
        bindings-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-2))
+      (visit-forms-list body `(,@stack ,stx) bindings-2))
     (unless (and (eq? let-bindings-env visited-let-bindings-env)
                  (eq? body visited-body))
       (set! result (transfer-comments
-                    node
+                    stx
                     (datum->syntax
                      #f
                      `(,sym ,visited-let-bindings-env
                             ,@visited-body)))))
     (f result stack bindings))
   ;; `(for ...)` form.
-  (define (visit-for-p node)
-    (form? node for_ env))
+  (define (visit-for? stx)
+    (form? stx for_ env))
   (define visit-for visit-let)
   ;; `(while ...)` form.
-  (define (visit-while-p node)
-    (form? node js/while_ env))
+  (define (visit-while? stx)
+    (form? stx js/while_ env))
   (define visit-while visit-function-call)
   ;; `(cond ...)` form.
-  (define (visit-cond-p node)
-    (form? node cond_ env))
-  (define (visit-cond node stack bindings)
-    (define result node)
+  (define (visit-cond? stx)
+    (form? stx cond_ env))
+  (define (visit-cond stx stack bindings)
+    (define result stx)
     (define sym
-      (~> node
+      (~> stx
           (send _ get 0)
           (syntax->datum _)))
-    (define clauses (send node drop 1))
+    (define clauses (send stx drop 1))
     (define visited-clauses
-      (visit-clauses-list clauses `(,@stack ,node) bindings))
+      (visit-clauses-list clauses `(,@stack ,stx) bindings))
     (unless (eq? visited-clauses clauses)
       (set! result (transfer-comments
-                    node
+                    stx
                     (datum->syntax
                      #f
                      `(,sym ,@visited-clauses)))))
     (f result stack bindings))
   ;; `(lambda ...)` form.
-  (define (visit-lambda-p node)
-    (or (form? node lambda_ env)
-        (form? node js/function_ env)
-        (form? node js/arrow_ env)))
-  (define (visit-lambda node stack bindings)
-    (define result node)
+  (define (visit-lambda? stx)
+    (or (form? stx lambda_ env)
+        (form? stx js/function_ env)
+        (form? stx js/arrow_ env)))
+  (define (visit-lambda stx stack bindings)
+    (define result stx)
     (define bindings-2
       (extend-environment (new LispEnvironment)
                           bindings))
     (define sym
-      (~> node
+      (~> stx
           (send _ get 0)
           (syntax->datum _)))
-    (define params (send node get 1))
+    (define params (send stx get 1))
     (define params-exp (syntax->datum params))
-    (define body (send node drop 2))
+    (define body (send stx drop 2))
     (cond
      ((symbol? params-exp)
       (make-type-binding bindings-2 params-exp 'Any))
@@ -7637,28 +6770,28 @@
           (set! param (first param)))
         (make-type-binding bindings-2 param 'Any))))
     (define visited-params
-      (visit-clauses-node params `(,@stack ,node) bindings-2))
+      (visit-clauses-stx params `(,@stack ,stx) bindings-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-2))
+      (visit-forms-list body `(,@stack ,stx) bindings-2))
     (unless (and (eq? params visited-params)
                  (eq? body visited-body))
       (set! result (transfer-comments
-                    node
+                    stx
                     (datum->syntax
                      #f
                      `(,sym ,visited-params
                             ,@visited-body)))))
     (f result stack bindings))
   ;; `(define ...)` form.
-  (define (visit-define-p node)
-    (form? node define_ env))
-  (define (visit-define node stack bindings)
-    (define result node)
+  (define (visit-define? stx)
+    (form? stx define_ env))
+  (define (visit-define stx stack bindings)
+    (define result stx)
     (define define-sym
-      (~> node
+      (~> stx
           (send _ get 0)
           (syntax->datum _)))
-    (define id (send node get 1))
+    (define id (send stx get 1))
     (define id-exp (syntax->datum id))
     (define id-sym
       (if (pair-or-list? id-exp)
@@ -7677,17 +6810,17 @@
                                 bindings)))
      (else
       (make-type-binding bindings id-sym 'Any)))
-    (define body (send node drop 2))
+    (define body (send stx drop 2))
     (define visited-id
       (if (pair-or-list? id-exp)
-          (visit-clauses-node id `(,@stack ,node) bindings-2)
-          (visit-node id `(,@stack ,node) bindings-2)))
+          (visit-clauses-stx id `(,@stack ,stx) bindings-2)
+          (visit-stx id `(,@stack ,stx) bindings-2)))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-2))
+      (visit-forms-list body `(,@stack ,stx) bindings-2))
     (unless (and (eq? id visited-id)
                  (eq? body visited-body))
       (set! result (transfer-comments
-                    node
+                    stx
                     (datum->syntax
                      #f
                      `(,define-sym
@@ -7695,24 +6828,24 @@
                         ,@visited-body)))))
     (f result stack bindings))
   ;; `(define-values ...)` form.
-  (define (visit-define-values-p node)
-    (form? node define-values_ env))
-  (define (visit-define-values node stack bindings)
-    (visit-forms-node node stack bindings 2))
+  (define (visit-define-values? stx)
+    (form? stx define-values_ env))
+  (define (visit-define-values stx stack bindings)
+    (visit-forms-stx stx stack bindings 2))
   ;; `(defmacro ...)` form.
-  (define (visit-defmacro-p node)
-    (form? node defmacro_ env))
-  (define (visit-defmacro node stack bindings)
-    (define result node)
+  (define (visit-defmacro? stx)
+    (form? stx defmacro_ env))
+  (define (visit-defmacro stx stack bindings)
+    (define result stx)
     (define defmacro-sym
-      (~> node
+      (~> stx
           (send _ get 0)
           (syntax->datum _)))
-    (define id (send node get 1))
+    (define id (send stx get 1))
     (define id-sym (syntax->datum id))
-    (define params (send node get 2))
+    (define params (send stx get 2))
     (define params-exp (syntax->datum params))
-    (define body (send node drop 3))
+    (define body (send stx drop 3))
     (make-type-binding bindings id-sym '(macro-> Any * Any))
     (define bindings-2
       (extend-environment (new LispEnvironment) bindings))
@@ -7723,16 +6856,16 @@
       (for ((param (flatten_ params-exp)))
         (make-type-binding bindings-2 params 'Any))))
     (define visited-id
-      (visit-node id `(,@stack ,node) bindings-2))
+      (visit-stx id `(,@stack ,stx) bindings-2))
     (define visited-params
-      (visit-forms-node params `(,@stack ,node) bindings-2))
+      (visit-forms-stx params `(,@stack ,stx) bindings-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-2))
+      (visit-forms-list body `(,@stack ,stx) bindings-2))
     (unless (and (eq? id visited-id)
                  (eq? params visited-params)
                  (eq? body visited-body))
       (set! result (transfer-comments
-                    node
+                    stx
                     (datum->syntax
                      #f
                      `(,defmacro-sym
@@ -7743,21 +6876,21 @@
     (make-type-binding bindings id-sym '(macro-> Any * Any))
     result)
   ;; `(define-macro ...)` form.
-  (define (visit-define-macro-p node)
-    (form? node define-macro_ env))
-  (define (visit-define-macro node stack bindings)
-    (define result node)
+  (define (visit-define-macro? stx)
+    (form? stx define-macro_ env))
+  (define (visit-define-macro stx stack bindings)
+    (define result stx)
     (define define-macro-sym
-      (~> node
+      (~> stx
           (send _ get 0)
           (syntax->datum _)))
-    (define name-and-args (send node get 1))
+    (define name-and-args (send stx get 1))
     (define name-and-args-exp (syntax->datum name-and-args))
     (define id-sym (car name-and-args-exp))
     (define id (datum->syntax name-and-args id-sym))
     (define params-exp (cdr name-and-args-exp))
     (define params (datum->syntax name-and-args params-exp))
-    (define body (send node drop 2))
+    (define body (send stx drop 2))
     (make-type-binding bindings id-sym '(macro-> Any * Any))
     (define bindings-2
       (extend-environment (new LispEnvironment) bindings))
@@ -7768,16 +6901,16 @@
       (for ((param (flatten_ params-exp)))
         (make-type-binding bindings-2 params 'Any))))
     (define visited-id
-      (visit-node id `(,@stack ,node) bindings-2))
+      (visit-stx id `(,@stack ,stx) bindings-2))
     (define visited-params
-      (visit-forms-node params `(,@stack ,node) bindings-2))
+      (visit-forms-stx params `(,@stack ,stx) bindings-2))
     (define visited-body
-      (visit-forms-list body `(,@stack ,node) bindings-2))
+      (visit-forms-list body `(,@stack ,stx) bindings-2))
     (unless (and (eq? id visited-id)
                  (eq? params visited-params)
                  (eq? body visited-body))
       (set! result (transfer-comments
-                    node
+                    stx
                     (datum->syntax
                      #f
                      `(,define-macro-sym
@@ -7787,141 +6920,141 @@
     (make-type-binding bindings id-sym '(macro-> Any * Any))
     result)
   ;; `(define-class ...)` form.
-  (define (visit-define-class-p node)
-    (form? node class_ env))
+  (define (visit-define-class? stx)
+    (form? stx class_ env))
   (define visit-define-class visit-function-call)
   ;; `(ann ...)` form.
-  (define (visit-ann-p node)
-    (form? node ann_ env))
-  (define (visit-ann node stack bindings)
-    (visit-node node stack bindings))
+  (define (visit-ann? stx)
+    (form? stx ann_ env))
+  (define (visit-ann stx stack bindings)
+    (visit-stx stx stack bindings))
   ;; `(and ...)` form.
-  (define (visit-and-p node)
-    (form? node and_ env))
+  (define (visit-and? stx)
+    (form? stx and_ env))
   (define visit-and visit-function-call)
   ;; `(or ...)` form.
-  (define (visit-or-p node)
-    (form? node or_ env))
+  (define (visit-or? stx)
+    (form? stx or_ env))
   (define visit-or visit-function-call)
   ;; `(when ...)` form.
-  (define (visit-when-p node)
-    (form? node when_ env))
-  (define (visit-when node stack bindings)
-    (visit-nonatomic node stack bindings 1))
+  (define (visit-when? stx)
+    (form? stx when_ env))
+  (define (visit-when stx stack bindings)
+    (visit-nonatomic stx stack bindings 1))
   ;; `(unless ...)` form.
-  (define (visit-unless-p node)
-    (form? node unless_ env))
-  (define (visit-unless node stack bindings)
-    (visit-nonatomic node stack bindings 1))
+  (define (visit-unless? stx)
+    (form? stx unless_ env))
+  (define (visit-unless stx stack bindings)
+    (visit-nonatomic stx stack bindings 1))
   ;; `(new ...)` form.
-  (define (visit-new-p node)
-    (form? node new_ env))
+  (define (visit-new? stx)
+    (form? stx new_ env))
   (define visit-new visit-function-call)
   ;; `(return ...)` form.
-  (define (visit-return-p node)
-    (form? node return_ env))
+  (define (visit-return? stx)
+    (form? stx return_ env))
   (define visit-return visit-function-call)
   ;; `(send ...)` form.
-  (define (visit-send-p node)
-    (form? node send_ env))
+  (define (visit-send? stx)
+    (form? stx send_ env))
   (define visit-send visit-function-call)
   ;; `(set! ...)` form.
-  (define (visit-setq-p node)
-    (form? node set!_ env))
+  (define (visit-setq? stx)
+    (form? stx set!_ env))
   (define visit-setq visit-function-call)
   ;; `(set-field! ...)` form.
-  (define (visit-set-field-p node)
-    (form? node set-field_ env))
+  (define (visit-set-field? stx)
+    (form? stx set-field_ env))
   (define visit-set-field visit-function-call)
   ;; `(get-field ...)` form.
-  (define (visit-get-field-p node)
-    (form? node get-field_ env))
+  (define (visit-get-field? stx)
+    (form? stx get-field_ env))
   (define visit-get-field visit-function-call)
   ;; Quoted value.
-  (define (visit-quote-p node)
-    (form? node quote_ env))
-  (define visit-quote visit-node)
+  (define (visit-quote? stx)
+    (form? stx quote_ env))
+  (define visit-quote visit-stx)
   ;; Quasiquoted value.
-  (define (visit-quasiquote-p node)
-    (form? node quasiquote_ env))
-  (define (visit-quasiquote node stack bindings)
-    (define (visit-quasiquote-form node stack bindings)
-      (define result node)
-      (define sym (send node get 0))
-      (define val (send node get 1))
+  (define (visit-quasiquote? stx)
+    (form? stx quasiquote_ env))
+  (define (visit-quasiquote stx stack bindings)
+    (define (visit-quasiquote-form stx stack bindings)
+      (define result stx)
+      (define sym (send stx get 0))
+      (define val (send stx get 1))
       ;; Visit `unquote` and `unquote-splicing` expressions, if any.
       (define visited-val
         (visit quasiquote-visitor val stack bindings))
       (unless (eq? val visited-val)
         (set! result (transfer-comments
-                      node
+                      stx
                       (datum->syntax
                        #f
                        `(,sym ,visited-val)))))
       ;; Visit the `unquote` expression.
       (f result stack bindings))
-    (define (visit-unquote-p node)
-      (tagged-list? node 'unquote))
-    (define (visit-unquote node stack)
+    (define (visit-unquote? stx)
+      (tagged-list? stx 'unquote))
+    (define (visit-unquote stx stack)
       ;; When visiting unquoted expressions,
       ;; use the regular visitor.
-      (visit-forms-node-with visitor node stack bindings 1))
-    (define (visit-unquote-splicing-p node)
-      (tagged-list? node 'unquote-splicing))
+      (visit-forms-node-with visitor stx stack bindings 1))
+    (define (visit-unquote-splicing? stx)
+      (tagged-list? stx 'unquote-splicing))
     (define visit-unquote-splicing visit-unquote)
-    (define (visit-quoted-list node stack bindings)
-      (visit-forms-node-with quasiquote-visitor node stack bindings))
+    (define (visit-quoted-list stx stack bindings)
+      (visit-forms-node-with quasiquote-visitor stx stack bindings))
     (define quasiquote-visitor
       (make-visitor
-       `((,visit-unquote-p ,visit-unquote)
-         (,visit-unquote-splicing-p ,visit-unquote-splicing)
-         (,visit-nonatomic-p ,visit-quoted-list)
-         (,visit-else-p ,skip-node))))
-    (visit-quasiquote-form node `(,@stack ,node) bindings))
+       `((,visit-unquote? ,visit-unquote)
+         (,visit-unquote-splicing? ,visit-unquote-splicing)
+         (,visit-nonatomic? ,visit-quoted-list)
+         (,visit-else? ,skip-stx))))
+    (visit-quasiquote-form stx `(,@stack ,stx) bindings))
   ;; List.
-  (define (visit-nonatomic-p node)
-    (let ((exp (syntax->datum node)))
+  (define (visit-nonatomic? stx)
+    (let ((exp (syntax->datum stx)))
       (pair-or-list? exp)))
   ;; Atomic value.
-  (define visit-atom-p visit-else-p)
-  (define visit-atom visit-node)
+  (define visit-atom? visit-else?)
+  (define visit-atom visit-stx)
   ;; Rename this to `map-visitor` to distinguish it from
   ;; the `visitor` parameter of many functions.
   (define visitor
     (make-visitor
-     `((,visit-module-p ,visit-module)
-       (,visit-begin-p ,visit-begin)
-       (,visit-begin0-p ,visit-begin0)
-       (,visit-let-p ,visit-let)
-       (,visit-let-values-p ,visit-let-values)
-       (,visit-cond-p ,visit-cond)
-       (,visit-lambda-p ,visit-lambda)
-       (,visit-define-p ,visit-define)
-       (,visit-define-values-p ,visit-define-values)
-       (,visit-define-macro-p ,visit-define-macro)
-       (,visit-defmacro-p ,visit-defmacro)
-       (,visit-ann-p ,visit-ann)
-       (,visit-and-p ,visit-and)
-       (,visit-or-p ,visit-or)
-       (,visit-for-p ,visit-for)
-       (,visit-while-p ,visit-while)
-       (,visit-when-p ,visit-when)
-       (,visit-send-p ,visit-send)
-       (,visit-setq-p ,visit-setq)
-       (,visit-set-field-p ,visit-set-field)
-       (,visit-get-field-p ,visit-get-field)
-       (,visit-unless-p ,visit-unless)
-       (,visit-define-class-p ,visit-define-class)
-       (,visit-new-p ,visit-new)
-       (,visit-return-p ,visit-return)
-       (,visit-quote-p ,visit-quote)
-       (,visit-quasiquote-p ,visit-quasiquote)
-       (,visit-macro-call-p ,visit-macro-call)
-       (,visit-special-form-p ,visit-special-form)
-       (,visit-function-call-p ,visit-function-call)
-       (,visit-nonatomic-p ,visit-nonatomic)
-       (,visit-else-p ,visit-atom))))
-  (visit visitor node stack bindings))
+     `((,visit-module? ,visit-module)
+       (,visit-begin? ,visit-begin)
+       (,visit-begin0? ,visit-begin0)
+       (,visit-let? ,visit-let)
+       (,visit-let-values? ,visit-let-values)
+       (,visit-cond? ,visit-cond)
+       (,visit-lambda? ,visit-lambda)
+       (,visit-define? ,visit-define)
+       (,visit-define-values? ,visit-define-values)
+       (,visit-define-macro? ,visit-define-macro)
+       (,visit-defmacro? ,visit-defmacro)
+       (,visit-ann? ,visit-ann)
+       (,visit-and? ,visit-and)
+       (,visit-or? ,visit-or)
+       (,visit-for? ,visit-for)
+       (,visit-while? ,visit-while)
+       (,visit-when? ,visit-when)
+       (,visit-send? ,visit-send)
+       (,visit-setq? ,visit-setq)
+       (,visit-set-field? ,visit-set-field)
+       (,visit-get-field? ,visit-get-field)
+       (,visit-unless? ,visit-unless)
+       (,visit-define-class? ,visit-define-class)
+       (,visit-new? ,visit-new)
+       (,visit-return? ,visit-return)
+       (,visit-quote? ,visit-quote)
+       (,visit-quasiquote? ,visit-quasiquote)
+       (,visit-macro-call? ,visit-macro-call)
+       (,visit-special-form? ,visit-special-form)
+       (,visit-function-call? ,visit-function-call)
+       (,visit-nonatomic? ,visit-nonatomic)
+       (,visit-else? ,visit-atom))))
+  (visit visitor stx stack bindings))
 
 ;;; Map the function `f` over the S-expression `exp`.
 ;;; The S-expression is processed in bottom-up order.
@@ -7942,23 +7075,23 @@
                      x
                      (datum->syntax x result)))))
          (is-rose (syntax? exp))
-         (node (if is-rose
-                   exp
-                   (datum->syntax #f exp)))
-         (result (map-syntax f1 node env stack bindings)))
-    ;; If the input is a rose tree node,
-    ;; return a rose tree node as output too.
+         (stx (if is-rose
+                  exp
+                  (datum->syntax #f exp)))
+         (result (map-syntax f1 stx env stack bindings)))
+    ;; If the input is a syntax object, then
+    ;; return a syntax object as output too.
     (if is-rose
         result
         (syntax->datum result))))
 
-;;; Call the function `f` on each node of a rose tree,
-;;; but do not create a new rose tree in the process.
-(define (iterate-rose f node (env (new LispEnvironment)))
+;;; Call the function `f` on each node of a syntax object,
+;;; but do not create a new syntax object in the process.
+(define (iterate-stx f stx (env (new LispEnvironment)))
   (map-syntax (lambda (x stack)
                 (f x stack)
                 x)
-              node
+              stx
               env))
 
 ;;; Expand an `(ann ...)` expression.
@@ -8010,22 +7143,22 @@
    (current-compilation-options)))
 
 ;;; Compile a `(js/switch ...)` form.
-(define (compile-js/switch node env (options (js/obj)))
+(define (compile-js/switch stx env (options (js/obj)))
   (define expression-type
     (oget options :expression-type))
   (cond
    ((eq? expression-type "expression")
     (compile-expression
-     (make-iife node)
+     (make-iife stx)
      env options))
    (else
     (define discriminant
-      (send node get 1))
+      (send stx get 1))
     (define discriminant-compiled
       (compile-expression
        discriminant env options))
     (define cases
-      (send node drop 2))
+      (send stx drop 2))
     (define cases-compiled
       (map (lambda (x)
              (define op
@@ -8127,21 +7260,21 @@
         (throw e))))))
 
 ;;; Traverse an ESTree tree.
-(define (traverse-estree node
+(define (traverse-estree stx
                          (enter #u)
                          (leave #u)
                          (replace #u))
-  (define result node)
+  (define result stx)
   (define el)
   (define el1)
   (define val)
   (define val1)
-  (unless (is-a? node Node)
+  (unless (is-a? stx Node)
     (return result))
   (when enter
-    (enter node))
-  (for ((key (js/keys node)))
-    (set! val (oget node key))
+    (enter stx))
+  (for ((key (js/keys stx)))
+    (set! val (oget stx key))
     (cond
      ((pair-or-list? val)
       (for ((i (range 0 (length val))))
@@ -8152,11 +7285,11 @@
      (else
       (set! val1 (traverse-estree val enter leave replace))
       (unless (eq? val val1)
-        (oset! node key val1)))))
+        (oset! stx key val1)))))
   (when leave
-    (leave node))
+    (leave stx))
   (when replace
-    (set! result (replace node)))
+    (set! result (replace stx)))
   result)
 
 ;;; Find ESTree nodes matching a predicate.
@@ -8186,10 +7319,10 @@
 ;;; Optimize a module.
 (define (optimize-module m env)
   (send m
-        set-nodes
+        set-stxs
         (map (lambda (x)
                (optimize-sexp x env))
-             (get-field main-nodes m))))
+             (get-field main-stxs m))))
 
 ;;; Optimize an ESTree tree.
 (define (optimize-estree exp)
@@ -8197,6 +7330,9 @@
       (let-vars->const-vars)))
 
 (define (let-vars->const-vars program)
+  ;; FIXME: This is rather slow. It might be better if the compiler
+  ;; kept track of variables that are being mutated, perhaps tagging
+  ;; mutables values with their own type in the environment.
   (define variables '())
   (traverse-estree
    program
@@ -8242,18 +7378,18 @@
       (else
        node)))))
 
-;;; Find a optimization rule matching `node`.
-(define (find-optimization node env (rules optimizations))
+;;; Find a optimization rule matching `stx`.
+(define (find-optimization stx env (rules optimizations))
   (for ((rule rules))
     (define-values (predicate)
       rule)
-    (when (predicate node env)
+    (when (predicate stx env)
       (return rule)))
   #f)
 
-;;; Apply optimizations to `node`.
-(define (apply-optimizations node env (rules optimizations))
-  (define result node)
+;;; Apply optimizations to `stx`.
+(define (apply-optimizations stx env (rules optimizations))
+  (define result stx)
   (define rule #f)
   (while (set! rule (find-optimization result env rules))
     (define-values (predicate optimizer)
@@ -8269,44 +7405,46 @@
   (define/public name "")
   (define/public module-path "")
   (define/public header-expressions '())
-  (define/public header-nodes '())
+  (define/public header-stxs '())
   (define/public require-expressions '())
-  (define/public require-nodes '())
+  (define/public require-stxs '())
   (define/public provide-expressions '())
-  (define/public provide-nodes '())
+  (define/public provide-stxs '())
   (define/public main-expressions '())
-  (define/public main-nodes '())
+  (define/public main-stxs '())
   (define/public expressions '())
-  (define/public nodes '())
+  (define/public stxs '())
   (define/public inline-lisp-sources-flag #f)
   (define/public seen-modules '())
-  (define/public environment)
   (define/public parent-environment)
+  (define/public require-environment)
+  (define/public main-environment)
+  (define/public provide-environment)
   (define/public interpretation-environment)
   (define/public module-map)
   (define/public symbol-map (make-hash))
 
-  (define/public (constructor (nodes '())
+  (define/public (constructor (stxs '())
                               (parent lang-environment)
                               (name "")
                               (module-path ""))
     (set-field! parent-environment this parent)
     (set-field! name this name)
     (set-field! module-path this module-path)
-    (send this initialize-nodes nodes))
+    (send this initialize-stxs stxs))
 
   (define/public (get-continuation-env)
     (new LispEnvironment
          '()
-         (send this get-environment)))
+          (send this get-environment)))
 
   (define/public (get-expressions)
     (get-field expressions this))
 
   (define/public (get-environment)
     (cond
-     ((get-field environment this)
-      (get-field environment this))
+     ((get-field main-environment this)
+      (get-field main-environment this))
      (else
       (send this
             make-environment
@@ -8327,14 +7465,14 @@
           sym))
     (send (get-field symbol-map this) has key))
 
-  (define/public (make-header-node (nodes '()))
-    ;; Create header node if there is more than one comment, or if
+  (define/public (make-header-stx (stxs '()))
+    ;; Create header stx if there is more than one comment, or if
     ;; there is a single comment ending in a blank line.
-    (when (> (length nodes) 0)
-      (define initial-node
-        (first nodes))
+    (when (> (length stxs) 0)
+      (define initial-stx
+        (first stxs))
       (define comments
-        (send initial-node get-property "comments"))
+        (send initial-stx get-property "comments"))
       (define initial-node-comments '())
       (define initial-node-comment-string #u)
       (define header-comments '())
@@ -8368,18 +7506,18 @@
       (when (> (length header-comment-strings) 0)
         (define header-exp
           '(begin))
-        (define header-node
+        (define header-stx
           (datum->syntax #f header-exp))
         (set! header-comments
               (map (lambda (x)
                      (new LeadingCommentToken x))
                    header-comment-strings))
-        (send header-node
+        (send header-stx
               set-property
               "comments"
               header-comments)
-        (push-right! (get-field header-nodes this)
-                     header-node)
+        (push-right! (get-field header-stxs this)
+                     header-stx)
         (push-right! (get-field header-expressions this)
                      header-exp)
         (when initial-node-comment-string
@@ -8387,7 +7525,7 @@
                 (list
                  (new LeadingCommentToken
                       initial-node-comment-string))))
-        (send initial-node
+        (send initial-stx
               set-property
               "comments"
               initial-node-comments))))
@@ -8403,41 +7541,41 @@
           (send this set-inline-lisp-sources-flag #t)
           (break)))))
 
-  (define/public (initialize-nodes (nodes '()))
+  (define/public (initialize-stxs (stxs '()))
     (define exp)
     (define match)
-    (define node)
-    (send this make-header-node nodes)
+    (define stx)
+    (send this make-header-stx stxs)
     ;; Sort the expressions into `require` expressions, `provide`
     ;; expressions and main expressions.
-    (for ((node nodes))
+    (for ((stx stxs))
       ;; Handle both S-expressions and rose tree values---for now.
       ;; In the future, we might want to simplify this to only
       ;; rose tree values.
       (cond
-       ((syntax? node)
-        (set! exp (syntax->datum node))
+       ((syntax? stx)
+        (set! exp (syntax->datum stx))
         (define comments
-          (send node get-property "comments"))
+          (send stx get-property "comments"))
         (when comments
           ;; Look for `inline-lisp-sources: true` magic comment.
           (send this find-inline-lisp-sources-comment comments)))
        (else
-        (set! exp node)
-        (set! node (datum->syntax #f exp))))
+        (set! exp stx)
+        (set! stx (datum->syntax #f exp))))
       (cond
        ((tagged-list? exp 'require)
         (push-right! (get-field require-expressions this) exp)
-        (push-right! (get-field require-nodes this) node))
+        (push-right! (get-field require-stxs this) stx))
        ((tagged-list? exp 'provide)
         (push-right! (get-field provide-expressions this) exp)
-        (push-right! (get-field provide-nodes this) node))
+        (push-right! (get-field provide-stxs this) stx))
        (else
         (push-right! (get-field main-expressions this) exp)
-        (push-right! (get-field main-nodes this) node))))
+        (push-right! (get-field main-stxs this) stx))))
     ;; Iterate over `require-expressions`.
-    (for ((node (get-field require-nodes this)))
-      (set! exp (syntax->datum node))
+    (for ((stx (get-field require-stxs this)))
+      (set! exp (syntax->datum stx))
       (cond
        ((and (tagged-list? exp 'require)
              (> (length exp) 1)
@@ -8482,8 +7620,8 @@
                 module-name-symbol
                 #t)))))
     ;; Iterate over `main-expressions`.
-    (for ((node (get-field main-nodes this)))
-      (set! exp (syntax->datum node))
+    (for ((stx (get-field main-stxs this)))
+      (set! exp (syntax->datum stx))
       (when (or (tagged-list? exp 'define)
                 (tagged-list? exp 'define-class))
         (define name
@@ -8491,11 +7629,11 @@
               (first (second exp))
               (second exp)))
         (send (get-field symbol-map this) set name #t)))
-    (set-field! nodes
+    (set-field! stxs
                 this
-                (append (get-field require-nodes this)
-                        (get-field main-nodes this)
-                        (get-field provide-nodes this)))
+                (append (get-field require-stxs this)
+                        (get-field main-stxs this)
+                        (get-field provide-stxs this)))
     (send
      this
      set-expressions
@@ -8505,23 +7643,22 @@
     this)
 
   (define/public (make-environment (parent #u))
-    (define module-env
+    (define require-env
       (new LispEnvironment '() parent))
-    (define module-interpretation-env
-      (new EnvironmentStack
-           module-env
-           js/environment))
+    (define module-env
+      (new LispEnvironment '() require-env))
+    (define provide-env
+      (new LispEnvironment '() module-env))
     (set-field! parent-environment this parent)
-    (set-field! environment this module-env)
-    (set-field! interpretation-environment
-                this
-                module-interpretation-env)
-    ;; Iterate over `require-nodes`, importing definitions
+    (set-field! require-environment this require-env)
+    (set-field! main-environment this module-env)
+    (set-field! provide-environment this provide-env)
+    ;; Iterate over `require-stxs`, importing definitions
     ;; from other modules.
-    (for ((node (get-field require-nodes this)))
-      ;; TODO: Create thunk for doing this on demand.
+    (for ((stx (get-field require-stxs this)))
+      ;; TODO: Create promise for doing this on demand.
       (define exp
-        (syntax->datum node))
+        (syntax->datum stx))
       ;; TODO: `require` forms that do not contain `only-in`.
       (when (and (tagged-list? exp 'require)
                  (> (length exp) 1)
@@ -8562,11 +7699,11 @@
               (send env get-typed-value local))
             (unless (undefined-type? f-type)
               (send module-env set-local! imported f f-type))))))
-    ;; Iterate over `main-nodes`, evaluating definition forms
+    ;; Iterate over `main-stxs`, evaluating definition forms
     ;; in the module environment.
-    (for ((node (get-field main-nodes this)))
+    (for ((stx (get-field main-stxs this)))
       (define exp
-        (syntax->datum node))
+        (syntax->datum stx))
       (cond
        ((or (definition? exp)
             (macro-definition? exp))
@@ -8580,38 +7717,35 @@
         (define typ
           (if (macro-definition? exp)
               '(macro-> Any * Any)
-              '(-> Any * Any)))
-        (send module-env
-              set-local!
-              name
-              (new InternalPromise
-                   (delay
-                     (define result #u)
-                     (try
-                       (define begin-exp
-                         `(begin ,exp ,name))
-                       (set! result
-                             (interpret_ begin-exp
-                                         :environment
-                                         module-interpretation-env))
-                       (catch Error e
-                         ;; Do nothing
-                         ))
-                     result))
-              typ))))
+               '(-> Any * Any)))
+        (define prom
+          (new InternalPromise
+               (delay
+                 (define result #u)
+                 (try
+                   (define begin-exp
+                     `(begin ,exp ,name))
+                   (set! result
+                         (interpret_ begin-exp
+                                     :environment module-env))
+                   (catch Error e
+                     ;; Do nothing
+                     ))
+                 result)))
+        (send module-env set-local! name prom typ))))
     module-env)
 
   (define/public (set-module-map module-map)
     (set-field! module-map this module-map)
     this)
 
-  (define/public (set-nodes nodes)
-    (set-field! main-nodes this nodes)
+  (define/public (set-stxs stxs)
+    (set-field! main-stxs this stxs)
     (set-field! main-expressions
                 this
                 (map (lambda (x)
                        (syntax->datum x))
-                     nodes))
+                     stxs))
     this)
 
   (define/public (set-expressions (expressions '()))
@@ -8646,21 +7780,21 @@
 
 ;;; Convert a `(module ...)` expression to a
 ;;; `Module` object.
-(define (module-expression->module-object node env)
+(define (module-expression->module-object stx env)
   (define name
-    (~> node
+    (~> stx
         (send _ get 1)
         (syntax->datum _)))
   (when (symbol? name)
     (set! name (symbol->string name)))
   (define module-path
-    (~> node
+    (~> stx
         (send _ get 2)
         (syntax->datum _)))
   (when (symbol? module-path)
     (set! module-path (symbol->string module-path)))
   (new Module
-       (send node drop 3)
+       (send stx drop 3)
        env
        name
        module-path))
@@ -8680,22 +7814,6 @@
   (set! name
         (regexp-replace (regexp "^\\./") name ""))
   name)
-
-;;; Return the current environment.
-(define (current-compilation-options)
-  current-compilation-options-pointer)
-
-;;; Run `f` with `current-compilation-options-pointer` bound to `options`.
-;;; The return value is the result of invoking `f`.
-(define (with-compilation-options options f)
-  (let ((result #u)
-        (tmp current-compilation-options-pointer))
-    (try
-      (set! current-compilation-options-pointer options)
-      (set! result (f))
-      (finally
-        (set! current-compilation-options-pointer tmp)))
-    result))
 
 ;;; Whether an expression is a definition.
 (define (definition? exp)
@@ -8718,21 +7836,6 @@
   (or (tagged-list? exp 'define-macro)
       (tagged-list? exp 'defmacro)))
 
-;;; Parse a parameter list into regular parameters
-;;; and rest parameter, if any.
-(define (parse-params-list params)
-  (define regular-params '())
-  (define rest-param #u)
-  (cond
-   ((symbol? params)
-    (set! rest-param params))
-   ((dotted-list? params)
-    (set! regular-params (dotted-list-head params))
-    (set! rest-param (dotted-list-tail params)))
-   (else
-    (set! regular-params params)))
-  (values regular-params rest-param))
-
 ;;; Make a type binding for `sym` in `env`,
 ;;; which should be a typed environment.
 (define (make-type-binding env sym typ (filter #u))
@@ -8751,6 +7854,8 @@
 ;;; Parse the value of the `ftype` spec.
 (define (parse-ftype x)
   (cond
+   ((tagged-list? x '(quote quasiquote))
+    (parse-ftype (second x)))
    ((eq? x "macro")
     '(macro-> Any * Any))
    ((eq? x "fexpr")
@@ -8900,6 +8005,15 @@
     result)
   result)
 
+;;; Get the compiler macro of `f`, if any.
+(define (compiler-macro f)
+  (get-field compiler-macro f))
+
+;;; Whether `f` has a compiler macro.
+(define (has-compiler-macro? f)
+  (and f
+       (get-field compiler-macro f)))
+
 ;;; Lisp environment.
 (define lisp-environment
   (new LispEnvironment
@@ -8937,6 +8051,7 @@
          (=? ,eq?_ (-> Any * Any))
          (> ,gt_ (-> Any * Any))
          (>= ,gte_ (-> Any * Any))
+         (NaN? ,js/is-NaN_ (-> Any * Any))
          (abs ,abs_ (-> Any * Any))
          (add ,add_ (-> Any * Any))
          (add1 ,add1_ (-> Any * Any))
@@ -9098,6 +8213,7 @@
          (function? ,procedure?_ (-> Any * Any))
          (functionp ,procedure?_ (-> Any * Any))
          (gensym ,gensym_ (-> Any * Any))
+         (gensym->symbol ,gensym->symbol_ (-> Any * Any))
          (gensym? ,gensym?_ (-> Any * Any))
          (get ,list-ref_ (-> Any * Any))
          (hash ,make-hash_ (-> Any * Any))
@@ -9171,6 +8287,7 @@
          (js/arrow? ,js/arrow?_ (-> Any * Any))
          (js/console.log ,(get-field log console) (-> Any * Any))
          (js/delete ,js/delete_ (-> Any * Any))
+         (js/dot ,js/dot_ (-> Any * Any))
          (js/eighth ,array-eighth_ (-> Any * Any))
          (js/field ,list-ref_ (-> Any * Any))
          (js/fifth ,array-fifth_ (-> Any * Any))
@@ -9187,6 +8304,7 @@
          (js/instance-of? ,js/instanceof_ (-> Any * Any))
          (js/instanceof ,js/instanceof_ (-> Any * Any))
          (js/instanceof? ,js/instanceof_ (-> Any * Any))
+         (js/is-NaN ,js/is-NaN_ (-> Any * Any))
          (js/is-loosely-equal? ,js/loosely-equal?_ (-> Any * Any))
          (js/is-strictly-equal? ,js/strictly-equal?_ (-> Any * Any))
          (js/js-obj ,js/obj_ (-> Any * Any))
@@ -9195,7 +8313,7 @@
          (js/keys ,js/keys_ (-> Any * Any))
          (js/last ,array-last_ (-> Any * Any))
          (js/length ,js/length_ (-> Any * Any))
-         (js/nan? ,js/nan?_ (-> Any * Any))
+         (js/nan? ,js/is-NaN_ (-> Any * Any))
          (js/new ,js/new_ (-> Any * Any))
          (js/ninth ,array-ninth_ (-> Any * Any))
          (js/nth ,nth_ (-> Any * Any))
@@ -9208,11 +8326,13 @@
          (js/object ,js/obj_ (-> Any * Any))
          (js/object-type? ,js/object-type?_ (-> Any * Any))
          (js/object? ,js/object-type?_ (-> Any * Any))
+         (js/parse-float ,js/parse-float_ (-> Any * Any))
          (js/promise ,js/promise_ (-> Any * Any))
          (js/promise? ,js/promise?_ (-> Any * Any))
          (js/raw ,js/raw_ (-> Any * Any))
          (js/reduce ,js/reduce_ (-> Any * Any))
          (js/reduce-right ,js/reduce-right_ (-> Any * Any))
+         (js/ref ,js/get_ (-> Any * Any))
          (js/regexp ,js/regexp_ (-> Any * Any))
          (js/regexp-match ,js/regexp-match_ (-> Any * Any))
          (js/regexp-quote ,regexp-quote_ (-> Any * Any))
@@ -9243,6 +8363,8 @@
          (js/typeof ,js/typeof_ (-> Any * Any))
          (js/yield ,yield_ (-> Any * Any))
          (js/~ ,js/bitwise-not_ (-> Any * Any))
+         (keyword->string ,keyword->string_ (-> Any * Any))
+         (keyword->symbol ,keyword->symbol_ (-> Any * Any))
          (keyword? ,keyword?_ (-> Any * Any))
          (keywordp ,keyword?_ (-> Any * Any))
          (last ,last_ (-> Any * Any))
@@ -9288,6 +8410,7 @@
          (mod ,modulo_ (-> Any * Any))
          (modulo ,modulo_ (-> Any * Any))
          (mul ,mul_ (-> Any * Any))
+         (nan? ,js/is-NaN_ (-> Any * Any))
          (new ,js/new_ (-> Any * Any))
          (new* ,js/new_ (-> Any * Any))
          (ninth ,ninth_ (-> Any * Any))
@@ -9327,12 +8450,11 @@
          (pop-left! ,pop-left!_ (-> Any * Any))
          (pop-right ,pop-right!_ (-> Any * Any))
          (pop-right! ,pop-right!_ (-> Any * Any))
-         (print ,print (-> Any * Any))
+         (print ,display_ (-> Any * Any))
          (print-estree ,print-estree (-> Any * Any))
          (procedure? ,procedure?_ (-> Any * Any))
          (promise-forced? ,promise-forced?_ (-> Any * Any))
          (promise-running? ,promise-running?_ (-> Any * Any))
-         ;; (promise-type? ,js/function-type?_ (-> Any * Any))
          (promise? ,promise?_ (-> Any * Any))
          (proper-list->dotted-list ,list->dotted-list_ (-> Any * Any))
          (proper-list-p ,proper-list?_ (-> Any * Any))
@@ -9370,6 +8492,7 @@
          (seventh ,seventh_ (-> Any * Any))
          (sixth ,sixth_ (-> Any * Any))
          (source ,source (-> Any * Any))
+         (string->keyword ,string->keyword_ (-> Any * Any))
          (string->number ,string->number_ (-> Any * Any))
          (string->symbol ,string->symbol_ (-> Any * Any))
          (string-append ,string-append_ (-> Any * Any))
@@ -9391,6 +8514,8 @@
          (sub ,sub_ (-> Any * Any))
          (sub1 ,sub1_ (-> Any * Any))
          (substring ,substring_ (-> Any * Any))
+         (symbol->gensym ,symbol->gensym_ (-> Any * Any))
+         (symbol->keyword ,symbol->keyword_ (-> Any * Any))
          (symbol->string ,symbol->string_ (-> Any * Any))
          (symbol-to-string ,symbol->string_ (-> Any * Any))
          (symbol? ,symbol?_ (-> Any * Any))
@@ -9452,13 +8577,17 @@
          (declare ,declare_ (macro-> Any * Any))
          (declare-fexpr ,declare-fexpr_ (macro-> Any * Any))
          (declare-macro ,declare-macro_ (macro-> Any * Any))
+         (declare-syntax-macro ,declare-syntax-macro_ (macro-> Any * Any))
          (defclass ,defclass_ (macro-> Any * Any))
          (define ,define_ (macro-> Any * Any))
          (define-class ,define-class_ (macro-> Any * Any))
+         (define-compiler-macro ,define-compiler-macro_ (macro-> Any * Any))
          (define-fexpr ,define-fexpr_ (macro-> Any * Any))
          (define-fields ,define-fields_ (macro-> Any * Any))
+         (define-inline ,define-inline_ (macro-> Any * Any))
          (define-js/obj ,define-fields_ (macro-> Any * Any))
          (define-macro ,define-macro_ (macro-> Any * Any))
+         (define-subst ,define-inline_ (macro-> Any * Any))
          (define-syntax ,define-syntax_ (macro-> Any * Any))
          (define-type ,define-type_ (macro-> Any * Any))
          (define-values ,define-values_ (macro-> Any * Any))
@@ -9467,6 +8596,7 @@
          (define/private ,define-private_ (macro-> Any * Any))
          (define/public ,define-public_ (macro-> Any * Any))
          (defmacro ,defmacro_ (macro-> Any * Any))
+         (defsubst ,defsubst_ (macro-> Any * Any))
          (defun ,defun_ (macro-> Any * Any))
          (delay ,delay_ (macro-> Any * Any))
          (destructuring-bind ,multiple-value-bind_ (macro-> Any * Any))
@@ -9511,7 +8641,7 @@
          (λ ,lambda_ (macro-> Any * Any))
          (lambda ,lambda_ (macro-> Any * Any))
          (lazy ,lazy_ (macro-> Any * Any))
-         (let ,let-star_ (macro-> Any * Any))
+         (let ,let_ (macro-> Any * Any))
          (let* ,let-star_ (macro-> Any * Any))
          (let*-values ,let-values_ (macro-> Any * Any))
          (let-env ,let-env_ (macro-> Any * Any))
@@ -9520,12 +8650,15 @@
          (let-values ,let-values_ (macro-> Any * Any))
          (letrec ,let-star_ (macro-> Any * Any))
          (letrec-values ,let-values_ (macro-> Any * Any))
+         (macro ,macro_ (macro-> Any * Any))
          (match ,match_ (macro-> Any * Any))
          (module ,module_ (macro-> Any * Any))
          (multiple-value-bind ,multiple-value-bind_ (macro-> Any * Any))
          (multiple-values-bind ,multiple-value-bind_ (macro-> Any * Any))
          (new/apply ,new/apply_ (macro-> Any * Any))
+         (nlambda ,nlambda_ (macro-> Any * Any))
          (once-only ,once-only_ (macro-> Any * Any))
+         (once-only* ,once-only*_ (macro-> Any * Any))
          (or ,or_ (macro-> Any * Any))
          (prog1 ,begin0_ (macro-> Any * Any))
          (progn ,begin_ (macro-> Any * Any))
@@ -9544,6 +8677,7 @@
          (set-field! ,set-field_ (macro-> Any * Any))
          (setq ,setq_ (macro-> Any * Any))
          (syntax ,syntax_ (macro-> Any * Any))
+         (syntax-macro ,syntax-macro_ (macro-> Any * Any))
          (throw ,throw_ (macro-> Any * Any))
          (thunk ,thunk_ (macro-> Any * Any))
          (try ,try_ (macro-> Any * Any))
@@ -9597,16 +8731,10 @@
 (define default-compilation-options
   (js/obj :language-environment
           lang-environment
-          :compilation-mapping-environment
-          compilation-mapping-env
           :finline-functions
           #t
           :gensym-map
           (make-hash)))
-
-;;; Pointer to the current compilation options.
-(define current-compilation-options-pointer
-  default-compilation-options)
 
 (provide
   (all-from-out "./array")
@@ -9670,7 +8798,6 @@
   (rename-out (let-fields_ let-fields))
   (rename-out (let-fields_ let-js/obj))
   (rename-out (let-star_ let*))
-  (rename-out (let-star_ let_))
   (rename-out (let-star_ letrec))
   (rename-out (let-values_ let*-values))
   (rename-out (let-values_ let-values))
@@ -9732,7 +8859,6 @@
   define-type_
   define-values_
   define_
-  definition->macro
   dot_
   find-estree
   for_
@@ -9742,7 +8868,7 @@
   interpret_
   interpretation-environment
   is-a?_
-  iterate-rose
+  iterate-stx
   js/async_
   js/await_
   js/raw_
@@ -9752,6 +8878,7 @@
   let-star_
   let-values_
   let-vars->const-vars
+  let_
   lisp
   lisp-environment
   load_
@@ -9768,7 +8895,7 @@
   make-module-map
   map-sexp
   map-syntax
-  map-visit-rose
+  map-visit-stx
   module-expression->module-object
   module_
   new_

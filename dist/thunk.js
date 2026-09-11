@@ -29,8 +29,8 @@ function thunk_(exp, env) {
     return [Symbol.for('lambda'), [], ...body];
 }
 exports.thunk_ = thunk_;
-thunk_.fsource = [Symbol.for('define'), [Symbol.for('thunk_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 thunk_.ftype = 'macro';
+thunk_.fsource = [Symbol.for('define'), [Symbol.for('thunk_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
 /**
  * Whether something is a thunk.
  */
@@ -40,6 +40,22 @@ function thunkp_(x) {
 exports.thunk = thunkp_;
 exports.thunkp_ = thunkp_;
 thunkp_.fsource = [Symbol.for('define'), [Symbol.for('thunk?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('x')], [Symbol.for('zero?'), [Symbol.for('arity'), Symbol.for('x')]]]];
+thunkp_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        if (!(Array.isArray(x) && (x.length > 0))) {
+            return [Symbol.for('and'), [Symbol.for('procedure?'), x], [Symbol.for('zero?'), [Symbol.for('arity'), x]]];
+        }
+        else {
+            const x1 = Symbol('x');
+            return [Symbol.for('let'), [[x1, x]], ((x) => {
+                    return [Symbol.for('and'), [Symbol.for('procedure?'), x], [Symbol.for('zero?'), [Symbol.for('arity'), x]]];
+                })(x1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Make a promise.
  */
@@ -50,8 +66,8 @@ function delay_(exp, env) {
 }
 exports.delay = delay_;
 exports.delay_ = delay_;
-delay_.fsource = [Symbol.for('define'), [Symbol.for('delay_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('let'), [[Symbol.for('sym'), [Symbol.for('gensym'), 'promise-f']]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('thunk'), [Symbol.for('cond'), [[Symbol.for('get-field'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')]], [Symbol.for('get-field'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')]]], [Symbol.for('else'), [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], undefined], [Symbol.for('set-field!'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], true], [Symbol.for('get-field'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')]]]]]], [Symbol.for('set-field!'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('ann'), undefined, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('ann'), false, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('ftype'), [Symbol.for('unquote'), Symbol.for('sym')], 'thunk'], [Symbol.for('unquote'), Symbol.for('sym')]]]]];
 delay_.ftype = 'macro';
+delay_.fsource = [Symbol.for('define'), [Symbol.for('delay_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('let'), [[Symbol.for('sym'), [Symbol.for('gensym'), 'promise-f']]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('thunk'), [Symbol.for('cond'), [[Symbol.for('get-field'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')]], [Symbol.for('get-field'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')]]], [Symbol.for('else'), [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], undefined], [Symbol.for('set-field!'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], true], [Symbol.for('get-field'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')]]]]]], [Symbol.for('set-field!'), Symbol.for('value'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('ann'), undefined, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('forced'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('ann'), false, Symbol.for('Any')]], [Symbol.for('set-field!'), Symbol.for('ftype'), [Symbol.for('unquote'), Symbol.for('sym')], 'thunk'], [Symbol.for('unquote'), Symbol.for('sym')]]]]];
 /**
  * Make a composable promise.
  */
@@ -61,8 +77,8 @@ function lazy_(exp, env) {
 }
 exports.lazy = lazy_;
 exports.lazy_ = lazy_;
-lazy_.fsource = [Symbol.for('define'), [Symbol.for('lazy_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('delay'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('when'), [Symbol.for('promise?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('force'), Symbol.for('result')]]], Symbol.for('result')]]];
 lazy_.ftype = 'macro';
+lazy_.fsource = [Symbol.for('define'), [Symbol.for('lazy_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), Symbol.for('body'), [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('delay'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('when'), [Symbol.for('promise?'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('force'), Symbol.for('result')]]], Symbol.for('result')]]];
 /**
  * Whether something is a promise.
  */
@@ -72,6 +88,22 @@ function promisep_(x) {
 exports.promisep = promisep_;
 exports.promisep_ = promisep_;
 promisep_.fsource = [Symbol.for('define'), [Symbol.for('promise?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('js/function-type?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]], 'thunk']]];
+promisep_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        if (!(Array.isArray(x) && (x.length > 0))) {
+            return [Symbol.for('and'), [Symbol.for('js/function-type?'), x], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), x, Symbol.for('Any')]], 'thunk']];
+        }
+        else {
+            const x1 = Symbol('x');
+            return [Symbol.for('let'), [[x1, x]], ((x) => {
+                    return [Symbol.for('and'), [Symbol.for('js/function-type?'), x], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), x, Symbol.for('Any')]], 'thunk']];
+                })(x1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Force a promise.
  */
@@ -81,6 +113,14 @@ function force_(x) {
 exports.force = force_;
 exports.force_ = force_;
 force_.fsource = [Symbol.for('define'), [Symbol.for('force_'), Symbol.for('x')], [[Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]]];
+force_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        return [[Symbol.for('ann'), x, Symbol.for('Any')]];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Whether a promise has been forced.
  */
@@ -95,6 +135,14 @@ function promiseForcedP_(x) {
 exports.promiseForcedP = promiseForcedP_;
 exports.promiseForcedP_ = promiseForcedP_;
 promiseForcedP_.fsource = [Symbol.for('define'), [Symbol.for('promise-forced?_'), Symbol.for('x')], [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')], true, false]];
+promiseForcedP_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        return [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('forced'), x], true, false];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Whether a promise is running.
  */
@@ -104,6 +152,14 @@ function promiseRunningP_(x) {
 exports.promiseRunningP = promiseRunningP_;
 exports.promiseRunningP_ = promiseRunningP_;
 promiseRunningP_.fsource = [Symbol.for('define'), [Symbol.for('promise-running?_'), Symbol.for('x')], [Symbol.for('undefined?'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')]]];
+promiseRunningP_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [x] = exp.slice(1);
+        return [Symbol.for('undefined?'), [Symbol.for('get-field'), Symbol.for('forced'), x]];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Map for storing promises in.
  *

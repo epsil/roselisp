@@ -16,6 +16,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import {
+  currentCompilationOptions
+} from './env';
+
 const [plistGet]: any[] = ((): any => {
   function plistGet_(plst: any, prop: any): any {
     let val: any = undefined;
@@ -47,6 +51,23 @@ function stringp_(x: any): any {
 stringp_.fsource = [Symbol.for('define'), [Symbol.for('string?_'), Symbol.for('x')], [Symbol.for('js/string?'), Symbol.for('x')]];
 
 /**
+ * Compiler macro for `(string? ...)` expressions.
+ */
+stringp_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [x]: any[] = exp.slice(1);
+    const {fstringobjects} = currentCompilationOptions();
+    if (fstringobjects) {
+      return [Symbol.for('funcall'), Symbol.for('string?'), x];
+    } else {
+      return [Symbol.for('js/string-literal?'), x];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
  * The length of a string.
  */
 function stringLength_(x: any): any {
@@ -54,6 +75,15 @@ function stringLength_(x: any): any {
 }
 
 stringLength_.fsource = [Symbol.for('define'), [Symbol.for('string-length_'), Symbol.for('x')], [Symbol.for('js/length'), Symbol.for('x')]];
+
+stringLength_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [x]: any[] = exp.slice(1);
+    return [Symbol.for('js/length'), x];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 /**
  * Concatenate one or more strings together.
@@ -73,6 +103,18 @@ function stringAppend_(...args: any[]): any {
 stringAppend_.fsource = [Symbol.for('define'), [Symbol.for('string-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), '']], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/string-concat'), Symbol.for('result'), Symbol.for('x')]]], Symbol.for('result')]];
 
 /**
+ * Compiler macro for `(string-append ...)` expressions.
+ */
+stringAppend_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const args: any = exp.slice(1);
+    return [Symbol.for('js/string-concat'), ...args];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
  * Get the character at a particular position in a string.
  *
  * Similar to [`string-ref` in Racket][rkt:string-ref].
@@ -84,6 +126,15 @@ function stringRef_(str: any, n: any): any {
 }
 
 stringRef_.fsource = [Symbol.for('define'), [Symbol.for('string-ref_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('charAt'), Symbol.for('n')]];
+
+stringRef_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [str, n]: any[] = exp.slice(1);
+    return [Symbol.for('send'), str, Symbol.for('charAt'), n];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 /**
  * Trim whitespace from the beginning and end of a string.
@@ -105,6 +156,22 @@ function stringTrim_(str: any, sep: any = undefined, ...options: any[]): any {
 stringTrim_.fsource = [Symbol.for('define'), [Symbol.for('string-trim_'), Symbol.for('str'), [Symbol.for('sep'), undefined], Symbol.for('.'), Symbol.for('options')], [Symbol.for('cond'), [Symbol.for('sep'), [Symbol.for('define'), Symbol.for('repeat-option'), [Symbol.for('plist-get'), Symbol.for('options'), Symbol.for(':repeat?')]], [Symbol.for('define'), Symbol.for('pattern-str'), [Symbol.for('string-append'), '(', [Symbol.for('regexp-quote'), Symbol.for('sep')], ')', [Symbol.for('if'), Symbol.for('repeat-option'), '+', '']]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-replace'), [Symbol.for('regexp'), [Symbol.for('string-append'), '^', Symbol.for('pattern-str')]], Symbol.for('_'), ''], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), [Symbol.for('string-append'), Symbol.for('pattern-str'), '$']], Symbol.for('_'), '']]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('str'), Symbol.for('trim')]]]];
 
 /**
+ * Compiler macro for `(string-trim ...)` expressions.
+ */
+stringTrim_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [str, ...args]: any[] = exp.slice(1);
+    if (Array.isArray(args) && (args.length === 0)) {
+      return [Symbol.for('send'), str, Symbol.for('trim')];
+    } else {
+      return [Symbol.for('funcall'), Symbol.for('string-trim'), str, ...args];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
  * Repeat a string `n` times.
  */
 function stringRepeat_(str: any, n: any): any {
@@ -112,6 +179,15 @@ function stringRepeat_(str: any, n: any): any {
 }
 
 stringRepeat_.fsource = [Symbol.for('define'), [Symbol.for('string-repeat_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('repeat'), Symbol.for('n')]];
+
+stringRepeat_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [str, n]: any[] = exp.slice(1);
+    return [Symbol.for('send'), str, Symbol.for('repeat'), n];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 /**
  * Join a list of strings, using `sep` as the separator.
@@ -126,6 +202,18 @@ function stringJoin_(lst: any, sep: any = ' '): any {
 
 stringJoin_.fsource = [Symbol.for('define'), [Symbol.for('string-join_'), Symbol.for('lst'), [Symbol.for('sep'), ' ']], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('join'), Symbol.for('sep')]];
 
+stringJoin_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    let [lst, sep]: any[] = exp.slice(1);
+    if (sep === undefined) {
+      sep = ' ';
+    }
+    return [Symbol.for('send'), lst, Symbol.for('join'), sep];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 /**
  * Split a string into a list of strings.
  *
@@ -138,6 +226,18 @@ function stringSplit_(str: any, sep: any = new RegExp('\\s+', 'g')): any {
 }
 
 stringSplit_.fsource = [Symbol.for('define'), [Symbol.for('string-split_'), Symbol.for('str'), [Symbol.for('sep'), [Symbol.for('regexp'), '\\s+', 'g']]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('split'), Symbol.for('sep')]];
+
+stringSplit_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    let [str, sep]: any[] = exp.slice(1);
+    if (sep === undefined) {
+      sep = [Symbol.for('regexp'), '\\s+', 'g'];
+    }
+    return [Symbol.for('send'), str, Symbol.for('split'), sep];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 /**
  * Return a copy of `str` where `from` is replaced with `to`.
@@ -165,6 +265,15 @@ function stringUpcase_(str: any): any {
 
 stringUpcase_.fsource = [Symbol.for('define'), [Symbol.for('string-upcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toUpperCase')]];
 
+stringUpcase_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [str]: any[] = exp.slice(1);
+    return [Symbol.for('send'), str, Symbol.for('toUpperCase')];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 /**
  * Convert string to lower case.
  *
@@ -177,6 +286,15 @@ function stringDowncase_(str: any): any {
 }
 
 stringDowncase_.fsource = [Symbol.for('define'), [Symbol.for('string-downcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toLowerCase')]];
+
+stringDowncase_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [str]: any[] = exp.slice(1);
+    return [Symbol.for('send'), str, Symbol.for('toLowerCase')];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 /**
  * Return a substring of `str`, from `start` to `end`.
@@ -192,6 +310,18 @@ function substring_(str: any, start: any, end: any = undefined): any {
 substring_.fsource = [Symbol.for('define'), [Symbol.for('substring_'), Symbol.for('str'), Symbol.for('start'), [Symbol.for('end'), undefined]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('substring'), Symbol.for('start'), Symbol.for('end')]];
 
 /**
+ * Compiler macro for `(substring ...)` expressions.
+ */
+substring_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [str, ...args]: any[] = exp.slice(1);
+    return [Symbol.for('send'), str, Symbol.for('substring'), ...args];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
  * Convert a string to a number.
  *
  * Similar to [`string->number` in Racket][rkt:string-to-number].
@@ -202,7 +332,16 @@ function stringToNumber_(str: any): any {
   return parseFloat(str);
 }
 
-stringToNumber_.fsource = [Symbol.for('define'), [Symbol.for('string->number_'), Symbol.for('str')], [Symbol.for('parseFloat'), Symbol.for('str')]];
+stringToNumber_.fsource = [Symbol.for('define'), [Symbol.for('string->number_'), Symbol.for('str')], [Symbol.for('js/parse-float'), Symbol.for('str')]];
+
+stringToNumber_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [str]: any[] = exp.slice(1);
+    return [Symbol.for('js/parse-float'), str];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 /**
  * Convert a number to a string.
@@ -212,24 +351,19 @@ stringToNumber_.fsource = [Symbol.for('define'), [Symbol.for('string->number_'),
  * [rkt:number-to-string]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._number-~3estring%29%29
  */
 function numberToString_(n: any): any {
-  return n + '';
+  return n.toString();
 }
 
-numberToString_.fsource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('js/string-concat'), Symbol.for('n'), '']];
+numberToString_.fsource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('n'), Symbol.for('toString')]];
 
-/**
- * Indent a string by prepending each line with `n` spaces.
- */
-function indentString(str: any, n: any = 2, options: any = {}): any {
-  const whitespaceOption: any = options['whitespace'];
-  const whitespace: any = whitespaceOption || ' ';
-  const includeEmptyLinesOption: any = options['includeEmptyLines'];
-  const pattern: any = includeEmptyLinesOption ? new RegExp('^', 'gm') : new RegExp('^(?!s*$)', 'gm');
-  const indentation: any = whitespace.repeat(n);
-  return str.replace(pattern, indentation);
-}
-
-indentString.fsource = [Symbol.for('define'), [Symbol.for('indent-string'), Symbol.for('str'), [Symbol.for('n'), 2], [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('whitespace-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':whitespace')]], [Symbol.for('define'), Symbol.for('whitespace'), [Symbol.for('or'), Symbol.for('whitespace-option'), ' ']], [Symbol.for('define'), Symbol.for('include-empty-lines-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':include-empty-lines')]], [Symbol.for('define'), Symbol.for('pattern'), [Symbol.for('if'), Symbol.for('include-empty-lines-option'), [Symbol.for('regexp'), '^', 'gm'], [Symbol.for('regexp'), '^(?!s*$)', 'gm']]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), Symbol.for('whitespace'), Symbol.for('n')]], [Symbol.for('regexp-replace'), Symbol.for('pattern'), Symbol.for('str'), Symbol.for('indentation')]];
+numberToString_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [n]: any[] = exp.slice(1);
+    return [Symbol.for('send'), n, Symbol.for('toString')];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 export {
   numberToString_ as numberToString,
@@ -238,7 +372,6 @@ export {
   stringReplace_ as stringReplace,
   stringp_ as stringp,
   substring_ as substring,
-  indentString,
   numberToString_,
   stringAppend_,
   stringDowncase_,

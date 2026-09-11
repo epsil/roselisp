@@ -22,7 +22,7 @@
 ;;;
 ;;; [rkt:eqp]: https://docs.racket-lang.org/reference/Equality.html#%28def._%28%28quote._~23~25kernel%29._eq~3f%29%29
 ;;; [cl:eq]: http://clhs.lisp.se/Body/f_eq.htm#eq
-(define (eq?_ x y)
+(define-inline (eq?_ x y)
   (js/=== x y))
 
 ;;; Loose equality.
@@ -32,7 +32,7 @@
 ;;;
 ;;; [rkt:eqvp]: https://docs.racket-lang.org/reference/Equality.html#%28def._%28%28quote._~23~25kernel%29._eqv~3f%29%29
 ;;; [cl:eql]: http://clhs.lisp.se/Body/f_eql.htm#eql
-(define (eqv?_ x y)
+(define-inline (eqv?_ x y)
   (js/same-value? x y))
 
 ;;; Structural equality.
@@ -43,6 +43,9 @@
 ;;; [rkt:equalp]: https://docs.racket-lang.org/reference/Equality.html#%28def._%28%28quote._~23~25kernel%29._equal~3f%29%29
 ;;; [cl:equal]: http://clhs.lisp.se/Body/f_equal.htm#equal
 (define (equal?_ x y)
+  ;; TODO: Define compiler macro for this function. Many cases
+  ;; can be compiled to code that does not invoke `equal?` at all
+  ;; (e.g., `(equal x '())` is the same as `(null? x)`).
   (cond
    ;; Compare equivalent values.
    ((eq? x y)

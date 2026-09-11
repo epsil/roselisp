@@ -40,6 +40,14 @@ exports.objectGet_ = objectRef_;
 exports.oget_ = objectRef_;
 exports.objectRef_ = objectRef_;
 objectRef_.fsource = [Symbol.for('define'), [Symbol.for('object-ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
+objectRef_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [obj, key] = exp.slice(1);
+        return [Symbol.for('js/get'), obj, key];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
 /**
  * Set the property `key` in `obj` to `val`.
  *
@@ -58,6 +66,17 @@ exports.oset_ = objectSetX_;
 exports.objectSetX_ = objectSetX_;
 objectSetX_.fsource = [Symbol.for('define'), [Symbol.for('object-set!_'), Symbol.for('obj'), Symbol.for('key'), Symbol.for('val')], [Symbol.for('oset!'), Symbol.for('obj'), Symbol.for('key'), Symbol.for('val')]];
 /**
+ * Compiler macro for `(object-set! ...)` expressions.
+ */
+objectSetX_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [obj, key, val] = exp.slice(1);
+        return [Symbol.for('js/='), [Symbol.for('js/get'), obj, key], val];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Return the keys for an object.
  *
  * Similar to [`field-names` in Racket][rkt:field-names].
@@ -69,3 +88,11 @@ function fieldNames_(obj) {
 }
 exports.fieldNames_ = fieldNames_;
 fieldNames_.fsource = [Symbol.for('define'), [Symbol.for('field-names_'), Symbol.for('obj')], [Symbol.for('js/keys'), Symbol.for('obj')]];
+fieldNames_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [obj] = exp.slice(1);
+        return [Symbol.for('js/keys'), obj];
+    };
+    f.ftype = 'macro';
+    return f;
+})();

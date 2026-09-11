@@ -1,17 +1,74 @@
-;;; # Various unsorted tests
+;;; # Unsorted tests
 ;;;
-;;; This file functions as an "inbox" for incoming tests.
+;;; This file functions as an "inbox" for incoming tests, as well as
+;;; an "outbox" for legacy tests that can be deleted.
 
 (require (only-in "./test-util"
                   assert-equal
                   test-repl
                   test-macro))
+(require (only-in "../../src/ts/unsorted"
+                  tcall
+                  trampoline))
 
 (declare-macro test-macro)
 
 (test-macro
- :repl #t
  :describe "To do"
+ :repl #t
+
+ :describe "Avoiding IIFEs"
+ xit> (compile '(define x
+                  (begin y z)))
+ "let y;
+
+let x = z;"
+
+ :describe "declare"
+ xit> (compile '(begin
+                  (define (my-plus x y)
+                    (+ x y 0))
+                  (declare my-plus
+                           (compiler-macro
+                            (macro (x y)
+                              `(+ ,x ,y))))
+                  (define x
+                    (my-plus 1 2))))
+ "function myPlus(x, y) {
+  return x + y + 0;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+let x = 1 + 2;"
+
+ :describe "define-subst"
+ xit> (compile '(begin
+                  (define-subst (my-plus x y)
+                    (+ x y))
+                  (define x
+                    (my-plus 1 2))))
+ "function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+let x = 1 + 2;"
 
  :describe "sqrt"
  xit> (sqrt 4)
@@ -227,6 +284,71 @@ normalizeList([1, Symbol.for('.'), []);"
 function normalizeList(x) {
   normalizeList1([1, Symbol.for('.'), x);
 }"
+
+ :describe "trampoline"
+ :repl #f
+ > (trampoline (fn (x) x) 1)
+ 1
+ > (define (add x y)
+     (+ x y))
+ > (define (fibonacci n)
+     (if (< n 2)
+         n
+         (tcall add
+                (tcall fibonacci (- n 1))
+                (tcall fibonacci (- n 2)))))
+ > (trampoline fibonacci 0)
+ 0
+ > (trampoline fibonacci 1)
+ 1
+ > (trampoline fibonacci 2)
+ 1
+ > (trampoline fibonacci 3)
+ 2
+ > (trampoline fibonacci 4)
+ 3
+ > (trampoline fibonacci 5)
+ 5
+ > (trampoline fibonacci 6)
+ 8
+ > (trampoline fibonacci 7)
+ 13
+ > (trampoline fibonacci 8)
+ 21
+ > (trampoline fibonacci 9)
+ 34
+ > (trampoline fibonacci 10)
+ 55
+ > (define (sub x y)
+     (- x y))
+ > (define (sequence n)
+     (if (< n 2)
+         n
+         (tcall sub
+                (tcall sequence (- n 1))
+                (tcall sequence (- n 2)))))
+ > (trampoline sequence 0)
+ 0
+ > (trampoline sequence 1)
+ 1
+ > (trampoline sequence 2)
+ 1
+ > (trampoline sequence 3)
+ 0
+ > (trampoline sequence 4)
+ -1
+ > (trampoline sequence 5)
+ -1
+ > (trampoline sequence 6)
+ 0
+ > (trampoline sequence 7)
+ 1
+ > (trampoline sequence 8)
+ 1
+ > (trampoline sequence 9)
+ 0
+ > (trampoline sequence 10)
+ -1
 
  ;; :describe "Other tests"
  ;; xit> (list? '(1 . ()))

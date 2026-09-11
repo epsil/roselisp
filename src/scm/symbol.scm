@@ -25,7 +25,7 @@
 ;;;
 ;;; [rkt:symbolp]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._symbol~3f%29%29
 ;;; [cl:symbolp]: http://clhs.lisp.se/Body/f_symbol.htm#symbolp
-(define (symbol?_ obj)
+(define-inline (symbol?_ obj)
   (eq? (type-of obj) "symbol"))
 
 ;;; Convert a symbol to a string.
@@ -35,7 +35,7 @@
 ;;;
 ;;; [rkt:symbol-to-string]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._symbol-~3estring%29%29
 ;;; [cl:symbol-name]: http://clhs.lisp.se/Body/f_symb_2.htm#symbol-name
-(define (symbol->string_ sym)
+(define-inline (symbol->string_ sym)
   (ann (get-field description sym)
        String))
 
@@ -46,7 +46,7 @@
 ;;;
 ;;; [rkt:string-to-symbol]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._string-~3esymbol%29%29
 ;;; [cl:intern]: http://clhs.lisp.se/Body/f_intern.htm#intern
-(define (string->symbol_ str)
+(define-inline (string->symbol_ str)
   ;; `Symbol.for()` returns the same symbol for a given string,
   ;; similar to `string->symbol`.
   (send Symbol for str))
@@ -58,13 +58,13 @@
 ;;;
 ;;; [rkt:gensym]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._gensym%29%29
 ;;; [cl:gensym]: http://clhs.lisp.se/Body/f_gensym.htm#gensym
-(define (gensym_ (str "g"))
+(define-inline (gensym_ (str "g"))
   ;; `Symbol()` returns a unique symbol for any string,
   ;; similar to `gensym`.
   (Symbol str))
 
 ;;; Whether something is a unique symbol.
-(define (gensym?_ obj)
+(define-inline (gensym?_ obj)
   ;; It is a unique symbol if it is a symbol that is different
   ;; from the one returned by `string->symbol`.
   (and (symbol? obj)
@@ -72,10 +72,20 @@
                  (string->symbol
                   (symbol->string obj))))))
 
+;;; Convert a unique symbol to a regular symbol.
+(define-inline (gensym->symbol_ x)
+  (string->symbol (symbol->string x)))
+
+;;; Convert a regular symbol to a unique symbol.
+(define-inline (symbol->gensym_ x)
+  (gensym (symbol->string x)))
+
 (provide
   (rename-out (string->symbol_ intern_))
+  gensym->symbol_
   gensym?_
   gensym_
   string->symbol_
+  symbol->gensym_
   symbol->string_
   symbol?_)

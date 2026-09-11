@@ -43,6 +43,7 @@
 declare function pairp_(x: any): any;
 declare namespace pairp_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is the empty list.
@@ -54,6 +55,7 @@ declare namespace pairp_ {
 declare function nullp_(x: any): any;
 declare namespace nullp_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a list.
@@ -69,6 +71,7 @@ declare namespace nullp_ {
 declare function listp_(x: any): any;
 declare namespace listp_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a pair or a list.
@@ -83,6 +86,7 @@ declare namespace listp_ {
 declare function pairOrListP_(x: any): any;
 declare namespace pairOrListP_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Make a list.
@@ -109,6 +113,7 @@ declare namespace list_ {
 declare function cons_(x: any, y: any): any;
 declare namespace cons_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var compilerMacro: any;
 }
 /**
  * Make a dotted list. Like `list`, but the final argument
@@ -187,6 +192,7 @@ declare namespace flatten_ {
 declare function first_(lst: any): any;
 declare namespace first_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the second element of a list.
@@ -198,6 +204,7 @@ declare namespace first_ {
 declare function second_(lst: any): any;
 declare namespace second_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the third element of a list.
@@ -209,6 +216,7 @@ declare namespace second_ {
 declare function third_(lst: any): any;
 declare namespace third_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the fourth element of a list.
@@ -220,6 +228,7 @@ declare namespace third_ {
 declare function fourth_(lst: any): any;
 declare namespace fourth_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the fifth element of a list.
@@ -231,6 +240,7 @@ declare namespace fourth_ {
 declare function fifth_(lst: any): any;
 declare namespace fifth_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the sixth element of a list.
@@ -242,6 +252,7 @@ declare namespace fifth_ {
 declare function sixth_(lst: any): any;
 declare namespace sixth_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the seventh element of a list.
@@ -253,6 +264,7 @@ declare namespace sixth_ {
 declare function seventh_(lst: any): any;
 declare namespace seventh_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the eighth element of a list.
@@ -264,6 +276,7 @@ declare namespace seventh_ {
 declare function eighth_(lst: any): any;
 declare namespace eighth_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the ninth element of a list.
@@ -275,6 +288,7 @@ declare namespace eighth_ {
 declare function ninth_(lst: any): any;
 declare namespace ninth_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the tenth element of a list.
@@ -286,6 +300,7 @@ declare namespace ninth_ {
 declare function tenth_(lst: any): any;
 declare namespace tenth_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the tail of a list.
@@ -302,6 +317,7 @@ declare namespace tenth_ {
 declare function cdr_(lst: any): any;
 declare namespace cdr_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the tail of a list.
@@ -313,6 +329,7 @@ declare namespace cdr_ {
 declare function rest_(lst: any): any;
 declare namespace rest_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Access the list element indicated by
@@ -321,6 +338,7 @@ declare namespace rest_ {
 declare function listRef_(lst: any, ...indices: any[]): any;
 declare namespace listRef_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the `n`-th element of a list.
@@ -334,6 +352,7 @@ declare namespace listRef_ {
 declare function nth_(n: any, lst: any): any;
 declare namespace nth_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Set a list position to a given value.
@@ -350,6 +369,7 @@ declare namespace listSet_ {
 declare function listSetX_(lst: any, ...indicesAndValue: any[]): any;
 declare namespace listSetX_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the `n`-th CDR element of a list.
@@ -379,6 +399,7 @@ declare namespace nthcdr_ {
 declare function take_(lst: any, n: any): any;
 declare namespace take_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the list obtained by dropping
@@ -391,6 +412,7 @@ declare namespace take_ {
 declare function drop_(lst: any, n: any): any;
 declare namespace drop_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the list obtained by dropping
@@ -403,6 +425,7 @@ declare namespace drop_ {
 declare function dropRight_(lst: any, n: any): any;
 declare namespace dropRight_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Reverse the order of a list.
@@ -415,6 +438,7 @@ declare namespace dropRight_ {
 declare function reverse_(lst: any): any;
 declare namespace reverse_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Reverse the order of a list.
@@ -422,6 +446,7 @@ declare namespace reverse_ {
 declare function reversex_(lst: any): any;
 declare namespace reversex_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return a list where the last `n` conses have been omitted.
@@ -456,6 +481,7 @@ declare namespace nbutlast_ {
 declare function popLeftX_(lst: any): any;
 declare namespace popLeftX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Pop an element off the end of a list.
@@ -467,6 +493,7 @@ declare namespace popLeftX_ {
 declare function popRightX_(lst: any): any;
 declare namespace popRightX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Push an element onto the beginning of a list.
@@ -478,6 +505,7 @@ declare namespace popRightX_ {
 declare function pushLeftX_(lst: any, x: any): any;
 declare namespace pushLeftX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Push an element onto the end of a list.
@@ -489,6 +517,7 @@ declare namespace pushLeftX_ {
 declare function pushRightX_(lst: any, x: any): any;
 declare namespace pushRightX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the length of a list.
@@ -502,6 +531,7 @@ declare namespace pushRightX_ {
 declare function length_(lst: any): any;
 declare namespace length_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the last element of a list.
@@ -513,6 +543,7 @@ declare namespace length_ {
 declare function last_(lst: any): any;
 declare namespace last_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the last pair of a list.
@@ -566,6 +597,7 @@ declare namespace setCdrX_ {
 declare function dottedListP_(x: any): any;
 declare namespace dottedListP_ {
     var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a dotted pair.
@@ -573,6 +605,7 @@ declare namespace dottedListP_ {
 declare function dottedPairP_(x: any): any;
 declare namespace dottedPairP_ {
     var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a proper dotted list.
@@ -594,6 +627,7 @@ declare namespace dottedImproperListP_ {
 declare function dottedListHead_(lst: any): any;
 declare namespace dottedListHead_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the tail of a dotted list.
@@ -601,6 +635,7 @@ declare namespace dottedListHead_ {
 declare function dottedListTail_(lst: any): any;
 declare namespace dottedListTail_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Create a dotted list link.
@@ -608,6 +643,7 @@ declare namespace dottedListTail_ {
 declare function dottedListLink_(x: any): any;
 declare namespace dottedListLink_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the CDR of a dotted pair.

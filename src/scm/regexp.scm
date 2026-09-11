@@ -26,7 +26,7 @@
       input))
 
 ;;; Whether `obj` is a regular expression.
-(define (regexp?_ obj)
+(define-inline (regexp?_ obj)
   (js/regexp? obj))
 
 ;;; Make a regexp string suitable for matching the given string.
@@ -35,7 +35,7 @@
 ;;; Similar to [`regexp-quote` in Racket][rkt:regexp-quote].
 ;;;
 ;;; [rkt:regexp-quote]: https://docs.racket-lang.org/reference/regexp.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._regexp-quote%29%29
-(define (regexp-quote_ str)
+(define-inline (regexp-quote_ str)
   ;; Based on `escapeRegExp()` from
   ;; <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping>.
   (regexp-replace (regexp "[.*+?^${}()|[\\]\\\\]" "g")
@@ -54,12 +54,12 @@
 ;;; [mdn:Regular Expressions]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
 ;;; [mdn:String.prototype.match]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
 ;;; [rkt:regexp-match]: https://docs.racket-lang.org/reference/regexp.html#%28def._%28%28quote._~23~25kernel%29._regexp-match%29%29
-(define (regexp-match_ pattern input)
+(define-inline (regexp-match_ pattern input)
   (js/regexp-match input pattern))
 
 ;;; Match `pattern` against `input` and return `#t`
 ;;; if it matches, otherwise `#f`.
-(define (regexp-match?_ pattern input)
+(define-inline (regexp-match?_ pattern input)
   (true? (regexp-match pattern input)))
 
 ;;; Match `pattern` against `input` and replace with `insert`.
@@ -71,7 +71,7 @@
 ;;; [mdn:Regular Expressions]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
 ;;; [mdn:String.prototype.replace]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace
 ;;; [rkt:regexp-replace]: https://docs.racket-lang.org/reference/regexp.html#%28def._%28%28quote._~23~25kernel%29._regexp-replace%29%29
-(define (regexp-replace_ pattern input insert)
+(define-inline (regexp-replace_ pattern input insert)
   (js/regexp-replace input pattern insert))
 
 (provide

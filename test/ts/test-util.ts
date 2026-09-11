@@ -20,16 +20,16 @@ const [equalp, keywordp]: any[] = ((): any => {
   function equalp_(x: any, y: any): any {
     if (x === y) {
       return true;
-    } else if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && Array.isArray(y)) {
+    } else if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && Array.isArray(y)) {
       const cdrX: any = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
-      if (Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX.at(-2) === Symbol.for('.')))) {
+      if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX[cdrX.length - 2] === Symbol.for('.')))) {
         return false;
       } else if (equalp_(x[0], y[0])) {
         return equalp_(cdrX, ((y.length === 3) && (y[1] === Symbol.for('.'))) ? y[2] : y.slice(1));
       } else {
         return false;
       }
-    } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y.at(-2) === Symbol.for('.'))) {
+    } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y[y.length - 2] === Symbol.for('.'))) {
       return equalp_(y, x);
     } else if (Array.isArray(x) && Array.isArray(y)) {
       if (x.length !== y.length) {
@@ -296,7 +296,7 @@ function simplifyReplForm(exp: any): any {
   } else {
     return [getReplFormType(exp), Symbol.for('>'), [Symbol.for('begin'), ...clauses.map(function (x: any): any {
       return x[0];
-    })], clauses.at(-1)[1]];
+    })], clauses[clauses.length - 1][1]];
   }
 }
 

@@ -15,6 +15,10 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "./util"
+                  flip-function-expression
+                  tagged-list?))
+
 ;;; Call `f` with `args`, using the last arg as a list of args.
 ;;; Returns the value `f` returns.
 ;;;
@@ -40,7 +44,7 @@
   (send/apply f call #n args))
 
 ;;; Return the arity of the function `f`.
-(define (arity_ f)
+(define-inline (arity_ f)
   (js/length f))
 
 ;;; Whether `obj` is a procedure (i.e., a function).
@@ -50,7 +54,7 @@
 ;;;
 ;;; [rkt:procedurep]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28quote._~23~25kernel%29._procedure~3f%29%29
 ;;; [cl:functionp]: http://clhs.lisp.se/Body/f_fnp.htm#functionp
-(define (procedure?_ obj)
+(define-inline (procedure?_ obj)
   (js/function? obj))
 
 ;;; Whether `obj` is a fexpr, that is, a procedure that
@@ -71,23 +75,18 @@
 
 ;;; Whether `x` is the type of a variable.
 (define (variable-type?_ x)
-  (or (eq? x 'Any)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "variable")))
+  ;; TODO: Legacy function, remove.
+  (eq? x 'Any))
 
 ;;; Whether `x` is the type of a procedure.
 (define (procedure-type?_ x)
   (or (tagged-list?_ x '->)
-      (tagged-list?_ x '->*)
-      ;; FIXME: Legacy code, remove.
-      (eq? x "function")
-      (eq? x "procedure")))
+      (tagged-list?_ x '->*)))
 
 ;;; Whether `x` is the type of a macro.
 (define (macro-type?_ x)
   (or (tagged-list?_ x 'macro->)
       ;; FIXME: Legacy code, remove.
-      (tagged-list?_ x '->macro)
       (eq? x "macro")))
 
 ;;; Whether `x` is the type of a syntax transformer.
@@ -102,22 +101,17 @@
 (define (fexpr-type?_ x)
   (or (tagged-list?_ x 'fexpr->)
       ;; FIXME: Legacy code, remove.
-      (tagged-list?_ x '->fexpr)
       (eq? x "fexpr")))
 
 ;;; Whether `x` is the type of a compiler.
 (define (compiler-type?_ x)
-  (or (tagged-list?_ x 'compiler->)
-      ;; FIXME: Legacy code, remove.
-      (tagged-list?_ x '->compiler)
-      (eq? x "compiler")))
+  ;; TODO: Legacy function, remove.
+  (tagged-list?_ x 'compiler->))
 
 ;;; Whether `x` is the type of a special form.
 (define (special-type?_ x)
-  (or (tagged-list?_ x 'special->)
-      ;; FIXME: Legacy code, remove.
-      (tagged-list?_ x '->special)
-      (eq? x "special")))
+  ;; TODO: Legacy function, remove.
+  (tagged-list?_ x 'special->))
 
 ;;; Whether `x` is the type of an undefined value.
 (define (undefined-type?_ x)
@@ -149,10 +143,46 @@
 ;;; [rkt:map]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Fmap..rkt%29._map%29%29
 ;;; [cl:mapcar]: http://clhs.lisp.se/Body/f_mapc_.htm#mapcar
 (define (map_ f seq)
-  (map f seq))
+  (send seq
+        map
+        (lambda (x)
+          (f x))))
+
+;;; Compiler macro for `(map ...)` expressions.
+(define-compiler-macro (map_ f x)
+  ;; Note that `` `(send ,x map ,f) `` is too simple, as JavaScript's
+  ;; `.map()` method calls the function with multiple arguments. This
+  ;; can lead to unintuitive bugs in cases where the function has an
+  ;; optional second parameter. To avoid this, we enclose `f` in a
+  ;; unary function wrapper.
+  (define (make-unary-function f-exp)
+    (cond
+     ;; If `f-exp` is a symbolic expression, then wrap it in a
+     ;; `lambda` expression.
+     ((symbol? f-exp)
+      `(lambda (x)
+         (,f-exp x)))
+     ;; If `f-exp` is an anonymous unary function, then there is
+     ;; no need to wrap it.
+     ((and (tagged-list? f-exp '(fn lambda js/function js/arrow))
+           (pair-or-list? (second f-exp))
+           (= (length (second f-exp)) 1))
+      f-exp)
+     (else
+      ;; Curried function application, i.e., the **A** combinator
+      ;; defined as a curried function. Calling this function with
+      ;; a single argument produces a unary function wrapper that
+      ;; calls a function with a single argument and disregards any
+      ;; additional arguments.
+      (define A-exp
+        '(lambda (f)
+           (lambda (x)
+             (f x))))
+      `(,A-exp ,f-exp))))
+  `(send ,x map ,(make-unary-function f)))
 
 ;;; Call a procedure on each element of a list.
-(define (for-each_ f lst)
+(define-inline (for-each_ f lst)
   (send lst forEach f))
 
 ;;; Less than operator.
@@ -255,7 +285,7 @@
 ;;; Similar to [`add1` in Racket][rkt:add1].
 ;;;
 ;;; [rkt:add1]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._add1%29%29
-(define (add1_ x)
+(define-inline (add1_ x)
   (+ x 1))
 
 ;;; Subtraction.
@@ -283,7 +313,7 @@
 ;;; Similar to [`sub1` in Racket][rkt:sub1].
 ;;;
 ;;; [rkt:sub1]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._sub1%29%29
-(define (sub1_ x)
+(define-inline (sub1_ x)
   (- x 1))
 
 ;;; Multiplication.
@@ -323,11 +353,11 @@
 ;;;
 ;;; [rkt:zerop]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._zero~3f%29%29
 ;;; [cl:zerop]: http://clhs.lisp.se/Body/f_zerop.htm#zerop
-(define (zero?_ n)
+(define-inline (zero?_ n)
   (= n 0))
 
 ;;; Whether a value is the number one.
-(define (one?_ n)
+(define-inline (one?_ n)
   (= n 1))
 
 ;;; Whether a number is odd.
@@ -337,7 +367,7 @@
 ;;;
 ;;; [rkt:oddp]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._odd~3f%29%29
 ;;; [cl:oddp]: http://clhs.lisp.se/Body/f_evenpc.htm#oddp
-(define (odd?_ n)
+(define-inline (odd?_ n)
   (not (even? n)))
 
 ;;; Whether a number is even.
@@ -347,15 +377,15 @@
 ;;;
 ;;; [rkt:oddp]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._even~3f%29%29
 ;;; [cl:oddp]: http://clhs.lisp.se/Body/f_evenpc.htm#evenp
-(define (even?_ n)
+(define-inline (even?_ n)
   (zero? (modulo n 2)))
 
 ;;; Whether a value is truthy.
-(define (true?_ x)
+(define-inline (true?_ x)
   (if x #t #f))
 
 ;;; Whether a value is falsy.
-(define (false?_ x)
+(define-inline (false?_ x)
   (if x #f #t))
 
 ;;; The identity function.
@@ -375,7 +405,7 @@
 ;;;
 ;;; [rkt:const]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Ffunction..rkt%29._const%29%29
 ;;; [cl:constantly]: http://clhs.lisp.se/Body/f_cons_1.htm#constantly
-(define (const_ (x #u))
+(define-inline (const_ (x #u))
   (lambda args
     x))
 
@@ -391,6 +421,10 @@
   ;; there is no separate data type for value tuples.
   args)
 
+;;; Compiler macro for `(values ...)` expressions.
+(define-compiler-macro (values_ &rest args)
+  `(list ,@args))
+
 ;;; Whether something is a keyword, i.e., a symbol
 ;;; whose first character is `:`.
 ;;;
@@ -405,20 +439,26 @@
                       (symbol->string obj))))
 
 ;;; Convert a keyword to a string without the `:` prefix.
-(define (keyword->string_ exp)
-  (~> exp
-      (symbol->string _)
-      (regexp-replace (regexp "^:") _ "")))
+(define-inline (keyword->string_ x)
+  (regexp-replace (regexp "^:")
+                  (symbol->string x)
+                  ""))
 
 ;;; Convert a keyword to a regular symbol
 ;;; (i.e., strip the `:` prefix).
-(define (keyword->symbol_ exp)
-  (~> exp
-      (keyword->string_ _)
-      (string->symbol _)))
+(define-inline (keyword->symbol_ x)
+  (string->symbol (keyword->string x)))
+
+;;; Convert a symbol to a keyword.
+(define-inline (symbol->keyword_ x)
+  (string->keyword (symbol->string x)))
+
+;;; Convert a string to a keyword.
+(define-inline (string->keyword_ x)
+  (string->symbol (string-append ":" x)))
 
 ;;; Whether something is an atomic value.
-(define (atom?_ x)
+(define-inline (atom?_ x)
   (not (pair? x)))
 
 ;;; Whether something is a number.
@@ -428,7 +468,7 @@
 ;;;
 ;;; [rkt:numberp]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._number~3f%29%29
 ;;; [cl:numberp]: http://clhs.lisp.se/Body/f_nump.htm#numberp
-(define (number?_ obj)
+(define-inline (number?_ obj)
   (send Number isFinite obj))
 
 ;;; Whether something is a boolean value.
@@ -438,11 +478,11 @@
 ;;;
 ;;; [rkt:booleanp]: https://docs.racket-lang.org/reference/booleans.html#%28def._%28%28quote._~23~25kernel%29._boolean~3f%29%29
 ;;; [el:booleanp]: https://www.gnu.org/software/emacs/manual/html_node/elisp/nil-and-t.html#index-booleanp
-(define (boolean?_ obj)
+(define-inline (boolean?_ obj)
   (eq? (type-of obj) "boolean"))
 
 ;;; Whether something is the value `undefined`.
-(define (undefined?_ obj)
+(define-inline (undefined?_ obj)
   (eq? obj #u))
 
 ;;; Fold up a list left to right.
@@ -455,6 +495,15 @@
 (define (foldl_ f v lst)
   (foldl f v lst))
 
+;;; Compiler macro for `(foldl ...)` expressions.
+(define-compiler-macro (foldl_ f v lst &environment env)
+  ;; `foldl()` and `.reduce()` invoke the reducing function with
+  ;; opposite argument order, and `.reduce()` passes additional
+  ;; arguments to it. We therefore wrap it in a binary function
+  ;; wrapper that reverses the order of the two first arguments
+  ;; and disregards the other arguments.
+  `(js/reduce ,lst ,(flip-function-expression f 'x 'acc) ,v))
+
 ;;; Fold up a list right to left.
 ;;;
 ;;; Similar to [`foldr` in Racket][rkt:foldr] and
@@ -464,6 +513,11 @@
 ;;; [cl:reduce]: http://clhs.lisp.se/Body/f_reduce.htm#reduce
 (define (foldr_ f v lst)
   (foldr f v lst))
+
+;;; Compiler macro for `(foldr ...)` expressions.
+(define-compiler-macro (foldr_ f v lst &environment env)
+  ;; Like `foldl`, but invokes the `reduceRight` method instead.
+  `(js/reduce-right ,lst ,(flip-function-expression f 'x 'acc) ,v))
 
 ;;; Whether a list contains a value.
 ;;; Returns a sublist if found, otherwise `#f`.
@@ -496,6 +550,22 @@
                (equal? v x)))
          lst))
 
+;;; Compiler macro for `(member? ...)` expressions.
+(define-compiler-macro (member?_ v lst is-equal)
+  (cond
+   (is-equal
+    (once-only*
+     (v is-equal)
+     `(memf? (lambda (x)
+               (,is-equal ,v x))
+             ,lst)))
+   (else
+    (once-only*
+     (v)
+     `(memf? (lambda (x)
+               (equal? ,v x))
+             ,lst)))))
+
 ;;; Whether a list contains a value.
 ;;; Like `member`, but comparison is done with `eq?`.
 ;;;
@@ -516,7 +586,7 @@
 ;;; Whether a list contains a value,
 ;;; using `eq?` for comparisons. Like `memq`,
 ;;; but always returns a boolean value.
-(define (memq?_ v lst)
+(define-inline (memq?_ v lst)
   ;; This construct maps neatly onto
   ;; [`Array.prototype.includes()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
   (send lst includes v))
@@ -538,7 +608,7 @@
 
 ;;; Whether a list contains a value matching a predicate.
 ;;; Like `memf`, but always returns a boolean value.
-(define (memf?_ proc lst)
+(define-inline (memf?_ proc lst)
   (>= (js/find-index proc lst) 0))
 
 ;;; Find a list element matching a predicate.
@@ -561,7 +631,7 @@
 ;;;
 ;;; [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
 ;;; [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
-(define (findf-index_ proc seq (not-found #f))
+(define-inline (findf-index_ proc seq (not-found #f))
   (let ((idx (js/find-index proc seq)))
     (if (>= idx 0)
         idx
@@ -574,7 +644,7 @@
 ;;;
 ;;; [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
 ;;; [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
-(define (index-where_ seq proc (not-found #f))
+(define-inline (index-where_ seq proc (not-found #f))
   (let ((idx (js/find-index proc seq)))
     (if (>= idx 0)
         idx
@@ -689,7 +759,7 @@
 ;;;
 ;;; [rkt:filter]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._filter%29%29
 ;;; [cl:remove-if-not]: http://clhs.lisp.se/Body/f_rm_rm.htm#remove-if-not
-(define (filter_ pred lst)
+(define-inline (filter_ pred lst)
   (send lst filter pred))
 
 ;;; Whether a value is self-evaluating.
@@ -712,6 +782,10 @@
 (define (assert_ x . args)
   (send/apply console assert x args))
 
+;;; Compiler macro for `(assert ...)` expressions.
+(define-compiler-macro (assert_ &rest args)
+  `(send console assert ,@args))
+
 ;;; Output a message to the console.
 ;;;
 ;;; Similar to [`display` in Racket][rkt:display] and
@@ -722,6 +796,10 @@
 (define (display_ . args)
   (send/apply console log args))
 
+;;; Compiler macro for `(display ...)` expressions.
+(define-compiler-macro (display_ &rest args)
+  `(send console log ,@args))
+
 ;;; Throw an error.
 ;;;
 ;;; Similar to [`error` in Racket][rkt:error] and
@@ -729,7 +807,7 @@
 ;;;
 ;;; [rkt:error]: https://docs.racket-lang.org/reference/exns.html#%28def._%28%28quote._~23~25kernel%29._error%29%29
 ;;; [cl:error]: http://clhs.lisp.se/Body/f_error.htm
-(define (error_ (arg #u))
+(define-inline (error_ (arg #u))
   (throw (new Error arg)))
 
 ;;; Get the type of a value.
@@ -737,7 +815,7 @@
 ;;; Similar to [`type-of` in Common Lisp][cl:type-of].
 ;;;
 ;;; [cl:type-of]: http://clhs.lisp.se/Body/f_tp_of.htm#type-of
-(define (type-of_ x)
+(define-inline (type-of_ x)
   (js/typeof x))
 
 ;;; Whether `obj` is an instance of `cls`.
@@ -745,11 +823,11 @@
 ;;; Similar to [`is-a?` in Racket][rkt:is-a-p].
 ;;;
 ;;; [rkt:is-a-p]: https://docs.racket-lang.org/reference/objectutils.html#%28def._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._is-a~3f%29%29
-(define (is-a?_ obj cls)
+(define-inline (is-a?_ obj cls)
   (js/instanceof obj cls))
 
 ;;; Return the absolute value of `x`.
-(define (abs_ x)
+(define-inline (abs_ x)
   (js/abs x))
 
 (provide
@@ -879,8 +957,10 @@
   range_
   self-evaluating?_
   special-type?_
+  string->keyword_
   sub1_
   sub_
+  symbol->keyword_
   syntax-transformer-type?_
   syntax-transformer?_
   tagged-list?_

@@ -21,8 +21,8 @@
  */
 declare function thunk_(exp: any, env: any): any;
 declare namespace thunk_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Whether something is a thunk.
@@ -30,22 +30,23 @@ declare namespace thunk_ {
 declare function thunkp_(x: any): any;
 declare namespace thunkp_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Make a promise.
  */
 declare function delay_(exp: any, env: any): any;
 declare namespace delay_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | undefined)[] | (boolean | symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | undefined)[] | (boolean | symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Make a composable promise.
  */
 declare function lazy_(exp: any, env: any): any;
 declare namespace lazy_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Whether something is a promise.
@@ -53,6 +54,7 @@ declare namespace lazy_ {
 declare function promisep_(x: any): any;
 declare namespace promisep_ {
     var fsource: (symbol | (symbol | (string | symbol | (symbol | symbol[])[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Force a promise.
@@ -60,6 +62,7 @@ declare namespace promisep_ {
 declare function force_(x: any): any;
 declare namespace force_ {
     var fsource: (symbol | symbol[] | symbol[][])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a promise has been forced.
@@ -67,6 +70,7 @@ declare namespace force_ {
 declare function promiseForcedP_(x: any): any;
 declare namespace promiseForcedP_ {
     var fsource: (symbol | (boolean | symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a promise is running.
@@ -74,6 +78,7 @@ declare namespace promiseForcedP_ {
 declare function promiseRunningP_(x: any): any;
 declare namespace promiseRunningP_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Map for storing promises in.

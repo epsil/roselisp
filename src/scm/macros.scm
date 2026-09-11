@@ -24,6 +24,7 @@
                   transfer-comments))
 (require (only-in "./util"
                   count-tree
+                  define->define-macro
                   list-expression->pattern
                   map-tree
                   number->letter
@@ -64,20 +65,43 @@
 ;;; [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
 ;;; [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
 (define-macro (define-macro_ name-and-args &rest body)
-  (define name
-    (car name-and-args))
   (define macro-fn-form
     (define-macro->lambda-form
       `(define-macro ,name-and-args
          ,@body)))
+  (define name
+    (car name-and-args))
   (define args
     (second macro-fn-form))
   (define macro-body
     (drop macro-fn-form 2))
-  `(begin
-     (define (,name ,@args)
-       ,@macro-body)
-     (declare-macro ,name)))
+  `(define ,(cons name args)
+     ,@macro-body))
+
+;;; Expand a `(macro ...)` expression.
+;;;
+;;; Somewhat similar to [`macro` in Emacs Lisp][el:macro].
+;;;
+;;; [el:macro]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Macros.html#index-defmacro
+(define-macro (macro_ args &rest body)
+  (define-macro->lambda-form
+    `(define-macro
+       ,(cons (gensym "f")
+              (if (symbol? args)
+                  `(&rest ,args)
+                  args))
+       ,@body)))
+
+;;; Expand a `(define-compiler-macro ...)` expression.
+(define-macro (define-compiler-macro_ name-and-args &rest body)
+  (define name
+    (car name-and-args))
+  (define args
+    (cdr name-and-args))
+  `(declare ,name
+            (compiler-macro
+             (macro ,args
+               ,@body))))
 
 ;;; Expand a `(syntax ...)` expression.
 (define-macro (syntax_ v)
@@ -89,14 +113,22 @@
 
 ;;; Expand a `(define-syntax ...)` expression.
 (define-macro (define-syntax_ name-and-args &rest body)
-  (define name
-    (if (symbol? name-and-args)
-        name-and-args
-        (car name-and-args)))
-  `(begin
-     (define ,name-and-args
-       ,@body)
-     (declare ,name (ftype (macro-> Syntax Syntax)))))
+  (cond
+   ((symbol? name-and-args)
+    `(begin
+       (define ,name-and-args
+         ,@body)
+       (declare ,name-and-args (ftype '(macro-> Syntax Syntax)))))
+   (else
+    `(define ,name-and-args
+       (declare (ftype '(macro-> Syntax Syntax)))
+       ,@body))))
+
+;;; Expand a `(syntax-macro ...)` expression.
+(define-macro (syntax-macro_ args &rest body)
+  `(lambda ,args
+     (declare (ftype '(macro-> Syntax Syntax)))
+     ,@body))
 
 ;;; Create a macro function on the basis of a
 ;;; `(define-macro ...)` expression.
@@ -108,22 +140,24 @@
 ;;; Create a `(lambda ...)` form for a macro function
 ;;; on the basis of a `(define-macro ...)` expression.
 (define (define-macro->lambda-form exp (options (js/obj)))
-  (define name-and-args
+  (define name-and-params
     (second exp))
   (define name
-    (car name-and-args))
+    (car name-and-params))
   (define args
-    (cdr name-and-args))
+    (cdr name-and-params))
   (define body
     (drop exp 2))
-  (define exp-arg
+  (define exp-param
     (or (oget options :exp)
         (gensym "exp")))
-  (define env-arg
+  (define env-param
     (or (oget options :env)
         (gensym "env")))
-  (define macro-args '())
-  (define rest-arg #u)
+  (define macro-params '())
+  (define initializers '())
+  (define optional #f)
+  (define rest-param #u)
   (cond
    ((list? args)
     (define i 0)
@@ -131,34 +165,53 @@
       (define arg
         (list-ref args i))
       (cond
+       ((or (pair-or-list? arg)
+            optional)
+        (when (symbol? arg)
+          (set! arg `(,arg #u)))
+        (define param
+          (first arg))
+        (define value
+          (second arg))
+        (define initializer
+          `(when (undefined? ,param)
+             (set! ,param ,value)))
+        (push-right! macro-params param)
+        (push-right! initializers initializer)
+        (set! i (+ i 1)))
+       ((eq? arg '&optional)
+        (set! optional #t)
+        (set! i (+ i 1)))
        ((memq? arg '(&body &rest))
-        (set! rest-arg (list-ref args (+ i 1)))
+        (set! rest-param (list-ref args (+ i 1)))
         (set! i (+ i 2)))
        ((eq? arg '&whole)
-        (set! exp-arg (list-ref args (+ i 1)))
+        (set! exp-param (list-ref args (+ i 1)))
         (set! i (+ i 2)))
        ((eq? arg '&environment)
-        (set! env-arg (list-ref args (+ i 1)))
+        (set! env-param (list-ref args (+ i 1)))
         (set! i (+ i 2)))
        (else
-        (push-right! macro-args arg)
+        (push-right! macro-params arg)
         (set! i (+ i 1))))))
    (else
-    (set! macro-args args)))
-  (when rest-arg
+    (set! macro-params args)))
+  (when rest-param
     (cond
-     ((null? macro-args)
-      (set! macro-args rest-arg))
+     ((null? macro-params)
+      (set! macro-params rest-param))
      (else
-      (set! macro-args
+      (set! macro-params
             (apply list*
-                   (append macro-args
-                           (list rest-arg)))))))
-  `(lambda (,exp-arg ,env-arg)
-     ,@(if (null? macro-args)
+                   (append macro-params
+                           (list rest-param)))))))
+  `(lambda (,exp-param ,env-param)
+     (declare (ftype "macro"))
+     ,@(if (null? macro-params)
            '()
-           `((define-values ,macro-args
-               (rest ,exp-arg))))
+           `((define-values ,macro-params
+               (rest ,exp-param))))
+     ,@initializers
      ,@body))
 
 ;;; Expand a `(defmacro ...)` expression.
@@ -172,12 +225,41 @@
   `(define-macro ,(cons name args)
      ,@body))
 
-;;; Expand a `(define-fexpr ...)` expression.
-(define-macro (define-fexpr_ name-and-args &rest body)
+;;; Expand a `(defsubst ...)` expression.
+;;;
+;;; Similar to [`defsubst` in Emacs Lisp][el:defsubst].
+;;;
+;;; [el:defsubst]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Inline-Functions.html#index-defsubst
+(define-macro (defsubst_ name args &rest body)
+  `(define-inline (,name ,@args)
+     ,@body))
+
+;;; Expand a `(define-inline ...)` expression.
+(define-macro (define-inline_ name-and-args &rest body)
   `(begin
      (define ,name-and-args
        ,@body)
-     (declare-fexpr ,(car name-and-args))))
+     (define-compiler-macro
+       ,@(rest
+          (define->define-macro
+            `(define ,name-and-args ,@body)
+            #t)))))
+
+;;; Expand a `(define-fexpr ...)` expression.
+(define-macro (define-fexpr_ name-and-args &rest body)
+  `(define ,name-and-args
+     (declare (ftype "fexpr"))
+     ,@body))
+
+;;; Expand a `(nlambda ...)` expression.
+;;;
+;;; Similar to [`nlambda` in Interlisp][il:nlambda].
+;;;
+;;; [il:nlambda]: https://interlisp.org/software/using-medley/cl-using/#lambda--nlambda--cllambda
+(define-macro (nlambda_ args &rest body)
+  `(lambda ,args
+     (declare (ftype "fexpr"))
+     ,@body))
 
 ;;; Expand a `(declare ...)` expression.
 ;;;
@@ -186,21 +268,43 @@
 ;;;
 ;;; [cl:declare]: http://clhs.lisp.se/Body/s_declar.htm#declare
 ;;; [el:declare]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Declare-Form.html
-(define-macro (declare_ name &rest specs)
-  `(begin
-     ,@(map (lambda (spec)
-              `(set-field! ,(first spec)
-                           ,name
-                           (quote ,(second spec))))
-            specs)))
+(define-macro (declare_ &rest args)
+  (cond
+   ((not (symbol? (first args)))
+    `(declare this ,@args))
+   (else
+    (define-values (name . specs)
+      args)
+    `(begin
+       ,@(map (lambda (spec)
+                `(set-field! ,(first spec)
+                             ,name
+                             ,(second spec)))
+              specs)))))
 
 ;;; Expand a `(declare-macro ...)` expression.
-(define-macro (declare-macro_ name)
-  `(declare ,name (ftype "macro")))
+(define-macro (declare-macro_ (name #u))
+  (cond
+   ((not name)
+    `(declare (ftype "macro")))
+   (else
+    `(declare ,name (ftype "macro")))))
+
+;;; Expand a `(declare-syntax-macro ...)` expression.
+(define-macro (declare-syntax-macro_ (name #u))
+  (cond
+   ((not name)
+    `(declare (ftype '(macro-> Syntax Syntax))))
+   (else
+    `(declare ,name (ftype '(macro-> Syntax Syntax))))))
 
 ;;; Expand a `(declare-fexpr ...)` expression.
-(define-macro (declare-fexpr_ name)
-  `(declare ,name (ftype "fexpr")))
+(define-macro (declare-fexpr_ (name #u))
+  (cond
+   ((not name)
+    `(declare (ftype "fexpr")))
+   (else
+    `(declare ,name (ftype "fexpr")))))
 
 ;;; Expand a `(begin0 ...)` expression.
 ;;;
@@ -257,10 +361,6 @@
    stx
    `(js/&& ,@(send stx drop 1))))
 
-;; (define-macro (and-1_ &rest args)
-;;   ;; TODO: Rewrite to use `define-syntax`.
-;;   `(js/&& ,@args))
-
 ;;; Expand an `(or ...)` expression.
 ;;;
 ;;; Similar to [`or` in Racket][rkt:or], [`or` in Guile][guile:or],
@@ -274,10 +374,6 @@
   (datum->syntax
    stx
    `(js/\|\| ,@(send stx drop 1))))
-
-;; (define-macro (or-1_ &rest args)
-;;   ;; TODO: Rewrite to use `define-syntax`.
-;;   `(js/\|\| ,@args))
 
 ;;; Expand a `(cond ...)` expression.
 ;;;
@@ -354,11 +450,6 @@
    `(if ,(send stx get 1)
         (begin ,@(send stx drop 2)))))
 
-;; (define-macro (when-1_ condition &rest body)
-;;   ;; TODO: Rewrite to use `define-syntax`.
-;;   `(if ,condition
-;;        (begin ,@body)))
-
 ;;; Expand an `(unless ...)` expression.
 ;;;
 ;;; Similar to [`unless` in Racket][rkt:unless], [`unless` in Guile][guile:unless],
@@ -373,11 +464,6 @@
    stx
    `(if (not ,(send stx get 1))
         (begin ,@(send stx drop 2)))))
-
-;; (define-macro (unless-1_ condition &rest body)
-;;   ;; TODO: Rewrite to use `define-syntax`.
-;;   `(if (not ,condition)
-;;        (begin ,@body)))
 
 ;;; Expand an `(el/if ...)` expression.
 ;;;
@@ -577,9 +663,11 @@
 ;;;
 ;;; [guile:while]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-while
 ;;; [el:while]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Iteration.html#index-while
-(define-macro (while_ test &rest body)
-  ;; TODO: Rewrite to use `define-syntax`.
-  `(js/while ,test ,@body))
+(define-syntax (while_ stx)
+  (datum->syntax
+   stx
+   `(js/while ,(send stx get 1)
+      ,@(send stx drop 2))))
 
 ;;; Expand a `(for ...)` expression.
 ;;;
@@ -813,7 +901,7 @@
 
 ;;; Expand a `(let-env ...)` expression.
 (define-macro (let-env_ x &rest body)
-  `(scm/eval (quote (begin ,@body))
+  `(scm/eval '(begin ,@body)
              (extend-environment
               ,x
               (current-environment))))
@@ -1165,21 +1253,57 @@
 ;;;
 ;;; [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
 (define-macro (with-gensyms_ names &rest body)
-  `(let ,(cl/loop for n in names collect `(,n (gensym)))
+  `(let ,(cl/loop for n in names
+                  collect `(,n (gensym)))
      ,@body))
 
-;;; `once-only` macro as defined in
+;;; `once-only` macro, adapted from the one described in
 ;;; Peter Seibel's [*Practical Common Lisp*][book:pcl].
 ;;;
 ;;; [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
 (define-macro (once-only_ names &rest body)
-  (let ((gensyms (cl/loop for n in names collect (gensym))))
-    `(let (,@(cl/loop for g in gensyms collect `(,g (gensym))))
-       `(let (,,@(cl/loop for g in gensyms for n in names collect ``(,,g ,,n)))
-          ,(let (,@(cl/loop for n in names for g in gensyms collect `(,n ,g)))
+  (let ((gensyms (cl/loop for n in names
+                          collect (gensym (symbol->string n)))))
+    `(let (,@(cl/loop for g in gensyms
+                      for n in names
+                      collect `(,g (gensym ,(symbol->string n)))))
+       `(let (,,@(cl/loop for g in gensyms
+                          for n in names
+                          collect ``(,,g ,,n)))
+          ,(let (,@(cl/loop for n in names
+                            for g in gensyms
+                            collect `(,n ,g)))
              ,@body)))))
 
+;;; Alternative implementation of `once-only` that skips over atomic
+;;; expressions. Expands to a nested `cond` form that only invokes
+;;; `once-only` on variables that are bound to complex expressions.
+;;;
+;;; Note that this gets rather verbose when there are many variables.
+;;; In that case, it may be better to define a recursive macro
+;;; instead.
+(define-macro (once-only*_ names &rest body)
+  (define (recurse input output body)
+    (cond
+     ((null? input)
+      (cond
+       ((null? output)
+        `(begin ,@body))
+       (else
+        `(once-only ,output
+                    ,@body))))
+     (else
+      `(cond
+        ((atom? ,(first input))
+         ,(recurse (rest input) output body))
+        (else
+         ,(recurse (rest input)
+                   (append output (list (first input)))
+                   body))))))
+  (recurse names '() body))
+
 (provide
+  (rename-out (define-inline_ define-subst_))
   and_
   begin0_
   case-eq_
@@ -1189,9 +1313,12 @@
   cond_
   declare-fexpr_
   declare-macro_
+  declare-syntax-macro_
   declare_
   defclass_
+  define-compiler-macro_
   define-fexpr_
+  define-inline_
   define-macro->function
   define-macro->lambda-form
   define-macro_
@@ -1199,20 +1326,25 @@
   define-public_
   define-syntax_
   defmacro_
+  defsubst_
   defun_
   do_
   el/if_
   for_
   let-env_
+  macro_
   match_
   multiple-value-bind_
   new/apply_
+  nlambda_
   once-only_
+  once-only*_
   or_
   quasisyntax_
   rkt/new_
   set_
   setq_
+  syntax-macro_
   syntax_
   thread-as_
   thread-first_
@@ -1221,5 +1353,5 @@
   unless_
   unwind-protect_
   when_
-  with-gensyms_
-  while_)
+  while_
+  with-gensyms_)

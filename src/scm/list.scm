@@ -32,6 +32,11 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "./env"
+                  current-compilation-options))
+(require (only-in "./util"
+                  tagged-list?))
+
 ;;; Whether something is a pair, i.e., a cons cell.
 ;;;
 ;;; Similar to [`pair?` in Racket][rkt:pairp] and
@@ -39,7 +44,7 @@
 ;;;
 ;;; [rkt:pairp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._pair~3f%29%29
 ;;; [cl:consp]: http://clhs.lisp.se/Body/f_consp.htm
-(define (pair?_ x)
+(define-inline (pair?_ x)
   ;; All lists except the empty list qualify as pairs.
   (and (array? x)
        (> (array-length x) 0)))
@@ -49,7 +54,7 @@
 ;;; Similar to [`null?` in Racket][rkt:nullp].
 ;;;
 ;;; [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
-(define (null?_ x)
+(define-inline (null?_ x)
   (and (array? x)
        (= (array-length x) 0)))
 
@@ -65,6 +70,21 @@
 (define (list?_ x)
   (null? (last-cdr x)))
 
+;;; Compiler macro for `(list? ...)` expressions.
+(define-compiler-macro (list?_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall list? ,x))
+   (else
+    (once-only*
+     (x)
+     `(and (array? ,x)
+           (not (and (>= (array-length ,x) 3)
+                     (eq? (array-nlast ,x 2) '|.|)
+                     (not (array? (array-last ,x))))))))))
+
 ;;; Whether something is a pair or a list.
 ;;;
 ;;; Similar to [`listp` in Common Lisp][cl:listp] and
@@ -76,6 +96,10 @@
 (define (pair-or-list?_ x)
   (or (pair? x)
       (null? x)))
+
+;;; Compiler macro for `(pair-or-list? ...)` expressions.
+(define-compiler-macro (pair-or-list?_ x)
+  `(array? ,x))
 
 ;;; Make a list.
 ;;;
@@ -98,6 +122,20 @@
   ;; Create a regular list whenever possible;
   ;; otherwise create a dotted list.
   `(,x ,@(dotted-list-link y)))
+
+;;; Compiler macro for `(cons ...)` expressions.
+(define-compiler-macro (cons_ x y)
+  (cond
+   ((self-evaluating? y)
+    ``(,,x . ,,y))
+   ((or (tagged-list? y 'list)
+        (and (tagged-list? y 'list*)
+             (> (length y) 2))
+        (and (tagged-list? y '(quote quasiquote))
+             (pair-or-list? (second y))))
+    ``(,,x ,@,y))
+   (else
+    ``(,,x ,@(dotted-list-link ,y)))))
 
 ;;; Make a dotted list. Like `list`, but the final argument
 ;;; is used as the tail, instead of as the final element.
@@ -190,6 +228,16 @@
 (define (first_ lst)
   (array-first lst))
 
+;;; Compiler macro for `(first ...)` expressions.
+(define-compiler-macro (first_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall first ,x))
+   (else
+    `(array-first ,x))))
+
 ;;; Return the second element of a list.
 ;;;
 ;;; Similar to [`second` in Racket][rkt:second].
@@ -199,6 +247,16 @@
   (if (dotted-list? lst)
       (dotted-list-second lst)
       (array-second lst)))
+
+;;; Compiler macro for `(second ...)` expressions.
+(define-compiler-macro (second_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall second ,x))
+   (else
+    `(array-second ,x))))
 
 ;;; Return the third element of a list.
 ;;;
@@ -210,6 +268,16 @@
       (dotted-list-third lst)
       (array-third lst)))
 
+;;; Compiler macro for `(third ...)` expressions.
+(define-compiler-macro (third_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall third ,x))
+   (else
+    `(array-third ,x))))
+
 ;;; Return the fourth element of a list.
 ;;;
 ;;; Similar to [`fourth` in Racket][rkt:fourth].
@@ -219,6 +287,16 @@
   (if (dotted-list? lst)
       (dotted-list-fourth lst)
       (array-fourth lst)))
+
+;;; Compiler macro for `(fourth ...)` expressions.
+(define-compiler-macro (fourth_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall fourth ,x))
+   (else
+    `(array-fourth ,x))))
 
 ;;; Return the fifth element of a list.
 ;;;
@@ -230,6 +308,16 @@
       (dotted-list-fifth lst)
       (array-fifth lst)))
 
+;;; Compiler macro for `(fifth ...)` expressions.
+(define-compiler-macro (fifth_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall fifth ,x))
+   (else
+    `(array-fifth ,x))))
+
 ;;; Return the sixth element of a list.
 ;;;
 ;;; Similar to [`sixth` in Racket][rkt:sixth].
@@ -239,6 +327,16 @@
   (if (dotted-list? lst)
       (dotted-list-sixth lst)
       (array-sixth lst)))
+
+;;; Compiler macro for `(sixth ...)` expressions.
+(define-compiler-macro (sixth_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall sixth ,x))
+   (else
+    `(array-sixth ,x))))
 
 ;;; Return the seventh element of a list.
 ;;;
@@ -250,6 +348,16 @@
       (dotted-list-seventh lst)
       (array-seventh lst)))
 
+;;; Compiler macro for `(seventh ...)` expressions.
+(define-compiler-macro (seventh_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall seventh ,x))
+   (else
+    `(array-seventh ,x))))
+
 ;;; Return the eighth element of a list.
 ;;;
 ;;; Similar to [`eighth` in Racket][rkt:eighth].
@@ -259,6 +367,16 @@
   (if (dotted-list? lst)
       (dotted-list-eighth lst)
       (array-eighth lst)))
+
+;;; Compiler macro for `(eighth ...)` expressions.
+(define-compiler-macro (eighth_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall eighth ,x))
+   (else
+    `(array-eighth ,x))))
 
 ;;; Return the ninth element of a list.
 ;;;
@@ -270,6 +388,16 @@
       (dotted-list-ninth lst)
       (array-ninth lst)))
 
+;;; Compiler macro for `(ninth ...)` expressions.
+(define-compiler-macro (ninth_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall ninth ,x))
+   (else
+    `(array-ninth ,x))))
+
 ;;; Return the tenth element of a list.
 ;;;
 ;;; Similar to [`tenth` in Racket][rkt:tenth].
@@ -279,6 +407,16 @@
   (if (dotted-list? lst)
       (dotted-list-tenth lst)
       (array-tenth lst)))
+
+;;; Compiler macro for `(tenth ...)` expressions.
+(define-compiler-macro (tenth_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall tenth ,x))
+   (else
+    `(array-tenth ,x))))
 
 ;;; Return the tail of a list.
 ;;;
@@ -295,6 +433,21 @@
       (array-third lst)
       (array-rest lst)))
 
+;;; Compiler macro for `(cdr ...)` expressions.
+(define-compiler-macro (cdr_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall cdr ,x))
+   (else
+    (once-only*
+     (x)
+     `(js/? (and (= (array-length ,x) 3)
+                 (eq? (array-ref ,x 1) '|.|))
+            (array-third ,x)
+            (array-rest ,x))))))
+
 ;;; Return the tail of a list.
 ;;;
 ;;; Similar to [`rest` in Racket][rkt:rest].
@@ -304,6 +457,16 @@
   (if (dotted-pair? lst)
       (array-third lst)
       (array-rest lst)))
+
+;;; Compiler macro for `(rest ...)` expressions.
+(define-compiler-macro (rest_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall rest ,x))
+   (else
+    `(array-rest ,x))))
 
 ;;; Access the list element indicated by
 ;;; one or more `indices`.
@@ -317,6 +480,16 @@
       (set! result (array-ref lst i)))
     result)))
 
+;;; Compiler macro for `(list-ref ...)` expressions.
+(define-compiler-macro (list-ref_ lst &rest indices)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall list-ref ,lst ,@indices))
+   (else
+    `(array-ref ,lst ,@indices))))
+
 ;;; Return the `n`-th element of a list.
 ;;;
 ;;; Similar to [`nth` in Racket][rkt:nth] and
@@ -326,6 +499,16 @@
 ;;; [cl:nth]: http://clhs.lisp.se/Body/f_nth.htm#nth
 (define (nth_ n lst)
   (list-ref_ lst n))
+
+;;; Compiler macro for `(nth ...)` expressions.
+(define-compiler-macro (nth_ n lst)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall nth ,n ,lst))
+   (else
+    `(list-ref ,lst ,n))))
 
 ;;; Set a list position to a given value.
 ;;; Returns a new list.
@@ -372,6 +555,16 @@
     (array-set! lst1 last-index value)
     value)))
 
+;;; Compiler macro for `(list-set! ...)` expressions.
+(define-compiler-macro (list-set!_ lst &rest indices-and-value)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall list-set! ,lst ,@indices-and-value))
+   (else
+    `(array-set! ,lst ,@indices-and-value))))
+
 ;;; Return the `n`-th CDR element of a list.
 (define (list-tail_ lst n)
   (define result lst)
@@ -402,6 +595,20 @@
 (define (take_ lst n)
   (drop-right lst (- (length lst) n)))
 
+;;; Compiler macro for `(take ...)` expressions.
+(define-compiler-macro (take_ lst n)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall take ,lst ,n))
+   ((eq? n 0)
+    '())
+   (else
+    (once-only*
+     (lst)
+     `(drop-right ,lst (- (length ,lst) ,n))))))
+
 ;;; Return the list obtained by dropping
 ;;; the first `n` elements from `lst`.
 ;;;
@@ -410,6 +617,16 @@
 ;;; [rkt:drop]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._drop%29%29
 (define (drop_ lst n)
   (array-drop lst n))
+
+;;; Compiler macro for `(drop ...)` expressions.
+(define-compiler-macro (drop_ lst n)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall drop ,lst ,n))
+   (else
+    `(array-drop ,lst ,n))))
 
 ;;; Return the list obtained by dropping
 ;;; the last `n` elements from `lst`.
@@ -420,6 +637,16 @@
 (define (drop-right_ lst n)
   (array-drop-right lst n))
 
+;;; Compiler macro for `(drop-right ...)` expressions.
+(define-compiler-macro (drop-right_ lst n)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall drop-right ,lst ,n))
+   (else
+    `(array-drop-right ,lst ,n))))
+
 ;;; Reverse the order of a list.
 ;;; Returns a new list.
 ;;;
@@ -429,8 +656,18 @@
 (define (reverse_ lst)
   (array-reverse lst))
 
+;;; Compiler macro for `(reverse ...)` expressions.
+(define-compiler-macro (reverse_ lst)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall reverse ,lst))
+   (else
+    `(array-reverse ,lst))))
+
 ;;; Reverse the order of a list.
-(define (reverse!_ lst)
+(define-inline (reverse!_ lst)
   (array-reverse! lst))
 
 ;;; Return a list where the last `n` conses have been omitted.
@@ -466,7 +703,7 @@
 ;;; Similar to [`pop` in Common Lisp][cl:pop].
 ;;;
 ;;; [cl:pop]: http://clhs.lisp.se/Body/m_pop.htm#pop
-(define (pop-left!_ lst)
+(define-inline (pop-left!_ lst)
   (array-pop-left! lst))
 
 ;;; Pop an element off the end of a list.
@@ -474,7 +711,7 @@
 ;;; Similar to [`Array.prototype.pop()` in JavaScript][js:pop].
 ;;;
 ;;; [js:pop]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop
-(define (pop-right!_ lst)
+(define-inline (pop-right!_ lst)
   (array-pop-right! lst))
 
 ;;; Push an element onto the beginning of a list.
@@ -482,7 +719,7 @@
 ;;; Similar to [`push` in Common Lisp][cl:push].
 ;;;
 ;;; [cl:push]: http://clhs.lisp.se/Body/m_push.htm#push
-(define (push-left!_ lst x)
+(define-inline (push-left!_ lst x)
   (array-push-left! lst x))
 
 ;;; Push an element onto the end of a list.
@@ -490,7 +727,7 @@
 ;;; Similar to [`Array.prototype.push()` in JavaScript][js:push].
 ;;;
 ;;; [js:push]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push
-(define (push-right!_ lst x)
+(define-inline (push-right!_ lst x)
   (array-push-right! lst x))
 
 ;;; Return the length of a list.
@@ -505,6 +742,16 @@
       (dotted-list-length lst)
       (array-length lst)))
 
+;;; Compiler macro for `(length ...)` expressions.
+(define-compiler-macro (length_ x)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall length ,x))
+   (else
+    `(js/length ,x))))
+
 ;;; Return the last element of a list.
 ;;;
 ;;; Similar to [`last` in Racket][rkt:last].
@@ -514,6 +761,16 @@
   (if (dotted-list? lst)
       (dotted-list-last lst)
       (array-last lst)))
+
+;;; Compiler macro for `(last ...)` expressions.
+(define-compiler-macro (last_ lst)
+  (define-fields (fdottedlists)
+    (current-compilation-options))
+  (cond
+   (fdottedlists
+    `(funcall last ,lst))
+   (else
+    `(array-last ,lst))))
 
 ;;; Return the last pair of a list.
 ;;;
@@ -593,13 +850,13 @@
 ;;; Similar to [`dotted-list?` in Racket][rkt:dotted-list-p].
 ;;;
 ;;; [rkt:dotted-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#dotted-list-p
-(define (dotted-list?_ x)
+(define-inline (dotted-list?_ x)
   (and (array? x)
        (>= (array-length x) 3)
        (eq? (array-nlast x 2) '|.|)))
 
 ;;; Whether something is a dotted pair.
-(define (dotted-pair?_ x)
+(define-inline (dotted-pair?_ x)
   (and (array? x)
        (= (array-length x) 3)
        (eq? (array-ref x 1) '|.|)))
@@ -619,11 +876,11 @@
        (not (null? (last-cdr x)))))
 
 ;;; Return the head of a dotted list.
-(define (dotted-list-head_ lst)
+(define-inline (dotted-list-head_ lst)
   (array-drop-right lst 2))
 
 ;;; Return the tail of a dotted list.
-(define (dotted-list-tail_ lst)
+(define-inline (dotted-list-tail_ lst)
   (array-last lst))
 
 ;;; Create a dotted list link.
@@ -631,6 +888,24 @@
   (if (pair-or-list? x)
       x
       (list '|.| x)))
+
+;;; Compiler macro for `(dotted-list-link ...)` expressions.
+(define-compiler-macro (dotted-list-link_ x)
+  (cond
+   ((self-evaluating? x)
+    (list '|.| x))
+   ((or (tagged-list? x 'list)
+        (and (tagged-list? x 'list*)
+             (> (length x) 2))
+        (and (tagged-list? x '(quote quasiquote))
+             (pair-or-list? (second x))))
+    x)
+   (else
+    (once-only*
+     (x)
+     `(js/? (pair-or-list? ,x)
+            ,x
+            (list '|.| ,x))))))
 
 ;;; Return the CDR of a dotted pair.
 (define (dotted-pair-cdr_ x)

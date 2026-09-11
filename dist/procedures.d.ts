@@ -46,6 +46,7 @@ declare namespace funcall_ {
 declare function arity_(f: any): any;
 declare namespace arity_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `obj` is a procedure (i.e., a function).
@@ -59,6 +60,7 @@ declare namespace arity_ {
 declare function procedurep_(obj: any): any;
 declare namespace procedurep_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `obj` is a fexpr, that is, a procedure that
@@ -87,14 +89,14 @@ declare namespace syntaxTransformerP_ {
  */
 declare function variableTypeP_(x: any): any;
 declare namespace variableTypeP_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Whether `x` is the type of a procedure.
  */
 declare function procedureTypeP_(x: any): any;
 declare namespace procedureTypeP_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Whether `x` is the type of a macro.
@@ -122,14 +124,14 @@ declare namespace fexprTypeP_ {
  */
 declare function compilerTypeP_(x: any): any;
 declare namespace compilerTypeP_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Whether `x` is the type of a special form.
  */
 declare function specialTypeP_(x: any): any;
 declare namespace specialTypeP_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
  * Whether `x` is the type of an undefined value.
@@ -169,7 +171,8 @@ declare namespace not_ {
  */
 declare function map_(f: any, seq: any): any;
 declare namespace map_ {
-    var fsource: (symbol | symbol[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Call a procedure on each element of a list.
@@ -177,6 +180,7 @@ declare namespace map_ {
 declare function forEach_(f: any, lst: any): any;
 declare namespace forEach_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Less than operator.
@@ -261,6 +265,7 @@ declare namespace add_ {
 declare function add1_(x: any): any;
 declare namespace add1_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Subtraction.
@@ -284,6 +289,7 @@ declare namespace sub_ {
 declare function sub1_(x: any): any;
 declare namespace sub1_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Multiplication.
@@ -321,6 +327,7 @@ declare namespace div_ {
 declare function zerop_(n: any): any;
 declare namespace zerop_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a value is the number one.
@@ -328,6 +335,7 @@ declare namespace zerop_ {
 declare function onep_(n: any): any;
 declare namespace onep_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a number is odd.
@@ -341,6 +349,7 @@ declare namespace onep_ {
 declare function oddp_(n: any): any;
 declare namespace oddp_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a number is even.
@@ -354,6 +363,7 @@ declare namespace oddp_ {
 declare function evenp_(n: any): any;
 declare namespace evenp_ {
     var fsource: (symbol | (symbol | (number | symbol)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a value is truthy.
@@ -361,6 +371,7 @@ declare namespace evenp_ {
 declare function truep_(x: any): any;
 declare namespace truep_ {
     var fsource: (symbol | (boolean | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a value is falsy.
@@ -368,6 +379,7 @@ declare namespace truep_ {
 declare function falsep_(x: any): any;
 declare namespace falsep_ {
     var fsource: (symbol | (boolean | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * The identity function.
@@ -394,6 +406,7 @@ declare namespace identity_ {
 declare function const_(x?: any): any;
 declare namespace const_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return a tuple of multiple values.
@@ -407,6 +420,7 @@ declare namespace const_ {
 declare function values_(...args: any[]): any;
 declare namespace values_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a keyword, i.e., a symbol
@@ -425,17 +439,35 @@ declare namespace keywordp_ {
 /**
  * Convert a keyword to a string without the `:` prefix.
  */
-declare function keywordToString_(exp: any): any;
+declare function keywordToString_(x: any): any;
 declare namespace keywordToString_ {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[];
+    var fsource: (symbol | (string | symbol | (string | symbol)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Convert a keyword to a regular symbol
  * (i.e., strip the `:` prefix).
  */
-declare function keywordToSymbol_(exp: any): any;
+declare function keywordToSymbol_(x: any): any;
 declare namespace keywordToSymbol_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
+}
+/**
+ * Convert a symbol to a keyword.
+ */
+declare function symbolToKeyword_(x: any): any;
+declare namespace symbolToKeyword_ {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
+}
+/**
+ * Convert a string to a keyword.
+ */
+declare function stringToKeyword_(x: any): any;
+declare namespace stringToKeyword_ {
+    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is an atomic value.
@@ -443,6 +475,7 @@ declare namespace keywordToSymbol_ {
 declare function atomp_(x: any): any;
 declare namespace atomp_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a number.
@@ -456,6 +489,7 @@ declare namespace atomp_ {
 declare function numberp_(obj: any): any;
 declare namespace numberp_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is a boolean value.
@@ -469,6 +503,7 @@ declare namespace numberp_ {
 declare function booleanp_(obj: any): any;
 declare namespace booleanp_ {
     var fsource: (symbol | (string | symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether something is the value `undefined`.
@@ -476,6 +511,7 @@ declare namespace booleanp_ {
 declare function undefinedp_(obj: any): any;
 declare namespace undefinedp_ {
     var fsource: (symbol | (symbol | undefined)[])[];
+    var compilerMacro: any;
 }
 /**
  * Fold up a list left to right.
@@ -489,6 +525,7 @@ declare namespace undefinedp_ {
 declare function foldl_(f: any, v: any, lst: any): any;
 declare namespace foldl_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Fold up a list right to left.
@@ -502,6 +539,7 @@ declare namespace foldl_ {
 declare function foldr_(f: any, v: any, lst: any): any;
 declare namespace foldr_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a list contains a value.
@@ -525,6 +563,7 @@ declare namespace member_ {
 declare function memberp_(v: any, lst: any, isEqual?: any): any;
 declare namespace memberp_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | undefined)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a list contains a value.
@@ -548,6 +587,7 @@ declare namespace memq_ {
 declare function memqp_(v: any, lst: any): any;
 declare namespace memqp_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a list contains a value matching a predicate.
@@ -571,6 +611,7 @@ declare namespace memf_ {
 declare function memfp_(proc: any, lst: any): any;
 declare namespace memfp_ {
     var fsource: (symbol | (number | symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Find a list element matching a predicate.
@@ -597,6 +638,7 @@ declare namespace findf_ {
 declare function findfIndex_(proc: any, seq: any, notFound?: any): any;
 declare namespace findfIndex_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
+    var compilerMacro: any;
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -610,6 +652,7 @@ declare namespace findfIndex_ {
 declare function indexWhere_(seq: any, proc: any, notFound?: any): any;
 declare namespace indexWhere_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
+    var compilerMacro: any;
 }
 /**
  * Find the index of a list element.
@@ -690,6 +733,7 @@ declare namespace pipe_ {
 declare function filter_(pred: any, lst: any): any;
 declare namespace filter_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether a value is self-evaluating.
@@ -711,6 +755,7 @@ declare namespace selfEvaluatingP_ {
 declare function assert_(x: any, ...args: any[]): any;
 declare namespace assert_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Output a message to the console.
@@ -724,6 +769,7 @@ declare namespace assert_ {
 declare function display_(...args: any[]): any;
 declare namespace display_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Throw an error.
@@ -737,6 +783,7 @@ declare namespace display_ {
 declare function error_(arg?: any): any;
 declare namespace error_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Get the type of a value.
@@ -748,6 +795,7 @@ declare namespace error_ {
 declare function typeOf_(x: any): any;
 declare namespace typeOf_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Whether `obj` is an instance of `cls`.
@@ -759,6 +807,7 @@ declare namespace typeOf_ {
 declare function isAP_(obj: any, cls: any): any;
 declare namespace isAP_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the absolute value of `x`.
@@ -766,5 +815,6 @@ declare namespace isAP_ {
 declare function abs_(x: any): any;
 declare namespace abs_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
-export { add1_ as add1, add_ as _add, add_ as add, add_ as plus, apply_ as apply, compilerTypeP_ as compilerTypeP, compose_ as compose, display_ as display, div_ as _div, div_ as div, error_ as error, falsep_ as falsep, fexprTypeP_ as fexprTypeP, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, gt_ as gt, gte_ as gte, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordToString_ as keywordToString, keywordToSymbol_ as keywordToSymbol, keywordp_ as keywordp, lt_ as lt, lte_ as lte, macroTypeP_ as macroTypeP, macrop_ as macrop, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, member_ as member, member_ as memq, memf_ as memf, mul_ as _mul, mul_ as mul, not_ as not, numberp_ as numberp, pipe_ as pipe, procedureTypeP_ as procedureTypeP, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, specialTypeP_ as specialTypeP, sub1_ as sub1, sub_ as _sub, sub_ as minus, sub_ as sub, sub_ as subtract, syntaxTransformerTypeP_ as syntaxTransformerTypeP, syntaxTransformerP_ as syntaxTransformerP, taggedListP_ as taggedListP, truep_ as truep, typeOf_ as typeOf, undefinedTypeP_ as undefinedTypeP, union_ as union, values_ as values, variableTypeP_ as variableTypeP, zerop_ as zerop, abs_, add1_, add_, apply_, arity_, assert_, atomp_, booleanp_, compilerTypeP_, compose_, const_, display_, div_, error_, evenp_, falsep_, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, forEach_, funcall_, gt_, gte_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordToString_, keywordToSymbol_, keywordp_, lt_, lte_, macroTypeP_, macrop_, map_, memberp_, member_, memfp_, memf_, memqp_, memq_, modulo_, mul_, not_, numberp_, oddp_, onep_, pipe_, procedureTypeP_, procedurep_, range_, selfEvaluatingP_, specialTypeP_, sub1_, sub_, syntaxTransformerTypeP_, syntaxTransformerP_, taggedListP_, truep_, typeOf_, undefinedTypeP_, undefinedp_, union_, values_, variableTypeP_, zerop_ };
+export { add1_ as add1, add_ as _add, add_ as add, add_ as plus, apply_ as apply, compilerTypeP_ as compilerTypeP, compose_ as compose, display_ as display, div_ as _div, div_ as div, error_ as error, falsep_ as falsep, fexprTypeP_ as fexprTypeP, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, gt_ as gt, gte_ as gte, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordToString_ as keywordToString, keywordToSymbol_ as keywordToSymbol, keywordp_ as keywordp, lt_ as lt, lte_ as lte, macroTypeP_ as macroTypeP, macrop_ as macrop, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, member_ as member, member_ as memq, memf_ as memf, mul_ as _mul, mul_ as mul, not_ as not, numberp_ as numberp, pipe_ as pipe, procedureTypeP_ as procedureTypeP, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, specialTypeP_ as specialTypeP, sub1_ as sub1, sub_ as _sub, sub_ as minus, sub_ as sub, sub_ as subtract, syntaxTransformerTypeP_ as syntaxTransformerTypeP, syntaxTransformerP_ as syntaxTransformerP, taggedListP_ as taggedListP, truep_ as truep, typeOf_ as typeOf, undefinedTypeP_ as undefinedTypeP, union_ as union, values_ as values, variableTypeP_ as variableTypeP, zerop_ as zerop, abs_, add1_, add_, apply_, arity_, assert_, atomp_, booleanp_, compilerTypeP_, compose_, const_, display_, div_, error_, evenp_, falsep_, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, forEach_, funcall_, gt_, gte_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordToString_, keywordToSymbol_, keywordp_, lt_, lte_, macroTypeP_, macrop_, map_, memberp_, member_, memfp_, memf_, memqp_, memq_, modulo_, mul_, not_, numberp_, oddp_, onep_, pipe_, procedureTypeP_, procedurep_, range_, selfEvaluatingP_, specialTypeP_, stringToKeyword_, sub1_, sub_, symbolToKeyword_, syntaxTransformerTypeP_, syntaxTransformerP_, taggedListP_, truep_, typeOf_, undefinedTypeP_, undefinedp_, union_, values_, variableTypeP_, zerop_ };

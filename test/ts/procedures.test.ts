@@ -32,56 +32,46 @@ describe('string?', function (): any {
 
 describe('compose', function (): any {
   it('g . f', function (): any {
-    return assertEqual(((): any => {
-      const f: any = function (x: any): any {
-        return x + 1;
-      };
-      const g: any = function (x: any): any {
-        return x + 2;
-      };
+    return assertEqual(((f: any, g: any): any => {
       return compose(g, f)(1);
-    })(), 4);
+    })(function (x: any): any {
+      return x + 1;
+    }, function (x: any): any {
+      return x + 2;
+    }), 4);
   });
   return it('h . g . f', function (): any {
-    return assertEqual(((): any => {
-      const f: any = function (x: any): any {
-        return x + 1;
-      };
-      const g: any = function (x: any): any {
-        return x + 2;
-      };
-      const h: any = function (x: any): any {
-        return x + 3;
-      };
+    return assertEqual(((f: any, g: any, h: any): any => {
       return compose(h, g, f)(1);
-    })(), 7);
+    })(function (x: any): any {
+      return x + 1;
+    }, function (x: any): any {
+      return x + 2;
+    }, function (x: any): any {
+      return x + 3;
+    }), 7);
   });
 });
 
 describe('pipe', function (): any {
   it('f ; g', function (): any {
-    return assertEqual(((): any => {
-      const f: any = function (x: any): any {
-        return x + 1;
-      };
-      const g: any = function (x: any): any {
-        return x + 2;
-      };
+    return assertEqual(((f: any, g: any): any => {
       return pipe(f, g)(1);
-    })(), 4);
+    })(function (x: any): any {
+      return x + 1;
+    }, function (x: any): any {
+      return x + 2;
+    }), 4);
   });
   return it('f ; g ; h', function (): any {
-    return assertEqual(((): any => {
-      const f: any = function (x: any): any {
-        return x + 1;
-      };
-      const g: any = function (x: any): any {
-        return x + 2;
-      };
-      const h: any = function (x: any): any {
-        return x + 3;
-      };
+    return assertEqual(((f: any, g: any, h: any): any => {
       return pipe(f, g, h)(1);
-    })(), 7);
+    })(function (x: any): any {
+      return x + 1;
+    }, function (x: any): any {
+      return x + 2;
+    }, function (x: any): any {
+      return x + 3;
+    }), 7);
   });
 });

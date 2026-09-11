@@ -47,6 +47,24 @@ describe('#n', function (): any {
   });
 });
 
+describe('NaN', function (): any {
+  it('NaN', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), Symbol.for('NaN'), Symbol.for('NaN')]);
+  });
+  it('(nan? NaN)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('nan?'), Symbol.for('NaN')], true]);
+  });
+  it('(nan? 0)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('nan?'), 0], false]);
+  });
+  it('(compile \'NaN)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), Symbol.for('NaN')]], 'NaN;']);
+  });
+  return it('(compile \'(nan? x))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('nan?'), Symbol.for('x')]]], 'isNaN(x);']);
+  });
+});
+
 describe('true?', function (): any {
   it('(true? #t)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('true?'), true], true]);
@@ -95,6 +113,30 @@ describe('atom?', function (): any {
   });
   return it('(atom? \'(1 2 3))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('atom?'), [Symbol.for('quote'), [1, 2, 3]]], false]);
+  });
+});
+
+describe('keyword->string', function (): any {
+  return it('(keyword->string :foo)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('keyword->string'), Symbol.for(':foo')], 'foo']);
+  });
+});
+
+describe('string->keyword', function (): any {
+  return it('(string->keyword "foo")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('string->keyword'), 'foo'], [Symbol.for('quote'), Symbol.for(':foo')]]);
+  });
+});
+
+describe('keyword->symbol', function (): any {
+  return it('(keyword->symbol :foo)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('keyword->symbol'), Symbol.for(':foo')], [Symbol.for('quote'), Symbol.for('foo')]]);
+  });
+});
+
+describe('symbol->keyword', function (): any {
+  return it('(symbol->keyword \'foo)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('symbol->keyword'), [Symbol.for('quote'), Symbol.for('foo')]], [Symbol.for('quote'), Symbol.for(':foo')]]);
   });
 });
 
@@ -157,7 +199,7 @@ describe('dotted-list?', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('dotted-list?'), [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar')]]], false]);
   });
   return it('(compile \'(dotted-list? x))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('dotted-list?'), Symbol.for('x')]]], 'Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for(\'.\'));']);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('dotted-list?'), Symbol.for('x')]]], 'Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for(\'.\'));']);
   });
 });
 
@@ -253,7 +295,7 @@ describe('dotted-list-tail', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('dotted-list-tail'), [Symbol.for('quote'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('.'), Symbol.for('baz')]]], [Symbol.for('quote'), Symbol.for('baz')]]);
   });
   return it('(compile \'(dotted-list-tail x))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('dotted-list-tail'), Symbol.for('x')]]], 'x.at(-1);']);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('dotted-list-tail'), Symbol.for('x')]]], 'x[x.length - 1];']);
   });
 });
 
@@ -500,6 +542,28 @@ describe('define-macro', function (): any {
       '\n' +
       'myMacro.ftype = \'macro\';']);
   });
+  it('(compile \'(define-macro (foo (x #u)) x))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('foo'), [Symbol.for('x'), undefined]], Symbol.for('x')]]], 'function foo(exp, env) {\n' +
+      '  let [x] = exp.slice(1);\n' +
+      '  if (x === undefined) {\n' +
+      '    x = undefined;\n' +
+      '  }\n' +
+      '  return x;\n' +
+      '}\n' +
+      '\n' +
+      'foo.ftype = \'macro\';']);
+  });
+  it('(compile \'(define-macro (foo &optional x) x))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&optional'), Symbol.for('x')], Symbol.for('x')]]], 'function foo(exp, env) {\n' +
+      '  let [x] = exp.slice(1);\n' +
+      '  if (x === undefined) {\n' +
+      '    x = undefined;\n' +
+      '  }\n' +
+      '  return x;\n' +
+      '}\n' +
+      '\n' +
+      'foo.ftype = \'macro\';']);
+  });
   return it('(compile \'(define-macro (my-macro exp &rest body) `(begin ,exp ,@body)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('my-macro'), Symbol.for('exp'), Symbol.for('&rest'), Symbol.for('body')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], 'function myMacro(exp1, env) {\n' +
       '  let [exp, ...body] = exp1.slice(1);\n' +
@@ -521,6 +585,85 @@ describe('define-fexpr', function (): any {
       'let x = 1;\n' +
       '\n' +
       'let bar = foo(Symbol.for(\'x\'));']);
+  });
+});
+
+describe('define-inline', function (): any {
+  return it('(compile \'(define-inline (my-plus x y) (+ x y)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-inline'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], 'function myPlus(x, y) {\n' +
+      '  return x + y;\n' +
+      '}\n' +
+      '\n' +
+      'myPlus.compilerMacro = (() => {\n' +
+      '  let f = function (exp, env) {\n' +
+      '    let [x, y] = exp.slice(1);\n' +
+      '    return [Symbol.for(\'+\'), x, y];\n' +
+      '  };\n' +
+      '  f.ftype = \'macro\';\n' +
+      '  return f;\n' +
+      '})();']);
+  });
+});
+
+describe('define-subst', function (): any {
+  return it('(compile \'(define-subst (my-plus x y) (+ x y)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-subst'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], 'function myPlus(x, y) {\n' +
+      '  return x + y;\n' +
+      '}\n' +
+      '\n' +
+      'myPlus.compilerMacro = (() => {\n' +
+      '  let f = function (exp, env) {\n' +
+      '    let [x, y] = exp.slice(1);\n' +
+      '    return [Symbol.for(\'+\'), x, y];\n' +
+      '  };\n' +
+      '  f.ftype = \'macro\';\n' +
+      '  return f;\n' +
+      '})();']);
+  });
+});
+
+describe('syntax-macro', function (): any {
+  return it('(compile \'(syntax-macro (x y) `(+ ,x ,y)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('syntax-macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]], 'let f = function (x, y) {\n' +
+      '  return [Symbol.for(\'+\'), x, y];\n' +
+      '};\n' +
+      '\n' +
+      'f.ftype = [Symbol.for(\'macro->\'), Symbol.for(\'Syntax\'), Symbol.for(\'Syntax\')];\n' +
+      '\n' +
+      'f;']);
+  });
+});
+
+describe('declare', function (): any {
+  it('(compile \'(define (foo x) (declare (ftype "macro")) x))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], 'function foo(x) {\n' +
+      '  return x;\n' +
+      '}\n' +
+      '\n' +
+      'foo.ftype = \'macro\';']);
+  });
+  it('(compile \'(lambda (x) (declare (ftype "macro")) x))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], 'let f = function (x) {\n' +
+      '  return x;\n' +
+      '};\n' +
+      '\n' +
+      'f.ftype = \'macro\';\n' +
+      '\n' +
+      'f;']);
+  });
+  return it('(compile \'(begin (define (my-plus x y) (+ x y 0)) (declare my-plus (compiler-macro (macro (x y) `(+ ,x ,y))))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y'), 0]], [Symbol.for('declare'), Symbol.for('my-plus'), [Symbol.for('compiler-macro'), [Symbol.for('macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]]]]], 'function myPlus(x, y) {\n' +
+      '  return x + y + 0;\n' +
+      '}\n' +
+      '\n' +
+      'myPlus.compilerMacro = (() => {\n' +
+      '  let f = function (exp, env) {\n' +
+      '    let [x, y] = exp.slice(1);\n' +
+      '    return [Symbol.for(\'+\'), x, y];\n' +
+      '  };\n' +
+      '  f.ftype = \'macro\';\n' +
+      '  return f;\n' +
+      '})();']);
   });
 });
 
@@ -1094,9 +1237,20 @@ describe('member?', function (): any {
       '  return f(2, x);\n' +
       '}) >= 0;']);
   });
-  return it('(compile \'(member? (+ 1 1) (list 1 2 3 4) f))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), [Symbol.for('+'), 1, 1], [Symbol.for('list'), 1, 2, 3, 4], Symbol.for('f')]]], '[1, 2, 3, 4].findIndex(function (x) {\n' +
-      '  return f(1 + 1, x);\n' +
+  it('(compile \'(member? (+ 1 1) (list 1 2 3 4) f))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), [Symbol.for('+'), 1, 1], [Symbol.for('list'), 1, 2, 3, 4], Symbol.for('f')]]], 'let v = 1 + 1;\n' +
+      '\n' +
+      '[1, 2, 3, 4].findIndex(function (x) {\n' +
+      '  return f(v, x);\n' +
+      '}) >= 0;']);
+  });
+  return it('(compile \'(member? (+ 1 1) (list 1 2 3 4) (memoize f)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), [Symbol.for('+'), 1, 1], [Symbol.for('list'), 1, 2, 3, 4], [Symbol.for('memoize'), Symbol.for('f')]]]], 'let v = 1 + 1;\n' +
+      '\n' +
+      'let isEqual = memoize(f);\n' +
+      '\n' +
+      '[1, 2, 3, 4].findIndex(function (x) {\n' +
+      '  return isEqual(v, x);\n' +
       '}) >= 0;']);
   });
 });

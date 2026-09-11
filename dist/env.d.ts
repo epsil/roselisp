@@ -303,7 +303,7 @@ declare class LispEnvironment extends PromiseEnvironment {
  * first element of the underlying array---is tried first, with the
  * other environments serving as parent environments.
  */
-declare class EnvironmentStack extends TypedEnvironment {
+declare class EnvironmentStack extends PromiseEnvironment {
     /**
      * Environment stack.
      *
@@ -338,11 +338,11 @@ declare class EnvironmentStack extends TypedEnvironment {
     /**
      * Get the binding for `key` as a tuple `(value found)`.
      */
-    getTuple(key: any, options?: any): any;
+    getUnforcedTuple(key: any, options?: any): any;
     /**
      * Get the local binding for `key` as a tuple `(value found)`.
      */
-    getLocalTuple(key: any, options?: any): any;
+    getUnforcedLocalTuple(key: any, options?: any): any;
     /**
      * Whether the stack contains an environment that binds `key`.
      */
@@ -434,46 +434,6 @@ declare class JavaScriptEnvironment extends DynamicEnvironment {
     constructor();
 }
 /**
- * Pointer to the current environment.
- * Used by {@link currentEnvironment}.
- */
-declare let currentEnvironmentPointer: any;
-/**
- * Return the current environment.
- */
-declare function currentEnvironment_(): any;
-declare namespace currentEnvironment_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return an empty environment.
- */
-declare function emptyEnvironment(): any;
-declare namespace emptyEnvironment {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the default environment.
- *
- * The default environment is defined as follows: use
- * the current environment if there is one, and if not,
- * use the empty environment.
- */
-declare function defaultEnvironment(): any;
-declare namespace defaultEnvironment {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-}
-/**
- * Run `f` with `currentEnvironmentPointer` bound to `env`.
- * This makes the current environment available through the
- * function {@link currentEnvironment}. The original value
- * of `currentEnvironmentPointer` is restored afterwards.
- */
-declare function withEnvironmentF(env: any, f: any): any;
-declare namespace withEnvironmentF {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
-}
-/**
  * Make an environment.
  */
 declare function makeEnvironment(variables?: any, parent?: any, isLisp2?: any): any;
@@ -518,4 +478,59 @@ declare function prefixBindings(prefix: any, bindings: any): any;
 declare namespace prefixBindings {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
-export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, withEnvironmentF as withEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withEnvironmentF };
+/**
+ * Pointer to the current environment.
+ * Used by {@link currentEnvironment}.
+ */
+declare let currentEnvironmentPointer: any;
+/**
+ * Return the current environment.
+ */
+declare function currentEnvironment_(): any;
+declare namespace currentEnvironment_ {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Return an empty environment.
+ */
+declare function emptyEnvironment(): any;
+declare namespace emptyEnvironment {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Return the default environment.
+ *
+ * The default environment is defined as follows: use
+ * the current environment if there is one, and if not,
+ * use the empty environment.
+ */
+declare function defaultEnvironment(): any;
+declare namespace defaultEnvironment {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+}
+/**
+ * Run `f` with `currentEnvironmentPointer` bound to `env`.
+ * This makes the current environment available through the
+ * function {@link currentEnvironment}. The original value
+ * of `currentEnvironmentPointer` is restored afterwards.
+ */
+declare function withEnvironmentF(env: any, f: any): any;
+declare namespace withEnvironmentF {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
+}
+/**
+ * Return the current compilation options.
+ */
+declare function currentCompilationOptions(): any;
+declare namespace currentCompilationOptions {
+    var fsource: (symbol | symbol[])[];
+}
+/**
+ * Run `f` with `current-compilation-options-pointer` bound to `options`.
+ * The return value is the result of invoking `f`.
+ */
+declare function withCompilationOptions(options: any, f: any): any;
+declare namespace withCompilationOptions {
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[][])[])[];
+}
+export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, withEnvironmentF as withEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentCompilationOptions, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withCompilationOptions, withEnvironmentF };

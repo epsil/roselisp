@@ -197,6 +197,23 @@ class Rose {
   }
 
   /**
+   * Return the list of nodes obtained by
+   * taking the first `n` nodes from
+   * the forest.
+   */
+  take(n: any): any {
+    return this.getForest().take(n);
+  }
+
+  /**
+   * Return the forest obtained by taking
+   * the first `n` nodes from the forest.
+   */
+  takeForest(n: any): any {
+    return this.getForest().takeForest(n);
+  }
+
+  /**
    * Return the first node in the forest,
    * or `#u` if there is none.
    */
@@ -571,6 +588,23 @@ class Forest {
   }
 
   /**
+   * Return the list of nodes obtained by
+   * taking the first `n` nodes.
+   */
+  take(n: any): any {
+    const lst: any = this.nodeList;
+    return lst.slice(0, -(lst.length - n) || undefined);
+  }
+
+  /**
+   * Return the forest obtained by taking
+   * the first `n` nodes.
+   */
+  takeForest(n: any): any {
+    return new Forest(...this.take(n));
+  }
+
+  /**
    * Return the first node,
    * or `#u` if there is none.
    */
@@ -796,41 +830,40 @@ function forestp(obj: any): any {
 }
 
 /**
- * Wrap a list of rose tree-wrapped S-expressions in
- * a `(begin ...)` form.
+ * Wrap a list of syntax objects in a `(begin ...)` form.
  *
  * Legacy function, but still used in a few places.
  */
-function beginWrapRose(nodes: any): any {
-  return makeListRose([Symbol.for('begin'), ...nodes]);
+function beginWrapStx(stxs: any): any {
+  return makeListRose([Symbol.for('begin'), ...stxs]);
 }
 
 /**
- * Wrap a list of rose tree-wrapped S-expressions in
- * a `(begin ...)` form. Does not wrap singleton lists.
+ * Wrap a list of syntax objects in a `(begin ...)` form.
+ * Does not wrap singleton lists.
  *
  * Legacy function, but still used in a few places.
  */
-function beginWrapRoseSmart(nodes: any): any {
-  if (!Array.isArray(nodes)) {
-    return nodes;
-  } else if ((nodes.length === 1) && Array.isArray(nodes[0].getValue()) && (nodes[0].getValue().length > 0) && (nodes[0].getValue()[0] === Symbol.for('begin'))) {
-    return nodes[0];
+function beginWrapStxSmart(stxs: any): any {
+  if (!Array.isArray(stxs)) {
+    return stxs;
+  } else if ((stxs.length === 1) && Array.isArray(stxs[0].getValue()) && (stxs[0].getValue().length > 0) && (stxs[0].getValue()[0] === Symbol.for('begin'))) {
+    return stxs[0];
   } else {
-    return beginWrapRose(nodes);
+    return beginWrapStx(stxs);
   }
 }
 
 /**
  * Legacy function, but still used in a few places.
  */
-function beginWrapRoseSmart1(nodes: any): any {
-  if (!Array.isArray(nodes)) {
-    return nodes;
-  } else if (nodes.length === 1) {
-    return nodes[0];
+function beginWrapStxSmart1(stxs: any): any {
+  if (!Array.isArray(stxs)) {
+    return stxs;
+  } else if (stxs.length === 1) {
+    return stxs[0];
   } else {
-    return beginWrapRose(nodes);
+    return beginWrapStx(stxs);
   }
 }
 
@@ -964,24 +997,6 @@ function makeSexpRose(exp: any = []): any {
 }
 
 /**
- * Slice a list wrapped in a rose tree.
- * Returns a new rose tree node containing
- * the sliced list.
- */
-function sliceRose(node: any, n: any): any {
-  const value: any = node.getValue();
-  if (Array.isArray(value)) {
-    const slicedNode: any = new Rose(value.slice(n));
-    for (let x of node.drop(n)) {
-      slicedNode.insert(x);
-    }
-    return slicedNode;
-  } else {
-    return node;
-  }
-}
-
-/**
  * Wrap an S-expression in a rose tree.
  */
 function wrapSexpInRose(exp: any, cache: any = new Map()): any {
@@ -1064,7 +1079,7 @@ function datumToSyntax(ctxt: any, v: any, srcloc: any = undefined): any {
  */
 function syntaxToList(stx: any): any {
   const exp: any = syntaxToDatum(stx);
-  if (Array.isArray(exp) && !((exp.length >= 3) && (exp.at(-2) === Symbol.for('.')) && !Array.isArray(exp.at(-1)))) {
+  if (Array.isArray(exp) && !((exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && !Array.isArray(exp[exp.length - 1]))) {
     return stx.getNodes();
   } else {
     return false;
@@ -1081,21 +1096,39 @@ function syntaxToList(stx: any): any {
 function syntaxE(stx: any): any {
   const v: any = syntaxToDatum(stx);
   if (Array.isArray(v)) {
-    const nodes: any = stx.getNodes();
-    if ((nodes.length >= 3) && (syntaxToDatum(nodes[nodes.length - 2]) === Symbol.for('.'))) {
+    const stxs: any = stx.getNodes();
+    if ((stxs.length >= 3) && (syntaxToDatum(stxs[stxs.length - 2]) === Symbol.for('.'))) {
       // Dotted list.
-      let tail: any = nodes.at(-1);
+      let tail: any = stxs[stxs.length - 1];
       const tailE: any = syntaxE(tail);
       if (Array.isArray(tailE)) {
         tail = tailE;
       }
-      return [...nodes.slice(0, -2), Symbol.for('.'), tail];
+      return [...stxs.slice(0, -2), Symbol.for('.'), tail];
     } else {
       // Regular list.
-      return nodes;
+      return stxs;
     }
   } else {
     return v;
+  }
+}
+
+/**
+ * Slice a list wrapped in a syntax object.
+ * Returns a new syntax object containing
+ * the sliced list.
+ */
+function sliceStx(stx: any, n: any): any {
+  const value: any = stx.getValue();
+  if (Array.isArray(value)) {
+    const slicedStx: any = new Rose(value.slice(n));
+    for (let x of stx.drop(n)) {
+      slicedStx.insert(x);
+    }
+    return slicedStx;
+  } else {
+    return stx;
   }
 }
 
@@ -1104,12 +1137,16 @@ export {
   RoseSplice as SyntaxSplice,
   roseToMap as makeRoseMap,
   sexpToRose as makeRose,
+  sliceStx as sliceRose,
+  beginWrapStx as beginWrapNode,
+  beginWrapStxSmart as beginWrapNodeSmart,
+  beginWrapStxSmart1 as beginWrapNodeSmart1,
   Forest,
   Rose,
   RoseSplice,
-  beginWrapRose,
-  beginWrapRoseSmart,
-  beginWrapRoseSmart1,
+  beginWrapStx,
+  beginWrapStxSmart,
+  beginWrapStxSmart1,
   datumToSyntax,
   forestp,
   makeListRose,
@@ -1119,7 +1156,7 @@ export {
   roseToSexp,
   rosep,
   sexpToRose,
-  sliceRose,
+  sliceStx,
   syntaxToDatum,
   syntaxToList,
   syntaxE,

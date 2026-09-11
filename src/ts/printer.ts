@@ -272,7 +272,9 @@ docValueString.fsource = [Symbol.for('define'), [Symbol.for('doc-value-string'),
  */
 function docShouldBreakP(doc: any): any {
   if (doc instanceof DocCommand) {
-    return doc.args.at(-1)['shouldBreak'];
+    return ((arr: any): any => {
+      return arr[arr.length - 1];
+    })(doc.args)['shouldBreak'];
   } else {
     return false;
   }
@@ -285,7 +287,9 @@ docShouldBreakP.fsource = [Symbol.for('define'), [Symbol.for('doc-should-break?'
  */
 function docHasCommentsP(doc: any): any {
   if (doc instanceof DocCommand) {
-    return doc.args.at(-1)['hasComments'];
+    return ((arr: any): any => {
+      return arr[arr.length - 1];
+    })(doc.args)['hasComments'];
   } else {
     return false;
   }

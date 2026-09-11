@@ -154,6 +154,12 @@ three")
  > (symbol->string 'foo)
  "foo"
 
+ :describe "Keywords"
+ > '#:foo
+ '#:foo
+ > (keyword? '#:foo)
+ #t
+
  :describe "Cons cells"
  > (cons 1 2)
  '(1 . 2)
@@ -333,11 +339,11 @@ x[length];"
  > (list? '(1 2 . 3))
  #f
  > (compile '(list? x))
- "Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !Array.isArray(x.at(-1)));"
+ "Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1]));"
  > (compile '(module m scheme
                (list? x))
             :fdottedlists #f)
- "Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for('.')) && !Array.isArray(x.at(-1)));"
+ "Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1]));"
  > (compile '(module m scheme
                (list? x))
             :fdottedlists #t)
@@ -633,11 +639,11 @@ tenth(x);"
  > (funcall last '(1 2 . ()))
  2
  > (compile '(last lst))
- "lst.at(-1);"
+ "lst[lst.length - 1];"
  > (compile '(module m scheme
                (last lst))
             :fdottedlists #f)
- "lst.at(-1);"
+ "lst[lst.length - 1];"
  > (compile '(module m scheme
                (last lst))
             :fdottedlists #t)
@@ -1385,10 +1391,15 @@ return x;"
  > (compile '(let (x)
                x)
             :as "expression")
- "(() => {
-  let x;
+ "((x) => {
   return x;
-})()"
+})(undefined)"
+ > (compile '(let ((x 1))
+               x)
+            :as "expression")
+ "((x) => {
+  return x;
+})(1)"
  > (compile '(let (x)
                x)
             :as "return"
@@ -1538,6 +1549,13 @@ console.log(x);
  "let [x, y] = [1, 2];
 
 let z = x + y;"
+ > (compile '(let-values (((value) (foo bar baz)))
+               value)
+            :as "expression")
+ "(() => {
+  let [value] = foo(bar, baz);
+  return value;
+})()"
  > (compile '(let-values ((value (foo bar baz)))
                value)
             :as "return")
@@ -3633,8 +3651,8 @@ reverse(lst);"
 }, v);"
  > (compile '(foldr (f g) v lst))
  "lst.reduceRight((function (f) {
-  return function (x, y) {
-    return f(y, x);
+  return function (acc, x) {
+    return f(x, acc);
   };
 })(f(g)), v);"
 
@@ -3737,6 +3755,34 @@ reverse(lst);"
  "str.substring(i);"
  > (compile '(substring str i j))
  "str.substring(i, j);"
+
+ :describe "case"
+ > (case "foo"
+     (("foo")
+      1))
+ 1
+ > (case 'foo
+     ((foo)
+      1))
+ 1
+ > (compile '(case x
+               ((foo)
+                1)))
+ "switch (x) {
+  case Symbol.for('foo'): {
+    1;
+    break;
+  }
+}"
+ > (compile '(case x
+               (("foo")
+                1)))
+ "switch (x) {
+  case 'foo': {
+    1;
+    break;
+  }
+}"
 
  :describe "match"
  > (match 1
@@ -3950,10 +3996,9 @@ if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal
     '(match "foo"
        ((app string-length (? number?) 3)
         #t)))
- "if ((() => {
-  let patternMatchVal = 'foo'.length;
+ "if (((patternMatchVal) => {
   return Number.isFinite(patternMatchVal) && (patternMatchVal === 3);
-})()) {
+})('foo'.length)) {
   true;
 }"
 

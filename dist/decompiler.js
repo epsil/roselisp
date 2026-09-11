@@ -40,7 +40,7 @@ const [listStar, findf] = (() => {
             return args[0];
         }
         else {
-            const tailLst = args.at(-1);
+            const tailLst = args[args.length - 1];
             const headLst = args.slice(0, -1);
             if (Array.isArray(tailLst)) {
                 return [...headLst, ...tailLst];
@@ -765,7 +765,7 @@ function decompileYieldExpression(node, options = {}) {
  */
 function decompileNewExpression(node, options = {}) {
     const arguments_ = node.arguments;
-    const isSpread = (arguments_.length > 0) && (0, estree_1.estreeTypeP)(arguments_.at(-1), 'SpreadElement');
+    const isSpread = (arguments_.length > 0) && (0, estree_1.estreeTypeP)(arguments_[arguments_.length - 1], 'SpreadElement');
     return (0, rose_1.datumToSyntax)(false, [...(isSpread ? [Symbol.for('apply')] : []), Symbol.for('new'), decompileEstree(node.callee, options), ...arguments_.map(function (x) {
             return decompileEstree(x, options);
         })]);
@@ -919,11 +919,11 @@ function decompileArrayExpression(node, options = {}) {
             return Symbol.for('_');
         }
     }
-    if ((elements.length > 0) && elements.at(-1) && (0, estree_1.estreeTypeP)(elements.at(-1), 'RestElement')) {
+    if ((elements.length > 0) && elements[elements.length - 1] && (0, estree_1.estreeTypeP)(elements[elements.length - 1], 'RestElement')) {
         const regularElements = elements.slice(0, -1).map(function (x) {
             return decompileElement(x);
         });
-        const restElement = decompileElement(elements.at(-1));
+        const restElement = decompileElement(elements[elements.length - 1]);
         return (0, rose_1.datumToSyntax)(false, listStar(...[...regularElements, restElement]));
     }
     else if (findf(function (x) {
@@ -1181,9 +1181,11 @@ function decompileFunction(node, options = {}) {
     let params = node.params.map(function (x) {
         return decompileParameter(x, options);
     });
-    if ((params.length > 0) && (0, estree_1.estreeTypeP)(node.params.at(-1), 'RestElement')) {
+    if ((params.length > 0) && (0, estree_1.estreeTypeP)(((arr) => {
+        return arr[arr.length - 1];
+    })(node.params), 'RestElement')) {
         if (params.length === 1) {
-            params = params.at(-1);
+            params = params[params.length - 1];
         }
         else {
             params = listStar(...params);

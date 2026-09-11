@@ -35,6 +35,18 @@
  > (compile #n)
  "null;"
 
+ :describe "NaN"
+ > NaN
+ NaN
+ > (nan? NaN)
+ #t
+ > (nan? 0)
+ #f
+ > (compile 'NaN)
+ "NaN;"
+ > (compile '(nan? x))
+ "isNaN(x);"
+
  :describe "true?"
  > (true? #t)
  #t
@@ -68,6 +80,22 @@
  #f
  > (atom? '(1 2 3))
  #f
+
+ :describe "keyword->string"
+ > (keyword->string :foo)
+ "foo"
+
+ :describe "string->keyword"
+ > (string->keyword "foo")
+ ':foo
+
+ :describe "keyword->symbol"
+ > (keyword->symbol :foo)
+ 'foo
+
+ :describe "symbol->keyword"
+ > (symbol->keyword 'foo)
+ ':foo
 
  :describe "pair-or-list?"
  > (pair-or-list? #t)
@@ -109,7 +137,7 @@
  > (dotted-list? '(foo bar))
  #f
  > (compile '(dotted-list? x))
- "Array.isArray(x) && (x.length >= 3) && (x.at(-2) === Symbol.for('.'));"
+ "Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'));"
 
  :describe "dotted-pair?"
  > (dotted-pair? '())
@@ -173,7 +201,7 @@
  > (dotted-list-tail '(foo bar . baz))
  'baz
  > (compile '(dotted-list-tail x))
- "x.at(-1);"
+ "x[x.length - 1];"
 
  :describe "dotted-list-parse"
  > (dotted-list-parse '(foo . bar))
@@ -369,6 +397,28 @@
 }
 
 myMacro.ftype = 'macro';"
+ > (compile '(define-macro (foo (x #u))
+               x))
+ "function foo(exp, env) {
+  let [x] = exp.slice(1);
+  if (x === undefined) {
+    x = undefined;
+  }
+  return x;
+}
+
+foo.ftype = 'macro';"
+ > (compile '(define-macro (foo &optional x)
+               x))
+ "function foo(exp, env) {
+  let [x] = exp.slice(1);
+  if (x === undefined) {
+    x = undefined;
+  }
+  return x;
+}
+
+foo.ftype = 'macro';"
  > (compile '(define-macro (my-macro exp &rest body)
                `(begin
                   ,exp
@@ -397,6 +447,88 @@ foo.ftype = 'fexpr';
 let x = 1;
 
 let bar = foo(Symbol.for('x'));"
+
+ :describe "define-inline"
+ > (compile '(define-inline (my-plus x y)
+               (+ x y)))
+ "function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();"
+
+ :describe "define-subst"
+ > (compile '(define-subst (my-plus x y)
+               (+ x y)))
+ "function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();"
+
+ :describe "syntax-macro"
+ > (compile '(syntax-macro (x y)
+                           `(+ ,x ,y)))
+ "let f = function (x, y) {
+  return [Symbol.for('+'), x, y];
+};
+
+f.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+f;"
+
+ :describe "declare"
+ > (compile '(define (foo x)
+               (declare (ftype "macro"))
+               x))
+ "function foo(x) {
+  return x;
+}
+
+foo.ftype = 'macro';"
+ > (compile '(lambda (x)
+               (declare (ftype "macro"))
+               x))
+ "let f = function (x) {
+  return x;
+};
+
+f.ftype = 'macro';
+
+f;"
+ > (compile '(begin
+               (define (my-plus x y)
+                 (+ x y 0))
+               (declare my-plus
+                        (compiler-macro
+                         (macro (x y)
+                           `(+ ,x ,y))))))
+ "function myPlus(x, y) {
+  return x + y + 0;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();"
 
  :describe "let-fields"
  > (compile '(let-fields (((prop) obj))
@@ -1063,11 +1195,19 @@ prop;"
  "[1, 2, 3, 4].findIndex(function (x) {
   return f(2, x);
 }) >= 0;"
- ;; TODO: Better compilation of this case:
- ;; `v` should be stored in a local variable.
  > (compile '(member? (+ 1 1) (list 1 2 3 4) f))
- "[1, 2, 3, 4].findIndex(function (x) {
-  return f(1 + 1, x);
+ "let v = 1 + 1;
+
+[1, 2, 3, 4].findIndex(function (x) {
+  return f(v, x);
+}) >= 0;"
+ > (compile '(member? (+ 1 1) (list 1 2 3 4) (memoize f)))
+ "let v = 1 + 1;
+
+let isEqual = memoize(f);
+
+[1, 2, 3, 4].findIndex(function (x) {
+  return isEqual(v, x);
 }) >= 0;"
 
  :describe "memq?"

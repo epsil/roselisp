@@ -221,6 +221,15 @@ describe('symbol->string', function (): any {
   });
 });
 
+describe('Keywords', function (): any {
+  it('\':foo', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('quote'), Symbol.for(':foo')], [Symbol.for('quote'), Symbol.for(':foo')]]);
+  });
+  return it('(keyword? \':foo)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('keyword?'), [Symbol.for('quote'), Symbol.for(':foo')]], true]);
+  });
+});
+
 describe('Cons cells', function (): any {
   it('(cons 1 2)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('cons'), 1, 2], [Symbol.for('quote'), [1, Symbol.for('.'), 2]]]);
@@ -472,10 +481,10 @@ describe('list?', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('list?'), [Symbol.for('quote'), [1, 2, Symbol.for('.'), 3]]], false]);
   });
   it('(compile \'(list? x))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('list?'), Symbol.for('x')]]], 'Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for(\'.\')) && !Array.isArray(x.at(-1)));']);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('list?'), Symbol.for('x')]]], 'Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for(\'.\')) && !Array.isArray(x[x.length - 1]));']);
   });
   it('(compile \'(module m scheme (list? x)) :fdottedlists #f)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('list?'), Symbol.for('x')]]], Symbol.for(':fdottedlists'), false], 'Array.isArray(x) && !((x.length >= 3) && (x.at(-2) === Symbol.for(\'.\')) && !Array.isArray(x.at(-1)));']);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('list?'), Symbol.for('x')]]], Symbol.for(':fdottedlists'), false], 'Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for(\'.\')) && !Array.isArray(x[x.length - 1]));']);
   });
   return it('(compile \'(module m scheme (list? x)) :fdottedlists #t)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('list?'), Symbol.for('x')]]], Symbol.for(':fdottedlists'), true], 'import {\n' +
@@ -792,10 +801,10 @@ describe('last', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('funcall'), Symbol.for('last'), [Symbol.for('quote'), [1, 2, Symbol.for('.'), []]]], 2]);
   });
   it('(compile \'(last lst))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('last'), Symbol.for('lst')]]], 'lst.at(-1);']);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('last'), Symbol.for('lst')]]], 'lst[lst.length - 1];']);
   });
   it('(compile \'(module m scheme (last lst)) :fdottedlists #f)', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('last'), Symbol.for('lst')]]], Symbol.for(':fdottedlists'), false], 'lst.at(-1);']);
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('last'), Symbol.for('lst')]]], Symbol.for(':fdottedlists'), false], 'lst[lst.length - 1];']);
   });
   return it('(compile \'(module m scheme (last lst)) :fdottedlists #t)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('last'), Symbol.for('lst')]]], Symbol.for(':fdottedlists'), true], 'import {\n' +
@@ -1557,10 +1566,14 @@ describe('let', function (): any {
       'return x;']);
   });
   it('(compile \'(let (x) x) :as "expression")', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), 'expression'], '(() => {\n' +
-      '  let x;\n' +
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), 'expression'], '((x) => {\n' +
       '  return x;\n' +
-      '})()']);
+      '})(undefined)']);
+  });
+  it('(compile \'(let ((x 1)) x) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [[Symbol.for('x'), 1]], Symbol.for('x')]], Symbol.for(':as'), 'expression'], '((x) => {\n' +
+      '  return x;\n' +
+      '})(1)']);
   });
   it('(compile \'(let (x) x) :as "return" :to "typescript")', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':as'), 'return', Symbol.for(':to'), 'typescript'], 'let x: any;\n' +
@@ -1670,6 +1683,12 @@ describe('let-values', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('x'), Symbol.for('y')], [Symbol.for('values'), 1, 2]]], [Symbol.for('define'), Symbol.for('z'), [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]]], 'let [x, y] = [1, 2];\n' +
       '\n' +
       'let z = x + y;']);
+  });
+  it('(compile \'(let-values (((value) (foo bar baz))) value) :as "expression")', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[[Symbol.for('value')], [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), 'expression'], '(() => {\n' +
+      '  let [value] = foo(bar, baz);\n' +
+      '  return value;\n' +
+      '})()']);
   });
   it('(compile \'(let-values ((value (foo bar baz))) value) :as "return")', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-values'), [[Symbol.for('value'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]], Symbol.for('value')]], Symbol.for(':as'), 'return'], 'let value = foo(bar, baz);\n' +
@@ -3809,8 +3828,8 @@ describe('foldr', function (): any {
   });
   return it('(compile \'(foldr (f g) v lst))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('foldr'), [Symbol.for('f'), Symbol.for('g')], Symbol.for('v'), Symbol.for('lst')]]], 'lst.reduceRight((function (f) {\n' +
-      '  return function (x, y) {\n' +
-      '    return f(y, x);\n' +
+      '  return function (acc, x) {\n' +
+      '    return f(x, acc);\n' +
       '  };\n' +
       '})(f(g)), v);']);
   });
@@ -3972,6 +3991,31 @@ describe('substring', function (): any {
   });
   return it('(compile \'(substring str i j))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('substring'), Symbol.for('str'), Symbol.for('i'), Symbol.for('j')]]], 'str.substring(i, j);']);
+  });
+});
+
+describe('case', function (): any {
+  it('(case "foo" (("foo") 1))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('case'), 'foo', [['foo'], 1]], 1]);
+  });
+  it('(case \'foo ((foo) 1))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('case'), [Symbol.for('quote'), Symbol.for('foo')], [[Symbol.for('foo')], 1]], 1]);
+  });
+  it('(compile \'(case x ((foo) 1)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('case'), Symbol.for('x'), [[Symbol.for('foo')], 1]]]], 'switch (x) {\n' +
+      '  case Symbol.for(\'foo\'): {\n' +
+      '    1;\n' +
+      '    break;\n' +
+      '  }\n' +
+      '}']);
+  });
+  return it('(compile \'(case x (("foo") 1)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('case'), Symbol.for('x'), [['foo'], 1]]]], 'switch (x) {\n' +
+      '  case \'foo\': {\n' +
+      '    1;\n' +
+      '    break;\n' +
+      '  }\n' +
+      '}']);
   });
 });
 
@@ -4149,10 +4193,9 @@ describe('match', function (): any {
       '}']);
   });
   return it('(compile \'(match "foo" ((app string-length (? number?) 3) #t)))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('match'), 'foo', [[Symbol.for('app'), Symbol.for('string-length'), [Symbol.for('?'), Symbol.for('number?')], 3], true]]]], 'if ((() => {\n' +
-      '  let patternMatchVal = \'foo\'.length;\n' +
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('match'), 'foo', [[Symbol.for('app'), Symbol.for('string-length'), [Symbol.for('?'), Symbol.for('number?')], 3], true]]]], 'if (((patternMatchVal) => {\n' +
       '  return Number.isFinite(patternMatchVal) && (patternMatchVal === 3);\n' +
-      '})()) {\n' +
+      '})(\'foo\'.length)) {\n' +
       '  true;\n' +
       '}']);
   });

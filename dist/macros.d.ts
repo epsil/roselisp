@@ -24,24 +24,24 @@
  */
 declare function defun_(exp: any, env: any): any;
 declare namespace defun_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
 }
 /**
  * Expand a `(define/private ...)` expression.
  */
 declare function definePrivate_(exp: any, env: any): any;
 declare namespace definePrivate_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(define/public ...)` expression.
  */
 declare function definePublic_(exp: any, env: any): any;
 declare namespace definePublic_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(defclass ...)` expression.
@@ -52,8 +52,8 @@ declare namespace definePublic_ {
  */
 declare function defclass_(exp: any, env: any): any;
 declare namespace defclass_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(define-macro ...)` expression.
@@ -66,32 +66,60 @@ declare namespace defclass_ {
  */
 declare function defineMacro_(exp: any, env: any): any;
 declare namespace defineMacro_ {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+}
+/**
+ * Expand a `(macro ...)` expression.
+ *
+ * Somewhat similar to [`macro` in Emacs Lisp][el:macro].
+ *
+ * [el:macro]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Macros.html#index-defmacro
+ */
+declare function macro_(exp: any, env: any): any;
+declare namespace macro_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[])[])[])[])[])[])[];
+}
+/**
+ * Expand a `(define-compiler-macro ...)` expression.
+ */
+declare function defineCompilerMacro_(exp: any, env: any): any;
+declare namespace defineCompilerMacro_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Expand a `(syntax ...)` expression.
  */
 declare function syntax_(exp: any, env: any): any;
 declare namespace syntax_ {
-    var fsource: (symbol | (symbol | (boolean | symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (boolean | symbol | (symbol | symbol[])[])[])[])[];
 }
 /**
  * Expand a `(quasisyntax ...)` expression.
  */
 declare function quasisyntax_(exp: any, env: any): any;
 declare namespace quasisyntax_ {
-    var fsource: (symbol | (symbol | (boolean | symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (boolean | symbol | (symbol | symbol[])[])[])[])[];
 }
 /**
  * Expand a `(define-syntax ...)` expression.
  */
 declare function defineSyntax_(exp: any, env: any): any;
 declare namespace defineSyntax_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[];
+}
+/**
+ * Expand a `(syntax-macro ...)` expression.
+ */
+declare function syntaxMacro_(exp: any, env: any): any;
+declare namespace syntaxMacro_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
 }
 /**
  * Create a macro function on the basis of a
@@ -107,7 +135,7 @@ declare namespace defineMacroToFunction {
  */
 declare function defineMacroToLambdaForm(exp: any, options?: any): any;
 declare namespace defineMacroToLambdaForm {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | symbol[])[] | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | undefined)[] | (boolean | symbol)[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | symbol[])[] | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol[] | undefined)[])[])[])[])[] | ((symbol | (number | symbol)[])[] | (boolean | symbol)[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[];
 }
 /**
  * Expand a `(defmacro ...)` expression.
@@ -120,16 +148,48 @@ declare namespace defineMacroToLambdaForm {
  */
 declare function defmacro_(exp: any, env: any): any;
 declare namespace defmacro_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol)[])[])[];
+}
+/**
+ * Expand a `(defsubst ...)` expression.
+ *
+ * Similar to [`defsubst` in Emacs Lisp][el:defsubst].
+ *
+ * [el:defsubst]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Inline-Functions.html#index-defsubst
+ */
+declare function defsubst_(exp: any, env: any): any;
+declare namespace defsubst_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][])[])[])[];
+}
+/**
+ * Expand a `(define-inline ...)` expression.
+ */
+declare function defineInline_(exp: any, env: any): any;
+declare namespace defineInline_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(define-fexpr ...)` expression.
  */
 declare function defineFexpr_(exp: any, env: any): any;
 declare namespace defineFexpr_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[];
+}
+/**
+ * Expand a `(nlambda ...)` expression.
+ *
+ * Similar to [`nlambda` in Interlisp][il:nlambda].
+ *
+ * [il:nlambda]: https://interlisp.org/software/using-medley/cl-using/#lambda--nlambda--cllambda
+ */
+declare function nlambda_(exp: any, env: any): any;
+declare namespace nlambda_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[];
 }
 /**
  * Expand a `(declare ...)` expression.
@@ -142,24 +202,32 @@ declare namespace defineFexpr_ {
  */
 declare function declare_(exp: any, env: any): any;
 declare namespace declare_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(declare-macro ...)` expression.
  */
 declare function declareMacro_(exp: any, env: any): any;
 declare namespace declareMacro_ {
-    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[])[];
+}
+/**
+ * Expand a `(declare-syntax-macro ...)` expression.
+ */
+declare function declareSyntaxMacro_(exp: any, env: any): any;
+declare namespace declareSyntaxMacro_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(declare-fexpr ...)` expression.
  */
 declare function declareFexpr_(exp: any, env: any): any;
 declare namespace declareFexpr_ {
-    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[])[];
 }
 /**
  * Expand a `(begin0 ...)` expression.
@@ -172,8 +240,8 @@ declare namespace declareFexpr_ {
  */
 declare function begin0_(exp: any, env: any): any;
 declare namespace begin0_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[];
 }
 /**
  * Expand a `(multiple-value-bind ...)` expression.
@@ -185,8 +253,8 @@ declare namespace begin0_ {
  */
 declare function multipleValueBind_(exp: any, env: any): any;
 declare namespace multipleValueBind_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[] | symbol[][][])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][][])[])[])[];
 }
 /**
  * Expand a `(rkt/new ...)' expression.
@@ -197,8 +265,8 @@ declare namespace multipleValueBind_ {
  */
 declare function rktNew_(exp: any, env: any): any;
 declare namespace rktNew_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand an `(and ...)` expression.
@@ -213,8 +281,8 @@ declare namespace rktNew_ {
  */
 declare function and_(stx: any): any;
 declare namespace and_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
     var ftype: symbol[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
 }
 /**
  * Expand an `(or ...)` expression.
@@ -229,8 +297,8 @@ declare namespace and_ {
  */
 declare function or_(stx: any): any;
 declare namespace or_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
     var ftype: symbol[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
 }
 /**
  * Expand a `(cond ...)` expression.
@@ -243,8 +311,8 @@ declare namespace or_ {
  */
 declare function cond_(stx: any): any;
 declare namespace cond_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[])[])[])[];
     var ftype: symbol[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[])[])[])[];
 }
 /**
  * Expand a `(when ...)` expression.
@@ -259,8 +327,8 @@ declare namespace cond_ {
  */
 declare function when_(stx: any): any;
 declare namespace when_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
     var ftype: symbol[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
 }
 /**
  * Expand an `(unless ...)` expression.
@@ -275,8 +343,8 @@ declare namespace when_ {
  */
 declare function unless_(stx: any): any;
 declare namespace unless_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
     var ftype: symbol[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
 }
 /**
  * Expand an `(el/if ...)` expression.
@@ -287,8 +355,8 @@ declare namespace unless_ {
  */
 declare function elIf_(exp: any, env: any): any;
 declare namespace elIf_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (number | symbol | symbol[])[][])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (number | symbol | symbol[])[][])[])[])[])[])[];
 }
 /**
  * Expand an `(as~> ...)` expression.
@@ -299,8 +367,8 @@ declare namespace elIf_ {
  */
 declare function threadAs_(exp: any, env: any): any;
 declare namespace threadAs_ {
-    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | ((number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(~> ...)` expression. Based on the
@@ -311,8 +379,8 @@ declare namespace threadAs_ {
  */
 declare function threadFirst_(exp: any, env: any): any;
 declare namespace threadFirst_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | ((number | symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol[] | (symbol | symbol[])[][])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | ((number | symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol[] | (symbol | symbol[])[][])[])[])[])[])[])[];
 }
 /**
  * Evaluate a `(~>> ...)` expression. Based on the
@@ -323,8 +391,8 @@ declare namespace threadFirst_ {
  */
 declare function threadLast_(exp: any, env: any): any;
 declare namespace threadLast_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (number | symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (number | symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[];
 }
 /**
  * Expand an `(unwind-protect ...)` expression.
@@ -337,8 +405,8 @@ declare namespace threadLast_ {
  */
 declare function unwindProtect_(exp: any, env: any): any;
 declare namespace unwindProtect_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(do ...)` expression.
@@ -351,8 +419,8 @@ declare namespace unwindProtect_ {
  */
 declare function do_(exp: any, env: any): any;
 declare namespace do_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(while ...)` expression.
@@ -363,10 +431,10 @@ declare namespace do_ {
  * [guile:while]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-while
  * [el:while]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Iteration.html#index-while
  */
-declare function while_(exp: any, env: any): any;
+declare function while_(stx: any): any;
 declare namespace while_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-    var ftype: string;
+    var ftype: symbol[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[];
 }
 /**
  * Expand a `(for ...)` expression.
@@ -377,8 +445,8 @@ declare namespace while_ {
  */
 declare function for_(exp: any, env: any): any;
 declare namespace for_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[][] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[][] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(case ...)` expression.
@@ -389,24 +457,24 @@ declare namespace for_ {
  */
 declare function case_(exp: any, env: any): any;
 declare namespace case_ {
-    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(case/eq ...)` expression.
  */
 declare function caseEq_(exp: any, env: any): any;
 declare namespace caseEq_ {
-    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(let-env ...)` expression.
  */
 declare function letEnv_(exp: any, env: any): any;
 declare namespace letEnv_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Expand a `(set ...)` expression.
@@ -419,8 +487,8 @@ declare namespace letEnv_ {
  */
 declare function set_(exp: any, env: any): any;
 declare namespace set_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(setq ...)` expression.
@@ -433,16 +501,16 @@ declare namespace set_ {
  */
 declare function setq_(exp: any, env: any): any;
 declare namespace setq_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 /**
  * Expand a `(new/apply ...)` expression.
  */
 declare function newApply_(exp: any, env: any): any;
 declare namespace newApply_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(try ...)` expression.
@@ -453,8 +521,8 @@ declare namespace newApply_ {
  */
 declare function try_(exp: any, env: any): any;
 declare namespace try_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(clj/try ...)` expression.
@@ -465,8 +533,8 @@ declare namespace try_ {
  */
 declare function cljTry_(exp: any, env: any): any;
 declare namespace cljTry_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(match ...)` expression.
@@ -479,8 +547,8 @@ declare namespace cljTry_ {
  */
 declare function match_(exp1: any, env: any): any;
 declare namespace match_ {
-    var fsource: (symbol | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol[])[] | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (boolean | symbol)[] | (boolean | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[])[])[][] | (boolean | symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][] | (symbol | ((boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[][] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[][])[] | (symbol | (number | symbol)[] | (symbol | (boolean | symbol)[])[])[])[][] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((number | symbol | symbol[])[] | (boolean | symbol | symbol[])[])[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (symbol | (boolean | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol[])[] | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (boolean | symbol)[] | (boolean | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[])[])[][] | (boolean | symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][] | (symbol | ((boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[][] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[][])[] | (symbol | (number | symbol)[] | (symbol | (boolean | symbol)[])[])[])[][] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((number | symbol | symbol[])[] | (boolean | symbol | symbol[])[])[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (symbol | (boolean | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(cl/loop ...)` expression.
@@ -491,8 +559,8 @@ declare namespace match_ {
  */
 declare function clLoop_(exp: any, env: any): any;
 declare namespace clLoop_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[])[];
 }
 /**
  * `with-gensyms` macro as defined in
@@ -502,18 +570,32 @@ declare namespace clLoop_ {
  */
 declare function withGensyms_(exp: any, env: any): any;
 declare namespace withGensyms_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
 }
 /**
- * `once-only` macro as defined in
+ * `once-only` macro, adapted from the one described in
  * Peter Seibel's [*Practical Common Lisp*][book:pcl].
  *
  * [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
  */
 declare function onceOnly_(exp: any, env: any): any;
 declare namespace onceOnly_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[][] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[][])[])[])[][])[])[])[])[])[])[])[])[];
     var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[][] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[][])[])[])[][])[])[])[])[])[])[])[])[];
 }
-export { and_, begin0_, caseEq_, case_, clLoop_, cljTry_, cond_, declareFexpr_, declareMacro_, declare_, defclass_, defineFexpr_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defun_, do_, elIf_, for_, letEnv_, match_, multipleValueBind_, newApply_, onceOnly_, or_, quasisyntax_, rktNew_, set_, setq_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, withGensyms_, while_ };
+/**
+ * Alternative implementation of `once-only` that skips over atomic
+ * expressions. Expands to a nested `cond` form that only invokes
+ * `once-only` on variables that are bound to complex expressions.
+ *
+ * Note that this gets rather verbose when there are many variables.
+ * In that case, it may be better to define a recursive macro
+ * instead.
+ */
+declare function onceOnlystar_(exp: any, env: any): any;
+declare namespace onceOnlystar_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[];
+}
+export { defineInline_ as defineSubst_, and_, begin0_, caseEq_, case_, clLoop_, cljTry_, cond_, declareFexpr_, declareMacro_, declareSyntaxMacro_, declare_, defclass_, defineCompilerMacro_, defineFexpr_, defineInline_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defsubst_, defun_, do_, elIf_, for_, letEnv_, macro_, match_, multipleValueBind_, newApply_, nlambda_, onceOnly_, onceOnlystar_, or_, quasisyntax_, rktNew_, set_, setq_, syntaxMacro_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_, withGensyms_ };

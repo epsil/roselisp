@@ -1,4 +1,17 @@
 /**
+ * # Unsorted code
+ *
+ * This file functions as an "inbox" or scratchpad for new code, as
+ * well as an "outbox" for legacy code that is not needed anymore and
+ * may be deleted.
+ *
+ * ## License
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+/**
  * # Trampoline
  *
  * Trampoline implementation.
@@ -275,8 +288,14 @@ declare class TrampolineCall {
  * values.
  */
 declare function trampoline(f: any, ...args: any[]): any;
+declare namespace trampoline {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+}
 /**
  * Create a trampolined function call.
  */
 declare function tcall(f: any, ...args: any[]): any;
+declare namespace tcall {
+    var fsource: (symbol | symbol[])[];
+}
 export { tcall as tCall, tcall as trampolineCall, trampoline as runTrampoline, trampoline as trampolineRun, Trampoline, TrampolineCall, tcall, trampoline };

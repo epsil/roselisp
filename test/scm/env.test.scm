@@ -1003,6 +1003,26 @@
        (assert-equal
         (send env2 get 'foo)
         "foo"))
+ > (it "has-promise?"
+       (define env
+         (new EnvironmentStack
+              (new PromiseEnvironment
+                   `((foo
+                      ,(new InternalPromise
+                            (delay "foo"))
+                      Any)))))
+       (send env has-promise? 'foo))
+ #t
+ > (it "has-local-promise?"
+       (define env
+         (new EnvironmentStack
+              (new PromiseEnvironment
+                   `((foo
+                      ,(new InternalPromise
+                            (delay "foo"))
+                      Any)))))
+       (send env has-local-promise? 'foo))
+ #t
 
  :describe "EnvironmentPipe"
  > (it "get"

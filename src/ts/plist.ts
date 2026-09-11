@@ -39,6 +39,22 @@ function plistp_(obj: any): any {
 
 plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('obj')], [Symbol.for('even?'), [Symbol.for('length'), Symbol.for('obj')]]]];
 
+plistp_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [obj]: any[] = exp.slice(1);
+    if (!(Array.isArray(obj) && (obj.length > 0))) {
+      return [Symbol.for('and'), [Symbol.for('pair-or-list?'), obj], [Symbol.for('even?'), [Symbol.for('length'), obj]]];
+    } else {
+      const obj1: any = Symbol('obj');
+      return [Symbol.for('let'), [[obj1, obj]], ((obj: any): any => {
+        return [Symbol.for('and'), [Symbol.for('pair-or-list?'), obj], [Symbol.for('even?'), [Symbol.for('length'), obj]]];
+      })(obj1)];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 /**
  * Copy a property list.
  */
@@ -46,7 +62,16 @@ function plistCopy_(plst: any): any {
   return [...plst];
 }
 
-plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('plst')]]]];
+plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('array-copy'), Symbol.for('plst')]];
+
+plistCopy_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [plst]: any[] = exp.slice(1);
+    return [Symbol.for('array-copy'), plst];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
 
 /**
  * Return the value of a property in a property list.
@@ -181,7 +206,7 @@ function plistToObject_(plst: any, options: any = {}): any {
   for (let i: any = 0; i < _end; i = i + 2) {
     const prop: any = (plst as any)[i];
     let val: any = plst[i + 1];
-    const key: any = makeIdentifierString(keywordToString(prop), options);
+    const key: any = makeIdentifierString((prop.description as string).replace(new RegExp('^:'), ''), options);
     (result as any)[key] = val;
   }
   return result;

@@ -11,6 +11,18 @@ import {
 
 testMacro.ftype = 'macro';
 
+describe('js/is-NaN', function (): any {
+  it('(js/is-NaN NaN)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/is-NaN'), Symbol.for('NaN')], true]);
+  });
+  it('(js/is-NaN 0)', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/is-NaN'), 0], false]);
+  });
+  return it('(compile \'(js/is-NaN x))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/is-NaN'), Symbol.for('x')]]], 'isNaN(x);']);
+  });
+});
+
 describe('js/[]', function (): any {
   return it('(compile \'(js/[] x y))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/[]'), Symbol.for('x'), Symbol.for('y')]]], 'x[y];']);

@@ -15,65 +15,67 @@
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 ;;; Whether something is an array.
-(define (array?_ x)
+(define-inline (array?_ x)
   (js/array? x))
 
 ;;; Return the length of an array.
-(define (array-length_ arr)
+(define-inline (array-length_ arr)
   (js/length arr))
 
 ;;; Copy an array.
-(define (array-copy_ arr)
+(define-inline (array-copy_ arr)
   `(,@arr))
 
 ;;; Return the first element of an array.
-(define (array-first_ arr)
+(define-inline (array-first_ arr)
   (array-ref arr 0))
 
 ;;; Return the second element of an array.
-(define (array-second_ arr)
+(define-inline (array-second_ arr)
   (array-ref arr 1))
 
 ;;; Return the third element of an array.
-(define (array-third_ arr)
+(define-inline (array-third_ arr)
   (array-ref arr 2))
 
 ;;; Return the fourth element of an array.
-(define (array-fourth_ arr)
+(define-inline (array-fourth_ arr)
   (array-ref arr 3))
 
 ;;; Return the fifth element of an array.
-(define (array-fifth_ arr)
+(define-inline (array-fifth_ arr)
   (array-ref arr 4))
 
 ;;; Return the sixth element of an array.
-(define (array-sixth_ arr)
+(define-inline (array-sixth_ arr)
   (array-ref arr 5))
 
 ;;; Return the seventh element of an array.
-(define (array-seventh_ arr)
+(define-inline (array-seventh_ arr)
   (array-ref arr 6))
 
 ;;; Return the eight element of an array.
-(define (array-eighth_ arr)
+(define-inline (array-eighth_ arr)
   (array-ref arr 7))
 
 ;;; Return the ninth element of an array.
-(define (array-ninth_ arr)
+(define-inline (array-ninth_ arr)
   (array-ref arr 8))
 
 ;;; Return the tenth element of an array.
-(define (array-tenth_ arr)
+(define-inline (array-tenth_ arr)
   (array-ref arr 9))
 
 ;;; Return the last element of an array.
-(define (array-last_ arr)
-  (array-at arr -1))
+(define-inline (array-last_ arr)
+  (array-nlast arr 1))
 
 ;;; Return the `n`-th element counting from
 ;;; the end of the array.
-(define (array-nlast_ arr n)
-  (array-at arr (- n)))
+(define-inline (array-nlast_ arr n)
+  ;; We could have called `array-at` with a negative index,
+  ;; but this has better backwards compatibility.
+  (array-ref arr (- (array-length arr) n)))
 
 ;;; Access the array element indicated by
 ;;; one or more `indices`.
@@ -91,10 +93,14 @@
     (set! result (js/get arr i)))
   result)
 
+;;; Compiler macro for `(array-ref ...)` expressions.
+(define-compiler-macro (array-ref_ arr &rest indices)
+  `(js/get ,arr ,@indices))
+
 ;;; Return the `i`-th element of the array.
 ;;; Accepts negative values, counting back
 ;;; from the end of the array.
-(define (array-at_ arr i)
+(define-inline (array-at_ arr i)
   (send arr at i))
 
 ;;; Set an array position to a given value.
@@ -140,23 +146,39 @@
   (js/= (array-ref arr1 last-index) value)
   value)
 
+;;; Compiler macro for `(array-set! ...)` expressions.
+(define-compiler-macro (array-set!_ arr &rest indices-and-value)
+  (define indices
+    (drop-right indices-and-value 1))
+  (define value
+    (last indices-and-value))
+  `(js/= (js/get ,arr ,@indices) ,value))
+
 ;;; Take the `n` first elements from `arr`.
-(define (array-take_ arr n)
+(define-inline (array-take_ arr n)
   (array-drop-right arr
                     (- (array-length arr) n)))
 
 ;;; Return the tail of an array.
-(define (array-rest_ arr)
+(define-inline (array-rest_ arr)
   (array-drop arr 1))
 
 ;;; Slice a JavaScript array.
-(define (array-slice_ arr . args)
+(define-inline (array-slice_ arr . args)
   (send/apply arr slice args))
 
 ;;; Return the array obtained by dropping
 ;;; the first `n` elements from `arr`.
 (define (array-drop_ arr n)
   (array-slice arr n))
+
+;;; Compiler macro for `(array-drop ...)` expressions.
+(define-compiler-macro (array-drop_ arr n)
+  (cond
+   ((eq? n 0)
+    arr)
+   (else
+    `(array-slice ,arr ,n))))
 
 ;;; Return the array obtained by dropping
 ;;; the last `n` elements from `arr`.
@@ -168,26 +190,48 @@
   ;; expression.
   (array-slice arr 0 (or (- n) #u)))
 
+;;; Compiler macro for `(array-drop-right ...)` expressions.
+(define-compiler-macro (array-drop-right_ arr n)
+  (cond
+   ((number? n)
+    (cond
+     ((= n 0)
+      arr)
+     (else
+      `(array-slice ,arr 0 (- ,n)))))
+   (else
+    `(array-slice ,arr 0 (or (- ,n) #u)))))
+
 ;;; Concatenate arrays.
 (define (array-concat_ . args)
   (send/apply '() concat args))
 
+;;; Compiler macro for `(array-concat ...)` expressions.
+(define-compiler-macro (array-concat_ &rest args)
+  (cond
+   ((eq? (length args) 0)
+    '())
+   ((eq? (length args) 1)
+    (first args))
+   (else
+    `(send ,(first args) concat ,@(rest args)))))
+
 ;;; Reverse the order of an array.
 ;;; Returns a new array.
-(define (array-reverse_ arr)
+(define-inline (array-reverse_ arr)
   (array-reverse! (array-copy arr)))
 
 ;;; Reverse the order of an array.
 ;;; Returns a new array.
-(define (array-reverse!_ arr)
+(define-inline (array-reverse!_ arr)
   (send arr reverse))
 
 ;;; Pop an element off the beginning of an array.
-(define (array-pop-left!_ arr)
+(define-inline (array-pop-left!_ arr)
   (send arr shift))
 
 ;;; Pop an element off the end of an array.
-(define (array-pop-right!_ arr)
+(define-inline (array-pop-right!_ arr)
   (send arr pop))
 
 ;;; Push an element onto the beginning of an array.
@@ -195,10 +239,30 @@
   (send arr unshift x)
   arr)
 
+;;; Compiler macro for `(array-push-left! ...)` expressions.
+(define-compiler-macro (array-push-left!_ arr x)
+  `(js/statement-or-expression
+    :statement (send ,arr unshift ,x)
+    :expression ,(once-only*
+                  (arr)
+                  `(begin
+                     (send ,arr unshift ,x)
+                     ,arr))))
+
 ;;; Push an element onto the end of an array.
 (define (array-push-right!_ arr x)
   (send arr push x)
   arr)
+
+;;; Compiler macro for `(array-push-right! ...)` expressions.
+(define-compiler-macro (array-push-right!_ arr x)
+  `(js/statement-or-expression
+    :statement (send ,arr push ,x)
+    :expression ,(once-only*
+                  (arr)
+                  `(begin
+                     (send ,arr push ,x)
+                     ,arr))))
 
 (provide
   (rename-out (array-ref_ aget))

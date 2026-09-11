@@ -11,6 +11,14 @@
 (test-macro
  :repl #t
 
+ :describe "js/is-NaN"
+ > (js/is-NaN NaN)
+ #t
+ > (js/is-NaN 0)
+ #f
+ > (compile '(js/is-NaN x))
+ "isNaN(x);"
+
  :describe "js/\[\]"
  > (compile '(js/\[\] x y))
  "x[y];"

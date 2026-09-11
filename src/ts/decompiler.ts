@@ -67,7 +67,7 @@ const [listStar, findf]: any[] = ((): any => {
     } else if (args.length === 1) {
       return args[0];
     } else {
-      const tailLst: any = args.at(-1);
+      const tailLst: any = args[args.length - 1];
       const headLst: any = args.slice(0, -1);
       if (Array.isArray(tailLst)) {
         return [...headLst, ...tailLst];
@@ -799,7 +799,7 @@ function decompileYieldExpression(node: any, options: any = {}): any {
  */
 function decompileNewExpression(node: any, options: any = {}): any {
   const arguments_: any = node.arguments;
-  const isSpread: any = (arguments_.length > 0) && estreeTypeP(arguments_.at(-1), 'SpreadElement');
+  const isSpread: any = (arguments_.length > 0) && estreeTypeP(arguments_[arguments_.length - 1], 'SpreadElement');
   return datumToSyntax(false, [...(isSpread ? [Symbol.for('apply')] : []), Symbol.for('new'), decompileEstree(node.callee, options), ...arguments_.map(function (x: any): any {
     return decompileEstree(x, options);
   })]);
@@ -954,11 +954,11 @@ function decompileArrayExpression(node: any, options: any = {}): any {
       return Symbol.for('_');
     }
   }
-  if ((elements.length > 0) && elements.at(-1) && estreeTypeP(elements.at(-1), 'RestElement')) {
+  if ((elements.length > 0) && elements[elements.length - 1] && estreeTypeP(elements[elements.length - 1], 'RestElement')) {
     const regularElements: any = elements.slice(0, -1).map(function (x: any): any {
       return decompileElement(x);
     });
-    const restElement: any = decompileElement(elements.at(-1));
+    const restElement: any = decompileElement(elements[elements.length - 1]);
     return datumToSyntax(false, listStar(...[...regularElements, restElement]));
   } else if (findf(function (x: any): any {
     return x && estreeTypeP(x, 'SpreadElement');
@@ -1237,9 +1237,11 @@ function decompileFunction(node: any, options: any = {}): any {
   let params: any = node.params.map(function (x: any): any {
     return decompileParameter(x, options);
   });
-  if ((params.length > 0) && estreeTypeP(node.params.at(-1), 'RestElement')) {
+  if ((params.length > 0) && estreeTypeP(((arr: any): any => {
+    return arr[arr.length - 1];
+  })(node.params), 'RestElement')) {
     if (params.length === 1) {
-      params = params.at(-1);
+      params = params[params.length - 1];
     } else {
       params = listStar(...params);
     }

@@ -158,6 +158,21 @@
         (send _ get-forest)
         (send _ drop-right-forest n)))
 
+  ;;; Return the list of nodes obtained by
+  ;;; taking the first `n` nodes from
+  ;;; the forest.
+  (define/public (take n)
+    (~> this
+        (send _ get-forest)
+        (send _ take n)))
+
+  ;;; Return the forest obtained by taking
+  ;;; the first `n` nodes from the forest.
+  (define/public (take-forest n)
+    (~> this
+        (send _ get-forest)
+        (send _ take-forest n)))
+
   ;;; Return the first node in the forest,
   ;;; or `#u` if there is none.
   (define/public (first)
@@ -443,6 +458,20 @@
         (send _ drop-right n)
         (apply new Forest _)))
 
+  ;;; Return the list of nodes obtained by
+  ;;; taking the first `n` nodes.
+  (define/public (take n)
+    (~> this
+        (get-field node-list _)
+        (take _ n)))
+
+  ;;; Return the forest obtained by taking
+  ;;; the first `n` nodes.
+  (define/public (take-forest n)
+    (~> this
+        (send _ take n)
+        (apply new Forest _)))
+
   ;;; Return the first node,
   ;;; or `#u` if there is none.
   (define/public (first)
@@ -601,46 +630,45 @@
 (define (forest? obj)
   (is-a? obj Forest))
 
-;;; Wrap a list of rose tree-wrapped S-expressions in
-;;; a `(begin ...)` form.
+;;; Wrap a list of syntax objects in a `(begin ...)` form.
 ;;;
 ;;; Legacy function, but still used in a few places.
-(define (begin-wrap-rose nodes)
+(define (begin-wrap-stx stxs)
   (make-list-rose
-   `(begin ,@nodes)))
+   `(begin ,@stxs)))
 
-;;; Wrap a list of rose tree-wrapped S-expressions in
-;;; a `(begin ...)` form. Does not wrap singleton lists.
+;;; Wrap a list of syntax objects in a `(begin ...)` form.
+;;; Does not wrap singleton lists.
 ;;;
 ;;; Legacy function, but still used in a few places.
-(define (begin-wrap-rose-smart nodes)
+(define (begin-wrap-stx-smart stxs)
   (cond
-   ((not (pair-or-list? nodes))
-    nodes)
-   ((and (= (length nodes) 1)
-         (pair-or-list? (~> (first nodes)
+   ((not (pair-or-list? stxs))
+    stxs)
+   ((and (= (length stxs) 1)
+         (pair-or-list? (~> (first stxs)
                             (send _ get-value)))
-         (> (~> (first nodes)
+         (> (~> (first stxs)
                 (send _ get-value)
                 (length _))
             0)
-         (eq? (~> (first nodes)
+         (eq? (~> (first stxs)
                   (send _ get-value)
                   (first _))
               'begin))
-    (first nodes))
+    (first stxs))
    (else
-    (begin-wrap-rose nodes))))
+    (begin-wrap-stx stxs))))
 
 ;;; Legacy function, but still used in a few places.
-(define (begin-wrap-rose-smart-1 nodes)
+(define (begin-wrap-stx-smart-1 stxs)
   (cond
-   ((not (pair-or-list? nodes))
-    nodes)
-   ((= (length nodes) 1)
-    (first nodes))
+   ((not (pair-or-list? stxs))
+    stxs)
+   ((= (length stxs) 1)
+    (first stxs))
    (else
-    (begin-wrap-rose nodes))))
+    (begin-wrap-stx stxs))))
 
 ;;; Make a rose tree-wrapped S-expression.
 ;;;
@@ -759,22 +787,6 @@
    (else
     (wrap-sexp-in-rose exp))))
 
-;;; Slice a list wrapped in a rose tree.
-;;; Returns a new rose tree node containing
-;;; the sliced list.
-(define (slice-rose node n)
-  (define value
-    (send node get-value))
-  (cond
-   ((pair-or-list? value)
-    (define sliced-node
-      (new Rose (drop value n)))
-    (for ((x (send node drop n)))
-      (send sliced-node insert x))
-    sliced-node)
-   (else
-    node)))
-
 ;;; Wrap an S-expression in a rose tree.
 (define (wrap-sexp-in-rose exp (cache (make-hash)))
   (cond
@@ -864,39 +876,59 @@
     (syntax->datum stx))
   (cond
    ((pair-or-list? v)
-    (define nodes
+    (define stxs
       (send stx get-nodes))
     (cond
      ;; Dotted list.
-     ((and (>= (length nodes) 3)
+     ((and (>= (length stxs) 3)
            (eq? (syntax->datum
-                 (list-ref nodes
-                           (- (length nodes) 2)))
+                 (list-ref stxs
+                           (- (length stxs) 2)))
                 '|.|))
       (define tail
-        (last nodes))
+        (last stxs))
       (define tail-e
         (syntax-e tail))
       (when (pair-or-list? tail-e)
         (set! tail tail-e))
-      `(,@(drop-right nodes 2) . ,tail))
+      `(,@(drop-right stxs 2) . ,tail))
      ;; Regular list.
      (else
-      nodes)))
+      stxs)))
    (else
     v)))
+
+;;; Slice a list wrapped in a syntax object.
+;;; Returns a new syntax object containing
+;;; the sliced list.
+(define (slice-stx stx n)
+  (define value
+    (send stx get-value))
+  (cond
+   ((pair-or-list? value)
+    (define sliced-stx
+      (new Rose (drop value n)))
+    (for ((x (send stx drop n)))
+      (send sliced-stx insert x))
+    sliced-stx)
+   (else
+    stx)))
 
 (provide
   (rename-out (Rose Syntax))
   (rename-out (RoseSplice SyntaxSplice))
   (rename-out (rose->map make-rose-map))
   (rename-out (sexp->rose make-rose))
+  (rename-out (slice-stx slice-rose))
+  (rename-out (begin-wrap-stx begin-wrap-node))
+  (rename-out (begin-wrap-stx-smart begin-wrap-node-smart))
+  (rename-out (begin-wrap-stx-smart-1 begin-wrap-node-smart-1))
   Forest
   Rose
   RoseSplice
-  begin-wrap-rose
-  begin-wrap-rose-smart
-  begin-wrap-rose-smart-1
+  begin-wrap-stx
+  begin-wrap-stx-smart
+  begin-wrap-stx-smart-1
   datum->syntax
   forest?
   make-list-rose
@@ -906,7 +938,7 @@
   rose->sexp
   rose?
   sexp->rose
-  slice-rose
+  slice-stx
   syntax->datum
   syntax->list
   syntax-e

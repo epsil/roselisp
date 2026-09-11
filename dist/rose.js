@@ -44,7 +44,7 @@
  * [w:Rose tree]: https://en.wikipedia.org/wiki/Rose_tree
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapSexpInRose = exports.transferComments = exports.syntaxp = exports.syntaxE = exports.syntaxToList = exports.syntaxToDatum = exports.sliceRose = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.forestp = exports.datumToSyntax = exports.beginWrapRoseSmart1 = exports.beginWrapRoseSmart = exports.beginWrapRose = exports.RoseSplice = exports.Rose = exports.Forest = exports.makeRose = exports.makeRoseMap = exports.SyntaxSplice = exports.Syntax = void 0;
+exports.wrapSexpInRose = exports.transferComments = exports.syntaxp = exports.syntaxE = exports.syntaxToList = exports.syntaxToDatum = exports.sliceStx = exports.sexpToRose = exports.rosep = exports.roseToSexp = exports.roseToMap = exports.makeSexpRose = exports.makeRoseNonrecursive = exports.makeListRose = exports.forestp = exports.datumToSyntax = exports.beginWrapStxSmart1 = exports.beginWrapStxSmart = exports.beginWrapStx = exports.RoseSplice = exports.Rose = exports.Forest = exports.beginWrapNodeSmart1 = exports.beginWrapNodeSmart = exports.beginWrapNode = exports.sliceRose = exports.makeRose = exports.makeRoseMap = exports.SyntaxSplice = exports.Syntax = void 0;
 const visitor_1 = require("./visitor");
 /**
  * Rose tree node class.
@@ -176,6 +176,21 @@ class Rose {
      */
     dropRightForest(n) {
         return this.getForest().dropRightForest(n);
+    }
+    /**
+     * Return the list of nodes obtained by
+     * taking the first `n` nodes from
+     * the forest.
+     */
+    take(n) {
+        return this.getForest().take(n);
+    }
+    /**
+     * Return the forest obtained by taking
+     * the first `n` nodes from the forest.
+     */
+    takeForest(n) {
+        return this.getForest().takeForest(n);
     }
     /**
      * Return the first node in the forest,
@@ -507,6 +522,21 @@ class Forest {
         return new Forest(...this.dropRight(n));
     }
     /**
+     * Return the list of nodes obtained by
+     * taking the first `n` nodes.
+     */
+    take(n) {
+        const lst = this.nodeList;
+        return lst.slice(0, -(lst.length - n) || undefined);
+    }
+    /**
+     * Return the forest obtained by taking
+     * the first `n` nodes.
+     */
+    takeForest(n) {
+        return new Forest(...this.take(n));
+    }
+    /**
      * Return the first node,
      * or `#u` if there is none.
      */
@@ -713,48 +743,50 @@ function forestp(obj) {
 }
 exports.forestp = forestp;
 /**
- * Wrap a list of rose tree-wrapped S-expressions in
- * a `(begin ...)` form.
+ * Wrap a list of syntax objects in a `(begin ...)` form.
  *
  * Legacy function, but still used in a few places.
  */
-function beginWrapRose(nodes) {
-    return makeListRose([Symbol.for('begin'), ...nodes]);
+function beginWrapStx(stxs) {
+    return makeListRose([Symbol.for('begin'), ...stxs]);
 }
-exports.beginWrapRose = beginWrapRose;
+exports.beginWrapNode = beginWrapStx;
+exports.beginWrapStx = beginWrapStx;
 /**
- * Wrap a list of rose tree-wrapped S-expressions in
- * a `(begin ...)` form. Does not wrap singleton lists.
+ * Wrap a list of syntax objects in a `(begin ...)` form.
+ * Does not wrap singleton lists.
  *
  * Legacy function, but still used in a few places.
  */
-function beginWrapRoseSmart(nodes) {
-    if (!Array.isArray(nodes)) {
-        return nodes;
+function beginWrapStxSmart(stxs) {
+    if (!Array.isArray(stxs)) {
+        return stxs;
     }
-    else if ((nodes.length === 1) && Array.isArray(nodes[0].getValue()) && (nodes[0].getValue().length > 0) && (nodes[0].getValue()[0] === Symbol.for('begin'))) {
-        return nodes[0];
+    else if ((stxs.length === 1) && Array.isArray(stxs[0].getValue()) && (stxs[0].getValue().length > 0) && (stxs[0].getValue()[0] === Symbol.for('begin'))) {
+        return stxs[0];
     }
     else {
-        return beginWrapRose(nodes);
+        return beginWrapStx(stxs);
     }
 }
-exports.beginWrapRoseSmart = beginWrapRoseSmart;
+exports.beginWrapNodeSmart = beginWrapStxSmart;
+exports.beginWrapStxSmart = beginWrapStxSmart;
 /**
  * Legacy function, but still used in a few places.
  */
-function beginWrapRoseSmart1(nodes) {
-    if (!Array.isArray(nodes)) {
-        return nodes;
+function beginWrapStxSmart1(stxs) {
+    if (!Array.isArray(stxs)) {
+        return stxs;
     }
-    else if (nodes.length === 1) {
-        return nodes[0];
+    else if (stxs.length === 1) {
+        return stxs[0];
     }
     else {
-        return beginWrapRose(nodes);
+        return beginWrapStx(stxs);
     }
 }
-exports.beginWrapRoseSmart1 = beginWrapRoseSmart1;
+exports.beginWrapNodeSmart1 = beginWrapStxSmart1;
+exports.beginWrapStxSmart1 = beginWrapStxSmart1;
 /**
  * Make a rose tree-wrapped S-expression.
  *
@@ -895,25 +927,6 @@ function makeSexpRose(exp = []) {
 }
 exports.makeSexpRose = makeSexpRose;
 /**
- * Slice a list wrapped in a rose tree.
- * Returns a new rose tree node containing
- * the sliced list.
- */
-function sliceRose(node, n) {
-    const value = node.getValue();
-    if (Array.isArray(value)) {
-        const slicedNode = new Rose(value.slice(n));
-        for (let x of node.drop(n)) {
-            slicedNode.insert(x);
-        }
-        return slicedNode;
-    }
-    else {
-        return node;
-    }
-}
-exports.sliceRose = sliceRose;
-/**
  * Wrap an S-expression in a rose tree.
  */
 function wrapSexpInRose(exp, cache = new Map()) {
@@ -998,7 +1011,7 @@ exports.datumToSyntax = datumToSyntax;
  */
 function syntaxToList(stx) {
     const exp = syntaxToDatum(stx);
-    if (Array.isArray(exp) && !((exp.length >= 3) && (exp.at(-2) === Symbol.for('.')) && !Array.isArray(exp.at(-1)))) {
+    if (Array.isArray(exp) && !((exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && !Array.isArray(exp[exp.length - 1]))) {
         return stx.getNodes();
     }
     else {
@@ -1016,19 +1029,19 @@ exports.syntaxToList = syntaxToList;
 function syntaxE(stx) {
     const v = syntaxToDatum(stx);
     if (Array.isArray(v)) {
-        const nodes = stx.getNodes();
-        if ((nodes.length >= 3) && (syntaxToDatum(nodes[nodes.length - 2]) === Symbol.for('.'))) {
+        const stxs = stx.getNodes();
+        if ((stxs.length >= 3) && (syntaxToDatum(stxs[stxs.length - 2]) === Symbol.for('.'))) {
             // Dotted list.
-            let tail = nodes.at(-1);
+            let tail = stxs[stxs.length - 1];
             const tailE = syntaxE(tail);
             if (Array.isArray(tailE)) {
                 tail = tailE;
             }
-            return [...nodes.slice(0, -2), Symbol.for('.'), tail];
+            return [...stxs.slice(0, -2), Symbol.for('.'), tail];
         }
         else {
             // Regular list.
-            return nodes;
+            return stxs;
         }
     }
     else {
@@ -1036,3 +1049,23 @@ function syntaxE(stx) {
     }
 }
 exports.syntaxE = syntaxE;
+/**
+ * Slice a list wrapped in a syntax object.
+ * Returns a new syntax object containing
+ * the sliced list.
+ */
+function sliceStx(stx, n) {
+    const value = stx.getValue();
+    if (Array.isArray(value)) {
+        const slicedStx = new Rose(value.slice(n));
+        for (let x of stx.drop(n)) {
+            slicedStx.insert(x);
+        }
+        return slicedStx;
+    }
+    else {
+        return stx;
+    }
+}
+exports.sliceRose = sliceStx;
+exports.sliceStx = sliceStx;

@@ -19,6 +19,7 @@
 declare function arrayp_(x: any): any;
 declare namespace arrayp_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the length of an array.
@@ -26,6 +27,7 @@ declare namespace arrayp_ {
 declare function arrayLength_(arr: any): any;
 declare namespace arrayLength_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Copy an array.
@@ -33,6 +35,7 @@ declare namespace arrayLength_ {
 declare function arrayCopy_(arr: any): any;
 declare namespace arrayCopy_ {
     var fsource: (symbol | (symbol | symbol[][])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the first element of an array.
@@ -40,6 +43,7 @@ declare namespace arrayCopy_ {
 declare function arrayFirst_(arr: any): any;
 declare namespace arrayFirst_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the second element of an array.
@@ -47,6 +51,7 @@ declare namespace arrayFirst_ {
 declare function arraySecond_(arr: any): any;
 declare namespace arraySecond_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the third element of an array.
@@ -54,6 +59,7 @@ declare namespace arraySecond_ {
 declare function arrayThird_(arr: any): any;
 declare namespace arrayThird_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the fourth element of an array.
@@ -61,6 +67,7 @@ declare namespace arrayThird_ {
 declare function arrayFourth_(arr: any): any;
 declare namespace arrayFourth_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the fifth element of an array.
@@ -68,6 +75,7 @@ declare namespace arrayFourth_ {
 declare function arrayFifth_(arr: any): any;
 declare namespace arrayFifth_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the sixth element of an array.
@@ -75,6 +83,7 @@ declare namespace arrayFifth_ {
 declare function arraySixth_(arr: any): any;
 declare namespace arraySixth_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the seventh element of an array.
@@ -82,6 +91,7 @@ declare namespace arraySixth_ {
 declare function arraySeventh_(arr: any): any;
 declare namespace arraySeventh_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the eight element of an array.
@@ -89,6 +99,7 @@ declare namespace arraySeventh_ {
 declare function arrayEighth_(arr: any): any;
 declare namespace arrayEighth_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the ninth element of an array.
@@ -96,6 +107,7 @@ declare namespace arrayEighth_ {
 declare function arrayNinth_(arr: any): any;
 declare namespace arrayNinth_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the tenth element of an array.
@@ -103,6 +115,7 @@ declare namespace arrayNinth_ {
 declare function arrayTenth_(arr: any): any;
 declare namespace arrayTenth_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the last element of an array.
@@ -110,6 +123,7 @@ declare namespace arrayTenth_ {
 declare function arrayLast_(arr: any): any;
 declare namespace arrayLast_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the `n`-th element counting from
@@ -117,7 +131,8 @@ declare namespace arrayLast_ {
  */
 declare function arrayNlast_(arr: any, n: any): any;
 declare namespace arrayNlast_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Access the array element indicated by
@@ -134,6 +149,7 @@ declare namespace arrayNlast_ {
 declare function arrayRef_(arr: any, ...indices: any[]): any;
 declare namespace arrayRef_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the `i`-th element of the array.
@@ -143,6 +159,7 @@ declare namespace arrayRef_ {
 declare function arrayAt_(arr: any, i: any): any;
 declare namespace arrayAt_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Set an array position to a given value.
@@ -165,6 +182,7 @@ declare namespace arraySet_ {
 declare function arraySetX_(arr: any, ...indicesAndValue: any[]): any;
 declare namespace arraySetX_ {
     var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Take the `n` first elements from `arr`.
@@ -172,6 +190,7 @@ declare namespace arraySetX_ {
 declare function arrayTake_(arr: any, n: any): any;
 declare namespace arrayTake_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the tail of an array.
@@ -179,6 +198,7 @@ declare namespace arrayTake_ {
 declare function arrayRest_(arr: any): any;
 declare namespace arrayRest_ {
     var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
 }
 /**
  * Slice a JavaScript array.
@@ -186,6 +206,7 @@ declare namespace arrayRest_ {
 declare function arraySlice_(arr: any, ...args: any[]): any;
 declare namespace arraySlice_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the array obtained by dropping
@@ -194,6 +215,7 @@ declare namespace arraySlice_ {
 declare function arrayDrop_(arr: any, n: any): any;
 declare namespace arrayDrop_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Return the array obtained by dropping
@@ -202,6 +224,7 @@ declare namespace arrayDrop_ {
 declare function arrayDropRight_(arr: any, n: any): any;
 declare namespace arrayDropRight_ {
     var fsource: (symbol | (number | symbol | (symbol | symbol[] | undefined)[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Concatenate arrays.
@@ -209,6 +232,7 @@ declare namespace arrayDropRight_ {
 declare function arrayConcat_(...args: any[]): any;
 declare namespace arrayConcat_ {
     var fsource: (symbol | (symbol | (symbol | never[])[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Reverse the order of an array.
@@ -217,6 +241,7 @@ declare namespace arrayConcat_ {
 declare function arrayReverse_(arr: any): any;
 declare namespace arrayReverse_ {
     var fsource: (symbol | (symbol | symbol[])[])[];
+    var compilerMacro: any;
 }
 /**
  * Reverse the order of an array.
@@ -225,6 +250,7 @@ declare namespace arrayReverse_ {
 declare function arrayReverseX_(arr: any): any;
 declare namespace arrayReverseX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Pop an element off the beginning of an array.
@@ -232,6 +258,7 @@ declare namespace arrayReverseX_ {
 declare function arrayPopLeftX_(arr: any): any;
 declare namespace arrayPopLeftX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Pop an element off the end of an array.
@@ -239,6 +266,7 @@ declare namespace arrayPopLeftX_ {
 declare function arrayPopRightX_(arr: any): any;
 declare namespace arrayPopRightX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Push an element onto the beginning of an array.
@@ -246,6 +274,7 @@ declare namespace arrayPopRightX_ {
 declare function arrayPushLeftX_(arr: any, x: any): any;
 declare namespace arrayPushLeftX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 /**
  * Push an element onto the end of an array.
@@ -253,5 +282,6 @@ declare namespace arrayPushLeftX_ {
 declare function arrayPushRightX_(arr: any, x: any): any;
 declare namespace arrayPushRightX_ {
     var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
 }
 export { arrayRef_ as aget, arrayRef_ as aget_, arrayRef_ as aref, arraySet_ as arraySet, arraySet_ as aset, arraySet_ as aset_, arrayAt_, arrayConcat_, arrayCopy_, arrayDropRight_, arrayDrop_, arrayEighth_, arrayFifth_, arrayFirst_, arrayFourth_, arrayLast_, arrayLength_, arrayNinth_, arrayPopLeftX_, arrayPopRightX_, arrayPushLeftX_, arrayPushRightX_, arrayRef_, arrayRest_, arrayReverseX_, arrayReverse_, arraySecond_, arraySetX_, arraySet_, arraySeventh_, arraySixth_, arraySlice_, arrayTake_, arrayTenth_, arrayNlast_, arrayThird_, arrayp_ };

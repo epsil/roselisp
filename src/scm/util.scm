@@ -487,6 +487,153 @@
       (+ _ n)
       (send String fromCharCode _)))
 
+;;; Given a binary function expression, produce a new
+;;; function expression that flips the argument order.
+(define (flip-function-expression exp (x 'x) (y 'y))
+  (cond
+   ;; Function expression is a symbol:
+   ;; wrap it in a `lambda` form that reverses
+   ;; the order of application.
+   ((symbol? exp)
+    `(lambda (,y ,x)
+       (,exp ,x ,y)))
+   ;; Function expression is a `lambda` form:
+   ;; swap the two first arguments.
+   ((and (tagged-list? exp '(fn lambda js/function js/arrow))
+         (>= (length (second exp)) 2))
+    `(lambda (,(second (second exp))
+              ,(first (second exp))
+              ,@(drop (second exp) 2))
+       ,@(drop exp 2)))
+   ;; Function expression is a function call:
+   ;; pass it to a function that will
+   ;; swap the arguments.
+   (else
+    ;; Curried **C** combinator, also known as `flip`.
+    ;; Only the first argument is curried here, but
+    ;; otherwise, this behaves similarly to Haskell's
+    ;; `flip`.
+    (define C-exp
+      `(lambda (f)
+         (lambda (,y ,x)
+           (f ,x ,y))))
+    `(,C-exp ,exp))))
+
+;;; Parse a parameter list into regular parameters
+;;; and rest parameter, if any.
+(define (parse-params-list params)
+  (define regular-params '())
+  (define rest-param #u)
+  (cond
+   ((symbol? params)
+    (set! rest-param params))
+   ((dotted-list? params)
+    (set! regular-params (dotted-list-head params))
+    (set! rest-param (dotted-list-tail params)))
+   (else
+    (set! regular-params params)))
+  (values regular-params rest-param))
+
+;;; Convert a `(define ...)` expression to
+;;; a `(define-macro ...)` expression.
+(define (define->define-macro x (once-only #f))
+  (define name-and-params
+    (second x))
+  (define name
+    (car name-and-params))
+  (define params
+    (cdr name-and-params))
+  (define-values (regular-params rest-param)
+    (parse-params-list params))
+  (define macro-params
+    (append (map (lambda (x)
+                   (cond
+                    ((pair-or-list? x)
+                     (define param
+                       (first x))
+                     (define value
+                       (second x))
+                     (list param
+                           (if (self-evaluating? value)
+                               value
+                               `(quote ,value))))
+                    (else
+                     x)))
+                 regular-params)
+            (if rest-param
+                (list '&rest rest-param)
+                '())))
+  (define macro-name-and-params
+    (cons name macro-params))
+  (define params1
+    (append (map (lambda (x)
+                   (if (pair-or-list? x)
+                       (first x)
+                       x))
+                 regular-params)
+            (if rest-param
+                (list rest-param)
+                '())))
+  (define counts
+    (build-list (length params1)
+                (const 0)))
+  (define body-forms
+    (drop x 2))
+  (define macro-body-forms
+    (map-tree (lambda (x)
+                (cond
+                 ((symbol? x)
+                  (cond
+                   ((and rest-param
+                         (eq? x rest-param))
+                    (list 'list
+                          (list 'unquote-splicing x)))
+                   ((memq? x params1)
+                    (define idx
+                      (index-where
+                       params1
+                       (lambda (y)
+                         (eq? y x))))
+                    (when (>= idx 0)
+                      (define count
+                        (list-ref counts idx))
+                      (list-set! counts idx (+ count 1)))
+                    (list 'unquote x))
+                   (else
+                    x)))
+                 (else
+                  x)))
+              body-forms))
+  (define begin-form
+    (if (= (length macro-body-forms) 1)
+        (first macro-body-forms)
+        `(begin ,@macro-body-forms)))
+  (define quasiquote-form
+    (cond
+     ((atom? begin-form)
+      begin-form)
+     ((tagged-list? begin-form 'unquote)
+      (second begin-form))
+     (else
+      (list 'quasiquote begin-form))))
+  (define macro-body quasiquote-form)
+  (when once-only
+    (define names '())
+    (for ((i (range 0 (length counts))))
+      (define count
+        (list-ref counts i))
+      (when (> count 1)
+        (define param
+          (list-ref params1 i))
+        (push-right! names param)))
+    (when (> (length names) 0)
+      (define once-only-form
+        `(once-only* ,names
+                     ,quasiquote-form))
+      (set! macro-body once-only-form)))
+  `(define-macro ,macro-name-and-params
+     ,macro-body))
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
@@ -494,8 +641,10 @@
   begin-wrap-smart
   colon-form?
   count-tree
+  define->define-macro
   define-generic
   define-method
+  flip-function-expression
   form?
   kebab-case->camel-case
   kebab-case->snake-case
@@ -509,6 +658,7 @@
   map-set!
   map-tree
   number->letter
+  parse-params-list
   quasiquote?
   quote?
   tagged-list?

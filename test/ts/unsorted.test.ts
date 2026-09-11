@@ -1,7 +1,8 @@
 /**
- * # Various unsorted tests
+ * # Unsorted tests
  *
- * This file functions as an "inbox" for incoming tests.
+ * This file functions as an "inbox" for incoming tests, as well as
+ * an "outbox" for legacy tests that can be deleted.
  */
 
 import {
@@ -10,9 +11,60 @@ import {
   testMacro
 } from './test-util';
 
+import {
+  tcall,
+  trampoline
+} from '../../src/ts/unsorted';
+
 testMacro.ftype = 'macro';
 
 describe('To do', function (): any {
+});
+
+describe('Avoiding IIFEs', function (): any {
+  return xit('(compile \'(define x (begin y z)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')]]]], 'let y;\n' +
+      '\n' +
+      'let x = z;']);
+  });
+});
+
+describe('declare', function (): any {
+  return xit('(compile \'(begin (define (my-plus x y) (+ x y 0)) (declare my-plus (compiler-macro (macro (x y) `(+ ,x ,y)))) (define x (my-plus 1 2))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y'), 0]], [Symbol.for('declare'), Symbol.for('my-plus'), [Symbol.for('compiler-macro'), [Symbol.for('macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('my-plus'), 1, 2]]]]], 'function myPlus(x, y) {\n' +
+      '  return x + y + 0;\n' +
+      '}\n' +
+      '\n' +
+      'myPlus.compilerMacro = (() => {\n' +
+      '  let f = function (exp, env) {\n' +
+      '    let [x, y] = exp.slice(1);\n' +
+      '    return [Symbol.for(\'+\'), x, y];\n' +
+      '  };\n' +
+      '  f.ftype = \'macro\';\n' +
+      '  return f;\n' +
+      '})();\n' +
+      '\n' +
+      'let x = 1 + 2;']);
+  });
+});
+
+describe('define-subst', function (): any {
+  return xit('(compile \'(begin (define-subst (my-plus x y) (+ x y)) (define x (my-plus 1 2))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-subst'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('my-plus'), 1, 2]]]]], 'function myPlus(x, y) {\n' +
+      '  return x + y;\n' +
+      '}\n' +
+      '\n' +
+      'myPlus.compilerMacro = (() => {\n' +
+      '  let f = function (exp, env) {\n' +
+      '    let [x, y] = exp.slice(1);\n' +
+      '    return [Symbol.for(\'+\'), x, y];\n' +
+      '  };\n' +
+      '  f.ftype = \'macro\';\n' +
+      '  return f;\n' +
+      '})();\n' +
+      '\n' +
+      'let x = 1 + 2;']);
+  });
 });
 
 describe('sqrt', function (): any {
@@ -259,5 +311,99 @@ describe('Dotted lists', function (): any {
       'function normalizeList(x) {\n' +
       '  normalizeList1([1, Symbol.for(\'.\'), x);\n' +
       '}']);
+  });
+});
+
+describe('trampoline', function (): any {
+  it('(trampoline (fn (x) x) 1)', function (): any {
+    return assertEqual(trampoline(function (x: any): any {
+      return x;
+    }, 1), 1);
+  });
+  function add(x: any, y: any): any {
+    return x + y;
+  }
+  function fibonacci(n: any): any {
+    if (n < 2) {
+      return n;
+    } else {
+      return tcall(add, tcall(fibonacci, n - 1), tcall(fibonacci, n - 2));
+    }
+  }
+  it('(trampoline fibonacci 0)', function (): any {
+    return assertEqual(trampoline(fibonacci, 0), 0);
+  });
+  it('(trampoline fibonacci 1)', function (): any {
+    return assertEqual(trampoline(fibonacci, 1), 1);
+  });
+  it('(trampoline fibonacci 2)', function (): any {
+    return assertEqual(trampoline(fibonacci, 2), 1);
+  });
+  it('(trampoline fibonacci 3)', function (): any {
+    return assertEqual(trampoline(fibonacci, 3), 2);
+  });
+  it('(trampoline fibonacci 4)', function (): any {
+    return assertEqual(trampoline(fibonacci, 4), 3);
+  });
+  it('(trampoline fibonacci 5)', function (): any {
+    return assertEqual(trampoline(fibonacci, 5), 5);
+  });
+  it('(trampoline fibonacci 6)', function (): any {
+    return assertEqual(trampoline(fibonacci, 6), 8);
+  });
+  it('(trampoline fibonacci 7)', function (): any {
+    return assertEqual(trampoline(fibonacci, 7), 13);
+  });
+  it('(trampoline fibonacci 8)', function (): any {
+    return assertEqual(trampoline(fibonacci, 8), 21);
+  });
+  it('(trampoline fibonacci 9)', function (): any {
+    return assertEqual(trampoline(fibonacci, 9), 34);
+  });
+  it('(trampoline fibonacci 10)', function (): any {
+    return assertEqual(trampoline(fibonacci, 10), 55);
+  });
+  function sub(x: any, y: any): any {
+    return x - y;
+  }
+  function sequence(n: any): any {
+    if (n < 2) {
+      return n;
+    } else {
+      return tcall(sub, tcall(sequence, n - 1), tcall(sequence, n - 2));
+    }
+  }
+  it('(trampoline sequence 0)', function (): any {
+    return assertEqual(trampoline(sequence, 0), 0);
+  });
+  it('(trampoline sequence 1)', function (): any {
+    return assertEqual(trampoline(sequence, 1), 1);
+  });
+  it('(trampoline sequence 2)', function (): any {
+    return assertEqual(trampoline(sequence, 2), 1);
+  });
+  it('(trampoline sequence 3)', function (): any {
+    return assertEqual(trampoline(sequence, 3), 0);
+  });
+  it('(trampoline sequence 4)', function (): any {
+    return assertEqual(trampoline(sequence, 4), -1);
+  });
+  it('(trampoline sequence 5)', function (): any {
+    return assertEqual(trampoline(sequence, 5), -1);
+  });
+  it('(trampoline sequence 6)', function (): any {
+    return assertEqual(trampoline(sequence, 6), 0);
+  });
+  it('(trampoline sequence 7)', function (): any {
+    return assertEqual(trampoline(sequence, 7), 1);
+  });
+  it('(trampoline sequence 8)', function (): any {
+    return assertEqual(trampoline(sequence, 8), 1);
+  });
+  it('(trampoline sequence 9)', function (): any {
+    return assertEqual(trampoline(sequence, 9), 0);
+  });
+  return it('(trampoline sequence 10)', function (): any {
+    return assertEqual(trampoline(sequence, 10), -1);
   });
 });

@@ -26,12 +26,87 @@
                   syntax->datum
                   syntax?))
 
-;;; Parse a string of Lisp code and return an S-expression.
-(define (read input)
-  (read-sexp input))
+;;; Map of operator symbols.
+;;; Used by `parse-syntax`.
+(define operator-symbols
+  (make-hash
+   `(("'" . ,quote-sym_)
+     ("`" . ,quasiquote-sym_)
+     ("," . ,unquote-sym_)
+     (",@" . ,unquote-splicing-sym_))))
+
+;;; Map of literal symbols.
+;;; Used by `parse-syntax`.
+(define literal-values
+  (make-hash
+   `(("#f" . ,#f)
+     ("#t" . ,#t)
+     ("#n" . ,#n)
+     ("#u" . ,#u))))
+
+;;; Token class.
+(define-class Token ()
+  ;;; The type of the token.
+  (define/public tag)
+
+  ;;; The value of the token.
+  (define/public value)
+
+  ;;; Make a token.
+  (define/public (constructor (value #u) (tag "token"))
+    (send this set-value value)
+    (send this set-tag tag))
+
+  ;;; Get the token tag
+  ;;; (i.e., its type).
+  (define/public (get-tag)
+    (get-field tag this))
+
+  ;;; Get the value of the token.
+  (define/public (get-value)
+    (get-field value this))
+
+  ;;; Set the token tag
+  ;;; (i.e., its type).
+  (define/public (set-tag tag)
+    (set-field! tag this tag))
+
+  ;;; Set the value of the token.
+  (define/public (set-value value)
+    (set-field! value this value)))
+
+;;; Token class for representing comments.
+(define-class CommentToken (Token)
+  (define/public (constructor value (tag "comment"))
+    (super value tag)))
+
+;;; Token class for representing leading comments.
+(define-class LeadingCommentToken (CommentToken)
+  (define/public (constructor value)
+    (super value "leading-comment")))
+
+;;; Token class for representing trailing comments.
+(define-class TrailingCommentToken (CommentToken)
+  (define/public (constructor value)
+    (super value "trailing-comment")))
+
+;;; Token class for representing numbers.
+(define-class NumberToken (Token)
+  (define/public (constructor value)
+    (super value "number")))
+
+;;; Token class for representing strings.
+(define-class StringToken (Token)
+  (define/public (constructor value)
+    (super value "string")))
+
+;;; Token class for representing symbols.
+(define-class SymbolToken (Token)
+  (define/public (constructor value)
+    (super value "symbol")))
 
 ;;; Parse a string of Lisp code and return an S-expression.
-(define (read-sexp str (options (js/obj)))
+(define (read str (options (js/obj)))
   (~> str
       (read-syntax _ options)
       (syntax->datum _)))
@@ -71,160 +146,161 @@
   (define result '())
   (define state "start")
   (while (not (eq? state "stop"))
-    (cond
-     ((eq? state "start")
-      (set! state
-            (if (= len 0)
-                "stop"
-                "read")))
-     ((eq? state "read")
-      (cond
-       ((>= pos len)
-        (set! state "stop"))
-       (else
-        (set! char (list-ref str pos))
-        (cond
-         ((whitespace? char)
-          (set! pos (+ pos 1)))
-         ((eq? char "(")
-          (push-right! result (new SymbolToken char))
-          (set! pos (+ pos 1)))
-         ((eq? char ")")
-          (push-right! result (new SymbolToken char))
-          (set! pos (+ pos 1)))
-         ((eq? char "|")
-          (set! state "pipe")
-          (set! pos (+ pos 1)))
-         ((eq? char "\"")
-          (set! state "string")
-          (set! pos (+ pos 1)))
-         ((comment? char)
-          (set! state "comment"))
-         ((eq? char "'")
-          (push-right! result (new SymbolToken char))
-          (set! pos (+ pos 1)))
-         ((eq? char "`")
-          (push-right! result (new SymbolToken char))
-          (set! pos (+ pos 1)))
-         ((eq? char ",")
-          (cond
-           ((and (< pos len)
-                 (eq? (list-ref str (+ pos 1)) "@"))
-            (define next-token
-              (list-ref str (+ pos 1)))
-            (push-right! result
-                         (new SymbolToken
-                              (string-append
-                               char next-token)))
-            (set! pos (+ pos 2)))
-           (else
+    (case state
+      (("start")
+       (set! state "read"))
+      (("read")
+       (cond
+        ((>= pos len)
+         (set! state "stop"))
+        (else
+         (set! char (list-ref str pos))
+         (match char
+           ((? whitespace?)
+            (set! pos (+ pos 1)))
+           ("("
             (push-right! result (new SymbolToken char))
-            (set! pos (+ pos 1)))))
-         (else
-          (set! state "symbol"))))))
-     ((eq? state "symbol")
-      (set! char (list-ref str pos))
-      (cond
-       ((or (>= pos len)
-            (regexp-match (regexp "\\s") char)
-            (eq? char ")"))
-        (define num
-          (parse-float buffer))
-        (if (not (is-NaN num))
-            (push-right! result (new NumberToken num))
-            (push-right! result (new SymbolToken buffer)))
-        (set! buffer "")
-        (set! state "read"))
-       ((eq? char "\\")
-        (set! char (list-ref str (+ pos 1)))
-        (set! buffer (string-append buffer char))
-        (set! pos (+ pos 2)))
-       (else
-        (set! buffer (string-append buffer char))
-        (set! pos (+ pos 1)))))
-     ((eq? state "pipe")
-      (cond
-       ((>= pos len)
-        (push-right! result (new SymbolToken buffer))
-        (set! buffer "")
-        (set! state "read"))
-       (else
-        (set! char (list-ref str pos))
-        (cond
-         ((eq? char "|")
-          (set! pos (+ pos 1))
-          (push-right! result (new SymbolToken buffer))
-          (set! buffer "")
-          (set! state "read"))
-         (else
-          (set! buffer (string-append buffer char))
-          (set! pos (+ pos 1)))))))
-     ((eq? state "string")
-      (cond
-       ((>= pos len)
-        (push-right! result (new StringToken buffer))
-        (set! buffer "")
-        (set! state "read"))
-       (else
-        (set! char (list-ref str pos))
-        (cond
-         ((eq? char "\\")
-          (cond
-           ((< pos len)
-            (define next-token
-              (list-ref str (+ pos 1)))
+            (set! pos (+ pos 1)))
+           (")"
+            (push-right! result (new SymbolToken char))
+            (set! pos (+ pos 1)))
+           ("|"
+            (set! state "pipe")
+            (set! pos (+ pos 1)))
+           ("\""
+            (set! state "string")
+            (set! pos (+ pos 1)))
+           ((? comment?)
+            (set! state "comment"))
+           ("'"
+            (push-right! result (new SymbolToken char))
+            (set! pos (+ pos 1)))
+           ("`"
+            (push-right! result (new SymbolToken char))
+            (set! pos (+ pos 1)))
+           (","
             (cond
-             ((eq? next-token "n")
-              (set! buffer (string-append buffer "\n")))
-             ((eq? next-token "t")
-              (set! buffer (string-append buffer "\t")))
-             ((eq? next-token "r")
-              (set! buffer (string-append buffer "\r")))
+             ((and (< pos len)
+                   (eq? (list-ref str (+ pos 1)) "@"))
+              (define next-token
+                (list-ref str (+ pos 1)))
+              (push-right! result
+                           (new SymbolToken
+                                (string-append
+                                 char next-token)))
+              (set! pos (+ pos 2)))
              (else
-              (set! buffer (string-append buffer next-token))))
-            (set! pos (+ pos 2)))
+              (push-right! result (new SymbolToken char))
+              (set! pos (+ pos 1)))))
+           (_
+            (set! state "symbol"))))))
+      (("symbol")
+       (set! char (list-ref str pos))
+       (cond
+        ((or (>= pos len)
+             (whitespace? char)
+             (eq? char ")"))
+         (define num
+           (string->number buffer))
+         (cond
+          ((number? num)
+           (push-right! result (new NumberToken num)))
+          (else
+           (push-right! result (new SymbolToken buffer))))
+         (set! buffer "")
+         (set! state "read"))
+        ((escape? char)
+         (set! char (list-ref str (+ pos 1)))
+         (set! buffer (string-append buffer char))
+         (set! pos (+ pos 2)))
+        (else
+         (set! buffer (string-append buffer char))
+         (set! pos (+ pos 1)))))
+      (("pipe")
+       (cond
+        ((>= pos len)
+         (push-right! result (new SymbolToken buffer))
+         (set! buffer "")
+         (set! state "read"))
+        (else
+         (set! char (list-ref str pos))
+         (case char
+           (("|")
+            (set! pos (+ pos 1))
+            (push-right! result (new SymbolToken buffer))
+            (set! buffer "")
+            (set! state "read"))
            (else
-            (set! pos (+ pos 1)))))
-         ((eq? char "\"")
-          (set! pos (+ pos 1))
-          (push-right! result (new StringToken buffer))
-          (set! buffer "")
-          (set! state "read"))
-         (else
-          (set! buffer (string-append buffer char))
-          (set! pos (+ pos 1)))))))
-     ((eq? state "comment")
-      (set! char (list-ref str pos))
-      (cond
-       ((>= pos len)
-        (when comments
-          (push-right! result
-                       (new LeadingCommentToken
-                            (remove-indentation buffer))))
-        (set! buffer "")
-        (set! state "stop"))
-       ((eq? char "\n")
-        (while (and (eq? char "\n")
-                    (< pos len))
-          (set! buffer (string-append buffer char))
-          (set! pos (+ pos 1))
-          (set! char (list-ref str pos)))
-        ;; Skip past indentation on the next line and see if there
-        ;; is another leading comment; if so, merge it into this.
-        (while (indentation? char)
-          (set! pos (+ pos 1))
-          (set! char (list-ref str pos)))
-        (unless (comment? char)
-          ;; Exit `comment` state.
-          (when comments
-            (push-right! result
-                         (new LeadingCommentToken
-                              (remove-indentation buffer))))
-          (set! buffer "")
-          (set! state "read")))
-       (else
-        (set! buffer (string-append buffer char))
-        (set! pos (+ pos 1)))))))
+            (set! buffer (string-append buffer char))
+            (set! pos (+ pos 1)))))))
+      (("string")
+       (cond
+        ((>= pos len)
+         (push-right! result (new StringToken buffer))
+         (set! buffer "")
+         (set! state "read"))
+        (else
+         (set! char (list-ref str pos))
+         (case char
+           (("\\")
+            (cond
+             ((< pos len)
+              (define next-token
+                (list-ref str (+ pos 1)))
+              (case next-token
+                (("n")
+                 (set! buffer (string-append buffer "\n")))
+                (("t")
+                 (set! buffer (string-append buffer "\t")))
+                (("r")
+                 (set! buffer (string-append buffer "\r")))
+                (else
+                 (set! buffer (string-append buffer next-token))))
+              (set! pos (+ pos 2)))
+             (else
+              (set! pos (+ pos 1)))))
+           (("\"")
+            (set! pos (+ pos 1))
+            (push-right! result (new StringToken buffer))
+            (set! buffer "")
+            (set! state "read"))
+           (else
+            (set! buffer (string-append buffer char))
+            (set! pos (+ pos 1)))))))
+      (("comment")
+       (set! char (list-ref str pos))
+       (cond
+        ((>= pos len)
+         (when comments
+           (push-right! result
+                        (new LeadingCommentToken
+                             (remove-indentation buffer))))
+         (set! buffer "")
+         (set! state "stop"))
+        ((newline? char)
+         (while (and (eq? char "\n")
+                     (< pos len))
+           (set! buffer (string-append buffer char))
+           (set! pos (+ pos 1))
+           (set! char (list-ref str pos)))
+         ;; Skip past indentation on the next line and see if there
+         ;; is another leading comment; if so, merge it into this.
+         (while (indentation? char)
+           (set! pos (+ pos 1))
+           (set! char (list-ref str pos)))
+         (unless (comment? char)
+           ;; Exit `comment` state.
+           (when comments
+             (push-right! result
+                          (new LeadingCommentToken
+                               (remove-indentation buffer))))
+           (set! buffer "")
+           (set! state "read")))
+        (else
+         (set! buffer (string-append buffer char))
+         (set! pos (+ pos 1)))))
+      (else
+       (set! state "stop"))))
   result)
 
 ;;; Take the array of tokens produced by `tokenize` and make a
@@ -397,8 +473,10 @@
         (update! exp node))
        ;; Symbolic value.
        (else
-        (set! exp (string->symbol
-                   (send token get-value)))
+        (set! exp
+              (~> (send token get-value)
+                  (regexp-replace (regexp "^#") _ "")
+                  (string->symbol _)))
         (set!-values (node comments)
                      (attach-comments exp comments options))
         (update! exp node))))
@@ -415,7 +493,7 @@
 ;;;
 ;;; The output of this function is a fully valid S-expression which
 ;;; can be evaluated in a Lisp environment.
-(define (parse-sexp tokens (options (js/obj)))
+(define (parse tokens (options (js/obj)))
   (~> tokens
       (parse-syntax _ options)
       (syntax->datum _)))
@@ -426,16 +504,16 @@
                   str
                   ""))
 
+;;; Whether a character is whitespace
+;;; (i.e., tabs, spaces or newlines).
+(define (whitespace? char)
+  (regexp-match (regexp "^\\s$") char))
+
 ;;; Whether a character is indentation
 ;;; (i.e., tabs or spaces, but not newlines).
 (define (indentation? char)
   ;; Newlines are whitespace, but not indentation.
   (regexp-match (regexp "^[^\\S\\r\\n]+$") char))
-
-;;; Whether a character is whitespace
-;;; (i.e., tabs, spaces or newlines).
-(define (whitespace? char)
-  (regexp-match (regexp "^\\s$") char))
 
 ;;; Whether a character is a newline.
 ;;;
@@ -451,6 +529,11 @@
 ;;; (i.e., `;`).
 (define (comment? char)
   (eq? char ";"))
+
+;;; Whether a character is an escaping character
+;;; (i.e., `\`).
+(define (escape? char)
+  (eq? char "\\"))
 
 ;;; Attach comments to a syntax object, conditional on options.
 ;;; Returns the resulting node and an empty list of comments.
@@ -488,88 +571,9 @@
 (define (comment-level? comment level)
   (= (get-comment-level comment) level))
 
-;;; Map of operator symbols.
-;;; Used by `parse-syntax`.
-(define operator-symbols
-  (make-hash
-   `(("'" . ,quote-sym_)
-     ("`" . ,quasiquote-sym_)
-     ("," . ,unquote-sym_)
-     (",@" . ,unquote-splicing-sym_))))
-
-;;; Map of literal symbols.
-;;; Used by `parse-syntax`.
-(define literal-values
-  (make-hash
-   `(("#f" . ,#f)
-     ("#t" . ,#t)
-     ("#n" . ,#n)
-     ("#u" . ,#u))))
-
-;;; Token class.
-(define-class Token ()
-  ;;; The type of the token.
-  (define/public tag)
-
-  ;;; The value of the token.
-  (define/public value)
-
-  ;;; Make a token.
-  (define/public (constructor (value #u) (tag "token"))
-    (send this set-value value)
-    (send this set-tag tag))
-
-  ;;; Get the token tag
-  ;;; (i.e., its type).
-  (define/public (get-tag)
-    (get-field tag this))
-
-  ;;; Get the value of the token.
-  (define/public (get-value)
-    (get-field value this))
-
-  ;;; Set the token tag
-  ;;; (i.e., its type).
-  (define/public (set-tag tag)
-    (set-field! tag this tag))
-
-  ;;; Set the value of the token.
-  (define/public (set-value value)
-    (set-field! value this value)))
-
-;;; Token class for representing comments.
-(define-class CommentToken (Token)
-  (define/public (constructor value (tag "comment"))
-    (super value tag)))
-
-;;; Token class for representing leading comments.
-(define-class LeadingCommentToken (CommentToken)
-  (define/public (constructor value)
-    (super value "leading-comment")))
-
-;;; Token class for representing trailing comments.
-(define-class TrailingCommentToken (CommentToken)
-  (define/public (constructor value)
-    (super value "trailing-comment")))
-
-;;; Token class for representing numbers.
-(define-class NumberToken (Token)
-  (define/public (constructor value)
-    (super value "number")))
-
-;;; Token class for representing strings.
-(define-class StringToken (Token)
-  (define/public (constructor value)
-    (super value "string")))
-
-;;; Token class for representing symbols.
-(define-class SymbolToken (Token)
-  (define/public (constructor value)
-    (super value "symbol")))
-
 (provide
-  (rename-out (parse-syntax parse-rose))
-  (rename-out (read-syntax read-rose))
+  (rename-out (parse parse-sexp))
+  (rename-out (read read-sexp))
   CommentToken
   LeadingCommentToken
   NumberToken
@@ -579,9 +583,8 @@
   TrailingCommentToken
   comment-level?
   get-comment-level
-  parse-sexp
+  parse
   parse-syntax
   read
-  read-sexp
   read-syntax
   tokenize)

@@ -1,5 +1,33 @@
 "use strict";
 // SPDX-License-Identifier: MPL-2.0
+// inline-lisp-sources: true
+/**
+ * # Unsorted code
+ *
+ * This file functions as an "inbox" or scratchpad for new code, as
+ * well as an "outbox" for legacy code that is not needed anymore and
+ * may be deleted.
+ *
+ * ## License
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.trampoline = exports.tcall = exports.TrampolineCall = exports.Trampoline = exports.trampolineRun = exports.runTrampoline = exports.trampolineCall = exports.tCall = void 0;
+/**
+ * Indent a string by prepending each line with `n` spaces.
+ */
+function indentString(str, n = 2, options = {}) {
+    const whitespaceOption = options['whitespace'];
+    const whitespace = whitespaceOption || ' ';
+    const includeEmptyLinesOption = options['includeEmptyLines'];
+    const pattern = includeEmptyLinesOption ? new RegExp('^', 'gm') : new RegExp('^(?!s*$)', 'gm');
+    const indentation = whitespace.repeat(n);
+    return str.replace(pattern, indentation);
+}
+indentString.fsource = [Symbol.for('define'), [Symbol.for('indent-string'), Symbol.for('str'), [Symbol.for('n'), 2], [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('whitespace-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':whitespace')]], [Symbol.for('define'), Symbol.for('whitespace'), [Symbol.for('or'), Symbol.for('whitespace-option'), ' ']], [Symbol.for('define'), Symbol.for('include-empty-lines-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':include-empty-lines')]], [Symbol.for('define'), Symbol.for('pattern'), [Symbol.for('if'), Symbol.for('include-empty-lines-option'), [Symbol.for('regexp'), '^', 'gm'], [Symbol.for('regexp'), '^(?!s*$)', 'gm']]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), Symbol.for('whitespace'), Symbol.for('n')]], [Symbol.for('regexp-replace'), Symbol.for('pattern'), Symbol.for('str'), Symbol.for('indentation')]];
 /**
  * # Trampoline
  *
@@ -128,8 +156,6 @@
  * [blog:Bendersky17]: https://eli.thegreenplace.net/2017/on-recursion-continuations-and-trampolines/
  * [blog:Bond22]: https://tkurtbond.github.io/posts/2022/06/14/lisp-style-trampolines-in-common-lisp-c-ada-oberon-2-and-revised-oberon/
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.trampoline = exports.tcall = exports.TrampolineCall = exports.Trampoline = exports.trampolineRun = exports.runTrampoline = exports.trampolineCall = exports.tCall = void 0;
 /**
  * Trampoline class.
  *
@@ -267,6 +293,7 @@ class Trampoline {
                 return exp;
             }
         }
+        f.fsource = [Symbol.for('define'), [Symbol.for('f'), Symbol.for('exp')], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('exp'), Symbol.for('TrampolineCall')], [Symbol.for('push-right!'), Symbol.for('nested-calls'), Symbol.for('exp')], [Symbol.for('get-field'), Symbol.for('value-symbol'), Symbol.for('tramp')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('get-field'), Symbol.for('value-symbol'), Symbol.for('tramp')]], [Symbol.for('send'), Symbol.for('tramp'), Symbol.for('pop-value')]], [Symbol.for('else'), Symbol.for('exp')]]];
         const call1 = call.mapRight(f);
         if (nestedCalls.length > 0) {
             tramp.pushCall(call1);
@@ -410,6 +437,7 @@ function trampoline(f, ...args) {
 exports.runTrampoline = trampoline;
 exports.trampolineRun = trampoline;
 exports.trampoline = trampoline;
+trampoline.fsource = [Symbol.for('define'), [Symbol.for('trampoline'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('trampoline-instance'), [Symbol.for('apply'), Symbol.for('new'), Symbol.for('Trampoline'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('send'), Symbol.for('trampoline-instance'), Symbol.for('run')]];
 /**
  * Create a trampolined function call.
  */
@@ -419,3 +447,4 @@ function tcall(f, ...args) {
 exports.tCall = tcall;
 exports.trampolineCall = tcall;
 exports.tcall = tcall;
+tcall.fsource = [Symbol.for('define'), [Symbol.for('tcall'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('new'), Symbol.for('TrampolineCall'), Symbol.for('f'), Symbol.for('args')]];

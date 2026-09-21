@@ -265,8 +265,16 @@
                      ,arr))))
 
 ;;; Sort an array with a comparator.
-(define-inline (array-sort_ arr (comp #u))
+(define (array-sort_ arr (comp #u))
   (send arr sort comp))
+
+;;; Compiler macro for `(array-sort ...)` expressions.
+(define-compiler-macro (array-sort_ arr (comp #u))
+  (cond
+   (comp
+    `(send ,arr sort ,comp))
+   (else
+    `(send ,arr sort))))
 
 (provide
   (rename-out (array-ref_ aget))

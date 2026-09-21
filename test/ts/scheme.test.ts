@@ -3845,11 +3845,17 @@ describe('filter', function (): any {
 });
 
 describe('sort', function (): any {
+  it('(sort \'(4 3 2 1))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]]], [Symbol.for('quote'), [1, 2, 3, 4]]]);
+  });
   it('(sort \'(4 3 2 1) (lambda (x y) (< x y)))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('<'), Symbol.for('x'), Symbol.for('y')]]], [Symbol.for('quote'), [1, 2, 3, 4]]]);
   });
   it('(sort \'(4 3 2 1) <)', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]], Symbol.for('<')], [Symbol.for('quote'), [1, 2, 3, 4]]]);
+  });
+  it('(compile \'(sort \'(4 3 2 1)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]]]]], '[4, 3, 2, 1].sort();']);
   });
   it('(compile \'(sort \'(4 3 2 1) <))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]], Symbol.for('<')]]], '[4, 3, 2, 1].sort(function (x, y) {\n' +

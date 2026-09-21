@@ -1469,7 +1469,7 @@ filter_.fsource = [Symbol.for('define'), [Symbol.for('filter_'), Symbol.for('pre
 
 filter_.compilerMacro = ((): any => {
   const f: any = function (exp: any, env: any): any {
-    const [pred, lst]: any[] = exp.slice(1);
+    let [pred, lst]: any[] = exp.slice(1);
     return [Symbol.for('send'), lst, Symbol.for('filter'), pred];
   };
   f.ftype = 'macro';
@@ -1632,28 +1632,38 @@ abs_.compilerMacro = ((): any => {
 /**
  * Sort a list with a predicate.
  */
-function sort_(lst: any, pred: any): any {
-  return lst.sort(function (x: any, y: any): any {
+function sort_(lst: any, pred: any = undefined): any {
+  return lst.sort(pred ? (function (x: any, y: any): any {
     if (pred(x, y)) {
       return -1;
     } else {
       return 1;
     }
-  });
+  }) : undefined);
 }
 
-sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), Symbol.for('pred')], [Symbol.for('array-sort'), Symbol.for('lst'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]]]];
+sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), [Symbol.for('pred'), undefined]], [Symbol.for('array-sort'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('pred'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]], undefined]]];
 
+/**
+ * Compiler macro for `(sort ...)` expressions.
+ */
 sort_.compilerMacro = ((): any => {
   const f: any = function (exp: any, env: any): any {
-    const [lst, pred]: any[] = exp.slice(1);
-    if (!(Array.isArray(pred) && (pred.length > 0))) {
-      return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
-    } else {
-      const pred1: any = Symbol('pred');
-      return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => {
+    let [lst, pred]: any[] = exp.slice(1);
+    if (pred === undefined) {
+      pred = undefined;
+    }
+    if (pred) {
+      if (!(Array.isArray(pred) && (pred.length > 0))) {
         return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
-      })(pred1)];
+      } else {
+        const pred1: any = Symbol('pred');
+        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => {
+          return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
+        })(pred1)];
+      }
+    } else {
+      return [Symbol.for('array-sort'), lst];
     }
   };
   f.ftype = 'macro';

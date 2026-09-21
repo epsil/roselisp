@@ -651,13 +651,21 @@ function arraySort_(arr, comp = undefined) {
 }
 exports.arraySort_ = arraySort_;
 arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+/**
+ * Compiler macro for `(array-sort ...)` expressions.
+ */
 arraySort_.compilerMacro = (() => {
     const f = function (exp, env) {
         let [arr, comp] = exp.slice(1);
         if (comp === undefined) {
             comp = undefined;
         }
-        return [Symbol.for('send'), arr, Symbol.for('sort'), comp];
+        if (comp) {
+            return [Symbol.for('send'), arr, Symbol.for('sort'), comp];
+        }
+        else {
+            return [Symbol.for('send'), arr, Symbol.for('sort')];
+        }
     };
     f.ftype = 'macro';
     return f;

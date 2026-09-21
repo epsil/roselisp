@@ -3663,12 +3663,16 @@ reverse(lst);"
  "lst.filter(f);"
 
  :describe "sort"
+ > (sort '(4 3 2 1))
+ '(1 2 3 4)
  > (sort '(4 3 2 1)
          (lambda (x y)
            (< x y)))
  '(1 2 3 4)
  > (sort '(4 3 2 1) <)
  '(1 2 3 4)
+ > (compile '(sort '(4 3 2 1)))
+ "[4, 3, 2, 1].sort();"
  > (compile '(sort '(4 3 2 1) <))
  "[4, 3, 2, 1].sort(function (x, y) {
   return (x < y) ? -1 : 1;

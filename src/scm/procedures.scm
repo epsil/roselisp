@@ -831,21 +831,28 @@
   (js/abs x))
 
 ;;; Sort a list with a predicate.
-(define (sort_ lst pred)
+(define (sort_ lst (pred #u))
   (array-sort lst
-              (lambda (x y)
-                (if (pred x y)
-                    -1
-                    1))))
-
-(define-compiler-macro (sort_ lst pred)
-  (once-only*
-   (pred)
-   `(array-sort ,lst
-                (lambda (x y)
-                  (js/? (,pred x y)
+              (if pred
+                  (lambda (x y)
+                    (if (pred x y)
                         -1
-                        1)))))
+                        1))
+                  #u)))
+
+;;; Compiler macro for `(sort ...)` expressions.
+(define-compiler-macro (sort_ lst (pred #u))
+  (cond
+   (pred
+    (once-only*
+     (pred)
+     `(array-sort ,lst
+                  (lambda (x y)
+                    (js/? (,pred x y)
+                          -1
+                          1)))))
+   (else
+    `(array-sort ,lst))))
 
 (provide
   (rename-out (add1_ add1))

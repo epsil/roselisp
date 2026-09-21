@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayp_ = exports.arrayThird_ = exports.arrayNlast_ = exports.arrayTenth_ = exports.arrayTake_ = exports.arraySlice_ = exports.arraySixth_ = exports.arraySeventh_ = exports.arraySet_ = exports.arraySetX_ = exports.arraySecond_ = exports.arrayReverse_ = exports.arrayReverseX_ = exports.arrayRest_ = exports.arrayRef_ = exports.arrayPushRightX_ = exports.arrayPushLeftX_ = exports.arrayPopRightX_ = exports.arrayPopLeftX_ = exports.arrayNinth_ = exports.arrayLength_ = exports.arrayLast_ = exports.arrayFourth_ = exports.arrayFirst_ = exports.arrayFifth_ = exports.arrayEighth_ = exports.arrayDrop_ = exports.arrayDropRight_ = exports.arrayCopy_ = exports.arrayConcat_ = exports.arrayAt_ = exports.aset_ = exports.aset = exports.arraySet = exports.aref = exports.aget_ = exports.aget = void 0;
+exports.arrayp_ = exports.arrayThird_ = exports.arrayTenth_ = exports.arrayTake_ = exports.arraySort_ = exports.arraySlice_ = exports.arraySixth_ = exports.arraySeventh_ = exports.arraySet_ = exports.arraySetX_ = exports.arraySecond_ = exports.arrayReverse_ = exports.arrayReverseX_ = exports.arrayRest_ = exports.arrayRef_ = exports.arrayPushRightX_ = exports.arrayPushLeftX_ = exports.arrayPopRightX_ = exports.arrayPopLeftX_ = exports.arrayNlast_ = exports.arrayNinth_ = exports.arrayLength_ = exports.arrayLast_ = exports.arrayFourth_ = exports.arrayFirst_ = exports.arrayFifth_ = exports.arrayEighth_ = exports.arrayDrop_ = exports.arrayDropRight_ = exports.arrayCopy_ = exports.arrayConcat_ = exports.arrayAt_ = exports.aset_ = exports.aset = exports.arraySet = exports.aref = exports.aget_ = exports.aget = void 0;
 /**
  * Whether something is an array.
  */
@@ -639,6 +639,25 @@ arrayPushRightX_.compilerMacro = (() => {
                         return [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('push'), x], arr];
                     })(arr1)];
             })(Symbol('arr'))];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
+ * Sort an array with a comparator.
+ */
+function arraySort_(arr, comp = undefined) {
+    return arr.sort(comp);
+}
+exports.arraySort_ = arraySort_;
+arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+arraySort_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        let [arr, comp] = exp.slice(1);
+        if (comp === undefined) {
+            comp = undefined;
+        }
+        return [Symbol.for('send'), arr, Symbol.for('sort'), comp];
     };
     f.ftype = 'macro';
     return f;

@@ -181,6 +181,9 @@ describe('define->define-macro', function (): any {
   it('(define->define-macro \'(define (foo x) (bar x) (baz x)) #t)', function (): any {
     return assertEqual(defineToDefineMacro([Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('bar'), Symbol.for('x')], [Symbol.for('baz'), Symbol.for('x')]], true), [Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('once-only*'), [Symbol.for('x')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('bar'), [Symbol.for('unquote'), Symbol.for('x')]], [Symbol.for('baz'), [Symbol.for('unquote'), Symbol.for('x')]]]]]]);
   });
+  it('(define->define-macro \'(define (foo x) (lambda () (baz x))) #t)', function (): any {
+    return assertEqual(defineToDefineMacro([Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('lambda'), [], [Symbol.for('baz'), Symbol.for('x')]]], true), [Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('once-only*'), [Symbol.for('x')], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [], [Symbol.for('baz'), [Symbol.for('unquote'), Symbol.for('x')]]]]]]);
+  });
   return it('(define->define-macro \'(define (foo x) (bar x)) #t)', function (): any {
     return assertEqual(defineToDefineMacro([Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('bar'), Symbol.for('x')]], true), [Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('quasiquote'), [Symbol.for('bar'), [Symbol.for('unquote'), Symbol.for('x')]]]]);
   });

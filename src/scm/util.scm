@@ -326,15 +326,21 @@
   `(let* ,bindings
      ,@body))
 
-;;; Map a function over a tree.
+;;; Map a function `f` over a tree `x`.
+;;;
+;;; `f` is called with two arguments: the current element
+;;; and a stack of parent elements.
 (define (map-tree f x)
-  (cond
-   ((pair-or-list? x)
-    (map (lambda (x1)
-           (map-tree f x1))
-         x))
-   (else
-    (f x))))
+  (define (map-tree-helper f x s)
+    (cond
+     ((pair-or-list? x)
+      (let ((s1 (cons x s)))
+        (map (lambda (x1)
+               (map-tree-helper f x1 s1))
+             x)))
+     (else
+      (f x s))))
+  (map-tree-helper f x '()))
 
 ;;; Count the number of occurrences in a tree
 ;;; of elements matching the predicate `f`.
@@ -579,8 +585,25 @@
                 (const 0)))
   (define body-forms
     (drop x 2))
+  ;; Whether we are inside of a repeatable expression.
+  (define (repeatable? s)
+    (define repeatables
+      '(js/for
+        js/for-in
+        js/for-of
+        js/while
+        js/arrow
+        js/function
+        for
+        while
+        fn
+        lambda))
+    (for ((x s))
+      (when (tagged-list? x repeatables)
+        (return #t)))
+    #f)
   (define macro-body-forms
-    (map-tree (lambda (x)
+    (map-tree (lambda (x s)
                 (cond
                  ((symbol? x)
                   (cond
@@ -597,7 +620,10 @@
                     (when (>= idx 0)
                       (define count
                         (list-ref counts idx))
-                      (list-set! counts idx (+ count 1)))
+                      (define increment 1)
+                      (when (repeatable? s)
+                        (set! increment 2))
+                      (list-set! counts idx (+ count increment)))
                     (list 'unquote x))
                    (else
                     x)))

@@ -3662,6 +3662,24 @@ reverse(lst);"
  > (compile '(filter f lst))
  "lst.filter(f);"
 
+ :describe "sort"
+ > (sort '(4 3 2 1)
+         (lambda (x y)
+           (< x y)))
+ '(1 2 3 4)
+ > (sort '(4 3 2 1) <)
+ '(1 2 3 4)
+ > (compile '(sort '(4 3 2 1) <))
+ "[4, 3, 2, 1].sort(function (x, y) {
+  return (x < y) ? -1 : 1;
+});"
+ > (compile '(sort '(4 3 2 1) (foo)))
+ "let pred = foo();
+
+[4, 3, 2, 1].sort(function (x, y) {
+  return pred(x, y) ? -1 : 1;
+});"
+
  :describe "string?"
  > (string? "foo")
  #t

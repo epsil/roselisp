@@ -689,6 +689,27 @@ arrayPushRightX_.compilerMacro = ((): any => {
   return f;
 })();
 
+/**
+ * Sort an array with a comparator.
+ */
+function arraySort_(arr: any, comp: any = undefined): any {
+  return arr.sort(comp);
+}
+
+arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+
+arraySort_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    let [arr, comp]: any[] = exp.slice(1);
+    if (comp === undefined) {
+      comp = undefined;
+    }
+    return [Symbol.for('send'), arr, Symbol.for('sort'), comp];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 export {
   arrayRef_ as aget,
   arrayRef_ as aget_,
@@ -708,6 +729,7 @@ export {
   arrayLast_,
   arrayLength_,
   arrayNinth_,
+  arrayNlast_,
   arrayPopLeftX_,
   arrayPopRightX_,
   arrayPushLeftX_,
@@ -722,9 +744,9 @@ export {
   arraySeventh_,
   arraySixth_,
   arraySlice_,
+  arraySort_,
   arrayTake_,
   arrayTenth_,
-  arrayNlast_,
   arrayThird_,
   arrayp_
 };

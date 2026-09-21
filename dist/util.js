@@ -383,17 +383,24 @@ function lambdaToLet(lambdaExp, args) {
 }
 exports.lambdaToLet = lambdaToLet;
 /**
- * Map a function over a tree.
+ * Map a function `f` over a tree `x`.
+ *
+ * `f` is called with two arguments: the current element
+ * and a stack of parent elements.
  */
 function mapTree(f, x) {
-    if (Array.isArray(x)) {
-        return x.map(function (x1) {
-            return mapTree(f, x1);
-        });
+    function mapTreeHelper(f, x, s) {
+        if (Array.isArray(x)) {
+            const s1 = [x, ...(Array.isArray(s) ? s : [Symbol.for('.'), s])];
+            return x.map(function (x1) {
+                return mapTreeHelper(f, x1, s1);
+            });
+        }
+        else {
+            return f(x, s);
+        }
     }
-    else {
-        return f(x);
-    }
+    return mapTreeHelper(f, x, []);
 }
 exports.mapTree = mapTree;
 /**
@@ -664,7 +671,17 @@ function defineToDefineMacro(x, onceOnly = false) {
         return 0;
     });
     const bodyForms = x.slice(2);
-    const macroBodyForms = mapTree(function (x) {
+    // Whether we are inside of a repeatable expression.
+    function repeatablep(s) {
+        const repeatables = [Symbol.for('js/for'), Symbol.for('js/for-in'), Symbol.for('js/for-of'), Symbol.for('js/while'), Symbol.for('js/arrow'), Symbol.for('js/function'), Symbol.for('for'), Symbol.for('while'), Symbol.for('fn'), Symbol.for('lambda')];
+        for (let x of s) {
+            if (taggedListP(x, repeatables)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    const macroBodyForms = mapTree(function (x, s) {
         if (typeof x === 'symbol') {
             if (restParam && (x === restParam)) {
                 return [Symbol.for('list'), [Symbol.for('unquote-splicing'), x]];
@@ -682,7 +699,11 @@ function defineToDefineMacro(x, onceOnly = false) {
                 }));
                 if (idx >= 0) {
                     const count = counts[idx];
-                    counts[idx] = count + 1;
+                    let increment = 1;
+                    if (repeatablep(s)) {
+                        increment = 2;
+                    }
+                    counts[idx] = count + increment;
                 }
                 return [Symbol.for('unquote'), x];
             }

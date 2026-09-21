@@ -380,16 +380,23 @@ function lambdaToLet(lambdaExp: any, args: any): any {
 }
 
 /**
- * Map a function over a tree.
+ * Map a function `f` over a tree `x`.
+ *
+ * `f` is called with two arguments: the current element
+ * and a stack of parent elements.
  */
 function mapTree(f: any, x: any): any {
-  if (Array.isArray(x)) {
-    return x.map(function (x1: any): any {
-      return mapTree(f, x1);
-    });
-  } else {
-    return f(x);
+  function mapTreeHelper(f: any, x: any, s: any): any {
+    if (Array.isArray(x)) {
+      const s1: any = [x, ...(Array.isArray(s) ? s : [Symbol.for('.'), s])];
+      return x.map(function (x1: any): any {
+        return mapTreeHelper(f, x1, s1);
+      });
+    } else {
+      return f(x, s);
+    }
   }
+  return mapTreeHelper(f, x, []);
 }
 
 /**
@@ -640,7 +647,17 @@ function defineToDefineMacro(x: any, onceOnly: any = false): any {
     return 0;
   });
   const bodyForms: any = x.slice(2);
-  const macroBodyForms: any = mapTree(function (x: any): any {
+  // Whether we are inside of a repeatable expression.
+  function repeatablep(s: any): any {
+    const repeatables: any = [Symbol.for('js/for'), Symbol.for('js/for-in'), Symbol.for('js/for-of'), Symbol.for('js/while'), Symbol.for('js/arrow'), Symbol.for('js/function'), Symbol.for('for'), Symbol.for('while'), Symbol.for('fn'), Symbol.for('lambda')];
+    for (let x of s) {
+      if (taggedListP(x, repeatables)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  const macroBodyForms: any = mapTree(function (x: any, s: any): any {
     if (typeof x === 'symbol') {
       if (restParam && (x === restParam)) {
         return [Symbol.for('list'), [Symbol.for('unquote-splicing'), x]];
@@ -656,7 +673,11 @@ function defineToDefineMacro(x: any, onceOnly: any = false): any {
         }));
         if (idx >= 0) {
           const count: any = (counts as any)[idx];
-          (counts as any)[idx] = count + 1;
+          let increment: any = 1;
+          if (repeatablep(s)) {
+            increment = 2;
+          }
+          (counts as any)[idx] = count + increment;
         }
         return [Symbol.for('unquote'), x];
       } else {

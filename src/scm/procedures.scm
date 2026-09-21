@@ -830,6 +830,23 @@
 (define-inline (abs_ x)
   (js/abs x))
 
+;;; Sort a list with a predicate.
+(define (sort_ lst pred)
+  (array-sort lst
+              (lambda (x y)
+                (if (pred x y)
+                    -1
+                    1))))
+
+(define-compiler-macro (sort_ lst pred)
+  (once-only*
+   (pred)
+   `(array-sort ,lst
+                (lambda (x y)
+                  (js/? (,pred x y)
+                        -1
+                        1)))))
+
 (provide
   (rename-out (add1_ add1))
   (rename-out (add_ _add))
@@ -956,6 +973,7 @@
   procedure?_
   range_
   self-evaluating?_
+  sort_
   special-type?_
   string->keyword_
   sub1_

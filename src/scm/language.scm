@@ -28,6 +28,8 @@
                   join
                   relative))
 (require (only-in "./array"
+                  array-at_
+                  array-concat_
                   array-copy_
                   array-drop-right_
                   array-drop_
@@ -38,23 +40,22 @@
                   array-last_
                   array-length_
                   array-ninth_
+                  array-nlast_
                   array-pop-left!_
                   array-pop-right!_
                   array-push-left!_
                   array-push-right!_
                   array-ref_
-                  array-at_
                   array-rest_
                   array-reverse!_
-                  array-concat_
                   array-reverse_
                   array-second_
-                  array-nlast_
                   array-set!_
                   array-set_
                   array-seventh_
                   array-sixth_
                   array-slice_
+                  array-sort_
                   array-take_
                   array-tenth_
                   array-third_
@@ -481,6 +482,7 @@
                   procedure?_
                   range_
                   self-evaluating?_
+                  sort_
                   special-type?
                   string->keyword_
                   sub1_
@@ -8069,6 +8071,7 @@
          (array-fifth ,array-fifth_ (-> Any * Any))
          (array-first ,array-first_ (-> Any * Any))
          (array-fourth ,array-fourth_ (-> Any * Any))
+         (array-sort ,array-sort_ (-> Any * Any))
          (array-get ,array-ref_ (-> Any * Any))
          (array-last ,array-last_ (-> Any * Any))
          (array-length ,array-length_ (-> Any * Any))
@@ -8428,6 +8431,7 @@
          (oget ,object-ref_ (-> Any * Any))
          (one? ,one?_ (-> Any * Any))
          (onep ,one?_ (-> Any * Any))
+         (order ,sort_ (-> Any * Any))
          (oref ,list-ref_ (-> Any * Any))
          (oset ,object-set!_ (-> Any * Any))
          (oset! ,object-set!_ (-> Any * Any))
@@ -8491,6 +8495,7 @@
          (set-nth! ,list-set!_ (-> Any * Any))
          (seventh ,seventh_ (-> Any * Any))
          (sixth ,sixth_ (-> Any * Any))
+         (sort ,sort_ (-> Any * Any))
          (source ,source (-> Any * Any))
          (string->keyword ,string->keyword_ (-> Any * Any))
          (string->number ,string->number_ (-> Any * Any))

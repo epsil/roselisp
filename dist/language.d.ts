@@ -178,7 +178,7 @@ declare namespace macroexpand {
  */
 declare function macroexpandStar(exp: any, env?: any): any;
 declare namespace macroexpandStar {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol)[] | (symbol | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | undefined)[])[] | (boolean | symbol)[])[];
 }
 /**
  * Expand the macro call `exp` in `env` a single step.
@@ -202,7 +202,7 @@ declare namespace macroexpand1 {
  */
 declare function macroexpandstar1(exp: any, env?: any): any;
 declare namespace macroexpandstar1 {
-    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[])[][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[])[][])[])[])[])[])[];
 }
 /**
  * Expand the macro call `exp` in `env`, and keep

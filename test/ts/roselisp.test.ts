@@ -176,6 +176,23 @@ describe('vector?', function (): any {
   });
 });
 
+describe('array-sort', function (): any {
+  it('(array-sort \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]], [Symbol.for('quote'), [1, 2, 3, 4]]]);
+  });
+  return it('(compile \'(array-sort \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], '[4, 3, 2, 1].sort(function (x, y) {\n' +
+      '  if (x < y) {\n' +
+      '    return -1;\n' +
+      '  } else if (x > y) {\n' +
+      '    return 1;\n' +
+      '  } else {\n' +
+      '    return 0;\n' +
+      '  }\n' +
+      '});']);
+  });
+});
+
 describe('Dotted lists', function (): any {
   return it('(equal? \'(1 2) \'(1 . (2 . ())))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('equal?'), [Symbol.for('quote'), [1, 2]], [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]]], true]);

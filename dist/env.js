@@ -934,9 +934,11 @@ class DynamicEnvironment extends TypedEnvironment {
     /**
      * Create a dynamic environment.
      */
-    constructor(lookupF, typingF = function (...args) {
-        return Symbol.for('Any');
-    }) {
+    constructor(lookupF, typingF = ((x) => {
+        return function (...args) {
+            return x;
+        };
+    })(Symbol.for('Any'))) {
         super();
         this.lookupF = lookupF;
         this.typingF = typingF;

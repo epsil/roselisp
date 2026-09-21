@@ -38,7 +38,7 @@ declare namespace thunkp_ {
 declare function delay_(exp: any, env: any): any;
 declare namespace delay_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | undefined)[] | (boolean | symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | undefined)[] | (boolean | symbol | symbol[])[])[])[])[])[] | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Make a composable promise.

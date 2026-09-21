@@ -115,7 +115,10 @@ declare function unquoteSplicingP(obj: any): any;
  */
 declare function lambdaToLet(lambdaExp: any, args: any): any;
 /**
- * Map a function over a tree.
+ * Map a function `f` over a tree `x`.
+ *
+ * `f` is called with two arguments: the current element
+ * and a stack of parent elements.
  */
 declare function mapTree(f: any, x: any): any;
 /**

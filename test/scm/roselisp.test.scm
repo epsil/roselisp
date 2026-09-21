@@ -121,6 +121,36 @@
  > (vector? '(1 . (2 . ())))
  #t
 
+ :describe "array-sort"
+ > (array-sort '(4 3 2 1)
+               (lambda (x y)
+                 (cond
+                  ((< x y)
+                   -1)
+                  ((> x y)
+                   1)
+                  (else
+                   0))))
+ '(1 2 3 4)
+ > (compile '(array-sort '(4 3 2 1)
+                         (lambda (x y)
+                           (cond
+                            ((< x y)
+                             -1)
+                            ((> x y)
+                             1)
+                            (else
+                             0)))))
+ "[4, 3, 2, 1].sort(function (x, y) {
+  if (x < y) {
+    return -1;
+  } else if (x > y) {
+    return 1;
+  } else {
+    return 0;
+  }
+});"
+
  :describe "Dotted lists"
  > (equal? '(1 2) '(1 . (2 . ())))
  #t

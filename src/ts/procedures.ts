@@ -780,7 +780,14 @@ const_.compilerMacro = ((): any => {
     if (x === undefined) {
       x = undefined;
     }
-    return [Symbol.for('lambda'), Symbol.for('args'), x];
+    if (!(Array.isArray(x) && (x.length > 0))) {
+      return [Symbol.for('lambda'), Symbol.for('args'), x];
+    } else {
+      const x1: any = Symbol('x');
+      return [Symbol.for('let'), [[x1, x]], ((x: any): any => {
+        return [Symbol.for('lambda'), Symbol.for('args'), x];
+      })(x1)];
+    }
   };
   f.ftype = 'macro';
   return f;
@@ -1622,6 +1629,37 @@ abs_.compilerMacro = ((): any => {
   return f;
 })();
 
+/**
+ * Sort a list with a predicate.
+ */
+function sort_(lst: any, pred: any): any {
+  return lst.sort(function (x: any, y: any): any {
+    if (pred(x, y)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
+}
+
+sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), Symbol.for('pred')], [Symbol.for('array-sort'), Symbol.for('lst'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]]]];
+
+sort_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    const [lst, pred]: any[] = exp.slice(1);
+    if (!(Array.isArray(pred) && (pred.length > 0))) {
+      return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
+    } else {
+      const pred1: any = Symbol('pred');
+      return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => {
+        return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
+      })(pred1)];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 export {
   add1_ as add1,
   add_ as _add,
@@ -1747,6 +1785,7 @@ export {
   procedurep_,
   range_,
   selfEvaluatingP_,
+  sort_,
   specialTypeP_,
   stringToKeyword_,
   sub1_,

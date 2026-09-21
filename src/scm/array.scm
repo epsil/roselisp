@@ -264,6 +264,10 @@
                      (send ,arr push ,x)
                      ,arr))))
 
+;;; Sort an array with a comparator.
+(define-inline (array-sort_ arr (comp #u))
+  (send arr sort comp))
+
 (provide
   (rename-out (array-ref_ aget))
   (rename-out (array-ref_ aget_))
@@ -283,6 +287,7 @@
   array-last_
   array-length_
   array-ninth_
+  array-nlast_
   array-pop-left!_
   array-pop-right!_
   array-push-left!_
@@ -297,8 +302,8 @@
   array-seventh_
   array-sixth_
   array-slice_
+  array-sort_
   array-take_
   array-tenth_
-  array-nlast_
   array-third_
   array?_)

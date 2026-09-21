@@ -211,7 +211,7 @@ declare namespace declare_ {
 declare function declareMacro_(exp: any, env: any): any;
 declare namespace declareMacro_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[])[];
 }
 /**
  * Expand a `(declare-syntax-macro ...)` expression.
@@ -219,7 +219,7 @@ declare namespace declareMacro_ {
 declare function declareSyntaxMacro_(exp: any, env: any): any;
 declare namespace declareSyntaxMacro_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(declare-fexpr ...)` expression.
@@ -227,7 +227,7 @@ declare namespace declareSyntaxMacro_ {
 declare function declareFexpr_(exp: any, env: any): any;
 declare namespace declareFexpr_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol)[])[])[])[])[])[];
 }
 /**
  * Expand a `(begin0 ...)` expression.
@@ -446,7 +446,7 @@ declare namespace while_ {
 declare function for_(exp: any, env: any): any;
 declare namespace for_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[][] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[][] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(case ...)` expression.
@@ -560,7 +560,7 @@ declare namespace match_ {
 declare function clLoop_(exp: any, env: any): any;
 declare namespace clLoop_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[])[];
 }
 /**
  * `with-gensyms` macro as defined in

@@ -20,7 +20,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
 exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.forEach_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.arity_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub_ = exports.sub1_ = exports.stringToKeyword_ = exports.specialTypeP_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub_ = exports.sub1_ = exports.stringToKeyword_ = exports.specialTypeP_ = exports.sort_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = void 0;
 const util_1 = require("./util");
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
@@ -771,7 +771,15 @@ const_.compilerMacro = (() => {
         if (x === undefined) {
             x = undefined;
         }
-        return [Symbol.for('lambda'), Symbol.for('args'), x];
+        if (!(Array.isArray(x) && (x.length > 0))) {
+            return [Symbol.for('lambda'), Symbol.for('args'), x];
+        }
+        else {
+            const x1 = Symbol('x');
+            return [Symbol.for('let'), [[x1, x]], ((x) => {
+                    return [Symbol.for('lambda'), Symbol.for('args'), x];
+                })(x1)];
+        }
     };
     f.ftype = 'macro';
     return f;
@@ -1593,6 +1601,37 @@ abs_.compilerMacro = (() => {
     const f = function (exp, env) {
         let [x] = exp.slice(1);
         return [Symbol.for('js/abs'), x];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
+ * Sort a list with a predicate.
+ */
+function sort_(lst, pred) {
+    return lst.sort(function (x, y) {
+        if (pred(x, y)) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
+    });
+}
+exports.sort_ = sort_;
+sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), Symbol.for('pred')], [Symbol.for('array-sort'), Symbol.for('lst'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]]]];
+sort_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        const [lst, pred] = exp.slice(1);
+        if (!(Array.isArray(pred) && (pred.length > 0))) {
+            return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
+        }
+        else {
+            const pred1 = Symbol('pred');
+            return [Symbol.for('let'), [[pred1, pred]], ((pred) => {
+                    return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
+                })(pred1)];
+        }
     };
     f.ftype = 'macro';
     return f;

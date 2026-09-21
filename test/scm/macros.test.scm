@@ -331,6 +331,16 @@
         (baz ,x))))
  > (define->define-macro
      '(define (foo x)
+        (lambda ()
+          (baz x)))
+     #t)
+ '(define-macro (foo x)
+    (once-only*
+     (x)
+     `(lambda ()
+        (baz ,x))))
+ > (define->define-macro
+     '(define (foo x)
         (bar x))
      #t)
  '(define-macro (foo x)

@@ -265,11 +265,25 @@
                      ,arr))))
 
 ;;; Sort an array with a comparator.
+;;; Returns a new array.
 (define (array-sort_ arr (comp #u))
-  (send arr sort comp))
+  (array-sort! (array-copy arr) comp))
 
 ;;; Compiler macro for `(array-sort ...)` expressions.
 (define-compiler-macro (array-sort_ arr (comp #u))
+  (cond
+   (comp
+    `(array-sort! (array-copy ,arr) ,comp))
+   (else
+    `(array-sort! (array-copy ,arr)))))
+
+;;; Sort an array with a comparator.
+;;; Changes the array.
+(define (array-sort!_ arr (comp #u))
+  (send arr sort comp))
+
+;;; Compiler macro for `(array-sort ...)` expressions.
+(define-compiler-macro (array-sort!_ arr (comp #u))
   (cond
    (comp
     `(send ,arr sort ,comp))
@@ -311,6 +325,7 @@
   array-sixth_
   array-slice_
   array-sort_
+  array-sort!_
   array-take_
   array-tenth_
   array-third_

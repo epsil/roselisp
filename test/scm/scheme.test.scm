@@ -3607,6 +3607,8 @@ reverse(lst);"
 })(g(y)));"
 
  :describe "foldl"
+ > (foldl + 0 '(1 2 3 4))
+ 10
  > (foldl cons '() '(1 2 3 4))
  '(4 3 2 1)
  > (compile '(foldl (lambda (x acc) x) v lst))
@@ -3634,6 +3636,8 @@ reverse(lst);"
 }, 0);"
 
  :describe "foldr"
+ > (foldr + 0 '(1 2 3 4))
+ 10
  > (foldr cons '() '(1 2 3 4))
  '(1 2 3 4)
  > (foldr (lambda (v l)
@@ -3671,16 +3675,38 @@ reverse(lst);"
  '(1 2 3 4)
  > (sort '(4 3 2 1) <)
  '(1 2 3 4)
- > (compile '(sort '(4 3 2 1)))
- "[4, 3, 2, 1].sort();"
- > (compile '(sort '(4 3 2 1) <))
- "[4, 3, 2, 1].sort(function (x, y) {
+ > (compile '(sort lst))
+ "[...lst].sort();"
+ > (compile '(sort lst <))
+ "[...lst].sort(function (x, y) {
   return (x < y) ? -1 : 1;
 });"
- > (compile '(sort '(4 3 2 1) (foo)))
+ > (compile '(sort lst (foo)))
  "let pred = foo();
 
-[4, 3, 2, 1].sort(function (x, y) {
+[...lst].sort(function (x, y) {
+  return pred(x, y) ? -1 : 1;
+});"
+
+ :describe "sort!"
+ > (sort! '(4 3 2 1))
+ '(1 2 3 4)
+ > (sort! '(4 3 2 1)
+          (lambda (x y)
+            (< x y)))
+ '(1 2 3 4)
+ > (sort! '(4 3 2 1) <)
+ '(1 2 3 4)
+ > (compile '(sort! lst))
+ "lst.sort();"
+ > (compile '(sort! lst <))
+ "lst.sort(function (x, y) {
+  return (x < y) ? -1 : 1;
+});"
+ > (compile '(sort! lst (foo)))
+ "let pred = foo();
+
+lst.sort(function (x, y) {
   return pred(x, y) ? -1 : 1;
 });"
 

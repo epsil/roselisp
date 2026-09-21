@@ -180,8 +180,11 @@ describe('array-sort', function (): any {
   it('(array-sort \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0))))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]], [Symbol.for('quote'), [1, 2, 3, 4]]]);
   });
-  return it('(compile \'(array-sort \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], '[4, 3, 2, 1].sort(function (x, y) {\n' +
+  it('(compile \'(array-sort arr))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr')]]], '[...arr].sort();']);
+  });
+  return it('(compile \'(array-sort arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], '[...arr].sort(function (x, y) {\n' +
       '  if (x < y) {\n' +
       '    return -1;\n' +
       '  } else if (x > y) {\n' +
@@ -190,6 +193,41 @@ describe('array-sort', function (): any {
       '    return 0;\n' +
       '  }\n' +
       '});']);
+  });
+});
+
+describe('array-sort!', function (): any {
+  it('(array-sort! \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort!'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]], [Symbol.for('quote'), [1, 2, 3, 4]]]);
+  });
+  it('(compile \'(array-sort! arr))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr')]]], 'arr.sort();']);
+  });
+  return it('(compile \'(array-sort! arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], 'arr.sort(function (x, y) {\n' +
+      '  if (x < y) {\n' +
+      '    return -1;\n' +
+      '  } else if (x > y) {\n' +
+      '    return 1;\n' +
+      '  } else {\n' +
+      '    return 0;\n' +
+      '  }\n' +
+      '});']);
+  });
+});
+
+describe('array-copy', function (): any {
+  it('(array-copy \'(1 2 3))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-copy'), [Symbol.for('quote'), [1, 2, 3]]], [Symbol.for('quote'), [1, 2, 3]]]);
+  });
+  it('(let* ((arr \'(1 2 3)) (arr1 (array-copy arr))) (equal? arr arr1))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('let*'), [[Symbol.for('arr'), [Symbol.for('quote'), [1, 2, 3]]], [Symbol.for('arr1'), [Symbol.for('array-copy'), Symbol.for('arr')]]], [Symbol.for('equal?'), Symbol.for('arr'), Symbol.for('arr1')]], true]);
+  });
+  it('(let* ((arr \'(1 2 3)) (arr1 (array-copy arr))) (eq? arr arr1))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('let*'), [[Symbol.for('arr'), [Symbol.for('quote'), [1, 2, 3]]], [Symbol.for('arr1'), [Symbol.for('array-copy'), Symbol.for('arr')]]], [Symbol.for('eq?'), Symbol.for('arr'), Symbol.for('arr1')]], false]);
+  });
+  return it('(compile \'(array-copy arr))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-copy'), Symbol.for('arr')]]], '[...arr];']);
   });
 });
 

@@ -286,10 +286,20 @@ declare namespace arrayPushRightX_ {
 }
 /**
  * Sort an array with a comparator.
+ * Returns a new array.
  */
 declare function arraySort_(arr: any, comp?: any): any;
 declare namespace arraySort_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
     var compilerMacro: any;
 }
-export { arrayRef_ as aget, arrayRef_ as aget_, arrayRef_ as aref, arraySet_ as arraySet, arraySet_ as aset, arraySet_ as aset_, arrayAt_, arrayConcat_, arrayCopy_, arrayDropRight_, arrayDrop_, arrayEighth_, arrayFifth_, arrayFirst_, arrayFourth_, arrayLast_, arrayLength_, arrayNinth_, arrayNlast_, arrayPopLeftX_, arrayPopRightX_, arrayPushLeftX_, arrayPushRightX_, arrayRef_, arrayRest_, arrayReverseX_, arrayReverse_, arraySecond_, arraySetX_, arraySet_, arraySeventh_, arraySixth_, arraySlice_, arraySort_, arrayTake_, arrayTenth_, arrayThird_, arrayp_ };
+/**
+ * Sort an array with a comparator.
+ * Changes the array.
+ */
+declare function arraySortX_(arr: any, comp?: any): any;
+declare namespace arraySortX_ {
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var compilerMacro: any;
+}
+export { arrayRef_ as aget, arrayRef_ as aget_, arrayRef_ as aref, arraySet_ as arraySet, arraySet_ as aset, arraySet_ as aset_, arrayAt_, arrayConcat_, arrayCopy_, arrayDropRight_, arrayDrop_, arrayEighth_, arrayFifth_, arrayFirst_, arrayFourth_, arrayLast_, arrayLength_, arrayNinth_, arrayNlast_, arrayPopLeftX_, arrayPopRightX_, arrayPushLeftX_, arrayPushRightX_, arrayRef_, arrayRest_, arrayReverseX_, arrayReverse_, arraySecond_, arraySetX_, arraySet_, arraySeventh_, arraySixth_, arraySlice_, arraySort_, arraySortX_, arrayTake_, arrayTenth_, arrayThird_, arrayp_ };

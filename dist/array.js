@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayp_ = exports.arrayThird_ = exports.arrayTenth_ = exports.arrayTake_ = exports.arraySort_ = exports.arraySlice_ = exports.arraySixth_ = exports.arraySeventh_ = exports.arraySet_ = exports.arraySetX_ = exports.arraySecond_ = exports.arrayReverse_ = exports.arrayReverseX_ = exports.arrayRest_ = exports.arrayRef_ = exports.arrayPushRightX_ = exports.arrayPushLeftX_ = exports.arrayPopRightX_ = exports.arrayPopLeftX_ = exports.arrayNlast_ = exports.arrayNinth_ = exports.arrayLength_ = exports.arrayLast_ = exports.arrayFourth_ = exports.arrayFirst_ = exports.arrayFifth_ = exports.arrayEighth_ = exports.arrayDrop_ = exports.arrayDropRight_ = exports.arrayCopy_ = exports.arrayConcat_ = exports.arrayAt_ = exports.aset_ = exports.aset = exports.arraySet = exports.aref = exports.aget_ = exports.aget = void 0;
+exports.arrayp_ = exports.arrayThird_ = exports.arrayTenth_ = exports.arrayTake_ = exports.arraySortX_ = exports.arraySort_ = exports.arraySlice_ = exports.arraySixth_ = exports.arraySeventh_ = exports.arraySet_ = exports.arraySetX_ = exports.arraySecond_ = exports.arrayReverse_ = exports.arrayReverseX_ = exports.arrayRest_ = exports.arrayRef_ = exports.arrayPushRightX_ = exports.arrayPushLeftX_ = exports.arrayPopRightX_ = exports.arrayPopLeftX_ = exports.arrayNlast_ = exports.arrayNinth_ = exports.arrayLength_ = exports.arrayLast_ = exports.arrayFourth_ = exports.arrayFirst_ = exports.arrayFifth_ = exports.arrayEighth_ = exports.arrayDrop_ = exports.arrayDropRight_ = exports.arrayCopy_ = exports.arrayConcat_ = exports.arrayAt_ = exports.aset_ = exports.aset = exports.arraySet = exports.aref = exports.aget_ = exports.aget = void 0;
 /**
  * Whether something is an array.
  */
@@ -645,16 +645,45 @@ arrayPushRightX_.compilerMacro = (() => {
 })();
 /**
  * Sort an array with a comparator.
+ * Returns a new array.
  */
 function arraySort_(arr, comp = undefined) {
-    return arr.sort(comp);
+    return [...arr].sort(comp);
 }
 exports.arraySort_ = arraySort_;
-arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('array-sort!'), [Symbol.for('array-copy'), Symbol.for('arr')], Symbol.for('comp')]];
 /**
  * Compiler macro for `(array-sort ...)` expressions.
  */
 arraySort_.compilerMacro = (() => {
+    const f = function (exp, env) {
+        let [arr, comp] = exp.slice(1);
+        if (comp === undefined) {
+            comp = undefined;
+        }
+        if (comp) {
+            return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr], comp];
+        }
+        else {
+            return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr]];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
+ * Sort an array with a comparator.
+ * Changes the array.
+ */
+function arraySortX_(arr, comp = undefined) {
+    return arr.sort(comp);
+}
+exports.arraySortX_ = arraySortX_;
+arraySortX_.fsource = [Symbol.for('define'), [Symbol.for('array-sort!_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+/**
+ * Compiler macro for `(array-sort ...)` expressions.
+ */
+arraySortX_.compilerMacro = (() => {
     const f = function (exp, env) {
         let [arr, comp] = exp.slice(1);
         if (comp === undefined) {

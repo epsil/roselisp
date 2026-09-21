@@ -132,7 +132,9 @@
                   (else
                    0))))
  '(1 2 3 4)
- > (compile '(array-sort '(4 3 2 1)
+ > (compile '(array-sort arr))
+ "[...arr].sort();"
+ > (compile '(array-sort arr
                          (lambda (x y)
                            (cond
                             ((< x y)
@@ -141,7 +143,7 @@
                              1)
                             (else
                              0)))))
- "[4, 3, 2, 1].sort(function (x, y) {
+ "[...arr].sort(function (x, y) {
   if (x < y) {
     return -1;
   } else if (x > y) {
@@ -150,6 +152,52 @@
     return 0;
   }
 });"
+
+ :describe "array-sort!"
+ > (array-sort! '(4 3 2 1)
+                (lambda (x y)
+                  (cond
+                   ((< x y)
+                    -1)
+                   ((> x y)
+                    1)
+                   (else
+                    0))))
+ '(1 2 3 4)
+ > (compile '(array-sort! arr))
+ "arr.sort();"
+ > (compile '(array-sort! arr
+                          (lambda (x y)
+                            (cond
+                             ((< x y)
+                              -1)
+                             ((> x y)
+                              1)
+                             (else
+                              0)))))
+ "arr.sort(function (x, y) {
+  if (x < y) {
+    return -1;
+  } else if (x > y) {
+    return 1;
+  } else {
+    return 0;
+  }
+});"
+
+ :describe "array-copy"
+ > (array-copy '(1 2 3))
+ '(1 2 3)
+ > (let* ((arr '(1 2 3))
+          (arr1 (array-copy arr)))
+     (equal? arr arr1))
+ #t
+ > (let* ((arr '(1 2 3))
+          (arr1 (array-copy arr)))
+     (eq? arr arr1))
+ #f
+ > (compile '(array-copy arr))
+ "[...arr];"
 
  :describe "Dotted lists"
  > (equal? '(1 2) '(1 . (2 . ())))

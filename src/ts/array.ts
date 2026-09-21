@@ -691,17 +691,47 @@ arrayPushRightX_.compilerMacro = ((): any => {
 
 /**
  * Sort an array with a comparator.
+ * Returns a new array.
  */
 function arraySort_(arr: any, comp: any = undefined): any {
-  return arr.sort(comp);
+  return [...arr].sort(comp);
 }
 
-arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('array-sort!'), [Symbol.for('array-copy'), Symbol.for('arr')], Symbol.for('comp')]];
 
 /**
  * Compiler macro for `(array-sort ...)` expressions.
  */
 arraySort_.compilerMacro = ((): any => {
+  const f: any = function (exp: any, env: any): any {
+    let [arr, comp]: any[] = exp.slice(1);
+    if (comp === undefined) {
+      comp = undefined;
+    }
+    if (comp) {
+      return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr], comp];
+    } else {
+      return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr]];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
+ * Sort an array with a comparator.
+ * Changes the array.
+ */
+function arraySortX_(arr: any, comp: any = undefined): any {
+  return arr.sort(comp);
+}
+
+arraySortX_.fsource = [Symbol.for('define'), [Symbol.for('array-sort!_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+
+/**
+ * Compiler macro for `(array-sort ...)` expressions.
+ */
+arraySortX_.compilerMacro = ((): any => {
   const f: any = function (exp: any, env: any): any {
     let [arr, comp]: any[] = exp.slice(1);
     if (comp === undefined) {
@@ -752,6 +782,7 @@ export {
   arraySixth_,
   arraySlice_,
   arraySort_,
+  arraySortX_,
   arrayTake_,
   arrayTenth_,
   arrayThird_,

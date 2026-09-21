@@ -55,6 +55,7 @@
                   array-seventh_
                   array-sixth_
                   array-slice_
+                  array-sort!_
                   array-sort_
                   array-take_
                   array-tenth_
@@ -482,6 +483,7 @@
                   procedure?_
                   range_
                   self-evaluating?_
+                  sort!_
                   sort_
                   special-type?
                   string->keyword_
@@ -8071,7 +8073,6 @@
          (array-fifth ,array-fifth_ (-> Any * Any))
          (array-first ,array-first_ (-> Any * Any))
          (array-fourth ,array-fourth_ (-> Any * Any))
-         (array-sort ,array-sort_ (-> Any * Any))
          (array-get ,array-ref_ (-> Any * Any))
          (array-last ,array-last_ (-> Any * Any))
          (array-length ,array-length_ (-> Any * Any))
@@ -8093,6 +8094,8 @@
          (array-seventh ,array-seventh_ (-> Any * Any))
          (array-sixth ,array-sixth_ (-> Any * Any))
          (array-slice ,array-slice_ (-> Any * Any))
+         (array-sort ,array-sort_ (-> Any * Any))
+         (array-sort! ,array-sort!_ (-> Any * Any))
          (array-take ,array-take_ (-> Any * Any))
          (array-tenth ,array-tenth_ (-> Any * Any))
          (array-third ,array-third_ (-> Any * Any))
@@ -8432,6 +8435,7 @@
          (one? ,one?_ (-> Any * Any))
          (onep ,one?_ (-> Any * Any))
          (order ,sort_ (-> Any * Any))
+         (order! ,sort!_ (-> Any * Any))
          (oref ,list-ref_ (-> Any * Any))
          (oset ,object-set!_ (-> Any * Any))
          (oset! ,object-set!_ (-> Any * Any))
@@ -8496,6 +8500,7 @@
          (seventh ,seventh_ (-> Any * Any))
          (sixth ,sixth_ (-> Any * Any))
          (sort ,sort_ (-> Any * Any))
+         (sort! ,sort!_ (-> Any * Any))
          (source ,source (-> Any * Any))
          (string->keyword ,string->keyword_ (-> Any * Any))
          (string->number ,string->number_ (-> Any * Any))

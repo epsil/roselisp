@@ -180,4 +180,10 @@ declare function parseParamsList(params: any): any;
  * a `(define-macro ...)` expression.
  */
 declare function defineToDefineMacro(x: any, onceOnly?: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };
+/**
+ * Separate a property list from a list of body forms.
+ * The property list is assumed to use keywords for
+ * its keys.
+ */
+declare function parsePlistAndBody(plstAndBody: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, validJsCasingStyleP };

@@ -17,8 +17,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.syntaxMacro_ = exports.setq_ = exports.set_ = exports.rktNew_ = exports.quasisyntax_ = exports.or_ = exports.onceOnlystar_ = exports.onceOnly_ = exports.nlambda_ = exports.newApply_ = exports.multipleValueBind_ = exports.match_ = exports.macro_ = exports.letEnv_ = exports.for_ = exports.elIf_ = exports.do_ = exports.defun_ = exports.defsubst_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineInline_ = exports.defineFexpr_ = exports.defineCompilerMacro_ = exports.defclass_ = exports.declare_ = exports.declareSyntaxMacro_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cond_ = exports.cljTry_ = exports.clLoop_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.and_ = exports.defineSubst_ = void 0;
-exports.withGensyms_ = exports.while_ = void 0;
+exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.syntaxMacro_ = exports.setq_ = exports.set_ = exports.rktNew_ = exports.quasisyntax_ = exports.or_ = exports.onceOnly_ = exports.nlambda_ = exports.newApply_ = exports.multipleValueBind_ = exports.match_ = exports.macro_ = exports.letEnv_ = exports.for_ = exports.elIf_ = exports.do_ = exports.defun_ = exports.defsubst_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineInline_ = exports.defineFexpr_ = exports.defineCompilerMacro_ = exports.defclass_ = exports.declare_ = exports.declareSyntaxMacro_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cond_ = exports.cljTry_ = exports.clLoop_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.and_ = exports.defineSubst_ = void 0;
+exports.withGensyms_ = void 0;
 const eval_1 = require("./eval");
 const plist_1 = require("./plist");
 const rose_1 = require("./rose");
@@ -1515,59 +1515,20 @@ withGensyms_.fsource = [Symbol.for('define'), [Symbol.for('with-gensyms_'), Symb
  * `once-only` macro, adapted from the one described in
  * Peter Seibel's [*Practical Common Lisp*][book:pcl].
  *
+ * Options may specified with a property list before
+ * the body forms. The `:smart` option, if true, creates
+ * a nested `cond` form that invokes `once-only` only on
+ * variables that are bound to complex expressions. (Note
+ * that this gets rather verbose when there are many
+ * variables. In that case, it may be better to define a
+ * recursive macro instead.)
+ *
  * [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
  */
 function onceOnly_(exp, env) {
     const [names, ...body] = exp.slice(1);
-    const gensyms = ((result) => {
-        for (let n of names) {
-            result.push(Symbol(n.description));
-        }
-        return result;
-    })([]);
-    return [Symbol.for('let'), [...((result) => {
-                const _end = gensyms.length;
-                const _end1 = names.length;
-                for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
-                    const g = gensyms[i];
-                    const n = names[j];
-                    result.push([g, [Symbol.for('gensym'), n.description]]);
-                }
-                return result;
-            })([])], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote'), ...((result) => {
-                            const _end = gensyms.length;
-                            const _end1 = names.length;
-                            for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
-                                const g = gensyms[i];
-                                const n = names[j];
-                                result.push([Symbol.for('quasiquote'), [[Symbol.for('unquote'), g], [Symbol.for('unquote'), n]]]);
-                            }
-                            return result;
-                        })([])]], [Symbol.for('unquote'), [Symbol.for('let'), [...((result) => {
-                                const _end = names.length;
-                                const _end1 = gensyms.length;
-                                for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
-                                    const n = names[i];
-                                    const g = gensyms[j];
-                                    result.push([n, g]);
-                                }
-                                return result;
-                            })([])], ...body]]]]];
-}
-exports.onceOnly_ = onceOnly_;
-onceOnly_.ftype = 'macro';
-onceOnly_.fsource = [Symbol.for('define'), [Symbol.for('once-only_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('names'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('let'), [[Symbol.for('gensyms'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('gensym'), [Symbol.for('symbol->string'), Symbol.for('n')]]]]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('g')], [Symbol.for('gensym'), [Symbol.for('unquote'), [Symbol.for('symbol->string'), Symbol.for('n')]]]]]]]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote'), [Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('quasiquote'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('unquote'), Symbol.for('g')]], [Symbol.for('unquote'), [Symbol.for('unquote'), Symbol.for('n')]]]]]]]]], [Symbol.for('unquote'), [Symbol.for('let'), [[Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('collect'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('n')], [Symbol.for('unquote'), Symbol.for('g')]]]]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]]]]];
-/**
- * Alternative implementation of `once-only` that skips over atomic
- * expressions. Expands to a nested `cond` form that only invokes
- * `once-only` on variables that are bound to complex expressions.
- *
- * Note that this gets rather verbose when there are many variables.
- * In that case, it may be better to define a recursive macro
- * instead.
- */
-function onceOnlystar_(exp, env) {
-    const [names, ...body] = exp.slice(1);
+    const [plst, body1] = (0, util_1.parsePlistAndBody)(body);
+    const smartOption = (0, plist_1.plistGet_)(plst, Symbol.for(':smart'));
     function recurse(input, output, body) {
         if (Array.isArray(input) && (input.length === 0)) {
             if (Array.isArray(output) && (output.length === 0)) {
@@ -1582,8 +1543,46 @@ function onceOnlystar_(exp, env) {
         }
     }
     recurse.fsource = [Symbol.for('define'), [Symbol.for('recurse'), Symbol.for('input'), Symbol.for('output'), Symbol.for('body')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('input')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('output')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('once-only'), [Symbol.for('unquote'), Symbol.for('output')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [[Symbol.for('atom?'), [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('input')]]], [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], Symbol.for('output'), Symbol.for('body')]]], [Symbol.for('else'), [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], [Symbol.for('append'), Symbol.for('output'), [Symbol.for('list'), [Symbol.for('first'), Symbol.for('input')]]], Symbol.for('body')]]]]]]]];
-    return recurse(names, [], body);
+    if (smartOption) {
+        return recurse(names, [], body1);
+    }
+    else {
+        const gensyms = ((result) => {
+            for (let n of names) {
+                result.push(Symbol(n.description));
+            }
+            return result;
+        })([]);
+        return [Symbol.for('let'), [...((result) => {
+                    const _end = gensyms.length;
+                    const _end1 = names.length;
+                    for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
+                        const g = gensyms[i];
+                        const n = names[j];
+                        result.push([g, [Symbol.for('gensym'), n.description]]);
+                    }
+                    return result;
+                })([])], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote'), ...((result) => {
+                                const _end = gensyms.length;
+                                const _end1 = names.length;
+                                for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
+                                    const g = gensyms[i];
+                                    const n = names[j];
+                                    result.push([Symbol.for('quasiquote'), [[Symbol.for('unquote'), g], [Symbol.for('unquote'), n]]]);
+                                }
+                                return result;
+                            })([])]], [Symbol.for('unquote'), [Symbol.for('let'), [...((result) => {
+                                    const _end = names.length;
+                                    const _end1 = gensyms.length;
+                                    for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
+                                        const n = names[i];
+                                        const g = gensyms[j];
+                                        result.push([n, g]);
+                                    }
+                                    return result;
+                                })([])], ...body]]]]];
+    }
 }
-exports.onceOnlystar_ = onceOnlystar_;
-onceOnlystar_.ftype = 'macro';
-onceOnlystar_.fsource = [Symbol.for('define'), [Symbol.for('once-only*_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('names'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define'), [Symbol.for('recurse'), Symbol.for('input'), Symbol.for('output'), Symbol.for('body')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('input')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('output')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('once-only'), [Symbol.for('unquote'), Symbol.for('output')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [[Symbol.for('atom?'), [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('input')]]], [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], Symbol.for('output'), Symbol.for('body')]]], [Symbol.for('else'), [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], [Symbol.for('append'), Symbol.for('output'), [Symbol.for('list'), [Symbol.for('first'), Symbol.for('input')]]], Symbol.for('body')]]]]]]]], [Symbol.for('recurse'), Symbol.for('names'), [Symbol.for('quote'), []], Symbol.for('body')]];
+exports.onceOnly_ = onceOnly_;
+onceOnly_.ftype = 'macro';
+onceOnly_.fsource = [Symbol.for('define'), [Symbol.for('once-only_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('names'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define-values'), [Symbol.for('plst'), Symbol.for('body1')], [Symbol.for('parse-plist-and-body'), Symbol.for('body')]], [Symbol.for('define'), Symbol.for('smart-option'), [Symbol.for('plist-get_'), Symbol.for('plst'), Symbol.for(':smart')]], [Symbol.for('define'), [Symbol.for('recurse'), Symbol.for('input'), Symbol.for('output'), Symbol.for('body')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('input')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('output')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('once-only'), [Symbol.for('unquote'), Symbol.for('output')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [[Symbol.for('atom?'), [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('input')]]], [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], Symbol.for('output'), Symbol.for('body')]]], [Symbol.for('else'), [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], [Symbol.for('append'), Symbol.for('output'), [Symbol.for('list'), [Symbol.for('first'), Symbol.for('input')]]], Symbol.for('body')]]]]]]]], [Symbol.for('cond'), [Symbol.for('smart-option'), [Symbol.for('recurse'), Symbol.for('names'), [Symbol.for('quote'), []], Symbol.for('body1')]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('gensyms'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('gensym'), [Symbol.for('symbol->string'), Symbol.for('n')]]]]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('g')], [Symbol.for('gensym'), [Symbol.for('unquote'), [Symbol.for('symbol->string'), Symbol.for('n')]]]]]]]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote'), [Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('quasiquote'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('unquote'), Symbol.for('g')]], [Symbol.for('unquote'), [Symbol.for('unquote'), Symbol.for('n')]]]]]]]]], [Symbol.for('unquote'), [Symbol.for('let'), [[Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('collect'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('n')], [Symbol.for('unquote'), Symbol.for('g')]]]]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]]]]]]];

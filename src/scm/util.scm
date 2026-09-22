@@ -654,11 +654,32 @@
         (push-right! names param)))
     (when (> (length names) 0)
       (define once-only-form
-        `(once-only* ,names
-                     ,quasiquote-form))
+        `(once-only ,names
+                    :smart #t
+                    ,quasiquote-form))
       (set! macro-body once-only-form)))
   `(define-macro ,macro-name-and-params
      ,macro-body))
+
+;;; Separate a property list from a list of body forms.
+;;; The property list is assumed to use keywords for
+;;; its keys.
+(define (parse-plist-and-body plst-and-body)
+  (define plst '())
+  (define body '())
+  (for ((i (range 0 (length plst-and-body) 2)))
+    (define prop
+      (list-ref plst-and-body i))
+    (cond
+     ((keyword? prop)
+      (push-right! plst prop)
+      (define val
+        (list-ref plst-and-body (+ i 1)))
+      (push-right! plst val))
+     (else
+      (set! body (drop plst-and-body i))
+      (break))))
+  (values plst body))
 
 (provide
   (rename-out (map-has? map-has))
@@ -685,6 +706,7 @@
   map-tree
   number->letter
   parse-params-list
+  parse-plist-and-body
   quasiquote?
   quote?
   tagged-list?

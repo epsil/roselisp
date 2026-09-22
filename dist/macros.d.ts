@@ -577,25 +577,19 @@ declare namespace withGensyms_ {
  * `once-only` macro, adapted from the one described in
  * Peter Seibel's [*Practical Common Lisp*][book:pcl].
  *
+ * Options may specified with a property list before
+ * the body forms. The `:smart` option, if true, creates
+ * a nested `cond` form that invokes `once-only` only on
+ * variables that are bound to complex expressions. (Note
+ * that this gets rather verbose when there are many
+ * variables. In that case, it may be better to define a
+ * recursive macro instead.)
+ *
  * [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
  */
 declare function onceOnly_(exp: any, env: any): any;
 declare namespace onceOnly_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[][] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[][])[])[])[][])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[][] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[][])[])[])[][])[])[])[])[])[])[])[])[])[])[];
 }
-/**
- * Alternative implementation of `once-only` that skips over atomic
- * expressions. Expands to a nested `cond` form that only invokes
- * `once-only` on variables that are bound to complex expressions.
- *
- * Note that this gets rather verbose when there are many variables.
- * In that case, it may be better to define a recursive macro
- * instead.
- */
-declare function onceOnlystar_(exp: any, env: any): any;
-declare namespace onceOnlystar_ {
-    var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[])[];
-}
-export { defineInline_ as defineSubst_, and_, begin0_, caseEq_, case_, clLoop_, cljTry_, cond_, declareFexpr_, declareMacro_, declareSyntaxMacro_, declare_, defclass_, defineCompilerMacro_, defineFexpr_, defineInline_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defsubst_, defun_, do_, elIf_, for_, letEnv_, macro_, match_, multipleValueBind_, newApply_, nlambda_, onceOnly_, onceOnlystar_, or_, quasisyntax_, rktNew_, set_, setq_, syntaxMacro_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_, withGensyms_ };
+export { defineInline_ as defineSubst_, and_, begin0_, caseEq_, case_, clLoop_, cljTry_, cond_, declareFexpr_, declareMacro_, declareSyntaxMacro_, declare_, defclass_, defineCompilerMacro_, defineFexpr_, defineInline_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defsubst_, defun_, do_, elIf_, for_, letEnv_, macro_, match_, multipleValueBind_, newApply_, nlambda_, onceOnly_, or_, quasisyntax_, rktNew_, set_, setq_, syntaxMacro_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_, withGensyms_ };

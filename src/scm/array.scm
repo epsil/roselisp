@@ -243,8 +243,9 @@
 (define-compiler-macro (array-push-left!_ arr x)
   `(js/statement-or-expression
     :statement (send ,arr unshift ,x)
-    :expression ,(once-only*
+    :expression ,(once-only
                   (arr)
+                  :smart #t
                   `(begin
                      (send ,arr unshift ,x)
                      ,arr))))
@@ -258,8 +259,9 @@
 (define-compiler-macro (array-push-right!_ arr x)
   `(js/statement-or-expression
     :statement (send ,arr push ,x)
-    :expression ,(once-only*
+    :expression ,(once-only
                   (arr)
+                  :smart #t
                   `(begin
                      (send ,arr push ,x)
                      ,arr))))

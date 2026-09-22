@@ -78,8 +78,9 @@
    (fdottedlists
     `(funcall list? ,x))
    (else
-    (once-only*
+    (once-only
      (x)
+     :smart #t
      `(and (array? ,x)
            (not (and (>= (array-length ,x) 3)
                      (eq? (array-nlast ,x 2) '|.|)
@@ -441,8 +442,9 @@
    (fdottedlists
     `(funcall cdr ,x))
    (else
-    (once-only*
+    (once-only
      (x)
+     :smart #t
      `(js/? (and (= (array-length ,x) 3)
                  (eq? (array-ref ,x 1) '|.|))
             (array-third ,x)
@@ -605,8 +607,9 @@
    ((eq? n 0)
     '())
    (else
-    (once-only*
+    (once-only
      (lst)
+     :smart #t
      `(drop-right ,lst (- (length ,lst) ,n))))))
 
 ;;; Return the list obtained by dropping
@@ -901,8 +904,9 @@
              (pair-or-list? (second x))))
     x)
    (else
-    (once-only*
+    (once-only
      (x)
+     :smart #t
      `(js/? (pair-or-list? ,x)
             ,x
             (list '|.| ,x))))))

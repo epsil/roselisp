@@ -324,8 +324,9 @@
         (baz x))
      #t)
  '(define-macro (foo x)
-    (once-only*
+    (once-only
      (x)
+     :smart #t
      `(begin
         (bar ,x)
         (baz ,x))))
@@ -335,8 +336,9 @@
           (baz x)))
      #t)
  '(define-macro (foo x)
-    (once-only*
+    (once-only
      (x)
+     :smart #t
      `(lambda ()
         (baz ,x))))
  > (define->define-macro

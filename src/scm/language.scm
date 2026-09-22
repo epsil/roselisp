@@ -383,7 +383,6 @@
                   new/apply_
                   nlambda_
                   once-only_
-                  once-only*_
                   or_
                   quasisyntax_
                   rkt/new_
@@ -816,7 +815,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-          lang-env))
+         lang-env))
   (oset! compilation-options :language-environment lang-env)
   (oset! compilation-options :compiled-environment compiled-env)
   (set! compilation-options
@@ -1717,7 +1716,7 @@
                    object
                    Object))
           '()
-           (list superclass)))
+          (list superclass)))
     (transfer-comments
      stx
      (datum->syntax
@@ -3202,7 +3201,7 @@
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-         'funcall))
+        'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -3439,7 +3438,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3527,7 +3526,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3732,7 +3731,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4389,7 +4388,7 @@
   (define env1
     (new LispEnvironment
          '()
-          env))
+         env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4505,7 +4504,7 @@
     (define env1
       (new LispEnvironment
            '()
-            env))
+           env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -5577,7 +5576,7 @@
       (define return-type
         (if is-constructor
             'Void
-             #u))
+            #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -6303,7 +6302,7 @@
   (define fold
     (if (eq? (plist-get_ options :fold) 'right)
         'foldr
-         'foldl))
+        'foldl))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
@@ -7440,7 +7439,7 @@
   (define/public (get-continuation-env)
     (new LispEnvironment
          '()
-          (send this get-environment)))
+         (send this get-environment)))
 
   (define/public (get-expressions)
     (get-field expressions this))
@@ -7721,7 +7720,7 @@
         (define typ
           (if (macro-definition? exp)
               '(macro-> Any * Any)
-               '(-> Any * Any)))
+              '(-> Any * Any)))
         (define prom
           (new InternalPromise
                (delay
@@ -8668,7 +8667,6 @@
          (new/apply ,new/apply_ (macro-> Any * Any))
          (nlambda ,nlambda_ (macro-> Any * Any))
          (once-only ,once-only_ (macro-> Any * Any))
-         (once-only* ,once-only*_ (macro-> Any * Any))
          (or ,or_ (macro-> Any * Any))
          (prog1 ,begin0_ (macro-> Any * Any))
          (progn ,begin_ (macro-> Any * Any))

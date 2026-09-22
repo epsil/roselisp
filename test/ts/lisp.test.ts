@@ -906,7 +906,7 @@ describe('once-only', function (): any {
       '\n' +
       'x * x;']);
   });
-  return it('(compile \'(begin (define-macro (my-plus x y) (once-only (x y) `(+ ,x ,y))) (my-plus (+ 1 1) (+ 2 2))))', function (): any {
+  it('(compile \'(begin (define-macro (my-plus x y) (once-only (x y) `(+ ,x ,y))) (my-plus (+ 1 1) (+ 2 2))))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-macro'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('once-only'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]], [Symbol.for('my-plus'), [Symbol.for('+'), 1, 1], [Symbol.for('+'), 2, 2]]]]], 'function myPlus(exp, env) {\n' +
       '  let [x, y] = exp.slice(1);\n' +
       '  let x1 = Symbol(\'x\');\n' +
@@ -924,11 +924,26 @@ describe('once-only', function (): any {
       '\n' +
       'x + y;']);
   });
-});
-
-describe('once-only*', function (): any {
-  return it('(compile \'(module m scheme (define-macro (my-plus x y) (once-only* (x y) `(+ ,x ,y))) (my-plus (+ 1 1) 2)))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define-macro'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('once-only*'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]], [Symbol.for('my-plus'), [Symbol.for('+'), 1, 1], 2]]]], 'function myPlus(exp, env) {\n' +
+  it('(compile \'(module m scheme (define-macro (my-plus x y) (once-only (x y) `(+ ,x ,y))) (my-plus (+ 1 1) 2)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define-macro'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('once-only'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]], [Symbol.for('my-plus'), [Symbol.for('+'), 1, 1], 2]]]], 'function myPlus(exp, env) {\n' +
+      '  let [x, y] = exp.slice(1);\n' +
+      '  let x1 = Symbol(\'x\');\n' +
+      '  let y1 = Symbol(\'y\');\n' +
+      '  return [Symbol.for(\'let\'), [[x1, x], [y1, y]], ((x, y) => {\n' +
+      '    return [Symbol.for(\'+\'), x, y];\n' +
+      '  })(x1, y1)];\n' +
+      '}\n' +
+      '\n' +
+      'myPlus.ftype = \'macro\';\n' +
+      '\n' +
+      'let x = 1 + 1;\n' +
+      '\n' +
+      'let y = 2;\n' +
+      '\n' +
+      'x + y;']);
+  });
+  return it('(compile \'(module m scheme (define-macro (my-plus x y) (once-only (x y) :smart #t `(+ ,x ,y))) (my-plus (+ 1 1) 2)))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define-macro'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('once-only'), [Symbol.for('x'), Symbol.for('y')], Symbol.for(':smart'), true, [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]], [Symbol.for('my-plus'), [Symbol.for('+'), 1, 1], 2]]]], 'function myPlus(exp, env) {\n' +
       '  let [x, y] = exp.slice(1);\n' +
       '  if (!(Array.isArray(x) && (x.length > 0))) {\n' +
       '    if (!(Array.isArray(y) && (y.length > 0))) {\n' +

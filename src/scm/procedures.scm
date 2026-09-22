@@ -167,8 +167,9 @@
          map
          ,(if (unary-lambda? f)
               f
-              (once-only*
+              (once-only
                (f)
+               :smart #t
                `(js/? (one? (arity ,f))
                       ,f
                       (lambda (x)
@@ -547,14 +548,16 @@
 (define-compiler-macro (member?_ v lst is-equal)
   (cond
    (is-equal
-    (once-only*
+    (once-only
      (v is-equal)
+     :smart #t
      `(memf? (lambda (x)
                (,is-equal ,v x))
              ,lst)))
    (else
-    (once-only*
+    (once-only
      (v)
+     :smart #t
      `(memf? (lambda (x)
                (equal? ,v x))
              ,lst)))))
@@ -837,8 +840,9 @@
 (define-compiler-macro (sort_ lst (pred #u))
   (cond
    (pred
-    (once-only*
+    (once-only
      (pred)
+     :smart #t
      `(array-sort ,lst
                   (lambda (x y)
                     (js/? (,pred x y)
@@ -861,8 +865,9 @@
 (define-compiler-macro (sort!_ lst (pred #u))
   (cond
    (pred
-    (once-only*
+    (once-only
      (pred)
+     :smart #t
      `(array-sort! ,lst
                    (lambda (x y)
                      (js/? (,pred x y)

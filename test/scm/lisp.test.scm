@@ -1066,12 +1066,32 @@ let x = 1 + 1;
 let y = 2 + 2;
 
 x + y;"
-
- :describe "once-only*"
  > (compile '(module m scheme
                (define-macro (my-plus x y)
-                 (once-only* (x y)
-                             `(+ ,x ,y)))
+                 (once-only (x y)
+                            `(+ ,x ,y)))
+               (my-plus (+ 1 1) 2)))
+ "function myPlus(exp, env) {
+  let [x, y] = exp.slice(1);
+  let x1 = Symbol('x');
+  let y1 = Symbol('y');
+  return [Symbol.for('let'), [[x1, x], [y1, y]], ((x, y) => {
+    return [Symbol.for('+'), x, y];
+  })(x1, y1)];
+}
+
+myPlus.ftype = 'macro';
+
+let x = 1 + 1;
+
+let y = 2;
+
+x + y;"
+ > (compile '(module m scheme
+               (define-macro (my-plus x y)
+                 (once-only (x y)
+                            :smart #t
+                            `(+ ,x ,y)))
                (my-plus (+ 1 1) 2)))
  "function myPlus(exp, env) {
   let [x, y] = exp.slice(1);

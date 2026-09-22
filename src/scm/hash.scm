@@ -126,8 +126,9 @@
    ((undefined? failure-result)
     `(send ,ht get ,key))
    (else
-    (once-only*
+    (once-only
      (ht key)
+     :smart #t
      `(if (hash-has-key? ,ht ,key)
           (hash-ref ,ht ,key)
           ,failure-result)))))
@@ -152,8 +153,9 @@
 
 ;;; Compiler macro for `(hash-remove! ...)` expressions.
 (define-compiler-macro (hash-remove!_ ht key)
-  (once-only*
+  (once-only
    (ht)
+   :smart #t
    `(begin
       (send ,ht delete ,key)
       ,ht)))
@@ -201,8 +203,9 @@
 (define-compiler-macro (hash-clear!_ ht)
   `(js/statement-or-expression
     :statement (send ,ht clear)
-    :expression ,(once-only*
+    :expression ,(once-only
                   (ht)
+                  :smart #t
                   `(begin
                      (send ,ht clear)
                      ,ht))))

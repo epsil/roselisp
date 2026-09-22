@@ -16,10 +16,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
-const [selfEvaluatingP, buildList] = (() => {
+const [selfEvaluatingP, buildList, keywordp] = (() => {
     function selfEvaluatingP_(x) {
         return (typeof x === 'boolean') || Number.isFinite(x) || (typeof x === 'string') || (() => {
             function keywordp_(obj) {
@@ -58,7 +58,7 @@ const [selfEvaluatingP, buildList] = (() => {
         }
         return result;
     }
-    return [selfEvaluatingP_, buildList_];
+    return [selfEvaluatingP_, buildList_, keywordp_];
 })();
 /**
  * Get the value stored under `path` in the map `map`.
@@ -364,7 +364,7 @@ exports.unquoteSplicingP = unquoteSplicingP;
  */
 function lambdaToLet(lambdaExp, args) {
     const params = lambdaExp[1];
-    const body = lambdaExp.slice(2);
+    let body = lambdaExp.slice(2);
     const bindings = [];
     if (typeof params === 'symbol') {
         bindings.push([params, [Symbol.for('quote'), args]]);
@@ -729,10 +729,34 @@ function defineToDefineMacro(x, onceOnly = false) {
             }
         }
         if (names.length > 0) {
-            const onceOnlyForm = [Symbol.for('once-only*'), names, quasiquoteForm];
+            const onceOnlyForm = [Symbol.for('once-only'), names, Symbol.for(':smart'), true, quasiquoteForm];
             macroBody = onceOnlyForm;
         }
     }
     return [Symbol.for('define-macro'), macroNameAndParams, macroBody];
 }
 exports.defineToDefineMacro = defineToDefineMacro;
+/**
+ * Separate a property list from a list of body forms.
+ * The property list is assumed to use keywords for
+ * its keys.
+ */
+function parsePlistAndBody(plstAndBody) {
+    const plst = [];
+    let body = [];
+    const _end = plstAndBody.length;
+    for (let i = 0; i < _end; i = i + 2) {
+        const prop = plstAndBody[i];
+        if (keywordp(prop)) {
+            plst.push(prop);
+            const val = plstAndBody[i + 1];
+            plst.push(val);
+        }
+        else {
+            body = plstAndBody.slice(i);
+            break;
+        }
+    }
+    return [plst, body];
+}
+exports.parsePlistAndBody = parsePlistAndBody;

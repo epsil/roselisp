@@ -27,7 +27,7 @@ import {
   syntaxToDatum
 } from './rose';
 
-const [selfEvaluatingP, buildList]: any[] = ((): any => {
+const [selfEvaluatingP, buildList, keywordp]: any[] = ((): any => {
   function selfEvaluatingP_(x: any): any {
     return (typeof x === 'boolean') || Number.isFinite(x) || (typeof x === 'string') || ((): any => {
       function keywordp_(obj: any): any {
@@ -66,7 +66,7 @@ const [selfEvaluatingP, buildList]: any[] = ((): any => {
     }
     return result;
   }
-  return [selfEvaluatingP_, buildList_];
+  return [selfEvaluatingP_, buildList_, keywordp_];
 })();
 
 /**
@@ -362,7 +362,7 @@ function unquoteSplicingP(obj: any): any {
  */
 function lambdaToLet(lambdaExp: any, args: any): any {
   const params: any = lambdaExp[1];
-  const body: any = lambdaExp.slice(2);
+  let body: any = lambdaExp.slice(2);
   const bindings: any = [];
   if (typeof params === 'symbol') {
     bindings.push([params, [Symbol.for('quote'), args]]);
@@ -701,11 +701,34 @@ function defineToDefineMacro(x: any, onceOnly: any = false): any {
       }
     }
     if (names.length > 0) {
-      const onceOnlyForm: any = [Symbol.for('once-only*'), names, quasiquoteForm];
+      const onceOnlyForm: any = [Symbol.for('once-only'), names, Symbol.for(':smart'), true, quasiquoteForm];
       macroBody = onceOnlyForm;
     }
   }
   return [Symbol.for('define-macro'), macroNameAndParams, macroBody];
+}
+
+/**
+ * Separate a property list from a list of body forms.
+ * The property list is assumed to use keywords for
+ * its keys.
+ */
+function parsePlistAndBody(plstAndBody: any): any {
+  const plst: any = [];
+  let body: any = [];
+  const _end: any = plstAndBody.length;
+  for (let i: any = 0; i < _end; i = i + 2) {
+    const prop: any = (plstAndBody as any)[i];
+    if (keywordp(prop)) {
+      plst.push(prop);
+      const val: any = plstAndBody[i + 1];
+      plst.push(val);
+    } else {
+      body = plstAndBody.slice(i);
+      break;
+    }
+  }
+  return [plst, body];
 }
 
 export {
@@ -733,6 +756,7 @@ export {
   mapTree,
   numberToLetter,
   parseParamsList,
+  parsePlistAndBody,
   quasiquotep,
   quotep,
   taggedListP,

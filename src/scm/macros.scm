@@ -28,6 +28,7 @@
                   list-expression->pattern
                   map-tree
                   number->letter
+                  parse-plist-and-body
                   tagged-list?))
 
 ;;; Expand a `(defun ...)` expression.
@@ -1260,29 +1261,20 @@
 ;;; `once-only` macro, adapted from the one described in
 ;;; Peter Seibel's [*Practical Common Lisp*][book:pcl].
 ;;;
+;;; Options may specified with a property list before
+;;; the body forms. The `:smart` option, if true, creates
+;;; a nested `cond` form that invokes `once-only` only on
+;;; variables that are bound to complex expressions. (Note
+;;; that this gets rather verbose when there are many
+;;; variables. In that case, it may be better to define a
+;;; recursive macro instead.)
+;;;
 ;;; [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
 (define-macro (once-only_ names &rest body)
-  (let ((gensyms (cl/loop for n in names
-                          collect (gensym (symbol->string n)))))
-    `(let (,@(cl/loop for g in gensyms
-                      for n in names
-                      collect `(,g (gensym ,(symbol->string n)))))
-       `(let (,,@(cl/loop for g in gensyms
-                          for n in names
-                          collect ``(,,g ,,n)))
-          ,(let (,@(cl/loop for n in names
-                            for g in gensyms
-                            collect `(,n ,g)))
-             ,@body)))))
-
-;;; Alternative implementation of `once-only` that skips over atomic
-;;; expressions. Expands to a nested `cond` form that only invokes
-;;; `once-only` on variables that are bound to complex expressions.
-;;;
-;;; Note that this gets rather verbose when there are many variables.
-;;; In that case, it may be better to define a recursive macro
-;;; instead.
-(define-macro (once-only*_ names &rest body)
+  (define-values (plst body1)
+    (parse-plist-and-body body))
+  (define smart-option
+    (plist-get_ plst :smart))
   (define (recurse input output body)
     (cond
      ((null? input)
@@ -1300,7 +1292,22 @@
          ,(recurse (rest input)
                    (append output (list (first input)))
                    body))))))
-  (recurse names '() body))
+  (cond
+   (smart-option
+    (recurse names '() body1))
+   (else
+    (let ((gensyms (cl/loop for n in names
+                            collect (gensym (symbol->string n)))))
+      `(let (,@(cl/loop for g in gensyms
+                        for n in names
+                        collect `(,g (gensym ,(symbol->string n)))))
+         `(let (,,@(cl/loop for g in gensyms
+                            for n in names
+                            collect ``(,,g ,,n)))
+            ,(let (,@(cl/loop for n in names
+                              for g in gensyms
+                              collect `(,n ,g)))
+               ,@body)))))))
 
 (provide
   (rename-out (define-inline_ define-subst_))
@@ -1338,7 +1345,6 @@
   new/apply_
   nlambda_
   once-only_
-  once-only*_
   or_
   quasisyntax_
   rkt/new_

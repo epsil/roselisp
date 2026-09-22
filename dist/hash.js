@@ -71,9 +71,9 @@ function makeHash_(assocs = []) {
     // `alist->tuples` and call that here. That function can then be given
     // a compiler macro that deals with quasiquoted association lists and
     // the like.
-    return new Map(assocs.map(function (x) {
+    return new Map(assocs.map((flatten.length === 1) ? flatten : (function (x) {
         return flatten(x);
-    }));
+    })));
 }
 exports.makeHash_ = makeHash_;
 makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('assocs'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), Symbol.for('assocs')]]];

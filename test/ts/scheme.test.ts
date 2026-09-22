@@ -191,9 +191,13 @@ describe('Symbols', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), Symbol.for('A')]], 'A;']);
   });
   return it('(compile \'(module m scheme (define lst (map symbol? \'(a b c)))))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('lst'), [Symbol.for('map'), Symbol.for('symbol?'), [Symbol.for('quote'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')]]]]]]], 'let lst = [Symbol.for(\'a\'), Symbol.for(\'b\'), Symbol.for(\'c\')].map(function (x) {\n' +
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('lst'), [Symbol.for('map'), Symbol.for('symbol?'), [Symbol.for('quote'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')]]]]]]], 'import {\n' +
+      '  symbolp\n' +
+      '} from \'roselisp\';\n' +
+      '\n' +
+      'let lst = [Symbol.for(\'a\'), Symbol.for(\'b\'), Symbol.for(\'c\')].map((symbolp.length === 1) ? symbolp : (function (x) {\n' +
       '  return typeof x === \'symbol\';\n' +
-      '});']);
+      '}));']);
   });
 });
 
@@ -3750,31 +3754,21 @@ describe('map', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('define'), [Symbol.for('fact'), Symbol.for('n')], [Symbol.for('if'), [Symbol.for('<'), Symbol.for('n'), 2], 1, [Symbol.for('*'), Symbol.for('n'), [Symbol.for('fact'), [Symbol.for('-'), Symbol.for('n'), 1]]]]], [Symbol.for('map'), Symbol.for('fact'), [Symbol.for('quote'), [1, 2, 3, 4, 5, 6]]]]], [Symbol.for('quote'), [1, 2, 6, 24, 120, 720]]]);
   });
   it('(compile \'(map f lst))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('map'), Symbol.for('f'), Symbol.for('lst')]]], 'lst.map(function (x) {\n' +
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('map'), Symbol.for('f'), Symbol.for('lst')]]], 'lst.map((f.length === 1) ? f : (function (x) {\n' +
       '  return f(x);\n' +
-      '});']);
+      '}));']);
   });
   it('(compile \'(map (lambda (x) x) lst))', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], Symbol.for('lst')]]], 'lst.map(function (x) {\n' +
       '  return x;\n' +
       '});']);
   });
-  it('(compile \'(map f x))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('map'), Symbol.for('f'), Symbol.for('x')]]], 'x.map(function (x) {\n' +
-      '  return f(x);\n' +
-      '});']);
-  });
-  it('(compile \'(map (lambda (x) x) x))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], Symbol.for('x')]]], 'x.map(function (x) {\n' +
-      '  return x;\n' +
-      '});']);
-  });
-  return it('(compile \'(map (g y) x))', function (): any {
-    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('map'), [Symbol.for('g'), Symbol.for('y')], Symbol.for('x')]]], 'x.map((function (f) {\n' +
-      '  return function (x) {\n' +
+  return it('(compile \'(map (g h) lst))', function (): any {
+    return testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('map'), [Symbol.for('g'), Symbol.for('h')], Symbol.for('lst')]]], 'lst.map(((f) => {\n' +
+      '  return (f.length === 1) ? f : (function (x) {\n' +
       '    return f(x);\n' +
-      '  };\n' +
-      '})(g(y)));']);
+      '  });\n' +
+      '})(g(h)));']);
   });
 });
 

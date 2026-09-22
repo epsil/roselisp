@@ -920,9 +920,9 @@ function decompileArrayExpression(node, options = {}) {
         }
     }
     if ((elements.length > 0) && elements[elements.length - 1] && (0, estree_1.estreeTypeP)(elements[elements.length - 1], 'RestElement')) {
-        const regularElements = elements.slice(0, -1).map(function (x) {
+        const regularElements = elements.slice(0, -1).map((decompileElement.length === 1) ? decompileElement : (function (x) {
             return decompileElement(x);
-        });
+        }));
         const restElement = decompileElement(elements[elements.length - 1]);
         return (0, rose_1.datumToSyntax)(false, listStar(...[...regularElements, restElement]));
     }
@@ -941,9 +941,9 @@ function decompileArrayExpression(node, options = {}) {
         return (0, rose_1.datumToSyntax)(false, [Symbol.for('append'), ...elementsDecompiled]);
     }
     else {
-        const elementsDecompiled = elements.map(function (x) {
+        const elementsDecompiled = elements.map((decompileElement.length === 1) ? decompileElement : (function (x) {
             return decompileElement(x);
-        });
+        }));
         return (0, rose_1.datumToSyntax)(false, [Symbol.for('list'), ...elementsDecompiled]);
     }
 }
@@ -1248,9 +1248,9 @@ function removeReturnTailCall(node) {
         return (0, rose_1.datumToSyntax)(false, [...node.dropRight(1), removeReturnTailCall(node.get(exp.length - 1))], node);
     }
     else if ((0, util_1.taggedListP)(exp, Symbol.for('if'))) {
-        return (0, rose_1.datumToSyntax)(false, [node.get(0), node.get(1), ...node.drop(2).map(function (x) {
+        return (0, rose_1.datumToSyntax)(false, [node.get(0), node.get(1), ...node.drop(2).map((removeReturnTailCall.length === 1) ? removeReturnTailCall : (function (x) {
                 return removeReturnTailCall(x);
-            })], node);
+            }))], node);
     }
     else if ((0, util_1.taggedListP)(exp, Symbol.for('cond'))) {
         return (0, rose_1.datumToSyntax)(false, [node.get(0), ...node.drop(1).map(function (x) {

@@ -134,9 +134,13 @@ three")
  > (compile '(module m scheme
                (define lst
                  (map symbol? '(a b c)))))
- "let lst = [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')].map(function (x) {
+ "import {
+  symbolp
+} from 'roselisp';
+
+let lst = [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')].map((symbolp.length === 1) ? symbolp : (function (x) {
   return typeof x === 'symbol';
-});"
+}));"
 
  :describe "symbol?"
  > (symbol? 'foo)
@@ -3579,32 +3583,24 @@ reverse(lst);"
             (* n (fact (- n 1)))))
       (map fact '(1 2 3 4 5 6))))
  '(1 2 6 24 120 720)
+ ;; We can't compile this to `lst.map(f)` because
+ ;; we need to ensure that the function is only
+ ;; called with a single argument, and JavaScript's
+ ;; `.map()` method passes multiple arguments.
  > (compile '(map f lst))
- "lst.map(function (x) {
+ "lst.map((f.length === 1) ? f : (function (x) {
   return f(x);
-});"
+}));"
  > (compile '(map (lambda (x) x) lst))
  "lst.map(function (x) {
   return x;
 });"
- > (compile '(map f x))
- "x.map(function (x) {
-  return f(x);
-});"
- > (compile '(map (lambda (x) x) x))
- "x.map(function (x) {
-  return x;
-});"
- ;; We can't compile this to `x.map(g(y))` because
- ;; we need to ensure that the function is only
- ;; called with a single argument, and JavaScript's
- ;; `.map()` method passes multiple arguments.
- > (compile '(map (g y) x))
- "x.map((function (f) {
-  return function (x) {
+ > (compile '(map (g h) lst))
+ "lst.map(((f) => {
+  return (f.length === 1) ? f : (function (x) {
     return f(x);
-  };
-})(g(y)));"
+  });
+})(g(h)));"
 
  :describe "foldl"
  > (foldl + 0 '(1 2 3 4))

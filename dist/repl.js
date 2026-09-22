@@ -84,9 +84,9 @@ exports.re = re;
  * Print utility.
  */
 function p(input) {
-    return input.map(function (x) {
+    return input.map((language_1.printSexpAsExpression.length === 1) ? language_1.printSexpAsExpression : (function (x) {
         return (0, language_1.printSexpAsExpression)(x);
-    }).join('\n');
+    })).join('\n');
 }
 /**
  * Read--Eval--Print utility.

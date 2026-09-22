@@ -473,7 +473,7 @@
 (define (list-ref_ lst . indices)
   (cond
    ((dotted-list? lst)
-    (apply dotted-list-ref_ lst indices))
+    (apply dotted-list-ref lst indices))
    (else
     (define result lst)
     (for ((i indices))
@@ -1021,39 +1021,39 @@
 
 ;;; Return the second element of a dotted list.
 (define (dotted-list-second_ lst)
-  (dotted-list-ref_ lst 1))
+  (dotted-list-ref lst 1))
 
 ;;; Return the third element of a dotted list.
 (define (dotted-list-third_ lst)
-  (dotted-list-ref_ lst 2))
+  (dotted-list-ref lst 2))
 
 ;;; Return the fourth element of a dotted list.
 (define (dotted-list-fourth_ lst)
-  (dotted-list-ref_ lst 3))
+  (dotted-list-ref lst 3))
 
 ;;; Return the fifth element of a dotted list.
 (define (dotted-list-fifth_ lst)
-  (dotted-list-ref_ lst 4))
+  (dotted-list-ref lst 4))
 
 ;;; Return the sixth element of a dotted list.
 (define (dotted-list-sixth_ lst)
-  (dotted-list-ref_ lst 5))
+  (dotted-list-ref lst 5))
 
 ;;; Return the seventh element of a dotted list.
 (define (dotted-list-seventh_ lst)
-  (dotted-list-ref_ lst 6))
+  (dotted-list-ref lst 6))
 
 ;;; Return the eighth element of a dotted list.
 (define (dotted-list-eighth_ lst)
-  (dotted-list-ref_ lst 7))
+  (dotted-list-ref lst 7))
 
 ;;; Return the ninth element of a dotted list.
 (define (dotted-list-ninth_ lst)
-  (dotted-list-ref_ lst 8))
+  (dotted-list-ref lst 8))
 
 ;;; Return the tenth element of a dotted list.
 (define (dotted-list-tenth_ lst)
-  (dotted-list-ref_ lst 9))
+  (dotted-list-ref lst 9))
 
 ;;; Return the last element of a dotted list.
 (define (dotted-list-last_ lst)

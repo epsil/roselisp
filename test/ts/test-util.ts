@@ -16,7 +16,7 @@ import {
   writeToString
 } from '../../src/ts/language';
 
-const [equalp, keywordp]: any[] = ((): any => {
+const [equalp, first, keywordp]: any[] = ((): any => {
   function equalp_(x: any, y: any): any {
     if (x === y) {
       return true;
@@ -68,10 +68,13 @@ const [equalp, keywordp]: any[] = ((): any => {
       return false;
     }
   }
+  function first_(lst: any): any {
+    return lst[0];
+  }
   function keywordp_(obj: any): any {
     return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
   }
-  return [equalp_, keywordp_];
+  return [equalp_, first_, keywordp_];
 })();
 
 const assertEqual: any = chai.assert.deepEqual;
@@ -294,9 +297,9 @@ function simplifyReplForm(exp: any): any {
   if (clauses.length <= 1) {
     return exp;
   } else {
-    return [getReplFormType(exp), Symbol.for('>'), [Symbol.for('begin'), ...clauses.map(function (x: any): any {
+    return [getReplFormType(exp), Symbol.for('>'), [Symbol.for('begin'), ...clauses.map((first.length === 1) ? first : (function (x: any): any {
       return x[0];
-    })], clauses[clauses.length - 1][1]];
+    }))], clauses[clauses.length - 1][1]];
   }
 }
 
@@ -352,9 +355,9 @@ function printSexp(exp: any): any {
   } else if (taggedListP(exp, Symbol.for('unquote-splicing'))) {
     return ',@' + printSexp(exp[1]);
   } else if (Array.isArray(exp)) {
-    return '(' + exp.map(function (x: any): any {
+    return '(' + exp.map((printSexp.length === 1) ? printSexp : (function (x: any): any {
       return printSexp(x);
-    }).join(' ') + ')';
+    })).join(' ') + ')';
   } else if (typeof exp === 'string') {
     return '"' + exp.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"') + '"';
   } else if (typeof exp === 'symbol') {

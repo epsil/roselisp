@@ -169,9 +169,9 @@ declare namespace not_ {
  * [rkt:map]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Fmap..rkt%29._map%29%29
  * [cl:mapcar]: http://clhs.lisp.se/Body/f_mapc_.htm#mapcar
  */
-declare function map_(f: any, seq: any): any;
+declare function map_(f: any, lst: any): any;
 declare namespace map_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var compilerMacro: any;
 }
 /**

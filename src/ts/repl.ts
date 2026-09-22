@@ -109,9 +109,9 @@ function re(input: any, env: any = makeInteractiveEnvironment()): any {
  * Print utility.
  */
 function p(input: any): any {
-  return input.map(function (x: any): any {
+  return input.map((printSexpAsExpression.length === 1) ? printSexpAsExpression : (function (x: any): any {
     return printSexpAsExpression(x);
-  }).join('\n');
+  })).join('\n');
 }
 
 /**

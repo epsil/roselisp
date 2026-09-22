@@ -140,9 +140,9 @@ describe('Global environment', function (): any {
       '})();\n' +
       '\n' +
       'function myMap(f, x) {\n' +
-      '  return x.map(function (x) {\n' +
+      '  return x.map((f.length === 1) ? f : (function (x) {\n' +
       '    return f(x);\n' +
-      '  });\n' +
+      '  }));\n' +
       '}\n' +
       '\n' +
       'let bar = myMap(first, [[1], [2], [3]]);');

@@ -371,9 +371,9 @@ class TrampolineCall {
    * from left to right.
    */
   mapLeft(f: any): any {
-    return new TrampolineCall(...this.call.map(function (x: any): any {
+    return new TrampolineCall(...this.call.map((f.length === 1) ? f : (function (x: any): any {
       return f(x);
-    }));
+    })));
   }
 
   /**

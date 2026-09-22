@@ -23,7 +23,7 @@ const eval_1 = require("./eval");
 const plist_1 = require("./plist");
 const rose_1 = require("./rose");
 const util_1 = require("./util");
-const [listStar, setCarX] = (() => {
+const [listStar, second, setCarX] = (() => {
     function listStar_(...args) {
         if (args.length === 0) {
             return undefined;
@@ -42,13 +42,105 @@ const [listStar, setCarX] = (() => {
             }
         }
     }
+    function second_(lst) {
+        if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+            return (() => {
+                function dottedListSecond_(lst) {
+                    return (() => {
+                        function dottedListRef_(lst, ...indices) {
+                            let result = lst;
+                            for (let i of indices) {
+                                while (i > 0) {
+                                    if (i < (result.length - 2)) {
+                                        break;
+                                    }
+                                    else {
+                                        i = i - (result.length - 2);
+                                        result = result[result.length - 1];
+                                    }
+                                }
+                                if (Array.isArray(result)) {
+                                    result = result[i];
+                                }
+                            }
+                            return result;
+                        }
+                        return dottedListRef_;
+                    })()(lst, 1);
+                }
+                function dottedListRef_(lst, ...indices) {
+                    let result = lst;
+                    for (let i of indices) {
+                        while (i > 0) {
+                            if (i < (result.length - 2)) {
+                                break;
+                            }
+                            else {
+                                i = i - (result.length - 2);
+                                result = result[result.length - 1];
+                            }
+                        }
+                        if (Array.isArray(result)) {
+                            result = result[i];
+                        }
+                    }
+                    return result;
+                }
+                return dottedListSecond_;
+            })()(lst);
+        }
+        else {
+            return lst[1];
+        }
+    }
     function setCarX_(x, y) {
         if (x.length > 0) {
             x[0] = y;
         }
         return undefined;
     }
-    return [listStar_, setCarX_];
+    function dottedListSecond_(lst) {
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 1);
+    }
+    function dottedListRef_(lst, ...indices) {
+        let result = lst;
+        for (let i of indices) {
+            while (i > 0) {
+                if (i < (result.length - 2)) {
+                    break;
+                }
+                else {
+                    i = i - (result.length - 2);
+                    result = result[result.length - 1];
+                }
+            }
+            if (Array.isArray(result)) {
+                result = result[i];
+            }
+        }
+        return result;
+    }
+    return [listStar_, second_, setCarX_];
 })();
 /**
  * Expand a `(defun ...)` expression.
@@ -464,9 +556,9 @@ function rktNew_(exp, env) {
     // support for creating a new object on the basis of by-name
     // initialization arguments; it only supports by-position
     // initialization arguments, which are passed to the constructor.
-    return [Symbol.for('make-object'), constructor, ...args.map(function (x) {
+    return [Symbol.for('make-object'), constructor, ...args.map((second.length === 1) ? second : (function (x) {
             return x[1];
-        })];
+        }))];
 }
 exports.rktNew_ = rktNew_;
 rktNew_.ftype = 'macro';

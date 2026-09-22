@@ -955,9 +955,9 @@ function decompileArrayExpression(node: any, options: any = {}): any {
     }
   }
   if ((elements.length > 0) && elements[elements.length - 1] && estreeTypeP(elements[elements.length - 1], 'RestElement')) {
-    const regularElements: any = elements.slice(0, -1).map(function (x: any): any {
+    const regularElements: any = elements.slice(0, -1).map((decompileElement.length === 1) ? decompileElement : (function (x: any): any {
       return decompileElement(x);
-    });
+    }));
     const restElement: any = decompileElement(elements[elements.length - 1]);
     return datumToSyntax(false, listStar(...[...regularElements, restElement]));
   } else if (findf(function (x: any): any {
@@ -973,9 +973,9 @@ function decompileArrayExpression(node: any, options: any = {}): any {
     });
     return datumToSyntax(false, [Symbol.for('append'), ...elementsDecompiled]);
   } else {
-    const elementsDecompiled: any = elements.map(function (x: any): any {
+    const elementsDecompiled: any = elements.map((decompileElement.length === 1) ? decompileElement : (function (x: any): any {
       return decompileElement(x);
-    });
+    }));
     return datumToSyntax(false, [Symbol.for('list'), ...elementsDecompiled]);
   }
 }
@@ -1297,9 +1297,9 @@ function removeReturnTailCall(node: any): any {
   } else if (taggedListP(exp, Symbol.for('js/block'))) {
     return datumToSyntax(false, [...node.dropRight(1), removeReturnTailCall(node.get(exp.length - 1))], node);
   } else if (taggedListP(exp, Symbol.for('if'))) {
-    return datumToSyntax(false, [node.get(0), node.get(1), ...node.drop(2).map(function (x: any): any {
+    return datumToSyntax(false, [node.get(0), node.get(1), ...node.drop(2).map((removeReturnTailCall.length === 1) ? removeReturnTailCall : (function (x: any): any {
       return removeReturnTailCall(x);
-    })], node);
+    }))], node);
   } else if (taggedListP(exp, Symbol.for('cond'))) {
     return datumToSyntax(false, [node.get(0), ...node.drop(1).map(function (x: any): any {
       return datumToSyntax(false, [...x.dropRight(1), removeReturnTailCall(x.get(syntaxToDatum(x).length - 1))], node);

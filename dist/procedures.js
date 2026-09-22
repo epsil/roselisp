@@ -305,35 +305,35 @@ not_.fsource = [Symbol.for('define'), [Symbol.for('not_'), Symbol.for('x')], [Sy
  * [rkt:map]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Fmap..rkt%29._map%29%29
  * [cl:mapcar]: http://clhs.lisp.se/Body/f_mapc_.htm#mapcar
  */
-function map_(f, seq) {
-    return seq.map(function (x) {
+function map_(f, lst) {
+    // Note that `(send lst map f)` is too simple, as JavaScript's
+    // `.map()` method calls the function with multiple arguments. This
+    // can lead to unintuitive bugs in cases where the function has an
+    // optional second parameter. To avoid this, we inspect the arity of
+    // `f` and enclose it in a unary function wrapper if necessary.
+    return lst.map((f.length === 1) ? f : (function (x) {
         return f(x);
-    });
+    }));
 }
 exports.map = map_;
 exports.mapcar = map_;
 exports.map_ = map_;
-map_.fsource = [Symbol.for('define'), [Symbol.for('map_'), Symbol.for('f'), Symbol.for('seq')], [Symbol.for('send'), Symbol.for('seq'), Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]]]];
+map_.fsource = [Symbol.for('define'), [Symbol.for('map_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('map'), [Symbol.for('if'), [Symbol.for('one?'), [Symbol.for('arity'), Symbol.for('f')]], Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]]]]];
 /**
  * Compiler macro for `(map ...)` expressions.
  */
 map_.compilerMacro = (() => {
     const f = function (exp, env) {
-        let [f, x] = exp.slice(1);
-        function makeUnaryFunction(fExp) {
-            if (typeof fExp === 'symbol') {
-                return [Symbol.for('lambda'), [Symbol.for('x')], [fExp, Symbol.for('x')]];
-            }
-            else if ((0, util_1.taggedListP)(fExp, [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]) && Array.isArray(fExp[1]) && (fExp[1].length === 1)) {
-                return fExp;
-            }
-            else {
-                const AExp = [Symbol.for('lambda'), [Symbol.for('f')], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]]];
-                return [AExp, fExp];
-            }
+        const [f, lst] = exp.slice(1);
+        function unaryLambdaP(exp) {
+            return (0, util_1.taggedListP)(exp, [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]) && Array.isArray(exp[1]) && (exp[1].length === 1);
         }
-        makeUnaryFunction.fsource = [Symbol.for('define'), [Symbol.for('make-unary-function'), Symbol.for('f-exp')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('f-exp')], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('x')], [[Symbol.for('unquote'), Symbol.for('f-exp')], Symbol.for('x')]]]], [[Symbol.for('and'), [Symbol.for('tagged-list?'), Symbol.for('f-exp'), [Symbol.for('quote'), [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]]], [Symbol.for('pair-or-list?'), [Symbol.for('second'), Symbol.for('f-exp')]], [Symbol.for('='), [Symbol.for('length'), [Symbol.for('second'), Symbol.for('f-exp')]], 1]], Symbol.for('f-exp')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('A-exp'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('f')], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]]]]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('A-exp')], [Symbol.for('unquote'), Symbol.for('f-exp')]]]]]];
-        return [Symbol.for('send'), x, Symbol.for('map'), makeUnaryFunction(f)];
+        unaryLambdaP.fsource = [Symbol.for('define'), [Symbol.for('unary-lambda?'), Symbol.for('exp')], [Symbol.for('and'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]]], [Symbol.for('pair-or-list?'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('one?'), [Symbol.for('length'), [Symbol.for('second'), Symbol.for('exp')]]]]];
+        return [Symbol.for('send'), lst, Symbol.for('map'), unaryLambdaP(f) ? f : (!(Array.isArray(f) && (f.length > 0)) ? [Symbol.for('js/?'), [Symbol.for('one?'), [Symbol.for('arity'), f]], f, [Symbol.for('lambda'), [Symbol.for('x')], [f, Symbol.for('x')]]] : ((f1) => {
+                return [Symbol.for('let'), [[f1, f]], ((f) => {
+                        return [Symbol.for('js/?'), [Symbol.for('one?'), [Symbol.for('arity'), f]], f, [Symbol.for('lambda'), [Symbol.for('x')], [f, Symbol.for('x')]]];
+                    })(f1)];
+            })(Symbol('f')))];
     };
     f.ftype = 'macro';
     return f;

@@ -39,7 +39,7 @@ import {
   taggedListP
 } from './util';
 
-const [listStar, setCarX]: any[] = ((): any => {
+const [listStar, second, setCarX]: any[] = ((): any => {
   function listStar_(...args: any[]): any {
     if (args.length === 0) {
       return undefined;
@@ -55,13 +55,100 @@ const [listStar, setCarX]: any[] = ((): any => {
       }
     }
   }
+  function second_(lst: any): any {
+    if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
+      return ((): any => {
+        function dottedListSecond_(lst: any): any {
+          return ((): any => {
+            function dottedListRef_(lst: any, ...indices: any[]): any {
+              let result: any = lst;
+              for (let i of indices) {
+                while (i > 0) {
+                  if (i < (result.length - 2)) {
+                    break;
+                  } else {
+                    i = i - (result.length - 2);
+                    result = result[result.length - 1];
+                  }
+                }
+                if (Array.isArray(result)) {
+                  result = (result as any)[i];
+                }
+              }
+              return result;
+            }
+            return dottedListRef_;
+          })()(lst, 1);
+        }
+        function dottedListRef_(lst: any, ...indices: any[]): any {
+          let result: any = lst;
+          for (let i of indices) {
+            while (i > 0) {
+              if (i < (result.length - 2)) {
+                break;
+              } else {
+                i = i - (result.length - 2);
+                result = result[result.length - 1];
+              }
+            }
+            if (Array.isArray(result)) {
+              result = (result as any)[i];
+            }
+          }
+          return result;
+        }
+        return dottedListSecond_;
+      })()(lst);
+    } else {
+      return lst[1];
+    }
+  }
   function setCarX_(x: any, y: any): any {
     if (x.length > 0) {
       x[0] = y;
     }
     return undefined;
   }
-  return [listStar_, setCarX_];
+  function dottedListSecond_(lst: any): any {
+    return ((): any => {
+      function dottedListRef_(lst: any, ...indices: any[]): any {
+        let result: any = lst;
+        for (let i of indices) {
+          while (i > 0) {
+            if (i < (result.length - 2)) {
+              break;
+            } else {
+              i = i - (result.length - 2);
+              result = result[result.length - 1];
+            }
+          }
+          if (Array.isArray(result)) {
+            result = (result as any)[i];
+          }
+        }
+        return result;
+      }
+      return dottedListRef_;
+    })()(lst, 1);
+  }
+  function dottedListRef_(lst: any, ...indices: any[]): any {
+    let result: any = lst;
+    for (let i of indices) {
+      while (i > 0) {
+        if (i < (result.length - 2)) {
+          break;
+        } else {
+          i = i - (result.length - 2);
+          result = result[result.length - 1];
+        }
+      }
+      if (Array.isArray(result)) {
+        result = (result as any)[i];
+      }
+    }
+    return result;
+  }
+  return [listStar_, second_, setCarX_];
 })();
 
 /**
@@ -510,9 +597,9 @@ function rktNew_(exp: any, env: any): any {
   // support for creating a new object on the basis of by-name
   // initialization arguments; it only supports by-position
   // initialization arguments, which are passed to the constructor.
-  return [Symbol.for('make-object'), constructor, ...args.map(function (x: any): any {
+  return [Symbol.for('make-object'), constructor, ...args.map((second.length === 1) ? second : (function (x: any): any {
     return x[1];
-  })];
+  }))];
 }
 
 rktNew_.ftype = 'macro';

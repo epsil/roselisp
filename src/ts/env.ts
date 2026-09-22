@@ -1164,9 +1164,9 @@ function prefixBindings(prefix: any, bindings: any): any {
     return [Symbol.for(prefix + (binding[0].description as string)), ...binding.slice(1)];
   }
   prefixBinding.fsource = [Symbol.for('define'), [Symbol.for('prefix-binding'), Symbol.for('binding')], [Symbol.for('~>'), [Symbol.for('first'), Symbol.for('binding')], [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('string-append'), Symbol.for('prefix'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('_')], [Symbol.for('rest'), Symbol.for('binding')]]]];
-  return bindings.map(function (x: any): any {
+  return bindings.map((prefixBinding.length === 1) ? prefixBinding : (function (x: any): any {
     return prefixBinding(x);
-  });
+  }));
 }
 
 prefixBindings.fsource = [Symbol.for('define'), [Symbol.for('prefix-bindings'), Symbol.for('prefix'), Symbol.for('bindings')], [Symbol.for('define'), [Symbol.for('prefix-binding'), Symbol.for('binding')], [Symbol.for('~>'), [Symbol.for('first'), Symbol.for('binding')], [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('string-append'), Symbol.for('prefix'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('_')], [Symbol.for('rest'), Symbol.for('binding')]]]], [Symbol.for('map'), Symbol.for('prefix-binding'), Symbol.for('bindings')]];

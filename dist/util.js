@@ -41,9 +41,9 @@ const [selfEvaluatingP, buildList] = (() => {
                 return result;
             }
             return range_;
-        })()(0, n).map(function (x) {
+        })()(0, n).map((proc.length === 1) ? proc : (function (x) {
             return proc(x);
-        });
+        }));
     }
     function keywordp_(obj) {
         return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
@@ -553,9 +553,9 @@ function listExpressionToPattern(exp) {
                 return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
             }
             else {
-                return exp.slice(1).map(function (x) {
+                return exp.slice(1).map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (function (x) {
                     return listExpressionToPattern(x);
-                });
+                }));
             }
         }
         else if (taggedListP(exp, Symbol.for('list*'))) {
@@ -565,9 +565,9 @@ function listExpressionToPattern(exp) {
                 return listExpressionToPattern(tail);
             }
             else {
-                return [...head.map(function (x) {
+                return [...head.map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (function (x) {
                         return listExpressionToPattern(x);
-                    }), Symbol.for('.'), listExpressionToPattern(tail)];
+                    })), Symbol.for('.'), listExpressionToPattern(tail)];
             }
         }
         else {

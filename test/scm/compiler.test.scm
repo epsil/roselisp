@@ -152,9 +152,9 @@ let fooBar = stringAppend('foo', 'bar');"
 })();
 
 function myMap(f, x) {
-  return x.map(function (x) {
+  return x.map((f.length === 1) ? f : (function (x) {
     return f(x);
-  });
+  }));
 }
 
 let bar = myMap(first, [[1], [2], [3]]);"

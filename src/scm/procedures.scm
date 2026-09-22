@@ -142,44 +142,37 @@
 ;;;
 ;;; [rkt:map]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Fmap..rkt%29._map%29%29
 ;;; [cl:mapcar]: http://clhs.lisp.se/Body/f_mapc_.htm#mapcar
-(define (map_ f seq)
-  (send seq
-        map
-        (lambda (x)
-          (f x))))
-
-;;; Compiler macro for `(map ...)` expressions.
-(define-compiler-macro (map_ f x)
-  ;; Note that `` `(send ,x map ,f) `` is too simple, as JavaScript's
+(define (map_ f lst)
+  ;; Note that `(send lst map f)` is too simple, as JavaScript's
   ;; `.map()` method calls the function with multiple arguments. This
   ;; can lead to unintuitive bugs in cases where the function has an
-  ;; optional second parameter. To avoid this, we enclose `f` in a
-  ;; unary function wrapper.
-  (define (make-unary-function f-exp)
-    (cond
-     ;; If `f-exp` is a symbolic expression, then wrap it in a
-     ;; `lambda` expression.
-     ((symbol? f-exp)
-      `(lambda (x)
-         (,f-exp x)))
-     ;; If `f-exp` is an anonymous unary function, then there is
-     ;; no need to wrap it.
-     ((and (tagged-list? f-exp '(fn lambda js/function js/arrow))
-           (pair-or-list? (second f-exp))
-           (= (length (second f-exp)) 1))
-      f-exp)
-     (else
-      ;; Curried function application, i.e., the **A** combinator
-      ;; defined as a curried function. Calling this function with
-      ;; a single argument produces a unary function wrapper that
-      ;; calls a function with a single argument and disregards any
-      ;; additional arguments.
-      (define A-exp
-        '(lambda (f)
-           (lambda (x)
-             (f x))))
-      `(,A-exp ,f-exp))))
-  `(send ,x map ,(make-unary-function f)))
+  ;; optional second parameter. To avoid this, we inspect the arity of
+  ;; `f` and enclose it in a unary function wrapper if necessary.
+  (send lst
+        map
+        (if (one? (arity f))
+            f
+            (lambda (x)
+              (f x)))))
+
+;;; Compiler macro for `(map ...)` expressions.
+(define-compiler-macro (map_ f lst)
+  ;; If `f` is a lambda expression, its arity can be known
+  ;; at compile time.
+  (define (unary-lambda? exp)
+    (and (tagged-list? exp '(fn lambda js/function js/arrow))
+         (pair-or-list? (second exp))
+         (one? (length (second exp)))))
+  `(send ,lst
+         map
+         ,(if (unary-lambda? f)
+              f
+              (once-only*
+               (f)
+               `(js/? (one? (arity ,f))
+                      ,f
+                      (lambda (x)
+                        (,f x)))))))
 
 ;;; Call a procedure on each element of a list.
 (define-inline (for-each_ f lst)

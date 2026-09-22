@@ -629,7 +629,7 @@ import {
   visit
 } from './visitor';
 
-const [flatten, keywordp, makeList, findf]: any[] = ((): any => {
+const [flatten, keywordp, symbolToString, makeList, findf]: any[] = ((): any => {
   function flatten_(lst: any): any {
     return lst.reduce(function (acc: any, x: any): any {
       if (Array.isArray(x)) {
@@ -644,6 +644,9 @@ const [flatten, keywordp, makeList, findf]: any[] = ((): any => {
   }
   function keywordp_(obj: any): any {
     return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+  }
+  function symbolToString_(sym: any): any {
+    return sym.description as string;
   }
   function makeList_(k: any, v: any): any {
     let result: any = [];
@@ -660,7 +663,7 @@ const [flatten, keywordp, makeList, findf]: any[] = ((): any => {
       return notFound;
     }
   }
-  return [flatten_, keywordp_, makeList_, findf_];
+  return [flatten_, keywordp_, symbolToString_, makeList_, findf_];
 })();
 
 /**
@@ -1910,9 +1913,9 @@ function compileTypeExp(exp: any, env: any, options: any = {}): any {
     return new TSFunctionType([...mandatoryParamsCompiled, ...optionalParamsCompiled, ...restParamsCompiled], returnValueCompiled);
   } else if (Array.isArray(exp) && (exp.length > 0)) {
     let name: any = new Identifier(exp[0].description as string);
-    let params: any = exp.slice(1).map(function (x: any): any {
+    let params: any = exp.slice(1).map((symbolToString.length === 1) ? symbolToString : (function (x: any): any {
       return x.description as string;
-    });
+    }));
     if (params.length > 0) {
       return new TSTypeReference(name, new TSTypeParameterInstantiation(params));
     } else {
@@ -4812,9 +4815,9 @@ function compileJsFor(stx: any, env: any, options: any = {}): any {
   }
   let initCompiled: any = (!initExp || (Array.isArray(initExp) && (initExp.length === 0))) ? null : compileStatement(init, env1, options);
   if (estreeTypeP(initCompiled, ['Program', 'BlockStatement'])) {
-    initCompiled = new SequenceExpression(initCompiled.body.map(function (x: any): any {
+    initCompiled = new SequenceExpression(initCompiled.body.map((makeExpression.length === 1) ? makeExpression : (function (x: any): any {
       return makeExpression(x);
-    }));
+    })));
   }
   let testCompiled: any = (!testExp || (Array.isArray(testExp) && (testExp.length === 0))) ? null : compileExpression(test, env1, options);
   function incrementp(x: any): any {
@@ -4835,9 +4838,9 @@ function compileJsFor(stx: any, env: any, options: any = {}): any {
   }
   let updateCompiled: any = (!updateExp || (Array.isArray(updateExp) && (updateExp.length === 0))) ? null : compileStatement(update, env1, options);
   if (estreeTypeP(updateCompiled, ['Program', 'BlockStatement'])) {
-    updateCompiled = new SequenceExpression(updateCompiled.body.map(function (x: any): any {
+    updateCompiled = new SequenceExpression(updateCompiled.body.map((makeExpression.length === 1) ? makeExpression : (function (x: any): any {
       return makeExpression(x);
-    }));
+    })));
   } else if (estreeTypeP(updateCompiled, 'ExpressionStatement')) {
     updateCompiled = updateCompiled.expression;
   }

@@ -96,7 +96,7 @@ const thunk_1 = require("./thunk");
 const util_1 = require("./util");
 Object.defineProperty(exports, "quotep", { enumerable: true, get: function () { return util_1.quotep; } });
 const visitor_1 = require("./visitor");
-const [flatten, keywordp, makeList, findf] = (() => {
+const [flatten, keywordp, symbolToString, makeList, findf] = (() => {
     function flatten_(lst) {
         return lst.reduce(function (acc, x) {
             if (Array.isArray(x)) {
@@ -114,6 +114,9 @@ const [flatten, keywordp, makeList, findf] = (() => {
     function keywordp_(obj) {
         return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
     }
+    function symbolToString_(sym) {
+        return sym.description;
+    }
     function makeList_(k, v) {
         let result = [];
         for (let i = 0; i < k; i++) {
@@ -130,7 +133,7 @@ const [flatten, keywordp, makeList, findf] = (() => {
             return notFound;
         }
     }
-    return [flatten_, keywordp_, makeList_, findf_];
+    return [flatten_, keywordp_, symbolToString_, makeList_, findf_];
 })();
 /**
  * Default options for interpretation and compilation.
@@ -1302,9 +1305,9 @@ function compileTypeExp(exp, env, options = {}) {
     }
     else if (Array.isArray(exp) && (exp.length > 0)) {
         let name = new estree_1.Identifier(exp[0].description);
-        let params = exp.slice(1).map(function (x) {
+        let params = exp.slice(1).map((symbolToString.length === 1) ? symbolToString : (function (x) {
             return x.description;
-        });
+        }));
         if (params.length > 0) {
             return new estree_1.TSTypeReference(name, new estree_1.TSTypeParameterInstantiation(params));
         }
@@ -4119,9 +4122,9 @@ function compileJsFor(stx, env, options = {}) {
     }
     let initCompiled = (!initExp || (Array.isArray(initExp) && (initExp.length === 0))) ? null : compileStatement(init, env1, options);
     if ((0, estree_1.estreeTypeP)(initCompiled, ['Program', 'BlockStatement'])) {
-        initCompiled = new estree_1.SequenceExpression(initCompiled.body.map(function (x) {
+        initCompiled = new estree_1.SequenceExpression(initCompiled.body.map((makeExpression.length === 1) ? makeExpression : (function (x) {
             return makeExpression(x);
-        }));
+        })));
     }
     let testCompiled = (!testExp || (Array.isArray(testExp) && (testExp.length === 0))) ? null : compileExpression(test, env1, options);
     function incrementp(x) {
@@ -4143,9 +4146,9 @@ function compileJsFor(stx, env, options = {}) {
     }
     let updateCompiled = (!updateExp || (Array.isArray(updateExp) && (updateExp.length === 0))) ? null : compileStatement(update, env1, options);
     if ((0, estree_1.estreeTypeP)(updateCompiled, ['Program', 'BlockStatement'])) {
-        updateCompiled = new estree_1.SequenceExpression(updateCompiled.body.map(function (x) {
+        updateCompiled = new estree_1.SequenceExpression(updateCompiled.body.map((makeExpression.length === 1) ? makeExpression : (function (x) {
             return makeExpression(x);
-        }));
+        })));
     }
     else if ((0, estree_1.estreeTypeP)(updateCompiled, 'ExpressionStatement')) {
         updateCompiled = updateCompiled.expression;

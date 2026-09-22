@@ -40,7 +40,7 @@ exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.
 exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.reversex_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.pairp_ = exports.pairOrListP_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = exports.list_ = exports.listp_ = exports.listTail_ = exports.listStar_ = exports.listSet_ = exports.listSetX_ = exports.listRef_ = exports.listToDottedList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = void 0;
 const env_1 = require("./env");
 const util_1 = require("./util");
-const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListLength, dottedListLast] = (() => {
+const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListRef, dottedListLength, dottedListLast] = (() => {
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
             return undefined;
@@ -75,31 +75,229 @@ const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dotte
         return result;
     }
     function dottedListSecond_(lst) {
-        return dottedListRef_(lst, 1);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 1);
     }
     function dottedListThird_(lst) {
-        return dottedListRef_(lst, 2);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 2);
     }
     function dottedListFourth_(lst) {
-        return dottedListRef_(lst, 3);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 3);
     }
     function dottedListFifth_(lst) {
-        return dottedListRef_(lst, 4);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 4);
     }
     function dottedListSixth_(lst) {
-        return dottedListRef_(lst, 5);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 5);
     }
     function dottedListSeventh_(lst) {
-        return dottedListRef_(lst, 6);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 6);
     }
     function dottedListEighth_(lst) {
-        return dottedListRef_(lst, 7);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 7);
     }
     function dottedListNinth_(lst) {
-        return dottedListRef_(lst, 8);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 8);
     }
     function dottedListTenth_(lst) {
-        return dottedListRef_(lst, 9);
+        return (() => {
+            function dottedListRef_(lst, ...indices) {
+                let result = lst;
+                for (let i of indices) {
+                    while (i > 0) {
+                        if (i < (result.length - 2)) {
+                            break;
+                        }
+                        else {
+                            i = i - (result.length - 2);
+                            result = result[result.length - 1];
+                        }
+                    }
+                    if (Array.isArray(result)) {
+                        result = result[i];
+                    }
+                }
+                return result;
+            }
+            return dottedListRef_;
+        })()(lst, 9);
+    }
+    function dottedListRef_(lst, ...indices) {
+        let result = lst;
+        for (let i of indices) {
+            while (i > 0) {
+                if (i < (result.length - 2)) {
+                    break;
+                }
+                else {
+                    i = i - (result.length - 2);
+                    result = result[result.length - 1];
+                }
+            }
+            if (Array.isArray(result)) {
+                result = result[i];
+            }
+        }
+        return result;
     }
     function dottedListLength_(lst) {
         let len = 0;
@@ -126,7 +324,7 @@ const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dotte
     function keywordp_(obj) {
         return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
     }
-    return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListLength_, dottedListLast_];
+    return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListRef_, dottedListLength_, dottedListLast_];
 })();
 /**
  * Whether something is a pair, i.e., a cons cell.
@@ -360,9 +558,9 @@ listStar_.fsource = [Symbol.for('define'), [Symbol.for('list-star_'), Symbol.for
  * [rkt:build-list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._build-list%29%29
  */
 function buildList_(n, proc) {
-    return range(0, n).map(function (x) {
+    return range(0, n).map((proc.length === 1) ? proc : (function (x) {
         return proc(x);
-    });
+    }));
 }
 exports.buildList = buildList_;
 exports.buildList_ = buildList_;
@@ -866,7 +1064,7 @@ rest_.compilerMacro = (() => {
  */
 function listRef_(lst, ...indices) {
     if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
-        return dottedListRef_(lst, ...indices);
+        return dottedListRef(lst, ...indices);
     }
     else {
         let result = lst;
@@ -877,7 +1075,7 @@ function listRef_(lst, ...indices) {
     }
 }
 exports.listRef_ = listRef_;
-listRef_.fsource = [Symbol.for('define'), [Symbol.for('list-ref_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-ref_'), Symbol.for('lst'), Symbol.for('indices')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-ref'), Symbol.for('lst'), Symbol.for('i')]]], Symbol.for('result')]]];
+listRef_.fsource = [Symbol.for('define'), [Symbol.for('list-ref_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-ref'), Symbol.for('lst'), Symbol.for('indices')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), Symbol.for('lst')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('array-ref'), Symbol.for('lst'), Symbol.for('i')]]], Symbol.for('result')]]];
 /**
  * Compiler macro for `(list-ref ...)` expressions.
  */
@@ -1766,74 +1964,74 @@ dottedListFirst_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-first
  * Return the second element of a dotted list.
  */
 function dottedListSecond_(lst) {
-    return dottedListRef_(lst, 1);
+    return dottedListRef(lst, 1);
 }
 exports.dottedListSecond_ = dottedListSecond_;
-dottedListSecond_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-second_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 1]];
+dottedListSecond_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-second_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 1]];
 /**
  * Return the third element of a dotted list.
  */
 function dottedListThird_(lst) {
-    return dottedListRef_(lst, 2);
+    return dottedListRef(lst, 2);
 }
 exports.dottedListThird_ = dottedListThird_;
-dottedListThird_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-third_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 2]];
+dottedListThird_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-third_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 2]];
 /**
  * Return the fourth element of a dotted list.
  */
 function dottedListFourth_(lst) {
-    return dottedListRef_(lst, 3);
+    return dottedListRef(lst, 3);
 }
 exports.dottedListFourth_ = dottedListFourth_;
-dottedListFourth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-fourth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 3]];
+dottedListFourth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-fourth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 3]];
 /**
  * Return the fifth element of a dotted list.
  */
 function dottedListFifth_(lst) {
-    return dottedListRef_(lst, 4);
+    return dottedListRef(lst, 4);
 }
 exports.dottedListFifth_ = dottedListFifth_;
-dottedListFifth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-fifth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 4]];
+dottedListFifth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-fifth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 4]];
 /**
  * Return the sixth element of a dotted list.
  */
 function dottedListSixth_(lst) {
-    return dottedListRef_(lst, 5);
+    return dottedListRef(lst, 5);
 }
 exports.dottedListSixth_ = dottedListSixth_;
-dottedListSixth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-sixth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 5]];
+dottedListSixth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-sixth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 5]];
 /**
  * Return the seventh element of a dotted list.
  */
 function dottedListSeventh_(lst) {
-    return dottedListRef_(lst, 6);
+    return dottedListRef(lst, 6);
 }
 exports.dottedListSeventh_ = dottedListSeventh_;
-dottedListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-seventh_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 6]];
+dottedListSeventh_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-seventh_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 6]];
 /**
  * Return the eighth element of a dotted list.
  */
 function dottedListEighth_(lst) {
-    return dottedListRef_(lst, 7);
+    return dottedListRef(lst, 7);
 }
 exports.dottedListEighth_ = dottedListEighth_;
-dottedListEighth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-eighth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 7]];
+dottedListEighth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-eighth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 7]];
 /**
  * Return the ninth element of a dotted list.
  */
 function dottedListNinth_(lst) {
-    return dottedListRef_(lst, 8);
+    return dottedListRef(lst, 8);
 }
 exports.dottedListNinth_ = dottedListNinth_;
-dottedListNinth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-ninth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 8]];
+dottedListNinth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-ninth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 8]];
 /**
  * Return the tenth element of a dotted list.
  */
 function dottedListTenth_(lst) {
-    return dottedListRef_(lst, 9);
+    return dottedListRef(lst, 9);
 }
 exports.dottedListTenth_ = dottedListTenth_;
-dottedListTenth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tenth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref_'), Symbol.for('lst'), 9]];
+dottedListTenth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tenth_'), Symbol.for('lst')], [Symbol.for('dotted-list-ref'), Symbol.for('lst'), 9]];
 /**
  * Return the last element of a dotted list.
  */

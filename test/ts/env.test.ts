@@ -19,6 +19,8 @@ import {
   testMacro
 } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('Environment', function (): any {
   it('find-frame', function (): any {
     const env: any = new Environment([[Symbol.for('foo'), 'bar']]);
@@ -1541,7 +1543,7 @@ describe('PromiseEnvironment', function (): any {
       return env.hasLocalPromiseP(Symbol.for('foo'));
     })(), true);
   });
-  return it('has-local-promise?, false', function (): any {
+  it('has-local-promise?, false', function (): any {
     return assertEqual(((): any => {
       const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
         const promiseF: any = function (): any {
@@ -1576,6 +1578,60 @@ describe('PromiseEnvironment', function (): any {
       })()), Symbol.for('Any')]]));
       return env.hasLocalPromiseP(Symbol.for('bar'));
     })(), false);
+  });
+  it('get-type', function (): any {
+    return assertEqual(((): any => {
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), 1, Symbol.for('Number')]]);
+      return env.getType(Symbol.for('foo'));
+    })(), Symbol.for('Number'));
+  });
+  it('get-type, promise', function (): any {
+    return assertEqual(((): any => {
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), 1, new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = Symbol.for('Number');
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })())]]);
+      return env.getType(Symbol.for('foo'));
+    })(), Symbol.for('Number'));
+  });
+  it('get-local-type', function (): any {
+    return assertEqual(((): any => {
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), 1, Symbol.for('Number')]]);
+      return env.getLocalType(Symbol.for('foo'));
+    })(), Symbol.for('Number'));
+  });
+  return it('get-local-type, promise', function (): any {
+    return assertEqual(((): any => {
+      const env: any = new PromiseEnvironment([[Symbol.for('foo'), 1, new InternalPromise(((): any => {
+        const promiseF: any = function (): any {
+          if (promiseF.forced) {
+            return promiseF.value;
+          } else {
+            promiseF.forced = undefined;
+            promiseF.value = Symbol.for('Number');
+            promiseF.forced = true;
+            return promiseF.value;
+          }
+        };
+        promiseF.value = undefined as any;
+        promiseF.forced = false as any;
+        promiseF.ftype = 'thunk';
+        return promiseF;
+      })())]]);
+      return env.getLocalType(Symbol.for('foo'));
+    })(), Symbol.for('Number'));
   });
 });
 

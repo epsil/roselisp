@@ -53,6 +53,8 @@ import {
   read
 } from './parser';
 
+withEnvironment.ftype = 'macro';
+
 /**
  * REPL prompt.
  */

@@ -740,51 +740,41 @@ declare const optimizations: any;
 declare class Module {
     name: any;
     modulePath: any;
-    headerExpressions: any;
-    headerStxs: any;
-    requireExpressions: any;
-    requireStxs: any;
-    provideExpressions: any;
-    provideStxs: any;
-    mainExpressions: any;
-    mainStxs: any;
-    expressions: any;
+    compilationOptions: any;
     stxs: any;
-    inlineLispSourcesFlag: any;
-    seenModules: any;
+    headerStxs: any;
+    requireStxs: any;
+    provideStxs: any;
+    mainStxs: any;
     parentEnvironment: any;
     requireEnvironment: any;
     mainEnvironment: any;
     provideEnvironment: any;
-    interpretationEnvironment: any;
     moduleMap: any;
-    symbolMap: any;
-    constructor(stxs?: any, parent?: any, name?: any, modulePath?: any);
-    getContinuationEnv(): any;
-    getExpressions(): any;
+    compiledModuleStx: any;
+    inlineLispSourcesFlag: any;
+    constructor(stxs?: any, parent?: any, name?: any, modulePath?: any, options?: any);
+    compile(env?: any, options?: any): any;
+    findInlineLispSourcesComment(comments?: any): any;
     getEnvironment(): any;
+    getInlineLispSourcesFlag(): any;
+    getMainEnvironment(): any;
+    getModule(moduleName: any): any;
     getModuleMap(): any;
     getName(): any;
-    /**
-     * Whether a particular symbol is bound in this module's scope
-     * (i.e., whether the module imports or defines the symbol).
-     */
-    hasSymbol(sym: any): any;
-    makeHeaderStx(stxs?: any): any;
-    findInlineLispSourcesComment(comments?: any): any;
+    getProvideEnvironment(): any;
+    getRequireEnvironment(): any;
     initializeStxs(stxs?: any): any;
-    makeEnvironment(parent?: any): any;
+    makeHeaderStx(stxs?: any): any;
+    setInlineLispSourcesFlag(val: any): any;
     setModuleMap(moduleMap: any): any;
     setStxs(stxs: any): any;
-    setExpressions(expressions?: any): any;
-    setInlineLispSourcesFlag(val: any): any;
-    getInlineLispSourcesFlag(): any;
 }
 /**
  * Convert a map of `module` forms to a map of `Module` objects,
  * interlinking them in the process.
  */
-declare function makeModuleMap(moduleExpressionMap: any, env: any): any;
+declare function makeModuleMap(moduleExpressionMap: any, env: any, options?: any): any;
 declare namespace makeModuleMap {
     var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[];
 }
@@ -792,7 +782,7 @@ declare namespace makeModuleMap {
  * Convert a `(module ...)` expression to a
  * `Module` object.
  */
-declare function moduleExpressionToModuleObject(stx: any, env: any): any;
+declare function moduleExpressionToModuleObject(stx: any, env: any, options?: any): any;
 declare namespace moduleExpressionToModuleObject {
     var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[];
 }

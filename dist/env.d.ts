@@ -265,10 +265,20 @@ declare class PromiseEnvironment extends TypedEnvironment {
      */
     getType(key: any, options?: any): any;
     /**
+     * Get the type of `key`. If there is no binding,
+     * return `Undefined`.
+     */
+    getUnforcedType(key: any, options?: any): any;
+    /**
      * Get the local type of `key`. If there is no binding,
      * return `Undefined`.
      */
     getLocalType(key: any, options?: any): any;
+    /**
+     * Get the local type of `key`. If there is no binding,
+     * return `Undefined`.
+     */
+    getUnforcedLocalType(key: any, options?: any): any;
     /**
      * Whether `key` is bound to a promise.
      */
@@ -519,6 +529,14 @@ declare namespace withEnvironmentF {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
 }
 /**
+ * Macro for `with-environment-f`.
+ */
+declare function withEnvironment(exp: any, env: any): any;
+declare namespace withEnvironment {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol)[])[])[];
+}
+/**
  * Return the current compilation options.
  */
 declare function currentCompilationOptions(): any;
@@ -533,4 +551,4 @@ declare function withCompilationOptions(options: any, f: any): any;
 declare namespace withCompilationOptions {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[][])[])[];
 }
-export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, withEnvironmentF as withEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentCompilationOptions, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withCompilationOptions, withEnvironmentF };
+export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentCompilationOptions, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withCompilationOptions, withEnvironment, withEnvironmentF };

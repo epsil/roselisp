@@ -495,9 +495,15 @@
     (when found
       (define-values (val typ)
         binding)
+      (define forced #f)
       (when (is-a? val InternalPromise)
         (set! val (send val force))
-        (send this set-local! key val typ)
+        (set! forced #t))
+      (when (is-a? typ InternalPromise)
+        (set! typ (send typ force))
+        (set! forced #t))
+      (when forced
+        ;; (send this set-local! key val typ)
         (set! binding (list val typ))
         (set! tuple (list binding found))))
     tuple)
@@ -533,6 +539,17 @@
   ;;; Get the type of `key`. If there is no binding,
   ;;; return `Undefined`.
   (define/public (get-type key (options (js/obj)))
+    (define typ
+      (send this get-unforced-type key options))
+    (when (is-a? typ InternalPromise)
+      (set! typ (send typ force))
+      ;; (send this set-type! key typ options)
+      )
+    typ)
+
+  ;;; Get the type of `key`. If there is no binding,
+  ;;; return `Undefined`.
+  (define/public (get-unforced-type key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define not-found
       (or (oget options :not-found)
@@ -552,6 +569,17 @@
   ;;; Get the local type of `key`. If there is no binding,
   ;;; return `Undefined`.
   (define/public (get-local-type key (options (js/obj)))
+    (define typ
+      (send this get-unforced-local-type key options))
+    (when (is-a? typ InternalPromise)
+      (set! typ (send typ force))
+      ;; (send this set-local-type! key typ options)
+      )
+    typ)
+
+  ;;; Get the local type of `key`. If there is no binding,
+  ;;; return `Undefined`.
+  (define/public (get-unforced-local-type key (options (js/obj)))
     ;; Obtain the type without forcing the thunk.
     (define not-found
       (or (oget options :not-found)
@@ -605,7 +633,7 @@
       (js/obj-append
        options
        (js/obj :not-found '(#u Undefined))))
-    ;; Obtain the type without forcing the thunk.
+    ;; Obtain the unforced value.
     (define tuple
       (send this get-unforced-tuple key inherited-options))
     (define-values (binding)
@@ -621,7 +649,7 @@
       (js/obj-append
        options
        (js/obj :not-found '(#u Undefined))))
-    ;; Obtain the type without forcing the thunk.
+    ;; Obtain the unforced value.
     (define tuple
       (send this get-unforced-local-tuple key inherited-options))
     (define-values (binding)
@@ -1055,8 +1083,7 @@
 
 ;;; Pointer to the current compilation options.
 (define current-compilation-options-pointer
-  (js/obj) ; default-compilation-options
-  )
+  (js/obj))
 
 ;;; Return the current compilation options.
 (define (current-compilation-options)
@@ -1078,7 +1105,6 @@
   (rename-out (PromiseEnvironment ThunkedEnvironment))
   (rename-out (current-environment_ current-environment))
   (rename-out (with-environment-f with-current-environment))
-  (rename-out (with-environment-f with-environment))
   DynamicEnvironment
   Environment
   EnvironmentComposition

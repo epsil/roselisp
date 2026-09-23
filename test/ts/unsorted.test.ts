@@ -1,8 +1,8 @@
 /**
  * # Unsorted tests
  *
- * This file functions as an "inbox" for incoming tests, as well as
- * an "outbox" for legacy tests that can be deleted.
+ * This file functions as an "inbox" for incoming tests,
+ * as well as an "outbox" for legacy tests pending deletion.
  */
 
 import {

@@ -24,6 +24,8 @@ import {
   testMacro
 } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('tokenize', function (): any {
   it('(tokenize "")', function (): any {
     return assertEqual(tokenize(''), []);

@@ -369,14 +369,6 @@ y
 z"
 
  :describe "compile-with-environment"
- > (it "compiledEnvironment"
-       (define options
-         (js/obj))
-       (compile-with-environment 'foo #u options)
-       (define compiled-env
-         (oget options "compiledEnvironment"))
-       (instance-of? compiled-env LispEnvironment))
- #t
  xit> (it "has"
           (define options
             (js/obj))

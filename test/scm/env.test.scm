@@ -14,6 +14,8 @@
                   assert-equal
                   test-macro))
 
+(declare-macro test-macro)
+
 (test-macro
  :describe "Environment"
  > (it "find-frame"
@@ -1392,6 +1394,36 @@
                       Any)))))
        (send env has-local-promise? 'bar))
  #f
+ > (it "get-type"
+       (define env
+         (new PromiseEnvironment
+              `((foo 1 Number))))
+       (send env get-type 'foo))
+ 'Number
+ > (it "get-type, promise"
+       (define env
+         (new PromiseEnvironment
+              `((foo
+                 1
+                 ,(new InternalPromise
+                       (delay 'Number))))))
+       (send env get-type 'foo))
+ 'Number
+ > (it "get-local-type"
+       (define env
+         (new PromiseEnvironment
+              `((foo 1 Number))))
+       (send env get-local-type 'foo))
+ 'Number
+ > (it "get-local-type, promise"
+       (define env
+         (new PromiseEnvironment
+              `((foo
+                 1
+                 ,(new InternalPromise
+                       (delay 'Number))))))
+       (send env get-local-type 'foo))
+ 'Number
 
  :describe "JavaScriptEnvironment"
  > (it "get"

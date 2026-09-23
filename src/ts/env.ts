@@ -391,7 +391,7 @@ class TypedEnvironment extends Environment {
       ...options,
       notFound: [undefined, notFound]
     };
-    const [, typ]: any[] = this.getTypedValue(key, inheritedOptions);
+    let [, typ]: any[] = this.getTypedValue(key, inheritedOptions);
     return typ;
   }
 
@@ -405,7 +405,7 @@ class TypedEnvironment extends Environment {
       ...options,
       notFound: [undefined, notFound]
     };
-    const [, typ]: any[] = this.getTypedLocalValue(key, inheritedOptions);
+    let [, typ]: any[] = this.getTypedLocalValue(key, inheritedOptions);
     return typ;
   }
 
@@ -444,7 +444,7 @@ class TypedEnvironment extends Environment {
       ...options,
       notFound: [undefined, Symbol.for('Undefined')]
     };
-    const [value, typ]: any[] = this.getTypedValue(key, inheritedOptions);
+    let [value, typ]: any[] = this.getTypedValue(key, inheritedOptions);
     if (typ === Symbol.for('Undefined')) {
       return notFound;
     } else {
@@ -461,7 +461,7 @@ class TypedEnvironment extends Environment {
       ...options,
       notFound: [undefined, Symbol.for('Undefined')]
     };
-    const [value, typ]: any[] = this.getTypedLocalValue(key, inheritedOptions);
+    let [value, typ]: any[] = this.getTypedLocalValue(key, inheritedOptions);
     if (typ === Symbol.for('Undefined')) {
       return notFound;
     } else {
@@ -563,9 +563,17 @@ class PromiseEnvironment extends TypedEnvironment {
     let [binding, found]: any[] = tuple;
     if (found) {
       let [val, typ]: any[] = binding;
+      let forced: any = false;
       if (val instanceof InternalPromise) {
         val = val.force();
-        this.setLocalX(key, val, typ);
+        forced = true;
+      }
+      if (typ instanceof InternalPromise) {
+        typ = typ.force();
+        forced = true;
+      }
+      if (forced) {
+        // (send this set-local! key val typ)
         binding = [val, typ];
         tuple = [binding, found];
       }
@@ -609,12 +617,25 @@ class PromiseEnvironment extends TypedEnvironment {
    * return `Undefined`.
    */
   getType(key: any, options: any = {}): any {
+    let typ: any = this.getUnforcedType(key, options);
+    if (typ instanceof InternalPromise) {
+      typ = typ.force();
+    }
+    // (send this set-type! key typ options)
+    return typ;
+  }
+
+  /**
+   * Get the type of `key`. If there is no binding,
+   * return `Undefined`.
+   */
+  getUnforcedType(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
     const notFound: any = options['notFound'] || Symbol.for('Undefined');
     let tuple: any = this.getUnforcedTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
-      const [, typ]: any[] = binding;
+      let [, typ]: any[] = binding;
       return typ;
     } else {
       return notFound;
@@ -626,12 +647,25 @@ class PromiseEnvironment extends TypedEnvironment {
    * return `Undefined`.
    */
   getLocalType(key: any, options: any = {}): any {
+    let typ: any = this.getUnforcedLocalType(key, options);
+    if (typ instanceof InternalPromise) {
+      typ = typ.force();
+    }
+    // (send this set-local-type! key typ options)
+    return typ;
+  }
+
+  /**
+   * Get the local type of `key`. If there is no binding,
+   * return `Undefined`.
+   */
+  getUnforcedLocalType(key: any, options: any = {}): any {
     // Obtain the type without forcing the thunk.
     const notFound: any = options['notFound'] || Symbol.for('Undefined');
     let tuple: any = this.getUnforcedLocalTuple(key, options);
     let [binding, found]: any[] = tuple;
     if (found) {
-      const [, typ]: any[] = binding;
+      let [, typ]: any[] = binding;
       return typ;
     } else {
       return notFound;
@@ -677,7 +711,7 @@ class PromiseEnvironment extends TypedEnvironment {
       ...options,
       notFound: [undefined, Symbol.for('Undefined')]
     };
-    // Obtain the type without forcing the thunk.
+    // Obtain the unforced value.
     let tuple: any = this.getUnforcedTuple(key, inheritedOptions);
     let [binding]: any[] = tuple;
     let [val]: any[] = binding;
@@ -693,7 +727,7 @@ class PromiseEnvironment extends TypedEnvironment {
       ...options,
       notFound: [undefined, Symbol.for('Undefined')]
     };
-    // Obtain the type without forcing the thunk.
+    // Obtain the unforced value.
     let tuple: any = this.getUnforcedLocalTuple(key, inheritedOptions);
     let [binding]: any[] = tuple;
     let [val]: any[] = binding;
@@ -1245,7 +1279,6 @@ withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment')
  */
 let currentCompilationOptionsPointer: any = {};
 
-// default-compilation-options
 /**
  * Return the current compilation options.
  */
@@ -1277,7 +1310,6 @@ export {
   PromiseEnvironment as ThunkedEnvironment,
   currentEnvironment_ as currentEnvironment,
   withEnvironmentF as withCurrentEnvironment,
-  withEnvironmentF as withEnvironment,
   DynamicEnvironment,
   Environment,
   EnvironmentComposition,
@@ -1298,5 +1330,6 @@ export {
   makeEnvironment,
   prefixBindings,
   withCompilationOptions,
+  withEnvironment,
   withEnvironmentF
 };

@@ -810,14 +810,11 @@
              lang-environment)))
   (define compilation-options
     (add-default-options options #t))
-  (define compiled-env
-    (new LispEnvironment))
   (define continuation-env
     (new LispEnvironment
          '()
          lang-env))
   (oset! compilation-options :language-environment lang-env)
-  (oset! compilation-options :compiled-environment compiled-env)
   (set! compilation-options
         (js/obj-append
          default-compilation-options
@@ -876,7 +873,7 @@
   (define result
     (make-hash))
   (define module-object-map
-    (make-module-map module-map env))
+    (make-module-map module-map env options))
   (define compiled-module)
   (define module)
   (for ((key (send module-object-map keys)))
@@ -890,71 +887,19 @@
 (define (compile-module obj env (options (js/obj)))
   (cond
    ((is-a? obj Module)
-    (compile-module-object obj env options))
+    (send obj compile env options))
    (else
     (compile-module-expression obj env options))))
 
 ;;; Compile a `(module ...)` expression.
 (define (compile-module-expression stx env (options (js/obj)))
   (define module
-    (module-expression->module-object stx env))
+    (module-expression->module-object stx env options))
   (define compilation-options
     (js/obj-append
      options
      (js/obj :current-module module)))
-  (compile-module-object module env compilation-options))
-
-;;; Compile a `Module` object.
-(define (compile-module-object module env (options (js/obj)))
-  (define expressions
-    (send module get-expressions))
-  (define module-environment
-    (send module get-environment))
-  (define module-options
-    (js/obj-append
-     (js/obj :current-module
-             module
-             :referenced-symbols
-             '()
-             :inline-lisp-sources
-             (send module get-inline-lisp-sources-flag))
-     options))
-  (define header-statements
-    (compile-statement
-     (begin-wrap-stx
-      (get-field header-stxs module))
-     module-environment
-     module-options))
-  (define require-statements
-    (compile-statement
-     (begin-wrap-stx
-      (get-field require-stxs module))
-     module-environment
-     module-options))
-  (define main-statements
-    (compile-statement-or-return-statement
-     (begin-wrap-stx
-      (get-field main-stxs module))
-     module-environment
-     module-options))
-  (define provide-statements
-    (compile-statement
-     (begin-wrap-stx
-      (get-field provide-stxs module))
-     module-environment
-     module-options))
-  (define global-environment
-    (build-global-environment
-     (oget module-options :referenced-symbols)
-     module-environment options))
-  (define program
-    (make-program
-     (append (get-field body header-statements)
-             (get-field body require-statements)
-             (get-field body global-environment)
-             (get-field body main-statements)
-             (get-field body provide-statements))))
-  program)
+  (send module compile env compilation-options))
 
 ;;; Compile a set of files.
 ;;; This function writes to disk.
@@ -976,9 +921,11 @@
     (oget options :quick))
   (define compilation-options
     (js/obj-append
+     default-compilation-options
      options
      (js/obj :expression-type "statement"
-             :to to-language-option)))
+             :to to-language-option
+             :language-environment lang-environment)))
   (define extension
     (if (eq? to-language-option "typescript")
         ".ts"
@@ -1045,7 +992,9 @@
      (else
       (push-right! full-module-names full-module-name))))
   (define module-map
-    (make-module-map module-expression-map lang-environment))
+    (make-module-map module-expression-map
+                     lang-environment
+                     compilation-options))
   (for ((full-module-name full-module-names))
     (define module
       (send module-map get full-module-name))
@@ -2620,7 +2569,7 @@
         (and symbolic-op
              (should-import? op env options)
              ;; Do not inline the operator if a
-             ;; compilation macro is defined for it.
+             ;; compilation procedure is defined for it.
              (not (send env has-promise? op))
              (not (hash-has-key? compilation-procedures-map
                                  (send env get op))))))
@@ -2634,7 +2583,7 @@
               (not should-import-op))
          ;; Set the `should-import` option to `#f`
          ;; if `op` is a symbol and there is a
-         ;; compilation macro defined for it.
+         ;; compilation procedure defined for it.
          (js/obj-append
           options
           (js/obj :should-import #f))
@@ -2654,7 +2603,7 @@
        (get-field inline f)
        (get-field fsource f)))
 
-;;; Add symbol `sym` to `referencedSymbols` if it references a value
+;;; Add symbol `sym` to `referenced-symbols` if it references a value
 ;;; not defined in the current module.
 (define (add-referenced-symbol sym env (options (js/obj)))
   (define referenced-symbols
@@ -2691,10 +2640,6 @@
        ;; Do not import if there is a local binding for the
        ;; value (e.g., a `let` variable).
        (not (send env has? sym (js/obj :filter lang-filter)))
-       ;; Do not import if the current module defines the
-       ;; value.
-       (not (and current-module
-                 (send current-module has-symbol sym)))
        ;; Only import if the language environment binds the symbol.
        ;; However, do not import if the value is a JavaScript
        ;; value, i.e., if it is provided by the very language
@@ -4518,24 +4463,24 @@
          env1
          (js/obj-append
           options
-          (js/obj :continuation-environment
-                  (new LispEnvironment)
-                  :expression-type
-                  "expression"))))
+          (js/obj :current-module #u
+                  :expression-type "expression"))))
       (define var-decl
         (compile-sexp define-values-form env1 options))
       (set-field! init
                   (first
                    (get-field declarations var-decl))
                   body-compiled)
-      (define result
-        (make-program-fragment
-         (list var-decl)))
-      result)
+      (make-program-fragment
+       (list var-decl)))
      (else
       (make-program-fragment
        (list
-        (compile-sexp exp env1 options))))))))
+        (compile-sexp exp
+                      env1
+                      (js/obj-append
+                       options
+                       (js/obj :current-module #u))))))))))
 
 ;;; Make a `((lambda () ...))` expression that evaluates to a single
 ;;; value from the language environment. `symbol` is a symbol bound in
@@ -4743,8 +4688,53 @@
     (or (send stx get 2) x-stx))
   (define y-exp
     (syntax->datum y-stx))
+  (define current-module
+    (oget options :current-module))
+  (cond
+   ((tagged-list? x-exp 'only-in)
+    (define module-name (second x-exp))
+    (define module-env-promise
+      (delay
+        (cond
+         (current-module
+          (define m
+            (send current-module get-module module-name))
+          (cond
+           (m
+            (send m get-provide-environment))
+           (else
+            #u)))
+         (else
+          #u))))
+    (for ((exp1 (drop x-exp 2)))
+      (define-values (imported local)
+        (if (pair-or-list? exp1)
+            (values (first exp1) (second exp1))
+            (values exp1 exp1)))
+      (define val-promise
+        (new InternalPromise
+             (delay
+               (define val #u)
+               (try
+                 (set! val
+                       (send (force module-env-promise) get imported))
+                 (catch Error e
+                   ;; Do nothing
+                   ))
+               val)))
+      (define env1
+        (if current-module
+            (get-field require-environment current-module)
+            env))
+      (send env1 set-local! local val-promise 'Any)))
+   (else
+    ;; TODO: `require` forms that do not contain `only-in`.
+    ))
   (cond
    (fcommonjs
+    (define env1
+      (extend-environment (new LispEnvironment)
+                          env))
     (cond
      ((tagged-list? x-exp 'only-in)
       (compile-statement
@@ -4752,7 +4742,7 @@
         #f
         `(define-fields ,(drop x-exp 2)
            (js/require ,(second x-exp))))
-       env options))
+       env1 options))
      (else
       (when (string? x-exp)
         (set! x-exp (string->symbol x-exp)))
@@ -4761,7 +4751,7 @@
         #f
         `(define ,x-exp
            (js/require ,y-stx)))
-       env options))))
+       env1 options))))
    (else
     (define specifiers '())
     (define seen '())
@@ -4778,8 +4768,6 @@
           (define x2
             (second exp))
           (unless (memq? x2 seen)
-            (unless (send env has? x2 (js/obj :filter lang-filter))
-              (make-type-binding env x2 'Any lang-filter))
             (push-right! seen x2)
             (push-right! specifiers
                          (new ImportSpecifier
@@ -4796,8 +4784,6 @@
          (else
           (define x1 exp)
           (unless (memq? x1 seen)
-            (unless (send env has? x1 (js/obj :filter lang-filter))
-              (make-type-binding env x1 'Any lang-filter))
             (push-right! seen x1)
             (push-right! specifiers
                          (new ImportSpecifier
@@ -4833,6 +4819,7 @@
            env
            options))
     (when (symbol? x-exp)
+      ;; TODO: Remove this.
       (unless (send env has? x-exp (js/obj :filter lang-filter))
         (make-type-binding env x-exp 'Any lang-filter)))
     (cond
@@ -5501,6 +5488,22 @@
     (syntax->datum class-name-stx))
   (define has-name
     (symbol? class-name))
+  (when has-name
+    (send env
+          set-local!
+          class-name
+          (new InternalPromise
+               (delay
+                 (define result #u)
+                 (try
+                   (set! result
+                         (interpret_ `(begin ,exp ,class-name)
+                                     :environment env))
+                   (catch Error e
+                     ;; Do nothing
+                     ))
+                 result))
+          'Any))
   (define super-class
     #n)
   (define id
@@ -5645,22 +5648,6 @@
   (define body
     (new ClassBody
          body-declarations))
-  (when has-name
-    (send env
-          set-local!
-          class-name
-          (new InternalPromise
-               (delay
-                 (define result #u)
-                 (try
-                   (set! result
-                         (interpret_ `(begin ,exp ,class-name)
-                                     :environment env))
-                   (catch Error e
-                     ;; Do nothing
-                     ))
-                 result))
-          'Any))
   (if has-name
       (new ClassDeclaration
            id
@@ -7407,51 +7394,147 @@
 (define-class Module ()
   (define/public name "")
   (define/public module-path "")
-  (define/public header-expressions '())
-  (define/public header-stxs '())
-  (define/public require-expressions '())
-  (define/public require-stxs '())
-  (define/public provide-expressions '())
-  (define/public provide-stxs '())
-  (define/public main-expressions '())
-  (define/public main-stxs '())
-  (define/public expressions '())
+  (define/public compilation-options)
   (define/public stxs '())
-  (define/public inline-lisp-sources-flag #f)
-  (define/public seen-modules '())
+  (define/public header-stxs '())
+  (define/public require-stxs '())
+  (define/public provide-stxs '())
+  (define/public main-stxs '())
   (define/public parent-environment)
   (define/public require-environment)
   (define/public main-environment)
   (define/public provide-environment)
-  (define/public interpretation-environment)
   (define/public module-map)
-  (define/public symbol-map (make-hash))
+  (define/public compiled-module-stx #u)
+  (define/public inline-lisp-sources-flag #f)
 
   (define/public (constructor (stxs '())
                               (parent lang-environment)
                               (name "")
-                              (module-path ""))
-    (set-field! parent-environment this parent)
+                              (module-path "")
+                              (options (js/obj)))
     (set-field! name this name)
     (set-field! module-path this module-path)
+    (set-field! parent-environment this parent)
+    (set-field! require-environment
+                this
+                (new LispEnvironment
+                     '()
+                     parent))
+    (set-field! main-environment
+                this
+                (new LispEnvironment
+                     '()
+                     (get-field require-environment this)))
+    (set-field! provide-environment
+                this
+                (new LispEnvironment
+                     '()
+                     (get-field main-environment this)))
+    (set-field! compilation-options
+                this
+                (js/obj-append
+                 options
+                 (js/obj :current-module this)))
     (send this initialize-stxs stxs))
 
-  (define/public (get-continuation-env)
-    (new LispEnvironment
-         '()
-         (send this get-environment)))
+  (define/public (compile (env (get-field main-environment this))
+                          (options (get-field compilation-options this)))
+    (define result
+      (get-field compiled-module-stx this))
+    (unless result
+      (define compilation-options
+        (get-field compilation-options this))
+      (define env1
+        (get-field main-environment this))
+      (define env2
+        (extend-environment (new LispEnvironment)
+                            env1))
+      (define inline-lisp-sources
+        (send this get-inline-lisp-sources-flag))
+      (define options1
+        (js/obj-append
+         (js/obj :referenced-symbols '()
+                 :inline-lisp-sources inline-lisp-sources)
+         options
+         (js/obj :current-module this)))
+      (define header-statements
+        (compile-statement
+         (begin-wrap-stx
+          (get-field header-stxs this))
+         env1 options1))
+      (define require-statements
+        (compile-statement
+         (begin-wrap-stx
+          (get-field require-stxs this))
+         env1 options1))
+      (define main-statements
+        (compile-statement-or-return-statement
+         (begin-wrap-stx
+          (get-field main-stxs this))
+         env1 options1))
+      (define provide-statements
+        (compile-statement
+         (begin-wrap-stx
+          (get-field provide-stxs this))
+         env1 options1))
+      (define global-environment
+        (build-global-environment
+         (oget options1 :referenced-symbols)
+         env2 ; env1
+         options))
+      (define program
+        (make-program
+         (append (get-field body header-statements)
+                 (get-field body require-statements)
+                 (get-field body global-environment)
+                 (get-field body main-statements)
+                 (get-field body provide-statements))))
+      (set! result program)
+      (set-field! compiled-module-stx this result))
+    result)
 
-  (define/public (get-expressions)
-    (get-field expressions this))
+  (define/public (find-inline-lisp-sources-comment (comments '()))
+    (unless (send this get-inline-lisp-sources-flag)
+      (define pattern
+        (regexp "; inline-lisp-sources: t"))
+      (for ((comment comments))
+        (define text
+          (get-field value comment))
+        (when (regexp-match pattern text)
+          (send this set-inline-lisp-sources-flag #t)
+          (break)))))
 
   (define/public (get-environment)
+    (send this get-main-environment))
+
+  (define/public (get-inline-lisp-sources-flag)
+    (get-field inline-lisp-sources-flag this))
+
+  (define/public (get-main-environment)
+    (unless (get-field compiled-module-stx this)
+      (send this compile))
+    (get-field main-environment this))
+
+  (define/public (get-module module-name)
+    (define module-map
+      (get-field module-map this))
     (cond
-     ((get-field main-environment this)
-      (get-field main-environment this))
+     ((not module-map)
+      #u)
      (else
-      (send this
-            make-environment
-            (get-field parent-environment this)))))
+      (define module-name-str
+        (~> (if (symbol? module-name)
+                (symbol->string module-name)
+                module-name)
+            (regexp-replace (regexp "^\\./") _ "")))
+      (define current-module-path
+        (get-field module-path this))
+      (define full-module-name
+        (~> module-name-str
+            (join current-module-path _)
+            (string-append "./" _)))
+      (send module-map get full-module-name))))
 
   (define/public (get-module-map)
     (get-field module-map this))
@@ -7459,17 +7542,53 @@
   (define/public (get-name)
     (get-field name this))
 
-  ;;; Whether a particular symbol is bound in this module's scope
-  ;;; (i.e., whether the module imports or defines the symbol).
-  (define/public (has-symbol sym)
-    (define key
-      (if (string? sym)
-          (string->symbol sym)
-          sym))
-    (send (get-field symbol-map this) has key))
+  (define/public (get-provide-environment)
+    (unless (get-field compiled-module-stx this)
+      (send this compile))
+    (get-field provide-environment this))
+
+  (define/public (get-require-environment)
+    (unless (get-field compiled-module-stx this)
+      (send this compile))
+    (get-field require-environment this))
+
+  (define/public (initialize-stxs (stxs '()))
+    (send this make-header-stx stxs)
+    ;; Sort the expressions into `require` expressions,
+    ;; `provide` expressions and main expressions.
+    (define require-stxs '())
+    (define provide-stxs '())
+    (define main-stxs '())
+    (for ((stx stxs))
+      (define exp #u)
+      (cond
+       ((syntax? stx)
+        (set! exp (syntax->datum stx))
+        (define comments
+          (send stx get-property "comments"))
+        (when comments
+          ;; Look for `inline-lisp-sources: true` magic comment.
+          (send this find-inline-lisp-sources-comment comments)))
+       (else
+        (set! exp stx)
+        (set! stx (datum->syntax #f exp))))
+      (cond
+       ((tagged-list? exp 'require)
+        (push-right! require-stxs stx))
+       ((tagged-list? exp 'provide)
+        (push-right! provide-stxs stx))
+       (else
+        (push-right! main-stxs stx))))
+    (define sorted-stxs
+      (append require-stxs main-stxs provide-stxs))
+    (set-field! require-stxs this require-stxs)
+    (set-field! provide-stxs this provide-stxs)
+    (set-field! main-stxs this main-stxs)
+    (set-field! stxs this sorted-stxs)
+    this)
 
   (define/public (make-header-stx (stxs '()))
-    ;; Create header stx if there is more than one comment, or if
+    ;; Create header if there is more than one comment, or if
     ;; there is a single comment ending in a blank line.
     (when (> (length stxs) 0)
       (define initial-stx
@@ -7521,8 +7640,6 @@
               header-comments)
         (push-right! (get-field header-stxs this)
                      header-stx)
-        (push-right! (get-field header-expressions this)
-                     header-exp)
         (when initial-node-comment-string
           (set! initial-node-comments
                 (list
@@ -7533,210 +7650,8 @@
               "comments"
               initial-node-comments))))
 
-  (define/public (find-inline-lisp-sources-comment (comments '()))
-    (unless (send this get-inline-lisp-sources-flag)
-      (define pattern
-        (regexp "; inline-lisp-sources: t"))
-      (for ((comment comments))
-        (define text
-          (get-field value comment))
-        (when (regexp-match pattern text)
-          (send this set-inline-lisp-sources-flag #t)
-          (break)))))
-
-  (define/public (initialize-stxs (stxs '()))
-    (define exp)
-    (define match)
-    (define stx)
-    (send this make-header-stx stxs)
-    ;; Sort the expressions into `require` expressions, `provide`
-    ;; expressions and main expressions.
-    (for ((stx stxs))
-      ;; Handle both S-expressions and rose tree values---for now.
-      ;; In the future, we might want to simplify this to only
-      ;; rose tree values.
-      (cond
-       ((syntax? stx)
-        (set! exp (syntax->datum stx))
-        (define comments
-          (send stx get-property "comments"))
-        (when comments
-          ;; Look for `inline-lisp-sources: true` magic comment.
-          (send this find-inline-lisp-sources-comment comments)))
-       (else
-        (set! exp stx)
-        (set! stx (datum->syntax #f exp))))
-      (cond
-       ((tagged-list? exp 'require)
-        (push-right! (get-field require-expressions this) exp)
-        (push-right! (get-field require-stxs this) stx))
-       ((tagged-list? exp 'provide)
-        (push-right! (get-field provide-expressions this) exp)
-        (push-right! (get-field provide-stxs this) stx))
-       (else
-        (push-right! (get-field main-expressions this) exp)
-        (push-right! (get-field main-stxs this) stx))))
-    ;; Iterate over `require-expressions`.
-    (for ((stx (get-field require-stxs this)))
-      (set! exp (syntax->datum stx))
-      (cond
-       ((and (tagged-list? exp 'require)
-             (> (length exp) 1)
-             (tagged-list? (second exp) 'only-in))
-        (define module-name
-          (second (second exp)))
-        (when (symbol? module-name)
-          (set! module-name
-                (symbol->string module-name)))
-        (when (set! match
-                    (regexp-match (regexp "^\\./(.*)$")
-                                  module-name))
-          (set! module-name (second match)))
-        (unless (or (not match)
-                    (memq? module-name (get-field seen-modules this)))
-          (push-right! (get-field seen-modules this) module-name))
-        ;; Add imported symbols to `.symbol-map`.
-        (for ((x (rest (second exp))))
-          (cond
-           ((pair-or-list? x)
-            (send (get-field symbol-map this) set (cadr x) #t))
-           (else
-            (send (get-field symbol-map this) set x #t)))))
-       ((and (tagged-list? exp 'require)
-             (> (length exp) 1))
-        (let* ((module-name-symbol (last exp))
-               (module-name module-name-symbol))
-          (cond
-           ((symbol? module-name-symbol)
-            (set! module-name
-                  (symbol->string
-                   module-name-symbol)))
-           (else
-            (set! module-name-symbol
-                  (string->symbol module-name))))
-          (set! module-name (get-module-name module-name))
-          (unless (memq? module-name (get-field seen-modules this))
-            (push-right! (get-field seen-modules this) module-name))
-          ;; Add module symbol to `symbol-map`.
-          (send (get-field symbol-map this)
-                set
-                module-name-symbol
-                #t)))))
-    ;; Iterate over `main-expressions`.
-    (for ((stx (get-field main-stxs this)))
-      (set! exp (syntax->datum stx))
-      (when (or (tagged-list? exp 'define)
-                (tagged-list? exp 'define-class))
-        (define name
-          (if (pair-or-list? (second exp))
-              (first (second exp))
-              (second exp)))
-        (send (get-field symbol-map this) set name #t)))
-    (set-field! stxs
-                this
-                (append (get-field require-stxs this)
-                        (get-field main-stxs this)
-                        (get-field provide-stxs this)))
-    (send
-     this
-     set-expressions
-     (append (get-field require-expressions this)
-             (get-field main-expressions this)
-             (get-field provide-expressions this)))
-    this)
-
-  (define/public (make-environment (parent #u))
-    (define require-env
-      (new LispEnvironment '() parent))
-    (define module-env
-      (new LispEnvironment '() require-env))
-    (define provide-env
-      (new LispEnvironment '() module-env))
-    (set-field! parent-environment this parent)
-    (set-field! require-environment this require-env)
-    (set-field! main-environment this module-env)
-    (set-field! provide-environment this provide-env)
-    ;; Iterate over `require-stxs`, importing definitions
-    ;; from other modules.
-    (for ((stx (get-field require-stxs this)))
-      ;; TODO: Create promise for doing this on demand.
-      (define exp
-        (syntax->datum stx))
-      ;; TODO: `require` forms that do not contain `only-in`.
-      (when (and (tagged-list? exp 'require)
-                 (> (length exp) 1)
-                 (tagged-list? (second exp) 'only-in))
-        (define module-name (second (second exp)))
-        (when (symbol? module-name)
-          (set! module-name
-                (symbol->string module-name)))
-        (set! module-name
-              (regexp-replace (regexp "^\\./") module-name ""))
-        (define module-path
-          (get-field module-path this))
-        (unless (regexp-match (regexp "^\\.\\/") module-path)
-          (set! module-path (string-append "./" module-path)))
-        (define full-module-name
-          (string-append
-           "./"
-           (join module-path module-name)))
-        (define env #u)
-        (when (and (get-field module-map this)
-                   (send (get-field module-map this) has full-module-name))
-          (define module
-            (send (get-field module-map this) get full-module-name))
-          (set! env (send module get-environment)))
-        (for ((exp1 (drop (second exp) 2)))
-          (define imported)
-          (define local)
-          (cond
-           ((pair-or-list? exp1)
-            (set! local (first exp1))
-            (set! imported (second exp1)))
-           (else
-            (set! local exp1)
-            (set! imported exp1)))
-          (make-type-binding module-env imported 'Any)
-          (when env
-            (define-values (f f-type)
-              (send env get-typed-value local))
-            (unless (undefined-type? f-type)
-              (send module-env set-local! imported f f-type))))))
-    ;; Iterate over `main-stxs`, evaluating definition forms
-    ;; in the module environment.
-    (for ((stx (get-field main-stxs this)))
-      (define exp
-        (syntax->datum stx))
-      (cond
-       ((or (definition? exp)
-            (macro-definition? exp))
-        ;; Evaluate `define` and `defmacro` forms in the module
-        ;; environment. Be error-tolerant since the module
-        ;; environment is not needed in many cases.
-        (define name
-          (second exp))
-        (when (pair-or-list? name)
-          (set! name (first name)))
-        (define typ
-          (if (macro-definition? exp)
-              '(macro-> Any * Any)
-              '(-> Any * Any)))
-        (define prom
-          (new InternalPromise
-               (delay
-                 (define result #u)
-                 (try
-                   (define begin-exp
-                     `(begin ,exp ,name))
-                   (set! result
-                         (interpret_ begin-exp
-                                     :environment module-env))
-                   (catch Error e
-                     ;; Do nothing
-                     ))
-                 result)))
-        (send module-env set-local! name prom typ))))
-    module-env)
+  (define/public (set-inline-lisp-sources-flag val)
+    (set-field! inline-lisp-sources-flag this val))
 
   (define/public (set-module-map module-map)
     (set-field! module-map this module-map)
@@ -7744,25 +7659,11 @@
 
   (define/public (set-stxs stxs)
     (set-field! main-stxs this stxs)
-    (set-field! main-expressions
-                this
-                (map (lambda (x)
-                       (syntax->datum x))
-                     stxs))
-    this)
-
-  (define/public (set-expressions (expressions '()))
-    (set-field! expressions this expressions))
-
-  (define/public (set-inline-lisp-sources-flag val)
-    (set-field! inline-lisp-sources-flag this val))
-
-  (define/public (get-inline-lisp-sources-flag)
-    (get-field inline-lisp-sources-flag this)))
+    this))
 
 ;;; Convert a map of `module` forms to a map of `Module` objects,
 ;;; interlinking them in the process.
-(define (make-module-map module-expression-map env)
+(define (make-module-map module-expression-map env (options (js/obj)))
   (define module-map
     (new PromiseMap))
   (for ((key (send module-expression-map keys)))
@@ -7776,14 +7677,14 @@
               (if (is-a? val Module)
                   val
                   (module-expression->module-object
-                   val env)))
+                   val env options)))
             (send m set-module-map module-map)
             m)))
   module-map)
 
 ;;; Convert a `(module ...)` expression to a
 ;;; `Module` object.
-(define (module-expression->module-object stx env)
+(define (module-expression->module-object stx env (options (js/obj)))
   (define name
     (~> stx
         (send _ get 1)
@@ -7800,7 +7701,8 @@
        (send stx drop 3)
        env
        name
-       module-path))
+       module-path
+       options))
 
 ;;; Whether `env` extends the Lisp environment.
 (define (extends-lisp-environment? env)

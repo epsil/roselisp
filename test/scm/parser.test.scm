@@ -17,7 +17,7 @@
                   assert-equal
                   test-macro))
 
-(declare test-macro)
+(declare-macro test-macro)
 
 (test-macro
  :describe "tokenize"

@@ -22,6 +22,8 @@ import {
   testMacro
 } from './test-util';
 
+testMacro.ftype = 'macro';
+
 describe('boolean values', function (): any {
   it('true', function (): any {
     return testRepl([Symbol.for('roselisp'), Symbol.for('>'), Symbol.for('true'), true]);

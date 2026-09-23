@@ -712,10 +712,10 @@
 ;;;
 ;;; [rkt:range]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._range%29%29
 (define (range_ start (end #u) (step #u))
-  (let* ((start-n (if (eq? end #u) 0 start))
-         (end-n (if (eq? end #u) start end))
-         (step-n (or step 1))
-         (result '()))
+  (let ((start-n (if (eq? end #u) 0 start))
+        (end-n (if (eq? end #u) start end))
+        (step-n (or step 1))
+        (result '()))
     (for ((i (range start-n end-n step-n)))
       (push-right! result i))
     result))

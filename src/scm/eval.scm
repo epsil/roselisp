@@ -72,6 +72,8 @@
 (require (only-in "./util"
                   tagged-list?))
 
+(declare-macro with-environment)
+
 ;;; The default evaluator.
 (define default-evaluator eval1)
 

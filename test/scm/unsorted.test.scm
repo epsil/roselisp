@@ -1,7 +1,7 @@
 ;;; # Unsorted tests
 ;;;
-;;; This file functions as an "inbox" for incoming tests, as well as
-;;; an "outbox" for legacy tests that can be deleted.
+;;; This file functions as an "inbox" for incoming tests,
+;;; as well as an "outbox" for legacy tests pending deletion.
 
 (require (only-in "./test-util"
                   assert-equal
@@ -351,6 +351,14 @@ function normalizeList(x) {
  -1
 
  ;; :describe "Other tests"
+ ;; > (it "compiledEnvironment"
+ ;;       (define options
+ ;;         (js/obj))
+ ;;       (compile-with-environment 'foo #u options)
+ ;;       (define compiled-env
+ ;;         (oget options "compiledEnvironment"))
+ ;;       (instance-of? compiled-env LispEnvironment))
+ ;; #t
  ;; xit> (list? '(1 . ()))
  ;; #t
  ;; xit> (list? '(1 . (2 . ())))

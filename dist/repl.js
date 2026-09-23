@@ -30,6 +30,7 @@ const equal_1 = require("./equal");
 const env_1 = require("./env");
 const language_1 = require("./language");
 const parser_1 = require("./parser");
+env_1.withEnvironment.ftype = 'macro';
 /**
  * REPL prompt.
  */

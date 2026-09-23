@@ -35,6 +35,7 @@ const [keywordp] = (() => {
     }
     return [keywordp_];
 })();
+env_1.withEnvironment.ftype = 'macro';
 /**
  * The default evaluator.
  */

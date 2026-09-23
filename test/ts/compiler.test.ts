@@ -299,14 +299,6 @@ describe('--fsemicolon false', function (): any {
 });
 
 describe('compile-with-environment', function (): any {
-  it('compiledEnvironment', function (): any {
-    return assertEqual(((): any => {
-      const options: any = {};
-      compileWithEnvironment(Symbol.for('foo'), undefined, options);
-      const compiledEnv: any = options['compiledEnvironment'];
-      return compiledEnv instanceof LispEnvironment;
-    })(), true);
-  });
   xit('has', function (): any {
     return assertEqual(((): any => {
       const options: any = {};

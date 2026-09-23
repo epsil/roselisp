@@ -17,10 +17,6 @@
  */
 
 import {
-  keywordToString
-} from './procedures';
-
-import {
   makeIdentifierString
 } from './util';
 

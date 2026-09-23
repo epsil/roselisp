@@ -100,6 +100,8 @@ const [keywordp]: any[] = ((): any => {
   return [keywordp_];
 })();
 
+withEnvironment.ftype = 'macro';
+
 /**
  * The default evaluator.
  */

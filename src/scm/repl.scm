@@ -39,6 +39,8 @@
 (require (only-in "./parser"
                   read))
 
+(declare-macro with-environment)
+
 ;;; REPL prompt.
 (define repl-prompt "> ")
 

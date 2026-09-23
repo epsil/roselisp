@@ -18,7 +18,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withEnvironmentF = exports.withCompilationOptions = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.currentCompilationOptions = exports.TypedEnvironment = exports.PromiseEnvironment = exports.LispEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = exports.ThunkedEnvironment = void 0;
+exports.withEnvironmentF = exports.withEnvironment = exports.withCompilationOptions = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.currentCompilationOptions = exports.TypedEnvironment = exports.PromiseEnvironment = exports.LispEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = exports.ThunkedEnvironment = void 0;
 const lookup_1 = require("./lookup");
 const thunk_1 = require("./thunk");
 /**
@@ -348,7 +348,7 @@ class TypedEnvironment extends Environment {
     getType(key, options = {}) {
         const notFound = options['notFound'] || Symbol.for('Undefined');
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, notFound] });
-        const [, typ] = this.getTypedValue(key, inheritedOptions);
+        let [, typ] = this.getTypedValue(key, inheritedOptions);
         return typ;
     }
     /**
@@ -358,7 +358,7 @@ class TypedEnvironment extends Environment {
     getLocalType(key, options = {}) {
         const notFound = options['notFound'] || Symbol.for('Undefined');
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, notFound] });
-        const [, typ] = this.getTypedLocalValue(key, inheritedOptions);
+        let [, typ] = this.getTypedLocalValue(key, inheritedOptions);
         return typ;
     }
     /**
@@ -385,7 +385,7 @@ class TypedEnvironment extends Environment {
     getUntypedValue(key, options = {}) {
         const notFound = options['notFound'];
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
-        const [value, typ] = this.getTypedValue(key, inheritedOptions);
+        let [value, typ] = this.getTypedValue(key, inheritedOptions);
         if (typ === Symbol.for('Undefined')) {
             return notFound;
         }
@@ -399,7 +399,7 @@ class TypedEnvironment extends Environment {
     getUntypedLocalValue(key, options = {}) {
         const notFound = options['notFound'];
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
-        const [value, typ] = this.getTypedLocalValue(key, inheritedOptions);
+        let [value, typ] = this.getTypedLocalValue(key, inheritedOptions);
         if (typ === Symbol.for('Undefined')) {
             return notFound;
         }
@@ -497,9 +497,17 @@ class PromiseEnvironment extends TypedEnvironment {
         let [binding, found] = tuple;
         if (found) {
             let [val, typ] = binding;
+            let forced = false;
             if (val instanceof thunk_1.InternalPromise) {
                 val = val.force();
-                this.setLocalX(key, val, typ);
+                forced = true;
+            }
+            if (typ instanceof thunk_1.InternalPromise) {
+                typ = typ.force();
+                forced = true;
+            }
+            if (forced) {
+                // (send this set-local! key val typ)
                 binding = [val, typ];
                 tuple = [binding, found];
             }
@@ -539,12 +547,24 @@ class PromiseEnvironment extends TypedEnvironment {
      * return `Undefined`.
      */
     getType(key, options = {}) {
+        let typ = this.getUnforcedType(key, options);
+        if (typ instanceof thunk_1.InternalPromise) {
+            typ = typ.force();
+        }
+        // (send this set-type! key typ options)
+        return typ;
+    }
+    /**
+     * Get the type of `key`. If there is no binding,
+     * return `Undefined`.
+     */
+    getUnforcedType(key, options = {}) {
         // Obtain the type without forcing the thunk.
         const notFound = options['notFound'] || Symbol.for('Undefined');
         let tuple = this.getUnforcedTuple(key, options);
         let [binding, found] = tuple;
         if (found) {
-            const [, typ] = binding;
+            let [, typ] = binding;
             return typ;
         }
         else {
@@ -556,12 +576,24 @@ class PromiseEnvironment extends TypedEnvironment {
      * return `Undefined`.
      */
     getLocalType(key, options = {}) {
+        let typ = this.getUnforcedLocalType(key, options);
+        if (typ instanceof thunk_1.InternalPromise) {
+            typ = typ.force();
+        }
+        // (send this set-local-type! key typ options)
+        return typ;
+    }
+    /**
+     * Get the local type of `key`. If there is no binding,
+     * return `Undefined`.
+     */
+    getUnforcedLocalType(key, options = {}) {
         // Obtain the type without forcing the thunk.
         const notFound = options['notFound'] || Symbol.for('Undefined');
         let tuple = this.getUnforcedLocalTuple(key, options);
         let [binding, found] = tuple;
         if (found) {
-            const [, typ] = binding;
+            let [, typ] = binding;
             return typ;
         }
         else {
@@ -604,7 +636,7 @@ class PromiseEnvironment extends TypedEnvironment {
      */
     setTypeX(key, typ, options = {}) {
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
-        // Obtain the type without forcing the thunk.
+        // Obtain the unforced value.
         let tuple = this.getUnforcedTuple(key, inheritedOptions);
         let [binding] = tuple;
         let [val] = binding;
@@ -616,7 +648,7 @@ class PromiseEnvironment extends TypedEnvironment {
      */
     setLocalTypeX(key, typ, options = {}) {
         const inheritedOptions = Object.assign(Object.assign({}, options), { notFound: [undefined, Symbol.for('Undefined')] });
-        // Obtain the type without forcing the thunk.
+        // Obtain the unforced value.
         let tuple = this.getUnforcedLocalTuple(key, inheritedOptions);
         let [binding] = tuple;
         let [val] = binding;
@@ -1122,7 +1154,6 @@ function withEnvironmentF(env, f) {
     return result;
 }
 exports.withCurrentEnvironment = withEnvironmentF;
-exports.withEnvironment = withEnvironmentF;
 exports.withEnvironmentF = withEnvironmentF;
 withEnvironmentF.fsource = [Symbol.for('define'), [Symbol.for('with-environment-f'), Symbol.for('env'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-environment-pointer')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('tmp')]]], Symbol.for('result')];
 /**
@@ -1132,13 +1163,13 @@ function withEnvironment(exp, env) {
     const [environment, ...body] = exp.slice(1);
     return [Symbol.for('with-environment-f'), environment, [Symbol.for('js/arrow'), [], ...body]];
 }
+exports.withEnvironment = withEnvironment;
 withEnvironment.ftype = 'macro';
 withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment-f'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('js/arrow'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
 /**
  * Pointer to the current compilation options.
  */
 let currentCompilationOptionsPointer = {};
-// default-compilation-options
 /**
  * Return the current compilation options.
  */

@@ -1309,9 +1309,14 @@
                               collect `(,n ,g)))
                ,@body)))))))
 
+;;; Expand an `(ann ...)` expression.
+(define-macro (ann_ exp typ)
+  `(ts/as ,exp ,typ))
+
 (provide
   (rename-out (define-inline_ define-subst_))
   and_
+  ann_
   begin0_
   case-eq_
   case_

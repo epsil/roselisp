@@ -1590,9 +1590,22 @@ onceOnly_.ftype = 'macro';
 
 onceOnly_.fsource = [Symbol.for('define'), [Symbol.for('once-only_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('names'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('define-values'), [Symbol.for('plst'), Symbol.for('body1')], [Symbol.for('parse-plist-and-body'), Symbol.for('body')]], [Symbol.for('define'), Symbol.for('smart-option'), [Symbol.for('plist-get_'), Symbol.for('plst'), Symbol.for(':smart')]], [Symbol.for('define'), [Symbol.for('recurse'), Symbol.for('input'), Symbol.for('output'), Symbol.for('body')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('input')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('output')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('once-only'), [Symbol.for('unquote'), Symbol.for('output')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('cond'), [[Symbol.for('atom?'), [Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('input')]]], [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], Symbol.for('output'), Symbol.for('body')]]], [Symbol.for('else'), [Symbol.for('unquote'), [Symbol.for('recurse'), [Symbol.for('rest'), Symbol.for('input')], [Symbol.for('append'), Symbol.for('output'), [Symbol.for('list'), [Symbol.for('first'), Symbol.for('input')]]], Symbol.for('body')]]]]]]]], [Symbol.for('cond'), [Symbol.for('smart-option'), [Symbol.for('recurse'), Symbol.for('names'), [Symbol.for('quote'), []], Symbol.for('body1')]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('gensyms'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('gensym'), [Symbol.for('symbol->string'), Symbol.for('n')]]]]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('g')], [Symbol.for('gensym'), [Symbol.for('unquote'), [Symbol.for('symbol->string'), Symbol.for('n')]]]]]]]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[Symbol.for('unquote'), [Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('collect'), [Symbol.for('quasiquote'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('unquote'), Symbol.for('g')]], [Symbol.for('unquote'), [Symbol.for('unquote'), Symbol.for('n')]]]]]]]]], [Symbol.for('unquote'), [Symbol.for('let'), [[Symbol.for('unquote-splicing'), [Symbol.for('cl/loop'), Symbol.for('for'), Symbol.for('n'), Symbol.for('in'), Symbol.for('names'), Symbol.for('for'), Symbol.for('g'), Symbol.for('in'), Symbol.for('gensyms'), Symbol.for('collect'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('n')], [Symbol.for('unquote'), Symbol.for('g')]]]]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]]]]]]];
 
+/**
+ * Expand an `(ann ...)` expression.
+ */
+function ann_(exp1: any, env: any): any {
+  const [exp, typ]: any[] = exp1.slice(1);
+  return [Symbol.for('ts/as'), exp, typ];
+}
+
+ann_.ftype = 'macro';
+
+ann_.fsource = [Symbol.for('define'), [Symbol.for('ann_'), Symbol.for('exp1'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('exp'), Symbol.for('typ')], [Symbol.for('rest'), Symbol.for('exp1')]], [Symbol.for('quasiquote'), [Symbol.for('ts/as'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('typ')]]]];
+
 export {
   defineInline_ as defineSubst_,
   and_,
+  ann_,
   begin0_,
   caseEq_,
   case_,

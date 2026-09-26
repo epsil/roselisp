@@ -352,6 +352,7 @@
                   third_))
 (require (only-in "./macros"
                   and_
+                  ann_
                   begin0_
                   case-eq_
                   case_
@@ -633,7 +634,6 @@
 (define compilation-procedures-map
   (make-hash
    `((,add_ . ,compile-add)
-     (,ann_ . ,compile-ann)
      (,append_ . ,compile-append)
      (,apply_ . ,compile-apply)
      (,begin_ . ,compile-begin)
@@ -723,6 +723,7 @@
      (,set-values_ . ,compile-set-values)
      (,sub_ . ,compile-sub)
      (,throw_ . ,compile-throw)
+     (,ts/as_ . ,compile-ts/as)
      (,yield_ . ,compile-yield))))
 
 ;;; Compile a Lisp expression to JavaScript or TypeScript.
@@ -1679,8 +1680,8 @@
         (define->define-class _)
         (syntax->datum _)))))
 
-;;; Compile an `(ann ...)` expression.
-(define (compile-ann stx env (options (js/obj)))
+;;; Compile a `(ts/as ...)` expression.
+(define (compile-ts/as stx env (options (js/obj)))
   (define to-language
     (oget options :to))
   (define e_
@@ -7094,8 +7095,8 @@
               stx
               env))
 
-;;; Expand an `(ann ...)` expression.
-(define-macro (ann_ &whole exp &environment env)
+;;; Expand a `(ts/as ...)` expression.
+(define-macro (ts/as_ &whole exp &environment env)
   ;; TODO: Convert to fexpr.
   (compile-sexp
    exp
@@ -8479,6 +8480,7 @@
          (~>> ,thread-last_ (macro-> Any * Any))
          (and ,and_ (macro-> Any * Any))
          (ann ,ann_ (macro-> Any * Any))
+         (ts/as ,ts/as_ (macro-> Any * Any))
          (as-> ,thread-as_ (macro-> Any * Any))
          (async ,js/async_ (macro-> Any * Any))
          (as~> ,thread-as_ (macro-> Any * Any))
@@ -8712,7 +8714,6 @@
   (rename-out (js/raw_ js))
   (rename-out (js/raw_ js/raw))
   (rename-out (js/raw_ js_))
-  ;; (rename-out (lambda_ compile-function))
   (rename-out (lambda_ fn))
   (rename-out (lambda_ lambda))
   (rename-out (let-fields_ let-fields))

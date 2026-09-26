@@ -15,7 +15,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 import { jsNew_ as new_ } from './javascript';
-import { and_, cljTry_, cond_, defineMacro_, definePublic_, for_, or_, setq_, try_ } from './macros';
+import { and_, ann_, cljTry_, cond_, defineMacro_, definePublic_, for_, or_, setq_, try_ } from './macros';
 import { read, readSyntax, readSexp, tokenize } from './parser';
 import { isAP_, typeOf_ } from './procedures';
 import { s, sexp } from './sexp';
@@ -615,14 +615,6 @@ declare namespace mapSexp {
 declare function iterateStx(f: any, stx: any, env?: any): any;
 declare namespace iterateStx {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
-}
-/**
- * Expand an `(ann ...)` expression.
- */
-declare function ann_(exp: any, env: any): any;
-declare namespace ann_ {
-    var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Expand a `(: ...)` expression.

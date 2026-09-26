@@ -41,9 +41,7 @@ const [selfEvaluatingP, buildList, keywordp] = (() => {
                 return result;
             }
             return range_;
-        })()(0, n).map((proc.length === 1) ? proc : (function (x) {
-            return proc(x);
-        }));
+        })()(0, n).map((proc.length === 1) ? proc : (x) => proc(x));
     }
     function keywordp_(obj) {
         return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
@@ -222,9 +220,7 @@ function makeIdentifierStringHelper(str) {
  * See also `kebab-case->snake-case`.
  */
 function kebabCaseToCamelCase(str) {
-    const segments = str.split('-').filter(function (x) {
-        return x !== '';
-    });
+    const segments = str.split('-').filter((x) => x !== '');
     if (segments.length === 0) {
         return '';
     }
@@ -233,9 +229,7 @@ function kebabCaseToCamelCase(str) {
     }
     else {
         const [firstSegment, ...restSegments] = segments;
-        return firstSegment + restSegments.map(function (x) {
-            return x.charAt(0).toUpperCase() + x.substring(1);
-        }).join('');
+        return firstSegment + restSegments.map((x) => x.charAt(0).toUpperCase() + x.substring(1)).join('');
     }
 }
 exports.kebabCaseToCamelCase = kebabCaseToCamelCase;
@@ -392,9 +386,7 @@ function mapTree(f, x) {
     function mapTreeHelper(f, x, s) {
         if (Array.isArray(x)) {
             const s1 = [x, ...(Array.isArray(s) ? s : [Symbol.for('.'), s])];
-            return x.map(function (x1) {
-                return mapTreeHelper(f, x1, s1);
-            });
+            return x.map((x1) => mapTreeHelper(f, x1, s1));
         }
         else {
             return f(x, s);
@@ -409,7 +401,7 @@ exports.mapTree = mapTree;
  */
 function countTree(f, x) {
     let n = 0;
-    mapTree(function (x) {
+    mapTree((x) => {
         if (f(x)) {
             n++;
         }
@@ -472,7 +464,7 @@ function defineGeneric(f) {
         }
     }
     genericFunction.methods = methods;
-    genericFunction.defmethod = function (argList, functionDefinition) {
+    genericFunction.defmethod = (argList, functionDefinition) => {
         const entry = [argList, functionDefinition];
         genericFunction.methods.unshift(entry);
         return genericFunction;
@@ -553,9 +545,7 @@ function listExpressionToPattern(exp) {
                 return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
             }
             else {
-                return exp.slice(1).map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (function (x) {
-                    return listExpressionToPattern(x);
-                }));
+                return exp.slice(1).map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (x) => listExpressionToPattern(x));
             }
         }
         else if (taggedListP(exp, Symbol.for('list*'))) {
@@ -565,9 +555,7 @@ function listExpressionToPattern(exp) {
                 return listExpressionToPattern(tail);
             }
             else {
-                return [...head.map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (function (x) {
-                        return listExpressionToPattern(x);
-                    })), Symbol.for('.'), listExpressionToPattern(tail)];
+                return [...head.map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (x) => listExpressionToPattern(x)), Symbol.for('.'), listExpressionToPattern(tail)];
             }
         }
         else {
@@ -648,7 +636,7 @@ function defineToDefineMacro(x, onceOnly = false) {
     const name = nameAndParams[0];
     const params = ((nameAndParams.length === 3) && (nameAndParams[1] === Symbol.for('.'))) ? nameAndParams[2] : nameAndParams.slice(1);
     let [regularParams, restParam] = parseParamsList(params);
-    const macroParams = [...regularParams.map(function (x) {
+    const macroParams = [...regularParams.map((x) => {
             if (Array.isArray(x)) {
                 const param = x[0];
                 let value = x[1];
@@ -659,7 +647,7 @@ function defineToDefineMacro(x, onceOnly = false) {
             }
         }), ...(restParam ? [Symbol.for('&rest'), restParam] : [])];
     const macroNameAndParams = [name, ...(Array.isArray(macroParams) ? macroParams : [Symbol.for('.'), macroParams])];
-    const params1 = [...regularParams.map(function (x) {
+    const params1 = [...regularParams.map((x) => {
             if (Array.isArray(x)) {
                 return x[0];
             }
@@ -667,9 +655,7 @@ function defineToDefineMacro(x, onceOnly = false) {
                 return x;
             }
         }), ...(restParam ? [restParam] : [])];
-    const counts = buildList(params1.length, function (...args) {
-        return 0;
-    });
+    const counts = buildList(params1.length, (...args) => 0);
     const bodyForms = x.slice(2);
     // Whether we are inside of a repeatable expression.
     function repeatablep(s) {
@@ -681,7 +667,7 @@ function defineToDefineMacro(x, onceOnly = false) {
         }
         return false;
     }
-    const macroBodyForms = mapTree(function (x, s) {
+    const macroBodyForms = mapTree((x, s) => {
         if (typeof x === 'symbol') {
             if (restParam && (x === restParam)) {
                 return [Symbol.for('list'), [Symbol.for('unquote-splicing'), x]];
@@ -694,9 +680,7 @@ function defineToDefineMacro(x, onceOnly = false) {
                     else {
                         return false;
                     }
-                })(params1.findIndex(function (y) {
-                    return y === x;
-                }));
+                })(params1.findIndex((y) => y === x));
                 if (idx >= 0) {
                     const count = counts[idx];
                     let increment = 1;

@@ -49,9 +49,7 @@ const [selfEvaluatingP, buildList, keywordp]: any[] = ((): any => {
         return result;
       }
       return range_;
-    })()(0, n).map((proc.length === 1) ? proc : (function (x: any): any {
-      return proc(x);
-    }));
+    })()(0, n).map((proc.length === 1) ? proc : (x: any): any => proc(x));
   }
   function keywordp_(obj: any): any {
     return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
@@ -230,18 +228,14 @@ function makeIdentifierStringHelper(str: any): any {
  * See also `kebab-case->snake-case`.
  */
 function kebabCaseToCamelCase(str: any): any {
-  const segments: any = str.split('-').filter(function (x: any): any {
-    return x !== '';
-  });
+  const segments: any = str.split('-').filter((x: any): any => x !== '');
   if (segments.length === 0) {
     return '';
   } else if (segments.length === 1) {
     return segments[0];
   } else {
     const [firstSegment, ...restSegments]: any[] = segments;
-    return firstSegment + restSegments.map(function (x: any): any {
-      return x.charAt(0).toUpperCase() + x.substring(1);
-    }).join('');
+    return firstSegment + restSegments.map((x: any): any => x.charAt(0).toUpperCase() + x.substring(1)).join('');
   }
 }
 
@@ -389,9 +383,7 @@ function mapTree(f: any, x: any): any {
   function mapTreeHelper(f: any, x: any, s: any): any {
     if (Array.isArray(x)) {
       const s1: any = [x, ...(Array.isArray(s) ? s : [Symbol.for('.'), s])];
-      return x.map(function (x1: any): any {
-        return mapTreeHelper(f, x1, s1);
-      });
+      return x.map((x1: any): any => mapTreeHelper(f, x1, s1));
     } else {
       return f(x, s);
     }
@@ -405,7 +397,7 @@ function mapTree(f: any, x: any): any {
  */
 function countTree(f: any, x: any): any {
   let n: any = 0;
-  mapTree(function (x: any): any {
+  mapTree((x: any): any => {
     if (f(x)) {
       n++;
     }
@@ -464,7 +456,7 @@ function defineGeneric(f: any): any {
     }
   }
   genericFunction.methods = methods;
-  genericFunction.defmethod = function (argList: any, functionDefinition: any): any {
+  genericFunction.defmethod = (argList: any, functionDefinition: any): any => {
     const entry: any = [argList, functionDefinition];
     genericFunction.methods.unshift(entry);
     return genericFunction;
@@ -539,9 +531,7 @@ function listExpressionToPattern(exp: any): any {
         const tail: any = exp[exp.length - 2];
         return listExpressionToPattern([Symbol.for('list*'), ...head, tail]);
       } else {
-        return exp.slice(1).map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (function (x: any): any {
-          return listExpressionToPattern(x);
-        }));
+        return exp.slice(1).map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (x: any): any => listExpressionToPattern(x));
       }
     } else if (taggedListP(exp, Symbol.for('list*'))) {
       const head: any = exp.slice(1).slice(0, -1);
@@ -549,9 +539,7 @@ function listExpressionToPattern(exp: any): any {
       if (head.length === 0) {
         return listExpressionToPattern(tail);
       } else {
-        return [...head.map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (function (x: any): any {
-          return listExpressionToPattern(x);
-        })), Symbol.for('.'), listExpressionToPattern(tail)];
+        return [...head.map((listExpressionToPattern.length === 1) ? listExpressionToPattern : (x: any): any => listExpressionToPattern(x)), Symbol.for('.'), listExpressionToPattern(tail)];
       }
     } else {
       return false;
@@ -626,7 +614,7 @@ function defineToDefineMacro(x: any, onceOnly: any = false): any {
   const name: any = nameAndParams[0];
   const params: any = ((nameAndParams.length === 3) && (nameAndParams[1] === Symbol.for('.'))) ? nameAndParams[2] : nameAndParams.slice(1);
   let [regularParams, restParam]: any[] = parseParamsList(params);
-  const macroParams: any = [...regularParams.map(function (x: any): any {
+  const macroParams: any = [...regularParams.map((x: any): any => {
     if (Array.isArray(x)) {
       const param: any = x[0];
       let value: any = x[1];
@@ -636,16 +624,14 @@ function defineToDefineMacro(x: any, onceOnly: any = false): any {
     }
   }), ...(restParam ? [Symbol.for('&rest'), restParam] : [])];
   const macroNameAndParams: any = [name, ...(Array.isArray(macroParams) ? macroParams : [Symbol.for('.'), macroParams])];
-  const params1: any = [...regularParams.map(function (x: any): any {
+  const params1: any = [...regularParams.map((x: any): any => {
     if (Array.isArray(x)) {
       return x[0];
     } else {
       return x;
     }
   }), ...(restParam ? [restParam] : [])];
-  const counts: any = buildList(params1.length, function (...args: any[]): any {
-    return 0;
-  });
+  const counts: any = buildList(params1.length, (...args: any[]): any => 0);
   const bodyForms: any = x.slice(2);
   // Whether we are inside of a repeatable expression.
   function repeatablep(s: any): any {
@@ -657,7 +643,7 @@ function defineToDefineMacro(x: any, onceOnly: any = false): any {
     }
     return false;
   }
-  const macroBodyForms: any = mapTree(function (x: any, s: any): any {
+  const macroBodyForms: any = mapTree((x: any, s: any): any => {
     if (typeof x === 'symbol') {
       if (restParam && (x === restParam)) {
         return [Symbol.for('list'), [Symbol.for('unquote-splicing'), x]];
@@ -668,9 +654,7 @@ function defineToDefineMacro(x: any, onceOnly: any = false): any {
           } else {
             return false;
           }
-        })(params1.findIndex(function (y: any): any {
-          return y === x;
-        }));
+        })(params1.findIndex((y: any): any => y === x));
         if (idx >= 0) {
           const count: any = (counts as any)[idx];
           let increment: any = 1;

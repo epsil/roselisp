@@ -74,58 +74,76 @@
 }"
 
  :describe "js/arrow"
+ > ((js/arrow ()
+      1))
+ 1
+ > ((js/arrow (x)
+      x)
+    1)
+ 1
+ > ((js/arrow (x y)
+      x)
+    1 2)
+ 1
  > (compile '(js/arrow ()
                0))
- "() => {
-  return 0;
-};"
+ "() => 0;"
  > (compile '(js/arrow () : Number
                        0)
             :to "typescript")
- "(): number => {
-  return 0;
-};"
+ "(): number => 0;"
+ > (compile '(js/arrow (x)
+               x))
+ "x => x;"
+ > (compile '(js/arrow (x)
+               x)
+            :to "typescript")
+ "(x: any): any => x;"
+ > (compile '(js/arrow (x y)
+               x))
+ "(x, y) => x;"
+ > (compile '(js/arrow (x y)
+               x)
+            :to "typescript")
+ "(x: any, y: any): any => x;"
  > (compile '(js/arrow ()
                :name foo
                0))
- "let foo = () => {
-  return 0;
-};"
+ "let foo = () => 0;"
  > (compile '(js/arrow () : Number
                        :name foo
                        0)
             :to "typescript")
- "let foo: any = (): number => {
-  return 0;
-};"
+ "let foo: any = (): number => 0;"
+ > (compile '(js/arrow (x)
+               (js/obj :foo x)))
+ "x => ({
+  foo: x
+});"
 
  :describe "js/arrow?"
  > (js/arrow? (js/arrow (x) x))
  #t
- > (js/arrow? (lambda (x) x))
+ > (js/arrow? (js/function (x) x))
  #f
+ > (js/arrow? (lambda (x) x))
+ #t
 
  :describe "js/=>"
  > (compile '(js/=> () 0))
- "() => {
-  return 0;
-};"
+ "() => 0;"
 
  :describe "js/iife"
  > (compile '(js/iife (js/arrow (x y)
                         (+ x y))
                       (list 1 2))
             :as "expression")
- "((x, y) => {
-  return x + y;
-})(1, 2)"
+ "((x, y) => x + y)(1, 2)"
  > (compile '(js/iife (js/arrow (x . y)
                         (+ x (first y)))
                       (list* a b))
             :as "expression")
- "((x, ...y) => {
-  return x + y[0];
-})(a, ...b)"
+ "((x, ...y) => x + y[0])(a, ...b)"
  > (compile '(js/iife (js/arrow (x y)
                         (+ x y))
                       (list 1 2))

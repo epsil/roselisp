@@ -41,7 +41,7 @@ visit.fsource = [Symbol.for('define'), [Symbol.for('visit'), Symbol.for('visitor
  * in order, similar to a `cond` form.
  */
 function makeVisitor(visitors: any = []): any {
-  return function (node: any, ...args: any[]): any {
+  return (node: any, ...args: any[]): any => {
     let result: any = node;
     for (let entry of visitors) {
       const [predicate, visitor]: any[] = entry;

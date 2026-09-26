@@ -143,7 +143,7 @@
                              1)
                             (else
                              0)))))
- "[...arr].sort(function (x, y) {
+ "[...arr].sort((x, y) => {
   if (x < y) {
     return -1;
   } else if (x > y) {
@@ -175,7 +175,7 @@
                               1)
                              (else
                               0)))))
- "arr.sort(function (x, y) {
+ "arr.sort((x, y) => {
   if (x < y) {
     return -1;
   } else if (x > y) {
@@ -534,7 +534,7 @@ let bar = foo(Symbol.for('x'));"
 }
 
 myPlus.compilerMacro = (() => {
-  let f = function (exp, env) {
+  let f = (exp, env) => {
     let [x, y] = exp.slice(1);
     return [Symbol.for('+'), x, y];
   };
@@ -550,7 +550,7 @@ myPlus.compilerMacro = (() => {
 }
 
 myPlus.compilerMacro = (() => {
-  let f = function (exp, env) {
+  let f = (exp, env) => {
     let [x, y] = exp.slice(1);
     return [Symbol.for('+'), x, y];
   };
@@ -561,9 +561,7 @@ myPlus.compilerMacro = (() => {
  :describe "syntax-macro"
  > (compile '(syntax-macro (x y)
                            `(+ ,x ,y)))
- "let f = function (x, y) {
-  return [Symbol.for('+'), x, y];
-};
+ "let f = (x, y) => [Symbol.for('+'), x, y];
 
 f.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
 
@@ -581,9 +579,7 @@ foo.ftype = 'macro';"
  > (compile '(lambda (x)
                (declare (ftype "macro"))
                x))
- "let f = function (x) {
-  return x;
-};
+ "let f = x => x;
 
 f.ftype = 'macro';
 
@@ -600,7 +596,7 @@ f;"
 }
 
 myPlus.compilerMacro = (() => {
-  let f = function (exp, env) {
+  let f = (exp, env) => {
     let [x, y] = exp.slice(1);
     return [Symbol.for('+'), x, y];
   };
@@ -705,9 +701,7 @@ prop;"
 
  :describe "async"
  > (compile '(async (lambda (x) x)))
- "async function (x) {
-  return x;
-};"
+ "async x => x;"
  > (compile '(define foo
                (async (lambda (x) x))))
  "async function foo(x) {
@@ -1123,34 +1117,34 @@ prop;"
 }"
 
  :describe "this"
- > (compile '(lambda (this)
+ > (compile '(js/function (this)
                #u))
  "function () {
   return undefined;
 };"
- > (compile '(lambda (this)
+ > (compile '(js/function (this)
                #u)
             :to "typescript")
  "function (this: any): any {
   return undefined;
 };"
- > (compile '(lambda (this arg)
+ > (compile '(js/function (this arg)
                arg))
  "function (arg) {
   return arg;
 };"
- > (compile '(lambda (this arg)
+ > (compile '(js/function (this arg)
                arg)
             :to "typescript")
  "function (this: any, arg: any): any {
   return arg;
 };"
- > (compile '(lambda (this . args)
+ > (compile '(js/function (this . args)
                args))
  "function (...args) {
   return args;
 };"
- > (compile '(lambda (this . args)
+ > (compile '(js/function (this . args)
                args)
             :to "typescript")
  "function (this: any, ...args: any[]): any {
@@ -1270,23 +1264,17 @@ prop;"
  > (member? 9 '(1 2 3 4))
  #f
  > (compile '(member? 2 (list 1 2 3 4) f))
- "[1, 2, 3, 4].findIndex(function (x) {
-  return f(2, x);
-}) >= 0;"
+ "[1, 2, 3, 4].findIndex(x => f(2, x)) >= 0;"
  > (compile '(member? (+ 1 1) (list 1 2 3 4) f))
  "let v = 1 + 1;
 
-[1, 2, 3, 4].findIndex(function (x) {
-  return f(v, x);
-}) >= 0;"
+[1, 2, 3, 4].findIndex(x => f(v, x)) >= 0;"
  > (compile '(member? (+ 1 1) (list 1 2 3 4) (memoize f)))
  "let v = 1 + 1;
 
 let isEqual = memoize(f);
 
-[1, 2, 3, 4].findIndex(function (x) {
-  return isEqual(v, x);
-}) >= 0;"
+[1, 2, 3, 4].findIndex(x => isEqual(v, x)) >= 0;"
 
  :describe "memq?"
  > (memq? 2 '(1 2 3 4))
@@ -1350,14 +1338,10 @@ let isEqual = memoize(f);
  "x as NN<any,any>;"
  > (compile '((ann (lambda (x) x) Any) 1)
             :to "typescript")
- "(function (x: any): any {
-  return x;
-} as any)(1);"
+ "((x: any): any => x as any)(1);"
  > (compile '(lambda (x) (ann (send x foo) Any))
             :to "typescript")
- "function (x: any): any {
-  return x.foo() as any;
-};"
+ "(x: any): any => x.foo() as any;"
 
  :describe ":"
  > (compile '(begin
@@ -1470,9 +1454,7 @@ let isEqual = memoize(f);
                  (lambda (x)
                    x)))
             :to "typescript")
- "let f: (a: number) => number = function (x: any): any {
-  return x;
-};"
+ "let f: (a: number) => number = (x: any): any => x;"
  > (compile '(begin
                (: f (-> Number Number))
                (define f
@@ -1480,9 +1462,7 @@ let isEqual = memoize(f);
                   (lambda (x)
                     x))))
             :to "typescript")
- "let f: (a: number) => number = foo(function (x: any): any {
-  return x;
-});"
+ "let f: (a: number) => number = foo((x: any): any => x);"
  > (compile '(begin
                (: f (-> Number Number Number))
                (define (f x (y 1))
@@ -1497,45 +1477,35 @@ let isEqual = memoize(f);
                  (lambda (x (y 1))
                    x)))
             :to "typescript")
- "let f: (a: number, b?: number) => number = function (x: any, y: any = 1): any {
-  return x;
-};"
+ "let f: (a: number, b?: number) => number = (x: any, y: any = 1): any => x;"
  > (compile '(begin
                (: f (-> Any * Any))
                (define f
                  (lambda x
                    x)))
             :to "typescript")
- "let f: (...a: any) => any = function (...x: any[]): any {
-  return x;
-};"
+ "let f: (...a: any) => any = (...x: any[]): any => x;"
  > (compile '(begin
                (: f (-> :rest Any Any))
                (define f
                  (lambda x
                    x)))
             :to "typescript")
- "let f: (...a: any) => any = function (...x: any[]): any {
-  return x;
-};"
+ "let f: (...a: any) => any = (...x: any[]): any => x;"
  > (compile '(begin
                (: f (->* :rest Any Any))
                (define f
                  (lambda x
                    x)))
             :to "typescript")
- "let f: (...a: any) => any = function (...x: any[]): any {
-  return x;
-};"
+ "let f: (...a: any) => any = (...x: any[]): any => x;"
  > (compile '(begin
                (: f (->* :rest (Listof Any) Any))
                (define f
                  (lambda x
                    x)))
             :to "typescript")
- "let f: (...a: any[]) => any = function (...x: any[]): any {
-  return x;
-};"
+ "let f: (...a: any[]) => any = (...x: any[]): any => x;"
  > (compile '(begin
                (: x Foo)
                (define x
@@ -1546,16 +1516,12 @@ let isEqual = memoize(f);
                (lambda ((x : Number))
                  x))
             :to "typescript")
- "let f: any = function (x: number): any {
-  return x;
-};"
+ "let f: any = (x: number): any => x;"
  > (compile '(define f
                (js/arrow ((x : Number))
                  x))
             :to "typescript")
- "let f: any = (x: number): any => {
-  return x;
-};"
+ "let f: any = (x: number): any => x;"
  > (compile '(define (f (x : Number))
                x)
             :to "typescript")
@@ -1627,9 +1593,7 @@ let isEqual = memoize(f);
                  (lambda (x)
                    x)))
             :to "javascript")
- "let f = function (x) {
-  return x;
-};"
+ "let f = x => x;"
  > (compile '(begin
                (define-type NN (-> Number Number))
                (: f NN)
@@ -1639,9 +1603,7 @@ let isEqual = memoize(f);
             :to "typescript")
  "type NN = (a: number) => number;
 
-let f: NN = function (x: any): any {
-  return x;
-};"
+let f: NN = (x: any): any => x;"
 
  :describe "require"
  > (compile '(require "foo"))

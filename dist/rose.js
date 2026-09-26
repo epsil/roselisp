@@ -85,7 +85,7 @@ class Rose {
         if (recursive) {
             let isNew = false;
             // Visit sub-nodes, if any.
-            const resultNodes = this.getNodes().map(function (node) {
+            const resultNodes = this.getNodes().map((node) => {
                 const resultNode = node.accept(visitor);
                 // If visiting a sub-node produces a new value,
                 // set `is-new` to `#t`.
@@ -289,9 +289,7 @@ class Rose {
      * of indices. Counting begins at zero.
      */
     get(...indices) {
-        return indices.reduce(function (node, idx) {
-            return node.nth(idx);
-        }, this);
+        return indices.reduce((node, idx) => node.nth(idx), this);
     }
     /**
      * Get the numerical index of `node` in the forest.
@@ -638,9 +636,7 @@ class Forest {
      * Counting begins at zero.
      */
     get(...indices) {
-        return indices.reduce(function (acc, idx) {
-            return acc.nth(idx);
-        }, this);
+        return indices.reduce((acc, idx) => acc.nth(idx), this);
     }
     // ;;; Get the `n`-th node.
     // ;;; Counting begins at zero.
@@ -653,9 +649,7 @@ class Forest {
      * Returns `-1` if not found.
      */
     getIndex(node) {
-        return this.getNodes().findIndex(function (x) {
-            return x === node;
-        });
+        return this.getNodes().findIndex((x) => x === node);
     }
     /**
      * Get the list of all the nodes.
@@ -859,7 +853,7 @@ exports.sexpToRose = sexpToRose;
 function roseToMap(node = undefined) {
     const map = new Map();
     if (node) {
-        node.forEachNode(function (x) {
+        node.forEachNode((x) => {
             const exp = x.getValue();
             return roseMapSetX(map, exp, x);
         });

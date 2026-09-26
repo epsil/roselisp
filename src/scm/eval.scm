@@ -941,7 +941,7 @@
   (define class-body-statements
     (get-estree-field "body" class-body))
   (define constructor-f
-    (lambda (this . args)
+    (js/function (this . args)
       (define constructor-inner-f #u)
       (for ((x class-body-statements))
         ;; TODO: Move evaluation outside---no reason to do it each
@@ -1187,7 +1187,9 @@
                                        (new ArrayPattern params)
                                        (estree-quote args)))
                                  "let")
-                           ,@(get-estree-field "body" body))))
+                           ,@(if (estree-type? body "BlockStatement")
+                                 (get-estree-field "body" body)
+                                 (list body)))))
                 env
                 options))
          (catch ReturnException e
@@ -1200,10 +1202,10 @@
      #t))
    (else
     (make-arity-function
-     (lambda (this . args)
+     (js/function (this . args)
        (with-this-value
         this
-        (lambda ()
+        (js/function ()
           (define result #u)
           (try
             (set! result
@@ -1217,7 +1219,9 @@
                                           (new ArrayPattern params)
                                           (estree-quote args)))
                                     "let")
-                              ,@(get-estree-field "body" body))))
+                              ,@(if (estree-type? body "BlockStatement")
+                                    (get-estree-field "body" body)
+                                    (list body)))))
                    env
                    options))
             (catch ReturnException e
@@ -1271,37 +1275,37 @@
    (else
     (case n
       ((0)
-       (lambda (this)
+       (js/function (this)
          (send fun apply this arguments)))
       ((1)
-       (lambda (this a)
+       (js/function (this a)
          (send fun apply this arguments)))
       ((2)
-       (lambda (this a b)
+       (js/function (this a b)
          (send fun apply this arguments)))
       ((3)
-       (lambda (this a b c)
+       (js/function (this a b c)
          (send fun apply this arguments)))
       ((4)
-       (lambda (this a b c d)
+       (js/function (this a b c d)
          (send fun apply this arguments)))
       ((5)
-       (lambda (this a b c d e)
+       (js/function (this a b c d e)
          (send fun apply this arguments)))
       ((6)
-       (lambda (this a b c d e fun)
+       (js/function (this a b c d e fun)
          (send fun apply this arguments)))
       ((7)
-       (lambda (this a b c d e f g)
+       (js/function (this a b c d e f g)
          (send fun apply this arguments)))
       ((8)
-       (lambda (this a b c d e f g h)
+       (js/function (this a b c d e f g h)
          (send fun apply this arguments)))
       ((9)
-       (lambda (this a b c d e f g h i)
+       (js/function (this a b c d e f g h i)
          (send fun apply this arguments)))
       ((10)
-       (lambda (this a b c d e f g h i j)
+       (js/function (this a b c d e f g h i j)
          (send fun apply this arguments)))
       (else
        fun)))))

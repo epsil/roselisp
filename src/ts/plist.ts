@@ -36,15 +36,13 @@ function plistp_(obj: any): any {
 plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('obj')], [Symbol.for('even?'), [Symbol.for('length'), Symbol.for('obj')]]]];
 
 plistp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
     if (!(Array.isArray(obj) && (obj.length > 0))) {
       return [Symbol.for('and'), [Symbol.for('pair-or-list?'), obj], [Symbol.for('even?'), [Symbol.for('length'), obj]]];
     } else {
       const obj1: any = Symbol('obj');
-      return [Symbol.for('let'), [[obj1, obj]], ((obj: any): any => {
-        return [Symbol.for('and'), [Symbol.for('pair-or-list?'), obj], [Symbol.for('even?'), [Symbol.for('length'), obj]]];
-      })(obj1)];
+      return [Symbol.for('let'), [[obj1, obj]], ((obj: any): any => [Symbol.for('and'), [Symbol.for('pair-or-list?'), obj], [Symbol.for('even?'), [Symbol.for('length'), obj]]])(obj1)];
     }
   };
   f.ftype = 'macro';
@@ -61,7 +59,7 @@ function plistCopy_(plst: any): any {
 plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('array-copy'), Symbol.for('plst')]];
 
 plistCopy_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [plst]: any[] = exp.slice(1);
     return [Symbol.for('array-copy'), plst];
   };
@@ -166,7 +164,7 @@ plistIterate_.fsource = [Symbol.for('define'), [Symbol.for('plist-iterate_'), Sy
  */
 function plistMap_(f: any, plst: any): any {
   const result: any = [];
-  plistIterate_(function (entry: any): any {
+  plistIterate_((entry: any): any => {
     let [prop, val]: any[] = f(entry);
     result.push(prop);
     result.push(val);
@@ -184,9 +182,7 @@ function plistToAlist_(plst: any): any {
   const alst: any = [];
   const _end: any = plst.length;
   for (let i: any = 0; i < _end; i = i + 2) {
-    alst.push([(plst as any)[i], ...((x: any): any => {
-      return Array.isArray(x) ? x : [Symbol.for('.'), x];
-    })(plst[i + 1])]);
+    alst.push([(plst as any)[i], ...((x: any): any => Array.isArray(x) ? x : [Symbol.for('.'), x])(plst[i + 1])]);
   }
   return alst;
 }

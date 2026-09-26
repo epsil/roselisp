@@ -41,15 +41,13 @@ function thunkp_(x: any): any {
 thunkp_.fsource = [Symbol.for('define'), [Symbol.for('thunk?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('x')], [Symbol.for('zero?'), [Symbol.for('arity'), Symbol.for('x')]]]];
 
 thunkp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     if (!(Array.isArray(x) && (x.length > 0))) {
       return [Symbol.for('and'), [Symbol.for('procedure?'), x], [Symbol.for('zero?'), [Symbol.for('arity'), x]]];
     } else {
       const x1: any = Symbol('x');
-      return [Symbol.for('let'), [[x1, x]], ((x: any): any => {
-        return [Symbol.for('and'), [Symbol.for('procedure?'), x], [Symbol.for('zero?'), [Symbol.for('arity'), x]]];
-      })(x1)];
+      return [Symbol.for('let'), [[x1, x]], ((x: any): any => [Symbol.for('and'), [Symbol.for('procedure?'), x], [Symbol.for('zero?'), [Symbol.for('arity'), x]]])(x1)];
     }
   };
   f.ftype = 'macro';
@@ -91,15 +89,13 @@ function promisep_(x: any): any {
 promisep_.fsource = [Symbol.for('define'), [Symbol.for('promise?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('js/function-type?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]], 'thunk']]];
 
 promisep_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     if (!(Array.isArray(x) && (x.length > 0))) {
       return [Symbol.for('and'), [Symbol.for('js/function-type?'), x], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), x, Symbol.for('Any')]], 'thunk']];
     } else {
       const x1: any = Symbol('x');
-      return [Symbol.for('let'), [[x1, x]], ((x: any): any => {
-        return [Symbol.for('and'), [Symbol.for('js/function-type?'), x], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), x, Symbol.for('Any')]], 'thunk']];
-      })(x1)];
+      return [Symbol.for('let'), [[x1, x]], ((x: any): any => [Symbol.for('and'), [Symbol.for('js/function-type?'), x], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), x, Symbol.for('Any')]], 'thunk']])(x1)];
     }
   };
   f.ftype = 'macro';
@@ -116,7 +112,7 @@ function force_(x: any): any {
 force_.fsource = [Symbol.for('define'), [Symbol.for('force_'), Symbol.for('x')], [[Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]]];
 
 force_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     return [[Symbol.for('ann'), x, Symbol.for('Any')]];
   };
@@ -138,7 +134,7 @@ function promiseForcedP_(x: any): any {
 promiseForcedP_.fsource = [Symbol.for('define'), [Symbol.for('promise-forced?_'), Symbol.for('x')], [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')], true, false]];
 
 promiseForcedP_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     return [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('forced'), x], true, false];
   };
@@ -156,7 +152,7 @@ function promiseRunningP_(x: any): any {
 promiseRunningP_.fsource = [Symbol.for('define'), [Symbol.for('promise-running?_'), Symbol.for('x')], [Symbol.for('undefined?'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')]]];
 
 promiseRunningP_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     return [Symbol.for('undefined?'), [Symbol.for('get-field'), Symbol.for('forced'), x]];
   };

@@ -58,7 +58,7 @@ exports.r = r;
  * Eval utility.
  */
 function e(input, env = makeInteractiveEnvironment()) {
-    return input.map(function (exp) {
+    return input.map((exp) => {
         let result = undefined;
         try {
             result = (0, language_1.interpret)(exp, env);
@@ -85,9 +85,7 @@ exports.re = re;
  * Print utility.
  */
 function p(input) {
-    return input.map((language_1.printSexpAsExpression.length === 1) ? language_1.printSexpAsExpression : (function (x) {
-        return (0, language_1.printSexpAsExpression)(x);
-    })).join('\n');
+    return input.map((language_1.printSexpAsExpression.length === 1) ? language_1.printSexpAsExpression : (x) => (0, language_1.printSexpAsExpression)(x)).join('\n');
 }
 /**
  * Read--Eval--Print utility.

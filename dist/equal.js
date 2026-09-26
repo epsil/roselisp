@@ -37,7 +37,7 @@ exports.eq_ = eqp_;
 exports.eqp_ = eqp_;
 eqp_.fsource = [Symbol.for('define'), [Symbol.for('eq?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
 eqp_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x, y] = exp.slice(1);
         return [Symbol.for('js/==='), x, y];
     };
@@ -66,7 +66,7 @@ exports.eqv_ = eqvp_;
 exports.eqvp_ = eqvp_;
 eqvp_.fsource = [Symbol.for('define'), [Symbol.for('eqv?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/same-value?'), Symbol.for('x'), Symbol.for('y')]];
 eqvp_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x, y] = exp.slice(1);
         return [Symbol.for('js/same-value?'), x, y];
     };

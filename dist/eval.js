@@ -53,7 +53,7 @@ exports.defaultEvaluator = defaultEvaluator;
  * on top of a Lisp environment, while `eval_` is a low-level function
  * that performs no such stacking.
  */
-const eval_ = (0, curry_1.dashify)(function (exp, env = undefined, options = {}) {
+const eval_ = (0, curry_1.dashify)((exp, env = undefined, options = {}) => {
     const evaluator = options['evaluator'] || defaultEvaluator;
     return callEvaluator(evaluator, exp, env, options);
 });
@@ -169,9 +169,7 @@ function evalSexp(exp, env, options = {}) {
                         }
                         else {
                             // Apply `f` to evaluated arguments
-                            return f(...args.map(function (arg) {
-                                return evalSexp(arg, env, options);
-                            }));
+                            return f(...args.map((arg) => evalSexp(arg, env, options)));
                         }
                     }
                 }
@@ -193,9 +191,7 @@ function evalSexp(exp, env, options = {}) {
                 else {
                     // Regular call. The arguments are evaluated,
                     // and the values are passed to the function.
-                    return f(...args.map(function (arg) {
-                        return evalSexp(arg, env, options);
-                    }));
+                    return f(...args.map((arg) => evalSexp(arg, env, options)));
                 }
             }
             else {
@@ -268,9 +264,7 @@ function evalEstree(node, env, options = {}) {
         const type_ = (0, estree_1.estreeType)(node);
         const evaluator = evalEstreeMap.get(type_);
         if (evaluator) {
-            return (0, env_1.withEnvironmentF)(env, () => {
-                return evaluator(node, env, options);
-            });
+            return (0, env_1.withEnvironmentF)(env, () => evaluator(node, env, options));
         }
         else {
             return undefined;
@@ -480,9 +474,7 @@ function evalEstreeNewExpression(node, env, options = {}) {
     const callee = (0, estree_1.getEstreeField)('callee', node);
     const args = (0, estree_1.getEstreeField)('arguments', node);
     const calleeVal = evalEstree(callee, env, options);
-    const argsVals = args.map(function (x) {
-        return evalEstree(x, env, options);
-    });
+    const argsVals = args.map((x) => evalEstree(x, env, options));
     return new calleeVal(...argsVals);
 }
 evalEstreeNewExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-new-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('callee'), [Symbol.for('get-estree-field'), 'callee', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-estree-field'), 'arguments', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('callee-val'), [Symbol.for('eval-estree'), Symbol.for('callee'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('args-vals'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('args')]], [Symbol.for('apply'), Symbol.for('new'), Symbol.for('callee-val'), Symbol.for('args-vals')]];
@@ -998,7 +990,7 @@ function evalEstreeClassExpression(node, env, options = {}) {
     }
     return constructorF;
 }
-evalEstreeClassExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-class-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('super-class'), [Symbol.for('get-estree-field'), 'superClass', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('class-body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('class-body-statements'), [Symbol.for('get-estree-field'), 'body', Symbol.for('class-body')]], [Symbol.for('define'), Symbol.for('constructor-f'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('constructor-inner-f'), undefined], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('class-body-statements')]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('x')]], [Symbol.for('define'), Symbol.for('key-str'), [Symbol.for('get-estree-field'), 'name', Symbol.for('key')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('x')]], [Symbol.for('define'), Symbol.for('value-val'), [Symbol.for('cond'), [Symbol.for('value'), [Symbol.for('eval-estree'), Symbol.for('value'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), undefined]]], [Symbol.for('oset!'), Symbol.for('this'), Symbol.for('key-str'), Symbol.for('value-val')], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('key-str'), 'constructor'], [Symbol.for('set!'), Symbol.for('constructor-inner-f'), Symbol.for('value-val')]]], [Symbol.for('when'), Symbol.for('constructor-inner-f'), [Symbol.for('send'), Symbol.for('constructor-inner-f'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('args')]], undefined]], [Symbol.for('when'), Symbol.for('super-class'), [Symbol.for('define'), Symbol.for('super-class-val'), [Symbol.for('eval-estree'), Symbol.for('super-class'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('oset!'), Symbol.for('constructor-f'), Symbol.for(':prototype'), [Symbol.for('send'), Symbol.for('Object'), Symbol.for('create'), [Symbol.for('oget'), Symbol.for('super-class-val'), Symbol.for(':prototype')]]]], Symbol.for('constructor-f')];
+evalEstreeClassExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-class-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('super-class'), [Symbol.for('get-estree-field'), 'superClass', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('class-body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('class-body-statements'), [Symbol.for('get-estree-field'), 'body', Symbol.for('class-body')]], [Symbol.for('define'), Symbol.for('constructor-f'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('constructor-inner-f'), undefined], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('class-body-statements')]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('x')]], [Symbol.for('define'), Symbol.for('key-str'), [Symbol.for('get-estree-field'), 'name', Symbol.for('key')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('x')]], [Symbol.for('define'), Symbol.for('value-val'), [Symbol.for('cond'), [Symbol.for('value'), [Symbol.for('eval-estree'), Symbol.for('value'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), undefined]]], [Symbol.for('oset!'), Symbol.for('this'), Symbol.for('key-str'), Symbol.for('value-val')], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('key-str'), 'constructor'], [Symbol.for('set!'), Symbol.for('constructor-inner-f'), Symbol.for('value-val')]]], [Symbol.for('when'), Symbol.for('constructor-inner-f'), [Symbol.for('send'), Symbol.for('constructor-inner-f'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('args')]], undefined]], [Symbol.for('when'), Symbol.for('super-class'), [Symbol.for('define'), Symbol.for('super-class-val'), [Symbol.for('eval-estree'), Symbol.for('super-class'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('oset!'), Symbol.for('constructor-f'), Symbol.for(':prototype'), [Symbol.for('send'), Symbol.for('Object'), Symbol.for('create'), [Symbol.for('oget'), Symbol.for('super-class-val'), Symbol.for(':prototype')]]]], Symbol.for('constructor-f')];
 /**
  * Evaluate an ESTree [`SwitchStatement`][estree:switchstatement] node.
  *
@@ -1205,7 +1197,7 @@ function evalEstreeFunctionExpressionHelper(node, env, options = {}, settings = 
         return makeArityFunction((...args) => {
             let result = undefined;
             try {
-                result = evalEstree((params.length === 0) ? body : new estree_1.BlockStatement([new estree_1.VariableDeclaration([new estree_1.VariableDeclarator(new estree_1.ArrayPattern(params), (0, estree_1.estreeQuote)(args))], 'let'), ...(0, estree_1.getEstreeField)('body', body)]), env, options);
+                result = evalEstree((params.length === 0) ? body : new estree_1.BlockStatement([new estree_1.VariableDeclaration([new estree_1.VariableDeclarator(new estree_1.ArrayPattern(params), (0, estree_1.estreeQuote)(args))], 'let'), ...((0, estree_1.estreeTypeP)(body, 'BlockStatement') ? (0, estree_1.getEstreeField)('body', body) : [body])]), env, options);
             }
             catch (e) {
                 if (e instanceof exception_1.ReturnException) {
@@ -1223,7 +1215,7 @@ function evalEstreeFunctionExpressionHelper(node, env, options = {}, settings = 
             return withThisValue(this, function () {
                 let result = undefined;
                 try {
-                    result = evalEstree((params.length === 0) ? body : new estree_1.BlockStatement([new estree_1.VariableDeclaration([new estree_1.VariableDeclarator(new estree_1.ArrayPattern(params), (0, estree_1.estreeQuote)(args))], 'let'), ...(0, estree_1.getEstreeField)('body', body)]), env, options);
+                    result = evalEstree((params.length === 0) ? body : new estree_1.BlockStatement([new estree_1.VariableDeclaration([new estree_1.VariableDeclarator(new estree_1.ArrayPattern(params), (0, estree_1.estreeQuote)(args))], 'let'), ...((0, estree_1.estreeTypeP)(body, 'BlockStatement') ? (0, estree_1.getEstreeField)('body', body) : [body])]), env, options);
                 }
                 catch (e) {
                     if (e instanceof exception_1.ReturnException) {
@@ -1238,7 +1230,7 @@ function evalEstreeFunctionExpressionHelper(node, env, options = {}, settings = 
         }, restParam ? undefined : params.length);
     }
 }
-evalEstreeFunctionExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-function-expression-helper'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]], [Symbol.for('settings'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('arrow-setting'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':arrow')]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('get-estree-field'), 'params', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('rest-param'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('params')], 0], [Symbol.for('estree-type?'), [Symbol.for('last'), Symbol.for('params')], 'RestElement']], [Symbol.for('last'), Symbol.for('params')], undefined]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('arrow-setting'), [Symbol.for('make-arity-function'), [Symbol.for('js/arrow'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('get-estree-field'), 'body', Symbol.for('body')]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]], true]], [Symbol.for('else'), [Symbol.for('make-arity-function'), [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('with-this-value'), Symbol.for('this'), [Symbol.for('lambda'), [], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('get-estree-field'), 'body', Symbol.for('body')]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')]]], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]]]]]];
+evalEstreeFunctionExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-function-expression-helper'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]], [Symbol.for('settings'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('arrow-setting'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':arrow')]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('get-estree-field'), 'params', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('rest-param'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('params')], 0], [Symbol.for('estree-type?'), [Symbol.for('last'), Symbol.for('params')], 'RestElement']], [Symbol.for('last'), Symbol.for('params')], undefined]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('arrow-setting'), [Symbol.for('make-arity-function'), [Symbol.for('js/arrow'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('estree-type?'), Symbol.for('body'), 'BlockStatement'], [Symbol.for('get-estree-field'), 'body', Symbol.for('body')], [Symbol.for('list'), Symbol.for('body')]]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]], true]], [Symbol.for('else'), [Symbol.for('make-arity-function'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('with-this-value'), Symbol.for('this'), [Symbol.for('js/function'), [], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('estree-type?'), Symbol.for('body'), 'BlockStatement'], [Symbol.for('get-estree-field'), 'body', Symbol.for('body')], [Symbol.for('list'), Symbol.for('body')]]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')]]], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]]]]]];
 /**
  * Make a function of the specified arity.
  */
@@ -1246,69 +1238,47 @@ function makeArityFunction(fun, n = undefined, arrow = false) {
     if (arrow) {
         switch (n) {
             case 0: {
-                return () => {
-                    return fun();
-                };
+                return () => fun();
                 break;
             }
             case 1: {
-                return (a) => {
-                    return fun(a);
-                };
+                return (a) => fun(a);
                 break;
             }
             case 2: {
-                return (a, b) => {
-                    return fun(a, b);
-                };
+                return (a, b) => fun(a, b);
                 break;
             }
             case 3: {
-                return (a, b, c) => {
-                    return fun(a, b, c);
-                };
+                return (a, b, c) => fun(a, b, c);
                 break;
             }
             case 4: {
-                return (a, b, c, d) => {
-                    return fun(a, b, c, d);
-                };
+                return (a, b, c, d) => fun(a, b, c, d);
                 break;
             }
             case 5: {
-                return (a, b, c, d, e) => {
-                    return fun(a, b, c, d, e);
-                };
+                return (a, b, c, d, e) => fun(a, b, c, d, e);
                 break;
             }
             case 6: {
-                return (a, b, c, d, e, f) => {
-                    return fun(a, b, c, d, e, f);
-                };
+                return (a, b, c, d, e, f) => fun(a, b, c, d, e, f);
                 break;
             }
             case 7: {
-                return (a, b, c, d, e, f, g) => {
-                    return fun(a, b, c, d, e, f, g);
-                };
+                return (a, b, c, d, e, f, g) => fun(a, b, c, d, e, f, g);
                 break;
             }
             case 8: {
-                return (a, b, c, d, e, f, g, h) => {
-                    return fun(a, b, c, d, e, f, g, h);
-                };
+                return (a, b, c, d, e, f, g, h) => fun(a, b, c, d, e, f, g, h);
                 break;
             }
             case 9: {
-                return (a, b, c, d, e, f, g, h, i) => {
-                    return fun(a, b, c, d, e, f, g, h, i);
-                };
+                return (a, b, c, d, e, f, g, h, i) => fun(a, b, c, d, e, f, g, h, i);
                 break;
             }
             case 10: {
-                return (a, b, c, d, e, f, g, h, i, j) => {
-                    return fun(a, b, c, d, e, f, g, h, i, j);
-                };
+                return (a, b, c, d, e, f, g, h, i, j) => fun(a, b, c, d, e, f, g, h, i, j);
                 break;
             }
             default: {
@@ -1390,7 +1360,7 @@ function makeArityFunction(fun, n = undefined, arrow = false) {
         }
     }
 }
-makeArityFunction.fsource = [Symbol.for('define'), [Symbol.for('make-arity-function'), Symbol.for('fun'), [Symbol.for('n'), undefined], [Symbol.for('arrow'), false]], [Symbol.for('cond'), [Symbol.for('arrow'), [Symbol.for('case'), Symbol.for('n'), [[0], [Symbol.for('js/arrow'), [], [Symbol.for('fun')]]], [[1], [Symbol.for('js/arrow'), [Symbol.for('a')], [Symbol.for('fun'), Symbol.for('a')]]], [[2], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b')]]], [[3], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')]]], [[4], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d')]]], [[5], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e')]]], [[6], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f')]]], [[7], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g')]]], [[8], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h')]]], [[9], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i')]]], [[10], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i'), Symbol.for('j')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i'), Symbol.for('j')]]], [Symbol.for('else'), Symbol.for('fun')]]], [Symbol.for('else'), [Symbol.for('case'), Symbol.for('n'), [[0], [Symbol.for('lambda'), [Symbol.for('this')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[1], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[2], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[3], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[4], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[5], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[6], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('fun')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[7], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[8], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[9], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[10], [Symbol.for('lambda'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i'), Symbol.for('j')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [Symbol.for('else'), Symbol.for('fun')]]]]];
+makeArityFunction.fsource = [Symbol.for('define'), [Symbol.for('make-arity-function'), Symbol.for('fun'), [Symbol.for('n'), undefined], [Symbol.for('arrow'), false]], [Symbol.for('cond'), [Symbol.for('arrow'), [Symbol.for('case'), Symbol.for('n'), [[0], [Symbol.for('js/arrow'), [], [Symbol.for('fun')]]], [[1], [Symbol.for('js/arrow'), [Symbol.for('a')], [Symbol.for('fun'), Symbol.for('a')]]], [[2], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b')]]], [[3], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')]]], [[4], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d')]]], [[5], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e')]]], [[6], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f')]]], [[7], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g')]]], [[8], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h')]]], [[9], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i')]]], [[10], [Symbol.for('js/arrow'), [Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i'), Symbol.for('j')], [Symbol.for('fun'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i'), Symbol.for('j')]]], [Symbol.for('else'), Symbol.for('fun')]]], [Symbol.for('else'), [Symbol.for('case'), Symbol.for('n'), [[0], [Symbol.for('js/function'), [Symbol.for('this')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[1], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[2], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[3], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[4], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[5], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[6], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('fun')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[7], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[8], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[9], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [[10], [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('a'), Symbol.for('b'), Symbol.for('c'), Symbol.for('d'), Symbol.for('e'), Symbol.for('f'), Symbol.for('g'), Symbol.for('h'), Symbol.for('i'), Symbol.for('j')], [Symbol.for('send'), Symbol.for('fun'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('arguments')]]], [Symbol.for('else'), Symbol.for('fun')]]]]];
 /**
  * Mapping from ESTree node types to evaluator functions.
  */

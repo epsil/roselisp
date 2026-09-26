@@ -321,7 +321,8 @@
    trailing-newlines))
 
 ;;; Whether an expression is "simple", i.e., does not
-;;; need to be wrapped in parentheses when printed.
+;;; need to be wrapped in parentheses when a unary
+;;; operator is applied to it.
 (define (estree-simple? exp)
   (memq? (estree-type exp)
          '("Literal"
@@ -333,6 +334,15 @@
            "ArrayExpression"
            "ObjectExpression"
            "MemberExpression")))
+
+;;; Whether an expression is "simple", i.e., does not
+;;; need to be wrapped in parentheses when used as
+;;; an expression.
+(define (estree-simple-expression? exp)
+  (or (estree-simple? exp)
+      (memq? (estree-type exp)
+             '("FunctionExpression"
+               "ArrowFunctionExpression"))))
 
 ;;; Whether an expression is "complex", i.e., needs
 ;;; to be wrapped in parentheses when printed.
@@ -1256,7 +1266,7 @@
      object-printed
      (if optional
          "?."
-         "")
+         empty)
      "["
      property-printed
      "]"))
@@ -1332,6 +1342,23 @@
       "Promise<any>")
      (else
       "any")))
+  (define id
+    (get-estree-field "id" node))
+  (define params
+    (get-estree-field "params" node))
+  (define body
+    (get-estree-field "body" node))
+  (define wrap-params
+    (if (and arrow
+             (not (eq? to-language "typescript"))
+             (one? (length params))
+             (estree-type? (first params) "Identifier")
+             (not (estree-type? body "BlockStatement")))
+        #f
+        #t))
+  (define wrap-body
+    (and arrow
+         (estree-type? body "ObjectExpression")))
   (list
    (if async_
        (list "async" space)
@@ -1339,12 +1366,13 @@
    (if arrow
        empty
        (list "function" space))
-   (if (get-estree-field "id" node)
-       (print-node (get-estree-field "id" node)
-                   options)
+   (if id
+       (print-node id options)
        empty)
-   "("
-   (~> (get-estree-field "params" node)
+   (if wrap-params
+       "("
+       empty)
+   (~> params
        (map (lambda (x)
               (print-node x
                           (js/obj-append
@@ -1352,7 +1380,9 @@
                            (js/obj :no-implicit-any #t))))
             _)
        (join (list "," space) _))
-   ")"
+   (if wrap-params
+       ")"
+       empty)
    (if (and (eq? to-language "typescript")
             (not (eq? return-type-printed "")))
        (list ":" space return-type-printed)
@@ -1360,8 +1390,13 @@
    (if arrow
        (list space "=>" space)
        space)
-   (print-node (get-estree-field "body" node)
-               options)))
+   (if wrap-body
+       "("
+       empty)
+   (print-node body options)
+   (if wrap-body
+       ")"
+       empty)))
 
 ;;; Print a `FunctionDeclaration` ESTree node to a `Doc` object.
 (define (print-function-declaration node (options (js/obj)))
@@ -1485,10 +1520,10 @@
   (unless (estree-simple? test)
     (set! test-printed
           (doc-wrap test-printed options)))
-  (unless (estree-simple? consequent)
+  (unless (estree-simple-expression? consequent)
     (set! consequent-printed
           (doc-wrap consequent-printed options)))
-  (unless (estree-simple? alternate)
+  (unless (estree-simple-expression? alternate)
     (set! alternate-printed
           (doc-wrap alternate-printed options)))
   (list

@@ -941,9 +941,7 @@ class EnvironmentStack extends PromiseEnvironment {
    * Map a function over the environment stack.
    */
   map(f: any): any {
-    return new EnvironmentStack(...this.stack.map(function (env: any): any {
-      return env.map(f);
-    }));
+    return new EnvironmentStack(...this.stack.map((env: any): any => env.map(f)));
   }
 
   /**
@@ -1067,11 +1065,7 @@ class DynamicEnvironment extends TypedEnvironment {
   /**
    * Create a dynamic environment.
    */
-  constructor(lookupF: any, typingF: any = ((x: any): any => {
-    return function (...args: any[]): any {
-      return x;
-    };
-  })(Symbol.for('Any'))) {
+  constructor(lookupF: any, typingF: any = ((x: any): any => (...args: any[]): any => x)(Symbol.for('Any'))) {
     super();
     this.lookupF = lookupF;
     this.typingF = typingF;
@@ -1198,9 +1192,7 @@ function prefixBindings(prefix: any, bindings: any): any {
     return [Symbol.for(prefix + (binding[0].description as string)), ...binding.slice(1)];
   }
   prefixBinding.fsource = [Symbol.for('define'), [Symbol.for('prefix-binding'), Symbol.for('binding')], [Symbol.for('~>'), [Symbol.for('first'), Symbol.for('binding')], [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('string-append'), Symbol.for('prefix'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('_')], [Symbol.for('rest'), Symbol.for('binding')]]]];
-  return bindings.map((prefixBinding.length === 1) ? prefixBinding : (function (x: any): any {
-    return prefixBinding(x);
-  }));
+  return bindings.map((prefixBinding.length === 1) ? prefixBinding : (x: any): any => prefixBinding(x));
 }
 
 prefixBindings.fsource = [Symbol.for('define'), [Symbol.for('prefix-bindings'), Symbol.for('prefix'), Symbol.for('bindings')], [Symbol.for('define'), [Symbol.for('prefix-binding'), Symbol.for('binding')], [Symbol.for('~>'), [Symbol.for('first'), Symbol.for('binding')], [Symbol.for('symbol->string'), Symbol.for('_')], [Symbol.for('string-append'), Symbol.for('prefix'), Symbol.for('_')], [Symbol.for('string->symbol'), Symbol.for('_')], [Symbol.for('append'), [Symbol.for('list'), Symbol.for('_')], [Symbol.for('rest'), Symbol.for('binding')]]]], [Symbol.for('map'), Symbol.for('prefix-binding'), Symbol.for('bindings')]];

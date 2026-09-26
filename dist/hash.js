@@ -24,7 +24,7 @@ exports.makeHash_ = exports.hashp_ = exports.hashValues_ = exports.hashSize_ = e
 const util_1 = require("./util");
 const [flatten] = (() => {
     function flatten_(lst) {
-        return lst.reduce(function (acc, x) {
+        return lst.reduce((acc, x) => {
             if (Array.isArray(x)) {
                 return [...acc, ...flatten_(x)];
             }
@@ -52,7 +52,7 @@ function hashp_(v) {
 exports.hashp_ = hashp_;
 hashp_.fsource = [Symbol.for('define'), [Symbol.for('hash?_'), Symbol.for('v')], [Symbol.for('is-a?'), Symbol.for('v'), Symbol.for('Map')]];
 hashp_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [v] = exp.slice(1);
         return [Symbol.for('is-a?'), v, Symbol.for('Map')];
     };
@@ -71,9 +71,7 @@ function makeHash_(assocs = []) {
     // `alist->tuples` and call that here. That function can then be given
     // a compiler macro that deals with quasiquoted association lists and
     // the like.
-    return new Map(assocs.map((flatten.length === 1) ? flatten : (function (x) {
-        return flatten(x);
-    })));
+    return new Map(assocs.map((flatten.length === 1) ? flatten : (x) => flatten(x)));
 }
 exports.makeHash_ = makeHash_;
 makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('assocs'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), Symbol.for('assocs')]]];
@@ -81,15 +79,11 @@ makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.fo
  * Compiler macro for `(make-hash ...)` expressions.
  */
 makeHash_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [assocs] = exp.slice(1);
         if (assocs) {
-            if (((0, util_1.taggedListP)(assocs, Symbol.for('quasiquote')) || (0, util_1.taggedListP)(assocs, Symbol.for('quote'))) && ((x) => {
-                return Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1]));
-            })(assocs[1]) && (assocs[1].filter(function (x) {
-                return !Array.isArray(x) || ((x.length === 2) && ((0, util_1.taggedListP)(x, Symbol.for('unquote')) || ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && !(0, util_1.taggedListP)(x[1], Symbol.for('hash->list')))));
-            }).length === 0)) {
-                return [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('ann'), [assocs[0], assocs[1].map(function (x) {
+            if (((0, util_1.taggedListP)(assocs, Symbol.for('quasiquote')) || (0, util_1.taggedListP)(assocs, Symbol.for('quote'))) && ((x) => Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1])))(assocs[1]) && (assocs[1].filter((x) => !Array.isArray(x) || ((x.length === 2) && ((0, util_1.taggedListP)(x, Symbol.for('unquote')) || ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && !(0, util_1.taggedListP)(x[1], Symbol.for('hash->list')))))).length === 0)) {
+                return [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('ann'), [assocs[0], assocs[1].map((x) => {
                                 if ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && (0, util_1.taggedListP)(x[1], Symbol.for('hash->list'))) {
                                     return [x[0], [Symbol.for('send'), x[1][1], Symbol.for('entries')]];
                                 }
@@ -122,7 +116,7 @@ function hashSetX_(ht, key, v) {
 exports.hashSetX_ = hashSetX_;
 hashSetX_.fsource = [Symbol.for('define'), [Symbol.for('hash-set!_'), Symbol.for('ht'), Symbol.for('key'), Symbol.for('v')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('set'), Symbol.for('key'), Symbol.for('v')]];
 hashSetX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht, key, v] = exp.slice(1);
         return [Symbol.for('send'), ht, Symbol.for('set'), key, v];
     };
@@ -167,7 +161,7 @@ hashRef_.fsource = [Symbol.for('define'), [Symbol.for('hash-ref_'), Symbol.for('
  * Compiler macro for `(hash-ref ...)` expressions.
  */
 hashRef_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht, key, failureResult] = exp.slice(1);
         if (failureResult === undefined) {
             return [Symbol.for('send'), ht, Symbol.for('get'), key];
@@ -179,24 +173,18 @@ hashRef_.compilerMacro = (() => {
                 }
                 else {
                     const key1 = Symbol('key');
-                    return [Symbol.for('let'), [[key1, key]], ((key) => {
-                            return [Symbol.for('if'), [Symbol.for('hash-has-key?'), ht, key], [Symbol.for('hash-ref'), ht, key], failureResult];
-                        })(key1)];
+                    return [Symbol.for('let'), [[key1, key]], ((key) => [Symbol.for('if'), [Symbol.for('hash-has-key?'), ht, key], [Symbol.for('hash-ref'), ht, key], failureResult])(key1)];
                 }
             }
             else {
                 if (!(Array.isArray(key) && (key.length > 0))) {
                     const ht1 = Symbol('ht');
-                    return [Symbol.for('let'), [[ht1, ht]], ((ht) => {
-                            return [Symbol.for('if'), [Symbol.for('hash-has-key?'), ht, key], [Symbol.for('hash-ref'), ht, key], failureResult];
-                        })(ht1)];
+                    return [Symbol.for('let'), [[ht1, ht]], ((ht) => [Symbol.for('if'), [Symbol.for('hash-has-key?'), ht, key], [Symbol.for('hash-ref'), ht, key], failureResult])(ht1)];
                 }
                 else {
                     const ht2 = Symbol('ht');
                     const key2 = Symbol('key');
-                    return [Symbol.for('let'), [[ht2, ht], [key2, key]], ((ht, key) => {
-                            return [Symbol.for('if'), [Symbol.for('hash-has-key?'), ht, key], [Symbol.for('hash-ref'), ht, key], failureResult];
-                        })(ht2, key2)];
+                    return [Symbol.for('let'), [[ht2, ht], [key2, key]], ((ht, key) => [Symbol.for('if'), [Symbol.for('hash-has-key?'), ht, key], [Symbol.for('hash-ref'), ht, key], failureResult])(ht2, key2)];
                 }
             }
         }
@@ -217,7 +205,7 @@ function hashHasKeyP_(ht, key) {
 exports.hashHasKeyP_ = hashHasKeyP_;
 hashHasKeyP_.fsource = [Symbol.for('define'), [Symbol.for('hash-has-key?_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('has'), Symbol.for('key')]];
 hashHasKeyP_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht, key] = exp.slice(1);
         return [Symbol.for('send'), ht, Symbol.for('has'), key];
     };
@@ -242,16 +230,14 @@ hashRemove_.fsource = [Symbol.for('define'), [Symbol.for('hash-remove_'), Symbol
  * Compiler macro for `(hash-remove! ...)` expressions.
  */
 hashRemoveX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht, key] = exp.slice(1);
         if (!(Array.isArray(ht) && (ht.length > 0))) {
             return [Symbol.for('begin'), [Symbol.for('send'), ht, Symbol.for('delete'), key], ht];
         }
         else {
             const ht1 = Symbol('ht');
-            return [Symbol.for('let'), [[ht1, ht]], ((ht) => {
-                    return [Symbol.for('begin'), [Symbol.for('send'), ht, Symbol.for('delete'), key], ht];
-                })(ht1)];
+            return [Symbol.for('let'), [[ht1, ht]], ((ht) => [Symbol.for('begin'), [Symbol.for('send'), ht, Symbol.for('delete'), key], ht])(ht1)];
         }
     };
     f.ftype = 'macro';
@@ -271,7 +257,7 @@ function hashRemoveX_(ht, key) {
 exports.hashRemoveX_ = hashRemoveX_;
 hashRemoveX_.fsource = [Symbol.for('define'), [Symbol.for('hash-remove!_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('delete'), Symbol.for('key')]];
 hashRemoveX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht, key] = exp.slice(1);
         return [Symbol.for('send'), ht, Symbol.for('delete'), key];
     };
@@ -287,7 +273,7 @@ function hashSize_(ht) {
 exports.hashSize_ = hashSize_;
 hashSize_.fsource = [Symbol.for('define'), [Symbol.for('hash-size_'), Symbol.for('ht')], [Symbol.for('get-field'), Symbol.for('size'), Symbol.for('ht')]];
 hashSize_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht] = exp.slice(1);
         return [Symbol.for('get-field'), Symbol.for('size'), ht];
     };
@@ -307,7 +293,7 @@ function hashCopy_(ht) {
 exports.hashCopy_ = hashCopy_;
 hashCopy_.fsource = [Symbol.for('define'), [Symbol.for('hash-copy_'), Symbol.for('ht')], [Symbol.for('new'), Symbol.for('Map'), Symbol.for('ht')]];
 hashCopy_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht] = exp.slice(1);
         return [Symbol.for('new'), Symbol.for('Map'), ht];
     };
@@ -344,13 +330,9 @@ hashClearX_.fsource = [Symbol.for('define'), [Symbol.for('hash-clear!_'), Symbol
  * Compiler macro for `(hash-clear ...)` expressions.
  */
 hashClearX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht] = exp.slice(1);
-        return [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), [Symbol.for('send'), ht, Symbol.for('clear')], Symbol.for(':expression'), !(Array.isArray(ht) && (ht.length > 0)) ? [Symbol.for('begin'), [Symbol.for('send'), ht, Symbol.for('clear')], ht] : ((ht1) => {
-                return [Symbol.for('let'), [[ht1, ht]], ((ht) => {
-                        return [Symbol.for('begin'), [Symbol.for('send'), ht, Symbol.for('clear')], ht];
-                    })(ht1)];
-            })(Symbol('ht'))];
+        return [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), [Symbol.for('send'), ht, Symbol.for('clear')], Symbol.for(':expression'), !(Array.isArray(ht) && (ht.length > 0)) ? [Symbol.for('begin'), [Symbol.for('send'), ht, Symbol.for('clear')], ht] : ((ht1) => [Symbol.for('let'), [[ht1, ht]], ((ht) => [Symbol.for('begin'), [Symbol.for('send'), ht, Symbol.for('clear')], ht])(ht1)])(Symbol('ht'))];
     };
     f.ftype = 'macro';
     return f;
@@ -368,7 +350,7 @@ function hashKeys_(ht) {
 exports.hashKeys_ = hashKeys_;
 hashKeys_.fsource = [Symbol.for('define'), [Symbol.for('hash-keys_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('keys')]]]]];
 hashKeys_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht] = exp.slice(1);
         return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), ht, Symbol.for('keys')]]]];
     };
@@ -388,7 +370,7 @@ function hashValues_(ht) {
 exports.hashValues_ = hashValues_;
 hashValues_.fsource = [Symbol.for('define'), [Symbol.for('hash-values_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('values')]]]]];
 hashValues_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht] = exp.slice(1);
         return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), ht, Symbol.for('values')]]]];
     };
@@ -404,7 +386,7 @@ function hashEntries_(ht) {
 exports.hashEntries_ = hashEntries_;
 hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('entries')]]]]];
 hashEntries_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht] = exp.slice(1);
         return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), ht, Symbol.for('entries')]]]];
     };
@@ -419,16 +401,12 @@ hashEntries_.compilerMacro = (() => {
  * [rkt:hash-to-list]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-~3elist%29%29
  */
 function hashToList_(ht) {
-    return [...ht.entries()].map(function (x) {
-        return [x[0], ...((x1) => {
-                return Array.isArray(x1) ? x1 : [Symbol.for('.'), x1];
-            })(x[1])];
-    });
+    return [...ht.entries()].map((x) => [x[0], ...((x1) => Array.isArray(x1) ? x1 : [Symbol.for('.'), x1])(x[1])]);
 }
 exports.hashToList_ = hashToList_;
 hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];
 hashToList_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [ht] = exp.slice(1);
         return [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), ht]];
     };

@@ -85,7 +85,7 @@ function r(input: any): any {
  * Eval utility.
  */
 function e(input: any, env: any = makeInteractiveEnvironment()): any {
-  return input.map(function (exp: any): any {
+  return input.map((exp: any): any => {
     let result: any = undefined;
     try {
       result = eval_(exp, env);
@@ -111,9 +111,7 @@ function re(input: any, env: any = makeInteractiveEnvironment()): any {
  * Print utility.
  */
 function p(input: any): any {
-  return input.map((printSexpAsExpression.length === 1) ? printSexpAsExpression : (function (x: any): any {
-    return printSexpAsExpression(x);
-  })).join('\n');
+  return input.map((printSexpAsExpression.length === 1) ? printSexpAsExpression : (x: any): any => printSexpAsExpression(x)).join('\n');
 }
 
 /**

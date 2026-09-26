@@ -138,9 +138,7 @@ three")
   symbolp
 } from 'roselisp';
 
-let lst = [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')].map((symbolp.length === 1) ? symbolp : (function (x) {
-  return typeof x === 'symbol';
-}));"
+let lst = [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')].map((symbolp.length === 1) ? symbolp : x => typeof x === 'symbol');"
 
  :describe "symbol?"
  > (symbol? 'foo)
@@ -293,13 +291,9 @@ x[length];"
  > (compile '(cons (x) y))
  "[x(), ...(Array.isArray(y) ? y : [Symbol.for('.'), y])];"
  > (compile '(cons x (y)))
- "[x, ...((x) => {
-  return Array.isArray(x) ? x : [Symbol.for('.'), x];
-})(y())];"
+ "[x, ...(x => Array.isArray(x) ? x : [Symbol.for('.'), x])(y())];"
  > (compile '(cons (x) (y)))
- "[x(), ...((x) => {
-  return Array.isArray(x) ? x : [Symbol.for('.'), x];
-})(y())];"
+ "[x(), ...(x => Array.isArray(x) ? x : [Symbol.for('.'), x])(y())];"
 
  :describe "cons?"
  > (cons? 0)
@@ -1065,9 +1059,7 @@ rest(x);"
  > (compile '(define foo
                (lambda (x)
                  x)))
- "let foo = function (x) {
-  return x;
-};"
+ "let foo = x => x;"
  > (compile '(define x)
             :to "typescript")
  "let x: any;"
@@ -1079,16 +1071,12 @@ rest(x);"
  > (compile '(define I
                (lambda (x)
                  x)))
- "let I = function (x) {
-  return x;
-};"
+ "let I = x => x;"
  > (compile '(define I
                (memoize
                 (lambda (x)
                   x))))
- "let I = memoize(function (x) {
-  return x;
-});"
+ "let I = memoize(x => x);"
  > (compile '(define (identity-function x)
                x))
  "function identityFunction(x) {
@@ -1154,9 +1142,7 @@ rest(x);"
   } else {
     let fs = args.slice(0, -1);
     let x = args[args.length - 1];
-    return fs.reduce(function (acc, f) {
-      return f(acc);
-    }, x);
+    return fs.reduce((acc, f) => f(acc), x);
   }
 }"
  > (compile
@@ -1176,9 +1162,7 @@ rest(x);"
     return args[0];
   } else {
     let [x, ...fs] = args;
-    return fs.reduce(function (acc, f) {
-      return f(acc);
-    }, x);
+    return fs.reduce((acc, f) => f(acc), x);
   }
 }"
  > (compile
@@ -1190,23 +1174,13 @@ rest(x);"
           (f (lambda (arg)
                ((future future) arg)))))))
  "function Y(f) {
-  return (function (future) {
-    return f(function (arg) {
-      return future(future)(arg);
-    });
-  })(function (future) {
-    return f(function (arg) {
-      return future(future)(arg);
-    });
-  });
+  return (future => f(arg => future(future)(arg)))(future => f(arg => future(future)(arg)));
 }"
  > (compile '(define (compose f g)
                (lambda (x)
                  (f (g x)))))
  "function compose(f, g) {
-  return function (x) {
-    return f(g(x));
-  };
+  return x => f(g(x));
 }"
  > (compile '(define (foo)
                (set! x (+ x 1))
@@ -1271,13 +1245,9 @@ rest(x);"
   curryN
 } from 'roselisp';
 
-let I = curryN(1, function (x) {
-  return x;
-});
+let I = curryN(1, x => x);
 
-let K = curryN(2, function (x, y) {
-  return x;
-});"
+let K = curryN(2, (x, y) => x);"
  > (compile '(define Foo
                (class object%)))
  "class Foo {
@@ -1297,9 +1267,7 @@ let K = curryN(2, function (x, y) {
   datumToSyntax
 } from 'roselisp';
 
-let foo = function (x) {
-  return datumToSyntax(false, Symbol.for('test'));
-};
+let foo = x => datumToSyntax(false, Symbol.for('test'));
 
 foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
 
@@ -1395,15 +1363,11 @@ return x;"
  > (compile '(let (x)
                x)
             :as "expression")
- "((x) => {
-  return x;
-})(undefined)"
+ "(x => x)(undefined)"
  > (compile '(let ((x 1))
                x)
             :as "expression")
- "((x) => {
-  return x;
-})(1)"
+ "(x => x)(1)"
  > (compile '(let (x)
                x)
             :as "return"
@@ -1431,26 +1395,18 @@ return x;"
            (square (lambda (x) (* x x)))
            (add1 (lambda (x) (+ x 1))))
        (display ((compose square add1) (add1 4)))))
- "let compose = function (f, g) {
-  return function (x) {
-    return f(g(x));
-  };
-};
+ "let compose = (f, g) => x => f(g(x));
 
-let square = function (x) {
-  return x * x;
-};
+let square = x => x * x;
 
-let add1 = function (x) {
-  return x + 1;
-};
+let add1 = x => x + 1;
 
 console.log(compose(square, add1)(add1(4)));"
  > (compile
     '(let ((and (lambda (x y)
                   (if x (if y #t #f) #f))))
        (and x y)))
- "let and = function (x, y) {
+ "let and = (x, y) => {
   if (x) {
     if (y) {
       return true;
@@ -1515,7 +1471,7 @@ console.log(x);
                    compilation-env
                    options))))))
     :to "typescript")
- "let makeCompilationEvaluator: any = memoize(function (env: any, options: any = {}): any {
+ "let makeCompilationEvaluator: any = memoize((env: any, options: any = {}): any => {
   let language: any = options['language'];
   language = language || defaultLanguage;
   let compilationEnv: any = compilationMap.get(language) || javascriptEnv;
@@ -1583,17 +1539,13 @@ return value;"
                (.reduce fs (lambda (acc f) (f acc)) x)))
  "let [x, ...fs] = args;
 
-fs.reduce(function (acc, f) {
-  return f(acc);
-}, x);"
+fs.reduce((acc, f) => f(acc), x);"
  > (compile '(let-values (((x . fs) args))
                (.reduce fs (lambda (acc f) (f acc)) x))
             :to "typescript")
  "let [x, ...fs]: any[] = args;
 
-fs.reduce(function (acc: any, f: any): any {
-  return f(acc);
-}, x);"
+fs.reduce((acc: any, f: any): any => f(acc), x);"
  > (compile '(let-values (((value1) (foo bar))
                           ((value2) (bar baz)))
                (list value1 value2))
@@ -1656,34 +1608,24 @@ let z = x + y + w + z;"
  1
  > (compile '(lambda (x)
                x))
- "function (x) {
-  return x;
-};"
+ "x => x;"
  > (compile '(lambda (x)
                x)
             :to "typescript")
- "function (x: any): any {
-  return x;
-};"
+ "(x: any): any => x;"
  > (compile '(lambda args
                args))
- "function (...args) {
-  return args;
-};"
+ "(...args) => args;"
  > (compile '(lambda (x . args)
                args))
- "function (x, ...args) {
-  return args;
-};"
+ "(x, ...args) => args;"
  > (compile '(lambda (x y . args)
                args))
- "function (x, y, ...args) {
-  return args;
-};"
+ "(x, y, ...args) => args;"
  > (compile '(lambda (x)
                (let ((x 1))
                  x)))
- "function (x) {
+ "(x) => {
   {
     let x = 1;
     return x;
@@ -1692,7 +1634,7 @@ let z = x + y + w + z;"
  > (compile '(lambda (x)
                (let ((y 1))
                  y)))
- "function (x) {
+ "(x) => {
   let y = 1;
   return y;
 };"
@@ -1702,9 +1644,7 @@ let z = x + y + w + z;"
                 given
                 " "
                 surname)))
- "function (given, surname = 'Smith') {
-  return 'Hello, ' + given + ' ' + surname;
-};"
+ "(given, surname = 'Smith') => 'Hello, ' + given + ' ' + surname;"
  > (compile '(lambda (given (surname "Smith"))
                (string-append
                 "Hello, "
@@ -1712,15 +1652,11 @@ let z = x + y + w + z;"
                 " "
                 surname))
             :to "typescript")
- "function (given: any, surname: any = 'Smith'): any {
-  return 'Hello, ' + given + ' ' + surname;
-};"
+ "(given: any, surname: any = 'Smith'): any => 'Hello, ' + given + ' ' + surname;"
  > (compile '(lambda (arg (options (js/obj)))
                arg)
             :to "typescript")
- "function (arg: any, options: any = {}): any {
-  return arg;
-};"
+ "(arg: any, options: any = {}): any => arg;"
 
  :describe "thunk"
  > (procedure? (thunk 1))
@@ -2641,9 +2577,7 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
  > (compile '(for-each (lambda (x)
                          x)
                        lst))
- "lst.forEach(function (x) {
-  return x;
-});"
+ "lst.forEach(x => x);"
 
  :describe "do"
  > (compile '(do ()
@@ -2692,7 +2626,7 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
                    (let ((entry (list arglist function-definition)))
                      (push! (get-field methods generic-function) entry)
                      generic-function))))
- "genericFunction.defMethod = function (arglist, functionDefinition) {
+ "genericFunction.defMethod = (arglist, functionDefinition) => {
   let entry = [arglist, functionDefinition];
   genericFunction.methods.unshift(entry);
   return genericFunction;
@@ -2774,13 +2708,9 @@ function K(x, y) {
                (define K
                  (lambda (x y)
                    x))))
- "let I = function (x) {
-  return x;
-};
+ "let I = x => x;
 
-let K = function (x, y) {
-  return x;
-};"
+let K = (x, y) => x;"
  > (compile '(module m scheme
                (define (foo length)
                  length))
@@ -3588,19 +3518,11 @@ reverse(lst);"
  ;; called with a single argument, and JavaScript's
  ;; `.map()` method passes multiple arguments.
  > (compile '(map f lst))
- "lst.map((f.length === 1) ? f : (function (x) {
-  return f(x);
-}));"
+ "lst.map((f.length === 1) ? f : x => f(x));"
  > (compile '(map (lambda (x) x) lst))
- "lst.map(function (x) {
-  return x;
-});"
+ "lst.map(x => x);"
  > (compile '(map (g h) lst))
- "lst.map(((f) => {
-  return (f.length === 1) ? f : (function (x) {
-    return f(x);
-  });
-})(g(h)));"
+ "lst.map((f => (f.length === 1) ? f : x => f(x))(g(h)));"
 
  :describe "foldl"
  > (foldl + 0 '(1 2 3 4))
@@ -3608,28 +3530,18 @@ reverse(lst);"
  > (foldl cons '() '(1 2 3 4))
  '(4 3 2 1)
  > (compile '(foldl (lambda (x acc) x) v lst))
- "lst.reduce(function (acc, x) {
-  return x;
-}, v);"
+ "lst.reduce((acc, x) => x, v);"
  > (compile '(foldl f v lst))
- "lst.reduce(function (acc, x) {
-  return f(x, acc);
-}, v);"
+ "lst.reduce((acc, x) => f(x, acc), v);"
  > (compile '(foldl f v l))
- "l.reduce(function (acc, x) {
-  return f(x, acc);
-}, v);"
+ "l.reduce((acc, x) => f(x, acc), v);"
  > (compile '(foldl (lambda (x acc)
                       (f x acc))
                     v
                     l))
- "l.reduce(function (acc, x) {
-  return f(x, acc);
-}, v);"
+ "l.reduce((acc, x) => f(x, acc), v);"
  > (compile '(foldl + 0 '(1 2 3 4)))
- "[1, 2, 3, 4].reduce(function (acc, x) {
-  return x + acc;
-}, 0);"
+ "[1, 2, 3, 4].reduce((acc, x) => x + acc, 0);"
 
  :describe "foldr"
  > (foldr + 0 '(1 2 3 4))
@@ -3642,19 +3554,11 @@ reverse(lst);"
           '(1 2 3 4))
  '(2 3 4 5)
  > (compile '(foldr (lambda (x acc) x) v lst))
- "lst.reduceRight(function (acc, x) {
-  return x;
-}, v);"
+ "lst.reduceRight((acc, x) => x, v);"
  > (compile '(foldr f v lst))
- "lst.reduceRight(function (acc, x) {
-  return f(x, acc);
-}, v);"
+ "lst.reduceRight((acc, x) => f(x, acc), v);"
  > (compile '(foldr (f g) v lst))
- "lst.reduceRight((function (f) {
-  return function (acc, x) {
-    return f(x, acc);
-  };
-})(f(g)), v);"
+ "lst.reduceRight((f => (acc, x) => f(x, acc))(f(g)), v);"
 
  :describe "filter"
  > (filter string? '("foo" 1 2 3))
@@ -3674,15 +3578,11 @@ reverse(lst);"
  > (compile '(sort lst))
  "[...lst].sort();"
  > (compile '(sort lst <))
- "[...lst].sort(function (x, y) {
-  return (x < y) ? -1 : 1;
-});"
+ "[...lst].sort((x, y) => (x < y) ? -1 : 1);"
  > (compile '(sort lst (foo)))
  "let pred = foo();
 
-[...lst].sort(function (x, y) {
-  return pred(x, y) ? -1 : 1;
-});"
+[...lst].sort((x, y) => pred(x, y) ? -1 : 1);"
 
  :describe "sort!"
  > (sort! '(4 3 2 1))
@@ -3696,15 +3596,11 @@ reverse(lst);"
  > (compile '(sort! lst))
  "lst.sort();"
  > (compile '(sort! lst <))
- "lst.sort(function (x, y) {
-  return (x < y) ? -1 : 1;
-});"
+ "lst.sort((x, y) => (x < y) ? -1 : 1);"
  > (compile '(sort! lst (foo)))
  "let pred = foo();
 
-lst.sort(function (x, y) {
-  return pred(x, y) ? -1 : 1;
-});"
+lst.sort((x, y) => pred(x, y) ? -1 : 1);"
 
  :describe "string?"
  > (string? "foo")
@@ -4040,9 +3936,7 @@ if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal
     '(match "foo"
        ((app string-length (? number?) 3)
         #t)))
- "if (((patternMatchVal) => {
-  return Number.isFinite(patternMatchVal) && (patternMatchVal === 3);
-})('foo'.length)) {
+ "if ((patternMatchVal => Number.isFinite(patternMatchVal) && (patternMatchVal === 3))('foo'.length)) {
   true;
 }"
 

@@ -314,9 +314,7 @@ length(x);"
                          (compile-expression
                           arg env inherited-options)))
                  (.join ", ")))
- "regularArgs.map(function (arg) {
-  return compileExpression(arg, env, inheritedOptions);
-}).join(', ');"
+ "regularArgs.map(arg => compileExpression(arg, env, inheritedOptions)).join(', ');"
 
  :describe "set"
  > (compile '(set 'x 1))
@@ -434,7 +432,7 @@ y = 2;"
 }
 
 myPlus.compilerMacro = (() => {
-  let f = function (exp, env) {
+  let f = (exp, env) => {
     let [x, y] = exp.slice(1);
     return [Symbol.for('+'), x, y];
   };
@@ -651,9 +649,7 @@ let baz = false;"
          (foo x))
        (define baz
          (bar 1))))
- "let foo = function (x) {
-  return x;
-};
+ "let foo = x => x;
 
 function bar(exp, env) {
   let [x] = exp.slice(1);
@@ -673,9 +669,7 @@ let baz = 1;"
          (foo x))
        (define baz
          (bar 1))))
- "let [foo] = [function (x) {
-  return x;
-}];
+ "let [foo] = [x => x];
 
 function bar(exp, env) {
   let [x] = exp.slice(1);
@@ -696,9 +690,7 @@ let baz = 1;"
        (define baz
          (bar 1))))
  "let {foo} = {
-  foo: function (x) {
-    return x;
-  }
+  foo: x => x
 };
 
 function bar(exp, env) {
@@ -720,9 +712,7 @@ let baz = 1;"
        (define baz
          (bar 1))))
  "let {foo: foo1} = {
-  foo: function (x) {
-    return x;
-  }
+  foo: x => x
 };
 
 function bar(exp, env) {
@@ -828,7 +818,7 @@ let quux = 'foo';"
  :describe "macro"
  > (compile '(macro (x y)
                `(+ ,x ,y)))
- "let f = function (exp, env) {
+ "let f = (exp, env) => {
   let [x, y] = exp.slice(1);
   return [Symbol.for('+'), x, y];
 };
@@ -840,7 +830,7 @@ f;"
                (macro (x y)
                  `(+ ,x ,y))))
  "let f = (() => {
-  let f1 = function (exp, env) {
+  let f1 = (exp, env) => {
     let [x, y] = exp.slice(1);
     return [Symbol.for('+'), x, y];
   };
@@ -851,9 +841,7 @@ f;"
  :describe "nlambda"
  > (compile '(nlambda (x y)
                       `(+ ,x ,y)))
- "let f = function (x, y) {
-  return [Symbol.for('+'), x, y];
-};
+ "let f = (x, y) => [Symbol.for('+'), x, y];
 
 f.ftype = 'fexpr';
 
@@ -862,9 +850,7 @@ f;"
                (nlambda (x y)
                         `(+ ,x ,y))))
  "let f = (() => {
-  let f1 = function (x, y) {
-    return [Symbol.for('+'), x, y];
-  };
+  let f1 = (x, y) => [Symbol.for('+'), x, y];
   f1.ftype = 'fexpr';
   return f1;
 })();"
@@ -1035,9 +1021,7 @@ x;"
  "function mySquare(exp, env) {
   let [x] = exp.slice(1);
   let x1 = Symbol('x');
-  return [Symbol.for('let'), [[x1, x]], ((x) => {
-    return [Symbol.for('*'), x, x];
-  })(x1)];
+  return [Symbol.for('let'), [[x1, x]], (x => [Symbol.for('*'), x, x])(x1)];
 }
 
 mySquare.ftype = 'macro';
@@ -1054,9 +1038,7 @@ x * x;"
   let [x, y] = exp.slice(1);
   let x1 = Symbol('x');
   let y1 = Symbol('y');
-  return [Symbol.for('let'), [[x1, x], [y1, y]], ((x, y) => {
-    return [Symbol.for('+'), x, y];
-  })(x1, y1)];
+  return [Symbol.for('let'), [[x1, x], [y1, y]], ((x, y) => [Symbol.for('+'), x, y])(x1, y1)];
 }
 
 myPlus.ftype = 'macro';
@@ -1075,9 +1057,7 @@ x + y;"
   let [x, y] = exp.slice(1);
   let x1 = Symbol('x');
   let y1 = Symbol('y');
-  return [Symbol.for('let'), [[x1, x], [y1, y]], ((x, y) => {
-    return [Symbol.for('+'), x, y];
-  })(x1, y1)];
+  return [Symbol.for('let'), [[x1, x], [y1, y]], ((x, y) => [Symbol.for('+'), x, y])(x1, y1)];
 }
 
 myPlus.ftype = 'macro';
@@ -1100,22 +1080,16 @@ x + y;"
       return [Symbol.for('+'), x, y];
     } else {
       let y1 = Symbol('y');
-      return [Symbol.for('let'), [[y1, y]], ((y) => {
-        return [Symbol.for('+'), x, y];
-      })(y1)];
+      return [Symbol.for('let'), [[y1, y]], (y => [Symbol.for('+'), x, y])(y1)];
     }
   } else {
     if (!(Array.isArray(y) && (y.length > 0))) {
       let x1 = Symbol('x');
-      return [Symbol.for('let'), [[x1, x]], ((x) => {
-        return [Symbol.for('+'), x, y];
-      })(x1)];
+      return [Symbol.for('let'), [[x1, x]], (x => [Symbol.for('+'), x, y])(x1)];
     } else {
       let x2 = Symbol('x');
       let y2 = Symbol('y');
-      return [Symbol.for('let'), [[x2, x], [y2, y]], ((x, y) => {
-        return [Symbol.for('+'), x, y];
-      })(x2, y2)];
+      return [Symbol.for('let'), [[x2, x], [y2, y]], ((x, y) => [Symbol.for('+'), x, y])(x2, y2)];
     }
   }
 }

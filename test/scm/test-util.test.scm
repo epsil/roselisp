@@ -235,12 +235,8 @@
         (js/obj :from "roselisp"
                 :to "node")))
  '(node
-   > "(function () {
-  return 1 + 1;
-})()"
-   "(function () {
-  return 2;
-})()")
+   > "(() => 1 + 1)()"
+   "(() => 2)()")
  > (it "(roselisp > (+ 1 1) _)"
        (compile-repl-form
         '(roselisp
@@ -249,9 +245,7 @@
         (js/obj :from "roselisp"
                 :to "node")))
  '(node
-   > "(function () {
-  return 1 + 1;
-})()"
+   > "(() => 1 + 1)()"
    "_")
  xit> (it "(roselisp > (+ 1 1) 2), plist"
           (compile-repl-form
@@ -261,12 +255,8 @@
            :from "roselisp"
            :to "node"))
  '(node
-   > "(function () {
-  return 1 + 1;
-})()"
-   "(function () {
-  return 2;
-})()")
+   > "(() => 1 + 1)()"
+   "(() => 2)()")
 
  :describe "simplify-repl-form"
  > (it "(roselisp > (+ 1 1) 2)"

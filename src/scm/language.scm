@@ -2909,6 +2909,20 @@
   (define args-list)
   (define regular-args)
   (define rest-arg)
+  (define (make-arrow-expression params body)
+    (define body1
+      (if (and (estree-type? body "BlockStatement")
+               (one? (length (get-field body body)))
+               (estree-type? (first (get-field body body))
+                             "ReturnStatement"))
+          (~> body
+              (get-field body _)
+              (first _)
+              (get-field argument _))
+          body))
+    (new ArrowFunctionExpression
+         params
+         body1))
   ;; Parse the parameter list: sort the regular parameters
   ;; from the rest parameter, if any.
   (cond
@@ -3057,9 +3071,7 @@
       (cond
        ((eq? function-type 'js/arrow)
         (set! result-f
-              (new ArrowFunctionExpression
-                   params
-                   body))
+              (make-arrow-expression params body))
         (set! result
               (new VariableDeclaration
                    (list (new VariableDeclarator
@@ -3077,9 +3089,7 @@
       (cond
        ((eq? function-type 'js/arrow)
         (set! result-f
-              (new ArrowFunctionExpression
-                   params
-                   body))
+              (make-arrow-expression params body))
         (set! result result-f))
        (else
         (set! result-f
@@ -3118,7 +3128,7 @@
 
 ;;; Compile a `(lambda ...)` expression.
 (define (compile-lambda stx env (options (js/obj)))
-  (compile-js/function stx env options))
+  (compile-js/arrow stx env options))
 
 ;;; Compile a `(js/function ...)` expression.
 (define (compile-js/function stx env (options (js/obj)) (settings (js/obj)))
@@ -8702,7 +8712,7 @@
   (rename-out (js/raw_ js))
   (rename-out (js/raw_ js/raw))
   (rename-out (js/raw_ js_))
-  (rename-out (lambda_ compile-function))
+  ;; (rename-out (lambda_ compile-function))
   (rename-out (lambda_ fn))
   (rename-out (lambda_ lambda))
   (rename-out (let-fields_ let-fields))

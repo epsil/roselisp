@@ -221,9 +221,7 @@ defineMacro_.fsource = [Symbol.for('define'), [Symbol.for('define-macro_'), Symb
  */
 function macro_(exp, env) {
     const [args, ...body] = exp.slice(1);
-    return defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol('f'), ...((x) => {
-                return Array.isArray(x) ? x : [Symbol.for('.'), x];
-            })((typeof args === 'symbol') ? [Symbol.for('&rest'), args] : args)], ...body]);
+    return defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol('f'), ...((x) => Array.isArray(x) ? x : [Symbol.for('.'), x])((typeof args === 'symbol') ? [Symbol.for('&rest'), args] : args)], ...body]);
 }
 exports.macro_ = macro_;
 macro_.ftype = 'macro';
@@ -443,9 +441,7 @@ function declare_(exp, env) {
     }
     else {
         let [name, ...specs] = args;
-        return [Symbol.for('begin'), ...specs.map(function (spec) {
-                return [Symbol.for('set-field!'), spec[0], name, spec[1]];
-            })];
+        return [Symbol.for('begin'), ...specs.map((spec) => [Symbol.for('set-field!'), spec[0], name, spec[1]])];
     }
 }
 exports.declare_ = declare_;
@@ -556,9 +552,7 @@ function rktNew_(exp, env) {
     // support for creating a new object on the basis of by-name
     // initialization arguments; it only supports by-position
     // initialization arguments, which are passed to the constructor.
-    return [Symbol.for('make-object'), constructor, ...args.map((second.length === 1) ? second : (function (x) {
-            return x[1];
-        }))];
+    return [Symbol.for('make-object'), constructor, ...args.map((second.length === 1) ? second : (x) => x[1])];
 }
 exports.rktNew_ = rktNew_;
 rktNew_.ftype = 'macro';
@@ -640,9 +634,7 @@ function cond_(stx) {
         }
     }
     transformLastClause.fsource = [Symbol.for('define'), [Symbol.for('transform-last-clause'), Symbol.for('x')], [Symbol.for('if'), [Symbol.for('tagged-list?'), Symbol.for('x'), [Symbol.for('quote'), Symbol.for('else')]], [Symbol.for('wrap-clause-body'), Symbol.for('x')], [Symbol.for('transform-clause'), Symbol.for('x')]]];
-    let result = clauses.reduceRight(function (acc, x) {
-        return transformClause(x, acc);
-    }, transformLastClause(lastClause));
+    let result = clauses.reduceRight((acc, x) => transformClause(x, acc), transformLastClause(lastClause));
     if (condVar) {
         result = (0, rose_1.datumToSyntax)(false, [Symbol.for('let'), [condVar], result]);
     }
@@ -726,9 +718,7 @@ function threadAs_(exp, env) {
         else {
             // Otherwise, count the occurrences of `sym` in the form
             // in order to determine what to do.
-            const n = (0, util_1.countTree)(function (el) {
-                return el === sym;
-            }, form);
+            const n = (0, util_1.countTree)((el) => el === sym, form);
             if (n === 0) {
                 // If `sym` occurs zero times in the form, create a
                 // `begin` expression to chain things togethr.
@@ -745,7 +735,7 @@ function threadAs_(exp, env) {
                 // If `sym` occurs exactly once in the form, chain it together
                 // with the preceding expression, using `sym` as the insertion
                 // point.
-                return (0, util_1.mapTree)(function (x) {
+                return (0, util_1.mapTree)((x) => {
                     if (x === sym) {
                         return exp;
                     }
@@ -764,9 +754,7 @@ function threadAs_(exp, env) {
     }
     f.fsource = [Symbol.for('define'), [Symbol.for('f'), Symbol.for('form'), Symbol.for('exp')], [Symbol.for('cond'), [Symbol.for('is-let'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('exp')], [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('form')]]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('n'), [Symbol.for('count-tree'), [Symbol.for('lambda'), [Symbol.for('el')], [Symbol.for('eq?'), Symbol.for('el'), Symbol.for('sym')]], Symbol.for('form')]], [Symbol.for('cond'), [[Symbol.for('='), Symbol.for('n'), 0], [Symbol.for('cond'), [[Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('begin')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('form')]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('form')]]]]]], [[Symbol.for('='), Symbol.for('n'), 1], [Symbol.for('map-tree'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('sym')], Symbol.for('exp'), Symbol.for('x')]], Symbol.for('form')]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('is-let'), true], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('set!'), [Symbol.for('unquote'), Symbol.for('sym')], [Symbol.for('unquote'), Symbol.for('form')]]]]]]]]];
     // Fold up `forms` left-to-right.
-    let result = forms.reduce(function (acc, x) {
-        return f(x, acc);
-    }, val);
+    let result = forms.reduce((acc, x) => f(x, acc), val);
     // If a `let` expression was indeed created, add `sym` as
     // the final expression.
     if (isLet) {
@@ -795,9 +783,7 @@ function threadFirst_(exp, env) {
         if (typeof val === 'symbol') {
             return [...acc, [val, Symbol.for('_')]];
         }
-        else if ((0, util_1.countTree)(function (x) {
-            return x === holeMarker;
-        }, val) === 0) {
+        else if ((0, util_1.countTree)((x) => x === holeMarker, val) === 0) {
             return [...acc, [val[0], holeMarker, ...val.slice(1)]];
         }
         else {
@@ -806,9 +792,7 @@ function threadFirst_(exp, env) {
     }
     f.fsource = [Symbol.for('define'), [Symbol.for('f'), Symbol.for('val'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('val')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote'), Symbol.for('val')], Symbol.for('_')]]]], [[Symbol.for('='), [Symbol.for('count-tree'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('hole-marker')]], Symbol.for('val')], 0], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote'), [Symbol.for('first'), Symbol.for('val')]], [Symbol.for('unquote'), Symbol.for('hole-marker')], [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('val')]]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [Symbol.for('unquote'), Symbol.for('val')]]]]]];
     const asExp = [Symbol.for('as~>'), x, holeMarker];
-    return forms.reduce(function (acc, x) {
-        return f(x, acc);
-    }, asExp);
+    return forms.reduce((acc, x) => f(x, acc), asExp);
 }
 exports.threadFirst_ = threadFirst_;
 threadFirst_.ftype = 'macro';
@@ -831,9 +815,7 @@ function threadLast_(exp, env) {
         if (typeof val === 'symbol') {
             return [...acc, [val, Symbol.for('_')]];
         }
-        else if ((0, util_1.countTree)(function (x) {
-            return x === holeMarker;
-        }, val) === 0) {
+        else if ((0, util_1.countTree)((x) => x === holeMarker, val) === 0) {
             return [...acc, [...val, holeMarker]];
         }
         else {
@@ -842,9 +824,7 @@ function threadLast_(exp, env) {
     }
     f.fsource = [Symbol.for('define'), [Symbol.for('f'), Symbol.for('val'), Symbol.for('acc')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('val')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote'), Symbol.for('val')], Symbol.for('_')]]]], [[Symbol.for('='), [Symbol.for('count-tree'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('hole-marker')]], Symbol.for('val')], 0], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [[Symbol.for('unquote-splicing'), Symbol.for('val')], [Symbol.for('unquote'), Symbol.for('hole-marker')]]]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('acc')], [Symbol.for('unquote'), Symbol.for('val')]]]]]];
     const asExp = [Symbol.for('as~>'), x, holeMarker];
-    return forms.reduce(function (acc, x) {
-        return f(x, acc);
-    }, asExp);
+    return forms.reduce((acc, x) => f(x, acc), asExp);
 }
 exports.threadLast_ = threadLast_;
 threadLast_.ftype = 'macro';
@@ -1050,7 +1030,7 @@ function case_(exp, env) {
         // patterns that must be matched against with `equal?`, not `eq? `.
         const isComplexVal = typeof val !== 'symbol';
         const valueVar = isComplexVal ? Symbol('_value') : val;
-        const condClauses = clauses.map(function (x) {
+        const condClauses = clauses.map((x) => {
             if (x[0] === Symbol.for('else')) {
                 return x;
             }
@@ -1093,7 +1073,7 @@ function caseEq_(exp, env) {
         // that performs pattern matching.
         const isComplexVal = typeof val !== 'symbol';
         const valueVar = isComplexVal ? Symbol('_value') : val;
-        const condClauses = clauses.map(function (x) {
+        const condClauses = clauses.map((x) => {
             if (x[0] === Symbol.for('else')) {
                 return x;
             }
@@ -1112,7 +1092,7 @@ function caseEq_(exp, env) {
     else {
         // Simple case: each regular clause contains exactly one pattern.
         // This is translatable to a `(js/swith ...)` form.
-        const switchClauses = clauses.map(function (x) {
+        const switchClauses = clauses.map((x) => {
             if (x[0] === Symbol.for('else')) {
                 return [Symbol.for('default'), ...x.slice(1)];
             }
@@ -1237,9 +1217,7 @@ function cljTry_(exp, env) {
             catchClauses = [catchClause];
         }
         else {
-            const condExp = [Symbol.for('cond'), ...cljCatchClauses.map(function (x) {
-                    return [[Symbol.for('is-a?'), sym, x[1]], ...x.slice(3)];
-                }), [Symbol.for('else'), [Symbol.for('throw'), sym]]];
+            const condExp = [Symbol.for('cond'), ...cljCatchClauses.map((x) => [[Symbol.for('is-a?'), sym, x[1]], ...x.slice(3)]), [Symbol.for('else'), [Symbol.for('throw'), sym]]];
             const catchClause = [Symbol.for('catch'), sym, condExp];
             catchClauses = [catchClause];
         }
@@ -1314,14 +1292,10 @@ function match_(exp1, env) {
                 return [Symbol.for('not'), patternMatch(pat[1], exp, false)];
             }
             else if ((0, util_1.taggedListP)(pat, Symbol.for('and'))) {
-                return combineExpressions([Symbol.for('and')], ...pat.slice(1).map(function (x) {
-                    return patternMatch(x, exp, false);
-                }));
+                return combineExpressions([Symbol.for('and')], ...pat.slice(1).map((x) => patternMatch(x, exp, false)));
             }
             else if ((0, util_1.taggedListP)(pat, Symbol.for('or'))) {
-                return combineExpressions([Symbol.for('or')], ...pat.slice(1).map(function (x) {
-                    return patternMatch(x, exp, false);
-                }));
+                return combineExpressions([Symbol.for('or')], ...pat.slice(1).map((x) => patternMatch(x, exp, false)));
             }
             else if ((0, util_1.taggedListP)(pat, Symbol.for('cons'))) {
                 return patternMatch([Symbol.for('list*'), ...pat.slice(1)], exp, false);
@@ -1367,9 +1341,7 @@ function match_(exp1, env) {
                 return [Symbol.for('regexp-match'), pat, exp];
             }
             else if ((0, util_1.taggedListP)(pat, Symbol.for('?'))) {
-                return combineExpressions([Symbol.for('and')], [pat[1], exp], ...pat.slice(2).map(function (x) {
-                    return patternMatch(x, exp, false);
-                }));
+                return combineExpressions([Symbol.for('and')], [pat[1], exp], ...pat.slice(2).map((x) => patternMatch(x, exp, false)));
             }
             else if ((0, util_1.taggedListP)(pat, Symbol.for('app'))) {
                 const pats = pat.slice(2);
@@ -1391,7 +1363,7 @@ function match_(exp1, env) {
     }
     patternMatch.fsource = [Symbol.for('define'), [Symbol.for('pattern-match'), Symbol.for('pat'), Symbol.for('exp'), [Symbol.for('make-let'), true]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('make-let'), [Symbol.for('pair-or-list?'), Symbol.for('exp')]], [Symbol.for('let'), [[Symbol.for('pattern-match-val'), [Symbol.for('gensym'), 'pattern-match-val']]], [Symbol.for('quasiquote'), [Symbol.for('let'), [[[Symbol.for('unquote'), Symbol.for('pattern-match-val')], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('unquote'), [Symbol.for('pattern-match'), Symbol.for('pat'), Symbol.for('pattern-match-val')]]]]]], [[Symbol.for('symbol?'), Symbol.for('pat')], true], [[Symbol.for('pair-or-list?'), Symbol.for('pat')], [Symbol.for('cond'), [[Symbol.for('null?'), Symbol.for('pat')], [Symbol.for('quasiquote'), [Symbol.for('null?'), [Symbol.for('unquote'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('quote')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('if'), [Symbol.for('pair-or-list?'), [Symbol.for('second'), Symbol.for('pat')]], [Symbol.for('quote'), Symbol.for('equal?')], [Symbol.for('quote'), Symbol.for('eq?')]]], [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('var')]], true], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('not')]], [Symbol.for('quasiquote'), [Symbol.for('not'), [Symbol.for('unquote'), [Symbol.for('pattern-match'), [Symbol.for('second'), Symbol.for('pat')], Symbol.for('exp'), false]]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('and')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('and')]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('rest'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('or')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('or')]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('rest'), Symbol.for('pat')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('cons')]], [Symbol.for('pattern-match'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), [Symbol.for('rest'), Symbol.for('pat')]]]], Symbol.for('exp'), false]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('list')]], [Symbol.for('cond'), [[Symbol.for('eq?'), [Symbol.for('last'), Symbol.for('pat')], [Symbol.for('quote'), Symbol.for('...')]], [Symbol.for('define'), Symbol.for('head'), [Symbol.for('~>'), [Symbol.for('drop'), Symbol.for('pat'), 1], [Symbol.for('drop-right'), Symbol.for('_'), 2]]], [Symbol.for('define'), Symbol.for('tail'), [Symbol.for('list-ref'), Symbol.for('pat'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('pat')], 2]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('quasiquote'), [Symbol.for('list*'), [Symbol.for('unquote-splicing'), Symbol.for('head')], [Symbol.for('unquote'), Symbol.for('tail')]]]], [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp'), false]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('len'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('pat')], 1]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('pair-or-list?'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('='), [Symbol.for('length'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('unquote'), Symbol.for('len')]]]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('pat')]]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('list-ref'), Symbol.for('pat'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [Symbol.for('list-ref'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), [Symbol.for('-'), Symbol.for('i'), 1]]]]], [Symbol.for('define'), Symbol.for('result1'), [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp1'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result1')]]], Symbol.for('result')]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('list*')]], [Symbol.for('define'), Symbol.for('head'), [Symbol.for('~>'), [Symbol.for('drop'), Symbol.for('pat'), 1], [Symbol.for('drop-right'), Symbol.for('_'), 1]]], [Symbol.for('define'), Symbol.for('tail'), [Symbol.for('last'), Symbol.for('pat')]], [Symbol.for('define'), Symbol.for('len'), [Symbol.for('length'), Symbol.for('head')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('pair-or-list?'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('>='), [Symbol.for('length'), [Symbol.for('unquote'), Symbol.for('exp')]], [Symbol.for('unquote'), [Symbol.for('length'), Symbol.for('head')]]]]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('head')]]]], [Symbol.for('define'), Symbol.for('pat1'), [Symbol.for('list-ref'), Symbol.for('head'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [Symbol.for('list-ref'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('i')]]]], [Symbol.for('define'), Symbol.for('result1'), [Symbol.for('pattern-match'), Symbol.for('pat1'), Symbol.for('exp1'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result1')]]], [Symbol.for('define'), Symbol.for('exp2'), [Symbol.for('quasiquote'), [Symbol.for('drop'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('len')]]]], [Symbol.for('define'), Symbol.for('result2'), [Symbol.for('pattern-match'), Symbol.for('tail'), Symbol.for('exp2'), false]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('combine-expressions'), Symbol.for('result'), Symbol.for('result2')]], Symbol.for('result')], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('regexp')]], [Symbol.for('quasiquote'), [Symbol.for('regexp-match'), [Symbol.for('unquote'), Symbol.for('pat')], [Symbol.for('unquote'), Symbol.for('exp')]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('?')]], [Symbol.for('apply'), Symbol.for('combine-expressions'), [Symbol.for('quote'), [Symbol.for('and')]], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('pattern-match'), Symbol.for('x'), Symbol.for('exp'), false]], [Symbol.for('drop'), Symbol.for('pat'), 2]]]], [[Symbol.for('tagged-list?'), Symbol.for('pat'), [Symbol.for('quote'), Symbol.for('app')]], [Symbol.for('define'), Symbol.for('pats'), [Symbol.for('drop'), Symbol.for('pat'), 2]], [Symbol.for('define'), Symbol.for('exp1'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('second'), Symbol.for('pat')]], [Symbol.for('unquote'), Symbol.for('exp')]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('pats')], 1], [Symbol.for('pattern-match'), [Symbol.for('first'), Symbol.for('pats')], Symbol.for('exp1'), false]], [Symbol.for('else'), [Symbol.for('pattern-match'), [Symbol.for('quasiquote'), [Symbol.for('and'), [Symbol.for('unquote-splicing'), Symbol.for('pats')]]], Symbol.for('exp1')]]]], [Symbol.for('else'), false]]], [Symbol.for('else'), [Symbol.for('quasiquote'), [Symbol.for('eq?'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote'), Symbol.for('pat')]]]]]];
     function combineExpressions(...exps) {
-        return exps.slice(1).reduce(function (acc, x) {
+        return exps.slice(1).reduce((acc, x) => {
             if (!Array.isArray(acc)) {
                 return acc;
             }
@@ -1422,7 +1394,7 @@ function match_(exp1, env) {
         return [Symbol.for('let'), [[matchVal, exp]], [Symbol.for('match'), matchVal, ...clauses]];
     }
     else {
-        const condClauses = clauses.map(function (x) {
+        const condClauses = clauses.map((x) => {
             const pat = x[0];
             const body = x.slice(1);
             return [patternMatch(pat, exp), ...patternBind(pat, exp), ...body];
@@ -1482,9 +1454,7 @@ function clLoop_(exp, env) {
         const resultExp = [Symbol.for('push-right'), resultVar, (0, plist_1.plistGet_)(accumulationPlist, Symbol.for('collect'))];
         body1.push(resultExp);
     }
-    let result = [Symbol.for('for'), forPlists.map(function (x) {
-            return [(0, plist_1.plistGet_)(x, Symbol.for('for')), (0, plist_1.plistGet_)(x, Symbol.for('in'))];
-        }), ...body1];
+    let result = [Symbol.for('for'), forPlists.map((x) => [(0, plist_1.plistGet_)(x, Symbol.for('for')), (0, plist_1.plistGet_)(x, Symbol.for('in'))]), ...body1];
     if (!(Array.isArray(letBindings) && (letBindings.length === 0))) {
         result = [Symbol.for('let'), letBindings, result, resultVar];
     }

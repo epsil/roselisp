@@ -165,9 +165,7 @@ function B2(...args: any[]): any {
       return (
         // Right-to-left function composition
         // corresponds to a right fold.
-        fs.reduceRight(function (acc: any, x: any): any {
-          return A(x, acc);
-        }, x)
+        fs.reduceRight((acc: any, x: any): any => A(x, acc), x)
       );
     }
   }
@@ -509,9 +507,7 @@ function Q2(...args: any[]): any {
       return (
         // Left-to-right function composition
         // corresponds to a left fold.
-        fs.reduce(function (acc: any, x: any): any {
-          return A(x, acc);
-        }, x)
+        fs.reduce((acc: any, x: any): any => A(x, acc), x)
       );
     }
   }
@@ -660,9 +656,7 @@ function T2(...args: any[]): any {
     }
     default: {
       const [x, ...fs]: any[] = args;
-      return fs.reduce(function (acc: any, x: any): any {
-        return A(x, acc);
-      }, x);
+      return fs.reduce((acc: any, x: any): any => A(x, acc), x);
     }
   }
 }
@@ -794,15 +788,7 @@ function Y1(f: any): any {
   // The names of the function arguments (`future`, `arg`)
   // are the same as in the book *The Little LISPer*, with
   // the exception of `f`, which is named `M` in the book.
-  return (function (future: any): any {
-    return f(function (arg: any): any {
-      return future(future)(arg);
-    });
-  })(function (future: any): any {
-    return f(function (arg: any): any {
-      return future(future)(arg);
-    });
-  });
+  return ((future: any): any => f((arg: any): any => future(future)(arg)))((future: any): any => f((arg: any): any => future(future)(arg)));
 }
 
 Y1.fsource = [Symbol.for('define'), [Symbol.for('Y1'), Symbol.for('f')], [[Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]], [Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]]]];

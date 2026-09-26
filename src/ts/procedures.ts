@@ -123,7 +123,7 @@ function arity_(f: any): any {
 arity_.fsource = [Symbol.for('define'), [Symbol.for('arity_'), Symbol.for('f')], [Symbol.for('js/length'), Symbol.for('f')]];
 
 arity_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [f]: any[] = exp.slice(1);
     return [Symbol.for('js/length'), f];
   };
@@ -147,7 +147,7 @@ function procedurep_(obj: any): any {
 procedurep_.fsource = [Symbol.for('define'), [Symbol.for('procedure?_'), Symbol.for('obj')], [Symbol.for('js/function?'), Symbol.for('obj')]];
 
 procedurep_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
     return [Symbol.for('js/function?'), obj];
   };
@@ -322,9 +322,7 @@ function map_(f: any, lst: any): any {
   // can lead to unintuitive bugs in cases where the function has an
   // optional second parameter. To avoid this, we inspect the arity of
   // `f` and enclose it in a unary function wrapper if necessary.
-  return lst.map((f.length === 1) ? f : (function (x: any): any {
-    return f(x);
-  }));
+  return lst.map((f.length === 1) ? f : (x: any): any => f(x));
 }
 
 map_.fsource = [Symbol.for('define'), [Symbol.for('map_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('map'), [Symbol.for('if'), [Symbol.for('one?'), [Symbol.for('arity'), Symbol.for('f')]], Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('f'), Symbol.for('x')]]]]];
@@ -333,17 +331,13 @@ map_.fsource = [Symbol.for('define'), [Symbol.for('map_'), Symbol.for('f'), Symb
  * Compiler macro for `(map ...)` expressions.
  */
 map_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [f, lst]: any[] = exp.slice(1);
     function unaryLambdaP(exp: any): any {
       return taggedListP(exp, [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]) && Array.isArray(exp[1]) && (exp[1].length === 1);
     }
     unaryLambdaP.fsource = [Symbol.for('define'), [Symbol.for('unary-lambda?'), Symbol.for('exp')], [Symbol.for('and'), [Symbol.for('tagged-list?'), Symbol.for('exp'), [Symbol.for('quote'), [Symbol.for('fn'), Symbol.for('lambda'), Symbol.for('js/function'), Symbol.for('js/arrow')]]], [Symbol.for('pair-or-list?'), [Symbol.for('second'), Symbol.for('exp')]], [Symbol.for('one?'), [Symbol.for('length'), [Symbol.for('second'), Symbol.for('exp')]]]]];
-    return [Symbol.for('send'), lst, Symbol.for('map'), unaryLambdaP(f) ? f : (!(Array.isArray(f) && (f.length > 0)) ? [Symbol.for('js/?'), [Symbol.for('one?'), [Symbol.for('arity'), f]], f, [Symbol.for('lambda'), [Symbol.for('x')], [f, Symbol.for('x')]]] : ((f1: any): any => {
-      return [Symbol.for('let'), [[f1, f]], ((f: any): any => {
-        return [Symbol.for('js/?'), [Symbol.for('one?'), [Symbol.for('arity'), f]], f, [Symbol.for('lambda'), [Symbol.for('x')], [f, Symbol.for('x')]]];
-      })(f1)];
-    })(Symbol('f')))];
+    return [Symbol.for('send'), lst, Symbol.for('map'), unaryLambdaP(f) ? f : (!(Array.isArray(f) && (f.length > 0)) ? [Symbol.for('js/?'), [Symbol.for('one?'), [Symbol.for('arity'), f]], f, [Symbol.for('lambda'), [Symbol.for('x')], [f, Symbol.for('x')]]] : ((f1: any): any => [Symbol.for('let'), [[f1, f]], ((f: any): any => [Symbol.for('js/?'), [Symbol.for('one?'), [Symbol.for('arity'), f]], f, [Symbol.for('lambda'), [Symbol.for('x')], [f, Symbol.for('x')]]])(f1)])(Symbol('f')))];
   };
   f.ftype = 'macro';
   return f;
@@ -359,7 +353,7 @@ function forEach_(f: any, lst: any): any {
 forEach_.fsource = [Symbol.for('define'), [Symbol.for('for-each_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('forEach'), Symbol.for('f')]];
 
 forEach_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [f, lst]: any[] = exp.slice(1);
     return [Symbol.for('send'), lst, Symbol.for('forEach'), f];
   };
@@ -514,7 +508,7 @@ function add1_(x: any): any {
 add1_.fsource = [Symbol.for('define'), [Symbol.for('add1_'), Symbol.for('x')], [Symbol.for('+'), Symbol.for('x'), 1]];
 
 add1_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('+'), x, 1];
   };
@@ -561,7 +555,7 @@ function sub1_(x: any): any {
 sub1_.fsource = [Symbol.for('define'), [Symbol.for('sub1_'), Symbol.for('x')], [Symbol.for('-'), Symbol.for('x'), 1]];
 
 sub1_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('-'), x, 1];
   };
@@ -626,7 +620,7 @@ function zerop_(n: any): any {
 zerop_.fsource = [Symbol.for('define'), [Symbol.for('zero?_'), Symbol.for('n')], [Symbol.for('='), Symbol.for('n'), 0]];
 
 zerop_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [n]: any[] = exp.slice(1);
     return [Symbol.for('='), n, 0];
   };
@@ -644,7 +638,7 @@ function onep_(n: any): any {
 onep_.fsource = [Symbol.for('define'), [Symbol.for('one?_'), Symbol.for('n')], [Symbol.for('='), Symbol.for('n'), 1]];
 
 onep_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [n]: any[] = exp.slice(1);
     return [Symbol.for('='), n, 1];
   };
@@ -668,7 +662,7 @@ function oddp_(n: any): any {
 oddp_.fsource = [Symbol.for('define'), [Symbol.for('odd?_'), Symbol.for('n')], [Symbol.for('not'), [Symbol.for('even?'), Symbol.for('n')]]];
 
 oddp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [n]: any[] = exp.slice(1);
     return [Symbol.for('not'), [Symbol.for('even?'), n]];
   };
@@ -692,7 +686,7 @@ function evenp_(n: any): any {
 evenp_.fsource = [Symbol.for('define'), [Symbol.for('even?_'), Symbol.for('n')], [Symbol.for('zero?'), [Symbol.for('modulo'), Symbol.for('n'), 2]]];
 
 evenp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [n]: any[] = exp.slice(1);
     return [Symbol.for('zero?'), [Symbol.for('modulo'), n, 2]];
   };
@@ -714,7 +708,7 @@ function truep_(x: any): any {
 truep_.fsource = [Symbol.for('define'), [Symbol.for('true?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), true, false]];
 
 truep_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('if'), x, true, false];
   };
@@ -736,7 +730,7 @@ function falsep_(x: any): any {
 falsep_.fsource = [Symbol.for('define'), [Symbol.for('false?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), false, true]];
 
 falsep_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('if'), x, false, true];
   };
@@ -769,15 +763,13 @@ identity_.fsource = [Symbol.for('define'), [Symbol.for('identity_'), Symbol.for(
  * [cl:constantly]: http://clhs.lisp.se/Body/f_cons_1.htm#constantly
  */
 function const_(x: any = undefined): any {
-  return function (...args: any[]): any {
-    return x;
-  };
+  return (...args: any[]): any => x;
 }
 
 const_.fsource = [Symbol.for('define'), [Symbol.for('const_'), [Symbol.for('x'), undefined]], [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('x')]];
 
 const_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     if (x === undefined) {
       x = undefined;
@@ -786,9 +778,7 @@ const_.compilerMacro = ((): any => {
       return [Symbol.for('lambda'), Symbol.for('args'), x];
     } else {
       const x1: any = Symbol('x');
-      return [Symbol.for('let'), [[x1, x]], ((x: any): any => {
-        return [Symbol.for('lambda'), Symbol.for('args'), x];
-      })(x1)];
+      return [Symbol.for('let'), [[x1, x]], ((x: any): any => [Symbol.for('lambda'), Symbol.for('args'), x])(x1)];
     }
   };
   f.ftype = 'macro';
@@ -816,7 +806,7 @@ values_.fsource = [Symbol.for('define'), [Symbol.for('values_'), Symbol.for('.')
  * Compiler macro for `(values ...)` expressions.
  */
 values_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let args: any = exp.slice(1);
     return [Symbol.for('list'), ...args];
   };
@@ -850,7 +840,7 @@ function keywordToString_(x: any): any {
 keywordToString_.fsource = [Symbol.for('define'), [Symbol.for('keyword->string_'), Symbol.for('x')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('x')], '']];
 
 keywordToString_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), x], ''];
   };
@@ -869,7 +859,7 @@ function keywordToSymbol_(x: any): any {
 keywordToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('keyword->symbol_'), Symbol.for('x')], [Symbol.for('string->symbol'), [Symbol.for('keyword->string'), Symbol.for('x')]]];
 
 keywordToSymbol_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('string->symbol'), [Symbol.for('keyword->string'), x]];
   };
@@ -887,7 +877,7 @@ function symbolToKeyword_(x: any): any {
 symbolToKeyword_.fsource = [Symbol.for('define'), [Symbol.for('symbol->keyword_'), Symbol.for('x')], [Symbol.for('string->keyword'), [Symbol.for('symbol->string'), Symbol.for('x')]]];
 
 symbolToKeyword_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('string->keyword'), [Symbol.for('symbol->string'), x]];
   };
@@ -905,7 +895,7 @@ function stringToKeyword_(x: any): any {
 stringToKeyword_.fsource = [Symbol.for('define'), [Symbol.for('string->keyword_'), Symbol.for('x')], [Symbol.for('string->symbol'), [Symbol.for('string-append'), ':', Symbol.for('x')]]];
 
 stringToKeyword_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('string->symbol'), [Symbol.for('string-append'), ':', x]];
   };
@@ -923,7 +913,7 @@ function atomp_(x: any): any {
 atomp_.fsource = [Symbol.for('define'), [Symbol.for('atom?_'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('pair?'), Symbol.for('x')]]];
 
 atomp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('not'), [Symbol.for('pair?'), x]];
   };
@@ -947,7 +937,7 @@ function numberp_(obj: any): any {
 numberp_.fsource = [Symbol.for('define'), [Symbol.for('number?_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isFinite'), Symbol.for('obj')]];
 
 numberp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
     return [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isFinite'), obj];
   };
@@ -971,7 +961,7 @@ function booleanp_(obj: any): any {
 booleanp_.fsource = [Symbol.for('define'), [Symbol.for('boolean?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'boolean']];
 
 booleanp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
     return [Symbol.for('eq?'), [Symbol.for('type-of'), obj], 'boolean'];
   };
@@ -989,7 +979,7 @@ function undefinedp_(obj: any): any {
 undefinedp_.fsource = [Symbol.for('define'), [Symbol.for('undefined?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), undefined]];
 
 undefinedp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
     return [Symbol.for('eq?'), obj, undefined];
   };
@@ -1007,9 +997,7 @@ undefinedp_.compilerMacro = ((): any => {
  * [cl:reduce]: http://clhs.lisp.se/Body/f_reduce.htm#reduce
  */
 function foldl_(f: any, v: any, lst: any): any {
-  return lst.reduce(function (acc: any, x: any): any {
-    return f(x, acc);
-  }, v);
+  return lst.reduce((acc: any, x: any): any => f(x, acc), v);
 }
 
 foldl_.fsource = [Symbol.for('define'), [Symbol.for('foldl_'), Symbol.for('f'), Symbol.for('v'), Symbol.for('lst')], [Symbol.for('foldl'), Symbol.for('f'), Symbol.for('v'), Symbol.for('lst')]];
@@ -1018,7 +1006,7 @@ foldl_.fsource = [Symbol.for('define'), [Symbol.for('foldl_'), Symbol.for('f'), 
  * Compiler macro for `(foldl ...)` expressions.
  */
 foldl_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [f, v, lst]: any[] = exp.slice(1);
     return [Symbol.for('js/reduce'), lst, flipFunctionExpression(f, Symbol.for('x'), Symbol.for('acc')), v];
   };
@@ -1036,9 +1024,7 @@ foldl_.compilerMacro = ((): any => {
  * [cl:reduce]: http://clhs.lisp.se/Body/f_reduce.htm#reduce
  */
 function foldr_(f: any, v: any, lst: any): any {
-  return lst.reduceRight(function (acc: any, x: any): any {
-    return f(x, acc);
-  }, v);
+  return lst.reduceRight((acc: any, x: any): any => f(x, acc), v);
 }
 
 foldr_.fsource = [Symbol.for('define'), [Symbol.for('foldr_'), Symbol.for('f'), Symbol.for('v'), Symbol.for('lst')], [Symbol.for('foldr'), Symbol.for('f'), Symbol.for('v'), Symbol.for('lst')]];
@@ -1047,7 +1033,7 @@ foldr_.fsource = [Symbol.for('define'), [Symbol.for('foldr_'), Symbol.for('f'), 
  * Compiler macro for `(foldr ...)` expressions.
  */
 foldr_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [f, v, lst]: any[] = exp.slice(1);
     return [Symbol.for('js/reduce-right'), lst, flipFunctionExpression(f, Symbol.for('x'), Symbol.for('acc')), v];
   };
@@ -1067,11 +1053,7 @@ foldr_.compilerMacro = ((): any => {
  * [cl:member]: http://clhs.lisp.se/Body/f_mem_m.htm
  */
 function member_(v: any, lst: any, isEqual: any = undefined): any {
-  const idx: any = lst.findIndex(isEqual ? (function (x: any): any {
-    return isEqual(v, x);
-  }) : (function (x: any): any {
-    return equalp(v, x);
-  }));
+  const idx: any = lst.findIndex(isEqual ? (x: any): any => isEqual(v, x) : (x: any): any => equalp(v, x));
   if (idx >= 0) {
     return lst.slice(idx);
   } else {
@@ -1086,11 +1068,7 @@ member_.fsource = [Symbol.for('define'), [Symbol.for('member_'), Symbol.for('v')
  * Like `member`, but always returns a boolean value.
  */
 function memberp_(v: any, lst: any, isEqual: any = undefined): any {
-  return lst.findIndex(isEqual ? (function (x: any): any {
-    return isEqual(v, x);
-  }) : (function (x: any): any {
-    return equalp(v, x);
-  })) >= 0;
+  return lst.findIndex(isEqual ? (x: any): any => isEqual(v, x) : (x: any): any => equalp(v, x)) >= 0;
 }
 
 memberp_.fsource = [Symbol.for('define'), [Symbol.for('member?_'), Symbol.for('v'), Symbol.for('lst'), [Symbol.for('is-equal'), undefined]], [Symbol.for('memf?'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('v'), Symbol.for('x')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('v'), Symbol.for('x')]]], Symbol.for('lst')]];
@@ -1099,7 +1077,7 @@ memberp_.fsource = [Symbol.for('define'), [Symbol.for('member?_'), Symbol.for('v
  * Compiler macro for `(member? ...)` expressions.
  */
 memberp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [v, lst, isEqual]: any[] = exp.slice(1);
     if (isEqual) {
       if (!(Array.isArray(v) && (v.length > 0))) {
@@ -1107,22 +1085,16 @@ memberp_.compilerMacro = ((): any => {
           return [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [isEqual, v, Symbol.for('x')]], lst];
         } else {
           const isEqual1: any = Symbol('is-equal');
-          return [Symbol.for('let'), [[isEqual1, isEqual]], ((isEqual: any): any => {
-            return [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [isEqual, v, Symbol.for('x')]], lst];
-          })(isEqual1)];
+          return [Symbol.for('let'), [[isEqual1, isEqual]], ((isEqual: any): any => [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [isEqual, v, Symbol.for('x')]], lst])(isEqual1)];
         }
       } else {
         if (!(Array.isArray(isEqual) && (isEqual.length > 0))) {
           const v1: any = Symbol('v');
-          return [Symbol.for('let'), [[v1, v]], ((v: any): any => {
-            return [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [isEqual, v, Symbol.for('x')]], lst];
-          })(v1)];
+          return [Symbol.for('let'), [[v1, v]], ((v: any): any => [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [isEqual, v, Symbol.for('x')]], lst])(v1)];
         } else {
           const v2: any = Symbol('v');
           const isEqual2: any = Symbol('is-equal');
-          return [Symbol.for('let'), [[v2, v], [isEqual2, isEqual]], ((v: any, isEqual: any): any => {
-            return [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [isEqual, v, Symbol.for('x')]], lst];
-          })(v2, isEqual2)];
+          return [Symbol.for('let'), [[v2, v], [isEqual2, isEqual]], ((v: any, isEqual: any): any => [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [isEqual, v, Symbol.for('x')]], lst])(v2, isEqual2)];
         }
       }
     } else {
@@ -1130,9 +1102,7 @@ memberp_.compilerMacro = ((): any => {
         return [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), v, Symbol.for('x')]], lst];
       } else {
         const v3: any = Symbol('v');
-        return [Symbol.for('let'), [[v3, v]], ((v: any): any => {
-          return [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), v, Symbol.for('x')]], lst];
-        })(v3)];
+        return [Symbol.for('let'), [[v3, v]], ((v: any): any => [Symbol.for('memf?'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), v, Symbol.for('x')]], lst])(v3)];
       }
     }
   };
@@ -1151,9 +1121,7 @@ memberp_.compilerMacro = ((): any => {
  * [el:memq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Sets-And-Lists.html#index-memq
  */
 function memq_(v: any, lst: any): any {
-  const idx: any = lst.findIndex(function (x: any): any {
-    return v === x;
-  });
+  const idx: any = lst.findIndex((x: any): any => v === x);
   if (idx >= 0) {
     return lst.slice(idx);
   } else {
@@ -1177,7 +1145,7 @@ function memqp_(v: any, lst: any): any {
 memqp_.fsource = [Symbol.for('define'), [Symbol.for('memq?_'), Symbol.for('v'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('includes'), Symbol.for('v')]];
 
 memqp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [v, lst]: any[] = exp.slice(1);
     return [Symbol.for('send'), lst, Symbol.for('includes'), v];
   };
@@ -1218,7 +1186,7 @@ function memfp_(proc: any, lst: any): any {
 memfp_.fsource = [Symbol.for('define'), [Symbol.for('memf?_'), Symbol.for('proc'), Symbol.for('lst')], [Symbol.for('>='), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')], 0]];
 
 memfp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [proc, lst]: any[] = exp.slice(1);
     return [Symbol.for('>='), [Symbol.for('js/find-index'), proc, lst], 0];
   };
@@ -1267,7 +1235,7 @@ function findfIndex_(proc: any, seq: any, notFound: any = false): any {
 findfIndex_.fsource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol.for('proc'), Symbol.for('seq'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 
 findfIndex_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [proc, seq, notFound]: any[] = exp.slice(1);
     if (notFound === undefined) {
       notFound = false;
@@ -1299,7 +1267,7 @@ function indexWhere_(seq: any, proc: any, notFound: any = false): any {
 indexWhere_.fsource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol.for('seq'), Symbol.for('proc'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 
 indexWhere_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [seq, proc, notFound]: any[] = exp.slice(1);
     if (notFound === undefined) {
       notFound = false;
@@ -1320,11 +1288,7 @@ indexWhere_.compilerMacro = ((): any => {
  * [cl:position]: http://clhs.lisp.se/Body/f_pos_p.htm#position
  */
 function indexOf_(seq: any, v: any, isEqual: any = undefined): any {
-  const idx: any = seq.findIndex(isEqual ? (function (x: any): any {
-    return isEqual(x, v);
-  }) : (function (x: any): any {
-    return equalp(x, v);
-  }));
+  const idx: any = seq.findIndex(isEqual ? (x: any): any => isEqual(x, v) : (x: any): any => equalp(x, v));
   if (idx >= 0) {
     return idx;
   } else {
@@ -1357,9 +1321,7 @@ function intersection_(...args: any[]): any {
   } else if (args.length === 1) {
     return args[0];
   } else {
-    return args.slice(1).reduce(function (acc: any, x: any): any {
-      return intersection2(acc, x);
-    }, args[0]);
+    return args.slice(1).reduce((acc: any, x: any): any => intersection2(acc, x), args[0]);
   }
 }
 
@@ -1388,9 +1350,7 @@ function union_(...args: any[]): any {
     return result;
   }
   union2.fsource = [Symbol.for('define'), [Symbol.for('union2'), Symbol.for('arr1'), Symbol.for('arr2')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr1')]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr2')]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], Symbol.for('result')]];
-  return args.reduce(function (acc: any, x: any): any {
-    return union2(acc, x);
-  }, []);
+  return args.reduce((acc: any, x: any): any => union2(acc, x), []);
 }
 
 union_.fsource = [Symbol.for('define'), [Symbol.for('union_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), [Symbol.for('union2'), Symbol.for('arr1'), Symbol.for('arr2')], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr1')]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], [Symbol.for('for'), [[Symbol.for('element'), Symbol.for('arr2')]], [Symbol.for('unless'), [Symbol.for('memq?'), Symbol.for('element'), Symbol.for('result')], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('element')]]], Symbol.for('result')]], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('acc')], [Symbol.for('union2'), Symbol.for('acc'), Symbol.for('x')]], [Symbol.for('quote'), []], Symbol.for('args')]];
@@ -1426,11 +1386,9 @@ range_.fsource = [Symbol.for('define'), [Symbol.for('range_'), Symbol.for('start
 function compose_(...args: any[]): any {
   const functions: any = args.slice(0, -1);
   const lastFunction: any = args[args.length - 1];
-  return function (...args: any[]): any {
+  return (...args: any[]): any => {
     const val: any = lastFunction(...args);
-    return functions.reduceRight(function (x: any, f: any): any {
-      return f(x);
-    }, val);
+    return functions.reduceRight((x: any, f: any): any => f(x), val);
   };
 }
 
@@ -1444,11 +1402,9 @@ compose_.fsource = [Symbol.for('define'), [Symbol.for('compose_'), Symbol.for('.
 function pipe_(...args: any[]): any {
   const functions: any = args.slice(1);
   const firstFunction: any = args[0];
-  return function (...args: any[]): any {
+  return (...args: any[]): any => {
     const val: any = firstFunction(...args);
-    return functions.reduce(function (x: any, f: any): any {
-      return f(x);
-    }, val);
+    return functions.reduce((x: any, f: any): any => f(x), val);
   };
 }
 
@@ -1470,7 +1426,7 @@ function filter_(pred: any, lst: any): any {
 filter_.fsource = [Symbol.for('define'), [Symbol.for('filter_'), Symbol.for('pred'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('filter'), Symbol.for('pred')]];
 
 filter_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [pred, lst]: any[] = exp.slice(1);
     return [Symbol.for('send'), lst, Symbol.for('filter'), pred];
   };
@@ -1507,7 +1463,7 @@ assert_.fsource = [Symbol.for('define'), [Symbol.for('assert_'), Symbol.for('x')
  * Compiler macro for `(assert ...)` expressions.
  */
 assert_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let args: any = exp.slice(1);
     return [Symbol.for('send'), Symbol.for('console'), Symbol.for('assert'), ...args];
   };
@@ -1534,7 +1490,7 @@ display_.fsource = [Symbol.for('define'), [Symbol.for('display_'), Symbol.for('.
  * Compiler macro for `(display ...)` expressions.
  */
 display_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let args: any = exp.slice(1);
     return [Symbol.for('send'), Symbol.for('console'), Symbol.for('log'), ...args];
   };
@@ -1558,7 +1514,7 @@ function error_(arg: any = undefined): any {
 error_.fsource = [Symbol.for('define'), [Symbol.for('error_'), [Symbol.for('arg'), undefined]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('Error'), Symbol.for('arg')]]];
 
 error_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [arg]: any[] = exp.slice(1);
     if (arg === undefined) {
       arg = undefined;
@@ -1583,7 +1539,7 @@ function typeOf_(x: any): any {
 typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
 
 typeOf_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('js/typeof'), x];
   };
@@ -1605,7 +1561,7 @@ function isAP_(obj: any, cls: any): any {
 isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instanceof'), Symbol.for('obj'), Symbol.for('cls')]];
 
 isAP_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj, cls]: any[] = exp.slice(1);
     return [Symbol.for('js/instanceof'), obj, cls];
   };
@@ -1623,7 +1579,7 @@ function abs_(x: any): any {
 abs_.fsource = [Symbol.for('define'), [Symbol.for('abs_'), Symbol.for('x')], [Symbol.for('js/abs'), Symbol.for('x')]];
 
 abs_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [x]: any[] = exp.slice(1);
     return [Symbol.for('js/abs'), x];
   };
@@ -1635,13 +1591,13 @@ abs_.compilerMacro = ((): any => {
  * Sort a list with a predicate.
  */
 function sort_(lst: any, pred: any = undefined): any {
-  return [...lst].sort(pred ? (function (x: any, y: any): any {
+  return [...lst].sort(pred ? (x: any, y: any): any => {
     if (pred(x, y)) {
       return -1;
     } else {
       return 1;
     }
-  }) : undefined);
+  } : undefined);
 }
 
 sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), [Symbol.for('pred'), undefined]], [Symbol.for('array-sort'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('pred'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]], undefined]]];
@@ -1650,7 +1606,7 @@ sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), 
  * Compiler macro for `(sort ...)` expressions.
  */
 sort_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [lst, pred]: any[] = exp.slice(1);
     if (pred === undefined) {
       pred = undefined;
@@ -1660,9 +1616,7 @@ sort_.compilerMacro = ((): any => {
         return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
       } else {
         const pred1: any = Symbol('pred');
-        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => {
-          return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
-        })(pred1)];
+        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]])(pred1)];
       }
     } else {
       return [Symbol.for('array-sort'), lst];
@@ -1676,13 +1630,13 @@ sort_.compilerMacro = ((): any => {
  * Sort a list with a predicate.
  */
 function sortx_(lst: any, pred: any = undefined): any {
-  return lst.sort(pred ? (function (x: any, y: any): any {
+  return lst.sort(pred ? (x: any, y: any): any => {
     if (pred(x, y)) {
       return -1;
     } else {
       return 1;
     }
-  }) : undefined);
+  } : undefined);
 }
 
 sortx_.fsource = [Symbol.for('define'), [Symbol.for('sort!_'), Symbol.for('lst'), [Symbol.for('pred'), undefined]], [Symbol.for('array-sort!'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('pred'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]], undefined]]];
@@ -1691,7 +1645,7 @@ sortx_.fsource = [Symbol.for('define'), [Symbol.for('sort!_'), Symbol.for('lst')
  * Compiler macro for `(sort ...)` expressions.
  */
 sortx_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [lst, pred]: any[] = exp.slice(1);
     if (pred === undefined) {
       pred = undefined;
@@ -1701,9 +1655,7 @@ sortx_.compilerMacro = ((): any => {
         return [Symbol.for('array-sort!'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
       } else {
         const pred1: any = Symbol('pred');
-        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => {
-          return [Symbol.for('array-sort!'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
-        })(pred1)];
+        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => [Symbol.for('array-sort!'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]])(pred1)];
       }
     } else {
       return [Symbol.for('array-sort!'), lst];

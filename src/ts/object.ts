@@ -40,7 +40,7 @@ function objectRef_(obj: any, key: any): any {
 objectRef_.fsource = [Symbol.for('define'), [Symbol.for('object-ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
 
 objectRef_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj, key]: any[] = exp.slice(1);
     return [Symbol.for('js/get'), obj, key];
   };
@@ -67,7 +67,7 @@ objectSetX_.fsource = [Symbol.for('define'), [Symbol.for('object-set!_'), Symbol
  * Compiler macro for `(object-set! ...)` expressions.
  */
 objectSetX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj, key, val]: any[] = exp.slice(1);
     return [Symbol.for('js/='), [Symbol.for('js/get'), obj, key], val];
   };
@@ -89,7 +89,7 @@ function fieldNames_(obj: any): any {
 fieldNames_.fsource = [Symbol.for('define'), [Symbol.for('field-names_'), Symbol.for('obj')], [Symbol.for('js/keys'), Symbol.for('obj')]];
 
 fieldNames_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
     return [Symbol.for('js/keys'), obj];
   };

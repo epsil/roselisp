@@ -41,7 +41,7 @@ exports.oget_ = objectRef_;
 exports.objectRef_ = objectRef_;
 objectRef_.fsource = [Symbol.for('define'), [Symbol.for('object-ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
 objectRef_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [obj, key] = exp.slice(1);
         return [Symbol.for('js/get'), obj, key];
     };
@@ -69,7 +69,7 @@ objectSetX_.fsource = [Symbol.for('define'), [Symbol.for('object-set!_'), Symbol
  * Compiler macro for `(object-set! ...)` expressions.
  */
 objectSetX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [obj, key, val] = exp.slice(1);
         return [Symbol.for('js/='), [Symbol.for('js/get'), obj, key], val];
     };
@@ -89,7 +89,7 @@ function fieldNames_(obj) {
 exports.fieldNames_ = fieldNames_;
 fieldNames_.fsource = [Symbol.for('define'), [Symbol.for('field-names_'), Symbol.for('obj')], [Symbol.for('js/keys'), Symbol.for('obj')]];
 fieldNames_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [obj] = exp.slice(1);
         return [Symbol.for('js/keys'), obj];
     };

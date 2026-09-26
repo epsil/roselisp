@@ -26,7 +26,7 @@ function arrayp_(x: any): any {
 arrayp_.fsource = [Symbol.for('define'), [Symbol.for('array?_'), Symbol.for('x')], [Symbol.for('js/array?'), Symbol.for('x')]];
 
 arrayp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     return [Symbol.for('js/array?'), x];
   };
@@ -44,7 +44,7 @@ function arrayLength_(arr: any): any {
 arrayLength_.fsource = [Symbol.for('define'), [Symbol.for('array-length_'), Symbol.for('arr')], [Symbol.for('js/length'), Symbol.for('arr')]];
 
 arrayLength_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('js/length'), arr];
   };
@@ -62,7 +62,7 @@ function arrayCopy_(arr: any): any {
 arrayCopy_.fsource = [Symbol.for('define'), [Symbol.for('array-copy_'), Symbol.for('arr')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('arr')]]]];
 
 arrayCopy_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), arr]]];
   };
@@ -80,7 +80,7 @@ function arrayFirst_(arr: any): any {
 arrayFirst_.fsource = [Symbol.for('define'), [Symbol.for('array-first_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 0]];
 
 arrayFirst_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 0];
   };
@@ -98,7 +98,7 @@ function arraySecond_(arr: any): any {
 arraySecond_.fsource = [Symbol.for('define'), [Symbol.for('array-second_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 1]];
 
 arraySecond_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 1];
   };
@@ -116,7 +116,7 @@ function arrayThird_(arr: any): any {
 arrayThird_.fsource = [Symbol.for('define'), [Symbol.for('array-third_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 2]];
 
 arrayThird_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 2];
   };
@@ -134,7 +134,7 @@ function arrayFourth_(arr: any): any {
 arrayFourth_.fsource = [Symbol.for('define'), [Symbol.for('array-fourth_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 3]];
 
 arrayFourth_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 3];
   };
@@ -152,7 +152,7 @@ function arrayFifth_(arr: any): any {
 arrayFifth_.fsource = [Symbol.for('define'), [Symbol.for('array-fifth_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 4]];
 
 arrayFifth_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 4];
   };
@@ -170,7 +170,7 @@ function arraySixth_(arr: any): any {
 arraySixth_.fsource = [Symbol.for('define'), [Symbol.for('array-sixth_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 5]];
 
 arraySixth_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 5];
   };
@@ -188,7 +188,7 @@ function arraySeventh_(arr: any): any {
 arraySeventh_.fsource = [Symbol.for('define'), [Symbol.for('array-seventh_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 6]];
 
 arraySeventh_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 6];
   };
@@ -206,7 +206,7 @@ function arrayEighth_(arr: any): any {
 arrayEighth_.fsource = [Symbol.for('define'), [Symbol.for('array-eighth_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 7]];
 
 arrayEighth_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 7];
   };
@@ -224,7 +224,7 @@ function arrayNinth_(arr: any): any {
 arrayNinth_.fsource = [Symbol.for('define'), [Symbol.for('array-ninth_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 8]];
 
 arrayNinth_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 8];
   };
@@ -242,7 +242,7 @@ function arrayTenth_(arr: any): any {
 arrayTenth_.fsource = [Symbol.for('define'), [Symbol.for('array-tenth_'), Symbol.for('arr')], [Symbol.for('array-ref'), Symbol.for('arr'), 9]];
 
 arrayTenth_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-ref'), arr, 9];
   };
@@ -260,7 +260,7 @@ function arrayLast_(arr: any): any {
 arrayLast_.fsource = [Symbol.for('define'), [Symbol.for('array-last_'), Symbol.for('arr')], [Symbol.for('array-nlast'), Symbol.for('arr'), 1]];
 
 arrayLast_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-nlast'), arr, 1];
   };
@@ -281,15 +281,13 @@ function arrayNlast_(arr: any, n: any): any {
 arrayNlast_.fsource = [Symbol.for('define'), [Symbol.for('array-nlast_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('array-ref'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('arr')], Symbol.for('n')]]];
 
 arrayNlast_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, n]: any[] = exp.slice(1);
     if (!(Array.isArray(arr) && (arr.length > 0))) {
       return [Symbol.for('array-ref'), arr, [Symbol.for('-'), [Symbol.for('array-length'), arr], n]];
     } else {
       const arr1: any = Symbol('arr');
-      return [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => {
-        return [Symbol.for('array-ref'), arr, [Symbol.for('-'), [Symbol.for('array-length'), arr], n]];
-      })(arr1)];
+      return [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => [Symbol.for('array-ref'), arr, [Symbol.for('-'), [Symbol.for('array-length'), arr], n]])(arr1)];
     }
   };
   f.ftype = 'macro';
@@ -322,7 +320,7 @@ arrayRef_.fsource = [Symbol.for('define'), [Symbol.for('array-ref_'), Symbol.for
  * Compiler macro for `(array-ref ...)` expressions.
  */
 arrayRef_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, ...indices]: any[] = exp.slice(1);
     return [Symbol.for('js/get'), arr, ...indices];
   };
@@ -342,7 +340,7 @@ function arrayAt_(arr: any, i: any): any {
 arrayAt_.fsource = [Symbol.for('define'), [Symbol.for('array-at_'), Symbol.for('arr'), Symbol.for('i')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('at'), Symbol.for('i')]];
 
 arrayAt_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, i]: any[] = exp.slice(1);
     return [Symbol.for('send'), arr, Symbol.for('at'), i];
   };
@@ -397,7 +395,7 @@ arraySetX_.fsource = [Symbol.for('define'), [Symbol.for('array-set!_'), Symbol.f
  * Compiler macro for `(array-set! ...)` expressions.
  */
 arraySetX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, ...indicesAndValue]: any[] = exp.slice(1);
     const indices: any = indicesAndValue.slice(0, -1);
     const value: any = indicesAndValue[indicesAndValue.length - 1];
@@ -417,15 +415,13 @@ function arrayTake_(arr: any, n: any): any {
 arrayTake_.fsource = [Symbol.for('define'), [Symbol.for('array-take_'), Symbol.for('arr'), Symbol.for('n')], [Symbol.for('array-drop-right'), Symbol.for('arr'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('arr')], Symbol.for('n')]]];
 
 arrayTake_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, n]: any[] = exp.slice(1);
     if (!(Array.isArray(arr) && (arr.length > 0))) {
       return [Symbol.for('array-drop-right'), arr, [Symbol.for('-'), [Symbol.for('array-length'), arr], n]];
     } else {
       const arr1: any = Symbol('arr');
-      return [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => {
-        return [Symbol.for('array-drop-right'), arr, [Symbol.for('-'), [Symbol.for('array-length'), arr], n]];
-      })(arr1)];
+      return [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => [Symbol.for('array-drop-right'), arr, [Symbol.for('-'), [Symbol.for('array-length'), arr], n]])(arr1)];
     }
   };
   f.ftype = 'macro';
@@ -442,7 +438,7 @@ function arrayRest_(arr: any): any {
 arrayRest_.fsource = [Symbol.for('define'), [Symbol.for('array-rest_'), Symbol.for('arr')], [Symbol.for('array-drop'), Symbol.for('arr'), 1]];
 
 arrayRest_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-drop'), arr, 1];
   };
@@ -460,7 +456,7 @@ function arraySlice_(arr: any, ...args: any[]): any {
 arraySlice_.fsource = [Symbol.for('define'), [Symbol.for('array-slice_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('args')]];
 
 arraySlice_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, ...args]: any[] = exp.slice(1);
     return [Symbol.for('send/apply'), arr, Symbol.for('slice'), [Symbol.for('list'), ...args]];
   };
@@ -482,7 +478,7 @@ arrayDrop_.fsource = [Symbol.for('define'), [Symbol.for('array-drop_'), Symbol.f
  * Compiler macro for `(array-drop ...)` expressions.
  */
 arrayDrop_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, n]: any[] = exp.slice(1);
     if (n === 0) {
       return arr;
@@ -520,7 +516,7 @@ arrayDropRight_.fsource = [Symbol.for('define'), [Symbol.for('array-drop-right_'
  * Compiler macro for `(array-drop-right ...)` expressions.
  */
 arrayDropRight_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, n]: any[] = exp.slice(1);
     if (Number.isFinite(n)) {
       if (n === 0) {
@@ -549,7 +545,7 @@ arrayConcat_.fsource = [Symbol.for('define'), [Symbol.for('array-concat_'), Symb
  * Compiler macro for `(array-concat ...)` expressions.
  */
 arrayConcat_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const args: any = exp.slice(1);
     if (args.length === 0) {
       return [];
@@ -574,7 +570,7 @@ function arrayReverse_(arr: any): any {
 arrayReverse_.fsource = [Symbol.for('define'), [Symbol.for('array-reverse_'), Symbol.for('arr')], [Symbol.for('array-reverse!'), [Symbol.for('array-copy'), Symbol.for('arr')]]];
 
 arrayReverse_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('array-reverse!'), [Symbol.for('array-copy'), arr]];
   };
@@ -593,7 +589,7 @@ function arrayReverseX_(arr: any): any {
 arrayReverseX_.fsource = [Symbol.for('define'), [Symbol.for('array-reverse!_'), Symbol.for('arr')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('reverse')]];
 
 arrayReverseX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('send'), arr, Symbol.for('reverse')];
   };
@@ -611,7 +607,7 @@ function arrayPopLeftX_(arr: any): any {
 arrayPopLeftX_.fsource = [Symbol.for('define'), [Symbol.for('array-pop-left!_'), Symbol.for('arr')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('shift')]];
 
 arrayPopLeftX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('send'), arr, Symbol.for('shift')];
   };
@@ -629,7 +625,7 @@ function arrayPopRightX_(arr: any): any {
 arrayPopRightX_.fsource = [Symbol.for('define'), [Symbol.for('array-pop-right!_'), Symbol.for('arr')], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('pop')]];
 
 arrayPopRightX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr]: any[] = exp.slice(1);
     return [Symbol.for('send'), arr, Symbol.for('pop')];
   };
@@ -651,13 +647,9 @@ arrayPushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('array-push-left!_'
  * Compiler macro for `(array-push-left! ...)` expressions.
  */
 arrayPushLeftX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, x]: any[] = exp.slice(1);
-    return [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), [Symbol.for('send'), arr, Symbol.for('unshift'), x], Symbol.for(':expression'), !(Array.isArray(arr) && (arr.length > 0)) ? [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('unshift'), x], arr] : ((arr1: any): any => {
-      return [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => {
-        return [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('unshift'), x], arr];
-      })(arr1)];
-    })(Symbol('arr'))];
+    return [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), [Symbol.for('send'), arr, Symbol.for('unshift'), x], Symbol.for(':expression'), !(Array.isArray(arr) && (arr.length > 0)) ? [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('unshift'), x], arr] : ((arr1: any): any => [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('unshift'), x], arr])(arr1)])(Symbol('arr'))];
   };
   f.ftype = 'macro';
   return f;
@@ -677,13 +669,9 @@ arrayPushRightX_.fsource = [Symbol.for('define'), [Symbol.for('array-push-right!
  * Compiler macro for `(array-push-right! ...)` expressions.
  */
 arrayPushRightX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [arr, x]: any[] = exp.slice(1);
-    return [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), [Symbol.for('send'), arr, Symbol.for('push'), x], Symbol.for(':expression'), !(Array.isArray(arr) && (arr.length > 0)) ? [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('push'), x], arr] : ((arr1: any): any => {
-      return [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => {
-        return [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('push'), x], arr];
-      })(arr1)];
-    })(Symbol('arr'))];
+    return [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), [Symbol.for('send'), arr, Symbol.for('push'), x], Symbol.for(':expression'), !(Array.isArray(arr) && (arr.length > 0)) ? [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('push'), x], arr] : ((arr1: any): any => [Symbol.for('let'), [[arr1, arr]], ((arr: any): any => [Symbol.for('begin'), [Symbol.for('send'), arr, Symbol.for('push'), x], arr])(arr1)])(Symbol('arr'))];
   };
   f.ftype = 'macro';
   return f;
@@ -703,7 +691,7 @@ arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.f
  * Compiler macro for `(array-sort ...)` expressions.
  */
 arraySort_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [arr, comp]: any[] = exp.slice(1);
     if (comp === undefined) {
       comp = undefined;
@@ -732,7 +720,7 @@ arraySortX_.fsource = [Symbol.for('define'), [Symbol.for('array-sort!_'), Symbol
  * Compiler macro for `(array-sort ...)` expressions.
  */
 arraySortX_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [arr, comp]: any[] = exp.slice(1);
     if (comp === undefined) {
       comp = undefined;

@@ -8,7 +8,6 @@
                   compile
                   compile-modules
                   compile-with-environment
-                  ;; definition->macro
                   split-comments))
 (require (only-in "../../src/ts/macros"
                   define-macro->lambda-form))
@@ -152,9 +151,7 @@ let fooBar = stringAppend('foo', 'bar');"
 })();
 
 function myMap(f, x) {
-  return x.map((f.length === 1) ? f : (function (x) {
-    return f(x);
-  }));
+  return x.map((f.length === 1) ? f : x => f(x));
 }
 
 let bar = myMap(first, [[1], [2], [3]]);"
@@ -185,9 +182,7 @@ let bar = myMap(first, [[1], [2], [3]]);"
     } else if (args.length === 1) {
       return args[0];
     } else {
-      return args.slice(1).reduce(function (acc, x) {
-        return intersection2(acc, x);
-      }, args[0]);
+      return args.slice(1).reduce((acc, x) => intersection2(acc, x), args[0]);
     }
   }
   return [intersection_];
@@ -619,9 +614,7 @@ function B2(...args: any[]): any {
   const x: any = args[args.length - 1];
   // Right-to-left function composition
   // corresponds to a right fold.
-  return fs.reduceRight(function (acc: any, x: any): any {
-    return A(x, acc);
-  }, x);
+  return fs.reduceRight((acc: any, x: any): any => A(x, acc), x);
 }"
  > (it "(define ... (let ...))"
        (compile-with-environment
@@ -1195,9 +1188,7 @@ I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.fo
  "// NN type alias.
 type NN = (a: number) => number;
 
-const f: NN = function (x: any): any {
-  return x;
-};"
+const f: NN = (x: any): any => x;"
  > (compile-with-environment
     '(module m scheme
        (define (foo x)
@@ -1220,9 +1211,7 @@ foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbo
        (js/obj :to "javascript"
                :inline-lisp-sources #t
                :optimize #t))
- "const foo = function (x) {
-  return x;
-};
+ "const foo = (x) => x;
 
 foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];"
  > (compile-with-environment

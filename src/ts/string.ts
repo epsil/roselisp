@@ -54,7 +54,7 @@ stringp_.fsource = [Symbol.for('define'), [Symbol.for('string?_'), Symbol.for('x
  * Compiler macro for `(string? ...)` expressions.
  */
 stringp_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     const {fstringobjects} = currentCompilationOptions();
     if (fstringobjects) {
@@ -77,7 +77,7 @@ function stringLength_(x: any): any {
 stringLength_.fsource = [Symbol.for('define'), [Symbol.for('string-length_'), Symbol.for('x')], [Symbol.for('js/length'), Symbol.for('x')]];
 
 stringLength_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
     return [Symbol.for('js/length'), x];
   };
@@ -106,7 +106,7 @@ stringAppend_.fsource = [Symbol.for('define'), [Symbol.for('string-append_'), Sy
  * Compiler macro for `(string-append ...)` expressions.
  */
 stringAppend_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const args: any = exp.slice(1);
     return [Symbol.for('js/string-concat'), ...args];
   };
@@ -128,7 +128,7 @@ function stringRef_(str: any, n: any): any {
 stringRef_.fsource = [Symbol.for('define'), [Symbol.for('string-ref_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('charAt'), Symbol.for('n')]];
 
 stringRef_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [str, n]: any[] = exp.slice(1);
     return [Symbol.for('send'), str, Symbol.for('charAt'), n];
   };
@@ -159,7 +159,7 @@ stringTrim_.fsource = [Symbol.for('define'), [Symbol.for('string-trim_'), Symbol
  * Compiler macro for `(string-trim ...)` expressions.
  */
 stringTrim_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [str, ...args]: any[] = exp.slice(1);
     if (Array.isArray(args) && (args.length === 0)) {
       return [Symbol.for('send'), str, Symbol.for('trim')];
@@ -181,7 +181,7 @@ function stringRepeat_(str: any, n: any): any {
 stringRepeat_.fsource = [Symbol.for('define'), [Symbol.for('string-repeat_'), Symbol.for('str'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('repeat'), Symbol.for('n')]];
 
 stringRepeat_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [str, n]: any[] = exp.slice(1);
     return [Symbol.for('send'), str, Symbol.for('repeat'), n];
   };
@@ -203,7 +203,7 @@ function stringJoin_(lst: any, sep: any = ' '): any {
 stringJoin_.fsource = [Symbol.for('define'), [Symbol.for('string-join_'), Symbol.for('lst'), [Symbol.for('sep'), ' ']], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('join'), Symbol.for('sep')]];
 
 stringJoin_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [lst, sep]: any[] = exp.slice(1);
     if (sep === undefined) {
       sep = ' ';
@@ -228,7 +228,7 @@ function stringSplit_(str: any, sep: any = new RegExp('\\s+', 'g')): any {
 stringSplit_.fsource = [Symbol.for('define'), [Symbol.for('string-split_'), Symbol.for('str'), [Symbol.for('sep'), [Symbol.for('regexp'), '\\s+', 'g']]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('split'), Symbol.for('sep')]];
 
 stringSplit_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     let [str, sep]: any[] = exp.slice(1);
     if (sep === undefined) {
       sep = [Symbol.for('regexp'), '\\s+', 'g'];
@@ -266,7 +266,7 @@ function stringUpcase_(str: any): any {
 stringUpcase_.fsource = [Symbol.for('define'), [Symbol.for('string-upcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toUpperCase')]];
 
 stringUpcase_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [str]: any[] = exp.slice(1);
     return [Symbol.for('send'), str, Symbol.for('toUpperCase')];
   };
@@ -288,7 +288,7 @@ function stringDowncase_(str: any): any {
 stringDowncase_.fsource = [Symbol.for('define'), [Symbol.for('string-downcase_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('toLowerCase')]];
 
 stringDowncase_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [str]: any[] = exp.slice(1);
     return [Symbol.for('send'), str, Symbol.for('toLowerCase')];
   };
@@ -313,7 +313,7 @@ substring_.fsource = [Symbol.for('define'), [Symbol.for('substring_'), Symbol.fo
  * Compiler macro for `(substring ...)` expressions.
  */
 substring_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [str, ...args]: any[] = exp.slice(1);
     return [Symbol.for('send'), str, Symbol.for('substring'), ...args];
   };
@@ -335,7 +335,7 @@ function stringToNumber_(str: any): any {
 stringToNumber_.fsource = [Symbol.for('define'), [Symbol.for('string->number_'), Symbol.for('str')], [Symbol.for('js/parse-float'), Symbol.for('str')]];
 
 stringToNumber_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [str]: any[] = exp.slice(1);
     return [Symbol.for('js/parse-float'), str];
   };
@@ -357,7 +357,7 @@ function numberToString_(n: any): any {
 numberToString_.fsource = [Symbol.for('define'), [Symbol.for('number->string_'), Symbol.for('n')], [Symbol.for('send'), Symbol.for('n'), Symbol.for('toString')]];
 
 numberToString_.compilerMacro = ((): any => {
-  const f: any = function (exp: any, env: any): any {
+  const f: any = (exp: any, env: any): any => {
     const [n]: any[] = exp.slice(1);
     return [Symbol.for('send'), n, Symbol.for('toString')];
   };

@@ -311,9 +311,7 @@ const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dotte
     function dottedListLast_(lst) {
         let current = lst;
         let result = undefined;
-        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => {
-            return Array.isArray(x) && (x.length === 0);
-        })(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
+        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => Array.isArray(x) && (x.length === 0))(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
             current = ((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1);
         }
         if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
@@ -345,16 +343,14 @@ exports.pairp = pairp_;
 exports.pairp_ = pairp_;
 pairp_.fsource = [Symbol.for('define'), [Symbol.for('pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
 pairp_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         if (!(Array.isArray(x) && (x.length > 0))) {
             return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>'), [Symbol.for('array-length'), x], 0]];
         }
         else {
             const x1 = Symbol('x');
-            return [Symbol.for('let'), [[x1, x]], ((x) => {
-                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>'), [Symbol.for('array-length'), x], 0]];
-                })(x1)];
+            return [Symbol.for('let'), [[x1, x]], ((x) => [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>'), [Symbol.for('array-length'), x], 0]])(x1)];
         }
     };
     f.ftype = 'macro';
@@ -374,16 +370,14 @@ exports.nullp = nullp_;
 exports.nullp_ = nullp_;
 nullp_.fsource = [Symbol.for('define'), [Symbol.for('null?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
 nullp_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         if (!(Array.isArray(x) && (x.length > 0))) {
             return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 0]];
         }
         else {
             const x1 = Symbol('x');
-            return [Symbol.for('let'), [[x1, x]], ((x) => {
-                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 0]];
-                })(x1)];
+            return [Symbol.for('let'), [[x1, x]], ((x) => [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 0]])(x1)];
         }
     };
     f.ftype = 'macro';
@@ -412,7 +406,7 @@ listp_.fsource = [Symbol.for('define'), [Symbol.for('list?_'), Symbol.for('x')],
  * Compiler macro for `(list? ...)` expressions.
  */
 listp_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -424,9 +418,7 @@ listp_.compilerMacro = (() => {
             }
             else {
                 const x1 = Symbol('x');
-                return [Symbol.for('let'), [[x1, x]], ((x) => {
-                        return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('not'), [Symbol.for('array?'), [Symbol.for('array-last'), x]]]]]];
-                    })(x1)];
+                return [Symbol.for('let'), [[x1, x]], ((x) => [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('not'), [Symbol.for('and'), [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('not'), [Symbol.for('array?'), [Symbol.for('array-last'), x]]]]]])(x1)];
             }
         }
     };
@@ -452,7 +444,7 @@ pairOrListP_.fsource = [Symbol.for('define'), [Symbol.for('pair-or-list?_'), Sym
  * Compiler macro for `(pair-or-list? ...)` expressions.
  */
 pairOrListP_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         return [Symbol.for('array?'), x];
     };
@@ -495,7 +487,7 @@ cons_.fsource = [Symbol.for('define'), [Symbol.for('cons_'), Symbol.for('x'), Sy
  * Compiler macro for `(cons ...)` expressions.
  */
 cons_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x, y] = exp.slice(1);
         if (selfEvaluatingP(y)) {
             return [Symbol.for('quasiquote'), [[Symbol.for('unquote'), x], Symbol.for('.'), [Symbol.for('unquote'), y]]];
@@ -558,9 +550,7 @@ listStar_.fsource = [Symbol.for('define'), [Symbol.for('list-star_'), Symbol.for
  * [rkt:build-list]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._build-list%29%29
  */
 function buildList_(n, proc) {
-    return range(0, n).map((proc.length === 1) ? proc : (function (x) {
-        return proc(x);
-    }));
+    return range(0, n).map((proc.length === 1) ? proc : (x) => proc(x));
 }
 exports.buildList = buildList_;
 exports.buildList_ = buildList_;
@@ -592,9 +582,7 @@ makeList_.fsource = [Symbol.for('define'), [Symbol.for('make-list_'), Symbol.for
  * [cl:append]: http://clhs.lisp.se/Body/f_append.htm#append
  */
 function append_(...args) {
-    return args.reduce(function (acc, x) {
-        return [...acc, ...x];
-    }, []);
+    return args.reduce((acc, x) => [...acc, ...x], []);
 }
 exports.append = append_;
 exports.append_ = append_;
@@ -607,7 +595,7 @@ append_.fsource = [Symbol.for('define'), [Symbol.for('append_'), Symbol.for('.')
  * [rkt:flatten]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._flatten%29%29
  */
 function flatten_(lst) {
-    return lst.reduce(function (acc, x) {
+    return lst.reduce((acc, x) => {
         if (Array.isArray(x)) {
             return [...acc, ...flatten_(x)];
         }
@@ -644,7 +632,7 @@ first_.fsource = [Symbol.for('define'), [Symbol.for('first_'), Symbol.for('lst')
  * Compiler macro for `(first ...)` expressions.
  */
 first_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -680,7 +668,7 @@ second_.fsource = [Symbol.for('define'), [Symbol.for('second_'), Symbol.for('lst
  * Compiler macro for `(second ...)` expressions.
  */
 second_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -715,7 +703,7 @@ third_.fsource = [Symbol.for('define'), [Symbol.for('third_'), Symbol.for('lst')
  * Compiler macro for `(third ...)` expressions.
  */
 third_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -750,7 +738,7 @@ fourth_.fsource = [Symbol.for('define'), [Symbol.for('fourth_'), Symbol.for('lst
  * Compiler macro for `(fourth ...)` expressions.
  */
 fourth_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -785,7 +773,7 @@ fifth_.fsource = [Symbol.for('define'), [Symbol.for('fifth_'), Symbol.for('lst')
  * Compiler macro for `(fifth ...)` expressions.
  */
 fifth_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -820,7 +808,7 @@ sixth_.fsource = [Symbol.for('define'), [Symbol.for('sixth_'), Symbol.for('lst')
  * Compiler macro for `(sixth ...)` expressions.
  */
 sixth_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -855,7 +843,7 @@ seventh_.fsource = [Symbol.for('define'), [Symbol.for('seventh_'), Symbol.for('l
  * Compiler macro for `(seventh ...)` expressions.
  */
 seventh_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -890,7 +878,7 @@ eighth_.fsource = [Symbol.for('define'), [Symbol.for('eighth_'), Symbol.for('lst
  * Compiler macro for `(eighth ...)` expressions.
  */
 eighth_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -925,7 +913,7 @@ ninth_.fsource = [Symbol.for('define'), [Symbol.for('ninth_'), Symbol.for('lst')
  * Compiler macro for `(ninth ...)` expressions.
  */
 ninth_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -960,7 +948,7 @@ tenth_.fsource = [Symbol.for('define'), [Symbol.for('tenth_'), Symbol.for('lst')
  * Compiler macro for `(tenth ...)` expressions.
  */
 tenth_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1002,7 +990,7 @@ cdr_.fsource = [Symbol.for('define'), [Symbol.for('cdr_'), Symbol.for('lst')], [
  * Compiler macro for `(cdr ...)` expressions.
  */
 cdr_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1014,9 +1002,7 @@ cdr_.compilerMacro = (() => {
             }
             else {
                 const x1 = Symbol('x');
-                return [Symbol.for('let'), [[x1, x]], ((x) => {
-                        return [Symbol.for('js/?'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]], [Symbol.for('array-third'), x], [Symbol.for('array-rest'), x]];
-                    })(x1)];
+                return [Symbol.for('let'), [[x1, x]], ((x) => [Symbol.for('js/?'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]], [Symbol.for('array-third'), x], [Symbol.for('array-rest'), x]])(x1)];
             }
         }
     };
@@ -1045,7 +1031,7 @@ rest_.fsource = [Symbol.for('define'), [Symbol.for('rest_'), Symbol.for('lst')],
  * Compiler macro for `(rest ...)` expressions.
  */
 rest_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1080,7 +1066,7 @@ listRef_.fsource = [Symbol.for('define'), [Symbol.for('list-ref_'), Symbol.for('
  * Compiler macro for `(list-ref ...)` expressions.
  */
 listRef_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst, ...indices] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1114,7 +1100,7 @@ nth_.fsource = [Symbol.for('define'), [Symbol.for('nth_'), Symbol.for('n'), Symb
  * Compiler macro for `(nth ...)` expressions.
  */
 nth_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [n, lst] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1177,7 +1163,7 @@ listSetX_.fsource = [Symbol.for('define'), [Symbol.for('list-set!_'), Symbol.for
  * Compiler macro for `(list-set! ...)` expressions.
  */
 listSetX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst, ...indicesAndValue] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1242,7 +1228,7 @@ take_.fsource = [Symbol.for('define'), [Symbol.for('take_'), Symbol.for('lst'), 
  * Compiler macro for `(take ...)` expressions.
  */
 take_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst, n] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1257,9 +1243,7 @@ take_.compilerMacro = (() => {
             }
             else {
                 const lst1 = Symbol('lst');
-                return [Symbol.for('let'), [[lst1, lst]], ((lst) => {
-                        return [Symbol.for('drop-right'), lst, [Symbol.for('-'), [Symbol.for('length'), lst], n]];
-                    })(lst1)];
+                return [Symbol.for('let'), [[lst1, lst]], ((lst) => [Symbol.for('drop-right'), lst, [Symbol.for('-'), [Symbol.for('length'), lst], n]])(lst1)];
             }
         }
     };
@@ -1284,7 +1268,7 @@ drop_.fsource = [Symbol.for('define'), [Symbol.for('drop_'), Symbol.for('lst'), 
  * Compiler macro for `(drop ...)` expressions.
  */
 drop_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst, n] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1315,7 +1299,7 @@ dropRight_.fsource = [Symbol.for('define'), [Symbol.for('drop-right_'), Symbol.f
  * Compiler macro for `(drop-right ...)` expressions.
  */
 dropRight_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst, n] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1346,7 +1330,7 @@ reverse_.fsource = [Symbol.for('define'), [Symbol.for('reverse_'), Symbol.for('l
  * Compiler macro for `(reverse ...)` expressions.
  */
 reverse_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1368,7 +1352,7 @@ function reversex_(lst) {
 exports.reversex_ = reversex_;
 reversex_.fsource = [Symbol.for('define'), [Symbol.for('reverse!_'), Symbol.for('lst')], [Symbol.for('array-reverse!'), Symbol.for('lst')]];
 reversex_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst] = exp.slice(1);
         return [Symbol.for('array-reverse!'), lst];
     };
@@ -1429,7 +1413,7 @@ exports.popLeftX = popLeftX_;
 exports.popLeftX_ = popLeftX_;
 popLeftX_.fsource = [Symbol.for('define'), [Symbol.for('pop-left!_'), Symbol.for('lst')], [Symbol.for('array-pop-left!'), Symbol.for('lst')]];
 popLeftX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst] = exp.slice(1);
         return [Symbol.for('array-pop-left!'), lst];
     };
@@ -1450,7 +1434,7 @@ exports.popRightX = popRightX_;
 exports.popRightX_ = popRightX_;
 popRightX_.fsource = [Symbol.for('define'), [Symbol.for('pop-right!_'), Symbol.for('lst')], [Symbol.for('array-pop-right!'), Symbol.for('lst')]];
 popRightX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst] = exp.slice(1);
         return [Symbol.for('array-pop-right!'), lst];
     };
@@ -1473,7 +1457,7 @@ exports.pushLeftX = pushLeftX_;
 exports.pushLeftX_ = pushLeftX_;
 pushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('push-left!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-left!'), Symbol.for('lst'), Symbol.for('x')]];
 pushLeftX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst, x] = exp.slice(1);
         return [Symbol.for('array-push-left!'), lst, x];
     };
@@ -1496,7 +1480,7 @@ exports.pushRightX = pushRightX_;
 exports.pushRightX_ = pushRightX_;
 pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-right!'), Symbol.for('lst'), Symbol.for('x')]];
 pushRightX_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst, x] = exp.slice(1);
         return [Symbol.for('array-push-right!'), lst, x];
     };
@@ -1527,7 +1511,7 @@ length_.fsource = [Symbol.for('define'), [Symbol.for('length_'), Symbol.for('lst
  * Compiler macro for `(length ...)` expressions.
  */
 length_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1562,7 +1546,7 @@ last_.fsource = [Symbol.for('define'), [Symbol.for('last_'), Symbol.for('lst')],
  * Compiler macro for `(last ...)` expressions.
  */
 last_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst] = exp.slice(1);
         const { fdottedlists } = (0, env_1.currentCompilationOptions)();
         if (fdottedlists) {
@@ -1594,9 +1578,7 @@ function lastPair_(lst) {
     else if (Array.isArray(lst) && (lst.length >= 3) && (lst[lst.length - 2] === Symbol.for('.'))) {
         let current = lst;
         let result = undefined;
-        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => {
-            return Array.isArray(x) && (x.length === 0);
-        })(current[current.length - 1])) {
+        while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => Array.isArray(x) && (x.length === 0))(current[current.length - 1])) {
             current = current[current.length - 1];
         }
         return result;
@@ -1699,16 +1681,14 @@ exports.dottedListP = dottedListP_;
 exports.dottedListP_ = dottedListP_;
 dottedListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]]]];
 dottedListP_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         if (!(Array.isArray(x) && (x.length > 0))) {
             return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]]];
         }
         else {
             const x1 = Symbol('x');
-            return [Symbol.for('let'), [[x1, x]], ((x) => {
-                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]]];
-                })(x1)];
+            return [Symbol.for('let'), [[x1, x]], ((x) => [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('>='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), x, 2], [Symbol.for('quote'), Symbol.for('.')]]])(x1)];
         }
     };
     f.ftype = 'macro';
@@ -1723,16 +1703,14 @@ function dottedPairP_(x) {
 exports.dottedPairP_ = dottedPairP_;
 dottedPairP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), Symbol.for('x'), 1], [Symbol.for('quote'), Symbol.for('.')]]]];
 dottedPairP_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         if (!(Array.isArray(x) && (x.length > 0))) {
             return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]];
         }
         else {
             const x1 = Symbol('x');
-            return [Symbol.for('let'), [[x1, x]], ((x) => {
-                    return [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]];
-                })(x1)];
+            return [Symbol.for('let'), [[x1, x]], ((x) => [Symbol.for('and'), [Symbol.for('array?'), x], [Symbol.for('='), [Symbol.for('array-length'), x], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), x, 1], [Symbol.for('quote'), Symbol.for('.')]]])(x1)];
         }
     };
     f.ftype = 'macro';
@@ -1742,9 +1720,7 @@ dottedPairP_.compilerMacro = (() => {
  * Whether something is a proper dotted list.
  */
 function dottedProperListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && ((x1) => {
-        return Array.isArray(x1) && (x1.length === 0);
-    })(lastCdr(x));
+    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && ((x1) => Array.isArray(x1) && (x1.length === 0))(lastCdr(x));
 }
 exports.dottedProperListP_ = dottedProperListP_;
 dottedProperListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-proper-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]];
@@ -1752,9 +1728,7 @@ dottedProperListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-proper-l
  * Whether something is an improper dotted list.
  */
 function dottedImproperListP_(x) {
-    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !((x1) => {
-        return Array.isArray(x1) && (x1.length === 0);
-    })(lastCdr(x));
+    return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !((x1) => Array.isArray(x1) && (x1.length === 0))(lastCdr(x));
 }
 exports.dottedImproperListP_ = dottedImproperListP_;
 dottedImproperListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-improper-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]], [Symbol.for('not'), [Symbol.for('null?'), [Symbol.for('last-cdr'), Symbol.for('x')]]]]];
@@ -1767,7 +1741,7 @@ function dottedListHead_(lst) {
 exports.dottedListHead_ = dottedListHead_;
 dottedListHead_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-head_'), Symbol.for('lst')], [Symbol.for('array-drop-right'), Symbol.for('lst'), 2]];
 dottedListHead_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst] = exp.slice(1);
         return [Symbol.for('array-drop-right'), lst, 2];
     };
@@ -1783,7 +1757,7 @@ function dottedListTail_(lst) {
 exports.dottedListTail_ = dottedListTail_;
 dottedListTail_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tail_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
 dottedListTail_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [lst] = exp.slice(1);
         return [Symbol.for('array-last'), lst];
     };
@@ -1807,7 +1781,7 @@ dottedListLink_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-link_'
  * Compiler macro for `(dotted-list-link ...)` expressions.
  */
 dottedListLink_.compilerMacro = (() => {
-    const f = function (exp, env) {
+    const f = (exp, env) => {
         const [x] = exp.slice(1);
         if (selfEvaluatingP(x)) {
             return [Symbol.for('.'), x];
@@ -1821,9 +1795,7 @@ dottedListLink_.compilerMacro = (() => {
             }
             else {
                 const x1 = Symbol('x');
-                return [Symbol.for('let'), [[x1, x]], ((x) => {
-                        return [Symbol.for('js/?'), [Symbol.for('pair-or-list?'), x], x, [Symbol.for('list'), [Symbol.for('quote'), Symbol.for('.')], x]];
-                    })(x1)];
+                return [Symbol.for('let'), [[x1, x]], ((x) => [Symbol.for('js/?'), [Symbol.for('pair-or-list?'), x], x, [Symbol.for('list'), [Symbol.for('quote'), Symbol.for('.')], x]])(x1)];
             }
         }
     };
@@ -2038,9 +2010,7 @@ dottedListTenth_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tenth
 function dottedListLast_(lst) {
     let current = lst;
     let result = undefined;
-    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => {
-        return Array.isArray(x) && (x.length === 0);
-    })(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
+    while (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.')) && !((x) => Array.isArray(x) && (x.length === 0))(((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1))) {
         current = ((current.length === 3) && (current[1] === Symbol.for('.'))) ? current[2] : current.slice(1);
     }
     if (Array.isArray(current) && (current.length >= 3) && (current[current.length - 2] === Symbol.for('.'))) {
@@ -2092,9 +2062,7 @@ properListP_.fsource = [Symbol.for('define'), [Symbol.for('proper-list?_'), Symb
  * [rkt:dotted-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#dotted-list-p
  */
 function improperListP_(x) {
-    return !((x1) => {
-        return Array.isArray(x1) && (x1.length === 0);
-    })(lastCdr(x));
+    return !((x1) => Array.isArray(x1) && (x1.length === 0))(lastCdr(x));
 }
 exports.improperListP = improperListP_;
 exports.improperListP_ = improperListP_;

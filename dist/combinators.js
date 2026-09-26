@@ -162,9 +162,7 @@ function B2(...args) {
             return (
             // Right-to-left function composition
             // corresponds to a right fold.
-            fs.reduceRight(function (acc, x) {
-                return A(x, acc);
-            }, x));
+            fs.reduceRight((acc, x) => A(x, acc), x));
         }
     }
 }
@@ -495,9 +493,7 @@ function Q2(...args) {
             return (
             // Left-to-right function composition
             // corresponds to a left fold.
-            fs.reduce(function (acc, x) {
-                return A(x, acc);
-            }, x));
+            fs.reduce((acc, x) => A(x, acc), x));
         }
     }
 }
@@ -641,9 +637,7 @@ function T2(...args) {
         }
         default: {
             const [x, ...fs] = args;
-            return fs.reduce(function (acc, x) {
-                return A(x, acc);
-            }, x);
+            return fs.reduce((acc, x) => A(x, acc), x);
         }
     }
 }
@@ -772,15 +766,7 @@ function Y1(f) {
     // The names of the function arguments (`future`, `arg`)
     // are the same as in the book *The Little LISPer*, with
     // the exception of `f`, which is named `M` in the book.
-    return (function (future) {
-        return f(function (arg) {
-            return future(future)(arg);
-        });
-    })(function (future) {
-        return f(function (arg) {
-            return future(future)(arg);
-        });
-    });
+    return ((future) => f((arg) => future(future)(arg)))((future) => f((arg) => future(future)(arg)));
 }
 exports.Y1 = Y1;
 Y1.fsource = [Symbol.for('define'), [Symbol.for('Y1'), Symbol.for('f')], [[Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]], [Symbol.for('lambda'), [Symbol.for('future')], [Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('arg')], [[Symbol.for('future'), Symbol.for('future')], Symbol.for('arg')]]]]]];

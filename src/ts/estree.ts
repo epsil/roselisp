@@ -1969,9 +1969,7 @@ function estreeTypeP(node: any, typ: any): any {
   } else if (node instanceof InternalPromise) {
     return false;
   } else if (Array.isArray(typ) && !((typ.length >= 3) && (typ[typ.length - 2] === Symbol.for('.')) && !Array.isArray(typ[typ.length - 1]))) {
-    return typ.findIndex(function (x: any): any {
-      return estreeTypeP(node, x);
-    }) >= 0;
+    return typ.findIndex((x: any): any => estreeTypeP(node, x)) >= 0;
   } else {
     return estreeType(node) === typ;
   }
@@ -1988,9 +1986,7 @@ estreeTypeP.fsource = [Symbol.for('define'), [Symbol.for('estree-type?'), Symbol
  */
 function wrapInEstree(x: any, recursive: any = false): any {
   if (recursive && Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1]))) {
-    return new ArrayExpression(x.map(function (x: any): any {
-      return wrapInEstree(x, recursive);
-    }));
+    return new ArrayExpression(x.map((x: any): any => wrapInEstree(x, recursive)));
   } else {
     return estreeQuote(x);
   }

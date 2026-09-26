@@ -199,9 +199,7 @@ function testRepl(exp: any, options: any = {}): any {
   let {env} = options;
   env = env || new LispEnvironment();
   const _value: any = getReplFormType(exp);
-  if ([Symbol.for('javascript'), Symbol.for('js'), Symbol.for('node')].findIndex(function (x: any): any {
-    return equalp(_value, x);
-  }) >= 0) {
+  if ([Symbol.for('javascript'), Symbol.for('js'), Symbol.for('node')].findIndex((x: any): any => equalp(_value, x)) >= 0) {
     return testNodeRepl(exp);
   } else {
     return testRoselispRepl(exp, options);
@@ -297,9 +295,7 @@ function simplifyReplForm(exp: any): any {
   if (clauses.length <= 1) {
     return exp;
   } else {
-    return [getReplFormType(exp), Symbol.for('>'), [Symbol.for('begin'), ...clauses.map((first.length === 1) ? first : (function (x: any): any {
-      return x[0];
-    }))], clauses[clauses.length - 1][1]];
+    return [getReplFormType(exp), Symbol.for('>'), [Symbol.for('begin'), ...clauses.map((first.length === 1) ? first : (x: any): any => x[0])], clauses[clauses.length - 1][1]];
   }
 }
 
@@ -355,9 +351,7 @@ function printSexp(exp: any): any {
   } else if (taggedListP(exp, Symbol.for('unquote-splicing'))) {
     return ',@' + printSexp(exp[1]);
   } else if (Array.isArray(exp)) {
-    return '(' + exp.map((printSexp.length === 1) ? printSexp : (function (x: any): any {
-      return printSexp(x);
-    })).join(' ') + ')';
+    return '(' + exp.map((printSexp.length === 1) ? printSexp : (x: any): any => printSexp(x)).join(' ') + ')';
   } else if (typeof exp === 'string') {
     return '"' + exp.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"') + '"';
   } else if (typeof exp === 'symbol') {
@@ -441,9 +435,7 @@ function testMacro(exp: any, env: any): any {
   if (group.length > 0) {
     groups.push(group);
   }
-  const tests: any = groups.map(function (group: any): any {
-    return [Symbol.for('describe'), group[0], [Symbol.for('fn'), [], ...group.slice(1)]];
-  });
+  const tests: any = groups.map((group: any): any => [Symbol.for('describe'), group[0], [Symbol.for('fn'), [], ...group.slice(1)]]);
   return [Symbol.for('begin'), ...tests];
 }
 

@@ -687,10 +687,12 @@ exports.Literal = Literal;
  */
 class RegExpLiteral extends Literal {
     constructor(pattern, flags = '') {
-        super(pattern);
-        this.type = 'RegExpLiteral';
-        this.pattern = pattern;
-        this.flags = flags;
+        super({}, '/' + pattern + '/' + flags);
+        this.type = 'Literal';
+        this.regex = {
+            pattern,
+            flags
+        };
     }
 }
 exports.RegExpLiteral = RegExpLiteral;
@@ -1204,7 +1206,7 @@ class TemplateElement extends TSNode {
         this.tail = tail;
         this.value = {
             cooked,
-            raw: raw || cooked.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('`', 'g'), '\\`')
+            raw: raw || cooked.replace(/\\/g, '\\\\').replace(/`/g, '\\`')
         };
     }
 }

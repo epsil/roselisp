@@ -146,6 +146,7 @@
                   Program
                   Property
                   PropertyDefinition
+                  RegExpLiteral
                   RestElement
                   ReturnStatement
                   SequenceExpression
@@ -687,6 +688,7 @@
      (,js/optional-chaining_ . ,compile-js/optional-chaining)
      (,js/plus_ . ,compile-add)
      (,js/raw_ . ,compile-js/raw)
+     (,js/regexp_ . ,compile-js/regexp)
      (,js/return_ . ,compile-return)
      (,js/sequence_ . ,compile-js/sequence)
      (,js/statement-or-expression_ . ,compile-js/statement-or-expression)
@@ -5431,6 +5433,33 @@
             env options)
            #n)))
 
+;;; Compile a `(js/regexp ...)` expression.
+(define (compile-js/regexp stx env (options (js/obj)))
+  (define exp
+    (syntax->datum stx))
+  (define pattern
+    (list-ref exp 1))
+  (define flags
+    (if (>= (length exp) 3)
+        (list-ref exp 2)
+        #u))
+  (cond
+   ((and (string? pattern)
+         (not (regexp-match (regexp "/") pattern))
+         (or (string? flags)
+             (undefined? flags)))
+    (make-expression-or-statement
+     (new RegExpLiteral
+          pattern
+          (or flags ""))
+     options))
+   (else
+    (compile-syntax
+     (datum->syntax
+      stx
+      `(new RegExp ,@(send stx drop 1)))
+     env options))))
+
 ;;; Compile a `(js/async ...)` expression.
 (define (compile-js/async stx env (options (js/obj)))
   (define result
@@ -5887,7 +5916,7 @@
   (compile-sexp expansion env options))
 
 ;;; Compiler macro for `(current-environment)` expressions.
-(define-macro (compile-current-environment-macro )
+(define-macro (compile-current-environment-macro)
   (define arg-sym
     (gensym "_arg"))
   (define str-sym

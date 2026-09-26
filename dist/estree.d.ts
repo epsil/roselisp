@@ -556,8 +556,7 @@ declare class Literal extends Expression {
  */
 declare class RegExpLiteral extends Literal {
     type: any;
-    pattern: any;
-    flags: any;
+    regex: any;
     constructor(pattern: any, flags?: any);
 }
 /**

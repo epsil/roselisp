@@ -114,7 +114,7 @@ const [flatten, keywordp, symbolToString, makeList, findf] = (() => {
         }, []);
     }
     function keywordp_(obj) {
-        return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+        return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
     }
     function symbolToString_(sym) {
         return sym.description;
@@ -187,7 +187,7 @@ const compilationVariablesMap = new Map([[Symbol.for('#f'), new estree_1.Literal
  *
  * A hashmap from Lisp functions to compiler procedures.
  */
-const compilationProceduresMap = new Map([[procedures_1.add_, compileAdd], [list_1.append_, compileAppend], [procedures_1.apply_, compileApply], [begin_, compileBegin], [break_, compileBreak], [class_, compileClass], [colon_, compileColon], [continue_, compileContinue], [macros_1.declare_, compileDeclare], [defineAsync_, compileDefineAsync], [defineClass_, compileDefineClass], [defineFields_, compileDefineFields], [defineGenerator_, compileDefineGenerator], [defineType_, compileDefineType], [defineValues_, compileDefineValues], [define_, compileDefine], [procedures_1.div_, compileDiv], [dot_, compileSend], [procedures_1.funcall_, compileFuncall], [procedures_1.gt_, compileGreaterThan], [procedures_1.gte_, compileGreaterThanOrEqual], [if_, compileIf], [jsArrow_, compileJsArrow], [jsAssignment_, compileJsAssignment], [jsAsync_, compileJsAsync], [jsAwait_, compileJsAwait], [jsBlock_, compileJsBlock], [jsConst_, compileJsConst], [javascript_1.jsDelete_, compileJsDelete], [jsDoWhile_, compileJsDoWhile], [javascript_1.jsDot_, compileJsDot], [javascript_1.jsEval_, compileJsEval], [jsForIn_, compileJsForIn], [jsForOf_, compileJsForOf], [jsFor_, compileJsFor], [jsFunction_, compileJsFunction], [javascript_1.jsGet_, compileJsGet], [javascript_1.jsGt_, compileGreaterThan], [javascript_1.jsGte_, compileGreaterThanOrEqual], [jsIf_, compileJsIf], [jsLet_, compileJsLet], [javascript_1.jsLooselyEqualP_, compileJsLooselyEqual], [javascript_1.jsLt_, compileLessThan], [javascript_1.jsLte_, compileLessThanOrEqual], [javascript_1.jsMod_, compileModulo], [javascript_1.jsNew_, compileJsNew], [javascript_1.jsNot_, compileNot], [javascript_1.jsObjAppend_, compileJsObjAppend], [javascript_1.jsObjSpread_, compileJsObjSpread], [javascript_1.jsObj_, compileJsObj], [jsOp_, compileJsOp], [javascript_1.jsOptionalChaining_, compileJsOptionalChaining], [javascript_1.jsPlus_, compileAdd], [jsRaw_, compileJsRaw], [javascript_1.jsReturn_, compileReturn], [jsSequence_, compileJsSequence], [jsStatementOrExpression_, compileJsStatementOrExpression], [javascript_1.jsStrictlyEqualP_, compileJsStrictlyEqual], [jsSwitch_, compileJsSwitch], [javascript_1.jsTaggedTemplate_, compileJsTaggedTemplate], [jsTernaryOperator_, compileJsTernaryOperator], [jsTry_, compileJsTry], [jsVar_, compileJsVar], [jsWhile_, compileJsWhile], [javascript_1.jsYield_, compileYield], [lambda_, compileLambda], [letFields_, compileLetFields], [letStar_, compileLetStar], [letValues_, compileLetValues], [let_, compileLet], [list_1.list_, compileList], [procedures_1.lt_, compileLessThan], [procedures_1.lte_, compileLessThanOrEqual], [module_, compileModule], [procedures_1.modulo_, compileModulo], [procedures_1.mul_, compileMul], [procedures_1.not_, compileNot], [provide_, compileProvide], [quasiquote_, compileQuasiquote], [quote_, compileQuote], [require_, compileRequire], [return_, compileReturn], [sendApply_, compileSendApply], [send_, compileSend], [setx_, compileSet], [setField_, compileSetField], [setFields_, compileSetFields], [setValues_, compileSetValues], [procedures_1.sub_, compileSub], [throw_, compileThrow], [tsAs_, compileTsAs], [yield_, compileYield]]);
+const compilationProceduresMap = new Map([[procedures_1.add_, compileAdd], [list_1.append_, compileAppend], [procedures_1.apply_, compileApply], [begin_, compileBegin], [break_, compileBreak], [class_, compileClass], [colon_, compileColon], [continue_, compileContinue], [macros_1.declare_, compileDeclare], [defineAsync_, compileDefineAsync], [defineClass_, compileDefineClass], [defineFields_, compileDefineFields], [defineGenerator_, compileDefineGenerator], [defineType_, compileDefineType], [defineValues_, compileDefineValues], [define_, compileDefine], [procedures_1.div_, compileDiv], [dot_, compileSend], [procedures_1.funcall_, compileFuncall], [procedures_1.gt_, compileGreaterThan], [procedures_1.gte_, compileGreaterThanOrEqual], [if_, compileIf], [jsArrow_, compileJsArrow], [jsAssignment_, compileJsAssignment], [jsAsync_, compileJsAsync], [jsAwait_, compileJsAwait], [jsBlock_, compileJsBlock], [jsConst_, compileJsConst], [javascript_1.jsDelete_, compileJsDelete], [jsDoWhile_, compileJsDoWhile], [javascript_1.jsDot_, compileJsDot], [javascript_1.jsEval_, compileJsEval], [jsForIn_, compileJsForIn], [jsForOf_, compileJsForOf], [jsFor_, compileJsFor], [jsFunction_, compileJsFunction], [javascript_1.jsGet_, compileJsGet], [javascript_1.jsGt_, compileGreaterThan], [javascript_1.jsGte_, compileGreaterThanOrEqual], [jsIf_, compileJsIf], [jsLet_, compileJsLet], [javascript_1.jsLooselyEqualP_, compileJsLooselyEqual], [javascript_1.jsLt_, compileLessThan], [javascript_1.jsLte_, compileLessThanOrEqual], [javascript_1.jsMod_, compileModulo], [javascript_1.jsNew_, compileJsNew], [javascript_1.jsNot_, compileNot], [javascript_1.jsObjAppend_, compileJsObjAppend], [javascript_1.jsObjSpread_, compileJsObjSpread], [javascript_1.jsObj_, compileJsObj], [jsOp_, compileJsOp], [javascript_1.jsOptionalChaining_, compileJsOptionalChaining], [javascript_1.jsPlus_, compileAdd], [jsRaw_, compileJsRaw], [javascript_1.jsRegexp_, compileJsRegexp], [javascript_1.jsReturn_, compileReturn], [jsSequence_, compileJsSequence], [jsStatementOrExpression_, compileJsStatementOrExpression], [javascript_1.jsStrictlyEqualP_, compileJsStrictlyEqual], [jsSwitch_, compileJsSwitch], [javascript_1.jsTaggedTemplate_, compileJsTaggedTemplate], [jsTernaryOperator_, compileJsTernaryOperator], [jsTry_, compileJsTry], [jsVar_, compileJsVar], [jsWhile_, compileJsWhile], [javascript_1.jsYield_, compileYield], [lambda_, compileLambda], [letFields_, compileLetFields], [letStar_, compileLetStar], [letValues_, compileLetValues], [let_, compileLet], [list_1.list_, compileList], [procedures_1.lt_, compileLessThan], [procedures_1.lte_, compileLessThanOrEqual], [module_, compileModule], [procedures_1.modulo_, compileModulo], [procedures_1.mul_, compileMul], [procedures_1.not_, compileNot], [provide_, compileProvide], [quasiquote_, compileQuasiquote], [quote_, compileQuote], [require_, compileRequire], [return_, compileReturn], [sendApply_, compileSendApply], [send_, compileSend], [setx_, compileSet], [setField_, compileSetField], [setFields_, compileSetFields], [setValues_, compileSetValues], [procedures_1.sub_, compileSub], [throw_, compileThrow], [tsAs_, compileTsAs], [yield_, compileYield]]);
 /**
  * Compile a Lisp expression to JavaScript or TypeScript.
  * Returns a string of JavaScript or TypeScript code.
@@ -361,7 +361,7 @@ function compileFilesX(files, options = {}) {
                         const data = '(begin\n' +
                             (0, fs_1.readFileSync)(file, {
                                 encoding: 'utf8'
-                            }).replace(new RegExp('^#!.*'), '') + '\n' +
+                            }).replace(/^#!.*/, '') + '\n' +
                             ')';
                         const beginStx = (0, parser_1.readSyntax)(data, {
                             comments: commentsOption
@@ -477,7 +477,7 @@ function compileSyntax(stx, env, options = {}) {
                     result = compileFunctionCall(stx, env, options);
                 }
             }
-            else if (op.description.match(new RegExp('^\\.'))) {
+            else if (op.description.match(/^\./)) {
                 result = compileDot(stx, env, options);
             }
             else {
@@ -662,7 +662,7 @@ function interpretFiles(files, env = undefined, options = {}) {
         const str = '(begin\n' +
             (0, fs_1.readFileSync)(file, {
                 encoding: 'utf8'
-            }).replace(new RegExp('^#!.*'), '') + '\n' +
+            }).replace(/^#!.*/, '') + '\n' +
             ')';
         let result = interpretString(str, env, options);
         return result;
@@ -969,7 +969,7 @@ unwrapBlockStatement.fsource = [Symbol.for('define'), [Symbol.for('unwrap-block-
  * from a comment string.
  */
 function removeCommentPrefix(comment) {
-    return comment.replace(new RegExp('^[^\\S\\r\\n]*[;]+[^\\S\\r\\n]?', 'gm'), '');
+    return comment.replace(/^[^\S\r\n]*[;]+[^\S\r\n]?/gm, '');
 }
 removeCommentPrefix.fsource = [Symbol.for('define'), [Symbol.for('remove-comment-prefix'), Symbol.for('comment')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^[^\\S\\r\\n]*[;]+[^\\S\\r\\n]?', 'gm'], Symbol.for('comment'), '']];
 /**
@@ -1023,12 +1023,12 @@ function splitComments(str) {
     let comment = '';
     let currentLevel = -1;
     let lines = str.split('\n');
-    if (str.match(new RegExp('\\n$'))) {
+    if (str.match(/\n$/)) {
         lines = lines.slice(0, -1);
     }
     for (let x of lines) {
         if (x === '') {
-            if (comment.match(new RegExp('\\n$'))) {
+            if (comment.match(/\n$/)) {
                 comment = comment + '\n';
                 comments.push(comment);
                 comment = '';
@@ -3068,12 +3068,12 @@ macroexpandAllUntil.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-al
  */
 function compileDot(stx, env, options = {}) {
     let exp = (0, rose_1.syntaxToDatum)(stx);
-    let match = exp[0].description.match(new RegExp('^\\.(.*)$'));
+    let match = exp[0].description.match(/^\.(.*)$/);
     const method = match[1];
     if (method === '') {
         // Method call:
         // `(. foo bar ...)` = `(send foo bar ...)`.
-        if ((match = exp[2].description.match(new RegExp('^-(.*)$')))) {
+        if ((match = exp[2].description.match(/^-(.*)$/))) {
             const field = match[1];
             const fieldSym = Symbol.for(field);
             let obj = stx.get(1);
@@ -3085,7 +3085,7 @@ function compileDot(stx, env, options = {}) {
     }
     else {
         let obj = stx.get(1);
-        if ((match = method.match(new RegExp('^-(.*)$')))) {
+        if ((match = method.match(/^-(.*)$/))) {
             // Member expression:
             // `(.-foo bar)` = `(js/. bar foo)`.
             const field = match[1];
@@ -3381,7 +3381,7 @@ function makeDefineValuesExp(symbols, env, options) {
                 if (value instanceof Function) {
                     const jsString = value + '';
                     let match;
-                    match = jsString.match(new RegExp('^function ([^( ]+)'));
+                    match = jsString.match(/^function ([^( ]+)/);
                     if (match) {
                         internalSymbol = Symbol.for(match[1]);
                         exp = [Symbol.for('js/raw'), jsString];
@@ -3875,8 +3875,8 @@ compileSet.fsource = [Symbol.for('define'), [Symbol.for('compile-set'), Symbol.f
  */
 function compileString(stx, env, options = {}) {
     const str = (0, rose_1.syntaxToDatum)(stx);
-    if (str.match(new RegExp('\\n'))) {
-        let lines = str.split(new RegExp('^', 'gm'));
+    if (str.match(/\n/)) {
+        let lines = str.split(/^/gm);
         if (lines.length <= 1) {
             return compileAtom(stx, env, options);
         }
@@ -3957,7 +3957,7 @@ function compileSymbol(stx, env, options = {}, settings = {}) {
     const str = exp.description;
     // Keyword symbols are auto-quoted, as is the
     // special symbol `'|.|`.
-    if (str.match(new RegExp('^:')) || (str === '.')) {
+    if (str.match(/^:/) || (str === '.')) {
         quotedSymbolOption = true;
     }
     if (gensymedSymbol) {
@@ -4206,6 +4206,21 @@ function compileReturn(stx, env, options = {}) {
 }
 compileReturn.fsource = [Symbol.for('define'), [Symbol.for('compile-return'), Symbol.for('stx'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('new'), Symbol.for('ReturnStatement'), [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('send'), Symbol.for('stx'), Symbol.for('size')], 1], [Symbol.for('compile-expression'), [Symbol.for('send'), Symbol.for('stx'), Symbol.for('get'), 1], Symbol.for('env'), Symbol.for('options')], null]]];
 /**
+ * Compile a `(js/regexp ...)` expression.
+ */
+function compileJsRegexp(stx, env, options = {}) {
+    let exp = (0, rose_1.syntaxToDatum)(stx);
+    const pattern = exp[1];
+    const flags = (exp.length >= 3) ? exp[2] : undefined;
+    if ((typeof pattern === 'string') && !pattern.match(new RegExp('/')) && ((typeof flags === 'string') || (flags === undefined))) {
+        return makeExpressionOrStatement(new estree_1.RegExpLiteral(pattern, flags || ''), options);
+    }
+    else {
+        return compileSyntax((0, rose_1.datumToSyntax)(stx, [Symbol.for('new'), Symbol.for('RegExp'), ...stx.drop(1)]), env, options);
+    }
+}
+compileJsRegexp.fsource = [Symbol.for('define'), [Symbol.for('compile-js/regexp'), Symbol.for('stx'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('syntax->datum'), Symbol.for('stx')]], [Symbol.for('define'), Symbol.for('pattern'), [Symbol.for('list-ref'), Symbol.for('exp'), 1]], [Symbol.for('define'), Symbol.for('flags'), [Symbol.for('if'), [Symbol.for('>='), [Symbol.for('length'), Symbol.for('exp')], 3], [Symbol.for('list-ref'), Symbol.for('exp'), 2], undefined]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('string?'), Symbol.for('pattern')], [Symbol.for('not'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '/'], Symbol.for('pattern')]], [Symbol.for('or'), [Symbol.for('string?'), Symbol.for('flags')], [Symbol.for('undefined?'), Symbol.for('flags')]]], [Symbol.for('make-expression-or-statement'), [Symbol.for('new'), Symbol.for('RegExpLiteral'), Symbol.for('pattern'), [Symbol.for('or'), Symbol.for('flags'), '']], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('compile-syntax'), [Symbol.for('datum->syntax'), Symbol.for('stx'), [Symbol.for('quasiquote'), [Symbol.for('new'), Symbol.for('RegExp'), [Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('stx'), Symbol.for('drop'), 1]]]]], Symbol.for('env'), Symbol.for('options')]]]];
+/**
  * Compile a `(js/async ...)` expression.
  */
 function compileJsAsync(stx, env, options = {}) {
@@ -4402,7 +4417,7 @@ function compileJsObj(stx, env, options = {}) {
             }
             let compiledKey = isQuotedSymbol ? compileSymbol(keyStx, env, options) : compileExpression(keyStx, env, options);
             const compiledValue = compileExpression(valStx, env, options);
-            if ((typeof keyExp === 'string') && keyExp.match(new RegExp('^[a-z]+$', 'i'))) {
+            if ((typeof keyExp === 'string') && keyExp.match(/^[a-z]+$/i)) {
                 compiledKey = new estree_1.Identifier(keyExp);
             }
             const shorthand = !computed && (0, estree_1.estreeTypeP)(compiledKey, 'Identifier') && (0, estree_1.estreeTypeP)(compiledValue, 'Identifier') && (compiledKey.name === compiledValue.name);
@@ -6217,7 +6232,7 @@ class Module {
     }
     findInlineLispSourcesComment(comments = []) {
         if (!this.getInlineLispSourcesFlag()) {
-            const pattern = new RegExp('; inline-lisp-sources: t');
+            const pattern = /; inline-lisp-sources: t/;
             for (let comment of comments) {
                 const text = comment.value;
                 if (text.match(pattern)) {
@@ -6326,12 +6341,12 @@ class Module {
                 if (commentStrings.length > 0) {
                     headerCommentStrings = commentStrings.slice(0, -1);
                     initialNodeCommentString = commentStrings[commentStrings.length - 1];
-                    if (initialNodeCommentString.match(new RegExp('\\n\\n$'))) {
+                    if (initialNodeCommentString.match(/\n\n$/)) {
                         headerCommentStrings.push(initialNodeCommentString);
                         initialNodeCommentString = undefined;
                     }
                     if (headerCommentStrings.length > 0) {
-                        headerCommentStrings[headerCommentStrings.length - 1] = headerCommentStrings[headerCommentStrings.length - 1].replace(new RegExp('\\n*$'), '');
+                        headerCommentStrings[headerCommentStrings.length - 1] = headerCommentStrings[headerCommentStrings.length - 1].replace(/\n*$/, '');
                     }
                 }
             }

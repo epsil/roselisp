@@ -95,7 +95,7 @@ import {
 
 const [keywordp]: any[] = ((): any => {
   function keywordp_(obj: any): any {
-    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+    return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
   }
   return [keywordp_];
 })();
@@ -190,7 +190,7 @@ function evalSexp(exp: any, env: any, options: any = {}): any {
       if (typeof op === 'symbol') {
         const name: any = op.description as string;
         let match: any;
-        if ((match = name.match(new RegExp('^\\.(.+)$')))) {
+        if ((match = name.match(/^\.(.+)$/))) {
           // Method call expression
           const method: any = match[1];
           const [obj, ...fargs]: any[] = args;
@@ -375,10 +375,15 @@ evalEstreeSequenceExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-
  * [estree:literal]: https://github.com/estree/estree/blob/master/es5.md#literal
  */
 function evalEstreeLiteral(node: any, env: any, options: any = {}): any {
-  return getEstreeField('value', node);
+  const regex: any = getEstreeField('regex', node);
+  if (regex) {
+    return new RegExp(regex.pattern, regex.flags);
+  } else {
+    return getEstreeField('value', node);
+  }
 }
 
-evalEstreeLiteral.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-literal'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]];
+evalEstreeLiteral.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-literal'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('regex'), [Symbol.for('get-estree-field'), 'regex', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('regex'), [Symbol.for('new'), Symbol.for('RegExp'), [Symbol.for('get-field'), Symbol.for('pattern'), Symbol.for('regex')], [Symbol.for('get-field'), Symbol.for('flags'), Symbol.for('regex')]]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]]]];
 
 /**
  * Evaluate an ESTree [`Identifier`][estree:identifier] node.

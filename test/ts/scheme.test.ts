@@ -1575,6 +1575,20 @@ describe('set!-values', (): any => {
   return it('(compile \'(set!-values (_ __ value) :hole-marker __ (foo bar baz)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!-values'), [Symbol.for('_'), Symbol.for('__'), Symbol.for('value')], Symbol.for(':hole-marker'), Symbol.for('__'), [Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')]]]], '[_, , value] = foo(bar, baz);']));
 });
 
+describe('regexp', (): any => {
+  it('(regexp-match? (regexp "^foo$") "foo")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('regexp-match?'), [Symbol.for('regexp'), '^foo$'], 'foo'], true]));
+  it('(regexp-match? (regexp "foo" "i") "foo")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('regexp-match?'), [Symbol.for('regexp'), 'foo', 'i'], 'foo'], true]));
+  it('(regexp-match? (regexp "^foo$") "bar")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('regexp-match?'), [Symbol.for('regexp'), '^foo$'], 'bar'], false]));
+  it('(compile \'(regexp "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), 'foo']]], '/foo/;']));
+  it('(compile \'(regexp "\\\\w+"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), '\\w+']]], '/\\w+/;']));
+  it('(compile \'(regexp "foo" "i"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), 'foo', 'i']]], '/foo/i;']));
+  it('(compile \'(regexp foo "i"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), Symbol.for('foo'), 'i']]], 'new RegExp(foo, \'i\');']));
+  it('(compile \'(regexp "foo" i))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), 'foo', Symbol.for('i')]]], 'new RegExp(\'foo\', i);']));
+  it('(compile \'(regexp foo i))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), Symbol.for('foo'), Symbol.for('i')]]], 'new RegExp(foo, i);']));
+  it('(compile \'(regexp "/"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), '/']]], 'new RegExp(\'/\');']));
+  return it('(compile \'(regexp "[/]"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('regexp'), '[/]']]], 'new RegExp(\'[/]\');']));
+});
+
 describe('hash', (): any => {
   it('(hash)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('hash')], [Symbol.for('new'), Symbol.for('Map')]]));
   it('(hash \'(("foo" . "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('hash'), [Symbol.for('quote'), [['foo', Symbol.for('.'), 'bar']]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('quote'), [['foo', 'bar']]]]]));
@@ -2108,7 +2122,7 @@ describe('match', (): any => {
     '  true;\n' +
     '}']));
   it('(compile \'(match exp ((or _ ()) #t)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('match'), Symbol.for('exp'), [[Symbol.for('or'), Symbol.for('_'), []], true]]]], 'true;']));
-  it('(compile \'(match "foo" ((regexp "foo") #t)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('match'), 'foo', [[Symbol.for('regexp'), 'foo'], true]]]], 'if (\'foo\'.match(new RegExp(\'foo\'))) {\n' +
+  it('(compile \'(match "foo" ((regexp "foo") #t)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('match'), 'foo', [[Symbol.for('regexp'), 'foo'], true]]]], 'if (\'foo\'.match(/foo/)) {\n' +
     '  true;\n' +
     '}']));
   it('(compile \'(match "foo" ((? string?) #t)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('match'), 'foo', [[Symbol.for('?'), Symbol.for('string?')], true]]]], 'if (typeof \'foo\' === \'string\') {\n' +

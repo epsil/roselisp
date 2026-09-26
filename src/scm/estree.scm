@@ -635,14 +635,16 @@
 ;;;
 ;;; [estree:regexpliteral]: https://github.com/estree/estree/blob/master/es5.md#regexpliteral
 (define-class RegExpLiteral (Literal)
-  (define/public type "RegExpLiteral")
-  (define/public pattern)
-  (define/public flags)
+  (define/public type "Literal")
+  (define/public regex)
 
   (define/public (constructor pattern (flags ""))
-    (super pattern)
-    (set-field! pattern this pattern)
-    (set-field! flags this flags)))
+    (super (js/obj)
+           (string-append "/" pattern "/" flags))
+    (set-field! regex
+                this
+                (js/obj :pattern pattern
+                        :flags flags))))
 
 ;;; CallExpression
 ;;;

@@ -333,7 +333,15 @@
 ;;;
 ;;; [estree:literal]: https://github.com/estree/estree/blob/master/es5.md#literal
 (define (eval-estree-literal node env (options (js/obj)))
-  (get-estree-field "value" node))
+  (define regex
+    (get-estree-field "regex" node))
+  (cond
+   (regex
+    (new RegExp
+         (get-field pattern regex)
+         (get-field flags regex)))
+   (else
+    (get-estree-field "value" node))))
 
 ;;; Evaluate an ESTree [`Identifier`][estree:identifier] node.
 ;;;

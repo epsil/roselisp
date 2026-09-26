@@ -623,7 +623,7 @@ let baz = x;"
     :finline-functions #t)
  "let [keywordp] = (() => {
   function keywordp_(obj) {
-    return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+    return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
   }
   return [keywordp_];
 })();

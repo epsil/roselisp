@@ -268,16 +268,16 @@ function attachComments(result, node, options = {}) {
         if (comment instanceof estree_1.BlockComment) {
             let blockComment = makeBlockComment(comment.originalText);
             if ((i === (comments.length - 1)) && (code === '')) {
-                blockComment = blockComment.replace(new RegExp('\\n*$'), '');
+                blockComment = blockComment.replace(/\n*$/, '');
             }
-            leadingComments = leadingComments + blockComment + (((code === '') || blockComment.match(new RegExp('\\n*$'))) ? empty : line);
+            leadingComments = leadingComments + blockComment + (((code === '') || blockComment.match(/\n*$/)) ? empty : line);
         }
         else if (comment instanceof estree_1.LeadingComment) {
             let leadingComment = makeLineComment(comment.originalText);
             if ((i === (comments.length - 1)) && (code === '')) {
-                leadingComment = leadingComment.replace(new RegExp('\\n$'), '');
+                leadingComment = leadingComment.replace(/\n$/, '');
             }
-            leadingComments = leadingComments + leadingComment + (((code === '') || leadingComment.match(new RegExp('\\n$'))) ? empty : line);
+            leadingComments = leadingComments + leadingComment + (((code === '') || leadingComment.match(/\n$/)) ? empty : line);
         }
         else if (comment instanceof estree_1.TrailingComment) {
             const trailingComment = makeLineComment(comment.originalText);
@@ -294,16 +294,16 @@ attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), 
  * Make a line comment.
  */
 function makeLineComment(text) {
-    const [, content, trailingNewlines] = text.match(new RegExp('^([\\s\\S]*?)([\\n]*)$'));
-    return content.split('\n').map((x) => x.replace(new RegExp('^'), (x === '') ? '//' : '// ')).join('\n') + trailingNewlines;
+    const [, content, trailingNewlines] = text.match(/^([\s\S]*?)([\n]*)$/);
+    return content.split('\n').map((x) => x.replace(/^/, (x === '') ? '//' : '// ')).join('\n') + trailingNewlines;
 }
 makeLineComment.fsource = [Symbol.for('define'), [Symbol.for('make-line-comment'), Symbol.for('text')], [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('content'), Symbol.for('trailing-newlines')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^([\\s\\S]*?)([\\n]*)$'], Symbol.for('text')]], [Symbol.for('string-append'), [Symbol.for('~>'), Symbol.for('content'), [Symbol.for('string-split'), '\n'], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^'], Symbol.for('x'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('x'), ''], '//', '// ']]], Symbol.for('_')], [Symbol.for('string-join'), '\n']], Symbol.for('trailing-newlines')]];
 /**
  * Make a block comment.
  */
 function makeBlockComment(text) {
-    const [, content, trailingNewlines] = text.match(new RegExp('^([\\s\\S]*?)([\\n]*)$'));
-    return '/**' + line + content.split('\n').map((x) => x.replace(new RegExp('^'), (x === '') ? ' *' : ' * ')).join('\n') + line + ' */' + trailingNewlines;
+    const [, content, trailingNewlines] = text.match(/^([\s\S]*?)([\n]*)$/);
+    return '/**' + line + content.split('\n').map((x) => x.replace(/^/, (x === '') ? ' *' : ' * ')).join('\n') + line + ' */' + trailingNewlines;
 }
 makeBlockComment.fsource = [Symbol.for('define'), [Symbol.for('make-block-comment'), Symbol.for('text')], [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('content'), Symbol.for('trailing-newlines')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^([\\s\\S]*?)([\\n]*)$'], Symbol.for('text')]], [Symbol.for('string-append'), '/**', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('content'), [Symbol.for('string-split'), '\n'], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^'], Symbol.for('x'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('x'), ''], ' *', ' * ']]], Symbol.for('_')], [Symbol.for('string-join'), '\n']], Symbol.for('line'), ' */', Symbol.for('trailing-newlines')]];
 /**
@@ -442,7 +442,7 @@ function writeToDoc(obj, options = {}) {
                 else {
                     return '#f';
                 }
-            }], [undefinedp, (obj) => '#u'], [jsNullP, (obj) => '#n'], [stringp, (obj) => ['"', join(literalline, obj.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"').split(line)), '"']], [procedurep, (obj) => '#<procedure>'], [pairOrListP, (obj) => {
+            }], [undefinedp, (obj) => '#u'], [jsNullP, (obj) => '#n'], [stringp, (obj) => ['"', join(literalline, obj.replace(/\\/g, '\\\\').replace(/"/g, '\\"').split(line)), '"']], [procedurep, (obj) => '#<procedure>'], [pairOrListP, (obj) => {
                 const op = obj[0];
                 const spec = prettyOption && prettyPrintMap.get(op);
                 let result = (spec instanceof Function) ? spec(obj, options) : (Number.isFinite(spec) ? prettyPrintWithOffset(spec, obj, options) : prettyPrintForm(obj, options));
@@ -748,34 +748,40 @@ printIdentifier.fsource = [Symbol.for('define'), [Symbol.for('print-identifier')
  * Print a `Literal` ESTree node to a `Doc` object.
  */
 function printLiteral(node, options = {}) {
-    const value = (0, estree_1.getEstreeField)('value', node);
-    if (typeof value === 'string') {
-        return printStringLiteral(node, options);
-    }
-    else if (value === true) {
-        return 'true';
-    }
-    else if (value === false) {
-        return 'false';
-    }
-    else if (value === null) {
-        return 'null';
-    }
-    else if (value === undefined) {
-        return 'undefined';
+    const regex = (0, estree_1.getEstreeField)('regex', node);
+    if (regex) {
+        return ['/', regex.pattern, '/', regex.flags];
     }
     else {
-        return value + '';
+        const value = (0, estree_1.getEstreeField)('value', node);
+        if (typeof value === 'string') {
+            return printStringLiteral(node, options);
+        }
+        else if (value === true) {
+            return 'true';
+        }
+        else if (value === false) {
+            return 'false';
+        }
+        else if (value === null) {
+            return 'null';
+        }
+        else if (value === undefined) {
+            return 'undefined';
+        }
+        else {
+            return value + '';
+        }
     }
 }
-printLiteral.fsource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), true], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), false], 'false'], [[Symbol.for('js/null?'), Symbol.for('value')], 'null'], [[Symbol.for('undefined?'), Symbol.for('value')], 'undefined'], [Symbol.for('else'), [Symbol.for('string-append'), Symbol.for('value'), '']]]];
+printLiteral.fsource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('regex'), [Symbol.for('get-estree-field'), 'regex', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('regex'), [Symbol.for('list'), '/', [Symbol.for('get-field'), Symbol.for('pattern'), Symbol.for('regex')], '/', [Symbol.for('get-field'), Symbol.for('flags'), Symbol.for('regex')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), true], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), false], 'false'], [[Symbol.for('js/null?'), Symbol.for('value')], 'null'], [[Symbol.for('undefined?'), Symbol.for('value')], 'undefined'], [Symbol.for('else'), [Symbol.for('js/to-string'), Symbol.for('value')]]]]]];
 /**
  * Print a string `Literal` ESTree node to a `Doc` object.
  *
  * Helper function for `print-literal`.
  */
 function printStringLiteral(node, options = {}) {
-    let str = (0, estree_1.getEstreeField)('value', node).replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('\'', 'g'), '\\\'').replace(new RegExp('\\n', 'g'), '\\n');
+    let str = (0, estree_1.getEstreeField)('value', node).replace(/\\/g, '\\\\').replace(/'/g, '\\\'').replace(/\n/g, '\\n');
     return ['\'', str, '\''];
 }
 printStringLiteral.fsource = [Symbol.for('define'), [Symbol.for('print-string-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('get-estree-field'), 'value', Symbol.for('_')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\\\', 'g'], Symbol.for('_'), '\\\\'], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\'', 'g'], Symbol.for('_'), '\\\''], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '\\n', 'g'], Symbol.for('_'), '\\n']]], [Symbol.for('list'), '\'', Symbol.for('str'), '\'']];
@@ -851,7 +857,7 @@ function printBinaryExpression(node, options = {}) {
     let rightPrintedStr = docValueString(rightPrinted);
     let shouldBreak = docShouldBreakP(leftPrinted) || docShouldBreakP(rightPrinted);
     const isMultilineStringLiteral = estreeStringLiteralP(left) && (0, estree_1.getEstreeField)('value', left).match('\\n$');
-    const isMultilineBinaryExpression = !isMultilineStringLiteral && (0, estree_1.estreeTypeP)(left, 'BinaryExpression') && estreeStringLiteralP((0, estree_1.getEstreeField)('right', left)) && (0, estree_1.getEstreeField)('value', (0, estree_1.getEstreeField)('right', left)).match(new RegExp('\\n$'));
+    const isMultilineBinaryExpression = !isMultilineStringLiteral && (0, estree_1.estreeTypeP)(left, 'BinaryExpression') && estreeStringLiteralP((0, estree_1.getEstreeField)('right', left)) && (0, estree_1.getEstreeField)('value', (0, estree_1.getEstreeField)('right', left)).match(/\n$/);
     const isMultilineString = isMultilineStringLiteral || isMultilineBinaryExpression;
     let result;
     if (!(estreeSimpleP(left) || ((0, estree_1.estreeTypeP)(left, type_) && ((0, estree_1.getEstreeField)('operator', left) === operator)))) {
@@ -1182,7 +1188,7 @@ function printForOfStatement(node, options = {}) {
     let resultStr;
     // FIXME: Kludge.
     if (toLanguage === 'typescript') {
-        leftPrinted = printDoc(leftPrinted).replace(new RegExp(': any$'), '');
+        leftPrinted = printDoc(leftPrinted).replace(/: any$/, '');
     }
     return ['for', space, '(', leftPrinted, space, 'of', space, rightPrinted, ')', space, bodyPrinted];
 }
@@ -1193,7 +1199,7 @@ printForOfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-of-s
 function printForInStatement(node, options = {}) {
     const toLanguage = options['to'];
     const left = (0, estree_1.getEstreeField)('left', node);
-    let leftPrinted = printDoc(printNode(left, options), options).replace(new RegExp(';$'), '');
+    let leftPrinted = printDoc(printNode(left, options), options).replace(/;$/, '');
     const right = (0, estree_1.getEstreeField)('right', node);
     const rightPrinted = printNode(right, options);
     const body = (0, estree_1.getEstreeField)('body', node);
@@ -1273,7 +1279,7 @@ function printMethodDefinition(node, options = {}) {
     const value = (0, estree_1.getEstreeField)('value', node);
     const valuePrinted = printDoc(printFunction(value, options, {
         returnType: (keyPrintedStr === 'constructor') ? '' : 'any'
-    }), options).replace(new RegExp('^function '), '');
+    }), options).replace(/^function /, '');
     const staticFlag = (0, estree_1.getEstreeField)('static', node);
     const computedFlag = (0, estree_1.getEstreeField)('computed', node);
     const generatorFlag = (0, estree_1.getEstreeField)('generator', value);
@@ -1644,7 +1650,7 @@ printTsTypeParameterInstantiation.fsource = [Symbol.for('define'), [Symbol.for('
  */
 function printXRawJavascript(node, options = {}) {
     let str = (0, estree_1.getEstreeField)('js', node);
-    if (str.match(new RegExp('^function \\('))) {
+    if (str.match(/^function \(/)) {
         str = docWrap(str);
     }
     return str;

@@ -24,7 +24,7 @@
 const jsIdentifierRegexp: any =
   // Very simple expression, does not
   // handle Unicode identifiers.
-  new RegExp('^\\w+$');
+  /^\w+$/;
 
 /**
  * Look up a JavaScript value.

@@ -23,7 +23,7 @@ function indentString(str, n = 2, options = {}) {
     const whitespaceOption = options['whitespace'];
     const whitespace = whitespaceOption || ' ';
     const includeEmptyLinesOption = options['includeEmptyLines'];
-    const pattern = includeEmptyLinesOption ? new RegExp('^', 'gm') : new RegExp('^(?!s*$)', 'gm');
+    const pattern = includeEmptyLinesOption ? /^/gm : /^(?!s*$)/gm;
     const indentation = whitespace.repeat(n);
     return str.replace(pattern, indentation);
 }

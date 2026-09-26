@@ -139,7 +139,7 @@ stringRef_.compilerMacro = (() => {
 function stringTrim_(str, sep = undefined, ...options) {
     if (sep) {
         const repeatOption = plistGet(options, Symbol.for(':repeat?'));
-        const patternStr = '(' + sep.replace(new RegExp('[.*+?^${}()|[\\]\\\\]', 'g'), '\\$&') + ')' + (repeatOption ? '+' : '');
+        const patternStr = '(' + sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')' + (repeatOption ? '+' : '');
         return str.replace(new RegExp('^' + patternStr), '').replace(new RegExp(patternStr + '$'), '');
     }
     else {
@@ -210,7 +210,7 @@ stringJoin_.compilerMacro = (() => {
  *
  * [rkt:string-split]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28lib._racket%2Fstring..rkt%29._string-split%29%29
  */
-function stringSplit_(str, sep = new RegExp('\\s+', 'g')) {
+function stringSplit_(str, sep = /\s+/g) {
     return str.split(sep);
 }
 exports.stringSplit_ = stringSplit_;

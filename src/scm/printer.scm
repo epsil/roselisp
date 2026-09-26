@@ -926,21 +926,31 @@
 
 ;;; Print a `Literal` ESTree node to a `Doc` object.
 (define (print-literal node (options (js/obj)))
-  (define value
-    (get-estree-field "value" node))
+  (define regex
+    (get-estree-field "regex" node))
   (cond
-   ((string? value)
-    (print-string-literal node options))
-   ((eq? value #t)
-    "true")
-   ((eq? value #f)
-    "false")
-   ((js/null? value)
-    "null")
-   ((undefined? value)
-    "undefined")
+   (regex
+    (list
+     "/"
+     (get-field pattern regex)
+     "/"
+     (get-field flags regex)))
    (else
-    (string-append value ""))))
+    (define value
+      (get-estree-field "value" node))
+    (cond
+     ((string? value)
+      (print-string-literal node options))
+     ((eq? value #t)
+      "true")
+     ((eq? value #f)
+      "false")
+     ((js/null? value)
+      "null")
+     ((undefined? value)
+      "undefined")
+     (else
+      (js/to-string value))))))
 
 ;;; Print a string `Literal` ESTree node to a `Doc` object.
 ;;;

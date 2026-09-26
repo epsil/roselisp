@@ -278,10 +278,6 @@
 (define (js/regexp_ input (flags #u))
   (new RegExp input flags))
 
-;;; Compiler macro for `(js/regexp ...)` expressions.
-(define-compiler-macro (js/regexp_ &rest args)
-  `(new RegExp ,@args))
-
 ;;; Whether `obj` is a JavaScript regular expression.
 (define-inline (js/regexp?_ obj)
   (is-a? obj RegExp))

@@ -357,7 +357,7 @@ describe('defmacro', (): any => {
     'let baz = x;']));
   it('(compile \'(module m scheme (define (foo-bar x) (keyword? x)) (defmacro bar (x) (foo-bar x)) (define baz (bar 1))) :finline-functions #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo-bar'), Symbol.for('x')], [Symbol.for('keyword?'), Symbol.for('x')]], [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], [Symbol.for('foo-bar'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]]]], Symbol.for(':finline-functions'), true], 'let [keywordp] = (() => {\n' +
     '  function keywordp_(obj) {\n' +
-    '    return (typeof obj === \'symbol\') && (obj.description.match(new RegExp(\'^:\')) ? true : false);\n' +
+    '    return (typeof obj === \'symbol\') && (obj.description.match(/^:/) ? true : false);\n' +
     '  }\n' +
     '  return [keywordp_];\n' +
     '})();\n' +

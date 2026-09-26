@@ -31,7 +31,7 @@ const [selfEvaluatingP, buildList, keywordp]: any[] = ((): any => {
   function selfEvaluatingP_(x: any): any {
     return (typeof x === 'boolean') || Number.isFinite(x) || (typeof x === 'string') || ((): any => {
       function keywordp_(obj: any): any {
-        return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+        return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
       }
       return keywordp_;
     })()(x) || (x === null) || (x === undefined);
@@ -52,7 +52,7 @@ const [selfEvaluatingP, buildList, keywordp]: any[] = ((): any => {
     })()(0, n).map((proc.length === 1) ? proc : (x: any): any => proc(x));
   }
   function keywordp_(obj: any): any {
-    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+    return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
   }
   function range_(start: any, end: any = undefined, step: any = undefined): any {
     const startN: any = (end === undefined) ? 0 : start;
@@ -209,12 +209,12 @@ function makeIdentifierString(str: any, options: any = {}): any {
  * Helper function for `make-identifier-string`.
  */
 function makeIdentifierStringHelper(str: any): any {
-  let result: any = str.replace(new RegExp('^\\+$', 'g'), '_add').replace(new RegExp('^-$', 'g'), '_sub').replace(new RegExp('^\\*$', 'g'), '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(new RegExp('%', 'g'), '').replace(new RegExp('/', 'g'), '-').replace(new RegExp(':', 'g'), '-').replace(new RegExp('->', 'g'), '-to-').replace(new RegExp('\\+', 'g'), '_').replace(new RegExp('\\*$', 'g'), '-star').replace(new RegExp('\\*', 'g'), 'star-');
-  const containsMultipleSegments: any = result.match(new RegExp('-', 'g'));
+  let result: any = str.replace(/^\+$/g, '_add').replace(/^-$/g, '_sub').replace(/^\*$/g, '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(/%/g, '').replace(new RegExp('/', 'g'), '-').replace(/:/g, '-').replace(/->/g, '-to-').replace(/\+/g, '_').replace(/\*$/g, '-star').replace(/\*/g, 'star-');
+  const containsMultipleSegments: any = result.match(/-/g);
   if (containsMultipleSegments) {
-    return result.replace(new RegExp('\\?', 'g'), '-p').replace(new RegExp('!', 'g'), '-x');
+    return result.replace(/\?/g, '-p').replace(/!/g, '-x');
   } else {
-    return result.replace(new RegExp('\\?', 'g'), 'p').replace(new RegExp('!', 'g'), 'x');
+    return result.replace(/\?/g, 'p').replace(/!/g, 'x');
   }
 }
 
@@ -249,7 +249,7 @@ function kebabCaseToCamelCase(str: any): any {
  * See also `kebab-case->camel-case`.
  */
 function kebabCaseToSnakeCase(str: any): any {
-  return str.replace(new RegExp('-', 'g'), '_');
+  return str.replace(/-/g, '_');
 }
 
 /**

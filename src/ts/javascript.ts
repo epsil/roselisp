@@ -185,7 +185,7 @@ jsFunctionTypeP_.compilerMacro = ((): any => {
  * Whether `obj` is an arrow function.
  */
 function jsArrowP_(x: any): any {
-  if ((x instanceof Function) && (x + '').match(new RegExp('^(\\([^)]*\\)|[^=]*) *=>'))) {
+  if ((x instanceof Function) && (x + '').match(/^(\([^)]*\)|[^=]*) *=>/)) {
     return true;
   } else {
     return false;
@@ -713,18 +713,6 @@ function jsRegexp_(input: any, flags: any = undefined): any {
 }
 
 jsRegexp_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp_'), Symbol.for('input'), [Symbol.for('flags'), undefined]], [Symbol.for('new'), Symbol.for('RegExp'), Symbol.for('input'), Symbol.for('flags')]];
-
-/**
- * Compiler macro for `(js/regexp ...)` expressions.
- */
-jsRegexp_.compilerMacro = ((): any => {
-  const f: any = (exp: any, env: any): any => {
-    const args: any = exp.slice(1);
-    return [Symbol.for('new'), Symbol.for('RegExp'), ...args];
-  };
-  f.ftype = 'macro';
-  return f;
-})();
 
 /**
  * Whether `obj` is a JavaScript regular expression.

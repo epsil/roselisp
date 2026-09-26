@@ -530,7 +530,7 @@ function parseSyntax(tokens: any, options: any = {}): any {
         updatex(exp, node);
       } else {
         // Symbolic value.
-        exp = Symbol.for(token.getValue().replace(new RegExp('^#'), ''));
+        exp = Symbol.for(token.getValue().replace(/^#/, ''));
         [node, comments] = attachComments(exp, comments, options);
         updatex(exp, node);
       }
@@ -563,7 +563,7 @@ parse.fsource = [Symbol.for('define'), [Symbol.for('parse'), Symbol.for('tokens'
  * Remove indentation from a multi-line string.
  */
 function removeIndentation(str: any): any {
-  return str.replace(new RegExp('^[^\\S\\r\\n]+$', 'gm'), '');
+  return str.replace(/^[^\S\r\n]+$/gm, '');
 }
 
 removeIndentation.fsource = [Symbol.for('define'), [Symbol.for('remove-indentation'), Symbol.for('str')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^[^\\S\\r\\n]+$', 'gm'], Symbol.for('str'), '']];
@@ -573,7 +573,7 @@ removeIndentation.fsource = [Symbol.for('define'), [Symbol.for('remove-indentati
  * (i.e., tabs, spaces or newlines).
  */
 function whitespacep(char: any): any {
-  return char.match(new RegExp('^\\s$'));
+  return char.match(/^\s$/);
 }
 
 whitespacep.fsource = [Symbol.for('define'), [Symbol.for('whitespace?'), Symbol.for('char')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^\\s$'], Symbol.for('char')]];
@@ -584,7 +584,7 @@ whitespacep.fsource = [Symbol.for('define'), [Symbol.for('whitespace?'), Symbol.
  */
 function indentationp(char: any): any {
   // Newlines are whitespace, but not indentation.
-  return char.match(new RegExp('^[^\\S\\r\\n]+$'));
+  return char.match(/^[^\S\r\n]+$/);
 }
 
 indentationp.fsource = [Symbol.for('define'), [Symbol.for('indentation?'), Symbol.for('char')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^[^\\S\\r\\n]+$'], Symbol.for('char')]];
@@ -648,7 +648,7 @@ attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), 
  */
 function getCommentLevel(comment: any): any {
   const str: any = (typeof comment === 'string') ? comment : comment.value;
-  return (str.match(new RegExp('^[ ]*;*')) as any)[0].trim().length;
+  return (str.match(/^[ ]*;*/) as any)[0].trim().length;
 }
 
 getCommentLevel.fsource = [Symbol.for('define'), [Symbol.for('get-comment-level'), Symbol.for('comment')], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('if'), [Symbol.for('string?'), Symbol.for('comment')], Symbol.for('comment'), [Symbol.for('get-field'), Symbol.for('value'), Symbol.for('comment')]]], [Symbol.for('~>'), Symbol.for('str'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^[ ]*;*'], Symbol.for('_')], [Symbol.for('ann'), Symbol.for('_'), Symbol.for('Any')], [Symbol.for('first'), Symbol.for('_')], [Symbol.for('string-trim'), Symbol.for('_')], [Symbol.for('string-length'), Symbol.for('_')]]];

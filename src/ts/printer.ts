@@ -328,15 +328,15 @@ function attachComments(result: any, node: any, options: any = {}): any {
     if (comment instanceof BlockComment) {
       let blockComment: any = makeBlockComment(comment.originalText);
       if ((i === (comments.length - 1)) && (code === '')) {
-        blockComment = blockComment.replace(new RegExp('\\n*$'), '');
+        blockComment = blockComment.replace(/\n*$/, '');
       }
-      leadingComments = leadingComments + blockComment + (((code === '') || blockComment.match(new RegExp('\\n*$'))) ? empty : line);
+      leadingComments = leadingComments + blockComment + (((code === '') || blockComment.match(/\n*$/)) ? empty : line);
     } else if (comment instanceof LeadingComment) {
       let leadingComment: any = makeLineComment(comment.originalText);
       if ((i === (comments.length - 1)) && (code === '')) {
-        leadingComment = leadingComment.replace(new RegExp('\\n$'), '');
+        leadingComment = leadingComment.replace(/\n$/, '');
       }
-      leadingComments = leadingComments + leadingComment + (((code === '') || leadingComment.match(new RegExp('\\n$'))) ? empty : line);
+      leadingComments = leadingComments + leadingComment + (((code === '') || leadingComment.match(/\n$/)) ? empty : line);
     } else if (comment instanceof TrailingComment) {
       const trailingComment: any = makeLineComment(comment.originalText);
       trailingComments = trailingComments + space + trailingComment;
@@ -354,8 +354,8 @@ attachComments.fsource = [Symbol.for('define'), [Symbol.for('attach-comments'), 
  * Make a line comment.
  */
 function makeLineComment(text: any): any {
-  const [, content, trailingNewlines]: any[] = text.match(new RegExp('^([\\s\\S]*?)([\\n]*)$'));
-  return content.split('\n').map((x: any): any => x.replace(new RegExp('^'), (x === '') ? '//' : '// ')).join('\n') + trailingNewlines;
+  const [, content, trailingNewlines]: any[] = text.match(/^([\s\S]*?)([\n]*)$/);
+  return content.split('\n').map((x: any): any => x.replace(/^/, (x === '') ? '//' : '// ')).join('\n') + trailingNewlines;
 }
 
 makeLineComment.fsource = [Symbol.for('define'), [Symbol.for('make-line-comment'), Symbol.for('text')], [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('content'), Symbol.for('trailing-newlines')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^([\\s\\S]*?)([\\n]*)$'], Symbol.for('text')]], [Symbol.for('string-append'), [Symbol.for('~>'), Symbol.for('content'), [Symbol.for('string-split'), '\n'], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^'], Symbol.for('x'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('x'), ''], '//', '// ']]], Symbol.for('_')], [Symbol.for('string-join'), '\n']], Symbol.for('trailing-newlines')]];
@@ -364,8 +364,8 @@ makeLineComment.fsource = [Symbol.for('define'), [Symbol.for('make-line-comment'
  * Make a block comment.
  */
 function makeBlockComment(text: any): any {
-  const [, content, trailingNewlines]: any[] = text.match(new RegExp('^([\\s\\S]*?)([\\n]*)$'));
-  return '/**' + line + content.split('\n').map((x: any): any => x.replace(new RegExp('^'), (x === '') ? ' *' : ' * ')).join('\n') + line + ' */' + trailingNewlines;
+  const [, content, trailingNewlines]: any[] = text.match(/^([\s\S]*?)([\n]*)$/);
+  return '/**' + line + content.split('\n').map((x: any): any => x.replace(/^/, (x === '') ? ' *' : ' * ')).join('\n') + line + ' */' + trailingNewlines;
 }
 
 makeBlockComment.fsource = [Symbol.for('define'), [Symbol.for('make-block-comment'), Symbol.for('text')], [Symbol.for('define-values'), [Symbol.for('_'), Symbol.for('content'), Symbol.for('trailing-newlines')], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^([\\s\\S]*?)([\\n]*)$'], Symbol.for('text')]], [Symbol.for('string-append'), '/**', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('content'), [Symbol.for('string-split'), '\n'], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^'], Symbol.for('x'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('x'), ''], ' *', ' * ']]], Symbol.for('_')], [Symbol.for('string-join'), '\n']], Symbol.for('line'), ' */', Symbol.for('trailing-newlines')]];
@@ -527,7 +527,7 @@ function writeToDoc(obj: any, options: any = {}): any {
     } else {
       return '#f';
     }
-  }], [undefinedp, (obj: any): any => '#u'], [jsNullP, (obj: any): any => '#n'], [stringp, (obj: any): any => ['"', join(literalline, obj.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"').split(line)), '"']], [procedurep, (obj: any): any => '#<procedure>'], [pairOrListP, (obj: any): any => {
+  }], [undefinedp, (obj: any): any => '#u'], [jsNullP, (obj: any): any => '#n'], [stringp, (obj: any): any => ['"', join(literalline, obj.replace(/\\/g, '\\\\').replace(/"/g, '\\"').split(line)), '"']], [procedurep, (obj: any): any => '#<procedure>'], [pairOrListP, (obj: any): any => {
     const op: any = obj[0];
     const spec: any = prettyOption && prettyPrintMap.get(op);
     let result: any = (spec instanceof Function) ? spec(obj, options) : (Number.isFinite(spec) ? prettyPrintWithOffset(spec, obj, options) : prettyPrintForm(obj, options));
@@ -870,23 +870,28 @@ printIdentifier.fsource = [Symbol.for('define'), [Symbol.for('print-identifier')
  * Print a `Literal` ESTree node to a `Doc` object.
  */
 function printLiteral(node: any, options: any = {}): any {
-  const value: any = getEstreeField('value', node);
-  if (typeof value === 'string') {
-    return printStringLiteral(node, options);
-  } else if (value === true) {
-    return 'true';
-  } else if (value === false) {
-    return 'false';
-  } else if (value === null) {
-    return 'null';
-  } else if (value === undefined) {
-    return 'undefined';
+  const regex: any = getEstreeField('regex', node);
+  if (regex) {
+    return ['/', regex.pattern, '/', regex.flags];
   } else {
-    return value + '';
+    const value: any = getEstreeField('value', node);
+    if (typeof value === 'string') {
+      return printStringLiteral(node, options);
+    } else if (value === true) {
+      return 'true';
+    } else if (value === false) {
+      return 'false';
+    } else if (value === null) {
+      return 'null';
+    } else if (value === undefined) {
+      return 'undefined';
+    } else {
+      return value + '';
+    }
   }
 }
 
-printLiteral.fsource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), true], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), false], 'false'], [[Symbol.for('js/null?'), Symbol.for('value')], 'null'], [[Symbol.for('undefined?'), Symbol.for('value')], 'undefined'], [Symbol.for('else'), [Symbol.for('string-append'), Symbol.for('value'), '']]]];
+printLiteral.fsource = [Symbol.for('define'), [Symbol.for('print-literal'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('regex'), [Symbol.for('get-estree-field'), 'regex', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('regex'), [Symbol.for('list'), '/', [Symbol.for('get-field'), Symbol.for('pattern'), Symbol.for('regex')], '/', [Symbol.for('get-field'), Symbol.for('flags'), Symbol.for('regex')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('string?'), Symbol.for('value')], [Symbol.for('print-string-literal'), Symbol.for('node'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('value'), true], 'true'], [[Symbol.for('eq?'), Symbol.for('value'), false], 'false'], [[Symbol.for('js/null?'), Symbol.for('value')], 'null'], [[Symbol.for('undefined?'), Symbol.for('value')], 'undefined'], [Symbol.for('else'), [Symbol.for('js/to-string'), Symbol.for('value')]]]]]];
 
 /**
  * Print a string `Literal` ESTree node to a `Doc` object.
@@ -894,7 +899,7 @@ printLiteral.fsource = [Symbol.for('define'), [Symbol.for('print-literal'), Symb
  * Helper function for `print-literal`.
  */
 function printStringLiteral(node: any, options: any = {}): any {
-  let str: any = getEstreeField('value', node).replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('\'', 'g'), '\\\'').replace(new RegExp('\\n', 'g'), '\\n');
+  let str: any = getEstreeField('value', node).replace(/\\/g, '\\\\').replace(/'/g, '\\\'').replace(/\n/g, '\\n');
   return ['\'', str, '\''];
 }
 
@@ -981,7 +986,7 @@ function printBinaryExpression(node: any, options: any = {}): any {
   let rightPrintedStr: any = docValueString(rightPrinted);
   let shouldBreak: any = docShouldBreakP(leftPrinted) || docShouldBreakP(rightPrinted);
   const isMultilineStringLiteral: any = estreeStringLiteralP(left) && getEstreeField('value', left).match('\\n$');
-  const isMultilineBinaryExpression: any = !isMultilineStringLiteral && estreeTypeP(left, 'BinaryExpression') && estreeStringLiteralP(getEstreeField('right', left)) && getEstreeField('value', getEstreeField('right', left)).match(new RegExp('\\n$'));
+  const isMultilineBinaryExpression: any = !isMultilineStringLiteral && estreeTypeP(left, 'BinaryExpression') && estreeStringLiteralP(getEstreeField('right', left)) && getEstreeField('value', getEstreeField('right', left)).match(/\n$/);
   const isMultilineString: any = isMultilineStringLiteral || isMultilineBinaryExpression;
   let result: any;
   if (!(estreeSimpleP(left) || (estreeTypeP(left, type_) && (getEstreeField('operator', left) === operator)))) {
@@ -1382,7 +1387,7 @@ function printForOfStatement(node: any, options: any = {}): any {
   let resultStr: any;
   // FIXME: Kludge.
   if (toLanguage === 'typescript') {
-    leftPrinted = printDoc(leftPrinted).replace(new RegExp(': any$'), '');
+    leftPrinted = printDoc(leftPrinted).replace(/: any$/, '');
   }
   return ['for', space, '(', leftPrinted, space, 'of', space, rightPrinted, ')', space, bodyPrinted];
 }
@@ -1395,7 +1400,7 @@ printForOfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-of-s
 function printForInStatement(node: any, options: any = {}): any {
   const toLanguage: any = options['to'];
   const left: any = getEstreeField('left', node);
-  let leftPrinted: any = printDoc(printNode(left, options), options).replace(new RegExp(';$'), '');
+  let leftPrinted: any = printDoc(printNode(left, options), options).replace(/;$/, '');
   const right: any = getEstreeField('right', node);
   const rightPrinted: any = printNode(right, options);
   const body: any = getEstreeField('body', node);
@@ -1487,7 +1492,7 @@ function printMethodDefinition(node: any, options: any = {}): any {
   const value: any = getEstreeField('value', node);
   const valuePrinted: any = printDoc(printFunction(value, options, {
     returnType: (keyPrintedStr === 'constructor') ? '' : 'any'
-  }), options).replace(new RegExp('^function '), '');
+  }), options).replace(/^function /, '');
   const staticFlag: any = getEstreeField('static', node);
   const computedFlag: any = getEstreeField('computed', node);
   const generatorFlag: any = getEstreeField('generator', value);
@@ -1939,7 +1944,7 @@ printTsTypeParameterInstantiation.fsource = [Symbol.for('define'), [Symbol.for('
  */
 function printXRawJavascript(node: any, options: any = {}): any {
   let str: any = getEstreeField('js', node);
-  if (str.match(new RegExp('^function \\('))) {
+  if (str.match(/^function \(/)) {
     str = docWrap(str);
   }
   return str;

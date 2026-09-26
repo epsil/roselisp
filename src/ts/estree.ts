@@ -852,16 +852,16 @@ class Literal extends Expression {
  * [estree:regexpliteral]: https://github.com/estree/estree/blob/master/es5.md#regexpliteral
  */
 class RegExpLiteral extends Literal {
-  type: any = 'RegExpLiteral';
+  type: any = 'Literal';
 
-  pattern: any;
-
-  flags: any;
+  regex: any;
 
   constructor(pattern: any, flags: any = '') {
-    super(pattern);
-    this.pattern = pattern;
-    this.flags = flags;
+    super({}, '/' + pattern + '/' + flags);
+    this.regex = {
+      pattern,
+      flags
+    };
   }
 }
 
@@ -1536,7 +1536,7 @@ class TemplateElement extends TSNode {
     this.tail = tail;
     this.value = {
       cooked,
-      raw: raw || cooked.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('`', 'g'), '\\`')
+      raw: raw || cooked.replace(/\\/g, '\\\\').replace(/`/g, '\\`')
     };
   }
 }

@@ -83,7 +83,7 @@ const [equalp, keywordp] = (() => {
         }
     }
     function keywordp_(obj) {
-        return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+        return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
     }
     return [equalp_, keywordp_];
 })();
@@ -813,7 +813,7 @@ values_.compilerMacro = (() => {
  * [cl:keywordp]: http://clhs.lisp.se/Body/f_kwdp.htm#keywordp
  */
 function keywordp_(obj) {
-    return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+    return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
 }
 exports.keywordp = keywordp_;
 exports.keywordp_ = keywordp_;
@@ -822,7 +822,7 @@ keywordp_.fsource = [Symbol.for('define'), [Symbol.for('keyword?_'), Symbol.for(
  * Convert a keyword to a string without the `:` prefix.
  */
 function keywordToString_(x) {
-    return x.description.replace(new RegExp('^:'), '');
+    return x.description.replace(/^:/, '');
 }
 exports.keywordToString = keywordToString_;
 exports.keywordToString_ = keywordToString_;
@@ -840,7 +840,7 @@ keywordToString_.compilerMacro = (() => {
  * (i.e., strip the `:` prefix).
  */
 function keywordToSymbol_(x) {
-    return Symbol.for(x.description.replace(new RegExp('^:'), ''));
+    return Symbol.for(x.description.replace(/^:/, ''));
 }
 exports.keywordToSymbol = keywordToSymbol_;
 exports.keywordToSymbol_ = keywordToSymbol_;

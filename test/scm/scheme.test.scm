@@ -2982,6 +2982,30 @@ let y = 2;"
                   (foo bar baz)))
  "[_, , value] = foo(bar, baz);"
 
+ :describe "regexp"
+ > (regexp-match? (regexp "^foo$") "foo")
+ #t
+ > (regexp-match? (regexp "foo" "i") "foo")
+ #t
+ > (regexp-match? (regexp "^foo$") "bar")
+ #f
+ > (compile '(regexp "foo"))
+ "/foo/;"
+ > (compile '(regexp "\\w+"))
+ "/\\w+/;"
+ > (compile '(regexp "foo" "i"))
+ "/foo/i;"
+ > (compile '(regexp foo "i"))
+ "new RegExp(foo, 'i');"
+ > (compile '(regexp "foo" i))
+ "new RegExp('foo', i);"
+ > (compile '(regexp foo i))
+ "new RegExp(foo, i);"
+ > (compile '(regexp "/"))
+ "new RegExp('/');"
+ > (compile '(regexp "[/]"))
+ "new RegExp('[/]');"
+
  :describe "hash"
  > (hash)
  (new Map)
@@ -3908,7 +3932,7 @@ if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal
     '(match "foo"
        ((regexp "foo")
         #t)))
- "if ('foo'.match(new RegExp('foo'))) {
+ "if ('foo'.match(/foo/)) {
   true;
 }"
  > (compile

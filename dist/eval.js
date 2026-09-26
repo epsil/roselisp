@@ -31,7 +31,7 @@ const rose_1 = require("./rose");
 const thunk_1 = require("./thunk");
 const [keywordp] = (() => {
     function keywordp_(obj) {
-        return (typeof obj === 'symbol') && (obj.description.match(new RegExp('^:')) ? true : false);
+        return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
     }
     return [keywordp_];
 })();
@@ -127,7 +127,7 @@ function evalSexp(exp, env, options = {}) {
             if (typeof op === 'symbol') {
                 const name = op.description;
                 let match;
-                if ((match = name.match(new RegExp('^\\.(.+)$')))) {
+                if ((match = name.match(/^\.(.+)$/))) {
                     // Method call expression
                     const method = match[1];
                     const [obj, ...fargs] = args;
@@ -326,9 +326,15 @@ evalEstreeSequenceExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-
  * [estree:literal]: https://github.com/estree/estree/blob/master/es5.md#literal
  */
 function evalEstreeLiteral(node, env, options = {}) {
-    return (0, estree_1.getEstreeField)('value', node);
+    const regex = (0, estree_1.getEstreeField)('regex', node);
+    if (regex) {
+        return new RegExp(regex.pattern, regex.flags);
+    }
+    else {
+        return (0, estree_1.getEstreeField)('value', node);
+    }
 }
-evalEstreeLiteral.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-literal'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]];
+evalEstreeLiteral.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-literal'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('regex'), [Symbol.for('get-estree-field'), 'regex', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('regex'), [Symbol.for('new'), Symbol.for('RegExp'), [Symbol.for('get-field'), Symbol.for('pattern'), Symbol.for('regex')], [Symbol.for('get-field'), Symbol.for('flags'), Symbol.for('regex')]]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]]]];
 /**
  * Evaluate an ESTree [`Identifier`][estree:identifier] node.
  *

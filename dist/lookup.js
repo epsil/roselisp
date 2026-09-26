@@ -26,7 +26,7 @@ exports.lookupJsValue = void 0;
 const jsIdentifierRegexp = 
 // Very simple expression, does not
 // handle Unicode identifiers.
-new RegExp('^\\w+$');
+/^\w+$/;
 /**
  * Look up a JavaScript value.
  *

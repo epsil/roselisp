@@ -196,7 +196,7 @@ function plistToObject_(plst, options = {}) {
     for (let i = 0; i < _end; i = i + 2) {
         const prop = plst[i];
         let val = plst[i + 1];
-        const key = (0, util_1.makeIdentifierString)(prop.description.replace(new RegExp('^:'), ''), options);
+        const key = (0, util_1.makeIdentifierString)(prop.description.replace(/^:/, ''), options);
         result[key] = val;
     }
     return result;

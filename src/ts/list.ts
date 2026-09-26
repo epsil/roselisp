@@ -59,7 +59,7 @@ const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dotte
   function selfEvaluatingP_(x: any): any {
     return (typeof x === 'boolean') || Number.isFinite(x) || (typeof x === 'string') || ((): any => {
       function keywordp_(obj: any): any {
-        return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+        return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
       }
       return keywordp_;
     })()(x) || (x === null) || (x === undefined);
@@ -310,7 +310,7 @@ const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dotte
     return result;
   }
   function keywordp_(obj: any): any {
-    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+    return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
   }
   return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListRef_, dottedListLength_, dottedListLast_];
 })();

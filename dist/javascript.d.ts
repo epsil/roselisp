@@ -372,7 +372,6 @@ declare namespace jsToString_ {
 declare function jsRegexp_(input: any, flags?: any): any;
 declare namespace jsRegexp_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
-    var compilerMacro: any;
 }
 /**
  * Whether `obj` is a JavaScript regular expression.

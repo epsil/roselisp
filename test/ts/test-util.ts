@@ -72,7 +72,7 @@ const [equalp, first, keywordp]: any[] = ((): any => {
     return lst[0];
   }
   function keywordp_(obj: any): any {
-    return (typeof obj === 'symbol') && ((obj.description as string).match(new RegExp('^:')) ? true : false);
+    return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
   }
   return [equalp_, first_, keywordp_];
 })();
@@ -353,7 +353,7 @@ function printSexp(exp: any): any {
   } else if (Array.isArray(exp)) {
     return '(' + exp.map((printSexp.length === 1) ? printSexp : (x: any): any => printSexp(x)).join(' ') + ')';
   } else if (typeof exp === 'string') {
-    return '"' + exp.replace(new RegExp('\\\\', 'g'), '\\\\').replace(new RegExp('"', 'g'), '\\"') + '"';
+    return '"' + exp.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
   } else if (typeof exp === 'symbol') {
     return exp.description as string;
   } else {

@@ -63,7 +63,7 @@ regexpp_.compilerMacro = (() => {
 function regexpQuote_(str) {
     // Based on `escapeRegExp()` from
     // <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping>.
-    return str.replace(new RegExp('[.*+?^${}()|[\\]\\\\]', 'g'), '\\$&');
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 exports.regexpQuote_ = regexpQuote_;
 regexpQuote_.fsource = [Symbol.for('define'), [Symbol.for('regexp-quote_'), Symbol.for('str')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '[.*+?^${}()|[\\]\\\\]', 'g'], Symbol.for('str'), '\\$&']];

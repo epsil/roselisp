@@ -715,6 +715,137 @@ function parsePlistAndBody(plstAndBody: any): any {
   return [plst, body];
 }
 
+/**
+ * Make a function of the specified arity.
+ */
+function makeArityFunction(fun: any, n: any = undefined, arrow: any = false): any {
+  if (arrow) {
+    switch (n) {
+      case 0: {
+        return (): any => fun();
+        break;
+      }
+      case 1: {
+        return (a: any): any => fun(a);
+        break;
+      }
+      case 2: {
+        return (a: any, b: any): any => fun(a, b);
+        break;
+      }
+      case 3: {
+        return (a: any, b: any, c: any): any => fun(a, b, c);
+        break;
+      }
+      case 4: {
+        return (a: any, b: any, c: any, d: any): any => fun(a, b, c, d);
+        break;
+      }
+      case 5: {
+        return (a: any, b: any, c: any, d: any, e: any): any => fun(a, b, c, d, e);
+        break;
+      }
+      case 6: {
+        return (a: any, b: any, c: any, d: any, e: any, f: any): any => fun(a, b, c, d, e, f);
+        break;
+      }
+      case 7: {
+        return (a: any, b: any, c: any, d: any, e: any, f: any, g: any): any => fun(a, b, c, d, e, f, g);
+        break;
+      }
+      case 8: {
+        return (a: any, b: any, c: any, d: any, e: any, f: any, g: any, h: any): any => fun(a, b, c, d, e, f, g, h);
+        break;
+      }
+      case 9: {
+        return (a: any, b: any, c: any, d: any, e: any, f: any, g: any, h: any, i: any): any => fun(a, b, c, d, e, f, g, h, i);
+        break;
+      }
+      case 10: {
+        return (a: any, b: any, c: any, d: any, e: any, f: any, g: any, h: any, i: any, j: any): any => fun(a, b, c, d, e, f, g, h, i, j);
+        break;
+      }
+      default: {
+        return (...args: any[]): any => fun(...args);
+      }
+    }
+  } else {
+    switch (n) {
+      case 0: {
+        return function (this: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 1: {
+        return function (this: any, a: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 2: {
+        return function (this: any, a: any, b: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 3: {
+        return function (this: any, a: any, b: any, c: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 4: {
+        return function (this: any, a: any, b: any, c: any, d: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 5: {
+        return function (this: any, a: any, b: any, c: any, d: any, e: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 6: {
+        return function (this: any, a: any, b: any, c: any, d: any, e: any, fun: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 7: {
+        return function (this: any, a: any, b: any, c: any, d: any, e: any, f: any, g: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 8: {
+        return function (this: any, a: any, b: any, c: any, d: any, e: any, f: any, g: any, h: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 9: {
+        return function (this: any, a: any, b: any, c: any, d: any, e: any, f: any, g: any, h: any, i: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      case 10: {
+        return function (this: any, a: any, b: any, c: any, d: any, e: any, f: any, g: any, h: any, i: any, j: any): any {
+          return fun.apply(this, arguments);
+        };
+        break;
+      }
+      default: {
+        return function (this: any, ...args: any[]): any {
+          return fun.apply(this, arguments);
+        };
+      }
+    }
+  }
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
@@ -731,6 +862,7 @@ export {
   kebabCaseToSnakeCase,
   lambdaToLet,
   listExpressionToPattern,
+  makeArityFunction,
   makeIdentifierString,
   makeUniqueSymbol,
   mapGet,

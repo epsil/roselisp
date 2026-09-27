@@ -157,314 +157,240 @@ indentString.fsource = [Symbol.for('define'), [Symbol.for('indent-string'), Symb
  * [blog:Bond22]: https://tkurtbond.github.io/posts/2022/06/14/lisp-style-trampolines-in-common-lisp-c-ada-oberon-2-and-revised-oberon/
  */
 
-/**
- * Trampoline class.
- *
- * Contains a call stack and a value stack. The call stack is stepped
- * through until it is exhausted, and the returned result is the
- * topmost entry on the value stack.
- */
-class Trampoline {
-  /**
-   * Call stack.
-   */
-  calls: any = [];
-
-  /**
-   * Value stack.
-   */
-  values: any = [];
-
-  /**
-   * Internal stack symbol, used to reference the value
-   * on the top of the value stack.
-   */
-  valueSymbol: any = Symbol('value');
-
-  /**
-   * Create a new trampoline.
-   * An initial function call may be specified
-   * with `f` and `args`; `args`  are here the
-   * arguments to the function `f`.
-   */
-  constructor(f: any = undefined, ...args: any[]) {
-    if (f) {
-      const initialCall: any = new TrampolineCall(f, ...args);
-      this.pushCall(initialCall);
-    }
-  }
-
-  /**
-   * Whether the trampoline is empty,
-   * i.e., there are no trampoline calls left.
-   */
-  isEmpty(): any {
-    return this.size() === 0;
-  }
-
-  /**
-   * Pop a function call off the call stack.
-   */
-  popCall(): any {
-    if (this.calls.length === 0) {
-      return undefined;
-    } else {
-      return this.calls.shift();
-    }
-  }
-
-  /**
-   * Pop a value off the value stack.
-   */
-  popValue(): any {
-    if (this.values.length === 0) {
-      return undefined;
-    } else {
-      return this.values.shift();
-    }
-  }
-
-  /**
-   * Push a function call onto the call stack.
-   */
-  pushCall(call: any): any {
-    this.calls.unshift(call);
-    return this;
-  }
-
-  /**
-   * Push a value onto the value stack.
-   */
-  pushValue(value: any): any {
-    this.values.unshift(value);
-    return this;
-  }
-
-  /**
-   * Pop and evaluate function calls off the call stack
-   * until it is exhausted. Returns the value returned by
-   * the final call.
-   */
-  run(): any {
-    return this.runUntil(0);
-  }
-
-  /**
-   * Pop and evaluate function calls off the call stack
-   * until it reaches size `size`.
-   */
-  runUntil(size: any = 0): any {
-    while (this.size() > size) {
-      this.step();
-    }
-    return this.popValue();
-  }
-
-  /**
-   * The number of function calls on the call stack.
-   */
-  size(): any {
-    return this.calls.length;
-  }
-
-  /**
-   * Pop a single function call off the call stack
-   * and evaluate it. The value thus obtained is
-   * pushed onto the value stack.
-   */
-  step(): any {
-    const tramp: any = this;
-    const nestedCalls: any = [];
-    const call: any = tramp.popCall();
-    // Iterate over the function call right-to-left so that
-    // values get fetched from the values stack in the right
-    // order: the rightmost value is on the top of the value
-    // stack, while the leftmost value is underneath the other
-    // values.
-    function f(exp: any): any {
-      if (exp instanceof TrampolineCall) {
-        // It is tempting to call `.runUntil()` here and
-        // evaluate the nested call right away, but that
-        // would create the kind of dependency on
-        // JavaScript's call stack that we are trying to
-        // avoid. So instead, we create a new function call
-        // that contains the special value `value-symbol`,
-        // which, when evaluated, will instruct the
-        // trampoline to fetch the value that the nested call
-        // evaluated to from the value stack.
-        nestedCalls.push(exp);
-        return tramp.valueSymbol;
-      } else if (exp === tramp.valueSymbol) {
-        // The special value `value-symbol` instructs the
-        // trampoline to pop a value off the value stack.
-        return tramp.popValue();
-      } else {
-        return exp;
-      }
-    }
-    f.fsource = [Symbol.for('define'), [Symbol.for('f'), Symbol.for('exp')], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('exp'), Symbol.for('TrampolineCall')], [Symbol.for('push-right!'), Symbol.for('nested-calls'), Symbol.for('exp')], [Symbol.for('get-field'), Symbol.for('value-symbol'), Symbol.for('tramp')]], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('get-field'), Symbol.for('value-symbol'), Symbol.for('tramp')]], [Symbol.for('send'), Symbol.for('tramp'), Symbol.for('pop-value')]], [Symbol.for('else'), Symbol.for('exp')]]];
-    const call1: any = call.mapRight(f);
-    if (nestedCalls.length > 0) {
-      tramp.pushCall(call1);
-      for (let nestedCall of nestedCalls) {
-        tramp.pushCall(nestedCall);
-      }
-    } else {
-      const value: any = call1.evaluate();
-      if (value instanceof TrampolineCall) {
-        return tramp.pushCall(value);
-      } else {
-        return tramp.pushValue(value);
-      }
-    }
-  }
-}
-
-/**
- * Trampolined function call.
- *
- * A wrapper around an array representing the call.
- */
-class TrampolineCall {
-  /**
-   * An array where the first element is the function
-   * and the other elements are the arguments to it.
-   */
-  call: any;
-
-  /**
-   * Create a trampolined function call.
-   *
-   * `call` is an array where the first element is the function
-   * and the remaining elements are the arguments to it.
-   */
-  constructor(...call: any[]) {
-    this.call = call;
-  }
-
-  /**
-   * Evaluate the function call.
-   */
-  evaluate(): any {
-    if (this.call.length === 0) {
-      return undefined;
-    } else {
-      const [f, ...args]: any[] = this.call;
-      if (f instanceof Function) {
-        return f(...args);
-      } else {
-        return undefined;
-      }
-    }
-  }
-
-  /**
-   * Map a function over the function call
-   * (left-to-right).
-   */
-  map(f: any): any {
-    return this.mapLeft(f);
-  }
-
-  /**
-   * Map a function over the function call,
-   * from left to right.
-   */
-  mapLeft(f: any): any {
-    return new TrampolineCall(...this.call.map((f.length === 1) ? f : (x: any): any => f(x)));
-  }
-
-  /**
-   * Map a function over the function call,
-   * from right to left.
-   */
-  mapRight(f: any): any {
-    const call: any = [];
-    const _start: any = this.size() - 1;
-    for (let i: any = _start; i > -1; i--) {
-      call.unshift(f((this.call as any)[i]));
-    }
-    return new TrampolineCall(...call);
-  }
-
-  /**
-   * Pop a value off the call
-   * (off the end of the call).
-   */
-  pop(): any {
-    return this.popRight();
-  }
-
-  /**
-   * Pop a value off the beginning of the call.
-   */
-  popLeft(): any {
-    return this.call.shift();
-  }
-
-  /**
-   * Pop a value off the end of the call.
-   */
-  popRight(): any {
-    return this.call.pop();
-  }
-
-  /**
-   * Push a value onto the call
-   * (the end of the call).
-   */
-  push(value: any): any {
-    return this.pushRight(value);
-  }
-
-  /**
-   * Push a value onto the beginning of the call.
-   */
-  pushLeft(value: any): any {
-    this.call.unshift(value);
-    return this;
-  }
-
-  /**
-   * Push a value onto the end of the call.
-   */
-  pushRight(value: any): any {
-    this.call.push(value);
-    return this;
-  }
-
-  /**
-   * Return the size of the call
-   * (i.e., number of arguments plus one).
-   */
-  size(): any {
-    return this.call.length;
-  }
-}
-
-/**
- * Run a trampolined function.
- *
- * The function may return an instance of {@link TrampolineCall}
- * (e.g., by calling {@link trampolineCall}) to represent a
- * trampolined function calls. Other values are treated as final
- * values.
- */
-function trampoline(f: any, ...args: any[]): any {
-  const trampolineInstance: any = new Trampoline(f, ...args);
-  return trampolineInstance.run();
-}
-
-trampoline.fsource = [Symbol.for('define'), [Symbol.for('trampoline'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('trampoline-instance'), [Symbol.for('apply'), Symbol.for('new'), Symbol.for('Trampoline'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('send'), Symbol.for('trampoline-instance'), Symbol.for('run')]];
-
-/**
- * Create a trampolined function call.
- */
-function tcall(f: any, ...args: any[]): any {
-  return new TrampolineCall(f, ...args);
-}
-
-tcall.fsource = [Symbol.for('define'), [Symbol.for('tcall'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('apply'), Symbol.for('new'), Symbol.for('TrampolineCall'), Symbol.for('f'), Symbol.for('args')]];
+// ;;; Trampoline class.
+// ;;;
+// ;;; Contains a call stack and a value stack. The call stack is stepped
+// ;;; through until it is exhausted, and the returned result is the
+// ;;; topmost entry on the value stack.
+// (define-class Trampoline ()
+//   ;;; Call stack.
+//   (define/public calls '())
+//   ;;; Value stack.
+//   (define/public values '())
+//   ;;; Internal stack symbol, used to reference the value
+//   ;;; on the top of the value stack.
+//   (define/public value-symbol
+//     (gensym "value"))
+//
+//   ;;; Create a new trampoline.
+//   ;;; An initial function call may be specified
+//   ;;; with `f` and `args`; `args`  are here the
+//   ;;; arguments to the function `f`.
+//   (define/public (constructor (f #u) . args)
+//     (when f
+//       (define initial-call
+//         (apply new TrampolineCall f args))
+//       (send this push-call initial-call)))
+//
+//   ;;; Whether the trampoline is empty,
+//   ;;; i.e., there are no trampoline calls left.
+//   (define/public (is-empty)
+//     (zero? (send this size)))
+//
+//   ;;; Pop a function call off the call stack.
+//   (define/public (pop-call)
+//     (cond
+//      ((zero? (length (get-field calls this)))
+//       #u)
+//      (else
+//       (pop! (get-field calls this)))))
+//
+//   ;;; Pop a value off the value stack.
+//   (define/public (pop-value)
+//     (cond
+//      ((zero? (length (get-field values this)))
+//       #u)
+//      (else
+//       (pop! (get-field values this)))))
+//
+//   ;;; Push a function call onto the call stack.
+//   (define/public (push-call call)
+//     (push! (get-field calls this) call)
+//     this)
+//
+//   ;;; Push a value onto the value stack.
+//   (define/public (push-value value)
+//     (push! (get-field values this) value)
+//     this)
+//
+//   ;;; Pop and evaluate function calls off the call stack
+//   ;;; until it is exhausted. Returns the value returned by
+//   ;;; the final call.
+//   (define/public (run)
+//     (send this run-until 0))
+//
+//   ;;; Pop and evaluate function calls off the call stack
+//   ;;; until it reaches size `size`.
+//   (define/public (run-until (size 0))
+//     (while (> (send this size) size)
+//       (send this step))
+//     (send this pop-value))
+//
+//   ;;; The number of function calls on the call stack.
+//   (define/public (size)
+//     (length (get-field calls this)))
+//
+//   ;;; Pop a single function call off the call stack
+//   ;;; and evaluate it. The value thus obtained is
+//   ;;; pushed onto the value stack.
+//   (define/public (step)
+//     (define tramp this)
+//     (define nested-calls '())
+//     (define call
+//       (send tramp pop-call))
+//     ;; Iterate over the function call right-to-left so that
+//     ;; values get fetched from the values stack in the right
+//     ;; order: the rightmost value is on the top of the value
+//     ;; stack, while the leftmost value is underneath the other
+//     ;; values.
+//     (define (f exp)
+//       (cond
+//        ((is-a? exp TrampolineCall)
+//         ;; It is tempting to call `.runUntil()` here and
+//         ;; evaluate the nested call right away, but that
+//         ;; would create the kind of dependency on
+//         ;; JavaScript's call stack that we are trying to
+//         ;; avoid. So instead, we create a new function call
+//         ;; that contains the special value `value-symbol`,
+//         ;; which, when evaluated, will instruct the
+//         ;; trampoline to fetch the value that the nested call
+//         ;; evaluated to from the value stack.
+//         (push-right! nested-calls exp)
+//         (get-field value-symbol tramp))
+//        ((eq? exp (get-field value-symbol tramp))
+//         ;; The special value `value-symbol` instructs the
+//         ;; trampoline to pop a value off the value stack.
+//         (send tramp pop-value))
+//        (else
+//         exp)))
+//     (define call1
+//       (send call map-right f))
+//     (cond
+//      ((> (length nested-calls) 0)
+//       (send tramp push-call call1)
+//       (for ((nested-call nested-calls))
+//         (send tramp push-call nested-call)))
+//      (else
+//       (define value
+//         (send call1 evaluate))
+//       (cond
+//        ((is-a? value TrampolineCall)
+//         (send tramp push-call value))
+//        (else
+//         (send tramp push-value value)))))))
+//
+// ;;; Trampolined function call.
+// ;;;
+// ;;; A wrapper around an array representing the call.
+// (define-class TrampolineCall ()
+//   ;;; An array where the first element is the function
+//   ;;; and the other elements are the arguments to it.
+//   (define/public call)
+//
+//   ;;; Create a trampolined function call.
+//   ;;;
+//   ;;; `call` is an array where the first element is the function
+//   ;;; and the remaining elements are the arguments to it.
+//   (define/public (constructor . call)
+//     (set-field! call this call))
+//
+//   ;;; Evaluate the function call.
+//   (define/public (evaluate)
+//     (cond
+//      ((= (~> this
+//              (get-field call _)
+//              (length _))
+//          0)
+//       #u)
+//      (else
+//       (define-values (f . args)
+//         (get-field call this))
+//       (if (procedure? f)
+//           (apply f args)
+//           #u))))
+//
+//   ;;; Map a function over the function call
+//   ;;; (left-to-right).
+//   (define/public (map f)
+//     (send this map-left f))
+//
+//   ;;; Map a function over the function call,
+//   ;;; from left to right.
+//   (define/public (map-left f)
+//     (~> this
+//         (get-field call _)
+//         (map f _)
+//         (apply new TrampolineCall _)))
+//
+//   ;;; Map a function over the function call,
+//   ;;; from right to left.
+//   (define/public (map-right f)
+//     (define call '())
+//     (for ((i (range (- (send this size) 1) -1 -1)))
+//       (~> this
+//           (get-field call _)
+//           (list-ref _ i)
+//           (f _)
+//           (push! call _)))
+//     (apply new TrampolineCall call))
+//
+//   ;;; Pop a value off the call
+//   ;;; (off the end of the call).
+//   (define/public (pop)
+//     (send this pop-right))
+//
+//   ;;; Pop a value off the beginning of the call.
+//   (define/public (pop-left)
+//     (~> this
+//         (get-field call _)
+//         (pop-left! _)))
+//
+//   ;;; Pop a value off the end of the call.
+//   (define/public (pop-right)
+//     (~> this
+//         (get-field call _)
+//         (pop-right! _)))
+//
+//   ;;; Push a value onto the call
+//   ;;; (the end of the call).
+//   (define/public (push value)
+//     (send this push-right value))
+//
+//   ;;; Push a value onto the beginning of the call.
+//   (define/public (push-left value)
+//     (~> this
+//         (get-field call _)
+//         (push-left! _ value))
+//     this)
+//
+//   ;;; Push a value onto the end of the call.
+//   (define/public (push-right value)
+//     (~> this
+//         (get-field call _)
+//         (push-right! _ value))
+//     this)
+//
+//   ;;; Return the size of the call
+//   ;;; (i.e., number of arguments plus one).
+//   (define/public (size)
+//     (~> this
+//         (get-field call _)
+//         (length _))))
+//
+// ;;; Run a trampolined function.
+// ;;;
+// ;;; The function may return an instance of {@link TrampolineCall}
+// ;;; (e.g., by calling {@link trampolineCall}) to represent a
+// ;;; trampolined function calls. Other values are treated as final
+// ;;; values.
+// (define (trampoline f . args)
+//   (define trampoline-instance
+//     (apply new Trampoline f args))
+//   (send trampoline-instance run))
+//
+// ;;; Create a trampolined function call.
+// (define (tcall f . args)
+//   (apply new TrampolineCall f args))
 
 // ;;; # Special forms
 // ;;;
@@ -1510,14 +1436,3 @@ tcall.fsource = [Symbol.for('define'), [Symbol.for('tcall'), Symbol.for('f'), Sy
 //     (lambda-special_ exp env))
 //   (set-field! fexpr f #t)
 //   f)
-
-export {
-  tcall as tCall,
-  tcall as trampolineCall,
-  trampoline as runTrampoline,
-  trampoline as trampolineRun,
-  Trampoline,
-  TrampolineCall,
-  tcall,
-  trampoline
-};

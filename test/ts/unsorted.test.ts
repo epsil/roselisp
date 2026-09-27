@@ -11,49 +11,44 @@ import {
   testMacro
 } from './test-util';
 
-import {
-  tcall,
-  trampoline
-} from '../../src/ts/unsorted';
-
 testMacro.ftype = 'macro';
 
 describe('To do', (): any => {
 });
 
-describe('Avoiding IIFEs', (): any => xit('(compile \'(define x (begin y z)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')]]]], 'let y;\n' +
-  '\n' +
-  'let x = z;'])));
+describe('Avoiding IIFEs', (): any => xit('(compile \'(define x (begin y z)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')]]]], `let y;
 
-describe('declare', (): any => xit('(compile \'(begin (define (my-plus x y) (+ x y 0)) (declare my-plus (compiler-macro (macro (x y) `(+ ,x ,y)))) (define x (my-plus 1 2))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y'), 0]], [Symbol.for('declare'), Symbol.for('my-plus'), [Symbol.for('compiler-macro'), [Symbol.for('macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('my-plus'), 1, 2]]]]], 'function myPlus(x, y) {\n' +
-  '  return x + y + 0;\n' +
-  '}\n' +
-  '\n' +
-  'myPlus.compilerMacro = (() => {\n' +
-  '  let f = function (exp, env) {\n' +
-  '    let [x, y] = exp.slice(1);\n' +
-  '    return [Symbol.for(\'+\'), x, y];\n' +
-  '  };\n' +
-  '  f.ftype = \'macro\';\n' +
-  '  return f;\n' +
-  '})();\n' +
-  '\n' +
-  'let x = 1 + 2;'])));
+let x = z;`])));
 
-describe('define-subst', (): any => xit('(compile \'(begin (define-subst (my-plus x y) (+ x y)) (define x (my-plus 1 2))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-subst'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('my-plus'), 1, 2]]]]], 'function myPlus(x, y) {\n' +
-  '  return x + y;\n' +
-  '}\n' +
-  '\n' +
-  'myPlus.compilerMacro = (() => {\n' +
-  '  let f = function (exp, env) {\n' +
-  '    let [x, y] = exp.slice(1);\n' +
-  '    return [Symbol.for(\'+\'), x, y];\n' +
-  '  };\n' +
-  '  f.ftype = \'macro\';\n' +
-  '  return f;\n' +
-  '})();\n' +
-  '\n' +
-  'let x = 1 + 2;'])));
+describe('declare', (): any => xit('(compile \'(begin (define (my-plus x y) (+ x y 0)) (declare my-plus (compiler-macro (macro (x y) `(+ ,x ,y)))) (define x (my-plus 1 2))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y'), 0]], [Symbol.for('declare'), Symbol.for('my-plus'), [Symbol.for('compiler-macro'), [Symbol.for('macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('my-plus'), 1, 2]]]]], `function myPlus(x, y) {
+  return x + y + 0;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+let x = 1 + 2;`])));
+
+describe('define-subst', (): any => xit('(compile \'(begin (define-subst (my-plus x y) (+ x y)) (define x (my-plus 1 2))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-subst'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('my-plus'), 1, 2]]]]], `function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = function (exp, env) {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+let x = 1 + 2;`])));
 
 describe('sqrt', (): any => {
   xit('(sqrt 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('sqrt'), 4], 2]));
@@ -95,16 +90,16 @@ describe('interpret', (): any => {
   it('(interpret 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), 1], 1]));
   it('(interpret \'\'foo)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), [Symbol.for('quote'), [Symbol.for('quote'), Symbol.for('foo')]]], [Symbol.for('quote'), Symbol.for('foo')]]));
   it('(interpret \'(second \'(1 . (2 . ()))) :fdottedlists #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), [Symbol.for('quote'), [Symbol.for('second'), [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]]]], Symbol.for(':fdottedlists'), true], 2]));
-  it('(compile \'(module m scheme (interpret 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('interpret'), 1]]]], 'import {\n' +
-    '  interpret\n' +
-    '} from \'roselisp\';\n' +
-    '\n' +
-    'interpret(1);']));
-  it('(compile \'(module m scheme (eval 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('eval'), 1]]]], 'import {\n' +
-    '  interpret\n' +
-    '} from \'roselisp\';\n' +
-    '\n' +
-    'interpret(1);']));
+  it('(compile \'(module m scheme (interpret 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('interpret'), 1]]]], `import {
+  interpret
+} from 'roselisp';
+
+interpret(1);`]));
+  it('(compile \'(module m scheme (eval 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('eval'), 1]]]], `import {
+  interpret
+} from 'roselisp';
+
+interpret(1);`]));
   return it('(compile \'(module m scheme (js/eval "1;")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('js/eval'), '1;']]]], 'eval(\'1;\');']));
 });
 
@@ -127,11 +122,11 @@ describe('Assignment operators', (): any => {
   return xit('(compile \'(js/>>>= x y))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/>>>='), Symbol.for('x'), Symbol.for('y')]]], 'x >>>= y;']));
 });
 
-describe('js/iife', (): any => xit('(compile \'(js/iife (js/arrow (x . y) (+ x (first y))) (list* a b)) :as \'statement)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), [Symbol.for('first'), Symbol.for('y')]]], [Symbol.for('list*'), Symbol.for('a'), Symbol.for('b')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], 'let x = a;\n' +
-  '\n' +
-  'let y = b;\n' +
-  '\n' +
-  'x + y[0];'])));
+describe('js/iife', (): any => xit('(compile \'(js/iife (js/arrow (x . y) (+ x (first y))) (list* a b)) :as \'statement)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/iife'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), [Symbol.for('first'), Symbol.for('y')]]], [Symbol.for('list*'), Symbol.for('a'), Symbol.for('b')]]], Symbol.for(':as'), [Symbol.for('quote'), Symbol.for('statement')]], `let x = a;
+
+let y = b;
+
+x + y[0];`])));
 
 describe('parse', (): any => {
   it('(parse "foo")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('parse'), 'foo'], [Symbol.for('quote'), Symbol.for('foo')]]));
@@ -141,27 +136,27 @@ describe('parse', (): any => {
 
 describe('interpret', (): any => xit('(interpret \'(length \'(1 . ())) :fdottedlists #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('interpret'), [Symbol.for('quote'), [Symbol.for('length'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]]], Symbol.for(':fdottedlists'), true], 1])));
 
-describe('gensym', (): any => xit('(compile `(module m scheme (define ,(gensym "length") length)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quasiquote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('gensym'), 'length']], Symbol.for('length')]]]], 'import {\n' +
-  '  length\n' +
-  '} from \'roselisp\';\n' +
-  '\n' +
-  'let length1 = length;'])));
+describe('gensym', (): any => xit('(compile `(module m scheme (define ,(gensym "length") length)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quasiquote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('unquote'), [Symbol.for('gensym'), 'length']], Symbol.for('length')]]]], `import {
+  length
+} from 'roselisp';
 
-describe('define-syntax', (): any => xit('(compile \'(module m scheme (define x 1) (define-syntax (foo x) (syntax (begin (define x 2) x))) (foo)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('x'), 1], [Symbol.for('define-syntax'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('syntax'), [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 2], Symbol.for('x')]]], [Symbol.for('foo')]]]], 'import {\n' +
-  '  datumToSyntax\n' +
-  '} from \'roselisp\';\n' +
-  '\n' +
-  'let x = 1;\n' +
-  '\n' +
-  'function foo(x) {\n' +
-  '  return datumToSyntax(false, [Symbol.for(\'begin\'), [Symbol.for(\'define\'), Symbol.for(\'x\'), 2], Symbol.for(\'x\')]);\n' +
-  '}\n' +
-  '\n' +
-  'foo.ftype = [Symbol.for(\'macro->\'), Symbol.for(\'Syntax\'), Symbol.for(\'Syntax\')];\n' +
-  '\n' +
-  'let x1 = 2;\n' +
-  '\n' +
-  'x1;'])));
+let length1 = length;`])));
+
+describe('define-syntax', (): any => xit('(compile \'(module m scheme (define x 1) (define-syntax (foo x) (syntax (begin (define x 2) x))) (foo)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('x'), 1], [Symbol.for('define-syntax'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('syntax'), [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 2], Symbol.for('x')]]], [Symbol.for('foo')]]]], `import {
+  datumToSyntax
+} from 'roselisp';
+
+let x = 1;
+
+function foo(x) {
+  return datumToSyntax(false, [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 2], Symbol.for('x')]);
+}
+
+foo.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+let x1 = 2;
+
+x1;`])));
 
 describe('Dotted lists', (): any => {
   xit('\'(1 . 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]], [Symbol.for('quote'), [1, Symbol.for('.'), 2]]]));
@@ -172,62 +167,16 @@ describe('Dotted lists', (): any => {
   xit('(dotted-list? \'(1 . (2 . ())))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('dotted-list?'), [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]]], false]));
   xit('(dotted-pair? \'(1 . ()))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('dotted-pair?'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]], false]));
   xit('(dotted-pair? \'(1 . (2 . ())))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('dotted-pair?'), [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]]], false]));
-  xit('(compile \'(module m scheme \'(1 . ())) :fdottedlists #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]]], Symbol.for(':fdottedlists'), true], 'import {\n' +
-    '  normalizeList\n' +
-    '} from \'roselisp\';\n' +
-    '\n' +
-    'normalizeList([1, Symbol.for(\'.\'), []);']));
-  return xit('(compile \'(module m scheme (define (normalize-list x) \'(1 . x))) :fdottedlists #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('normalize-list'), Symbol.for('x')], [Symbol.for('quote'), [1, Symbol.for('.'), Symbol.for('x')]]]]], Symbol.for(':fdottedlists'), true], 'import {\n' +
-    '  normalizeList1\n' +
-    '} from \'roselisp\';\n' +
-    '\n' +
-    'function normalizeList(x) {\n' +
-    '  normalizeList1([1, Symbol.for(\'.\'), x);\n' +
-    '}']));
-});
+  xit('(compile \'(module m scheme \'(1 . ())) :fdottedlists #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('quote'), [1, Symbol.for('.'), []]]]], Symbol.for(':fdottedlists'), true], `import {
+  normalizeList
+} from 'roselisp';
 
-describe('trampoline', (): any => {
-  it('(trampoline (fn (x) x) 1)', (): any => assertEqual(trampoline((x: any): any => x, 1), 1));
-  function add(x: any, y: any): any {
-    return x + y;
-  }
-  function fibonacci(n: any): any {
-    if (n < 2) {
-      return n;
-    } else {
-      return tcall(add, tcall(fibonacci, n - 1), tcall(fibonacci, n - 2));
-    }
-  }
-  it('(trampoline fibonacci 0)', (): any => assertEqual(trampoline(fibonacci, 0), 0));
-  it('(trampoline fibonacci 1)', (): any => assertEqual(trampoline(fibonacci, 1), 1));
-  it('(trampoline fibonacci 2)', (): any => assertEqual(trampoline(fibonacci, 2), 1));
-  it('(trampoline fibonacci 3)', (): any => assertEqual(trampoline(fibonacci, 3), 2));
-  it('(trampoline fibonacci 4)', (): any => assertEqual(trampoline(fibonacci, 4), 3));
-  it('(trampoline fibonacci 5)', (): any => assertEqual(trampoline(fibonacci, 5), 5));
-  it('(trampoline fibonacci 6)', (): any => assertEqual(trampoline(fibonacci, 6), 8));
-  it('(trampoline fibonacci 7)', (): any => assertEqual(trampoline(fibonacci, 7), 13));
-  it('(trampoline fibonacci 8)', (): any => assertEqual(trampoline(fibonacci, 8), 21));
-  it('(trampoline fibonacci 9)', (): any => assertEqual(trampoline(fibonacci, 9), 34));
-  it('(trampoline fibonacci 10)', (): any => assertEqual(trampoline(fibonacci, 10), 55));
-  function sub(x: any, y: any): any {
-    return x - y;
-  }
-  function sequence(n: any): any {
-    if (n < 2) {
-      return n;
-    } else {
-      return tcall(sub, tcall(sequence, n - 1), tcall(sequence, n - 2));
-    }
-  }
-  it('(trampoline sequence 0)', (): any => assertEqual(trampoline(sequence, 0), 0));
-  it('(trampoline sequence 1)', (): any => assertEqual(trampoline(sequence, 1), 1));
-  it('(trampoline sequence 2)', (): any => assertEqual(trampoline(sequence, 2), 1));
-  it('(trampoline sequence 3)', (): any => assertEqual(trampoline(sequence, 3), 0));
-  it('(trampoline sequence 4)', (): any => assertEqual(trampoline(sequence, 4), -1));
-  it('(trampoline sequence 5)', (): any => assertEqual(trampoline(sequence, 5), -1));
-  it('(trampoline sequence 6)', (): any => assertEqual(trampoline(sequence, 6), 0));
-  it('(trampoline sequence 7)', (): any => assertEqual(trampoline(sequence, 7), 1));
-  it('(trampoline sequence 8)', (): any => assertEqual(trampoline(sequence, 8), 1));
-  it('(trampoline sequence 9)', (): any => assertEqual(trampoline(sequence, 9), 0));
-  return it('(trampoline sequence 10)', (): any => assertEqual(trampoline(sequence, 10), -1));
+normalizeList([1, Symbol.for('.'), []);`]));
+  return xit('(compile \'(module m scheme (define (normalize-list x) \'(1 . x))) :fdottedlists #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('normalize-list'), Symbol.for('x')], [Symbol.for('quote'), [1, Symbol.for('.'), Symbol.for('x')]]]]], Symbol.for(':fdottedlists'), true], `import {
+  normalizeList1
+} from 'roselisp';
+
+function normalizeList(x) {
+  normalizeList1([1, Symbol.for('.'), x);
+}`]));
 });

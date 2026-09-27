@@ -16,7 +16,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
 const [selfEvaluatingP, buildList, keywordp] = (() => {
@@ -744,3 +744,135 @@ function parsePlistAndBody(plstAndBody) {
     return [plst, body];
 }
 exports.parsePlistAndBody = parsePlistAndBody;
+/**
+ * Make a function of the specified arity.
+ */
+function makeArityFunction(fun, n = undefined, arrow = false) {
+    if (arrow) {
+        switch (n) {
+            case 0: {
+                return () => fun();
+                break;
+            }
+            case 1: {
+                return (a) => fun(a);
+                break;
+            }
+            case 2: {
+                return (a, b) => fun(a, b);
+                break;
+            }
+            case 3: {
+                return (a, b, c) => fun(a, b, c);
+                break;
+            }
+            case 4: {
+                return (a, b, c, d) => fun(a, b, c, d);
+                break;
+            }
+            case 5: {
+                return (a, b, c, d, e) => fun(a, b, c, d, e);
+                break;
+            }
+            case 6: {
+                return (a, b, c, d, e, f) => fun(a, b, c, d, e, f);
+                break;
+            }
+            case 7: {
+                return (a, b, c, d, e, f, g) => fun(a, b, c, d, e, f, g);
+                break;
+            }
+            case 8: {
+                return (a, b, c, d, e, f, g, h) => fun(a, b, c, d, e, f, g, h);
+                break;
+            }
+            case 9: {
+                return (a, b, c, d, e, f, g, h, i) => fun(a, b, c, d, e, f, g, h, i);
+                break;
+            }
+            case 10: {
+                return (a, b, c, d, e, f, g, h, i, j) => fun(a, b, c, d, e, f, g, h, i, j);
+                break;
+            }
+            default: {
+                return (...args) => fun(...args);
+            }
+        }
+    }
+    else {
+        switch (n) {
+            case 0: {
+                return function () {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 1: {
+                return function (a) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 2: {
+                return function (a, b) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 3: {
+                return function (a, b, c) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 4: {
+                return function (a, b, c, d) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 5: {
+                return function (a, b, c, d, e) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 6: {
+                return function (a, b, c, d, e, fun) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 7: {
+                return function (a, b, c, d, e, f, g) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 8: {
+                return function (a, b, c, d, e, f, g, h) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 9: {
+                return function (a, b, c, d, e, f, g, h, i) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            case 10: {
+                return function (a, b, c, d, e, f, g, h, i, j) {
+                    return fun.apply(this, arguments);
+                };
+                break;
+            }
+            default: {
+                return function (...args) {
+                    return fun.apply(this, arguments);
+                };
+            }
+        }
+    }
+}
+exports.makeArityFunction = makeArityFunction;

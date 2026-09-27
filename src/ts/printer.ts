@@ -299,15 +299,15 @@ docHasCommentsP.fsource = [Symbol.for('define'), [Symbol.for('doc-has-comments?'
 function docWrap(doc: any, options: any = {}, settings: any = {}): any {
   const open: any = settings['open'] || '(';
   const close: any = settings['close'] || ')';
-  const offset: any = open.length;
   if (options['hasComments'] || docHasCommentsP(doc)) {
-    return printDoc([open, line, align(offset, doc), line, close], options);
+    const offset: any = open.length;
+    return [open, line, align(offset, doc), line, close];
   } else {
-    return printDoc([open, doc, close]);
+    return [open, doc, close];
   }
 }
 
-docWrap.fsource = [Symbol.for('define'), [Symbol.for('doc-wrap'), Symbol.for('doc'), [Symbol.for('options'), [Symbol.for('js/obj')]], [Symbol.for('settings'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('open'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':open')], '(']], [Symbol.for('define'), Symbol.for('close'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':close')], ')']], [Symbol.for('define'), Symbol.for('offset'), [Symbol.for('string-length'), Symbol.for('open')]], [Symbol.for('cond'), [[Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':has-comments')], [Symbol.for('doc-has-comments?'), Symbol.for('doc')]], [Symbol.for('print-doc'), [Symbol.for('list'), Symbol.for('open'), Symbol.for('line'), [Symbol.for('align'), Symbol.for('offset'), Symbol.for('doc')], Symbol.for('line'), Symbol.for('close')], Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('print-doc'), [Symbol.for('list'), Symbol.for('open'), Symbol.for('doc'), Symbol.for('close')]]]]];
+docWrap.fsource = [Symbol.for('define'), [Symbol.for('doc-wrap'), Symbol.for('doc'), [Symbol.for('options'), [Symbol.for('js/obj')]], [Symbol.for('settings'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('open'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':open')], '(']], [Symbol.for('define'), Symbol.for('close'), [Symbol.for('or'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':close')], ')']], [Symbol.for('cond'), [[Symbol.for('or'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':has-comments')], [Symbol.for('doc-has-comments?'), Symbol.for('doc')]], [Symbol.for('define'), Symbol.for('offset'), [Symbol.for('string-length'), Symbol.for('open')]], [Symbol.for('list'), Symbol.for('open'), Symbol.for('line'), [Symbol.for('align'), Symbol.for('offset'), Symbol.for('doc')], Symbol.for('line'), Symbol.for('close')]], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('open'), Symbol.for('doc'), Symbol.for('close')]]]];
 
 /**
  * Print comments of an ESTree node and attach them
@@ -925,7 +925,7 @@ function printTemplateElement(node: any, options: any = {}): any {
   return printTemplateString(str);
 }
 
-printTemplateElement.fsource = [Symbol.for('define'), [Symbol.for('print-template-element'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('get-estree-field'), 'raw', [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]]], [Symbol.for('print-template-string'), Symbol.for('str')]];
+printTemplateElement.fsource = [Symbol.for('define'), [Symbol.for('print-template-element'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('get-estree-field'), 'value', Symbol.for('_')], [Symbol.for('get-estree-field'), 'raw', Symbol.for('_')]]], [Symbol.for('print-template-string'), Symbol.for('str')]];
 
 /**
  * Print a `TemplateLiteral` ESTree node to a `Doc` object.
@@ -980,40 +980,38 @@ function printBinaryExpression(node: any, options: any = {}): any {
   const operatorPrinted: any = operator;
   const left: any = getEstreeField('left', node);
   let leftPrinted: any = printNode(left, options);
-  let leftPrintedStr: any = docValueString(leftPrinted);
   const right: any = getEstreeField('right', node);
-  const rightPrinted: any = printNode(right, options);
-  let rightPrintedStr: any = docValueString(rightPrinted);
+  let rightPrinted: any = printNode(right, options);
   let shouldBreak: any = docShouldBreakP(leftPrinted) || docShouldBreakP(rightPrinted);
   const isMultilineStringLiteral: any = estreeStringLiteralP(left) && getEstreeField('value', left).match('\\n$');
   const isMultilineBinaryExpression: any = !isMultilineStringLiteral && estreeTypeP(left, 'BinaryExpression') && estreeStringLiteralP(getEstreeField('right', left)) && getEstreeField('value', getEstreeField('right', left)).match(/\n$/);
   const isMultilineString: any = isMultilineStringLiteral || isMultilineBinaryExpression;
   let result: any;
   if (!(estreeSimpleP(left) || (estreeTypeP(left, type_) && (getEstreeField('operator', left) === operator)))) {
-    leftPrintedStr = docWrap(leftPrintedStr, {
+    leftPrinted = docWrap(leftPrinted, {
       ...options,
       hasComments: docHasCommentsP(leftPrinted)
     });
   }
   if (!(estreeSimpleP(right) || (estreeTypeP(right, type_) && (getEstreeField('operator', right) === operator) && ['+', '*', '&&', '||'].includes(operator)))) {
-    rightPrintedStr = docWrap(rightPrintedStr, {
+    rightPrinted = docWrap(rightPrinted, {
       ...options,
       hasComments: docHasCommentsP(rightPrinted)
     });
   }
   if (shouldBreak) {
-    result = ['(', line, align(1, leftPrintedStr), estreeHasTrailingCommentP(left) ? [line, align(1, operator)] : [space, operator], line, align(1, rightPrintedStr), line, ')'];
+    result = ['(', line, align(1, leftPrinted), estreeHasTrailingCommentP(left) ? [line, align(1, operator)] : [space, operator], line, align(1, rightPrinted), line, ')'];
   } else if (isMultilineString) {
-    result = [leftPrintedStr, space, operator, line, indent(rightPrintedStr)];
+    result = [leftPrinted, space, operator, line, indent(rightPrinted)];
   } else {
-    result = [leftPrintedStr, space, operator, space, rightPrintedStr];
+    result = [leftPrinted, space, operator, space, rightPrinted];
   }
   return group(result, {
     shouldBreak
   });
 }
 
-printBinaryExpression.fsource = [Symbol.for('define'), [Symbol.for('print-binary-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('estree-type'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('operator'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('operator-printed'), Symbol.for('operator')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('left-printed-str'), [Symbol.for('doc-value-string'), Symbol.for('left-printed')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('right-printed-str'), [Symbol.for('doc-value-string'), Symbol.for('right-printed')]], [Symbol.for('define'), Symbol.for('should-break'), [Symbol.for('or'), [Symbol.for('doc-should-break?'), Symbol.for('left-printed')], [Symbol.for('doc-should-break?'), Symbol.for('right-printed')]]], [Symbol.for('define'), Symbol.for('is-multiline-string-literal'), [Symbol.for('and'), [Symbol.for('estree-string-literal?'), Symbol.for('left')], [Symbol.for('regexp-match'), '\\n$', [Symbol.for('get-estree-field'), 'value', Symbol.for('left')]]]], [Symbol.for('define'), Symbol.for('is-multiline-binary-expression'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('is-multiline-string-literal')], [Symbol.for('estree-type?'), Symbol.for('left'), 'BinaryExpression'], [Symbol.for('estree-string-literal?'), [Symbol.for('get-estree-field'), 'right', Symbol.for('left')]], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\n$'], [Symbol.for('~>'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'right', Symbol.for('_')], [Symbol.for('get-estree-field'), 'value', Symbol.for('_')]]]]], [Symbol.for('define'), Symbol.for('is-multiline-string'), [Symbol.for('or'), Symbol.for('is-multiline-string-literal'), Symbol.for('is-multiline-binary-expression')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('or'), [Symbol.for('estree-simple?'), Symbol.for('left')], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('left'), Symbol.for('type_')], [Symbol.for('eq?'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('left')], Symbol.for('operator')]]], [Symbol.for('set!'), Symbol.for('left-printed-str'), [Symbol.for('doc-wrap'), Symbol.for('left-printed-str'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':has-comments'), [Symbol.for('doc-has-comments?'), Symbol.for('left-printed')]]]]]], [Symbol.for('unless'), [Symbol.for('or'), [Symbol.for('estree-simple?'), Symbol.for('right')], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('right'), Symbol.for('type_')], [Symbol.for('eq?'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('right')], Symbol.for('operator')], [Symbol.for('memq?'), Symbol.for('operator'), [Symbol.for('quote'), ['+', '*', '&&', '||']]]]], [Symbol.for('set!'), Symbol.for('right-printed-str'), [Symbol.for('doc-wrap'), Symbol.for('right-printed-str'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':has-comments'), [Symbol.for('doc-has-comments?'), Symbol.for('right-printed')]]]]]], [Symbol.for('cond'), [Symbol.for('should-break'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '(', Symbol.for('line'), [Symbol.for('align'), 1, Symbol.for('left-printed-str')], [Symbol.for('if'), [Symbol.for('estree-has-trailing-comment?'), Symbol.for('left')], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('align'), 1, Symbol.for('operator')]], [Symbol.for('list'), Symbol.for('space'), Symbol.for('operator')]], Symbol.for('line'), [Symbol.for('align'), 1, Symbol.for('right-printed-str')], Symbol.for('line'), ')']]], [Symbol.for('is-multiline-string'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), Symbol.for('left-printed-str'), Symbol.for('space'), Symbol.for('operator'), Symbol.for('line'), [Symbol.for('indent'), Symbol.for('right-printed-str')]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), Symbol.for('left-printed-str'), Symbol.for('space'), Symbol.for('operator'), Symbol.for('space'), Symbol.for('right-printed-str')]]]], [Symbol.for('group'), Symbol.for('result'), [Symbol.for('js/obj'), Symbol.for(':should-break'), Symbol.for('should-break')]]];
+printBinaryExpression.fsource = [Symbol.for('define'), [Symbol.for('print-binary-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('estree-type'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('operator'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('operator-printed'), Symbol.for('operator')], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('should-break'), [Symbol.for('or'), [Symbol.for('doc-should-break?'), Symbol.for('left-printed')], [Symbol.for('doc-should-break?'), Symbol.for('right-printed')]]], [Symbol.for('define'), Symbol.for('is-multiline-string-literal'), [Symbol.for('and'), [Symbol.for('estree-string-literal?'), Symbol.for('left')], [Symbol.for('regexp-match'), '\\n$', [Symbol.for('get-estree-field'), 'value', Symbol.for('left')]]]], [Symbol.for('define'), Symbol.for('is-multiline-binary-expression'), [Symbol.for('and'), [Symbol.for('not'), Symbol.for('is-multiline-string-literal')], [Symbol.for('estree-type?'), Symbol.for('left'), 'BinaryExpression'], [Symbol.for('estree-string-literal?'), [Symbol.for('get-estree-field'), 'right', Symbol.for('left')]], [Symbol.for('regexp-match'), [Symbol.for('regexp'), '\\n$'], [Symbol.for('~>'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'right', Symbol.for('_')], [Symbol.for('get-estree-field'), 'value', Symbol.for('_')]]]]], [Symbol.for('define'), Symbol.for('is-multiline-string'), [Symbol.for('or'), Symbol.for('is-multiline-string-literal'), Symbol.for('is-multiline-binary-expression')]], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('or'), [Symbol.for('estree-simple?'), Symbol.for('left')], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('left'), Symbol.for('type_')], [Symbol.for('eq?'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('left')], Symbol.for('operator')]]], [Symbol.for('set!'), Symbol.for('left-printed'), [Symbol.for('doc-wrap'), Symbol.for('left-printed'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':has-comments'), [Symbol.for('doc-has-comments?'), Symbol.for('left-printed')]]]]]], [Symbol.for('unless'), [Symbol.for('or'), [Symbol.for('estree-simple?'), Symbol.for('right')], [Symbol.for('and'), [Symbol.for('estree-type?'), Symbol.for('right'), Symbol.for('type_')], [Symbol.for('eq?'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('right')], Symbol.for('operator')], [Symbol.for('memq?'), Symbol.for('operator'), [Symbol.for('quote'), ['+', '*', '&&', '||']]]]], [Symbol.for('set!'), Symbol.for('right-printed'), [Symbol.for('doc-wrap'), Symbol.for('right-printed'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':has-comments'), [Symbol.for('doc-has-comments?'), Symbol.for('right-printed')]]]]]], [Symbol.for('cond'), [Symbol.for('should-break'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '(', Symbol.for('line'), [Symbol.for('align'), 1, Symbol.for('left-printed')], [Symbol.for('if'), [Symbol.for('estree-has-trailing-comment?'), Symbol.for('left')], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('align'), 1, Symbol.for('operator')]], [Symbol.for('list'), Symbol.for('space'), Symbol.for('operator')]], Symbol.for('line'), [Symbol.for('align'), 1, Symbol.for('right-printed')], Symbol.for('line'), ')']]], [Symbol.for('is-multiline-string'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), Symbol.for('left-printed'), Symbol.for('space'), Symbol.for('operator'), Symbol.for('line'), [Symbol.for('indent'), Symbol.for('right-printed')]]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), Symbol.for('left-printed'), Symbol.for('space'), Symbol.for('operator'), Symbol.for('space'), Symbol.for('right-printed')]]]], [Symbol.for('group'), Symbol.for('result'), [Symbol.for('js/obj'), Symbol.for(':should-break'), Symbol.for('should-break')]]];
 
 /**
  * Print a `LogicalExpression` ESTree node to a `Doc` object.
@@ -1035,7 +1033,7 @@ function printAssignmentExpression(node: any, options: any = {}): any {
   const left: any = getEstreeField('left', node);
   let leftPrinted: any = printNode(left, options);
   const right: any = getEstreeField('right', node);
-  const rightPrinted: any = printNode(right, {
+  let rightPrinted: any = printNode(right, {
     ...options,
     noImplicitAny: false
   });
@@ -1080,9 +1078,6 @@ function printSequenceExpression(node: any, options: any = {}): any {
   const expressionsPrinted: any = expressions.map((x: any): any => printNode(x, options));
   let result: any;
   result = join([',', space], expressionsPrinted);
-  // (when (> (length expressions) 1)
-  //   (set! result
-  //         (doc-wrap result options)))
   return result;
 }
 
@@ -1102,11 +1097,11 @@ function printBlockStatement(node: any, options: any = {}): any {
     return getEstreeField('body', node);
   })();
   const bodyIndented: any = indent(join(line, bodyModified.map((x: any): any => printNode(x, options))));
-  const bodyPrinted: any = printDoc(bodyIndented);
-  return ['{', line, bodyIndented, (bodyPrinted === '') ? empty : line, '}'];
+  const bodyPrintedStr: any = printDoc(bodyIndented);
+  return ['{', line, bodyIndented, (bodyPrintedStr === '') ? empty : line, '}'];
 }
 
-printBlockStatement.fsource = [Symbol.for('define'), [Symbol.for('print-block-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-modified'), [Symbol.for('begin'), [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('>'), [Symbol.for('length'), Symbol.for('body')], 0]], [Symbol.for('set-field!'), Symbol.for('comments'), [Symbol.for('first'), Symbol.for('body')], [Symbol.for('append'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('or'), [Symbol.for('get-estree-field'), 'comments', [Symbol.for('first'), Symbol.for('body')]], [Symbol.for('quote'), []]]]], [Symbol.for('set-field!'), Symbol.for('comments'), Symbol.for('node'), [Symbol.for('quote'), []]]], [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]]], [Symbol.for('define'), Symbol.for('body-indented'), [Symbol.for('indent'), [Symbol.for('~>'), Symbol.for('body-modified'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), Symbol.for('line'), Symbol.for('_')]]]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-doc'), Symbol.for('body-indented')]], [Symbol.for('list'), '{', Symbol.for('line'), Symbol.for('body-indented'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('body-printed'), ''], Symbol.for('empty'), Symbol.for('line')], '}']];
+printBlockStatement.fsource = [Symbol.for('define'), [Symbol.for('print-block-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-modified'), [Symbol.for('begin'), [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('>'), [Symbol.for('length'), Symbol.for('body')], 0]], [Symbol.for('set-field!'), Symbol.for('comments'), [Symbol.for('first'), Symbol.for('body')], [Symbol.for('append'), [Symbol.for('get-estree-field'), 'comments', Symbol.for('node')], [Symbol.for('or'), [Symbol.for('get-estree-field'), 'comments', [Symbol.for('first'), Symbol.for('body')]], [Symbol.for('quote'), []]]]], [Symbol.for('set-field!'), Symbol.for('comments'), Symbol.for('node'), [Symbol.for('quote'), []]]], [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]]], [Symbol.for('define'), Symbol.for('body-indented'), [Symbol.for('indent'), [Symbol.for('~>'), Symbol.for('body-modified'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), Symbol.for('line'), Symbol.for('_')]]]], [Symbol.for('define'), Symbol.for('body-printed-str'), [Symbol.for('print-doc'), Symbol.for('body-indented')]], [Symbol.for('list'), '{', Symbol.for('line'), Symbol.for('body-indented'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('body-printed-str'), ''], Symbol.for('empty'), Symbol.for('line')], '}']];
 
 /**
  * Print a `MemberExpression` ESTree node to a `Doc` object.
@@ -1267,27 +1262,26 @@ printVariableDeclarator.fsource = [Symbol.for('define'), [Symbol.for('print-vari
 function printIfStatement(node: any, options: any = {}): any {
   const test: any = getEstreeField('test', node);
   let testPrinted: any = printNode(test, options);
-  let testPrintedStr: any = docValueString(testPrinted);
   // It is customary to wrap assignment expressions
   // in an extra set of parentheses to indicate that
   // that is what is really intended, distinguishing
   // them from comparisons (`if ((x = y)) { ... }`
   // vs. `if (x === y) { ... }`).
   if (estreeTypeP(test, 'AssignmentExpression')) {
-    testPrintedStr = docWrap(testPrinted, options);
+    testPrinted = docWrap(testPrinted, options);
   }
   const consequent: any = getEstreeField('consequent', node);
   let consequentPrinted: any = printNode(consequent, options);
   const alternate: any = getEstreeField('alternate', node);
-  let result: any = 'if (' + testPrintedStr + ')' + (docShouldBreakP(consequentPrinted) ? line : space) + docValueString(consequentPrinted);
+  let result: any = ['if', space, '(', testPrinted, ')', docShouldBreakP(consequentPrinted) ? line : space, consequentPrinted];
   if (alternate) {
     let alternatePrinted: any = printNode(alternate, options);
-    result = result + ' else ' + docValueString(alternatePrinted);
+    result = [result, space, 'else', space, alternatePrinted];
   }
   return result;
 }
 
-printIfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-if-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('test-printed-str'), [Symbol.for('doc-value-string'), Symbol.for('test-printed')]], [Symbol.for('when'), [Symbol.for('estree-type?'), Symbol.for('test'), 'AssignmentExpression'], [Symbol.for('set!'), Symbol.for('test-printed-str'), [Symbol.for('doc-wrap'), Symbol.for('test-printed'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('print-node'), Symbol.for('consequent'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('alternate'), [Symbol.for('get-estree-field'), 'alternate', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('string-append'), 'if (', Symbol.for('test-printed-str'), ')', [Symbol.for('if'), [Symbol.for('doc-should-break?'), Symbol.for('consequent-printed')], Symbol.for('line'), Symbol.for('space')], [Symbol.for('doc-value-string'), Symbol.for('consequent-printed')]]], [Symbol.for('when'), Symbol.for('alternate'), [Symbol.for('define'), Symbol.for('alternate-printed'), [Symbol.for('print-node'), Symbol.for('alternate'), Symbol.for('options')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('string-append'), Symbol.for('result'), ' else ', [Symbol.for('doc-value-string'), Symbol.for('alternate-printed')]]]], Symbol.for('result')];
+printIfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-if-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('when'), [Symbol.for('estree-type?'), Symbol.for('test'), 'AssignmentExpression'], [Symbol.for('set!'), Symbol.for('test-printed'), [Symbol.for('doc-wrap'), Symbol.for('test-printed'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('consequent-printed'), [Symbol.for('print-node'), Symbol.for('consequent'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('alternate'), [Symbol.for('get-estree-field'), 'alternate', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list'), 'if', Symbol.for('space'), '(', Symbol.for('test-printed'), ')', [Symbol.for('if'), [Symbol.for('doc-should-break?'), Symbol.for('consequent-printed')], Symbol.for('line'), Symbol.for('space')], Symbol.for('consequent-printed')]], [Symbol.for('when'), Symbol.for('alternate'), [Symbol.for('define'), Symbol.for('alternate-printed'), [Symbol.for('print-node'), Symbol.for('alternate'), Symbol.for('options')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), Symbol.for('result'), Symbol.for('space'), 'else', Symbol.for('space'), Symbol.for('alternate-printed')]]], Symbol.for('result')];
 
 /**
  * Print a `ConditionalExpression` ESTree node to a `Doc` object.
@@ -1357,7 +1351,8 @@ function printForStatement(node: any, options: any = {}): any {
     fsemicolon: false
   });
   const test: any = getEstreeField('test', node);
-  let testPrinted: any = printDoc(printNode(test, options), options);
+  let testPrinted: any = printNode(test, options);
+  const testPrintedStr: any = printDoc(testPrinted, options);
   const update: any = getEstreeField('update', node);
   const updatePrinted: any = printNode(update, {
     ...options,
@@ -1365,10 +1360,10 @@ function printForStatement(node: any, options: any = {}): any {
   });
   const body: any = getEstreeField('body', node);
   const bodyPrinted: any = printNode(body, options);
-  return ['for', space, '(', initPrinted, ';', (testPrinted === empty) ? empty : space, testPrinted, ';', (updatePrinted === empty) ? empty : space, updatePrinted, ')', space, bodyPrinted];
+  return ['for', space, '(', initPrinted, ';', (testPrintedStr === empty) ? empty : space, testPrinted, ';', (updatePrinted === empty) ? empty : space, updatePrinted, ')', space, bodyPrinted];
 }
 
-printForStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-estree-field'), 'init', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('init-printed'), [Symbol.for('print-node'), Symbol.for('init'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':fsemicolon'), false]]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-doc'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('get-estree-field'), 'update', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('update-printed'), [Symbol.for('print-node'), Symbol.for('update'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':fsemicolon'), false]]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('init-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('test-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('test-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('update-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('update-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
+printForStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-estree-field'), 'init', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('init-printed'), [Symbol.for('print-node'), Symbol.for('init'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':fsemicolon'), false]]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test-printed'), [Symbol.for('print-node'), Symbol.for('test'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('test-printed-str'), [Symbol.for('print-doc'), Symbol.for('test-printed'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('get-estree-field'), 'update', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('update-printed'), [Symbol.for('print-node'), Symbol.for('update'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':fsemicolon'), false]]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('init-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('test-printed-str'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('test-printed'), ';', [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('update-printed'), Symbol.for('empty')], Symbol.for('empty'), Symbol.for('space')], Symbol.for('update-printed'), ')', Symbol.for('space'), Symbol.for('body-printed')]];
 
 /**
  * Print a `ForOfStatement` ESTree node to a `Doc` object.
@@ -1381,7 +1376,7 @@ function printForOfStatement(node: any, options: any = {}): any {
     fsemicolon: false
   });
   const right: any = getEstreeField('right', node);
-  const rightPrinted: any = printNode(right, options);
+  let rightPrinted: any = printNode(right, options);
   const body: any = getEstreeField('body', node);
   const bodyPrinted: any = printNode(body, options);
   let resultStr: any;
@@ -1400,15 +1395,16 @@ printForOfStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-of-s
 function printForInStatement(node: any, options: any = {}): any {
   const toLanguage: any = options['to'];
   const left: any = getEstreeField('left', node);
-  let leftPrinted: any = printDoc(printNode(left, options), options).replace(/;$/, '');
+  let leftPrinted: any = printNode(left, options);
+  const leftPrintedStr: any = printDoc(leftPrinted, options).replace(/;$/, '');
   const right: any = getEstreeField('right', node);
-  const rightPrinted: any = printNode(right, options);
+  let rightPrinted: any = printNode(right, options);
   const body: any = getEstreeField('body', node);
   const bodyPrinted: any = printNode(body, options);
-  return ['for', space, '(', leftPrinted, space, 'in', space, rightPrinted, (toLanguage === 'typescript') ? ' as any[]' : empty, ')', space, bodyPrinted];
+  return ['for', space, '(', leftPrintedStr, space, 'in', space, rightPrinted, (toLanguage === 'typescript') ? ' as any[]' : empty, ')', space, bodyPrinted];
 }
 
-printForInStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-in-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':to')]], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('~>'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')], [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('left-printed'), Symbol.for('space'), 'in', Symbol.for('space'), Symbol.for('right-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('to-language'), 'typescript'], ' as any[]', Symbol.for('empty')], ')', Symbol.for('space'), Symbol.for('body-printed')]];
+printForInStatement.fsource = [Symbol.for('define'), [Symbol.for('print-for-in-statement'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':to')]], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-printed'), [Symbol.for('print-node'), Symbol.for('left'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('left-printed-str'), [Symbol.for('~>'), Symbol.for('left-printed'), [Symbol.for('print-doc'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), ';$'], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-printed'), [Symbol.for('print-node'), Symbol.for('right'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]], [Symbol.for('list'), 'for', Symbol.for('space'), '(', Symbol.for('left-printed-str'), Symbol.for('space'), 'in', Symbol.for('space'), Symbol.for('right-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('to-language'), 'typescript'], ' as any[]', Symbol.for('empty')], ')', Symbol.for('space'), Symbol.for('body-printed')]];
 
 /**
  * Print a `TryStatement` ESTree node to a `Doc` object.
@@ -1441,12 +1437,12 @@ function printClassDeclaration(node: any, options: any = {}): any {
   const id: any = getEstreeField('id', node);
   const body: any = getEstreeField('body', node);
   const bodyIndented: any = indent(printNode(body, options));
-  const bodyPrinted: any = printDoc(bodyIndented, options);
+  const bodyPrintedStr: any = printDoc(bodyIndented, options);
   const superClass: any = getEstreeField('superClass', node);
-  return ['class', space, id ? [printNode(id, options), space] : empty, superClass ? ['extends', space, printNode(superClass, options), space] : empty, '{', line, bodyIndented, (bodyPrinted === '') ? empty : line, '}'];
+  return ['class', space, id ? [printNode(id, options), space] : empty, superClass ? ['extends', space, printNode(superClass, options), space] : empty, '{', line, bodyIndented, (bodyPrintedStr === '') ? empty : line, '}'];
 }
 
-printClassDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-class-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('get-estree-field'), 'id', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-indented'), [Symbol.for('indent'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('body-printed'), [Symbol.for('print-doc'), Symbol.for('body-indented'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('super-class'), [Symbol.for('get-estree-field'), 'superClass', Symbol.for('node')]], [Symbol.for('list'), 'class', Symbol.for('space'), [Symbol.for('if'), Symbol.for('id'), [Symbol.for('list'), [Symbol.for('print-node'), Symbol.for('id'), Symbol.for('options')], Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('super-class'), [Symbol.for('list'), 'extends', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('super-class'), Symbol.for('options')], Symbol.for('space')], Symbol.for('empty')], '{', Symbol.for('line'), Symbol.for('body-indented'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('body-printed'), ''], Symbol.for('empty'), Symbol.for('line')], '}']];
+printClassDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-class-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('get-estree-field'), 'id', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body-indented'), [Symbol.for('indent'), [Symbol.for('print-node'), Symbol.for('body'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('body-printed-str'), [Symbol.for('print-doc'), Symbol.for('body-indented'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('super-class'), [Symbol.for('get-estree-field'), 'superClass', Symbol.for('node')]], [Symbol.for('list'), 'class', Symbol.for('space'), [Symbol.for('if'), Symbol.for('id'), [Symbol.for('list'), [Symbol.for('print-node'), Symbol.for('id'), Symbol.for('options')], Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('super-class'), [Symbol.for('list'), 'extends', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('super-class'), Symbol.for('options')], Symbol.for('space')], Symbol.for('empty')], '{', Symbol.for('line'), Symbol.for('body-indented'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('body-printed-str'), ''], Symbol.for('empty'), Symbol.for('line')], '}']];
 
 /**
  * Print a `ClassExpression` ESTree node to a `Doc` object.
@@ -1490,17 +1486,20 @@ function printMethodDefinition(node: any, options: any = {}): any {
   let keyPrinted: any = printNode(key, options);
   const keyPrintedStr: any = printDoc(keyPrinted, options);
   const value: any = getEstreeField('value', node);
-  const valuePrinted: any = printDoc(printFunction(value, options, {
+  const valuePrinted: any = printFunction(value, options, {
     returnType: (keyPrintedStr === 'constructor') ? '' : 'any'
-  }), options).replace(/^function /, '');
+  });
+  const valuePrintedStr: any =
+    // FIXME: Kludge.
+    printDoc(valuePrinted, options).replace(/^function /, '');
   const staticFlag: any = getEstreeField('static', node);
   const computedFlag: any = getEstreeField('computed', node);
   const generatorFlag: any = getEstreeField('generator', value);
   const accessibility: any = getEstreeField('accessibility', node);
-  return [((toLanguage === 'typescript') && (accessibility === 'private')) ? ['private', space] : empty, staticFlag ? ['static', space] : empty, generatorFlag ? '*' : empty, computedFlag ? ['[', keyPrinted, ']'] : keyPrinted, valuePrinted];
+  return [((toLanguage === 'typescript') && (accessibility === 'private')) ? ['private', space] : empty, staticFlag ? ['static', space] : empty, generatorFlag ? '*' : empty, computedFlag ? ['[', keyPrinted, ']'] : keyPrinted, valuePrintedStr];
 }
 
-printMethodDefinition.fsource = [Symbol.for('define'), [Symbol.for('print-method-definition'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':to')]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('key-printed'), [Symbol.for('print-node'), Symbol.for('key'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('key-printed-str'), [Symbol.for('print-doc'), Symbol.for('key-printed'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('value-printed'), [Symbol.for('~>'), Symbol.for('value'), [Symbol.for('print-function'), Symbol.for('_'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':return-type'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('key-printed-str'), 'constructor'], '', 'any']]], [Symbol.for('print-doc'), Symbol.for('_'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^function '], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('static-flag'), [Symbol.for('get-estree-field'), 'static', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('computed-flag'), [Symbol.for('get-estree-field'), 'computed', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('generator-flag'), [Symbol.for('get-estree-field'), 'generator', Symbol.for('value')]], [Symbol.for('define'), Symbol.for('accessibility'), [Symbol.for('get-estree-field'), 'accessibility', Symbol.for('node')]], [Symbol.for('list'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('to-language'), 'typescript'], [Symbol.for('eq?'), Symbol.for('accessibility'), 'private']], [Symbol.for('list'), 'private', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('static-flag'), [Symbol.for('list'), 'static', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('generator-flag'), '*', Symbol.for('empty')], [Symbol.for('if'), Symbol.for('computed-flag'), [Symbol.for('list'), '[', Symbol.for('key-printed'), ']'], Symbol.for('key-printed')], Symbol.for('value-printed')]];
+printMethodDefinition.fsource = [Symbol.for('define'), [Symbol.for('print-method-definition'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':to')]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('key-printed'), [Symbol.for('print-node'), Symbol.for('key'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('key-printed-str'), [Symbol.for('print-doc'), Symbol.for('key-printed'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('value-printed'), [Symbol.for('print-function'), Symbol.for('value'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':return-type'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('key-printed-str'), 'constructor'], '', 'any']]]], [Symbol.for('define'), Symbol.for('value-printed-str'), [Symbol.for('~>'), Symbol.for('value-printed'), [Symbol.for('print-doc'), Symbol.for('_'), Symbol.for('options')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^function '], Symbol.for('_'), '']]], [Symbol.for('define'), Symbol.for('static-flag'), [Symbol.for('get-estree-field'), 'static', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('computed-flag'), [Symbol.for('get-estree-field'), 'computed', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('generator-flag'), [Symbol.for('get-estree-field'), 'generator', Symbol.for('value')]], [Symbol.for('define'), Symbol.for('accessibility'), [Symbol.for('get-estree-field'), 'accessibility', Symbol.for('node')]], [Symbol.for('list'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('eq?'), Symbol.for('to-language'), 'typescript'], [Symbol.for('eq?'), Symbol.for('accessibility'), 'private']], [Symbol.for('list'), 'private', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('static-flag'), [Symbol.for('list'), 'static', Symbol.for('space')], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('generator-flag'), '*', Symbol.for('empty')], [Symbol.for('if'), Symbol.for('computed-flag'), [Symbol.for('list'), '[', Symbol.for('key-printed'), ']'], Symbol.for('key-printed')], Symbol.for('value-printed-str')]];
 
 /**
  * Print an `ArrayExpression` ESTree node to a `Doc` object.
@@ -1522,7 +1521,7 @@ function printArrayExpression(node: any, options: any = {}): any {
     } else {
       printedExp = empty;
     }
-    printedExpressions.push(docValueString(printedExp));
+    printedExpressions.push(printedExp);
     if (docShouldBreakP(printedExp)) {
       shouldBreak = true;
     }
@@ -1546,7 +1545,7 @@ function printArrayExpression(node: any, options: any = {}): any {
   return result;
 }
 
-printArrayExpression.fsource = [Symbol.for('define'), [Symbol.for('print-array-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':to')]], [Symbol.for('define'), Symbol.for('no-implicit-any'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':no-implicit-any')]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('get-estree-field'), 'typeAnnotation', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('printed-expressions'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('should-break'), false], [Symbol.for('define'), Symbol.for('printed-exp')], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('for'), [[Symbol.for('exp'), [Symbol.for('get-estree-field'), 'elements', Symbol.for('node')]]], [Symbol.for('if'), Symbol.for('exp'), [Symbol.for('set!'), Symbol.for('printed-exp'), [Symbol.for('print-node'), Symbol.for('exp'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':no-implicit-any'), false]]]], [Symbol.for('set!'), Symbol.for('printed-exp'), Symbol.for('empty')]], [Symbol.for('push-right!'), Symbol.for('printed-expressions'), [Symbol.for('doc-value-string'), Symbol.for('printed-exp')]], [Symbol.for('when'), [Symbol.for('doc-should-break?'), Symbol.for('printed-exp')], [Symbol.for('set!'), Symbol.for('should-break'), true]]], [Symbol.for('cond'), [Symbol.for('should-break'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '[', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('printed-expressions'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('align'), 1, Symbol.for('x')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')]], Symbol.for('line'), ']']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '[', [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('space')], Symbol.for('printed-expressions')], ']']]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('no-implicit-any'), [Symbol.for('not'), Symbol.for('type_')]], [Symbol.for('set!'), Symbol.for('type_'), [Symbol.for('new'), Symbol.for('TSArrayType'), [Symbol.for('new'), Symbol.for('TSAnyKeyword')]]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('type_'), [Symbol.for('eq?'), Symbol.for('to-language'), 'typescript']], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('append'), Symbol.for('result'), [Symbol.for('list'), ':', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('type_'), Symbol.for('options')]]]]], [Symbol.for('when'), Symbol.for('should-break'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('group'), Symbol.for('result'), [Symbol.for('js/obj'), Symbol.for(':should-break'), Symbol.for('should-break')]]]], Symbol.for('result')];
+printArrayExpression.fsource = [Symbol.for('define'), [Symbol.for('print-array-expression'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('to-language'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':to')]], [Symbol.for('define'), Symbol.for('no-implicit-any'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':no-implicit-any')]], [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('get-estree-field'), 'typeAnnotation', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('printed-expressions'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('should-break'), false], [Symbol.for('define'), Symbol.for('printed-exp')], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('for'), [[Symbol.for('exp'), [Symbol.for('get-estree-field'), 'elements', Symbol.for('node')]]], [Symbol.for('if'), Symbol.for('exp'), [Symbol.for('set!'), Symbol.for('printed-exp'), [Symbol.for('print-node'), Symbol.for('exp'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':no-implicit-any'), false]]]], [Symbol.for('set!'), Symbol.for('printed-exp'), Symbol.for('empty')]], [Symbol.for('push-right!'), Symbol.for('printed-expressions'), Symbol.for('printed-exp')], [Symbol.for('when'), [Symbol.for('doc-should-break?'), Symbol.for('printed-exp')], [Symbol.for('set!'), Symbol.for('should-break'), true]]], [Symbol.for('cond'), [Symbol.for('should-break'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '[', Symbol.for('line'), [Symbol.for('~>'), Symbol.for('printed-expressions'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('align'), 1, Symbol.for('x')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')]], Symbol.for('line'), ']']]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '[', [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('space')], Symbol.for('printed-expressions')], ']']]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('no-implicit-any'), [Symbol.for('not'), Symbol.for('type_')]], [Symbol.for('set!'), Symbol.for('type_'), [Symbol.for('new'), Symbol.for('TSArrayType'), [Symbol.for('new'), Symbol.for('TSAnyKeyword')]]]], [Symbol.for('when'), [Symbol.for('and'), Symbol.for('type_'), [Symbol.for('eq?'), Symbol.for('to-language'), 'typescript']], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('append'), Symbol.for('result'), [Symbol.for('list'), ':', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('type_'), Symbol.for('options')]]]]], [Symbol.for('when'), Symbol.for('should-break'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('group'), Symbol.for('result'), [Symbol.for('js/obj'), Symbol.for(':should-break'), Symbol.for('should-break')]]]], Symbol.for('result')];
 
 /**
  * Print an `ArrayPattern` ESTree node to a `Doc` object.
@@ -1587,17 +1586,19 @@ printImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-impor
  */
 function printImportSpecifier(node: any, options: any = {}): any {
   const local: any = getEstreeField('local', node);
-  const localPrinted: any = printDoc(printNode(local, options), options);
+  const localPrinted: any = printNode(local, options);
+  const localPrintedStr: any = printDoc(localPrinted, options);
   const imported: any = getEstreeField('imported', node);
-  const importedPrinted: any = printDoc(printNode(imported, options), options);
-  if (localPrinted === importedPrinted) {
+  const importedPrinted: any = printNode(imported, options);
+  const importedPrintedStr: any = printDoc(importedPrinted, options);
+  if (localPrintedStr === importedPrintedStr) {
     return localPrinted;
   } else {
     return [localPrinted, space, 'as', space, importedPrinted];
   }
 }
 
-printImportSpecifier.fsource = [Symbol.for('define'), [Symbol.for('print-import-specifier'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('local-printed'), [Symbol.for('print-doc'), [Symbol.for('print-node'), Symbol.for('local'), Symbol.for('options')], Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported'), [Symbol.for('get-estree-field'), 'imported', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('imported-printed'), [Symbol.for('print-doc'), [Symbol.for('print-node'), Symbol.for('imported'), Symbol.for('options')], Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('local-printed'), Symbol.for('imported-printed')], Symbol.for('local-printed')], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('local-printed'), Symbol.for('space'), 'as', Symbol.for('space'), Symbol.for('imported-printed')]]]];
+printImportSpecifier.fsource = [Symbol.for('define'), [Symbol.for('print-import-specifier'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('local-printed'), [Symbol.for('print-node'), Symbol.for('local'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('local-printed-str'), [Symbol.for('print-doc'), Symbol.for('local-printed'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported'), [Symbol.for('get-estree-field'), 'imported', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('imported-printed'), [Symbol.for('print-node'), Symbol.for('imported'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported-printed-str'), [Symbol.for('print-doc'), Symbol.for('imported-printed'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('local-printed-str'), Symbol.for('imported-printed-str')], Symbol.for('local-printed')], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('local-printed'), Symbol.for('space'), 'as', Symbol.for('space'), Symbol.for('imported-printed')]]]];
 
 /**
  * Print an `ImportDefaultSpecifier` ESTree node to a `Doc` object.
@@ -1623,11 +1624,12 @@ printImportNamespaceSpecifier.fsource = [Symbol.for('define'), [Symbol.for('prin
 function printExportNamedDeclaration(node: any, options: any = {}): any {
   const fsemicolon: any = options['fsemicolon'];
   const specifiers: any = getEstreeField('specifiers', node);
-  const specifiersPrinted: any = printDoc(indent(join([',', line], specifiers.map((x: any): any => printNode(x, options)))), options);
-  return ['export', space, '{', line, specifiersPrinted, (specifiersPrinted === '') ? empty : line, '}', fsemicolon ? ';' : empty];
+  const specifiersPrinted: any = indent(join([',', line], specifiers.map((x: any): any => printNode(x, options))));
+  const specifiersPrintedStr: any = printDoc(specifiersPrinted, options);
+  return ['export', space, '{', line, specifiersPrinted, (specifiersPrintedStr === '') ? empty : line, '}', fsemicolon ? ';' : empty];
 }
 
-printExportNamedDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-named-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':fsemicolon')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('specifiers-printed'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent')], [Symbol.for('print-doc'), Symbol.for('options')]]], [Symbol.for('list'), 'export', Symbol.for('space'), '{', Symbol.for('line'), Symbol.for('specifiers-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('specifiers-printed'), ''], Symbol.for('empty'), Symbol.for('line')], '}', [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
+printExportNamedDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-named-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':fsemicolon')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('specifiers-printed'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]]], [Symbol.for('define'), Symbol.for('specifiers-printed-str'), [Symbol.for('print-doc'), Symbol.for('specifiers-printed'), Symbol.for('options')]], [Symbol.for('list'), 'export', Symbol.for('space'), '{', Symbol.for('line'), Symbol.for('specifiers-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('specifiers-printed-str'), ''], Symbol.for('empty'), Symbol.for('line')], '}', [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
 
 /**
  * Print an `ExportSpecifier` ESTree node to a `Doc` object.

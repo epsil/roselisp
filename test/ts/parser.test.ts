@@ -39,75 +39,78 @@ describe('tokenize', (): any => {
   it('(tokenize "()")', (): any => assertEqual(tokenize('()'), [new SymbolToken('('), new SymbolToken(')')]));
   it('(tokenize "\'(foo)")', (): any => assertEqual(tokenize('\'(foo)'), [new SymbolToken('\''), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')]));
   it('(tokenize "(foo \\"bar\\")")', (): any => assertEqual(tokenize('(foo "bar")'), [new SymbolToken('('), new SymbolToken('foo'), new StringToken('bar'), new SymbolToken(')')]));
-  it('(tokenize "(foo\n' +
-    '\\"bar\\")")', (): any => assertEqual(tokenize('(foo\n' +
-    '"bar")'), [new SymbolToken('('), new SymbolToken('foo'), new StringToken('bar'), new SymbolToken(')')]));
+  it(`(tokenize "(foo
+\\"bar\\")")`, (): any => assertEqual(tokenize(`(foo
+"bar")`), [new SymbolToken('('), new SymbolToken('foo'), new StringToken('bar'), new SymbolToken(')')]));
   it('(tokenize "(foo) ; bar" (js/obj :comments #f))', (): any => assertEqual(tokenize('(foo) ; bar', {
     comments: false
   }), [new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')]));
   xit('(tokenize "\'(foo) ; bar" (js/obj :comments #f))', (): any => assertEqual(tokenize('\'(foo) ; bar', {
     comments: false
   }), [new SymbolToken('\''), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')]));
-  xit('(tokenize "(foo ; baz\n' +
-    'bar)")', (): any => assertEqual(tokenize('(foo ; baz\n' +
-    'bar)'), [new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
-  xit('(tokenize "(foo ; baz\n' +
-    'bar)" (js/obj :comments #t))', (): any => assertEqual(tokenize('(foo ; baz\n' +
-    'bar)', {
+  xit(`(tokenize "(foo ; baz
+bar)")`, (): any => assertEqual(tokenize(`(foo ; baz
+bar)`), [new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
+  xit(`(tokenize "(foo ; baz
+bar)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`(foo ; baz
+bar)`, {
     comments: true
   }), [new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')'), new TrailingCommentToken('; baz')]));
-  it('(tokenize ";; baz\n' +
-    '(foo bar)" (js/obj :comments #t))', (): any => assertEqual(tokenize(';; baz\n' +
-    '(foo bar)', {
+  it(`(tokenize ";; baz
+(foo bar)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`;; baz
+(foo bar)`, {
     comments: true
   }), [new LeadingCommentToken(';; baz\n'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
-  it('(tokenize "  ;; baz\n' +
-    '  (foo bar)" (js/obj :comments #t))', (): any => assertEqual(tokenize('  ;; baz\n' +
-    '  (foo bar)', {
+  it(`(tokenize "  ;; baz
+  (foo bar)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`  ;; baz
+  (foo bar)`, {
     comments: true
   }), [new LeadingCommentToken(';; baz\n'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
-  it('(tokenize ";; baz\n' +
-    ';; quux\n' +
-    '(foo bar)" (js/obj :comments #t))', (): any => assertEqual(tokenize(';; baz\n' +
-    ';; quux\n' +
-    '(foo bar)', {
+  it(`(tokenize ";; baz
+;; quux
+(foo bar)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`;; baz
+;; quux
+(foo bar)`, {
     comments: true
-  }), [new LeadingCommentToken(';; baz\n' +
-    ';; quux\n'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
-  it('(tokenize ";; baz\n' +
-    ';;\n' +
-    ';; quux\n' +
-    '(foo bar)" (js/obj :comments #t))', (): any => assertEqual(tokenize(';; baz\n' +
-    ';;\n' +
-    ';; quux\n' +
-    '(foo bar)', {
+  }), [new LeadingCommentToken(`;; baz
+;; quux
+`), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
+  it(`(tokenize ";; baz
+;;
+;; quux
+(foo bar)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`;; baz
+;;
+;; quux
+(foo bar)`, {
     comments: true
-  }), [new LeadingCommentToken(';; baz\n' +
-    ';;\n' +
-    ';; quux\n'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
-  it('(tokenize ";; baz\n' +
-    '\n' +
-    ';; quux\n' +
-    '(foo bar)" (js/obj :comments #t))', (): any => assertEqual(tokenize(';; baz\n' +
-    '\n' +
-    ';; quux\n' +
-    '(foo bar)', {
+  }), [new LeadingCommentToken(`;; baz
+;;
+;; quux
+`), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
+  it(`(tokenize ";; baz
+
+;; quux
+(foo bar)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`;; baz
+
+;; quux
+(foo bar)`, {
     comments: true
-  }), [new LeadingCommentToken(';; baz\n' +
-    '\n' +
-    ';; quux\n'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
-  it('(tokenize ";; foo\n' +
-    '`(foo)" (js/obj :comments #t))', (): any => assertEqual(tokenize(';; foo\n' +
-    '`(foo)', {
+  }), [new LeadingCommentToken(`;; baz
+
+;; quux
+`), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('bar'), new SymbolToken(')')]));
+  it(`(tokenize ";; foo
+\`(foo)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`;; foo
+\`(foo)`, {
     comments: true
   }), [new LeadingCommentToken(';; foo\n'), new SymbolToken('`'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')')]));
   it('(tokenize "(foo \'(bar))")', (): any => assertEqual(tokenize('(foo \'(bar))'), [new SymbolToken('('), new SymbolToken('foo'), new SymbolToken('\''), new SymbolToken('('), new SymbolToken('bar'), new SymbolToken(')'), new SymbolToken(')')]));
   it('(tokenize "((lambda (x) x) \\"Lisp\\")")', (): any => assertEqual(tokenize('((lambda (x) x) "Lisp")'), [new SymbolToken('('), new SymbolToken('('), new SymbolToken('lambda'), new SymbolToken('('), new SymbolToken('x'), new SymbolToken(')'), new SymbolToken('x'), new SymbolToken(')'), new StringToken('Lisp'), new SymbolToken(')')]));
-  return it('(tokenize "(define (foo)\n' +
-    '  ;; this\n' +
-    '  this)" (js/obj :comments #t))', (): any => assertEqual(tokenize('(define (foo)\n' +
-    '  ;; this\n' +
-    '  this)', {
+  return it(`(tokenize "(define (foo)
+  ;; this
+  this)" (js/obj :comments #t))`, (): any => assertEqual(tokenize(`(define (foo)
+  ;; this
+  this)`, {
     comments: true
   }), [new SymbolToken('('), new SymbolToken('define'), new SymbolToken('('), new SymbolToken('foo'), new SymbolToken(')'), new LeadingCommentToken(';; this\n'), new SymbolToken('this'), new SymbolToken(')')]));
 });
@@ -135,22 +138,22 @@ describe('parse', (): any => {
 describe('read', (): any => {
   it('(read "(foo) ;comment")', (): any => assertEqual(read('(foo) ;comment'), [Symbol.for('foo')]));
   it('(read "(foo) ;; this is a comment")', (): any => assertEqual(read('(foo) ;; this is a comment'), [Symbol.for('foo')]));
-  it('(read "(define (foo)\n' +
-    '  ;; this is a comment\n' +
-    '  (bar) ; this is also a comment\n' +
-    '  (baz))")', (): any => assertEqual(read('(define (foo)\n' +
-    '  ;; this is a comment\n' +
-    '  (bar) ; this is also a comment\n' +
-    '  (baz))'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('bar')], [Symbol.for('baz')]]));
+  it(`(read "(define (foo)
+  ;; this is a comment
+  (bar) ; this is also a comment
+  (baz))")`, (): any => assertEqual(read(`(define (foo)
+  ;; this is a comment
+  (bar) ; this is also a comment
+  (baz))`), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('bar')], [Symbol.for('baz')]]));
   it('(read "\\"string ;-D\\"")', (): any => assertEqual(read('"string ;-D"'), 'string ;-D'));
   it('(read "\\"string\\\\\\"test\\"")', (): any => assertEqual(read('"string\\"test"'), 'string"test'));
-  it('(read "\\"string\\\\ntest\\"")', (): any => assertEqual(read('"string\\ntest"'), 'string\n' +
-    'test'));
+  it('(read "\\"string\\\\ntest\\"")', (): any => assertEqual(read('"string\\ntest"'), `string
+test`));
   it('(read "\\"string\\\\\\\\ntest\\"")', (): any => assertEqual(read('"string\\\\ntest"'), 'string\\ntest'));
-  it('(read "\\"string\n' +
-    'test\\"")', (): any => assertEqual(read('"string\n' +
-    'test"'), 'string\n' +
-    'test'));
+  it(`(read "\\"string
+test\\"")`, (): any => assertEqual(read(`"string
+test"`), `string
+test`));
   it('(read "\'foo")', (): any => assertEqual(read('\'foo'), [Symbol.for('quote'), Symbol.for('foo')]));
   it('(read "\'|foo|")', (): any => assertEqual(read('\'|foo|'), [Symbol.for('quote'), Symbol.for('foo')]));
   it('(read "\'()")', (): any => assertEqual(read('\'()'), [Symbol.for('quote'), []]));
@@ -164,22 +167,22 @@ describe('read', (): any => {
 });
 
 describe('read-syntax', (): any => {
-  it('(syntax->datum (read-syntax ";; comment\n' +
-    '(foo)"))', (): any => assertEqual(syntaxToDatum(readSyntax(';; comment\n' +
-    '(foo)')), [Symbol.for('foo')]));
-  it(';; comment\n' +
-    '(foo), comments', (): any => {
-    const actual: any = readSyntax(';; comment\n' +
-      '(foo)', {
+  it(`(syntax->datum (read-syntax ";; comment
+(foo)"))`, (): any => assertEqual(syntaxToDatum(readSyntax(`;; comment
+(foo)`)), [Symbol.for('foo')]));
+  it(`;; comment
+(foo), comments`, (): any => {
+    const actual: any = readSyntax(`;; comment
+(foo)`, {
       comments: true
     });
     assertEqual(actual.getValue(), [Symbol.for('foo')]);
     return assertEqual(actual.getProperty('comments'), [new LeadingCommentToken(';; comment\n')]);
   });
-  it(';; comment\n' +
-    '`(foo), comments', (): any => {
-    const actual: any = readSyntax(';; comment\n' +
-      '`(foo)', {
+  it(`;; comment
+\`(foo), comments`, (): any => {
+    const actual: any = readSyntax(`;; comment
+\`(foo)`, {
       comments: true
     });
     assertEqual(actual.getValue(), [Symbol.for('quasiquote'), [Symbol.for('foo')]]);
@@ -212,30 +215,28 @@ describe('sexp', (): any => {
   it('(sexp "foo")', (): any => assertEqual(sexp('foo'), Symbol.for('foo')));
   it('(js/tag sexp "(foo)")', (): any => assertEqual(sexp`(foo)`, [Symbol.for('foo')]));
   it('(sexp "(foo)")', (): any => assertEqual(sexp('(foo)'), [Symbol.for('foo')]));
-  it('(js/tag sexp "\n' +
-    '      (foo)\n' +
-    '  ")', (): any => assertEqual(sexp`
+  it(`(js/tag sexp "
+      (foo)
+  ")`, (): any => assertEqual(sexp`
       (foo)
   `, [Symbol.for('foo')]));
-  it('(sexp "\n' +
-    '      (foo)\n' +
-    '  ")', (): any => assertEqual(sexp('\n' +
-    '      (foo)\n' +
-    '  '), [Symbol.for('foo')]));
-  it('(js/tag sexp "\n' +
-    '      (foo\n' +
-    '        (bar))\n' +
-    '  ")', (): any => assertEqual(sexp`
+  it(`(sexp "
+      (foo)
+  ")`, (): any => assertEqual(sexp('\n      (foo)\n  '), [Symbol.for('foo')]));
+  it(`(js/tag sexp "
+      (foo
+        (bar))
+  ")`, (): any => assertEqual(sexp`
       (foo
         (bar))
   `, [Symbol.for('foo'), [Symbol.for('bar')]]));
-  it('(sexp "\n' +
-    '      (foo\n' +
-    '        (bar))\n' +
-    '  ")', (): any => assertEqual(sexp('\n' +
-    '      (foo\n' +
-    '        (bar))\n' +
-    '  '), [Symbol.for('foo'), [Symbol.for('bar')]]));
+  it(`(sexp "
+      (foo
+        (bar))
+  ")`, (): any => assertEqual(sexp(`
+      (foo
+        (bar))
+  `), [Symbol.for('foo'), [Symbol.for('bar')]]));
   it('(js/tag sexp "(foo \\"bar\\")")', (): any => assertEqual(sexp`(foo "bar")`, [Symbol.for('foo'), 'bar']));
   it('(sexp "(foo \\"bar\\")")', (): any => assertEqual(sexp('(foo "bar")'), [Symbol.for('foo'), 'bar']));
   it('(js/tag sexp "(+ 1 1)")', (): any => assertEqual(sexp`(+ 1 1)`, [Symbol.for('+'), 1, 1]));

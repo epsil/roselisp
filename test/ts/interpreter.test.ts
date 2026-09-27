@@ -77,13 +77,9 @@ describe('String functions', (): any => {
   it('(string-split "foo bar baz" " ")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('string-split'), 'foo bar baz', ' '], [Symbol.for('quote'), ['foo', 'bar', 'baz']]]));
   it('(string-trim "_foo bar  baz_" "_")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('string-trim'), '_foo bar  baz_', '_'], 'foo bar  baz']));
   it('(string-trim "__foo bar  baz__" "_" :repeat? #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('string-trim'), '__foo bar  baz__', '_', Symbol.for(':repeat?'), true], 'foo bar  baz']));
-  return it('(string-trim "  foo bar  baz \n' +
-    '\n' +
-    '	" " " :repeat? #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('string-trim'), '  foo bar  baz \n' +
-    '\n' +
-    '	', ' ', Symbol.for(':repeat?'), true], 'foo bar  baz \n' +
-    '\n' +
-    '	']));
+  return it(`(string-trim "  foo bar  baz 
+
+	" " " :repeat? #t)`, (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('string-trim'), '  foo bar  baz \n\n	', ' ', Symbol.for(':repeat?'), true], 'foo bar  baz \n\n	']));
 });
 
 describe('apply', (): any => it('(apply new make-hash \'())', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('apply'), Symbol.for('new'), Symbol.for('make-hash'), [Symbol.for('quote'), []]], [Symbol.for('new'), Symbol.for('Map')]])));

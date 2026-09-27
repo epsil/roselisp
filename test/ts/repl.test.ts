@@ -19,6 +19,6 @@ describe('REPL', (): any => {
   it('(rep "#t")', (): any => assertEqual(rep('#t'), '#t'));
   it('(rep "\\"string\\"")', (): any => assertEqual(rep('"string"'), '"string"'));
   it('(rep "(+ 1 1)")', (): any => assertEqual(rep('(+ 1 1)'), '2'));
-  return it('(rep "(+ 1 1) (+ 1 1)")', (): any => assertEqual(rep('(+ 1 1) (+ 1 1)'), '2\n' +
-    '2'));
+  return it('(rep "(+ 1 1) (+ 1 1)")', (): any => assertEqual(rep('(+ 1 1) (+ 1 1)'), `2
+2`));
 });

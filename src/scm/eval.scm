@@ -70,6 +70,7 @@
 (require (only-in "./thunk"
                   InternalPromise))
 (require (only-in "./util"
+                  make-arity-function
                   tagged-list?))
 
 (declare-macro with-environment)
@@ -342,6 +343,24 @@
          (get-field flags regex)))
    (else
     (get-estree-field "value" node))))
+
+;;; Evaluate an ESTree [`TemplateLiteral`][estree:templateliteral] node.
+;;;
+;;; [estree:templateliteral]: https://github.com/estree/estree/blob/master/es2015.md#templateliteral
+(define (eval-estree-template-literal node env (options (js/obj)))
+  (define quasis
+    (get-estree-field "quasis" node))
+  (define quasi
+    (first quasis))
+  (eval-estree quasi env options))
+
+;;; Evaluate an ESTree [`TemplateElement`][estree:templateelement] node.
+;;;
+;;; [estree:templateelement]: https://github.com/estree/estree/blob/master/es2015.md#templateelement
+(define (eval-estree-template-element node env (options (js/obj)))
+  (~> node
+      (get-estree-field "value" _)
+      (oget _ :cooked)))
 
 ;;; Evaluate an ESTree [`Identifier`][estree:identifier] node.
 ;;;
@@ -1025,19 +1044,6 @@
       (throw (new BreakException result))))
   result)
 
-;;; Evaluate a TSESTree `TSAsExpression` node.
-(define (eval-estree-ts-as-expression node env (options (js/obj)))
-  (define expression
-    (get-estree-field "expression" node))
-  (eval-estree expression env options))
-
-;;; Evaluate an ESTree `XRawJavaScript` node.
-;;; This is an unofficial ESTree extension.
-(define (eval-estree-x-raw-javascript node env (options (js/obj)))
-  (define js
-    (get-estree-field "js" node))
-  (js/eval js))
-
 ;;; Global variable used for storing the value of `this`.
 ;;; Used for evaluating `ThisExpression`.
 (define current-this-value #u)
@@ -1150,8 +1156,6 @@
       #u)))
   (eval-pattern left right-val))
 
-;;; Helper function for `eval-estree-assignment-expression-helper`.
-
 ;;; Helper function for `eval-estree-array-expression`.
 (define (eval-estree-array-expression-helper elements env (options (js/obj)))
   (define result '())
@@ -1240,83 +1244,18 @@
          #u
          (length params))))))
 
-;;; Make a function of the specified arity.
-(define (make-arity-function fun (n #u) (arrow #f))
-  (cond
-   (arrow
-    (case n
-      ((0)
-       (js/arrow ()
-         (fun)))
-      ((1)
-       (js/arrow (a)
-         (fun a)))
-      ((2)
-       (js/arrow (a b)
-         (fun a b)))
-      ((3)
-       (js/arrow (a b c)
-         (fun a b c)))
-      ((4)
-       (js/arrow (a b c d)
-         (fun a b c d)))
-      ((5)
-       (js/arrow (a b c d e)
-         (fun a b c d e)))
-      ((6)
-       (js/arrow (a b c d e f)
-         (fun a b c d e f)))
-      ((7)
-       (js/arrow (a b c d e f g)
-         (fun a b c d e f g)))
-      ((8)
-       (js/arrow (a b c d e f g h)
-         (fun a b c d e f g h)))
-      ((9)
-       (js/arrow (a b c d e f g h i)
-         (fun a b c d e f g h i)))
-      ((10)
-       (js/arrow (a b c d e f g h i j)
-         (fun a b c d e f g h i j)))
-      (else
-       fun)))
-   (else
-    (case n
-      ((0)
-       (js/function (this)
-         (send fun apply this arguments)))
-      ((1)
-       (js/function (this a)
-         (send fun apply this arguments)))
-      ((2)
-       (js/function (this a b)
-         (send fun apply this arguments)))
-      ((3)
-       (js/function (this a b c)
-         (send fun apply this arguments)))
-      ((4)
-       (js/function (this a b c d)
-         (send fun apply this arguments)))
-      ((5)
-       (js/function (this a b c d e)
-         (send fun apply this arguments)))
-      ((6)
-       (js/function (this a b c d e fun)
-         (send fun apply this arguments)))
-      ((7)
-       (js/function (this a b c d e f g)
-         (send fun apply this arguments)))
-      ((8)
-       (js/function (this a b c d e f g h)
-         (send fun apply this arguments)))
-      ((9)
-       (js/function (this a b c d e f g h i)
-         (send fun apply this arguments)))
-      ((10)
-       (js/function (this a b c d e f g h i j)
-         (send fun apply this arguments)))
-      (else
-       fun)))))
+;;; Evaluate a TSESTree `TSAsExpression` node.
+(define (eval-estree-ts-as-expression node env (options (js/obj)))
+  (define expression
+    (get-estree-field "expression" node))
+  (eval-estree expression env options))
+
+;;; Evaluate an ESTree `XRawJavaScript` node.
+;;; This is an unofficial ESTree extension.
+(define (eval-estree-x-raw-javascript node env (options (js/obj)))
+  (define js
+    (get-estree-field "js" node))
+  (js/eval js))
 
 ;;; Mapping from ESTree node types to evaluator functions.
 (define eval-estree-map
@@ -1353,6 +1292,8 @@
      ("SwitchCase" . ,eval-estree-switch-case)
      ("SwitchStatement" . ,eval-estree-switch-statement)
      ("TSAsExpression" . ,eval-estree-ts-as-expression)
+     ("TemplateElement" . ,eval-estree-template-element)
+     ("TemplateLiteral" . ,eval-estree-template-literal)
      ("ThisExpression" . ,eval-estree-this-expression)
      ("ThrowStatement" . ,eval-estree-throw-statement)
      ("TryStatement" . ,eval-estree-try-statement)

@@ -43,10 +43,10 @@ const initialReplMessage = ';; Roselisp version ' + constants_1.version + '.\n' 
 /**
  * Help message displayed by the REPL's `help` command.
  */
-const replHelpMessage = 'Enter an S-expression to evaluate it.\n' +
-    'Use the up and down keys to access previous expressions.\n' +
-    '\n' +
-    'Type ,q to quit.';
+const replHelpMessage = `Enter an S-expression to evaluate it.
+Use the up and down keys to access previous expressions.
+
+Type ,q to quit.`;
 /**
  * Read utility.
  */

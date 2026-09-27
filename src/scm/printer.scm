@@ -190,22 +190,22 @@
   (define close
     (or (oget settings :close)
         ")"))
-  (define offset
-    (string-length open))
   (cond
    ((or (oget options :has-comments)
         (doc-has-comments? doc))
-    (print-doc
-     (list
-      open
-      line
-      (align offset doc)
-      line
-      close)
-     options))
+    (define offset
+      (string-length open))
+    (list
+     open
+     line
+     (align offset doc)
+     line
+     close))
    (else
-    (print-doc
-     (list open doc close)))))
+    (list
+     open
+     doc
+     close))))
 
 ;;; Print comments of an ESTree node and attach them
 ;;; to a `Doc` object.
@@ -979,7 +979,9 @@
 ;;; Print a `TemplateElement` ESTree node to a `Doc` object.
 (define (print-template-element node (options (js/obj)))
   (define str
-    (get-estree-field "raw" (get-estree-field "value" node)))
+    (~> node
+        (get-estree-field "value" _)
+        (get-estree-field "raw" _)))
   (print-template-string str))
 
 ;;; Print a `TemplateLiteral` ESTree node to a `Doc` object.
@@ -1043,17 +1045,11 @@
   (define left
     (get-estree-field "left" node))
   (define left-printed
-    (print-node
-     left options))
-  (define left-printed-str
-    (doc-value-string left-printed))
+    (print-node left options))
   (define right
     (get-estree-field "right" node))
   (define right-printed
-    (print-node
-     right options))
-  (define right-printed-str
-    (doc-value-string right-printed))
+    (print-node right options))
   (define should-break
     (or (doc-should-break? left-printed)
         (doc-should-break? right-printed)))
@@ -1074,9 +1070,10 @@
   (define result)
   (unless (or (estree-simple? left)
               (and (estree-type? left type_)
-                   (eq? (get-estree-field "operator" left) operator)))
-    (set! left-printed-str
-          (doc-wrap left-printed-str
+                   (eq? (get-estree-field "operator" left)
+                        operator)))
+    (set! left-printed
+          (doc-wrap left-printed
                     (js/obj-append
                      options
                      (js/obj :has-comments
@@ -1084,10 +1081,11 @@
                               left-printed))))))
   (unless (or (estree-simple? right)
               (and (estree-type? right type_)
-                   (eq? (get-estree-field "operator" right) operator)
+                   (eq? (get-estree-field "operator" right)
+                        operator)
                    (memq? operator '("+" "*" "&&" "||"))))
-    (set! right-printed-str
-          (doc-wrap right-printed-str
+    (set! right-printed
+          (doc-wrap right-printed
                     (js/obj-append
                      options
                      (js/obj :has-comments
@@ -1095,33 +1093,36 @@
                               right-printed))))))
   (cond
    (should-break
-    (set! result (list
-                  "("
-                  line
-                  (align 1 left-printed-str)
-                  (if (estree-has-trailing-comment? left)
-                      (list
-                       line
-                       (align 1 operator))
-                      (list space operator))
-                  line
-                  (align 1 right-printed-str)
-                  line
-                  ")")))
+    (set! result
+          (list
+           "("
+           line
+           (align 1 left-printed)
+           (if (estree-has-trailing-comment? left)
+               (list
+                line
+                (align 1 operator))
+               (list space operator))
+           line
+           (align 1 right-printed)
+           line
+           ")")))
    (is-multiline-string
-    (set! result (list
-                  left-printed-str
-                  space
-                  operator
-                  line
-                  (indent right-printed-str))))
+    (set! result
+          (list
+           left-printed
+           space
+           operator
+           line
+           (indent right-printed))))
    (else
-    (set! result (list
-                  left-printed-str
-                  space
-                  operator
-                  space
-                  right-printed-str))))
+    (set! result
+          (list
+           left-printed
+           space
+           operator
+           space
+           right-printed))))
   (group result
          (js/obj :should-break should-break)))
 
@@ -1209,9 +1210,6 @@
   (set! result
         (join (list "," space)
               expressions-printed))
-  ;; (when (> (length expressions) 1)
-  ;;   (set! result
-  ;;         (doc-wrap result options)))
   result)
 
 ;;; Print a `BlockStatement` ESTree node to a `Doc` object.
@@ -1237,13 +1235,13 @@
                 (print-node x options))
               _)
          (join line _))))
-  (define body-printed
+  (define body-printed-str
     (print-doc body-indented))
   (list
    "{"
    line
    body-indented
-   (if (eq? body-printed "")
+   (if (eq? body-printed-str "")
        empty
        line)
    "}"))
@@ -1473,43 +1471,42 @@
   (define test
     (get-estree-field "test" node))
   (define test-printed
-    (print-node
-     test options))
-  (define test-printed-str
-    (doc-value-string test-printed))
+    (print-node test options))
   ;; It is customary to wrap assignment expressions
   ;; in an extra set of parentheses to indicate that
   ;; that is what is really intended, distinguishing
   ;; them from comparisons (`if ((x = y)) { ... }`
   ;; vs. `if (x === y) { ... }`).
   (when (estree-type? test "AssignmentExpression")
-    (set! test-printed-str
+    (set! test-printed
           (doc-wrap test-printed options)))
   (define consequent
     (get-estree-field "consequent" node))
   (define consequent-printed
-    (print-node
-     consequent options))
+    (print-node consequent options))
   (define alternate
     (get-estree-field "alternate" node))
   (define result
-    (string-append
-     "if ("
-     test-printed-str
+    (list
+     "if"
+     space
+     "("
+     test-printed
      ")"
      (if (doc-should-break? consequent-printed)
          line
          space)
-     (doc-value-string consequent-printed)))
+     consequent-printed))
   (when alternate
     (define alternate-printed
-      (print-node
-       alternate options))
+      (print-node alternate options))
     (set! result
-          (string-append
+          (list
            result
-           " else "
-           (doc-value-string alternate-printed))))
+           space
+           "else"
+           space
+           alternate-printed)))
   result)
 
 ;;; Print a `ConditionalExpression` ESTree node to a `Doc` object.
@@ -1610,7 +1607,9 @@
   (define test
     (get-estree-field "test" node))
   (define test-printed
-    (print-doc (print-node test options) options))
+    (print-node test options))
+  (define test-printed-str
+    (print-doc test-printed options))
   (define update
     (get-estree-field "update" node))
   (define update-printed
@@ -1628,7 +1627,7 @@
    "("
    init-printed
    ";"
-   (if (eq? test-printed empty)
+   (if (eq? test-printed-str empty)
        empty
        space)
    test-printed
@@ -1689,7 +1688,9 @@
   (define left
     (get-estree-field "left" node))
   (define left-printed
-    (~> (print-node left options)
+    (print-node left options))
+  (define left-printed-str
+    (~> left-printed
         (print-doc options)
         (regexp-replace (regexp ";$") _ "")))
   (define right
@@ -1704,7 +1705,7 @@
    "for"
    space
    "("
-   left-printed
+   left-printed-str
    space
    "in"
    space
@@ -1773,7 +1774,7 @@
     (get-estree-field "body" node))
   (define body-indented
     (indent (print-node body options)))
-  (define body-printed
+  (define body-printed-str
     (print-doc body-indented options))
   (define super-class
     (get-estree-field "superClass" node))
@@ -1795,7 +1796,7 @@
    "{"
    line
    body-indented
-   (if (eq? body-printed "")
+   (if (eq? body-printed-str "")
        empty
        line)
    "}"))
@@ -1866,15 +1867,17 @@
   (define value
     (get-estree-field "value" node))
   (define value-printed
-    (~> value
-        (print-function
-         _
-         options
-         (js/obj :return-type
-                 (if (eq? key-printed-str
-                          "constructor")
-                     ""
-                     "any")))
+    (print-function
+     value
+     options
+     (js/obj :return-type
+             (if (eq? key-printed-str
+                      "constructor")
+                 ""
+                 "any"))))
+  (define value-printed-str
+    ;; FIXME: Kludge.
+    (~> value-printed
         (print-doc _ options)
         (regexp-replace (regexp "^function ") _ "")))
   (define static-flag
@@ -1899,7 +1902,7 @@
    (if computed-flag
        (list "[" key-printed "]")
        key-printed)
-   value-printed))
+   value-printed-str))
 
 ;;; Print an `ArrayExpression` ESTree node to a `Doc` object.
 (define (print-array-expression node (options (js/obj)))
@@ -1921,8 +1924,7 @@
                            options
                            (js/obj :no-implicit-any #f))))
         (set! printed-exp empty))
-    (push-right! printed-expressions
-                 (doc-value-string printed-exp))
+    (push-right! printed-expressions printed-exp)
     (when (doc-should-break? printed-exp)
       (set! should-break #t)))
   (cond
@@ -2027,13 +2029,17 @@
   (define local
     (get-estree-field "local" node))
   (define local-printed
-    (print-doc (print-node local options) options))
+    (print-node local options))
+  (define local-printed-str
+    (print-doc local-printed options))
   (define imported
     (get-estree-field "imported" node))
   (define imported-printed
-    (print-doc (print-node imported options) options))
+    (print-node imported options))
+  (define imported-printed-str
+    (print-doc imported-printed options))
   (cond
-   ((eq? local-printed imported-printed)
+   ((eq? local-printed-str imported-printed-str)
     local-printed)
    (else
     (list
@@ -2068,15 +2074,16 @@
                (print-node x options))
              _)
         (join (list "," line) _)
-        (indent)
-        (print-doc options)))
+        (indent _)))
+  (define specifiers-printed-str
+    (print-doc specifiers-printed options))
   (list
    "export"
    space
    "{"
    line
    specifiers-printed
-   (if (eq? specifiers-printed "")
+   (if (eq? specifiers-printed-str "")
        empty
        line)
    "}"

@@ -29,236 +29,236 @@ import {
 testMacro.ftype = 'macro';
 
 describe('Global environment', (): any => {
-  it('(compile \'(module m scheme (define lst `(,symbol? ,boolean?))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('lst'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), Symbol.for('boolean?')]]]]], Symbol.for(':finline-functions'), true), 'let [symbolp, booleanp] = (() => {\n' +
-    '  function symbolp_(obj) {\n' +
-    '    return typeof obj === \'symbol\';\n' +
-    '  }\n' +
-    '  function booleanp_(obj) {\n' +
-    '    return typeof obj === \'boolean\';\n' +
-    '  }\n' +
-    '  return [symbolp_, booleanp_];\n' +
-    '})();\n' +
-    '\n' +
-    'let lst = [symbolp, booleanp];'));
-  it('(compile \'(module m scheme (define one-plus-one (apply + \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-plus-one'), [Symbol.for('apply'), Symbol.for('+'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), 'let [_add] = (() => {\n' +
-    '  function add_(...args) {\n' +
-    '    let result = 0;\n' +
-    '    for (let arg of args) {\n' +
-    '      result = result + arg;\n' +
-    '    }\n' +
-    '    return result;\n' +
-    '  }\n' +
-    '  return [add_];\n' +
-    '})();\n' +
-    '\n' +
-    'let onePlusOne = _add(1, 1);'));
-  it('(compile \'(module m scheme (define one-minus-one (apply - \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-minus-one'), [Symbol.for('apply'), Symbol.for('-'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), 'let [_sub] = (() => {\n' +
-    '  function sub_(...args) {\n' +
-    '    let len = args.length;\n' +
-    '    if (len === 0) {\n' +
-    '      return 0;\n' +
-    '    } else if (len === 1) {\n' +
-    '      return -args[0];\n' +
-    '    } else {\n' +
-    '      let result = args[0];\n' +
-    '      for (let i = 1; i < len; i++) {\n' +
-    '        result = result - args[i];\n' +
-    '      }\n' +
-    '      return result;\n' +
-    '    }\n' +
-    '  }\n' +
-    '  return [sub_];\n' +
-    '})();\n' +
-    '\n' +
-    'let oneMinusOne = _sub(1, 1);'));
-  it('(compile \'(module m scheme (define one-minus-one (apply - \'(1 1)))))', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-minus-one'), [Symbol.for('apply'), Symbol.for('-'), [Symbol.for('quote'), [1, 1]]]]]), 'import {\n' +
-    '  _sub\n' +
-    '} from \'roselisp\';\n' +
-    '\n' +
-    'let oneMinusOne = _sub(1, 1);'));
-  it('(compile \'(module m scheme (define one-times-one (apply * \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-times-one'), [Symbol.for('apply'), Symbol.for('*'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), 'let [_mul] = (() => {\n' +
-    '  function mul_(...args) {\n' +
-    '    let result = 1;\n' +
-    '    for (let arg of args) {\n' +
-    '      result = result * arg;\n' +
-    '    }\n' +
-    '    return result;\n' +
-    '  }\n' +
-    '  return [mul_];\n' +
-    '})();\n' +
-    '\n' +
-    'let oneTimesOne = _mul(1, 1);'));
-  it('(compile \'(module m scheme (define one-divided-by-one (apply / \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-divided-by-one'), [Symbol.for('apply'), Symbol.for('/'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), 'let [_div] = (() => {\n' +
-    '  function div_(...args) {\n' +
-    '    if (args.length === 1) {\n' +
-    '      return 1 / args[0];\n' +
-    '    } else {\n' +
-    '      let result = args[0];\n' +
-    '      let _end = args.length;\n' +
-    '      for (let i = 1; i < _end; i++) {\n' +
-    '        result = result / args[i];\n' +
-    '      }\n' +
-    '      return result;\n' +
-    '    }\n' +
-    '  }\n' +
-    '  return [div_];\n' +
-    '})();\n' +
-    '\n' +
-    'let oneDividedByOne = _div(1, 1);'));
-  it('(compile \'(module m scheme (define foo-bar (apply string-append \'("foo" "bar")))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo-bar'), [Symbol.for('apply'), Symbol.for('string-append'), [Symbol.for('quote'), ['foo', 'bar']]]]], Symbol.for(':finline-functions'), true), 'let [stringAppend] = (() => {\n' +
-    '  function stringAppend_(...args) {\n' +
-    '    let result = \'\';\n' +
-    '    for (let x of args) {\n' +
-    '      result = result + x;\n' +
-    '    }\n' +
-    '    return result;\n' +
-    '  }\n' +
-    '  return [stringAppend_];\n' +
-    '})();\n' +
-    '\n' +
-    'let fooBar = stringAppend(\'foo\', \'bar\');'));
-  it('(compile \'(module m lisp (define (my-map f x) (map f x)) (define bar (my-map first \'((1) (2) (3))))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('lisp'), [Symbol.for('define'), [Symbol.for('my-map'), Symbol.for('f'), Symbol.for('x')], [Symbol.for('map'), Symbol.for('f'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('my-map'), Symbol.for('first'), [Symbol.for('quote'), [[1], [2], [3]]]]]], Symbol.for(':finline-functions'), true), 'let [first] = (() => {\n' +
-    '  function first_(lst) {\n' +
-    '    return lst[0];\n' +
-    '  }\n' +
-    '  return [first_];\n' +
-    '})();\n' +
-    '\n' +
-    'function myMap(f, x) {\n' +
-    '  return x.map((f.length === 1) ? f : x => f(x));\n' +
-    '}\n' +
-    '\n' +
-    'let bar = myMap(first, [[1], [2], [3]]);'));
-  it('(compile \'(module m lisp (define (my-cdr x) (cdr x))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('lisp'), [Symbol.for('define'), [Symbol.for('my-cdr'), Symbol.for('x')], [Symbol.for('cdr'), Symbol.for('x')]]], Symbol.for(':finline-functions'), true), 'function myCdr(x) {\n' +
-    '  return ((x.length === 3) && (x[1] === Symbol.for(\'.\'))) ? x[2] : x.slice(1);\n' +
-    '}'));
-  return it('(compile \'(module m lisp (define (my-intersection x y) (intersection x y))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('lisp'), [Symbol.for('define'), [Symbol.for('my-intersection'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('intersection'), Symbol.for('x'), Symbol.for('y')]]], Symbol.for(':finline-functions'), true), 'let [intersection] = (() => {\n' +
-    '  function intersection_(...args) {\n' +
-    '    function intersection2(arr1, arr2) {\n' +
-    '      let result = [];\n' +
-    '      for (let element of arr1) {\n' +
-    '        if (arr2.includes(element) && !result.includes(element)) {\n' +
-    '          result.push(element);\n' +
-    '        }\n' +
-    '      }\n' +
-    '      return result;\n' +
-    '    }\n' +
-    '    if (args.length === 0) {\n' +
-    '      return [];\n' +
-    '    } else if (args.length === 1) {\n' +
-    '      return args[0];\n' +
-    '    } else {\n' +
-    '      return args.slice(1).reduce((acc, x) => intersection2(acc, x), args[0]);\n' +
-    '    }\n' +
-    '  }\n' +
-    '  return [intersection_];\n' +
-    '})();\n' +
-    '\n' +
-    'function myIntersection(x, y) {\n' +
-    '  return intersection(x, y);\n' +
-    '}'));
+  it('(compile \'(module m scheme (define lst `(,symbol? ,boolean?))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('lst'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('symbol?')], [Symbol.for('unquote'), Symbol.for('boolean?')]]]]], Symbol.for(':finline-functions'), true), `let [symbolp, booleanp] = (() => {
+  function symbolp_(obj) {
+    return typeof obj === 'symbol';
+  }
+  function booleanp_(obj) {
+    return typeof obj === 'boolean';
+  }
+  return [symbolp_, booleanp_];
+})();
+
+let lst = [symbolp, booleanp];`));
+  it('(compile \'(module m scheme (define one-plus-one (apply + \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-plus-one'), [Symbol.for('apply'), Symbol.for('+'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_add] = (() => {
+  function add_(...args) {
+    let result = 0;
+    for (let arg of args) {
+      result = result + arg;
+    }
+    return result;
+  }
+  return [add_];
+})();
+
+let onePlusOne = _add(1, 1);`));
+  it('(compile \'(module m scheme (define one-minus-one (apply - \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-minus-one'), [Symbol.for('apply'), Symbol.for('-'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_sub] = (() => {
+  function sub_(...args) {
+    let len = args.length;
+    if (len === 0) {
+      return 0;
+    } else if (len === 1) {
+      return -args[0];
+    } else {
+      let result = args[0];
+      for (let i = 1; i < len; i++) {
+        result = result - args[i];
+      }
+      return result;
+    }
+  }
+  return [sub_];
+})();
+
+let oneMinusOne = _sub(1, 1);`));
+  it('(compile \'(module m scheme (define one-minus-one (apply - \'(1 1)))))', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-minus-one'), [Symbol.for('apply'), Symbol.for('-'), [Symbol.for('quote'), [1, 1]]]]]), `import {
+  _sub
+} from 'roselisp';
+
+let oneMinusOne = _sub(1, 1);`));
+  it('(compile \'(module m scheme (define one-times-one (apply * \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-times-one'), [Symbol.for('apply'), Symbol.for('*'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_mul] = (() => {
+  function mul_(...args) {
+    let result = 1;
+    for (let arg of args) {
+      result = result * arg;
+    }
+    return result;
+  }
+  return [mul_];
+})();
+
+let oneTimesOne = _mul(1, 1);`));
+  it('(compile \'(module m scheme (define one-divided-by-one (apply / \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-divided-by-one'), [Symbol.for('apply'), Symbol.for('/'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_div] = (() => {
+  function div_(...args) {
+    if (args.length === 1) {
+      return 1 / args[0];
+    } else {
+      let result = args[0];
+      let _end = args.length;
+      for (let i = 1; i < _end; i++) {
+        result = result / args[i];
+      }
+      return result;
+    }
+  }
+  return [div_];
+})();
+
+let oneDividedByOne = _div(1, 1);`));
+  it('(compile \'(module m scheme (define foo-bar (apply string-append \'("foo" "bar")))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo-bar'), [Symbol.for('apply'), Symbol.for('string-append'), [Symbol.for('quote'), ['foo', 'bar']]]]], Symbol.for(':finline-functions'), true), `let [stringAppend] = (() => {
+  function stringAppend_(...args) {
+    let result = '';
+    for (let x of args) {
+      result = result + x;
+    }
+    return result;
+  }
+  return [stringAppend_];
+})();
+
+let fooBar = stringAppend('foo', 'bar');`));
+  it('(compile \'(module m lisp (define (my-map f x) (map f x)) (define bar (my-map first \'((1) (2) (3))))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('lisp'), [Symbol.for('define'), [Symbol.for('my-map'), Symbol.for('f'), Symbol.for('x')], [Symbol.for('map'), Symbol.for('f'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('my-map'), Symbol.for('first'), [Symbol.for('quote'), [[1], [2], [3]]]]]], Symbol.for(':finline-functions'), true), `let [first] = (() => {
+  function first_(lst) {
+    return lst[0];
+  }
+  return [first_];
+})();
+
+function myMap(f, x) {
+  return x.map((f.length === 1) ? f : x => f(x));
+}
+
+let bar = myMap(first, [[1], [2], [3]]);`));
+  it('(compile \'(module m lisp (define (my-cdr x) (cdr x))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('lisp'), [Symbol.for('define'), [Symbol.for('my-cdr'), Symbol.for('x')], [Symbol.for('cdr'), Symbol.for('x')]]], Symbol.for(':finline-functions'), true), `function myCdr(x) {
+  return ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
+}`));
+  return it('(compile \'(module m lisp (define (my-intersection x y) (intersection x y))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('lisp'), [Symbol.for('define'), [Symbol.for('my-intersection'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('intersection'), Symbol.for('x'), Symbol.for('y')]]], Symbol.for(':finline-functions'), true), `let [intersection] = (() => {
+  function intersection_(...args) {
+    function intersection2(arr1, arr2) {
+      let result = [];
+      for (let element of arr1) {
+        if (arr2.includes(element) && !result.includes(element)) {
+          result.push(element);
+        }
+      }
+      return result;
+    }
+    if (args.length === 0) {
+      return [];
+    } else if (args.length === 1) {
+      return args[0];
+    } else {
+      return args.slice(1).reduce((acc, x) => intersection2(acc, x), args[0]);
+    }
+  }
+  return [intersection_];
+})();
+
+function myIntersection(x, y) {
+  return intersection(x, y);
+}`));
 });
 
 describe('compile-modules', (): any => {
   it('(module ... (define ...) ...)', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')]]], compilationEnvironment, {
     language: 'javascript',
     optimize: true
-  }), ['function I(x) {\n' +
-    '  return x;\n' +
-    '}']));
+  }), [`function I(x) {
+  return x;
+}`]));
   it('import macro from another module', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('defmacro'), Symbol.for('foo'), [Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('foo')]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('require'), [Symbol.for('only-in'), './a', Symbol.for('foo')]], [Symbol.for('declare-macro'), Symbol.for('foo')], [Symbol.for('define'), [Symbol.for('bar'), Symbol.for('x')], [Symbol.for('foo'), Symbol.for('x')]]]], compilationEnvironment, {
     language: 'javascript',
     optimize: true
-  }), ['function foo(exp, env) {\n' +
-    '  const [x] = exp.slice(1);\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'foo.ftype = \'macro\';\n' +
-    '\n' +
-    'export {\n' +
-    '  foo\n' +
-    '};', 'import {\n' +
-    '  foo\n' +
-    '} from \'./a\';\n' +
-    '\n' +
-    'foo.ftype = \'macro\';\n' +
-    '\n' +
-    'function bar(x) {\n' +
-    '  return x;\n' +
-    '}']));
+  }), [`function foo(exp, env) {
+  const [x] = exp.slice(1);
+  return x;
+}
+
+foo.ftype = 'macro';
+
+export {
+  foo
+};`, `import {
+  foo
+} from './a';
+
+foo.ftype = 'macro';
+
+function bar(x) {
+  return x;
+}`]));
   it('import macro from a module defined later', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('require'), [Symbol.for('only-in'), './b', Symbol.for('bar')]], [Symbol.for('declare-macro'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('bar'), Symbol.for('x')]]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('bar')]]], compilationEnvironment, {
     language: 'javascript',
     optimize: true
-  }), ['import {\n' +
-    '  bar\n' +
-    '} from \'./b\';\n' +
-    '\n' +
-    'bar.ftype = \'macro\';\n' +
-    '\n' +
-    'function foo(x) {\n' +
-    '  return x;\n' +
-    '}', 'function bar(exp, env) {\n' +
-    '  const [x] = exp.slice(1);\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'bar.ftype = \'macro\';\n' +
-    '\n' +
-    'export {\n' +
-    '  bar\n' +
-    '};']));
+  }), [`import {
+  bar
+} from './b';
+
+bar.ftype = 'macro';
+
+function foo(x) {
+  return x;
+}`, `function bar(exp, env) {
+  const [x] = exp.slice(1);
+  return x;
+}
+
+bar.ftype = 'macro';
+
+export {
+  bar
+};`]));
   it('import function for use in a macro', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('require'), [Symbol.for('only-in'), './b', Symbol.for('baz')]], [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], [Symbol.for('baz'), Symbol.for('x')]], [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('bar'), Symbol.for('x')]]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('baz'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('baz')]]], compilationEnvironment, {
     language: 'javascript',
     optimize: true
-  }), ['import {\n' +
-    '  baz\n' +
-    '} from \'./b\';\n' +
-    '\n' +
-    'function bar(exp, env) {\n' +
-    '  const [x] = exp.slice(1);\n' +
-    '  return baz(x);\n' +
-    '}\n' +
-    '\n' +
-    'bar.ftype = \'macro\';\n' +
-    '\n' +
-    'function foo(x) {\n' +
-    '  return x;\n' +
-    '}', 'function baz(x) {\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'export {\n' +
-    '  baz\n' +
-    '};']));
+  }), [`import {
+  baz
+} from './b';
+
+function bar(exp, env) {
+  const [x] = exp.slice(1);
+  return baz(x);
+}
+
+bar.ftype = 'macro';
+
+function foo(x) {
+  return x;
+}`, `function baz(x) {
+  return x;
+}
+
+export {
+  baz
+};`]));
   return it('import renamed macro from another module', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('defmacro'), Symbol.for('foo'), [Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('foo')]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('require'), [Symbol.for('only-in'), './a', [Symbol.for('foo'), Symbol.for('foo1')]]], [Symbol.for('declare-macro'), Symbol.for('foo1')], [Symbol.for('define'), [Symbol.for('bar'), Symbol.for('x')], [Symbol.for('foo1'), Symbol.for('x')]]]], compilationEnvironment, {
     language: 'javascript',
     optimize: true
-  }), ['function foo(exp, env) {\n' +
-    '  const [x] = exp.slice(1);\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'foo.ftype = \'macro\';\n' +
-    '\n' +
-    'export {\n' +
-    '  foo\n' +
-    '};', 'import {\n' +
-    '  foo as foo1\n' +
-    '} from \'./a\';\n' +
-    '\n' +
-    'foo1.ftype = \'macro\';\n' +
-    '\n' +
-    'function bar(x) {\n' +
-    '  return x;\n' +
-    '}']));
+  }), [`function foo(exp, env) {
+  const [x] = exp.slice(1);
+  return x;
+}
+
+foo.ftype = 'macro';
+
+export {
+  foo
+};`, `import {
+  foo as foo1
+} from './a';
+
+foo1.ftype = 'macro';
+
+function bar(x) {
+  return x;
+}`]));
 });
 
-describe('--fsemicolon false', (): any => it('(compile \'(begin x y z) :fsemicolon #f)', (): any => assertEqual(compile([Symbol.for('begin'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')], Symbol.for(':fsemicolon'), false), 'x\n' +
-  '\n' +
-  'y\n' +
-  '\n' +
-  'z')));
+describe('--fsemicolon false', (): any => it('(compile \'(begin x y z) :fsemicolon #f)', (): any => assertEqual(compile([Symbol.for('begin'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')], Symbol.for(':fsemicolon'), false), `x
+
+y
+
+z`)));
 
 describe('compile-with-environment', (): any => {
   xit('has', (): any => assertEqual(((): any => {
@@ -273,584 +273,584 @@ describe('compile-with-environment', (): any => {
     const continuationEnv: any = options['continuationEnv'];
     return continuationEnv instanceof EnvironmentStack;
   })(), true));
-  it(';; comment\n' +
-    '(foo)', (): any => assertEqual(compileWithEnvironment(readSyntax(';; comment\n' +
-    '(foo)'), compilationEnvironment, {
+  it(`;; comment
+(foo)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`;; comment
+(foo)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '// comment\n' +
-    'foo();'));
-  it(';; multi-line\n' +
-    ';; comment\n' +
-    '(foo)', (): any => assertEqual(compileWithEnvironment(readSyntax(';; multi-line\n' +
-    ';; comment\n' +
-    '(foo)'), compilationEnvironment, {
+  }), `// comment
+foo();`));
+  it(`;; multi-line
+;; comment
+(foo)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`;; multi-line
+;; comment
+(foo)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '// multi-line\n' +
-    '// comment\n' +
-    'foo();'));
-  xit(';; multi-line\n' +
-    ';;\n' +
-    ';; comment\n' +
-    '(foo)', (): any => assertEqual(compileWithEnvironment(readSyntax(';; multi-line\n' +
-    ';;\n' +
-    ';; comment\n' +
-    '(foo)'), compilationEnvironment, {
+  }), `// multi-line
+// comment
+foo();`));
+  xit(`;; multi-line
+;;
+;; comment
+(foo)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`;; multi-line
+;;
+;; comment
+(foo)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '// multi-line\n' +
-    '//\n' +
-    '// comment\n' +
-    'foo();'));
-  it(';; multiple\n' +
-    '\n' +
-    ';; comments\n' +
-    '(foo)', (): any => assertEqual(compileWithEnvironment(readSyntax(';; multiple\n' +
-    '\n' +
-    ';; comments\n' +
-    '(foo)'), compilationEnvironment, {
+  }), `// multi-line
+//
+// comment
+foo();`));
+  it(`;; multiple
+
+;; comments
+(foo)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`;; multiple
+
+;; comments
+(foo)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '// multiple\n' +
-    '\n' +
-    '// comments\n' +
-    'foo();'));
-  it('(+\n' +
-    ' ;; foo\n' +
-    ' foo\n' +
-    ' ;; bar\n' +
-    ' bar)', (): any => assertEqual(compileWithEnvironment(readSyntax('(+\n' +
-    '            ;; foo\n' +
-    '            foo\n' +
-    '            ;; bar\n' +
-    '            bar)'), compilationEnvironment, {
+  }), `// multiple
+
+// comments
+foo();`));
+  it(`(+
+ ;; foo
+ foo
+ ;; bar
+ bar)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`(+
+            ;; foo
+            foo
+            ;; bar
+            bar)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '(\n' +
-    ' // foo\n' +
-    ' foo +\n' +
-    ' // bar\n' +
-    ' bar\n' +
-    ');'));
-  it('(list foo\n' +
-    '      ;; bar\n' +
-    '      bar\n' +
-    '      ;; baz\n' +
-    '      baz)', (): any => assertEqual(compileWithEnvironment(readSyntax('(list foo\n' +
-    '      ;; bar\n' +
-    '      bar\n' +
-    '      ;; baz\n' +
-    '      baz)'), compilationEnvironment, {
+  }), `(
+ // foo
+ foo +
+ // bar
+ bar
+);`));
+  it(`(list foo
+      ;; bar
+      bar
+      ;; baz
+      baz)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`(list foo
+      ;; bar
+      bar
+      ;; baz
+      baz)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '[\n' +
-    ' foo,\n' +
-    ' // bar\n' +
-    ' bar,\n' +
-    ' // baz\n' +
-    ' baz\n' +
-    '];'));
-  it('(+\n' +
-    ' ;; foo\n' +
-    ' foo\n' +
-    ' ;; bar\n' +
-    ' bar)', (): any => assertEqual(compileWithEnvironment(readSyntax('(+\n' +
-    '            ;; foo\n' +
-    '            foo\n' +
-    '            ;; bar\n' +
-    '            bar)'), compilationEnvironment, {
+  }), `[
+ foo,
+ // bar
+ bar,
+ // baz
+ baz
+];`));
+  it(`(+
+ ;; foo
+ foo
+ ;; bar
+ bar)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`(+
+            ;; foo
+            foo
+            ;; bar
+            bar)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '(\n' +
-    ' // foo\n' +
-    ' foo +\n' +
-    ' // bar\n' +
-    ' bar\n' +
-    ');'));
-  it(';; comment\n' +
-    '(foo)', (): any => assertEqual(compileWithEnvironment(readSyntax(';; comment\n' +
-    '(foo)'), compilationEnvironment, {
+  }), `(
+ // foo
+ foo +
+ // bar
+ bar
+);`));
+  it(`;; comment
+(foo)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`;; comment
+(foo)`), compilationEnvironment, {
     expressionType: 'statement',
     to: 'javascript',
     optimize: true
-  }), '// comment\n' +
-    'foo();'));
-  it('I & K', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; I combinator.\n' +
-    '  (define (I x)\n' +
-    '   ;; Just return x.\n' +
-    '   x)\n' +
-    '  ;;; K combinator.\n' +
-    '  (define (K x y)\n' +
-    '    x))'), compilationEnvironment, {
+  }), `// comment
+foo();`));
+  it('I & K', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; I combinator.
+  (define (I x)
+   ;; Just return x.
+   x)
+  ;;; K combinator.
+  (define (K x y)
+    x))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * I combinator.\n' +
-    ' */\n' +
-    'function I(x) {\n' +
-    '  // Just return x.\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    '/**\n' +
-    ' * K combinator.\n' +
-    ' */\n' +
-    'function K(x, y) {\n' +
-    '  return x;\n' +
-    '}'));
-  it('A, JS', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; A combinator.\n' +
-    '  (define (A f . args)\n' +
-    '    ;; Apply f to args.\n' +
-    '    (apply f args)))'), compilationEnvironment, {
+  }), `/**
+ * I combinator.
+ */
+function I(x) {
+  // Just return x.
+  return x;
+}
+
+/**
+ * K combinator.
+ */
+function K(x, y) {
+  return x;
+}`));
+  it('A, JS', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; A combinator.
+  (define (A f . args)
+    ;; Apply f to args.
+    (apply f args)))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * A combinator.\n' +
-    ' */\n' +
-    'function A(f, ...args) {\n' +
-    '  // Apply f to args.\n' +
-    '  return f(...args);\n' +
-    '}'));
-  it('A, TS', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; A combinator.\n' +
-    '  (define (A f . args)\n' +
-    '    ;; Apply f to args.\n' +
-    '    (apply f args)))'), compilationEnvironment, {
+  }), `/**
+ * A combinator.
+ */
+function A(f, ...args) {
+  // Apply f to args.
+  return f(...args);
+}`));
+  it('A, TS', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; A combinator.
+  (define (A f . args)
+    ;; Apply f to args.
+    (apply f args)))`), compilationEnvironment, {
     to: 'typescript',
     optimize: true
-  }), '/**\n' +
-    ' * A combinator.\n' +
-    ' */\n' +
-    'function A(f: any, ...args: any[]): any {\n' +
-    '  // Apply f to args.\n' +
-    '  return f(...args);\n' +
-    '}'));
-  xit('B2, TS', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; B2 combinator.\n' +
-    '  (define (B2 . args)\n' +
-    '    (let ((fs (drop-right args 1))\n' +
-    '          (x (array-list-last args)))\n' +
-    '      ;; Right-to-left function composition\n' +
-    '      ;; corresponds to a right fold.\n' +
-    '      (foldr A x fs))))'), compilationEnvironment, {
+  }), `/**
+ * A combinator.
+ */
+function A(f: any, ...args: any[]): any {
+  // Apply f to args.
+  return f(...args);
+}`));
+  xit('B2, TS', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; B2 combinator.
+  (define (B2 . args)
+    (let ((fs (drop-right args 1))
+          (x (array-list-last args)))
+      ;; Right-to-left function composition
+      ;; corresponds to a right fold.
+      (foldr A x fs))))`), compilationEnvironment, {
     to: 'typescript',
     optimize: true
-  }), '/**\n' +
-    ' * B2 combinator.\n' +
-    ' */\n' +
-    'function B2(...args: any[]): any {\n' +
-    '  const fs: any = args.slice(0, -1);\n' +
-    '  const x: any = args[args.length - 1];\n' +
-    '  // Right-to-left function composition\n' +
-    '  // corresponds to a right fold.\n' +
-    '  return fs.reduceRight((acc: any, x: any): any => A(x, acc), x);\n' +
-    '}'));
-  it('(define ... (let ...))', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Foo.\n' +
-    '  (define (foo x)\n' +
-    '    ;; Bind y.\n' +
-    '    (let ((y 1))\n' +
-    '      ;; Return y.\n' +
-    '      y)))'), compilationEnvironment, {
+  }), `/**
+ * B2 combinator.
+ */
+function B2(...args: any[]): any {
+  const fs: any = args.slice(0, -1);
+  const x: any = args[args.length - 1];
+  // Right-to-left function composition
+  // corresponds to a right fold.
+  return fs.reduceRight((acc: any, x: any): any => A(x, acc), x);
+}`));
+  it('(define ... (let ...))', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Foo.
+  (define (foo x)
+    ;; Bind y.
+    (let ((y 1))
+      ;; Return y.
+      y)))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Foo.\n' +
-    ' */\n' +
-    'function foo(x) {\n' +
-    '  // Bind y.\n' +
-    '  const y = 1;\n' +
-    '  // Return y.\n' +
-    '  return y;\n' +
-    '}'));
-  it('(define ... (if ...))', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Whether x is a truish value.\n' +
-    '  (define (truish x)\n' +
-    '    (if x\n' +
-    '        ;; If x is truish, return true.\n' +
-    '        #t\n' +
-    '      ;; If x is falsey, return false.\n' +
-    '      #f)))'), compilationEnvironment, {
+  }), `/**
+ * Foo.
+ */
+function foo(x) {
+  // Bind y.
+  const y = 1;
+  // Return y.
+  return y;
+}`));
+  it('(define ... (if ...))', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Whether x is a truish value.
+  (define (truish x)
+    (if x
+        ;; If x is truish, return true.
+        #t
+      ;; If x is falsey, return false.
+      #f)))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Whether x is a truish value.\n' +
-    ' */\n' +
-    'function truish(x) {\n' +
-    '  if (x) {\n' +
-    '    // If x is truish, return true.\n' +
-    '    return true;\n' +
-    '  } else {\n' +
-    '    // If x is falsey, return false.\n' +
-    '    return false;\n' +
-    '  }\n' +
-    '}'));
-  it('(define ... (cond ...))', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Whether x is a truish value.\n' +
-    '  (define (truish x)\n' +
-    '    (cond\n' +
-    '      ;; If x is truish, return true.\n' +
-    '      (x\n' +
-    '       #t)\n' +
-    '      ;; If x is falsey, return false.\n' +
-    '      (else\n' +
-    '       #f))))'), compilationEnvironment, {
+  }), `/**
+ * Whether x is a truish value.
+ */
+function truish(x) {
+  if (x) {
+    // If x is truish, return true.
+    return true;
+  } else {
+    // If x is falsey, return false.
+    return false;
+  }
+}`));
+  it('(define ... (cond ...))', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Whether x is a truish value.
+  (define (truish x)
+    (cond
+      ;; If x is truish, return true.
+      (x
+       #t)
+      ;; If x is falsey, return false.
+      (else
+       #f))))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Whether x is a truish value.\n' +
-    ' */\n' +
-    'function truish(x) {\n' +
-    '  if (x) {\n' +
-    '    // If x is truish, return true.\n' +
-    '    return true;\n' +
-    '  } else {\n' +
-    '    // If x is falsey, return false.\n' +
-    '    return false;\n' +
-    '  }\n' +
-    '}'));
-  it('(define ... (let ...))', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Wrap a value in a list.\n' +
-    '  (define (wrap-in-list x)\n' +
-    '    ;; Return x wrapped in a list.\n' +
-    '    `(,x)))'), compilationEnvironment, {
+  }), `/**
+ * Whether x is a truish value.
+ */
+function truish(x) {
+  if (x) {
+    // If x is truish, return true.
+    return true;
+  } else {
+    // If x is falsey, return false.
+    return false;
+  }
+}`));
+  it('(define ... (let ...))', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Wrap a value in a list.
+  (define (wrap-in-list x)
+    ;; Return x wrapped in a list.
+    \`(,x)))`), compilationEnvironment, {
     case: 'camelcase',
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Wrap a value in a list.\n' +
-    ' */\n' +
-    'function wrapInList(x) {\n' +
-    '  // Return x wrapped in a list.\n' +
-    '  return [x];\n' +
-    '}'));
-  it('while...if', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; test function.\n' +
-    '  (define (test)\n' +
-    '    ;; while loop.\n' +
-    '    (while foo\n' +
-    '      (cond\n' +
-    '       ;; bar case.\n' +
-    '       (bar\n' +
-    '        ;; inner cond.\n' +
-    '        (cond\n' +
-    '         (baz\n' +
-    '          "baz")))\n' +
-    '       ;; else case.\n' +
-    '       (else\n' +
-    '        "baz")))))'), compilationEnvironment, {
+  }), `/**
+ * Wrap a value in a list.
+ */
+function wrapInList(x) {
+  // Return x wrapped in a list.
+  return [x];
+}`));
+  it('while...if', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; test function.
+  (define (test)
+    ;; while loop.
+    (while foo
+      (cond
+       ;; bar case.
+       (bar
+        ;; inner cond.
+        (cond
+         (baz
+          "baz")))
+       ;; else case.
+       (else
+        "baz")))))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * test function.\n' +
-    ' */\n' +
-    'function test() {\n' +
-    '  // while loop.\n' +
-    '  while (foo) {\n' +
-    '    if (bar) {\n' +
-    '      // bar case.\n' +
-    '      // inner cond.\n' +
-    '      if (baz) {\n' +
-    '        return \'baz\';\n' +
-    '      }\n' +
-    '    } else {\n' +
-    '      // else case.\n' +
-    '      return \'baz\';\n' +
-    '    }\n' +
-    '  }\n' +
-    '}'));
-  it('(define-class Foo ...)', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Foo class.\n' +
-    '  (define-class Foo ()\n' +
-    '    ;;; bar property.\n' +
-    '    (define/public bar 0)\n' +
-    '\n' +
-    '    ;;; Foo constructor.\n' +
-    '    (define/public (constructor n)\n' +
-    '      ;; Set bar to n.\n' +
-    '      (set! (.-this bar) n))))'), compilationEnvironment, {
+  }), `/**
+ * test function.
+ */
+function test() {
+  // while loop.
+  while (foo) {
+    if (bar) {
+      // bar case.
+      // inner cond.
+      if (baz) {
+        return 'baz';
+      }
+    } else {
+      // else case.
+      return 'baz';
+    }
+  }
+}`));
+  it('(define-class Foo ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Foo class.
+  (define-class Foo ()
+    ;;; bar property.
+    (define/public bar 0)
+
+    ;;; Foo constructor.
+    (define/public (constructor n)
+      ;; Set bar to n.
+      (set! (.-this bar) n))))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Foo class.\n' +
-    ' */\n' +
-    'class Foo {\n' +
-    '  /**\n' +
-    '   * bar property.\n' +
-    '   */\n' +
-    '  bar = 0;\n' +
-    '\n' +
-    '  /**\n' +
-    '   * Foo constructor.\n' +
-    '   */\n' +
-    '  constructor(n) {\n' +
-    '    // Set bar to n.\n' +
-    '    bar.this = n;\n' +
-    '  }\n' +
-    '}'));
-  it('(define-class Foo ...)', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Foo class.\n' +
-    '  (define-class Foo ()\n' +
-    '    ;;; foo method.\n' +
-    '    (define/public (foo)\n' +
-    '      ;; this\n' +
-    '      this)))'), compilationEnvironment, {
+  }), `/**
+ * Foo class.
+ */
+class Foo {
+  /**
+   * bar property.
+   */
+  bar = 0;
+
+  /**
+   * Foo constructor.
+   */
+  constructor(n) {
+    // Set bar to n.
+    bar.this = n;
+  }
+}`));
+  it('(define-class Foo ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Foo class.
+  (define-class Foo ()
+    ;;; foo method.
+    (define/public (foo)
+      ;; this
+      this)))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Foo class.\n' +
-    ' */\n' +
-    'class Foo {\n' +
-    '  /**\n' +
-    '   * foo method.\n' +
-    '   */\n' +
-    '  foo() {\n' +
-    '    // this\n' +
-    '    return this;\n' +
-    '  }\n' +
-    '}'));
-  it('(define Foo (class ...))', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Foo class.\n' +
-    '  (define Foo\n' +
-    '    (class object%\n' +
-    '      ;;; bar method.\n' +
-    '      (define/public (bar)\n' +
-    '        ;; this\n' +
-    '        this))))'), compilationEnvironment, {
+  }), `/**
+ * Foo class.
+ */
+class Foo {
+  /**
+   * foo method.
+   */
+  foo() {
+    // this
+    return this;
+  }
+}`));
+  it('(define Foo (class ...))', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Foo class.
+  (define Foo
+    (class object%
+      ;;; bar method.
+      (define/public (bar)
+        ;; this
+        this))))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Foo class.\n' +
-    ' */\n' +
-    'class Foo {\n' +
-    '  /**\n' +
-    '   * bar method.\n' +
-    '   */\n' +
-    '  bar() {\n' +
-    '    // this\n' +
-    '    return this;\n' +
-    '  }\n' +
-    '}'));
-  it('(define Foo (class ...))', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Foo class.\n' +
-    '  (define Foo\n' +
-    '    (class object%\n' +
-    '      ;;; foo method.\n' +
-    '      (define/public (foo)\n' +
-    '        0)\n' +
-    '\n' +
-    '      ;;; bar generator method.\n' +
-    '      (define/generator ((get-field iterator Symbol))\n' +
-    '        (for ((x (list 1 2 3 4)))\n' +
-    '          (yield x))))))'), compilationEnvironment, {
+  }), `/**
+ * Foo class.
+ */
+class Foo {
+  /**
+   * bar method.
+   */
+  bar() {
+    // this
+    return this;
+  }
+}`));
+  it('(define Foo (class ...))', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Foo class.
+  (define Foo
+    (class object%
+      ;;; foo method.
+      (define/public (foo)
+        0)
+
+      ;;; bar generator method.
+      (define/generator ((get-field iterator Symbol))
+        (for ((x (list 1 2 3 4)))
+          (yield x))))))`), compilationEnvironment, {
     to: 'typescript',
     optimize: true
-  }), '/**\n' +
-    ' * Foo class.\n' +
-    ' */\n' +
-    'class Foo {\n' +
-    '  /**\n' +
-    '   * foo method.\n' +
-    '   */\n' +
-    '  foo(): any {\n' +
-    '    return 0;\n' +
-    '  }\n' +
-    '\n' +
-    '  /**\n' +
-    '   * bar generator method.\n' +
-    '   */\n' +
-    '  *[Symbol.iterator](): any {\n' +
-    '    for (let x of [1, 2, 3, 4]) {\n' +
-    '      yield x;\n' +
-    '    }\n' +
-    '  }\n' +
-    '}'));
-  xit('(define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Hello, world.\n' +
-    '  (: hello-world (-> Void))\n' +
-    '  (define (hello-world)\n' +
-    '    (display "hello, world")))'), compilationEnvironment, {
+  }), `/**
+ * Foo class.
+ */
+class Foo {
+  /**
+   * foo method.
+   */
+  foo(): any {
+    return 0;
+  }
+
+  /**
+   * bar generator method.
+   */
+  *[Symbol.iterator](): any {
+    for (let x of [1, 2, 3, 4]) {
+      yield x;
+    }
+  }
+}`));
+  xit('(define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Hello, world.
+  (: hello-world (-> Void))
+  (define (hello-world)
+    (display "hello, world")))`), compilationEnvironment, {
     case: 'camelcase',
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Hello, world.\n' +
-    ' */\n' +
-    'function helloWorld() {\n' +
-    '  console.log(\'hello, world\');\n' +
-    '}'));
-  it(';;; Foo, blank line, (define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(';;; Foo\n' +
-    '\n' +
-    '(require "foo")'), compilationEnvironment, {
+  }), `/**
+ * Hello, world.
+ */
+function helloWorld() {
+  console.log('hello, world');
+}`));
+  it(';;; Foo, blank line, (define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(`;;; Foo
+
+(require "foo")`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Foo\n' +
-    ' */\n' +
-    '\n' +
-    'import * as foo from \'foo\';'));
-  it(';; Foo, blank line, ;;; Bar, (define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(';; Foo\n' +
-    '\n' +
-    ';;; Bar\n' +
-    '(require "foo")'), compilationEnvironment, {
+  }), `/**
+ * Foo
+ */
+
+import * as foo from 'foo';`));
+  it(';; Foo, blank line, ;;; Bar, (define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(`;; Foo
+
+;;; Bar
+(require "foo")`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '// Foo\n' +
-    '\n' +
-    '/**\n' +
-    ' * Bar\n' +
-    ' */\n' +
-    'import * as foo from \'foo\';'));
-  it('(define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(';; Foo\n' +
-    ';;; Bar\n' +
-    '\n' +
-    '(require "foo")'), compilationEnvironment, {
+  }), `// Foo
+
+/**
+ * Bar
+ */
+import * as foo from 'foo';`));
+  it('(define (hello-world) ...)', (): any => assertEqual(compileWithEnvironment(readSyntax(`;; Foo
+;;; Bar
+
+(require "foo")`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), '// Foo\n' +
-    '/**\n' +
-    ' * Bar\n' +
-    ' */\n' +
-    '\n' +
-    'import * as foo from \'foo\';'));
-  it('(define foo\n' +
-    '  ;; bar\n' +
-    '  bar)', (): any => assertEqual(compileWithEnvironment(readSyntax('(define foo\n' +
-    '  ;; bar\n' +
-    '  bar)'), compilationEnvironment, {
+  }), `// Foo
+/**
+ * Bar
+ */
+
+import * as foo from 'foo';`));
+  it(`(define foo
+  ;; bar
+  bar)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`(define foo
+  ;; bar
+  bar)`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), 'const foo =\n' +
-    '  // bar\n' +
-    '  bar;'));
-  it('(set! foo\n' +
-    '  ;; bar\n' +
-    '  bar)', (): any => assertEqual(compileWithEnvironment(readSyntax('(set! foo\n' +
-    '  ;; bar\n' +
-    '  bar)'), compilationEnvironment, {
+  }), `const foo =
+  // bar
+  bar;`));
+  it(`(set! foo
+  ;; bar
+  bar)`, (): any => assertEqual(compileWithEnvironment(readSyntax(`(set! foo
+  ;; bar
+  bar)`), compilationEnvironment, {
     to: 'javascript',
     expressionType: 'statement',
     optimize: true
-  }), 'foo =\n' +
-    '  // bar\n' +
-    '  bar;'));
+  }), `foo =
+  // bar
+  bar;`));
   xit('x, camelCase', (): any => assertEqual(compileWithEnvironment(Symbol.for('x'), new LispEnvironment([['x', 1, 'variable']]), {
     to: 'javascript',
     optimize: true
   }), '1'));
-  it('(module m scheme ... (apply + \'(1 1)) ...), comment', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Module header.\n' +
-    '\n' +
-    '  (define one-plus-one\n' +
-    '    (apply + \'(1 1))))'), compilationEnvironment, {
+  it('(module m scheme ... (apply + \'(1 1)) ...), comment', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Module header.
+
+  (define one-plus-one
+    (apply + '(1 1))))`), compilationEnvironment, {
     case: 'camelcase',
     finlineFunctions: true,
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Module header.\n' +
-    ' */\n' +
-    '\n' +
-    'const [_add] = (() => {\n' +
-    '  function add_(...args) {\n' +
-    '    let result = 0;\n' +
-    '    for (let arg of args) {\n' +
-    '      result = result + arg;\n' +
-    '    }\n' +
-    '    return result;\n' +
-    '  }\n' +
-    '  return [add_];\n' +
-    '})();\n' +
-    '\n' +
-    'const onePlusOne = _add(1, 1);'));
-  it('(module m scheme ... (apply + \'(1 1)) ...), comments', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Module header.\n' +
-    '\n' +
-    '  ;;; Custom addition function.\n' +
-    '  (define one-plus-one\n' +
-    '    (apply + \'(1 1))))'), compilationEnvironment, {
+  }), `/**
+ * Module header.
+ */
+
+const [_add] = (() => {
+  function add_(...args) {
+    let result = 0;
+    for (let arg of args) {
+      result = result + arg;
+    }
+    return result;
+  }
+  return [add_];
+})();
+
+const onePlusOne = _add(1, 1);`));
+  it('(module m scheme ... (apply + \'(1 1)) ...), comments', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Module header.
+
+  ;;; Custom addition function.
+  (define one-plus-one
+    (apply + '(1 1))))`), compilationEnvironment, {
     case: 'camelcase',
     finlineFunctions: true,
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Module header.\n' +
-    ' */\n' +
-    '\n' +
-    'const [_add] = (() => {\n' +
-    '  function add_(...args) {\n' +
-    '    let result = 0;\n' +
-    '    for (let arg of args) {\n' +
-    '      result = result + arg;\n' +
-    '    }\n' +
-    '    return result;\n' +
-    '  }\n' +
-    '  return [add_];\n' +
-    '})();\n' +
-    '\n' +
-    '/**\n' +
-    ' * Custom addition function.\n' +
-    ' */\n' +
-    'const onePlusOne = _add(1, 1);'));
-  it('(module m scheme ... (apply + \'(1 1)) ...), comments', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  ;;; Module header.\n' +
-    '\n' +
-    '  ;;; Custom macro.\n' +
-    '  (define-macro (foo &rest body)\n' +
-    '    `(begin ,@body))\n' +
-    '\n' +
-    '  (foo\n' +
-    '   (cond\n' +
-    '    ;; False clause.\n' +
-    '    (#f\n' +
-    '     1)\n' +
-    '    ;; True clause.\n' +
-    '    (else\n' +
-    '     2))))'), compilationEnvironment, {
+  }), `/**
+ * Module header.
+ */
+
+const [_add] = (() => {
+  function add_(...args) {
+    let result = 0;
+    for (let arg of args) {
+      result = result + arg;
+    }
+    return result;
+  }
+  return [add_];
+})();
+
+/**
+ * Custom addition function.
+ */
+const onePlusOne = _add(1, 1);`));
+  it('(module m scheme ... (apply + \'(1 1)) ...), comments', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  ;;; Module header.
+
+  ;;; Custom macro.
+  (define-macro (foo &rest body)
+    \`(begin ,@body))
+
+  (foo
+   (cond
+    ;; False clause.
+    (#f
+     1)
+    ;; True clause.
+    (else
+     2))))`), compilationEnvironment, {
     case: 'camelcase',
     finlineFunctions: true,
     to: 'javascript',
     optimize: true
-  }), '/**\n' +
-    ' * Module header.\n' +
-    ' */\n' +
-    '\n' +
-    '/**\n' +
-    ' * Custom macro.\n' +
-    ' */\n' +
-    'function foo(exp, env) {\n' +
-    '  const body = exp.slice(1);\n' +
-    '  return [Symbol.for(\'begin\'), ...body];\n' +
-    '}\n' +
-    '\n' +
-    'foo.ftype = \'macro\';\n' +
-    '\n' +
-    'if (false) {\n' +
-    '  // False clause.\n' +
-    '  1;\n' +
-    '} else {\n' +
-    '  // True clause.\n' +
-    '  2;\n' +
-    '}'));
+  }), `/**
+ * Module header.
+ */
+
+/**
+ * Custom macro.
+ */
+function foo(exp, env) {
+  const body = exp.slice(1);
+  return [Symbol.for('begin'), ...body];
+}
+
+foo.ftype = 'macro';
+
+if (false) {
+  // False clause.
+  1;
+} else {
+  // True clause.
+  2;
+}`));
   xit('(I x), JS function', (): any => assertEqual(compileWithEnvironment([Symbol.for('I'), Symbol.for('x')], new LispEnvironment([['I', (x: any): any => x, 'function']]), {
     to: 'javascript',
     optimize: true
-  }), '(function {\n' +
-    '   let I = function(x) {\n' +
-    '     return x;\n' +
-    '   }\n' +
-    '   return I;\n' +
-    '})()(x)'));
+  }), `(function {
+   let I = function(x) {
+     return x;
+   }
+   return I;
+})()(x)`));
   it('(truep x)', (): any => assertEqual(compileWithEnvironment([Symbol.for('truep'), Symbol.for('x')], compilationEnvironment, {
     case: 'camelcase',
     to: 'javascript',
@@ -861,87 +861,87 @@ describe('compile-with-environment', (): any => {
     to: 'javascript',
     optimize: true
   }), 'x ? false : true'));
-  it('read-syntax', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  (define foo\n' +
-    '    `(foo)))'), compilationEnvironment, {
+  it('read-syntax', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  (define foo
+    \`(foo)))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
   }), 'const foo = [Symbol.for(\'foo\')];'));
-  it('read-syntax, quasiquote', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  (define foo 1)\n' +
-    '  (define bar\n' +
-    '    `(,foo)))'), compilationEnvironment, {
+  it('read-syntax, quasiquote', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  (define foo 1)
+  (define bar
+    \`(,foo)))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), 'const foo = 1;\n' +
-    '\n' +
-    'const bar = [foo];'));
-  it('read-syntax, quasiquoted list of pairs', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m scheme\n' +
-    '  (define foo 1)\n' +
-    '  (define bar 2)\n' +
-    '  (define quux\n' +
-    '    `(("foo" . ,foo)\n' +
-    '       ("bar" . ,bar))))'), compilationEnvironment, {
+  }), `const foo = 1;
+
+const bar = [foo];`));
+  it('read-syntax, quasiquoted list of pairs', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m scheme
+  (define foo 1)
+  (define bar 2)
+  (define quux
+    \`(("foo" . ,foo)
+       ("bar" . ,bar))))`), compilationEnvironment, {
     to: 'javascript',
     optimize: true
-  }), 'const foo = 1;\n' +
-    '\n' +
-    'const bar = 2;\n' +
-    '\n' +
-    'const quux = [[\'foo\', Symbol.for(\'.\'), foo], [\'bar\', Symbol.for(\'.\'), bar]];'));
-  xit('(module m lisp ... (define *lisp-map* \'()))', (): any => assertEqual(compileWithEnvironment(readSyntax('(module m lisp\n' +
-    '  ;; inline-lisp-sources: true\n' +
-    '\n' +
-    '  (define (I x) x))'), compilationEnvironment, {
+  }), `const foo = 1;
+
+const bar = 2;
+
+const quux = [['foo', Symbol.for('.'), foo], ['bar', Symbol.for('.'), bar]];`));
+  xit('(module m lisp ... (define *lisp-map* \'()))', (): any => assertEqual(compileWithEnvironment(readSyntax(`(module m lisp
+  ;; inline-lisp-sources: true
+
+  (define (I x) x))`), compilationEnvironment, {
     case: 'camelcase',
     to: 'javascript',
     optimize: true
-  }), '// inline-lisp-sources: true\n' +
-    '\n' +
-    'function I(x) {\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'I.fsource = [Symbol.for(\'define\'), [Symbol.for(\'I\'), Symbol.for(\'x\')], Symbol.for(\'x\')];'));
-  it('(: f (-> Number Number)), lambda, comments, TS', (): any => assertEqual(compileWithEnvironment(readSyntax('(begin\n' +
-    '  ;; NN type alias.\n' +
-    '  (define-type NN (-> Number Number))\n' +
-    '  (: f NN)\n' +
-    '  (define f\n' +
-    '    (lambda (x)\n' +
-    '      x)))'), compilationEnvironment, {
+  }), `// inline-lisp-sources: true
+
+function I(x) {
+  return x;
+}
+
+I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')];`));
+  it('(: f (-> Number Number)), lambda, comments, TS', (): any => assertEqual(compileWithEnvironment(readSyntax(`(begin
+  ;; NN type alias.
+  (define-type NN (-> Number Number))
+  (: f NN)
+  (define f
+    (lambda (x)
+      x)))`), compilationEnvironment, {
     to: 'typescript',
     expressionType: 'statement',
     optimize: true
-  }), '// NN type alias.\n' +
-    'type NN = (a: number) => number;\n' +
-    '\n' +
-    'const f: NN = (x: any): any => x;'));
+  }), `// NN type alias.
+type NN = (a: number) => number;
+
+const f: NN = (x: any): any => x;`));
   it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')]], compilationEnvironment, {
     to: 'javascript',
     inlineLispSources: true,
     optimize: true
-  }), 'function foo(x) {\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'foo.fsource = [Symbol.for(\'define\'), [Symbol.for(\'foo\'), Symbol.for(\'x\')], Symbol.for(\'x\')];'));
+  }), `function foo(x) {
+  return x;
+}
+
+foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];`));
   xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], compilationEnvironment, {
     to: 'javascript',
     inlineLispSources: true,
     optimize: true
-  }), 'const foo = (x) => x;\n' +
-    '\n' +
-    'foo.fsource = [Symbol.for(\'lambda\'), [Symbol.for(\'x\')], Symbol.for(\'x\')];'));
+  }), `const foo = (x) => x;
+
+foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];`));
   return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], compilationEnvironment, {
     to: 'javascript',
     inlineLispSources: true,
     optimize: true
-  }), 'async function foo(x) {\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'foo.fsource = [Symbol.for(\'define/async\'), [Symbol.for(\'foo\'), Symbol.for(\'x\')], Symbol.for(\'x\')];'));
+  }), `async function foo(x) {
+  return x;
+}
+
+foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];`));
 });
 
 describe('define-macro->lambda-form', (): any => {
@@ -969,14 +969,15 @@ describe('define-macro->lambda-form', (): any => {
 });
 
 describe('split-comments', (): any => {
-  it('(split-comments ";;; Foo\n' +
-    '")', (): any => assertEqual(splitComments(';;; Foo\n'), [';;; Foo\n']));
+  it(`(split-comments ";;; Foo
+")`, (): any => assertEqual(splitComments(';;; Foo\n'), [';;; Foo\n']));
   xit('(split-comments ";;; Foo")', (): any => assertEqual(splitComments(';;; Foo'), [';;; Foo']));
-  xit('(split-comments ";; Foo\n' +
-    ';;; Bar")', (): any => assertEqual(splitComments(';; Foo\n' +
-    ';;; Bar'), [';; Foo\n', ';;; Bar']));
-  return xit('(split-comments ";; Foo\n' +
-    ';;; Bar\n' +
-    '")', (): any => assertEqual(splitComments(';; Foo\n' +
-    ';;; Bar\n'), [';; Foo\n', ';;; Bar\n']));
+  xit(`(split-comments ";; Foo
+;;; Bar")`, (): any => assertEqual(splitComments(`;; Foo
+;;; Bar`), [';; Foo\n', ';;; Bar']));
+  return xit(`(split-comments ";; Foo
+;;; Bar
+")`, (): any => assertEqual(splitComments(`;; Foo
+;;; Bar
+`), [';; Foo\n', ';;; Bar\n']));
 });

@@ -33,10 +33,10 @@ describe('decompile', (): any => {
   it('(decompile "\'foo\'")', (): any => assertEqual(decompile('\'foo\''), 'foo'));
   it('(decompile "const foo = `bar`;")', (): any => assertEqual(decompile('const foo = `bar`;'), [Symbol.for('define'), Symbol.for('foo'), 'bar']));
   it('(decompile "const foo = bar`baz`;")', (): any => assertEqual(decompile('const foo = bar`baz`;'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js/tag'), Symbol.for('bar'), 'baz']]));
-  it('(decompile "const foo = `bar\n' +
-    '\\\\`baz`;")', (): any => assertEqual(decompile('const foo = `bar\n' +
-    '\\`baz`;'), [Symbol.for('define'), Symbol.for('foo'), 'bar\n' +
-    '`baz']));
+  it(`(decompile "const foo = \`bar
+\\\\\`baz\`;")`, (): any => assertEqual(decompile(`const foo = \`bar
+\\\`baz\`;`), [Symbol.for('define'), Symbol.for('foo'), `bar
+\`baz`]));
   it('(decompile "/foo/")', (): any => assertEqual(decompile('/foo/'), [Symbol.for('js/regexp'), 'foo']));
   it('(decompile "/foo/g")', (): any => assertEqual(decompile('/foo/g'), [Symbol.for('js/regexp'), 'foo', 'g']));
   xit('(decompile "const exp = /.*/;")', (): any => assertEqual(decompile('const exp = /.*/;'), [Symbol.for('define'), Symbol.for('exp'), [Symbol.for('regexp'), '.*']]));
@@ -92,9 +92,9 @@ describe('decompile', (): any => {
   it('(decompile "foo(x, ...args);")', (): any => assertEqual(decompile('foo(x, ...args);'), [Symbol.for('apply'), Symbol.for('foo'), Symbol.for('x'), Symbol.for('args')]));
   it('(decompile "foo(...args, x);")', (): any => assertEqual(decompile('foo(...args, x);'), [Symbol.for('apply'), Symbol.for('foo'), [Symbol.for('append'), Symbol.for('args'), [Symbol.for('list'), Symbol.for('x')]]]));
   it('(decompile "foo(x, ...args, y);")', (): any => assertEqual(decompile('foo(x, ...args, y);'), [Symbol.for('apply'), Symbol.for('foo'), [Symbol.for('append'), [Symbol.for('list'), Symbol.for('x')], Symbol.for('args'), [Symbol.for('list'), Symbol.for('y')]]]));
-  xit('(decompile "// comment\n' +
-    'foo(bar);")', (): any => assertEqual(decompile('// comment\n' +
-    'foo(bar);'), [Symbol.for('foo'), Symbol.for('bar')]));
+  xit(`(decompile "// comment
+foo(bar);")`, (): any => assertEqual(decompile(`// comment
+foo(bar);`), [Symbol.for('foo'), Symbol.for('bar')]));
   it('(decompile "x = 1;")', (): any => assertEqual(decompile('x = 1;'), [Symbol.for('set!'), Symbol.for('x'), 1]));
   it('(decompile "x += 1;")', (): any => assertEqual(decompile('x += 1;'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('+'), Symbol.for('x'), 1]]));
   it('(decompile "x -= 1;")', (): any => assertEqual(decompile('x -= 1;'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('-'), Symbol.for('x'), 1]]));
@@ -107,9 +107,9 @@ describe('decompile', (): any => {
   it('(decompile "let x = undefined;")', (): any => assertEqual(decompile('let x = undefined;'), [Symbol.for('define'), Symbol.for('x'), Symbol.for('undefined')]));
   it('(decompile "let x;")', (): any => assertEqual(decompile('let x;'), [Symbol.for('define'), Symbol.for('x')]));
   it('(decompile "let x = 1, y = 2;")', (): any => assertEqual(decompile('let x = 1, y = 2;'), [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 1], [Symbol.for('define'), Symbol.for('y'), 2]]));
-  it('(decompile "let x = 1, y = 2;\n' +
-    'let z = 3;")', (): any => assertEqual(decompile('let x = 1, y = 2;\n' +
-    'let z = 3;'), [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 1], [Symbol.for('define'), Symbol.for('y'), 2], [Symbol.for('define'), Symbol.for('z'), 3]]));
+  it(`(decompile "let x = 1, y = 2;
+let z = 3;")`, (): any => assertEqual(decompile(`let x = 1, y = 2;
+let z = 3;`), [Symbol.for('begin'), [Symbol.for('define'), Symbol.for('x'), 1], [Symbol.for('define'), Symbol.for('y'), 2], [Symbol.for('define'), Symbol.for('z'), 3]]));
   it('(decompile "const x = 1")', (): any => assertEqual(decompile('const x = 1'), [Symbol.for('define'), Symbol.for('x'), 1]));
   it('(decompile "let [x] = arr;")', (): any => assertEqual(decompile('let [x] = arr;'), [Symbol.for('define-values'), [Symbol.for('x')], Symbol.for('arr')]));
   it('(decompile "let [x, y] = arr;")', (): any => assertEqual(decompile('let [x, y] = arr;'), [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('y')], Symbol.for('arr')]));
@@ -135,347 +135,347 @@ describe('decompile', (): any => {
   it('(decompile "x()?.y();")', (): any => assertEqual(decompile('x()?.y();'), [[Symbol.for('js/?.'), [Symbol.for('x')], Symbol.for('y')]]));
   it('(decompile "x.y(z);")', (): any => assertEqual(decompile('x.y(z);'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]));
   it('(decompile "x.y(...z);")', (): any => assertEqual(decompile('x.y(...z);'), [Symbol.for('send/apply'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]));
-  it('(decompile "function I(x) {\n' +
-    '  return x;}")', (): any => assertEqual(decompile('function I(x) {\n' +
-    '  return x;}'), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')]));
-  it('(decompile "function I(x) {\n' +
-    '  foo();\n' +
-    '  return x;\n' +
-    '}")', (): any => assertEqual(decompile('function I(x) {\n' +
-    '  foo();\n' +
-    '  return x;\n' +
-    '}'), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], [Symbol.for('foo')], Symbol.for('x')]));
-  it('(decompile "function I(x: any, y?: any) {\n' +
-    '  return x;\n' +
-    '}" :from \'typescript)', (): any => assertEqual(decompile('function I(x: any, y?: any) {\n' +
-    '  return x;\n' +
-    '}', Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), [Symbol.for('I'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for('undefined')]], Symbol.for('x')]));
-  it('(decompile "function I(x: any, y: any = true) {\n' +
-    '  return x;\n' +
-    '}" :from \'typescript)', (): any => assertEqual(decompile('function I(x: any, y: any = true) {\n' +
-    '  return x;\n' +
-    '}', Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), [Symbol.for('I'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any'), true]], Symbol.for('x')]));
-  it('(decompile "function I(x: number, y: number = 1) {\n' +
-    '  return x;\n' +
-    '}" :from \'typescript)', (): any => assertEqual(decompile('function I(x: number, y: number = 1) {\n' +
-    '  return x;\n' +
-    '}', Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), [Symbol.for('I'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Number'), 1]], Symbol.for('x')]));
-  it('(decompile "function foo(x = 1) {\n' +
-    '  return x;\n' +
-    '}")', (): any => assertEqual(decompile('function foo(x = 1) {\n' +
-    '  return x;\n' +
-    '}'), [Symbol.for('define'), [Symbol.for('foo'), [Symbol.for('x'), 1]], Symbol.for('x')]));
-  it('(decompile "function foo(...args) {\n' +
-    '  return args;\n' +
-    '}")', (): any => assertEqual(decompile('function foo(...args) {\n' +
-    '  return args;\n' +
-    '}'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]));
-  it('(decompile "function I(x) {\n' +
-    '  if (x) {\n' +
-    '    return x;\n' +
-    '  } else {\n' +
-    '    return false;\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('function I(x) {\n' +
-    '  if (x) {\n' +
-    '    return x;\n' +
-    '  } else {\n' +
-    '    return false;\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), Symbol.for('x'), false]]));
-  it('(decompile "function I(x) {\n' +
-    '  if (x) {\n' +
-    '    return x;\n' +
-    '  } else if (false) {\n' +
-    '    return false;\n' +
-    '  } else {\n' +
-    '    return false;\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('function I(x) {\n' +
-    '  if (x) {\n' +
-    '    return x;\n' +
-    '  } else if (false) {\n' +
-    '    return false;\n' +
-    '  } else {\n' +
-    '    return false;\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('x')], [false, false], [Symbol.for('else'), false]]]));
-  it('(decompile "let I = function (x) {\n' +
-    '  return x;\n' +
-    '};")', (): any => assertEqual(decompile('let I = function (x) {\n' +
-    '  return x;\n' +
-    '};'), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]));
-  it('(decompile "let foo = function (...args) {\n' +
-    '  return args;\n' +
-    '};")', (): any => assertEqual(decompile('let foo = function (...args) {\n' +
-    '  return args;\n' +
-    '};'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('args')]]));
-  it('(decompile "let I = (x) => {\n' +
-    '  return x;\n' +
-    '};")', (): any => assertEqual(decompile('let I = (x) => {\n' +
-    '  return x;\n' +
-    '};'), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('js/arrow'), [Symbol.for('x')], Symbol.for('x')]]));
-  it('(decompile "let I = (x: any) => {\n' +
-    '  return x;\n' +
-    '};" :from \'typescript)', (): any => assertEqual(decompile('let I = (x: any) => {\n' +
-    '  return x;\n' +
-    '};', Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('js/arrow'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for('x')]]));
-  it('(decompile "if (true) {\n' +
-    '  foo(\'bar\');\n' +
-    '}")', (): any => assertEqual(decompile('if (true) {\n' +
-    '  foo(\'bar\');\n' +
-    '}'), [Symbol.for('when'), true, [Symbol.for('foo'), 'bar']]));
-  it('(decompile "if (!foo) {\n' +
-    '  bar(\'baz\');\n' +
-    '}")', (): any => assertEqual(decompile('if (!foo) {\n' +
-    '  bar(\'baz\');\n' +
-    '}'), [Symbol.for('unless'), Symbol.for('foo'), [Symbol.for('bar'), 'baz']]));
-  it('(decompile "if (true) {\n' +
-    '  foo(\'bar\');\n' +
-    '} else {\n' +
-    '  bar(\'baz\');\n' +
-    '}")', (): any => assertEqual(decompile('if (true) {\n' +
-    '  foo(\'bar\');\n' +
-    '} else {\n' +
-    '  bar(\'baz\');\n' +
-    '}'), [Symbol.for('if'), true, [Symbol.for('foo'), 'bar'], [Symbol.for('bar'), 'baz']]));
-  it('(decompile "if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  bar(\'baz\');\n' +
-    '}")', (): any => assertEqual(decompile('if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  bar(\'baz\');\n' +
-    '}'), [Symbol.for('if'), Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']], [Symbol.for('bar'), 'baz']]));
-  it('(decompile "if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  if (z) {\n' +
-    '    bar(\'baz\');\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  if (z) {\n' +
-    '    bar(\'baz\');\n' +
-    '  }\n' +
-    '}'), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']]], [Symbol.for('z'), [Symbol.for('bar'), 'baz']]]));
-  it('(decompile "if (x) {\n' +
-    '  foo();\n' +
-    '  bar();\n' +
-    '} else if (y) {\n' +
-    '  baz();\n' +
-    '  quux();\n' +
-    '}")', (): any => assertEqual(decompile('if (x) {\n' +
-    '  foo();\n' +
-    '  bar();\n' +
-    '} else if (y) {\n' +
-    '  baz();\n' +
-    '  quux();\n' +
-    '}'), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('foo')], [Symbol.for('bar')]], [Symbol.for('y'), [Symbol.for('baz')], [Symbol.for('quux')]]]));
-  it('(decompile "if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  if (z) {\n' +
-    '    bar(\'baz\');\n' +
-    '  } else {\n' +
-    '    baz(\'quux\');\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  if (z) {\n' +
-    '    bar(\'baz\');\n' +
-    '  } else {\n' +
-    '    baz(\'quux\');\n' +
-    '  }\n' +
-    '}'), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']]], [Symbol.for('z'), [Symbol.for('bar'), 'baz']], [Symbol.for('else'), [Symbol.for('baz'), 'quux']]]));
-  it('(decompile "if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  if (!z) {\n' +
-    '    bar(\'baz\');\n' +
-    '  } else {\n' +
-    '    baz(\'quux\');\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('if (x) {\n' +
-    '  if (y) {\n' +
-    '    foo(\'bar\');\n' +
-    '  }\n' +
-    '} else {\n' +
-    '  if (!z) {\n' +
-    '    bar(\'baz\');\n' +
-    '  } else {\n' +
-    '    baz(\'quux\');\n' +
-    '  }\n' +
-    '}'), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']]], [[Symbol.for('not'), Symbol.for('z')], [Symbol.for('bar'), 'baz']], [Symbol.for('else'), [Symbol.for('baz'), 'quux']]]));
-  it('(decompile "if (x) {\n' +
-    '  foo(\'bar\');\n' +
-    '} else if (y) {\n' +
-    '  bar(\'baz\');\n' +
-    '} else {\n' +
-    '  baz(\'quux\');\n' +
-    '}")', (): any => assertEqual(decompile('if (x) {\n' +
-    '  foo(\'bar\');\n' +
-    '} else if (y) {\n' +
-    '  bar(\'baz\');\n' +
-    '} else {\n' +
-    '  baz(\'quux\');\n' +
-    '}'), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('foo'), 'bar']], [Symbol.for('y'), [Symbol.for('bar'), 'baz']], [Symbol.for('else'), [Symbol.for('baz'), 'quux']]]));
-  it('(decompile "if (x) {\n' +
-    '  foo();\n' +
-    '} else {\n' +
-    '  bar();\n' +
-    '  baz();\n' +
-    '}")', (): any => assertEqual(decompile('if (x) {\n' +
-    '  foo();\n' +
-    '} else {\n' +
-    '  bar();\n' +
-    '  baz();\n' +
-    '}'), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')], [Symbol.for('baz')]]]));
+  it(`(decompile "function I(x) {
+  return x;}")`, (): any => assertEqual(decompile(`function I(x) {
+  return x;}`), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.for('x')]));
+  it(`(decompile "function I(x) {
+  foo();
+  return x;
+}")`, (): any => assertEqual(decompile(`function I(x) {
+  foo();
+  return x;
+}`), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], [Symbol.for('foo')], Symbol.for('x')]));
+  it(`(decompile "function I(x: any, y?: any) {
+  return x;
+}" :from 'typescript)`, (): any => assertEqual(decompile(`function I(x: any, y?: any) {
+  return x;
+}`, Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), [Symbol.for('I'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for('undefined')]], Symbol.for('x')]));
+  it(`(decompile "function I(x: any, y: any = true) {
+  return x;
+}" :from 'typescript)`, (): any => assertEqual(decompile(`function I(x: any, y: any = true) {
+  return x;
+}`, Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), [Symbol.for('I'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any'), true]], Symbol.for('x')]));
+  it(`(decompile "function I(x: number, y: number = 1) {
+  return x;
+}" :from 'typescript)`, (): any => assertEqual(decompile(`function I(x: number, y: number = 1) {
+  return x;
+}`, Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), [Symbol.for('I'), [Symbol.for('x'), Symbol.for(':'), Symbol.for('Number')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Number'), 1]], Symbol.for('x')]));
+  it(`(decompile "function foo(x = 1) {
+  return x;
+}")`, (): any => assertEqual(decompile(`function foo(x = 1) {
+  return x;
+}`), [Symbol.for('define'), [Symbol.for('foo'), [Symbol.for('x'), 1]], Symbol.for('x')]));
+  it(`(decompile "function foo(...args) {
+  return args;
+}")`, (): any => assertEqual(decompile(`function foo(...args) {
+  return args;
+}`), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]));
+  it(`(decompile "function I(x) {
+  if (x) {
+    return x;
+  } else {
+    return false;
+  }
+}")`, (): any => assertEqual(decompile(`function I(x) {
+  if (x) {
+    return x;
+  } else {
+    return false;
+  }
+}`), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), Symbol.for('x'), false]]));
+  it(`(decompile "function I(x) {
+  if (x) {
+    return x;
+  } else if (false) {
+    return false;
+  } else {
+    return false;
+  }
+}")`, (): any => assertEqual(decompile(`function I(x) {
+  if (x) {
+    return x;
+  } else if (false) {
+    return false;
+  } else {
+    return false;
+  }
+}`), [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], [Symbol.for('cond'), [Symbol.for('x'), Symbol.for('x')], [false, false], [Symbol.for('else'), false]]]));
+  it(`(decompile "let I = function (x) {
+  return x;
+};")`, (): any => assertEqual(decompile(`let I = function (x) {
+  return x;
+};`), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]));
+  it(`(decompile "let foo = function (...args) {
+  return args;
+};")`, (): any => assertEqual(decompile(`let foo = function (...args) {
+  return args;
+};`), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('args')]]));
+  it(`(decompile "let I = (x) => {
+  return x;
+};")`, (): any => assertEqual(decompile(`let I = (x) => {
+  return x;
+};`), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('js/arrow'), [Symbol.for('x')], Symbol.for('x')]]));
+  it(`(decompile "let I = (x: any) => {
+  return x;
+};" :from 'typescript)`, (): any => assertEqual(decompile(`let I = (x: any) => {
+  return x;
+};`, Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('js/arrow'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for('x')]]));
+  it(`(decompile "if (true) {
+  foo('bar');
+}")`, (): any => assertEqual(decompile(`if (true) {
+  foo('bar');
+}`), [Symbol.for('when'), true, [Symbol.for('foo'), 'bar']]));
+  it(`(decompile "if (!foo) {
+  bar('baz');
+}")`, (): any => assertEqual(decompile(`if (!foo) {
+  bar('baz');
+}`), [Symbol.for('unless'), Symbol.for('foo'), [Symbol.for('bar'), 'baz']]));
+  it(`(decompile "if (true) {
+  foo('bar');
+} else {
+  bar('baz');
+}")`, (): any => assertEqual(decompile(`if (true) {
+  foo('bar');
+} else {
+  bar('baz');
+}`), [Symbol.for('if'), true, [Symbol.for('foo'), 'bar'], [Symbol.for('bar'), 'baz']]));
+  it(`(decompile "if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  bar('baz');
+}")`, (): any => assertEqual(decompile(`if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  bar('baz');
+}`), [Symbol.for('if'), Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']], [Symbol.for('bar'), 'baz']]));
+  it(`(decompile "if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  if (z) {
+    bar('baz');
+  }
+}")`, (): any => assertEqual(decompile(`if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  if (z) {
+    bar('baz');
+  }
+}`), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']]], [Symbol.for('z'), [Symbol.for('bar'), 'baz']]]));
+  it(`(decompile "if (x) {
+  foo();
+  bar();
+} else if (y) {
+  baz();
+  quux();
+}")`, (): any => assertEqual(decompile(`if (x) {
+  foo();
+  bar();
+} else if (y) {
+  baz();
+  quux();
+}`), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('foo')], [Symbol.for('bar')]], [Symbol.for('y'), [Symbol.for('baz')], [Symbol.for('quux')]]]));
+  it(`(decompile "if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  if (z) {
+    bar('baz');
+  } else {
+    baz('quux');
+  }
+}")`, (): any => assertEqual(decompile(`if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  if (z) {
+    bar('baz');
+  } else {
+    baz('quux');
+  }
+}`), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']]], [Symbol.for('z'), [Symbol.for('bar'), 'baz']], [Symbol.for('else'), [Symbol.for('baz'), 'quux']]]));
+  it(`(decompile "if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  if (!z) {
+    bar('baz');
+  } else {
+    baz('quux');
+  }
+}")`, (): any => assertEqual(decompile(`if (x) {
+  if (y) {
+    foo('bar');
+  }
+} else {
+  if (!z) {
+    bar('baz');
+  } else {
+    baz('quux');
+  }
+}`), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('when'), Symbol.for('y'), [Symbol.for('foo'), 'bar']]], [[Symbol.for('not'), Symbol.for('z')], [Symbol.for('bar'), 'baz']], [Symbol.for('else'), [Symbol.for('baz'), 'quux']]]));
+  it(`(decompile "if (x) {
+  foo('bar');
+} else if (y) {
+  bar('baz');
+} else {
+  baz('quux');
+}")`, (): any => assertEqual(decompile(`if (x) {
+  foo('bar');
+} else if (y) {
+  bar('baz');
+} else {
+  baz('quux');
+}`), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('foo'), 'bar']], [Symbol.for('y'), [Symbol.for('bar'), 'baz']], [Symbol.for('else'), [Symbol.for('baz'), 'quux']]]));
+  it(`(decompile "if (x) {
+  foo();
+} else {
+  bar();
+  baz();
+}")`, (): any => assertEqual(decompile(`if (x) {
+  foo();
+} else {
+  bar();
+  baz();
+}`), [Symbol.for('cond'), [Symbol.for('x'), [Symbol.for('foo')]], [Symbol.for('else'), [Symbol.for('bar')], [Symbol.for('baz')]]]));
   it('(decompile "let x = true ? foo : bar;")', (): any => assertEqual(decompile('let x = true ? foo : bar;'), [Symbol.for('define'), Symbol.for('x'), [Symbol.for('if'), true, Symbol.for('foo'), Symbol.for('bar')]]));
   it('(decompile "let x = 1 ? foo : 2 ? bar : baz")', (): any => assertEqual(decompile('let x = 1 ? foo : 2 ? bar : baz'), [Symbol.for('define'), Symbol.for('x'), [Symbol.for('cond'), [1, Symbol.for('foo')], [2, Symbol.for('bar')], [Symbol.for('else'), Symbol.for('baz')]]]));
-  it('(decompile "while (foo) {\n' +
-    '  bar();}")', (): any => assertEqual(decompile('while (foo) {\n' +
-    '  bar();}'), [Symbol.for('do'), [], [[Symbol.for('not'), Symbol.for('foo')]], [Symbol.for('bar')]]));
-  it('(decompile "do {\n' +
-    '  bar();\n' +
-    '} while (foo);")', (): any => assertEqual(decompile('do {\n' +
-    '  bar();\n' +
-    '} while (foo);'), [Symbol.for('js/do-while'), [[Symbol.for('bar')]], Symbol.for('foo')]));
-  it('(decompile "do {\n' +
-    '  bar();\n' +
-    '  baz();\n' +
-    '} while (foo);")', (): any => assertEqual(decompile('do {\n' +
-    '  bar();\n' +
-    '  baz();\n' +
-    '} while (foo);'), [Symbol.for('js/do-while'), [[Symbol.for('bar')], [Symbol.for('baz')]], Symbol.for('foo')]));
-  it('(decompile "for (let i = 0; i < 10; i++) {\n' +
-    '  foo();\n' +
-    '  break;\n' +
-    '}")', (): any => assertEqual(decompile('for (let i = 0; i < 10; i++) {\n' +
-    '  foo();\n' +
-    '  break;\n' +
-    '}'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, 10]]], [Symbol.for('foo')], [Symbol.for('break')]]));
-  it('(decompile "for (i = 0; i < arr.length; i++) {\n' +
-    '  foo();\n' +
-    '}")', (): any => assertEqual(decompile('for (i = 0; i < arr.length; i++) {\n' +
-    '  foo();\n' +
-    '}'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('arr')]]]], [Symbol.for('foo')]]));
-  it('(decompile "for (let i = 10; i > 0; i--) {\n' +
-    '  foo();\n' +
-    '}")', (): any => assertEqual(decompile('for (let i = 10; i > 0; i--) {\n' +
-    '  foo();\n' +
-    '}'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 10, 0, -1]]], [Symbol.for('foo')]]));
-  it('(decompile "for (let i = 0, j = 0; i < 10; i++, j++) {\n' +
-    '  foo();\n' +
-    '  break bar;\n' +
-    '}")', (): any => assertEqual(decompile('for (let i = 0, j = 0; i < 10; i++, j++) {\n' +
-    '  foo();\n' +
-    '  break bar;\n' +
-    '}'), [Symbol.for('do'), [[Symbol.for('i'), 0, [Symbol.for('+'), Symbol.for('i'), 1]], [Symbol.for('j'), 0, [Symbol.for('+'), Symbol.for('j'), 1]]], [[Symbol.for('not'), [Symbol.for('<'), Symbol.for('i'), 10]]], [Symbol.for('foo')], [Symbol.for('break'), Symbol.for('bar')]]));
-  it('(decompile "for (let x of foo) {\n' +
-    '  bar();\n' +
-    '  continue;\n' +
-    '}")', (): any => assertEqual(decompile('for (let x of foo) {\n' +
-    '  bar();\n' +
-    '  continue;\n' +
-    '}'), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('foo')]], [Symbol.for('bar')], [Symbol.for('continue')]]));
-  it('(decompile "for (const [name, value] of entries) {\n' +
-    '  result.insert(value, [name]);\n' +
-    '}")', (): any => assertEqual(decompile('for (const [name, value] of entries) {\n' +
-    '  result.insert(value, [name]);\n' +
-    '}'), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('entries')]], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('value')], Symbol.for('x')], [Symbol.for('send'), Symbol.for('result'), Symbol.for('insert'), Symbol.for('value'), [Symbol.for('list'), Symbol.for('name')]]]));
-  it('(decompile "for (const [name, value] of x) {\n' +
-    '  result.insert(value, [name]);\n' +
-    '}")', (): any => assertEqual(decompile('for (const [name, value] of x) {\n' +
-    '  result.insert(value, [name]);\n' +
-    '}'), [Symbol.for('for'), [[Symbol.for('x1'), Symbol.for('x')]], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('value')], Symbol.for('x1')], [Symbol.for('send'), Symbol.for('result'), Symbol.for('insert'), Symbol.for('value'), [Symbol.for('list'), Symbol.for('name')]]]));
-  it('(decompile "for (let x in foo) {\n' +
-    '  bar();\n' +
-    '}")', (): any => assertEqual(decompile('for (let x in foo) {\n' +
-    '  bar();\n' +
-    '}'), [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('js/keys'), Symbol.for('foo')]]], [Symbol.for('bar')]]));
+  it(`(decompile "while (foo) {
+  bar();}")`, (): any => assertEqual(decompile(`while (foo) {
+  bar();}`), [Symbol.for('do'), [], [[Symbol.for('not'), Symbol.for('foo')]], [Symbol.for('bar')]]));
+  it(`(decompile "do {
+  bar();
+} while (foo);")`, (): any => assertEqual(decompile(`do {
+  bar();
+} while (foo);`), [Symbol.for('js/do-while'), [[Symbol.for('bar')]], Symbol.for('foo')]));
+  it(`(decompile "do {
+  bar();
+  baz();
+} while (foo);")`, (): any => assertEqual(decompile(`do {
+  bar();
+  baz();
+} while (foo);`), [Symbol.for('js/do-while'), [[Symbol.for('bar')], [Symbol.for('baz')]], Symbol.for('foo')]));
+  it(`(decompile "for (let i = 0; i < 10; i++) {
+  foo();
+  break;
+}")`, (): any => assertEqual(decompile(`for (let i = 0; i < 10; i++) {
+  foo();
+  break;
+}`), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, 10]]], [Symbol.for('foo')], [Symbol.for('break')]]));
+  it(`(decompile "for (i = 0; i < arr.length; i++) {
+  foo();
+}")`, (): any => assertEqual(decompile(`for (i = 0; i < arr.length; i++) {
+  foo();
+}`), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('arr')]]]], [Symbol.for('foo')]]));
+  it(`(decompile "for (let i = 10; i > 0; i--) {
+  foo();
+}")`, (): any => assertEqual(decompile(`for (let i = 10; i > 0; i--) {
+  foo();
+}`), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 10, 0, -1]]], [Symbol.for('foo')]]));
+  it(`(decompile "for (let i = 0, j = 0; i < 10; i++, j++) {
+  foo();
+  break bar;
+}")`, (): any => assertEqual(decompile(`for (let i = 0, j = 0; i < 10; i++, j++) {
+  foo();
+  break bar;
+}`), [Symbol.for('do'), [[Symbol.for('i'), 0, [Symbol.for('+'), Symbol.for('i'), 1]], [Symbol.for('j'), 0, [Symbol.for('+'), Symbol.for('j'), 1]]], [[Symbol.for('not'), [Symbol.for('<'), Symbol.for('i'), 10]]], [Symbol.for('foo')], [Symbol.for('break'), Symbol.for('bar')]]));
+  it(`(decompile "for (let x of foo) {
+  bar();
+  continue;
+}")`, (): any => assertEqual(decompile(`for (let x of foo) {
+  bar();
+  continue;
+}`), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('foo')]], [Symbol.for('bar')], [Symbol.for('continue')]]));
+  it(`(decompile "for (const [name, value] of entries) {
+  result.insert(value, [name]);
+}")`, (): any => assertEqual(decompile(`for (const [name, value] of entries) {
+  result.insert(value, [name]);
+}`), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('entries')]], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('value')], Symbol.for('x')], [Symbol.for('send'), Symbol.for('result'), Symbol.for('insert'), Symbol.for('value'), [Symbol.for('list'), Symbol.for('name')]]]));
+  it(`(decompile "for (const [name, value] of x) {
+  result.insert(value, [name]);
+}")`, (): any => assertEqual(decompile(`for (const [name, value] of x) {
+  result.insert(value, [name]);
+}`), [Symbol.for('for'), [[Symbol.for('x1'), Symbol.for('x')]], [Symbol.for('define-values'), [Symbol.for('name'), Symbol.for('value')], Symbol.for('x1')], [Symbol.for('send'), Symbol.for('result'), Symbol.for('insert'), Symbol.for('value'), [Symbol.for('list'), Symbol.for('name')]]]));
+  it(`(decompile "for (let x in foo) {
+  bar();
+}")`, (): any => assertEqual(decompile(`for (let x in foo) {
+  bar();
+}`), [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('js/keys'), Symbol.for('foo')]]], [Symbol.for('bar')]]));
   it('(decompile "new Foo();")', (): any => assertEqual(decompile('new Foo();'), [Symbol.for('new'), Symbol.for('Foo')]));
   it('(decompile "new Foo(\'bar\');")', (): any => assertEqual(decompile('new Foo(\'bar\');'), [Symbol.for('new'), Symbol.for('Foo'), 'bar']));
   it('(decompile "new Foo(...args);")', (): any => assertEqual(decompile('new Foo(...args);'), [Symbol.for('apply'), Symbol.for('new'), Symbol.for('Foo'), Symbol.for('args')]));
   it('(decompile "new Foo(x, ...args);")', (): any => assertEqual(decompile('new Foo(x, ...args);'), [Symbol.for('apply'), Symbol.for('new'), Symbol.for('Foo'), Symbol.for('x'), Symbol.for('args')]));
   it('(decompile "delete x")', (): any => assertEqual(decompile('delete x'), [Symbol.for('js/delete'), Symbol.for('x')]));
   it('(decompile "throw new Error(\'An error\')")', (): any => assertEqual(decompile('throw new Error(\'An error\')'), [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('Error'), 'An error']]));
-  xit('(decompile "try {\n' +
-    '}")', (): any => assertEqual(decompile('try {\n' +
-    '}'), [Symbol.for('try')]));
-  it('(decompile "try {\n' +
-    '  x = 2 / 1;\n' +
-    '} finally {\n' +
-    '  foo();\n' +
-    '}")', (): any => assertEqual(decompile('try {\n' +
-    '  x = 2 / 1;\n' +
-    '} finally {\n' +
-    '  foo();\n' +
-    '}'), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('finally'), [Symbol.for('foo')]]]));
-  it('(decompile "try {\n' +
-    '  x = 2 / 1;\n' +
-    '} catch {\n' +
-    '  foo();\n' +
-    '}")', (): any => assertEqual(decompile('try {\n' +
-    '  x = 2 / 1;\n' +
-    '} catch {\n' +
-    '  foo();\n' +
-    '}'), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('_'), [Symbol.for('foo')]]]));
-  it('(decompile "try {\n' +
-    '  x = 2 / 1;\n' +
-    '} catch (e) {\n' +
-    '  foo();\n' +
-    '} finally {\n' +
-    '  bar();\n' +
-    '}")', (): any => assertEqual(decompile('try {\n' +
-    '  x = 2 / 1;\n' +
-    '} catch (e) {\n' +
-    '  foo();\n' +
-    '} finally {\n' +
-    '  bar();\n' +
-    '}'), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('e'), [Symbol.for('foo')]], [Symbol.for('finally'), [Symbol.for('bar')]]]));
-  it('(decompile "const I = async function (x) {\n' +
-    '  return x;\n' +
-    '};")', (): any => assertEqual(decompile('const I = async function (x) {\n' +
-    '  return x;\n' +
-    '};'), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]));
-  it('(decompile "async function I(x) {\n' +
-    '  return x;\n' +
-    '}" :module #t)', (): any => assertEqual(decompile('async function I(x) {\n' +
-    '  return x;\n' +
-    '}', Symbol.for(':module'), true), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]]));
+  xit(`(decompile "try {
+}")`, (): any => assertEqual(decompile(`try {
+}`), [Symbol.for('try')]));
+  it(`(decompile "try {
+  x = 2 / 1;
+} finally {
+  foo();
+}")`, (): any => assertEqual(decompile(`try {
+  x = 2 / 1;
+} finally {
+  foo();
+}`), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('finally'), [Symbol.for('foo')]]]));
+  it(`(decompile "try {
+  x = 2 / 1;
+} catch {
+  foo();
+}")`, (): any => assertEqual(decompile(`try {
+  x = 2 / 1;
+} catch {
+  foo();
+}`), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('_'), [Symbol.for('foo')]]]));
+  it(`(decompile "try {
+  x = 2 / 1;
+} catch (e) {
+  foo();
+} finally {
+  bar();
+}")`, (): any => assertEqual(decompile(`try {
+  x = 2 / 1;
+} catch (e) {
+  foo();
+} finally {
+  bar();
+}`), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('e'), [Symbol.for('foo')]], [Symbol.for('finally'), [Symbol.for('bar')]]]));
+  it(`(decompile "const I = async function (x) {
+  return x;
+};")`, (): any => assertEqual(decompile(`const I = async function (x) {
+  return x;
+};`), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]));
+  it(`(decompile "async function I(x) {
+  return x;
+}" :module #t)`, (): any => assertEqual(decompile(`async function I(x) {
+  return x;
+}`, Symbol.for(':module'), true), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('I'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]]));
   it('(decompile "import \'foo\';")', (): any => assertEqual(decompile('import \'foo\';'), [Symbol.for('require'), 'foo']));
   it('(decompile "import * as foo from \'bar\';")', (): any => assertEqual(decompile('import * as foo from \'bar\';'), [Symbol.for('require'), Symbol.for('foo'), 'bar']));
   it('(decompile "import { foo } from \'bar\';")', (): any => assertEqual(decompile('import { foo } from \'bar\';'), [Symbol.for('require'), [Symbol.for('only-in'), 'bar', Symbol.for('foo')]]));
   it('(decompile "import { foo as bar } from \'baz\';")', (): any => assertEqual(decompile('import { foo as bar } from \'baz\';'), [Symbol.for('require'), [Symbol.for('only-in'), 'baz', [Symbol.for('foo'), Symbol.for('bar')]]]));
   it('(decompile "export {};")', (): any => assertEqual(decompile('export {};'), [Symbol.for('provide')]));
-  it('(decompile "export {\n' +
-    '  foo\n' +
-    '};")', (): any => assertEqual(decompile('export {\n' +
-    '  foo\n' +
-    '};'), [Symbol.for('provide'), Symbol.for('foo')]));
-  it('(decompile "export {\n' +
-    '  foo as bar\n' +
-    '};")', (): any => assertEqual(decompile('export {\n' +
-    '  foo as bar\n' +
-    '};'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('foo'), Symbol.for('bar')]]]));
+  it(`(decompile "export {
+  foo
+};")`, (): any => assertEqual(decompile(`export {
+  foo
+};`), [Symbol.for('provide'), Symbol.for('foo')]));
+  it(`(decompile "export {
+  foo as bar
+};")`, (): any => assertEqual(decompile(`export {
+  foo as bar
+};`), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('foo'), Symbol.for('bar')]]]));
   it('(decompile "export * from \'foo\';")', (): any => assertEqual(decompile('export * from \'foo\';'), [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo']]));
   it('(decompile "({});")', (): any => assertEqual(decompile('({});'), [Symbol.for('js/obj')]));
   it('(decompile "({ foo: bar });")', (): any => assertEqual(decompile('({ foo: bar });'), [Symbol.for('js/obj'), 'foo', Symbol.for('bar')]));
@@ -483,107 +483,107 @@ describe('decompile', (): any => {
   it('(decompile "const foo = {};")', (): any => assertEqual(decompile('const foo = {};'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js/obj')]]));
   it('(decompile "const foo = { bar: true };")', (): any => assertEqual(decompile('const foo = { bar: true };'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js/obj'), 'bar', true]]));
   it('(decompile "const foo = { ...{ bar: true } };")', (): any => assertEqual(decompile('const foo = { ...{ bar: true } };'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('js/obj-append'), [Symbol.for('js/obj'), 'bar', true]]]));
-  it('(decompile "class Foo {\n' +
-    '}")', (): any => assertEqual(decompile('class Foo {\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), []]));
-  it('(decompile "class Foo extends Bar {\n' +
-    '}")', (): any => assertEqual(decompile('class Foo extends Bar {\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Bar')]]));
-  it('(decompile "class Foo {\n' +
-    '  bar = 1;\n' +
-    '}")', (): any => assertEqual(decompile('class Foo {\n' +
-    '  bar = 1;\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('bar'), 1]]));
-  it('(decompile "class Foo {\n' +
-    '  bar() {\n' +
-    '    return 1;\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('class Foo {\n' +
-    '  bar() {\n' +
-    '    return 1;\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 1]]));
-  it('(decompile "class Foo {\n' +
-    '  bar;\n' +
-    '\n' +
-    '  constructor() {\n' +
-    '    this.bar = 1;\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('class Foo {\n' +
-    '  bar;\n' +
-    '\n' +
-    '  constructor() {\n' +
-    '    this.bar = 1;\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('constructor')], [Symbol.for('set-field!'), Symbol.for('bar'), Symbol.for('this'), 1]]]));
-  it('(decompile "class Foo extends Bar {\n' +
-    '  constructor() {\n' +
-    '    super();\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('class Foo extends Bar {\n' +
-    '  constructor() {\n' +
-    '    super();\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Bar')], [Symbol.for('define'), [Symbol.for('constructor')], [Symbol.for('super')]]]));
-  it('(decompile "class Foo extends Bar {\n' +
-    '  constructor(x) {\n' +
-    '    super(x);\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('class Foo extends Bar {\n' +
-    '  constructor(x) {\n' +
-    '    super(x);\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Bar')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super'), Symbol.for('x')]]]));
-  it('(decompile "class Foo {\n' +
-    '  arr;\n' +
-    '\n' +
-    '  constructor(arr) {\n' +
-    '    this.arr = arr;\n' +
-    '  }\n' +
-    '\n' +
-    '  *generator() {\n' +
-    '    for (let x of this.arr) {\n' +
-    '      yield x;\n' +
-    '    }\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('class Foo {\n' +
-    '  arr;\n' +
-    '\n' +
-    '  constructor(arr) {\n' +
-    '    this.arr = arr;\n' +
-    '  }\n' +
-    '\n' +
-    '  *generator() {\n' +
-    '    for (let x of this.arr) {\n' +
-    '      yield x;\n' +
-    '    }\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [Symbol.for('generator')], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]));
-  it('(decompile "class Foo {\n' +
-    '  arr;\n' +
-    '\n' +
-    '  constructor(arr) {\n' +
-    '    this.arr = arr;\n' +
-    '  }\n' +
-    '\n' +
-    '  *[Symbol.iterator]() {\n' +
-    '    for (let x of this.arr) {\n' +
-    '      yield x;\n' +
-    '    }\n' +
-    '  }\n' +
-    '}")', (): any => assertEqual(decompile('class Foo {\n' +
-    '  arr;\n' +
-    '\n' +
-    '  constructor(arr) {\n' +
-    '    this.arr = arr;\n' +
-    '  }\n' +
-    '\n' +
-    '  *[Symbol.iterator]() {\n' +
-    '    for (let x of this.arr) {\n' +
-    '      yield x;\n' +
-    '    }\n' +
-    '  }\n' +
-    '}'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [[Symbol.for('get-field'), Symbol.for('iterator'), Symbol.for('Symbol')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]));
+  it(`(decompile "class Foo {
+}")`, (): any => assertEqual(decompile(`class Foo {
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), []]));
+  it(`(decompile "class Foo extends Bar {
+}")`, (): any => assertEqual(decompile(`class Foo extends Bar {
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Bar')]]));
+  it(`(decompile "class Foo {
+  bar = 1;
+}")`, (): any => assertEqual(decompile(`class Foo {
+  bar = 1;
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('bar'), 1]]));
+  it(`(decompile "class Foo {
+  bar() {
+    return 1;
+  }
+}")`, (): any => assertEqual(decompile(`class Foo {
+  bar() {
+    return 1;
+  }
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 1]]));
+  it(`(decompile "class Foo {
+  bar;
+
+  constructor() {
+    this.bar = 1;
+  }
+}")`, (): any => assertEqual(decompile(`class Foo {
+  bar;
+
+  constructor() {
+    this.bar = 1;
+  }
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('constructor')], [Symbol.for('set-field!'), Symbol.for('bar'), Symbol.for('this'), 1]]]));
+  it(`(decompile "class Foo extends Bar {
+  constructor() {
+    super();
+  }
+}")`, (): any => assertEqual(decompile(`class Foo extends Bar {
+  constructor() {
+    super();
+  }
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Bar')], [Symbol.for('define'), [Symbol.for('constructor')], [Symbol.for('super')]]]));
+  it(`(decompile "class Foo extends Bar {
+  constructor(x) {
+    super(x);
+  }
+}")`, (): any => assertEqual(decompile(`class Foo extends Bar {
+  constructor(x) {
+    super(x);
+  }
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Bar')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super'), Symbol.for('x')]]]));
+  it(`(decompile "class Foo {
+  arr;
+
+  constructor(arr) {
+    this.arr = arr;
+  }
+
+  *generator() {
+    for (let x of this.arr) {
+      yield x;
+    }
+  }
+}")`, (): any => assertEqual(decompile(`class Foo {
+  arr;
+
+  constructor(arr) {
+    this.arr = arr;
+  }
+
+  *generator() {
+    for (let x of this.arr) {
+      yield x;
+    }
+  }
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [Symbol.for('generator')], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]));
+  it(`(decompile "class Foo {
+  arr;
+
+  constructor(arr) {
+    this.arr = arr;
+  }
+
+  *[Symbol.iterator]() {
+    for (let x of this.arr) {
+      yield x;
+    }
+  }
+}")`, (): any => assertEqual(decompile(`class Foo {
+  arr;
+
+  constructor(arr) {
+    this.arr = arr;
+  }
+
+  *[Symbol.iterator]() {
+    for (let x of this.arr) {
+      yield x;
+    }
+  }
+}`), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [[Symbol.for('get-field'), Symbol.for('iterator'), Symbol.for('Symbol')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]));
   it('(decompile "foo as any" :from \'typescript)', (): any => assertEqual(decompile('foo as any', Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Any')]));
   it('(decompile "foo as number" :from \'typescript)', (): any => assertEqual(decompile('foo as number', Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Number')]));
   it('(decompile "foo as boolean" :from \'typescript)', (): any => assertEqual(decompile('foo as boolean', Symbol.for(':from'), Symbol.for('typescript')), [Symbol.for('ann'), Symbol.for('foo'), Symbol.for('Boolean')]));

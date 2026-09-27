@@ -681,6 +681,86 @@
       (break))))
   (values plst body))
 
+;;; Make a function of the specified arity.
+(define (make-arity-function fun (n #u) (arrow #f))
+  (cond
+   (arrow
+    (case n
+      ((0)
+       (js/arrow ()
+         (fun)))
+      ((1)
+       (js/arrow (a)
+         (fun a)))
+      ((2)
+       (js/arrow (a b)
+         (fun a b)))
+      ((3)
+       (js/arrow (a b c)
+         (fun a b c)))
+      ((4)
+       (js/arrow (a b c d)
+         (fun a b c d)))
+      ((5)
+       (js/arrow (a b c d e)
+         (fun a b c d e)))
+      ((6)
+       (js/arrow (a b c d e f)
+         (fun a b c d e f)))
+      ((7)
+       (js/arrow (a b c d e f g)
+         (fun a b c d e f g)))
+      ((8)
+       (js/arrow (a b c d e f g h)
+         (fun a b c d e f g h)))
+      ((9)
+       (js/arrow (a b c d e f g h i)
+         (fun a b c d e f g h i)))
+      ((10)
+       (js/arrow (a b c d e f g h i j)
+         (fun a b c d e f g h i j)))
+      (else
+       (js/arrow args
+         (apply fun args)))))
+   (else
+    (case n
+      ((0)
+       (js/function (this)
+         (send fun apply this arguments)))
+      ((1)
+       (js/function (this a)
+         (send fun apply this arguments)))
+      ((2)
+       (js/function (this a b)
+         (send fun apply this arguments)))
+      ((3)
+       (js/function (this a b c)
+         (send fun apply this arguments)))
+      ((4)
+       (js/function (this a b c d)
+         (send fun apply this arguments)))
+      ((5)
+       (js/function (this a b c d e)
+         (send fun apply this arguments)))
+      ((6)
+       (js/function (this a b c d e fun)
+         (send fun apply this arguments)))
+      ((7)
+       (js/function (this a b c d e f g)
+         (send fun apply this arguments)))
+      ((8)
+       (js/function (this a b c d e f g h)
+         (send fun apply this arguments)))
+      ((9)
+       (js/function (this a b c d e f g h i)
+         (send fun apply this arguments)))
+      ((10)
+       (js/function (this a b c d e f g h i j)
+         (send fun apply this arguments)))
+      (else
+       (js/function (this . args)
+         (send fun apply this arguments)))))))
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
@@ -697,6 +777,7 @@
   kebab-case->snake-case
   lambda->let
   list-expression->pattern
+  make-arity-function
   make-identifier-string
   make-unique-symbol
   map-get

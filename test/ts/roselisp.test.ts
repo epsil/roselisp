@@ -85,29 +85,29 @@ describe('vector?', (): any => {
 describe('array-sort', (): any => {
   it('(array-sort \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
   it('(compile \'(array-sort arr))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr')]]], '[...arr].sort();']));
-  return it('(compile \'(array-sort arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], '[...arr].sort((x, y) => {\n' +
-    '  if (x < y) {\n' +
-    '    return -1;\n' +
-    '  } else if (x > y) {\n' +
-    '    return 1;\n' +
-    '  } else {\n' +
-    '    return 0;\n' +
-    '  }\n' +
-    '});']));
+  return it('(compile \'(array-sort arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], `[...arr].sort((x, y) => {
+  if (x < y) {
+    return -1;
+  } else if (x > y) {
+    return 1;
+  } else {
+    return 0;
+  }
+});`]));
 });
 
 describe('array-sort!', (): any => {
   it('(array-sort! \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort!'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
   it('(compile \'(array-sort! arr))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr')]]], 'arr.sort();']));
-  return it('(compile \'(array-sort! arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], 'arr.sort((x, y) => {\n' +
-    '  if (x < y) {\n' +
-    '    return -1;\n' +
-    '  } else if (x > y) {\n' +
-    '    return 1;\n' +
-    '  } else {\n' +
-    '    return 0;\n' +
-    '  }\n' +
-    '});']));
+  return it('(compile \'(array-sort! arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], `arr.sort((x, y) => {
+  if (x < y) {
+    return -1;
+  } else if (x > y) {
+    return 1;
+  } else {
+    return 0;
+  }
+});`]));
 });
 
 describe('array-copy', (): any => {
@@ -291,108 +291,108 @@ describe('proper-list->dotted-list', (): any => {
 
 describe('define-macro', (): any => {
   it('((lambda () (define-macro (my-macro x) x) (my-macro 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('define-macro'), [Symbol.for('my-macro'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('my-macro'), 1]]], 1]));
-  it('(compile \'(define-macro (my-macro env &rest body) `(begin ,env ,@body)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('my-macro'), Symbol.for('env'), Symbol.for('&rest'), Symbol.for('body')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('env')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], 'function myMacro(exp, env1) {\n' +
-    '  let [env, ...body] = exp.slice(1);\n' +
-    '  return [Symbol.for(\'begin\'), env, ...body];\n' +
-    '}\n' +
-    '\n' +
-    'myMacro.ftype = \'macro\';']));
-  it('(compile \'(define-macro (foo (x #u)) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('foo'), [Symbol.for('x'), undefined]], Symbol.for('x')]]], 'function foo(exp, env) {\n' +
-    '  let [x] = exp.slice(1);\n' +
-    '  if (x === undefined) {\n' +
-    '    x = undefined;\n' +
-    '  }\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'foo.ftype = \'macro\';']));
-  it('(compile \'(define-macro (foo &optional x) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&optional'), Symbol.for('x')], Symbol.for('x')]]], 'function foo(exp, env) {\n' +
-    '  let [x] = exp.slice(1);\n' +
-    '  if (x === undefined) {\n' +
-    '    x = undefined;\n' +
-    '  }\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'foo.ftype = \'macro\';']));
-  return it('(compile \'(define-macro (my-macro exp &rest body) `(begin ,exp ,@body)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('my-macro'), Symbol.for('exp'), Symbol.for('&rest'), Symbol.for('body')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], 'function myMacro(exp1, env) {\n' +
-    '  let [exp, ...body] = exp1.slice(1);\n' +
-    '  return [Symbol.for(\'begin\'), exp, ...body];\n' +
-    '}\n' +
-    '\n' +
-    'myMacro.ftype = \'macro\';']));
+  it('(compile \'(define-macro (my-macro env &rest body) `(begin ,env ,@body)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('my-macro'), Symbol.for('env'), Symbol.for('&rest'), Symbol.for('body')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('env')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], `function myMacro(exp, env1) {
+  let [env, ...body] = exp.slice(1);
+  return [Symbol.for('begin'), env, ...body];
+}
+
+myMacro.ftype = 'macro';`]));
+  it('(compile \'(define-macro (foo (x #u)) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('foo'), [Symbol.for('x'), undefined]], Symbol.for('x')]]], `function foo(exp, env) {
+  let [x] = exp.slice(1);
+  if (x === undefined) {
+    x = undefined;
+  }
+  return x;
+}
+
+foo.ftype = 'macro';`]));
+  it('(compile \'(define-macro (foo &optional x) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&optional'), Symbol.for('x')], Symbol.for('x')]]], `function foo(exp, env) {
+  let [x] = exp.slice(1);
+  if (x === undefined) {
+    x = undefined;
+  }
+  return x;
+}
+
+foo.ftype = 'macro';`]));
+  return it('(compile \'(define-macro (my-macro exp &rest body) `(begin ,exp ,@body)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-macro'), [Symbol.for('my-macro'), Symbol.for('exp'), Symbol.for('&rest'), Symbol.for('body')], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('unquote'), Symbol.for('exp')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]]], `function myMacro(exp1, env) {
+  let [exp, ...body] = exp1.slice(1);
+  return [Symbol.for('begin'), exp, ...body];
+}
+
+myMacro.ftype = 'macro';`]));
 });
 
-describe('define-fexpr', (): any => it('(compile \'(begin (define-fexpr (foo x) x) (define x 1) (define bar (foo x))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-fexpr'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('define'), Symbol.for('x'), 1], [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), Symbol.for('x')]]]]], 'function foo(x) {\n' +
-  '  return x;\n' +
-  '}\n' +
-  '\n' +
-  'foo.ftype = \'fexpr\';\n' +
-  '\n' +
-  'let x = 1;\n' +
-  '\n' +
-  'let bar = foo(Symbol.for(\'x\'));'])));
+describe('define-fexpr', (): any => it('(compile \'(begin (define-fexpr (foo x) x) (define x 1) (define bar (foo x))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-fexpr'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('define'), Symbol.for('x'), 1], [Symbol.for('define'), Symbol.for('bar'), [Symbol.for('foo'), Symbol.for('x')]]]]], `function foo(x) {
+  return x;
+}
 
-describe('define-inline', (): any => it('(compile \'(define-inline (my-plus x y) (+ x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-inline'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], 'function myPlus(x, y) {\n' +
-  '  return x + y;\n' +
-  '}\n' +
-  '\n' +
-  'myPlus.compilerMacro = (() => {\n' +
-  '  let f = (exp, env) => {\n' +
-  '    let [x, y] = exp.slice(1);\n' +
-  '    return [Symbol.for(\'+\'), x, y];\n' +
-  '  };\n' +
-  '  f.ftype = \'macro\';\n' +
-  '  return f;\n' +
-  '})();'])));
+foo.ftype = 'fexpr';
 
-describe('define-subst', (): any => it('(compile \'(define-subst (my-plus x y) (+ x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-subst'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], 'function myPlus(x, y) {\n' +
-  '  return x + y;\n' +
-  '}\n' +
-  '\n' +
-  'myPlus.compilerMacro = (() => {\n' +
-  '  let f = (exp, env) => {\n' +
-  '    let [x, y] = exp.slice(1);\n' +
-  '    return [Symbol.for(\'+\'), x, y];\n' +
-  '  };\n' +
-  '  f.ftype = \'macro\';\n' +
-  '  return f;\n' +
-  '})();'])));
+let x = 1;
 
-describe('syntax-macro', (): any => it('(compile \'(syntax-macro (x y) `(+ ,x ,y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('syntax-macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]], 'let f = (x, y) => [Symbol.for(\'+\'), x, y];\n' +
-  '\n' +
-  'f.ftype = [Symbol.for(\'macro->\'), Symbol.for(\'Syntax\'), Symbol.for(\'Syntax\')];\n' +
-  '\n' +
-  'f;'])));
+let bar = foo(Symbol.for('x'));`])));
+
+describe('define-inline', (): any => it('(compile \'(define-inline (my-plus x y) (+ x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-inline'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], `function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = (exp, env) => {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();`])));
+
+describe('define-subst', (): any => it('(compile \'(define-subst (my-plus x y) (+ x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-subst'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], `function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = (exp, env) => {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();`])));
+
+describe('syntax-macro', (): any => it('(compile \'(syntax-macro (x y) `(+ ,x ,y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('syntax-macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]], `let f = (x, y) => [Symbol.for('+'), x, y];
+
+f.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
+
+f;`])));
 
 describe('declare', (): any => {
-  it('(compile \'(define (foo x) (declare (ftype "macro")) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], 'function foo(x) {\n' +
-    '  return x;\n' +
-    '}\n' +
-    '\n' +
-    'foo.ftype = \'macro\';']));
-  it('(compile \'(lambda (x) (declare (ftype "macro")) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], 'let f = x => x;\n' +
-    '\n' +
-    'f.ftype = \'macro\';\n' +
-    '\n' +
-    'f;']));
-  return it('(compile \'(begin (define (my-plus x y) (+ x y 0)) (declare my-plus (compiler-macro (macro (x y) `(+ ,x ,y))))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y'), 0]], [Symbol.for('declare'), Symbol.for('my-plus'), [Symbol.for('compiler-macro'), [Symbol.for('macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]]]]], 'function myPlus(x, y) {\n' +
-    '  return x + y + 0;\n' +
-    '}\n' +
-    '\n' +
-    'myPlus.compilerMacro = (() => {\n' +
-    '  let f = (exp, env) => {\n' +
-    '    let [x, y] = exp.slice(1);\n' +
-    '    return [Symbol.for(\'+\'), x, y];\n' +
-    '  };\n' +
-    '  f.ftype = \'macro\';\n' +
-    '  return f;\n' +
-    '})();']));
+  it('(compile \'(define (foo x) (declare (ftype "macro")) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], `function foo(x) {
+  return x;
+}
+
+foo.ftype = 'macro';`]));
+  it('(compile \'(lambda (x) (declare (ftype "macro")) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], `let f = x => x;
+
+f.ftype = 'macro';
+
+f;`]));
+  return it('(compile \'(begin (define (my-plus x y) (+ x y 0)) (declare my-plus (compiler-macro (macro (x y) `(+ ,x ,y))))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y'), 0]], [Symbol.for('declare'), Symbol.for('my-plus'), [Symbol.for('compiler-macro'), [Symbol.for('macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]]]]], `function myPlus(x, y) {
+  return x + y + 0;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = (exp, env) => {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();`]));
 });
 
-describe('let-fields', (): any => it('(compile \'(let-fields (((prop) obj)) prop))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-fields'), [[[Symbol.for('prop')], Symbol.for('obj')]], Symbol.for('prop')]]], 'let {prop} = obj;\n' +
-  '\n' +
-  'prop;'])));
+describe('let-fields', (): any => it('(compile \'(let-fields (((prop) obj)) prop))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-fields'), [[[Symbol.for('prop')], Symbol.for('obj')]], Symbol.for('prop')]]], `let {prop} = obj;
+
+prop;`])));
 
 describe('arity', (): any => {
   it('(arity (lambda () 1))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('arity'), [Symbol.for('lambda'), [], 1]], 0]));
@@ -404,17 +404,17 @@ describe('arity', (): any => {
 describe('break', (): any => {
   it('((lambda () (while #t (break)) 1))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('while'), true, [Symbol.for('break')]], 1]], 1]));
   it('(let ((result (list))) (for ((i (range 0 10))) (break) (push-right! result i)) result)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('list')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, 10]]], [Symbol.for('break')], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('i')]], Symbol.for('result')], [Symbol.for('quote'), []]]));
-  return it('(compile \'(while #t (break)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('while'), true, [Symbol.for('break')]]]], 'while (true) {\n' +
-    '  break;\n' +
-    '}']));
+  return it('(compile \'(while #t (break)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('while'), true, [Symbol.for('break')]]]], `while (true) {
+  break;
+}`]));
 });
 
 describe('continue', (): any => {
   it('(let ((result (list)) (i 0)) (while (< i 10) (set! i (+ i 1)) (when (< i 5) (continue)) (push-right! result i)) result)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('list')]], [Symbol.for('i'), 0]], [Symbol.for('while'), [Symbol.for('<'), Symbol.for('i'), 10], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('+'), Symbol.for('i'), 1]], [Symbol.for('when'), [Symbol.for('<'), Symbol.for('i'), 5], [Symbol.for('continue')]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('i')]], Symbol.for('result')], [Symbol.for('quote'), [5, 6, 7, 8, 9, 10]]]));
   it('(let ((result (list))) (for ((i (range 0 11))) (when (< i 5) (continue)) (push-right! result i)) result)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('list')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, 11]]], [Symbol.for('when'), [Symbol.for('<'), Symbol.for('i'), 5], [Symbol.for('continue')]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('i')]], Symbol.for('result')], [Symbol.for('quote'), [5, 6, 7, 8, 9, 10]]]));
-  return it('(compile \'(while #f (continue)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('while'), false, [Symbol.for('continue')]]]], 'while (false) {\n' +
-    '  continue;\n' +
-    '}']));
+  return it('(compile \'(while #f (continue)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('while'), false, [Symbol.for('continue')]]]], `while (false) {
+  continue;
+}`]));
 });
 
 describe('return', (): any => {
@@ -423,9 +423,9 @@ describe('return', (): any => {
   it('((js/arrow () (return 1) 2))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('js/arrow'), [], [Symbol.for('return'), 1], 2]], 1]));
   it('(compile \'(return))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('return')]]], 'return;']));
   it('(compile \'(return 0))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('return'), 0]]], 'return 0;']));
-  return it('(compile \'(while #t (return 0)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('while'), true, [Symbol.for('return'), 0]]]], 'while (true) {\n' +
-    '  return 0;\n' +
-    '}']));
+  return it('(compile \'(while #t (return 0)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('while'), true, [Symbol.for('return'), 0]]]], `while (true) {
+  return 0;
+}`]));
 });
 
 describe('yield', (): any => {
@@ -439,15 +439,15 @@ describe('await', (): any => it('(compile \'(await (foo)))', (): any => testRepl
 
 describe('async', (): any => {
   it('(compile \'(async (lambda (x) x)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], 'async x => x;']));
-  it('(compile \'(define foo (async (lambda (x) x))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]]], 'async function foo(x) {\n' +
-    '  return x;\n' +
-    '}']));
-  it('(compile \'(define foo (async (lambda (x) x))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'async function foo(x: any): Promise<any> {\n' +
-    '  return x;\n' +
-    '}']));
-  return it('(compile \'(define/async (foo x) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')]]], 'async function foo(x) {\n' +
-    '  return x;\n' +
-    '}']));
+  it('(compile \'(define foo (async (lambda (x) x))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]]], `async function foo(x) {
+  return x;
+}`]));
+  it('(compile \'(define foo (async (lambda (x) x))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], `async function foo(x: any): Promise<any> {
+  return x;
+}`]));
+  return it('(compile \'(define/async (foo x) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')]]], `async function foo(x) {
+  return x;
+}`]));
 });
 
 describe('oget', (): any => {
@@ -492,194 +492,194 @@ describe('class', (): any => {
   it('((lambda () (defclass Foo () (define bar "baz")) (define quux (new Foo)) (get-field bar quux)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('defclass'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('bar'), 'baz']], [Symbol.for('define'), Symbol.for('quux'), [Symbol.for('new'), Symbol.for('Foo')]], [Symbol.for('get-field'), Symbol.for('bar'), Symbol.for('quux')]]], 'baz']));
   it('((lambda () (defclass Foo () (define x) (define (constructor x) (set-field! x this x)) (define (bar) (get-field x this))) (define quux (new Foo "xyzzy")) (send quux bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('defclass'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('set-field!'), Symbol.for('x'), Symbol.for('this'), Symbol.for('x')]], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('get-field'), Symbol.for('x'), Symbol.for('this')]]], [Symbol.for('define'), Symbol.for('quux'), [Symbol.for('new'), Symbol.for('Foo'), 'xyzzy']], [Symbol.for('send'), Symbol.for('quux'), Symbol.for('bar')]]], 'xyzzy']));
   it('((lambda () (defclass Foo (Object) (define (bar) "baz")) (define quux (new Foo)) (send quux bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('defclass'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define'), [Symbol.for('bar')], 'baz']], [Symbol.for('define'), Symbol.for('quux'), [Symbol.for('new'), Symbol.for('Foo')]], [Symbol.for('send'), Symbol.for('quux'), Symbol.for('bar')]]], 'baz']));
-  return it('(compile \'(class () (define/public (bar) "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('class'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 'bar']]]], 'class {\n' +
-    '  bar() {\n' +
-    '    return \'bar\';\n' +
-    '  }\n' +
-    '}']));
+  return it('(compile \'(class () (define/public (bar) "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('class'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 'bar']]]], `class {
+  bar() {
+    return 'bar';
+  }
+}`]));
 });
 
 describe('define-class', (): any => {
   it('((lambda () (define-class Foo () (define/public (bar) "bar")) (define foo (new Foo)) (send foo bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 'bar']], [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('new'), Symbol.for('Foo')]], [Symbol.for('send'), Symbol.for('foo'), Symbol.for('bar')]]], 'bar']));
-  it('(compile \'(define-class Foo))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo')]]], 'class Foo {\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define/public (bar) "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 'bar']]]], 'class Foo {\n' +
-    '  bar() {\n' +
-    '    return \'bar\';\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define/public (bar) "bar") (define/public (baz) "baz")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 'bar'], [Symbol.for('define/public'), [Symbol.for('baz')], 'baz']]]], 'class Foo {\n' +
-    '  bar() {\n' +
-    '    return \'bar\';\n' +
-    '  }\n' +
-    '\n' +
-    '  baz() {\n' +
-    '    return \'baz\';\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define/public bar) (define/public baz "baz") (define/public (quux) "quux")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('bar')], [Symbol.for('define/public'), Symbol.for('baz'), 'baz'], [Symbol.for('define/public'), [Symbol.for('quux')], 'quux']]]], 'class Foo {\n' +
-    '  bar;\n' +
-    '\n' +
-    '  baz = \'baz\';\n' +
-    '\n' +
-    '  quux() {\n' +
-    '    return \'quux\';\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]]], 'class Foo {\n' +
-    '  x;\n' +
-    '\n' +
-    '  constructor(x) {\n' +
-    '    super();\n' +
-    '    this.x = x;\n' +
-    '  }\n' +
-    '\n' +
-    '  bar() {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
-    '  private x: any;\n' +
-    '\n' +
-    '  constructor(x: any) {\n' +
-    '    super();\n' +
-    '    this.x = x;\n' +
-    '  }\n' +
-    '\n' +
-    '  bar(): any {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define/public x) (define/public (constructor . args) (super) (set! (.-stack this) args)) (define/public (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-stack'), Symbol.for('this')], Symbol.for('args')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
-    '  x: any;\n' +
-    '\n' +
-    '  constructor(...args: any[]) {\n' +
-    '    super();\n' +
-    '    this.stack = args;\n' +
-    '  }\n' +
-    '\n' +
-    '  bar(): any {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo (Object) (define/public x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]]], 'class Foo extends Object {\n' +
-    '  x;\n' +
-    '\n' +
-    '  constructor(x) {\n' +
-    '    super();\n' +
-    '    this.x = x;\n' +
-    '  }\n' +
-    '\n' +
-    '  bar() {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo (Object) (define/public x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]]], 'class Foo extends Object {\n' +
-    '  x;\n' +
-    '\n' +
-    '  constructor(x) {\n' +
-    '    super();\n' +
-    '    this.x = x;\n' +
-    '  }\n' +
-    '\n' +
-    '  bar() {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo (Object) (define/private x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/private (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/private'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/private'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo extends Object {\n' +
-    '  private x: any;\n' +
-    '\n' +
-    '  constructor(x: any) {\n' +
-    '    super();\n' +
-    '    this.x = x;\n' +
-    '  }\n' +
-    '\n' +
-    '  private bar(): any {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (public x) (define x) (public constructor) (define (constructor x) (super) (set! (.-x this) x)) (public bar) (define (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('public'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('public'), Symbol.for('constructor')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('public'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
-    '  x: any;\n' +
-    '\n' +
-    '  constructor(x: any) {\n' +
-    '    super();\n' +
-    '    this.x = x;\n' +
-    '  }\n' +
-    '\n' +
-    '  bar(): any {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (private x) (define x) (define (constructor x) (super) (set! (.-x this) x)) (private bar) (define (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('private'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('private'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], 'class Foo {\n' +
-    '  private x: any;\n' +
-    '\n' +
-    '  constructor(x: any) {\n' +
-    '    super();\n' +
-    '    this.x = x;\n' +
-    '  }\n' +
-    '\n' +
-    '  private bar(): any {\n' +
-    '    return this.x;\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define/public arr) (define/public (constructor arr) (set-field! arr this arr)) (define/public (nth i) (aget (get-field arr this) i))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/public'), [Symbol.for('nth'), Symbol.for('i')], [Symbol.for('aget'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')], Symbol.for('i')]]]]], 'class Foo {\n' +
-    '  arr;\n' +
-    '\n' +
-    '  constructor(arr) {\n' +
-    '    this.arr = arr;\n' +
-    '  }\n' +
-    '\n' +
-    '  nth(i) {\n' +
-    '    return this.arr[i];\n' +
-    '  }\n' +
-    '}']));
-  it('(compile \'(define-class Foo () (define/public arr) (define (constructor arr) (set-field! arr this arr)) (define/generator (generator) (for ((x (get-field arr this))) (yield x)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [Symbol.for('generator')], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]]], 'class Foo {\n' +
-    '  arr;\n' +
-    '\n' +
-    '  constructor(arr) {\n' +
-    '    this.arr = arr;\n' +
-    '  }\n' +
-    '\n' +
-    '  *generator() {\n' +
-    '    for (let x of this.arr) {\n' +
-    '      yield x;\n' +
-    '    }\n' +
-    '  }\n' +
-    '}']));
-  return it('(compile \'(define-class Foo () (define/public arr) (define (constructor arr) (set-field! arr this arr)) (define/generator ((get-field iterator Symbol)) (for ((x (get-field arr this))) (yield x)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [[Symbol.for('get-field'), Symbol.for('iterator'), Symbol.for('Symbol')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]]], 'class Foo {\n' +
-    '  arr;\n' +
-    '\n' +
-    '  constructor(arr) {\n' +
-    '    this.arr = arr;\n' +
-    '  }\n' +
-    '\n' +
-    '  *[Symbol.iterator]() {\n' +
-    '    for (let x of this.arr) {\n' +
-    '      yield x;\n' +
-    '    }\n' +
-    '  }\n' +
-    '}']));
+  it('(compile \'(define-class Foo))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo')]]], `class Foo {
+}`]));
+  it('(compile \'(define-class Foo () (define/public (bar) "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 'bar']]]], `class Foo {
+  bar() {
+    return 'bar';
+  }
+}`]));
+  it('(compile \'(define-class Foo () (define/public (bar) "bar") (define/public (baz) "baz")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), [Symbol.for('bar')], 'bar'], [Symbol.for('define/public'), [Symbol.for('baz')], 'baz']]]], `class Foo {
+  bar() {
+    return 'bar';
+  }
+
+  baz() {
+    return 'baz';
+  }
+}`]));
+  it('(compile \'(define-class Foo () (define/public bar) (define/public baz "baz") (define/public (quux) "quux")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('bar')], [Symbol.for('define/public'), Symbol.for('baz'), 'baz'], [Symbol.for('define/public'), [Symbol.for('quux')], 'quux']]]], `class Foo {
+  bar;
+
+  baz = 'baz';
+
+  quux() {
+    return 'quux';
+  }
+}`]));
+  it('(compile \'(define-class Foo () (define x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]]], `class Foo {
+  x;
+
+  constructor(x) {
+    super();
+    this.x = x;
+  }
+
+  bar() {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo () (define x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], `class Foo {
+  private x: any;
+
+  constructor(x: any) {
+    super();
+    this.x = x;
+  }
+
+  bar(): any {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo () (define/public x) (define/public (constructor . args) (super) (set! (.-stack this) args)) (define/public (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-stack'), Symbol.for('this')], Symbol.for('args')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], `class Foo {
+  x: any;
+
+  constructor(...args: any[]) {
+    super();
+    this.stack = args;
+  }
+
+  bar(): any {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo (Object) (define/public x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]]], `class Foo extends Object {
+  x;
+
+  constructor(x) {
+    super();
+    this.x = x;
+  }
+
+  bar() {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo (Object) (define/public x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/public (bar) (.-x this))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/public'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/public'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]]], `class Foo extends Object {
+  x;
+
+  constructor(x) {
+    super();
+    this.x = x;
+  }
+
+  bar() {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo (Object) (define/private x) (define/public (constructor x) (super) (set! (.-x this) x)) (define/private (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [Symbol.for('Object')], [Symbol.for('define/private'), Symbol.for('x')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('define/private'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], `class Foo extends Object {
+  private x: any;
+
+  constructor(x: any) {
+    super();
+    this.x = x;
+  }
+
+  private bar(): any {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo () (public x) (define x) (public constructor) (define (constructor x) (super) (set! (.-x this) x)) (public bar) (define (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('public'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('public'), Symbol.for('constructor')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('public'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], `class Foo {
+  x: any;
+
+  constructor(x: any) {
+    super();
+    this.x = x;
+  }
+
+  bar(): any {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo () (private x) (define x) (define (constructor x) (super) (set! (.-x this) x)) (private bar) (define (bar) (.-x this))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('private'), Symbol.for('x')], [Symbol.for('define'), Symbol.for('x')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('x')], [Symbol.for('super')], [Symbol.for('set!'), [Symbol.for('.-x'), Symbol.for('this')], Symbol.for('x')]], [Symbol.for('private'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('.-x'), Symbol.for('this')]]]], Symbol.for(':to'), 'typescript'], `class Foo {
+  private x: any;
+
+  constructor(x: any) {
+    super();
+    this.x = x;
+  }
+
+  private bar(): any {
+    return this.x;
+  }
+}`]));
+  it('(compile \'(define-class Foo () (define/public arr) (define/public (constructor arr) (set-field! arr this arr)) (define/public (nth i) (aget (get-field arr this) i))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define/public'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/public'), [Symbol.for('nth'), Symbol.for('i')], [Symbol.for('aget'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')], Symbol.for('i')]]]]], `class Foo {
+  arr;
+
+  constructor(arr) {
+    this.arr = arr;
+  }
+
+  nth(i) {
+    return this.arr[i];
+  }
+}`]));
+  it('(compile \'(define-class Foo () (define/public arr) (define (constructor arr) (set-field! arr this arr)) (define/generator (generator) (for ((x (get-field arr this))) (yield x)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [Symbol.for('generator')], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]]], `class Foo {
+  arr;
+
+  constructor(arr) {
+    this.arr = arr;
+  }
+
+  *generator() {
+    for (let x of this.arr) {
+      yield x;
+    }
+  }
+}`]));
+  return it('(compile \'(define-class Foo () (define/public arr) (define (constructor arr) (set-field! arr this arr)) (define/generator ((get-field iterator Symbol)) (for ((x (get-field arr this))) (yield x)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [[Symbol.for('get-field'), Symbol.for('iterator'), Symbol.for('Symbol')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]]], `class Foo {
+  arr;
+
+  constructor(arr) {
+    this.arr = arr;
+  }
+
+  *[Symbol.iterator]() {
+    for (let x of this.arr) {
+      yield x;
+    }
+  }
+}`]));
 });
 
 describe('this', (): any => {
-  it('(compile \'(js/function (this) #u))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this')], undefined]]], 'function () {\n' +
-    '  return undefined;\n' +
-    '};']));
-  it('(compile \'(js/function (this) #u) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this')], undefined]], Symbol.for(':to'), 'typescript'], 'function (this: any): any {\n' +
-    '  return undefined;\n' +
-    '};']));
-  it('(compile \'(js/function (this arg) arg))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('arg')], Symbol.for('arg')]]], 'function (arg) {\n' +
-    '  return arg;\n' +
-    '};']));
-  it('(compile \'(js/function (this arg) arg) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('arg')], Symbol.for('arg')]], Symbol.for(':to'), 'typescript'], 'function (this: any, arg: any): any {\n' +
-    '  return arg;\n' +
-    '};']));
-  it('(compile \'(js/function (this . args) args))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]]], 'function (...args) {\n' +
-    '  return args;\n' +
-    '};']));
-  return it('(compile \'(js/function (this . args) args) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]], Symbol.for(':to'), 'typescript'], 'function (this: any, ...args: any[]): any {\n' +
-    '  return args;\n' +
-    '};']));
+  it('(compile \'(js/function (this) #u))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this')], undefined]]], `function () {
+  return undefined;
+};`]));
+  it('(compile \'(js/function (this) #u) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this')], undefined]], Symbol.for(':to'), 'typescript'], `function (this: any): any {
+  return undefined;
+};`]));
+  it('(compile \'(js/function (this arg) arg))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('arg')], Symbol.for('arg')]]], `function (arg) {
+  return arg;
+};`]));
+  it('(compile \'(js/function (this arg) arg) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('arg')], Symbol.for('arg')]], Symbol.for(':to'), 'typescript'], `function (this: any, arg: any): any {
+  return arg;
+};`]));
+  it('(compile \'(js/function (this . args) args))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]]], `function (...args) {
+  return args;
+};`]));
+  return it('(compile \'(js/function (this . args) args) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], Symbol.for('args')]], Symbol.for(':to'), 'typescript'], `function (this: any, ...args: any[]): any {
+  return args;
+};`]));
 });
 
 describe('instance-of?', (): any => {
@@ -707,30 +707,30 @@ describe('define-fields', (): any => {
   it('(compile \'(define-fields (prop) obj))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-fields'), [Symbol.for('prop')], Symbol.for('obj')]]], 'let {prop} = obj;']));
   it('(compile \'(define-fields ((x y) z) obj))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-fields'), [[Symbol.for('x'), Symbol.for('y')], Symbol.for('z')], Symbol.for('obj')]]], 'let {x: y, z} = obj;']));
   it('(compile \'(define-fields ((x y) z) obj))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-fields'), [[Symbol.for('x'), Symbol.for('y')], Symbol.for('z')], Symbol.for('obj')]]], 'let {x: y, z} = obj;']));
-  it('(compile \'(define-fields (foo) (js/obj "foo" "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-fields'), [Symbol.for('foo')], [Symbol.for('js/obj'), 'foo', 'bar']]]], 'let {foo} = {\n' +
-    '  foo: \'bar\'\n' +
-    '};']));
-  it('(compile \'(define-fields ((foo bar)) (js/obj "foo" "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-fields'), [[Symbol.for('foo'), Symbol.for('bar')]], [Symbol.for('js/obj'), 'foo', 'bar']]]], 'let {foo: bar} = {\n' +
-    '  foo: \'bar\'\n' +
-    '};']));
-  it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields (x rest) obj) (append rest \'(5)))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [Symbol.for('x'), Symbol.for('rest')], Symbol.for('obj')], [Symbol.for('append'), Symbol.for('rest'), [Symbol.for('quote'), [5]]]]]], Symbol.for(':to'), 'typescript'], 'function foo(): any {\n' +
-    '  let obj: any = {};\n' +
-    '  let {x, rest} = obj;\n' +
-    '  return [...rest, 5];\n' +
-    '}']));
-  return it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields ((rest r) x) obj) (list r x))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [[Symbol.for('rest'), Symbol.for('r')], Symbol.for('x')], Symbol.for('obj')], [Symbol.for('list'), Symbol.for('r'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'function foo(): any {\n' +
-    '  let obj: any = {};\n' +
-    '  let {rest: r, x} = obj;\n' +
-    '  return [r, x];\n' +
-    '}']));
+  it('(compile \'(define-fields (foo) (js/obj "foo" "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-fields'), [Symbol.for('foo')], [Symbol.for('js/obj'), 'foo', 'bar']]]], `let {foo} = {
+  foo: 'bar'
+};`]));
+  it('(compile \'(define-fields ((foo bar)) (js/obj "foo" "bar")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-fields'), [[Symbol.for('foo'), Symbol.for('bar')]], [Symbol.for('js/obj'), 'foo', 'bar']]]], `let {foo: bar} = {
+  foo: 'bar'
+};`]));
+  it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields (x rest) obj) (append rest \'(5)))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [Symbol.for('x'), Symbol.for('rest')], Symbol.for('obj')], [Symbol.for('append'), Symbol.for('rest'), [Symbol.for('quote'), [5]]]]]], Symbol.for(':to'), 'typescript'], `function foo(): any {
+  let obj: any = {};
+  let {x, rest} = obj;
+  return [...rest, 5];
+}`]));
+  return it('(compile \'(module m scheme (define (foo) (define obj (js/obj)) (define-fields ((rest r) x) obj) (list r x))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo')], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('js/obj')]], [Symbol.for('define-fields'), [[Symbol.for('rest'), Symbol.for('r')], Symbol.for('x')], Symbol.for('obj')], [Symbol.for('list'), Symbol.for('r'), Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], `function foo(): any {
+  let obj: any = {};
+  let {rest: r, x} = obj;
+  return [r, x];
+}`]));
 });
 
 describe('set!-fields', (): any => {
   it('((lambda () (let (x) (set!-fields (x) (js/obj "x" 1)) x)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [[Symbol.for('lambda'), [], [Symbol.for('let'), [Symbol.for('x')], [Symbol.for('set!-fields'), [Symbol.for('x')], [Symbol.for('js/obj'), 'x', 1]], Symbol.for('x')]]], 1]));
   it('(compile \'(set!-fields (prop) obj))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!-fields'), [Symbol.for('prop')], Symbol.for('obj')]]], '({prop} = obj);']));
-  return it('(compile \'(set!-fields (x) (js/obj "x" 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!-fields'), [Symbol.for('x')], [Symbol.for('js/obj'), 'x', 1]]]], '({x} = {\n' +
-    '  x: 1\n' +
-    '});']));
+  return it('(compile \'(set!-fields (x) (js/obj "x" 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('set!-fields'), [Symbol.for('x')], [Symbol.for('js/obj'), 'x', 1]]]], `({x} = {
+  x: 1
+});`]));
 });
 
 describe('Map', (): any => {
@@ -742,14 +742,14 @@ describe('member?', (): any => {
   it('(member? 2 \'(1 2 3 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('member?'), 2, [Symbol.for('quote'), [1, 2, 3, 4]]], true]));
   it('(member? 9 \'(1 2 3 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('member?'), 9, [Symbol.for('quote'), [1, 2, 3, 4]]], false]));
   it('(compile \'(member? 2 (list 1 2 3 4) f))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), 2, [Symbol.for('list'), 1, 2, 3, 4], Symbol.for('f')]]], '[1, 2, 3, 4].findIndex(x => f(2, x)) >= 0;']));
-  it('(compile \'(member? (+ 1 1) (list 1 2 3 4) f))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), [Symbol.for('+'), 1, 1], [Symbol.for('list'), 1, 2, 3, 4], Symbol.for('f')]]], 'let v = 1 + 1;\n' +
-    '\n' +
-    '[1, 2, 3, 4].findIndex(x => f(v, x)) >= 0;']));
-  return it('(compile \'(member? (+ 1 1) (list 1 2 3 4) (memoize f)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), [Symbol.for('+'), 1, 1], [Symbol.for('list'), 1, 2, 3, 4], [Symbol.for('memoize'), Symbol.for('f')]]]], 'let v = 1 + 1;\n' +
-    '\n' +
-    'let isEqual = memoize(f);\n' +
-    '\n' +
-    '[1, 2, 3, 4].findIndex(x => isEqual(v, x)) >= 0;']));
+  it('(compile \'(member? (+ 1 1) (list 1 2 3 4) f))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), [Symbol.for('+'), 1, 1], [Symbol.for('list'), 1, 2, 3, 4], Symbol.for('f')]]], `let v = 1 + 1;
+
+[1, 2, 3, 4].findIndex(x => f(v, x)) >= 0;`]));
+  return it('(compile \'(member? (+ 1 1) (list 1 2 3 4) (memoize f)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('member?'), [Symbol.for('+'), 1, 1], [Symbol.for('list'), 1, 2, 3, 4], [Symbol.for('memoize'), Symbol.for('f')]]]], `let v = 1 + 1;
+
+let isEqual = memoize(f);
+
+[1, 2, 3, 4].findIndex(x => isEqual(v, x)) >= 0;`]));
 });
 
 describe('memq?', (): any => {
@@ -770,30 +770,30 @@ describe('define-type', (): any => {
   it('(compile \'(define-type NN (-> Number Number)) :to "javascript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]]], Symbol.for(':to'), 'javascript'], '']));
   it('(compile \'(define-type NN (-> Number Number)) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]]], Symbol.for(':to'), 'typescript'], 'type NN = (a: number) => number;']));
   it('(compile \'(begin (define-type NN (-> Number Number)) (: f NN) (define f (lambda (x) x))) :to "javascript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for(':'), Symbol.for('f'), Symbol.for('NN')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'javascript'], 'let f = x => x;']));
-  return it('(compile \'(begin (define-type NN (-> Number Number)) (: f NN) (define f (lambda (x) x))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for(':'), Symbol.for('f'), Symbol.for('NN')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], 'type NN = (a: number) => number;\n' +
-    '\n' +
-    'let f: NN = (x: any): any => x;']));
+  return it('(compile \'(begin (define-type NN (-> Number Number)) (: f NN) (define f (lambda (x) x))) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-type'), Symbol.for('NN'), [Symbol.for('->'), Symbol.for('Number'), Symbol.for('Number')]], [Symbol.for(':'), Symbol.for('f'), Symbol.for('NN')], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], Symbol.for(':to'), 'typescript'], `type NN = (a: number) => number;
+
+let f: NN = (x: any): any => x;`]));
 });
 
 describe('require', (): any => {
   it('(compile \'(require "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), 'foo']]], 'import * as foo from \'foo\';']));
   it('(compile \'(require "foo-bar"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), 'foo-bar']]], 'import * as fooBar from \'foo-bar\';']));
   it('(compile \'(require foo "bar"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), Symbol.for('foo'), 'bar']]], 'import * as foo from \'bar\';']));
-  it('(compile \'(require (only-in foo bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar')]]]], 'import {\n' +
-    '  bar\n' +
-    '} from \'foo\';']));
-  it('(compile \'(require (only-in foo (bar baz))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), [Symbol.for('bar'), Symbol.for('baz')]]]]], 'import {\n' +
-    '  bar as baz\n' +
-    '} from \'foo\';']));
-  it('(compile \'(require (only-in "foo" (bar baz))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), 'foo', [Symbol.for('bar'), Symbol.for('baz')]]]]], 'import {\n' +
-    '  bar as baz\n' +
-    '} from \'foo\';']));
-  it('(compile \'(require (only-in foo bar bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar'), Symbol.for('bar')]]]], 'import {\n' +
-    '  bar\n' +
-    '} from \'foo\';']));
-  it('(compile \'(require (only-in foo bar (baz bar))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar'), [Symbol.for('baz'), Symbol.for('bar')]]]]], 'import {\n' +
-    '  bar\n' +
-    '} from \'foo\';']));
+  it('(compile \'(require (only-in foo bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar')]]]], `import {
+  bar
+} from 'foo';`]));
+  it('(compile \'(require (only-in foo (bar baz))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), [Symbol.for('bar'), Symbol.for('baz')]]]]], `import {
+  bar as baz
+} from 'foo';`]));
+  it('(compile \'(require (only-in "foo" (bar baz))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), 'foo', [Symbol.for('bar'), Symbol.for('baz')]]]]], `import {
+  bar as baz
+} from 'foo';`]));
+  it('(compile \'(require (only-in foo bar bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar'), Symbol.for('bar')]]]], `import {
+  bar
+} from 'foo';`]));
+  it('(compile \'(require (only-in foo bar (baz bar))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), [Symbol.for('only-in'), Symbol.for('foo'), Symbol.for('bar'), [Symbol.for('baz'), Symbol.for('bar')]]]]], `import {
+  bar
+} from 'foo';`]));
   it('(compile \'(require "foo") :fes-module-interop #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), 'foo']], Symbol.for(':fes-module-interop'), true], 'import foo from \'foo\';']));
   it('(compile \'(require "foo-bar") :fes-module-interop #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), 'foo-bar']], Symbol.for(':fes-module-interop'), true], 'import fooBar from \'foo-bar\';']));
   it('(compile \'(require foo "bar") :fes-module-interop #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('require'), Symbol.for('foo'), 'bar']], Symbol.for(':fes-module-interop'), true], 'import foo from \'bar\';']));
@@ -807,56 +807,56 @@ describe('require', (): any => {
 
 describe('provide', (): any => {
   it('(compile \'(provide))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide')]]], '']));
-  it('(compile \'(provide x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]]], 'export {\n' +
-    '  x\n' +
-    '};']));
-  it('(compile \'(provide x y))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')]]], 'export {\n' +
-    '  x,\n' +
-    '  y\n' +
-    '};']));
-  it('(compile \'(provide (rename-out (x y))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]]]]], 'export {\n' +
-    '  x as y\n' +
-    '};']));
-  it('(compile \'(provide (rename-out (x y) (w z))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('w'), Symbol.for('z')]]]]], 'export {\n' +
-    '  x as y,\n' +
-    '  w as z\n' +
-    '};']));
-  it('(compile \'(provide x (rename-out (y z))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('z')]]]]], 'export {\n' +
-    '  x,\n' +
-    '  y as z\n' +
-    '};']));
-  it('(compile \'(provide x x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), Symbol.for('x')]]], 'export {\n' +
-    '  x\n' +
-    '};']));
-  it('(compile \'(provide x (rename-out (y x))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('x')]]]]], 'export {\n' +
-    '  x\n' +
-    '};']));
-  it('(compile \'(provide (rename-out (x js/undefined))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('js/undefined')]]]]], 'export {\n' +
-    '  x as jsUndefined\n' +
-    '};']));
+  it('(compile \'(provide x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]]], `export {
+  x
+};`]));
+  it('(compile \'(provide x y))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')]]], `export {
+  x,
+  y
+};`]));
+  it('(compile \'(provide (rename-out (x y))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]]]]], `export {
+  x as y
+};`]));
+  it('(compile \'(provide (rename-out (x y) (w z))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('w'), Symbol.for('z')]]]]], `export {
+  x as y,
+  w as z
+};`]));
+  it('(compile \'(provide x (rename-out (y z))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('z')]]]]], `export {
+  x,
+  y as z
+};`]));
+  it('(compile \'(provide x x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), Symbol.for('x')]]], `export {
+  x
+};`]));
+  it('(compile \'(provide x (rename-out (y x))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), [Symbol.for('rename-out'), [Symbol.for('y'), Symbol.for('x')]]]]], `export {
+  x
+};`]));
+  it('(compile \'(provide (rename-out (x js/undefined))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('js/undefined')]]]]], `export {
+  x as jsUndefined
+};`]));
   it('(compile \'(provide (all-from-out "foo")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo']]]], 'export * from \'foo\';']));
-  it('(compile \'(provide (all-from-out "foo") bar))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo'], Symbol.for('bar')]]], 'export * from \'foo\';\n' +
-    '\n' +
-    'export {\n' +
-    '  bar\n' +
-    '};']));
-  it('(compile \'(provide x) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]], Symbol.for(':fcommonjs'), true], 'module.exports = {\n' +
-    '  x\n' +
-    '};']));
-  it('(compile \'(provide x y) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')]], Symbol.for(':fcommonjs'), true], 'module.exports = {\n' +
-    '  x,\n' +
-    '  y\n' +
-    '};']));
-  it('(compile \'(provide foo-bar) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('foo-bar')]], Symbol.for(':fcommonjs'), true], 'module.exports = {\n' +
-    '  fooBar\n' +
-    '};']));
-  it('(compile \'(provide (rename-out (x y))) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]]]], Symbol.for(':fcommonjs'), true], 'module.exports = {\n' +
-    '  x: y\n' +
-    '};']));
-  return it('(compile \'(provide (all-from-out "foo-bar") baz) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo-bar'], Symbol.for('baz')]], Symbol.for(':fcommonjs'), true], 'module.exports = {\n' +
-    '  ...fooBar,\n' +
-    '  baz\n' +
-    '};']));
+  it('(compile \'(provide (all-from-out "foo") bar))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo'], Symbol.for('bar')]]], `export * from 'foo';
+
+export {
+  bar
+};`]));
+  it('(compile \'(provide x) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x')]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  x
+};`]));
+  it('(compile \'(provide x y) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('x'), Symbol.for('y')]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  x,
+  y
+};`]));
+  it('(compile \'(provide foo-bar) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), Symbol.for('foo-bar')]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  fooBar
+};`]));
+  it('(compile \'(provide (rename-out (x y))) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('rename-out'), [Symbol.for('x'), Symbol.for('y')]]]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  x: y
+};`]));
+  return it('(compile \'(provide (all-from-out "foo-bar") baz) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('provide'), [Symbol.for('all-from-out'), 'foo-bar'], Symbol.for('baz')]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  ...fooBar,
+  baz
+};`]));
 });
 
 describe('compile', (): any => {

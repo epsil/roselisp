@@ -5004,19 +5004,29 @@
    ((regexp-match (regexp "\\n") str)
     (define lines
       (string-split str (regexp "^" "gm")))
+    (define nonblank-lines
+      (filter
+       (lambda (x)
+         (not (regexp-match (regexp "^\\s*$") x)))
+       lines))
     (cond
-     ((<= (length lines) 1)
+     ((or (<= (length lines) 1)
+          (<= (length nonblank-lines) 1))
       (compile-atom stx env options))
      (else
-      ;; TODO: We could compile to a template literal instead.
-      ;; We just have to take care to escape it properly.
-      (compile-syntax
-       (transfer-comments
-        stx
-        (datum->syntax
-         stx
-         `(string-append ,@lines)))
-       env options))))
+      (define cooked str)
+      (define raw
+        (regexp-replace (regexp "\\\\|`" "g") str "\\$&"))
+      (define result
+        (make-expression-or-statement
+         (new TemplateLiteral
+              (list
+               (new TemplateElement
+                    #t
+                    cooked
+                    raw)))
+         options))
+      result)))
    (else
     (compile-atom stx env options))))
 

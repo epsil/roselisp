@@ -12,6 +12,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 /**
+ * Indent a string by prepending each line with `n` spaces.
+ */
+declare function indentString(str: any, n?: any, options?: any): any;
+declare namespace indentString {
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
+}
+/**
  * # Trampoline
  *
  * Trampoline implementation.
@@ -139,163 +146,3 @@
  * [blog:Bendersky17]: https://eli.thegreenplace.net/2017/on-recursion-continuations-and-trampolines/
  * [blog:Bond22]: https://tkurtbond.github.io/posts/2022/06/14/lisp-style-trampolines-in-common-lisp-c-ada-oberon-2-and-revised-oberon/
  */
-/**
- * Trampoline class.
- *
- * Contains a call stack and a value stack. The call stack is stepped
- * through until it is exhausted, and the returned result is the
- * topmost entry on the value stack.
- */
-declare class Trampoline {
-    /**
-     * Call stack.
-     */
-    calls: any;
-    /**
-     * Value stack.
-     */
-    values: any;
-    /**
-     * Internal stack symbol, used to reference the value
-     * on the top of the value stack.
-     */
-    valueSymbol: any;
-    /**
-     * Create a new trampoline.
-     * An initial function call may be specified
-     * with `f` and `args`; `args`  are here the
-     * arguments to the function `f`.
-     */
-    constructor(f?: any, ...args: any[]);
-    /**
-     * Whether the trampoline is empty,
-     * i.e., there are no trampoline calls left.
-     */
-    isEmpty(): any;
-    /**
-     * Pop a function call off the call stack.
-     */
-    popCall(): any;
-    /**
-     * Pop a value off the value stack.
-     */
-    popValue(): any;
-    /**
-     * Push a function call onto the call stack.
-     */
-    pushCall(call: any): any;
-    /**
-     * Push a value onto the value stack.
-     */
-    pushValue(value: any): any;
-    /**
-     * Pop and evaluate function calls off the call stack
-     * until it is exhausted. Returns the value returned by
-     * the final call.
-     */
-    run(): any;
-    /**
-     * Pop and evaluate function calls off the call stack
-     * until it reaches size `size`.
-     */
-    runUntil(size?: any): any;
-    /**
-     * The number of function calls on the call stack.
-     */
-    size(): any;
-    /**
-     * Pop a single function call off the call stack
-     * and evaluate it. The value thus obtained is
-     * pushed onto the value stack.
-     */
-    step(): any;
-}
-/**
- * Trampolined function call.
- *
- * A wrapper around an array representing the call.
- */
-declare class TrampolineCall {
-    /**
-     * An array where the first element is the function
-     * and the other elements are the arguments to it.
-     */
-    call: any;
-    /**
-     * Create a trampolined function call.
-     *
-     * `call` is an array where the first element is the function
-     * and the remaining elements are the arguments to it.
-     */
-    constructor(...call: any[]);
-    /**
-     * Evaluate the function call.
-     */
-    evaluate(): any;
-    /**
-     * Map a function over the function call
-     * (left-to-right).
-     */
-    map(f: any): any;
-    /**
-     * Map a function over the function call,
-     * from left to right.
-     */
-    mapLeft(f: any): any;
-    /**
-     * Map a function over the function call,
-     * from right to left.
-     */
-    mapRight(f: any): any;
-    /**
-     * Pop a value off the call
-     * (off the end of the call).
-     */
-    pop(): any;
-    /**
-     * Pop a value off the beginning of the call.
-     */
-    popLeft(): any;
-    /**
-     * Pop a value off the end of the call.
-     */
-    popRight(): any;
-    /**
-     * Push a value onto the call
-     * (the end of the call).
-     */
-    push(value: any): any;
-    /**
-     * Push a value onto the beginning of the call.
-     */
-    pushLeft(value: any): any;
-    /**
-     * Push a value onto the end of the call.
-     */
-    pushRight(value: any): any;
-    /**
-     * Return the size of the call
-     * (i.e., number of arguments plus one).
-     */
-    size(): any;
-}
-/**
- * Run a trampolined function.
- *
- * The function may return an instance of {@link TrampolineCall}
- * (e.g., by calling {@link trampolineCall}) to represent a
- * trampolined function calls. Other values are treated as final
- * values.
- */
-declare function trampoline(f: any, ...args: any[]): any;
-declare namespace trampoline {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-}
-/**
- * Create a trampolined function call.
- */
-declare function tcall(f: any, ...args: any[]): any;
-declare namespace tcall {
-    var fsource: (symbol | symbol[])[];
-}
-export { tcall as tCall, tcall as trampolineCall, trampoline as runTrampoline, trampoline as trampolineRun, Trampoline, TrampolineCall, tcall, trampoline };

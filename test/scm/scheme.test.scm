@@ -81,17 +81,17 @@
  "'don\\'t';"
  > (compile "newline
 test")
- "'newline\\n' +
-  'test';"
+ "`newline
+test`;"
  > (compile "newline\ntest")
- "'newline\\n' +
-  'test';"
+ "`newline
+test`;"
  > (compile "newline
 test
 three")
- "'newline\\n' +
-  'test\\n' +
-  'three';"
+ "`newline
+test
+three`;"
  > (compile "\\s")
  "'\\\\s';"
 

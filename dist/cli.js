@@ -132,42 +132,42 @@ const cliOptions = {
  * Help message. Displayed when the program
  * is invoked with `-h` or `--help`.
  */
-const helpMessage = 'Lisp interpreter and transpiler in JavaScript\n' +
-    '\n' +
-    'REPL:\n' +
-    '\n' +
-    '  roselisp\n' +
-    '\n' +
-    'Interpret a file:\n' +
-    '\n' +
-    '  roselisp input.scm\n' +
-    '\n' +
-    'Compile a file to JavaScript:\n' +
-    '\n' +
-    '  roselisp -c input.scm\n' +
-    '\n' +
-    'Compile a file to TypeScript:\n' +
-    '\n' +
-    '  roselisp -c --language typescript input.scm\n' +
-    '\n' +
-    'Options:\n' +
-    '\n' +
-    '  --compile   Compiles one or more files (short form -c).\n' +
-    '              Otherwise, the default is interpretation.\n' +
-    '  --quick     Incremental compilation (short form -q).\n' +
-    '              Only compiles a file if the input file is\n' +
-    '              newer than the output file.\n' +
-    '  --eval      Evaluate an expression (short form -e).\n' +
-    '              For example, roselisp -e "(+ 1 1)"\n' +
-    '              evaluates the expression (+ 1 1) and\n' +
-    '              prints the result to standard output.\n' +
-    '              Otherwise interprets it (default).\n' +
-    '  --indent    The number of spaces to indent\n' +
-    '              (default: 2).\n' +
-    '  --language  Language: javascript or typescript\n' +
-    '              (default: javascript).\n' +
-    '  --out-dir   Output directory for compiled files\n' +
-    '              (default: same directory).';
+const helpMessage = `Lisp interpreter and transpiler in JavaScript
+
+REPL:
+
+  roselisp
+
+Interpret a file:
+
+  roselisp input.scm
+
+Compile a file to JavaScript:
+
+  roselisp -c input.scm
+
+Compile a file to TypeScript:
+
+  roselisp -c --language typescript input.scm
+
+Options:
+
+  --compile   Compiles one or more files (short form -c).
+              Otherwise, the default is interpretation.
+  --quick     Incremental compilation (short form -q).
+              Only compiles a file if the input file is
+              newer than the output file.
+  --eval      Evaluate an expression (short form -e).
+              For example, roselisp -e "(+ 1 1)"
+              evaluates the expression (+ 1 1) and
+              prints the result to standard output.
+              Otherwise interprets it (default).
+  --indent    The number of spaces to indent
+              (default: 2).
+  --language  Language: javascript or typescript
+              (default: javascript).
+  --out-dir   Output directory for compiled files
+              (default: same directory).`;
 /**
  * Normalize CLI options.
  */

@@ -900,13 +900,6 @@
     `(js/switch ,val
                 ,@switch-clauses))))
 
-;;; Expand a `(let-env ...)` expression.
-(define-macro (let-env_ x &rest body)
-  `(scm/eval '(begin ,@body)
-             (extend-environment
-              ,x
-              (current-environment))))
-
 ;;; Expand a `(set ...)` expression.
 ;;;
 ;;; Similar to [`set` in Common Lisp][cl:set] and
@@ -1343,7 +1336,6 @@
   do_
   el/if_
   for_
-  let-env_
   macro_
   match_
   multiple-value-bind_

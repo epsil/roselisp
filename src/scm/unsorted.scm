@@ -12,6 +12,13 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+;;; Expand a `(let-env ...)` expression.
+(define-macro (let-env_ x &rest body)
+  `(scm/eval '(begin ,@body)
+             (extend-environment
+              ,x
+              (current-environment))))
+
 ;;; Indent a string by prepending each line with `n` spaces.
 (define (indent-string str (n 2) (options (js/obj)))
   (define whitespace-option

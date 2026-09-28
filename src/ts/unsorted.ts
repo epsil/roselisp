@@ -15,6 +15,18 @@
  */
 
 /**
+ * Expand a `(let-env ...)` expression.
+ */
+function letEnv_(exp: any, env: any): any {
+  const [x, ...body]: any[] = exp.slice(1);
+  return [Symbol.for('scm/eval'), [Symbol.for('quote'), [Symbol.for('begin'), ...body]], [Symbol.for('extend-environment'), x, [Symbol.for('current-environment')]]];
+}
+
+letEnv_.ftype = 'macro';
+
+letEnv_.fsource = [Symbol.for('define'), [Symbol.for('let-env_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('scm/eval'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]], [Symbol.for('extend-environment'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('current-environment')]]]]];
+
+/**
  * Indent a string by prepending each line with `n` spaces.
  */
 function indentString(str: any, n: any = 2, options: any = {}): any {

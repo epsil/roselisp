@@ -379,7 +379,6 @@
                   do_
                   el/if_
                   for_
-                  let-env_
                   macro_
                   match_
                   multiple-value-bind_
@@ -8642,7 +8641,6 @@
          (let ,let_ (macro-> Any * Any))
          (let* ,let-star_ (macro-> Any * Any))
          (let*-values ,let-values_ (macro-> Any * Any))
-         (let-env ,let-env_ (macro-> Any * Any))
          (let-fields ,let-fields_ (macro-> Any * Any))
          (let-js/obj ,let-fields_ (macro-> Any * Any))
          (let-values ,let-values_ (macro-> Any * Any))

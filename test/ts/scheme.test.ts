@@ -1725,6 +1725,11 @@ describe('pow', (): any => {
   return it('(compile \'(pow 2 3 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('pow'), 2, 3, 4]]], '2 ** 3 ** 4;']));
 });
 
+describe('sqrt', (): any => {
+  it('(sqrt 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sqrt'), 4], 2]));
+  return it('(compile \'(sqrt 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sqrt'), 4]]], 'Math.sqrt(4);']));
+});
+
 describe('<', (): any => {
   it('(< 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('<'), 1], true]));
   it('(< 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('<'), 1, 2], true]));

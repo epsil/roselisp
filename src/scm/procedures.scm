@@ -359,6 +359,15 @@
 (define-compiler-macro (expt_ &rest args)
   `(js/** ,@args))
 
+;;; Square root.
+;;;
+;;; Similar to [`sqrt` in Racket][rkt:sqrt] and [`sqrt` in Common Lisp][cl:sqrt].
+;;;
+;;; [rkt:sqrt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._sqrt%29%29
+;;; [cl:sqrt]: http://clhs.lisp.se/Body/f_sqrt_.htm#sqrt
+(define-inline (sqrt_ x)
+  (send Math sqrt x))
+
 ;;; Whether a value is the number zero.
 ;;;
 ;;; Similar to [`zerop` in Racket][rkt:zerop] and
@@ -1025,6 +1034,7 @@
   sort!_
   sort_
   special-type?_
+  sqrt_
   string->keyword_
   sub1_
   sub_

@@ -3252,6 +3252,12 @@ let y = 2;"
  > (compile '(pow 2 3 4))
  "2 ** 3 ** 4;"
 
+ :describe "sqrt"
+ > (sqrt 4)
+ 2
+ > (compile '(sqrt 4))
+ "Math.sqrt(4);"
+
  :describe "<"
  > (< 1)
  #t

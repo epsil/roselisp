@@ -50,11 +50,6 @@ myPlus.compilerMacro = (() => {
 
 let x = 1 + 2;`])));
 
-describe('sqrt', (): any => {
-  xit('(sqrt 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('sqrt'), 4], 2]));
-  return xit('(compile \'(sqrt 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sqrt'), 4]]], 'Math.sqrt(4);']));
-});
-
 describe('js/eval', (): any => {
   it('(js/eval "1 + 1;")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/eval'), '1 + 1;'], 2]));
   it('(compile \'(js/eval "1 + 1;"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1 + 1;']]], 'eval(\'1 + 1;\');']));

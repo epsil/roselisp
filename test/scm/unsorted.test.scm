@@ -67,12 +67,6 @@ myPlus.compilerMacro = (() => {
 
 let x = 1 + 2;"
 
- :describe "sqrt"
- xit> (sqrt 4)
- 2
- xit> (compile '(sqrt 4))
- "Math.sqrt(4);"
-
  :describe "js/eval"
  > (js/eval "1 + 1;")
  2

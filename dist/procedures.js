@@ -20,7 +20,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
 exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.forEach_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.expt_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.arity_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub_ = exports.sub1_ = exports.stringToKeyword_ = exports.specialTypeP_ = exports.sort_ = exports.sortx_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub_ = exports.sub1_ = exports.stringToKeyword_ = exports.sqrt_ = exports.specialTypeP_ = exports.sort_ = exports.sortx_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = void 0;
 const util_1 = require("./util");
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
@@ -624,6 +624,27 @@ expt_.compilerMacro = (() => {
     const f = (exp, env) => {
         const args = exp.slice(1);
         return [Symbol.for('js/**'), ...args];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
+ * Square root.
+ *
+ * Similar to [`sqrt` in Racket][rkt:sqrt] and [`sqrt` in Common Lisp][cl:sqrt].
+ *
+ * [rkt:sqrt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._sqrt%29%29
+ * [cl:sqrt]: http://clhs.lisp.se/Body/f_sqrt_.htm#sqrt
+ */
+function sqrt_(x) {
+    return Math.sqrt(x);
+}
+exports.sqrt_ = sqrt_;
+sqrt_.fsource = [Symbol.for('define'), [Symbol.for('sqrt_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Math'), Symbol.for('sqrt'), Symbol.for('x')]];
+sqrt_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        let [x] = exp.slice(1);
+        return [Symbol.for('send'), Symbol.for('Math'), Symbol.for('sqrt'), x];
     };
     f.ftype = 'macro';
     return f;

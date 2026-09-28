@@ -633,6 +633,29 @@ expt_.compilerMacro = ((): any => {
 })();
 
 /**
+ * Square root.
+ *
+ * Similar to [`sqrt` in Racket][rkt:sqrt] and [`sqrt` in Common Lisp][cl:sqrt].
+ *
+ * [rkt:sqrt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._sqrt%29%29
+ * [cl:sqrt]: http://clhs.lisp.se/Body/f_sqrt_.htm#sqrt
+ */
+function sqrt_(x: any): any {
+  return Math.sqrt(x);
+}
+
+sqrt_.fsource = [Symbol.for('define'), [Symbol.for('sqrt_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Math'), Symbol.for('sqrt'), Symbol.for('x')]];
+
+sqrt_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    let [x]: any[] = exp.slice(1);
+    return [Symbol.for('send'), Symbol.for('Math'), Symbol.for('sqrt'), x];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
  * Whether a value is the number zero.
  *
  * Similar to [`zerop` in Racket][rkt:zerop] and
@@ -1822,6 +1845,7 @@ export {
   sortx_,
   sort_,
   specialTypeP_,
+  sqrt_,
   stringToKeyword_,
   sub1_,
   sub_,

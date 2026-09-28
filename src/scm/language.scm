@@ -489,6 +489,7 @@
                   sort!_
                   sort_
                   special-type?
+                  sqrt_
                   string->keyword_
                   sub1_
                   sub_
@@ -8468,6 +8469,7 @@
          (sort ,sort_ (-> Any * Any))
          (sort! ,sort!_ (-> Any * Any))
          (source ,source (-> Any * Any))
+         (sqrt ,sqrt_ (-> Any * Any))
          (string->keyword ,string->keyword_ (-> Any * Any))
          (string->number ,string->number_ (-> Any * Any))
          (string->symbol ,string->symbol_ (-> Any * Any))

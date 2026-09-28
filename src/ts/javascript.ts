@@ -1060,6 +1060,24 @@ jsUnsignedBitwiseShiftRight_.compilerMacro = ((): any => {
 })();
 
 /**
+ * Exponentiation.
+ */
+function jsExpt_(...args: any[]): any {
+  return args.reduceRight((right: any, left: any): any => left ** right, 1);
+}
+
+jsExpt_.fsource = [Symbol.for('define'), [Symbol.for('js/expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('**'), Symbol.for('args'), Symbol.for(':identity'), 1, Symbol.for(':fold'), Symbol.for('right')]];
+
+jsExpt_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const args: any = exp.slice(1);
+    return [Symbol.for('js/op/apply'), Symbol.for('**'), [Symbol.for('list'), ...args], Symbol.for(':identity'), 1, Symbol.for(':fold'), Symbol.for('right')];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
  * Create a JavaScript `Promise`.
  */
 function jsPromise_(f: any): any {
@@ -1111,6 +1129,7 @@ export {
   jsDelete_,
   jsDot_,
   jsEval_,
+  jsExpt_,
   jsFindIndex_,
   jsFunctionObjectP_,
   jsFunctionTypeP_,

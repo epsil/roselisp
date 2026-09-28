@@ -28,11 +28,13 @@
 ;;; [rkt:apply]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._apply%29%29
 ;;; [cl:apply]: http://clhs.lisp.se/Body/f_apply.htm#apply
 (define (apply_ f . args)
-  (when (> (length args) 0)
-    (set! args
-          (append (drop-right args 1)
-                  (last args))))
-  (send f apply #n args))
+  (send f
+        apply
+        #n
+        (if (> (length args) 0)
+            (append (drop-right args 1)
+                    (last args))
+            args)))
 
 ;;; Call `f` with `args`.
 ;;; Returns the value `f` returns.
@@ -339,6 +341,23 @@
         (set! result
               (/ result (list-ref args i))))
       result))))
+
+;;; Exponentiation.
+;;;
+;;; Similar to [`expt` in Racket][rkt:expt] and [`expt` in Common Lisp][cl:expt].
+;;;
+;;; [rkt:expt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._expt%29%29
+;;; [cl:expt]: http://clhs.lisp.se/Body/f_exp_e.htm#expt
+(define (expt_ . args)
+  (let ((result 1))
+    (for ((i (range (- (length args) 1) -1 -1)))
+      (set! result
+            (js/** (list-ref args i) result)))
+    result))
+
+;;; Compiler macro for `(expt ...)` expressions.
+(define-compiler-macro (expt_ &rest args)
+  `(js/** ,@args))
 
 ;;; Whether a value is the number zero.
 ;;;
@@ -960,6 +979,7 @@
   div_
   error_
   even?_
+  expt_
   false?_
   fexpr-type?
   fexpr?_

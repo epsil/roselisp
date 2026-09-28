@@ -761,6 +761,17 @@
        (js/function (this . args)
          (send fun apply this arguments)))))))
 
+;;; Unwrap a `(quote ...)` expression.
+;;; Returns other values as-is.
+(define (unwrap-quote-expression exp)
+  (cond
+   ((syntax? exp)
+    (unwrap-quote-expression (syntax->datum exp)))
+   ((tagged-list? exp 'quote)
+    (second exp))
+   (else
+    exp)))
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
@@ -794,4 +805,5 @@
   text-of-quotation
   unquote-splicing?
   unquote?
+  unwrap-quote-expression
   valid-js-casing-style?)

@@ -846,6 +846,20 @@ function makeArityFunction(fun: any, n: any = undefined, arrow: any = false): an
   }
 }
 
+/**
+ * Unwrap a `(quote ...)` expression.
+ * Returns other values as-is.
+ */
+function unwrapQuoteExpression(exp: any): any {
+  if (syntaxp(exp)) {
+    return unwrapQuoteExpression(syntaxToDatum(exp));
+  } else if (taggedListP(exp, Symbol.for('quote'))) {
+    return exp[1];
+  } else {
+    return exp;
+  }
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
@@ -879,5 +893,6 @@ export {
   textOfQuotation,
   unquoteSplicingP,
   unquotep,
+  unwrapQuoteExpression,
   validJsCasingStyleP
 };

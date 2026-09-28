@@ -3228,6 +3228,30 @@ let y = 2;"
  > (compile '(/ 1 2 4))
  "1 / 2 / 4;"
 
+ :describe "expt"
+ > (expt 2 3)
+ 8
+ > (expt 4 3 2)
+ 262144
+ > (funcall expt 1 2)
+ 1
+ > (funcall expt 2 1)
+ 2
+ > (funcall expt 4 3 2)
+ 262144
+ > (compile '(expt 2 3))
+ "2 ** 3;"
+ > (compile '(expt 2 3 4))
+ "2 ** 3 ** 4;"
+
+ :describe "pow"
+ > (pow 2 3)
+ 8
+ > (compile '(pow 2 3))
+ "2 ** 3;"
+ > (compile '(pow 2 3 4))
+ "2 ** 3 ** 4;"
+
  :describe "<"
  > (< 1)
  #t

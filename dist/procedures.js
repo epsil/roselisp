@@ -19,8 +19,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.forEach_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.arity_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub_ = exports.sub1_ = exports.stringToKeyword_ = exports.specialTypeP_ = exports.sort_ = exports.sortx_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = void 0;
+exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.forEach_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.expt_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.arity_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub_ = exports.sub1_ = exports.stringToKeyword_ = exports.specialTypeP_ = exports.sort_ = exports.sortx_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = void 0;
 const util_1 = require("./util");
 const [equalp, keywordp] = (() => {
     function equalp_(x, y) {
@@ -98,14 +98,11 @@ const [equalp, keywordp] = (() => {
  * [cl:apply]: http://clhs.lisp.se/Body/f_apply.htm#apply
  */
 function apply_(f, ...args) {
-    if (args.length > 0) {
-        args = [...args.slice(0, -1), ...args[args.length - 1]];
-    }
-    return f.apply(null, args);
+    return f.apply(null, (args.length > 0) ? [...args.slice(0, -1), ...args[args.length - 1]] : args);
 }
 exports.apply = apply_;
 exports.apply_ = apply_;
-apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, Symbol.for('args')]];
+apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('last'), Symbol.for('args')]], Symbol.for('args')]]];
 /**
  * Call `f` with `args`.
  * Returns the value `f` returns.
@@ -603,6 +600,35 @@ exports.div = div_;
 exports.div_ = div_;
 div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
 /**
+ * Exponentiation.
+ *
+ * Similar to [`expt` in Racket][rkt:expt] and [`expt` in Common Lisp][cl:expt].
+ *
+ * [rkt:expt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._expt%29%29
+ * [cl:expt]: http://clhs.lisp.se/Body/f_exp_e.htm#expt
+ */
+function expt_(...args) {
+    let result = 1;
+    const _start = args.length - 1;
+    for (let i = _start; i > -1; i--) {
+        result = args[i] ** result;
+    }
+    return result;
+}
+exports.expt_ = expt_;
+expt_.fsource = [Symbol.for('define'), [Symbol.for('expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 1]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('args')], 1], -1, -1]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/**'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')], Symbol.for('result')]]], Symbol.for('result')]];
+/**
+ * Compiler macro for `(expt ...)` expressions.
+ */
+expt_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/**'), ...args];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Whether a value is the number zero.
  *
  * Similar to [`zerop` in Racket][rkt:zerop] and
@@ -796,7 +822,7 @@ values_.fsource = [Symbol.for('define'), [Symbol.for('values_'), Symbol.for('.')
  */
 values_.compilerMacro = (() => {
     const f = (exp, env) => {
-        let args = exp.slice(1);
+        const args = exp.slice(1);
         return [Symbol.for('list'), ...args];
     };
     f.ftype = 'macro';
@@ -1440,7 +1466,7 @@ assert_.fsource = [Symbol.for('define'), [Symbol.for('assert_'), Symbol.for('x')
  */
 assert_.compilerMacro = (() => {
     const f = (exp, env) => {
-        let args = exp.slice(1);
+        const args = exp.slice(1);
         return [Symbol.for('send'), Symbol.for('console'), Symbol.for('assert'), ...args];
     };
     f.ftype = 'macro';
@@ -1466,7 +1492,7 @@ display_.fsource = [Symbol.for('define'), [Symbol.for('display_'), Symbol.for('.
  */
 display_.compilerMacro = (() => {
     const f = (exp, env) => {
-        let args = exp.slice(1);
+        const args = exp.slice(1);
         return [Symbol.for('send'), Symbol.for('console'), Symbol.for('log'), ...args];
     };
     f.ftype = 'macro';

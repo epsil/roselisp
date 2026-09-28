@@ -16,7 +16,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unwrapQuoteExpression = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
 const [selfEvaluatingP, buildList, keywordp] = (() => {
@@ -876,3 +876,19 @@ function makeArityFunction(fun, n = undefined, arrow = false) {
     }
 }
 exports.makeArityFunction = makeArityFunction;
+/**
+ * Unwrap a `(quote ...)` expression.
+ * Returns other values as-is.
+ */
+function unwrapQuoteExpression(exp) {
+    if ((0, rose_1.syntaxp)(exp)) {
+        return unwrapQuoteExpression((0, rose_1.syntaxToDatum)(exp));
+    }
+    else if (taggedListP(exp, Symbol.for('quote'))) {
+        return exp[1];
+    }
+    else {
+        return exp;
+    }
+}
+exports.unwrapQuoteExpression = unwrapQuoteExpression;

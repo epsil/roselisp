@@ -73,24 +73,6 @@ let x = 1 + 2;"
  xit> (compile '(sqrt 4))
  "Math.sqrt(4);"
 
- :describe "expt"
- xit> (expt 2 3)
- 8
- xit> (compile '(expt 2 3))
- "2 ** 3;"
-
- :describe "pow"
- xit> (pow 2 3)
- 8
- xit> (compile '(pow 2 3))
- "2 ** 3;"
-
- :describe "js/**"
- xit> (js/** 2 3)
- 8
- xit> (compile '(js/** 2 3))
- "2 ** 3;"
-
  :describe "js/eval"
  > (js/eval "1 + 1;")
  2

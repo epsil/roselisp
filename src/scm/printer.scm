@@ -1083,7 +1083,7 @@
               (and (estree-type? right type_)
                    (eq? (get-estree-field "operator" right)
                         operator)
-                   (memq? operator '("+" "*" "&&" "||"))))
+                   (memq? operator '("+" "*" "**" "&&" "||"))))
     (set! right-printed
           (doc-wrap right-printed
                     (js/obj-append

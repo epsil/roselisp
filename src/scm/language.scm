@@ -221,6 +221,7 @@
                   js/delete_
                   js/dot_
                   js/eval_
+                  js/expt_
                   js/find-index_
                   js/function-object?_
                   js/function-type?_
@@ -443,6 +444,7 @@
                   div_
                   error_
                   even?_
+                  expt_
                   false?_
                   fexpr-type?
                   fexpr?_
@@ -570,6 +572,7 @@
                   quote?
                   tagged-list?
                   text-of-quotation
+                  unwrap-quote-expression
                   valid-js-casing-style?))
 (require (only-in "./visitor"
                   make-visitor
@@ -816,7 +819,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-         lang-env))
+          lang-env))
   (oset! compilation-options :language-environment lang-env)
   (set! compilation-options
         (js/obj-append
@@ -1668,7 +1671,7 @@
                    object
                    Object))
           '()
-          (list superclass)))
+           (list superclass)))
     (transfer-comments
      stx
      (datum->syntax
@@ -3159,7 +3162,7 @@
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-        'funcall))
+         'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -3396,7 +3399,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3484,7 +3487,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3689,7 +3692,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4346,7 +4349,7 @@
   (define env1
     (new LispEnvironment
          '()
-         env))
+          env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4462,7 +4465,7 @@
     (define env1
       (new LispEnvironment
            '()
-           env))
+            env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -5629,7 +5632,7 @@
       (define return-type
         (if is-constructor
             'Void
-            #u))
+             #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -6337,26 +6340,35 @@
   (define identity
     (plist-get_ options :identity))
   (define fold
-    (if (eq? (plist-get_ options :fold) 'right)
+    (if (eq? (unwrap-quote-expression
+              (plist-get_ options :fold))
+             'right)
         'foldr
-        'foldl))
+         'foldl))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
    ((symbol? args)
     (if (undefined? identity)
-        `(,fold (lambda (right left)
+        `(,fold (lambda ,(if (eq? fold 'foldr)
+                             '(left right)
+                              '(right left))
                   (js/op ,op left right))
-                (first ,args)
-                (rest ,args))
-        `(,fold (lambda (right left)
+                ,(if (eq? fold 'foldr)
+                     `(last ,args)
+                     `(first ,args))
+                ,(if (eq? fold 'foldr)
+                     `(drop-right ,args 1)
+                     `(rest ,args)))
+        `(,fold (lambda ,(if (eq? fold 'foldr)
+                             '(left right)
+                              '(right left))
                   (js/op ,op left right))
                 ,identity
                 ,args)))
-   ;; If `args` is a list expression, however,
-   ;; then it is actually possible to perform
-   ;; the fold at compile time, which produces
-   ;; neater code.
+   ;; If `args` is a `(list ...)` expression,
+   ;; then it is possible to perform the fold
+   ;; at compile time, producing neater code.
    ((tagged-list? args 'list)
     (define args1
       (rest args))
@@ -6367,16 +6379,16 @@
       (first args1))
      (else
       (if (eq? fold 'foldr)
-          (foldr (lambda (right left)
+          (foldr (lambda (left right)
                    `(js/op ,op ,left ,right))
-                 (first args1)
-                 (rest args1))
+                 (last args1)
+                 (drop-right args1 1))
           (foldl (lambda (right left)
                    `(js/op ,op ,left ,right))
                  (first args1)
                  (rest args1))))))
-   ;; A quoted list is just another way of
-   ;; writing a list.
+   ;; Transform a `(quote (...))` expression to
+   ;; the equivalent `(list ...)` expression.
    ((tagged-list? args 'quote)
     `(js/op/apply ,op
                   (list
@@ -7470,17 +7482,17 @@
                 this
                 (new LispEnvironment
                      '()
-                     parent))
+                      parent))
     (set-field! main-environment
                 this
                 (new LispEnvironment
                      '()
-                     (get-field require-environment this)))
+                      (get-field require-environment this)))
     (set-field! provide-environment
                 this
                 (new LispEnvironment
                      '()
-                     (get-field main-environment this)))
+                      (get-field main-environment this)))
     (set-field! compilation-options
                 this
                 (js/obj-append
@@ -8147,6 +8159,7 @@
          (eqv? ,eqv?_ (-> Any * Any))
          (error ,error_ (-> Any * Any))
          (even? ,even?_ (-> Any * Any))
+         (expt ,expt_ (-> Any * Any))
          (extend-environment ,extend-environment (-> Any * Any))
          (false? ,false?_ (-> Any * Any))
          (falsep ,false?_ (-> Any * Any))
@@ -8216,6 +8229,7 @@
          (js/& ,js/bitwise-and_ (-> Any * Any))
          (js/&& ,js/and_ (-> Any * Any))
          (js/* ,mul_ (-> Any * Any))
+         (js/** ,js/expt_ (-> Any * Any))
          (js/+ ,add_ (-> Any * Any))
          (js/+ ,js/plus_ (-> Any * Any))
          (js/- ,sub_ (-> Any * Any))
@@ -8409,6 +8423,7 @@
          (pop-left! ,pop-left!_ (-> Any * Any))
          (pop-right ,pop-right!_ (-> Any * Any))
          (pop-right! ,pop-right!_ (-> Any * Any))
+         (pow ,expt_ (-> Any * Any))
          (print ,display_ (-> Any * Any))
          (print-estree ,print-estree (-> Any * Any))
          (procedure? ,procedure?_ (-> Any * Any))

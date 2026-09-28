@@ -55,21 +55,6 @@ describe('sqrt', (): any => {
   return xit('(compile \'(sqrt 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sqrt'), 4]]], 'Math.sqrt(4);']));
 });
 
-describe('expt', (): any => {
-  xit('(expt 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('expt'), 2, 3], 8]));
-  return xit('(compile \'(expt 2 3))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('expt'), 2, 3]]], '2 ** 3;']));
-});
-
-describe('pow', (): any => {
-  xit('(pow 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('pow'), 2, 3], 8]));
-  return xit('(compile \'(pow 2 3))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('pow'), 2, 3]]], '2 ** 3;']));
-});
-
-describe('js/**', (): any => {
-  xit('(js/** 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('js/**'), 2, 3], 8]));
-  return xit('(compile \'(js/** 2 3))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/**'), 2, 3]]], '2 ** 3;']));
-});
-
 describe('js/eval', (): any => {
   it('(js/eval "1 + 1;")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/eval'), '1 + 1;'], 2]));
   it('(compile \'(js/eval "1 + 1;"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1 + 1;']]], 'eval(\'1 + 1;\');']));

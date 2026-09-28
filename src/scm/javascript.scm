@@ -402,6 +402,10 @@
 (define-inline (js/unsigned-bitwise-shift-right_ . args)
   (js/op/apply >>> args))
 
+;;; Exponentiation.
+(define-inline (js/expt_ . args)
+  (js/op/apply ** args :identity 1 :fold right))
+
 ;;; Create a JavaScript `Promise`.
 (define (js/promise_ f)
   (new Promise f))
@@ -430,6 +434,7 @@
   js/delete_
   js/dot_
   js/eval_
+  js/expt_
   js/find-index_
   js/function-object?_
   js/function-type?_

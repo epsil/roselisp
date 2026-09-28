@@ -536,6 +536,14 @@ declare namespace jsUnsignedBitwiseShiftRight_ {
     var compilerMacro: any;
 }
 /**
+ * Exponentiation.
+ */
+declare function jsExpt_(...args: any[]): any;
+declare namespace jsExpt_ {
+    var fsource: (symbol | (number | symbol)[])[];
+    var compilerMacro: any;
+}
+/**
  * Create a JavaScript `Promise`.
  */
 declare function jsPromise_(f: any): any;
@@ -557,4 +565,4 @@ declare namespace jsParseFloat_ {
     var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
 }
-export { jsInstanceof_ as jsInstanceOfP_, jsTypeof_ as jsTypeOf_, jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsIsNaN_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsParseFloat_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };
+export { jsInstanceof_ as jsInstanceOfP_, jsTypeof_ as jsTypeOf_, jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsExpt_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsIsNaN_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsParseFloat_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };

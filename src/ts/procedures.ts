@@ -91,13 +91,10 @@ const [equalp, keywordp]: any[] = ((): any => {
  * [cl:apply]: http://clhs.lisp.se/Body/f_apply.htm#apply
  */
 function apply_(f: any, ...args: any[]): any {
-  if (args.length > 0) {
-    args = [...args.slice(0, -1), ...args[args.length - 1]];
-  }
-  return f.apply(null, args);
+  return f.apply(null, (args.length > 0) ? [...args.slice(0, -1), ...args[args.length - 1]] : args);
 }
 
-apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('set!'), Symbol.for('args'), [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('last'), Symbol.for('args')]]]], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, Symbol.for('args')]];
+apply_.fsource = [Symbol.for('define'), [Symbol.for('apply_'), Symbol.for('f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send'), Symbol.for('f'), Symbol.for('apply'), null, [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('append'), [Symbol.for('drop-right'), Symbol.for('args'), 1], [Symbol.for('last'), Symbol.for('args')]], Symbol.for('args')]]];
 
 /**
  * Call `f` with `args`.
@@ -605,6 +602,37 @@ function div_(...args: any[]): any {
 div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
 
 /**
+ * Exponentiation.
+ *
+ * Similar to [`expt` in Racket][rkt:expt] and [`expt` in Common Lisp][cl:expt].
+ *
+ * [rkt:expt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._expt%29%29
+ * [cl:expt]: http://clhs.lisp.se/Body/f_exp_e.htm#expt
+ */
+function expt_(...args: any[]): any {
+  let result: any = 1;
+  const _start: any = args.length - 1;
+  for (let i: any = _start; i > -1; i--) {
+    result = (args as any)[i] ** result;
+  }
+  return result;
+}
+
+expt_.fsource = [Symbol.for('define'), [Symbol.for('expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 1]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('args')], 1], -1, -1]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/**'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')], Symbol.for('result')]]], Symbol.for('result')]];
+
+/**
+ * Compiler macro for `(expt ...)` expressions.
+ */
+expt_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const args: any = exp.slice(1);
+    return [Symbol.for('js/**'), ...args];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
  * Whether a value is the number zero.
  *
  * Similar to [`zerop` in Racket][rkt:zerop] and
@@ -807,7 +835,7 @@ values_.fsource = [Symbol.for('define'), [Symbol.for('values_'), Symbol.for('.')
  */
 values_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
-    let args: any = exp.slice(1);
+    const args: any = exp.slice(1);
     return [Symbol.for('list'), ...args];
   };
   f.ftype = 'macro';
@@ -1464,7 +1492,7 @@ assert_.fsource = [Symbol.for('define'), [Symbol.for('assert_'), Symbol.for('x')
  */
 assert_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
-    let args: any = exp.slice(1);
+    const args: any = exp.slice(1);
     return [Symbol.for('send'), Symbol.for('console'), Symbol.for('assert'), ...args];
   };
   f.ftype = 'macro';
@@ -1491,7 +1519,7 @@ display_.fsource = [Symbol.for('define'), [Symbol.for('display_'), Symbol.for('.
  */
 display_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
-    let args: any = exp.slice(1);
+    const args: any = exp.slice(1);
     return [Symbol.for('send'), Symbol.for('console'), Symbol.for('log'), ...args];
   };
   f.ftype = 'macro';
@@ -1749,6 +1777,7 @@ export {
   div_,
   error_,
   evenp_,
+  expt_,
   falsep_,
   fexprp_,
   filter_,

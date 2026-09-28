@@ -1709,6 +1709,22 @@ describe('/', (): any => {
   return it('(compile \'(/ 1 2 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('/'), 1, 2, 4]]], '1 / 2 / 4;']));
 });
 
+describe('expt', (): any => {
+  it('(expt 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('expt'), 2, 3], 8]));
+  it('(expt 4 3 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('expt'), 4, 3, 2], 262144]));
+  it('(funcall expt 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('funcall'), Symbol.for('expt'), 1, 2], 1]));
+  it('(funcall expt 2 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('funcall'), Symbol.for('expt'), 2, 1], 2]));
+  it('(funcall expt 4 3 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('funcall'), Symbol.for('expt'), 4, 3, 2], 262144]));
+  it('(compile \'(expt 2 3))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('expt'), 2, 3]]], '2 ** 3;']));
+  return it('(compile \'(expt 2 3 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('expt'), 2, 3, 4]]], '2 ** 3 ** 4;']));
+});
+
+describe('pow', (): any => {
+  it('(pow 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('pow'), 2, 3], 8]));
+  it('(compile \'(pow 2 3))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('pow'), 2, 3]]], '2 ** 3;']));
+  return it('(compile \'(pow 2 3 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('pow'), 2, 3, 4]]], '2 ** 3 ** 4;']));
+});
+
 describe('<', (): any => {
   it('(< 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('<'), 1], true]));
   it('(< 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('<'), 1, 2], true]));

@@ -999,6 +999,22 @@ z;"
  > (compile '(js// 1 2 4))
  "1 / 2 / 4;"
 
+ :describe "js/**"
+ > (js/** 2 3)
+ 8
+ > (js/** 4 3 2)
+ 262144
+ > (funcall js/** 1 2)
+ 1
+ > (funcall js/** 2 1)
+ 2
+ > (funcall js/** 4 3 2)
+ 262144
+ > (compile '(js/** 2 3))
+ "2 ** 3;"
+ > (compile '(js/** 2 3 4))
+ "2 ** 3 ** 4;"
+
  :describe "js/<"
  > (js/< 1 2)
  #t

@@ -596,6 +596,16 @@ describe('js//', (): any => {
   return it('(compile \'(js// 1 2 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js//'), 1, 2, 4]]], '1 / 2 / 4;']));
 });
 
+describe('js/**', (): any => {
+  it('(js/** 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/**'), 2, 3], 8]));
+  it('(js/** 4 3 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/**'), 4, 3, 2], 262144]));
+  it('(funcall js/** 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('funcall'), Symbol.for('js/**'), 1, 2], 1]));
+  it('(funcall js/** 2 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('funcall'), Symbol.for('js/**'), 2, 1], 2]));
+  it('(funcall js/** 4 3 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('funcall'), Symbol.for('js/**'), 4, 3, 2], 262144]));
+  it('(compile \'(js/** 2 3))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/**'), 2, 3]]], '2 ** 3;']));
+  return it('(compile \'(js/** 2 3 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/**'), 2, 3, 4]]], '2 ** 3 ** 4;']));
+});
+
 describe('js/<', (): any => {
   it('(js/< 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/<'), 1, 2], true]));
   it('(js/< 2 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/<'), 2, 1], false]));

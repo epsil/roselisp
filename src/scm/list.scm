@@ -202,7 +202,7 @@
   (foldl (lambda (x acc)
            (append acc x))
          '()
-         args))
+          args))
 
 ;;; Flatten an arbitrarily nested list.
 ;;;
@@ -219,7 +219,7 @@
             (else
              (push-right! acc x))))
          '()
-         lst))
+          lst))
 
 ;;; Return the first element of a list.
 ;;;
@@ -520,7 +520,7 @@
     (apply dotted-list-set_ lst indices-and-value))
    (else
     (define result
-      `(,@lst))
+      (list-copy lst))
     (cond
      ((> (length indices-and-value) 2)
       (define-values (pos . indices-and-value-1)
@@ -566,6 +566,16 @@
     `(funcall list-set! ,lst ,@indices-and-value))
    (else
     `(array-set! ,lst ,@indices-and-value))))
+
+;;; Copy a list.
+;;;
+;;; Similar to [`list-copy` in Guile][guile:list-copy]
+;;; and [`copy-list` in Common Lisp][cl:copy-list].
+;;;
+;;; [guile:list-copy]: https://doc.guix.gnu.org/guile/latest/en/html_node/List-Constructors.html#index-list_002dcopy
+;;; [cl:copy-list]: http://clhs.lisp.se/Body/f_cp_lis.htm#copy-list
+(define-inline (list-copy_ lst)
+  (array-copy lst))
 
 ;;; Return the `n`-th CDR element of a list.
 (define (list-tail_ lst n)
@@ -679,7 +689,7 @@
 ;;;
 ;;; [cl:butlast]: http://clhs.lisp.se/Body/f_butlas.htm#butlast
 (define (butlast_ x (n 1))
-  (let ((result `(,@x))
+  (let ((result (list-copy x))
         (i n))
     (while (and (> i 0)
                 (> (length result) 0))
@@ -956,7 +966,7 @@
       indices-and-value)
     (cond
      ((< pos (- (array-length lst) 2))
-      (define result `(,@lst))
+      (define result (list-copy lst))
       (array-set! result
                   pos
                   (apply dotted-list-set_
@@ -975,7 +985,7 @@
       indices-and-value)
     (cond
      ((< pos (- (array-length lst) 2))
-      (define result `(,@lst))
+      (define result (list-copy lst))
       (array-set! result pos val)
       result)
      (else
@@ -1115,6 +1125,10 @@
 (define (dotted-list->list_ x)
   `(,@(dotted-list-head x) ,(dotted-list-tail x)))
 
+;;; Convert an iterator to a list.
+(define-inline (iterator->list_ iterator)
+  (iterator->array iterator))
+
 (provide
   (rename-out (append_ append))
   (rename-out (build-list_ build-list))
@@ -1197,6 +1211,7 @@
   dotted-list-head_
   dotted-list-last_
   dotted-list-length_
+  dotted-list-link_
   dotted-list-ninth_
   dotted-list-parse_
   dotted-list-ref_
@@ -1207,7 +1222,6 @@
   dotted-list-sixth_
   dotted-list-tail_
   dotted-list-tenth_
-  dotted-list-link_
   dotted-list-third_
   dotted-list?_
   dotted-pair-cdr_
@@ -1221,11 +1235,13 @@
   flatten_
   fourth_
   improper-list?_
+  iterator->list_
   last-cdr_
   last-pair_
   last_
   length_
   list->dotted-list_
+  list-copy_
   list-ref_
   list-set!_
   list-set_

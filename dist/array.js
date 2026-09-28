@@ -17,7 +17,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayp_ = exports.arrayThird_ = exports.arrayTenth_ = exports.arrayTake_ = exports.arraySortX_ = exports.arraySort_ = exports.arraySlice_ = exports.arraySixth_ = exports.arraySeventh_ = exports.arraySet_ = exports.arraySetX_ = exports.arraySecond_ = exports.arrayReverse_ = exports.arrayReverseX_ = exports.arrayRest_ = exports.arrayRef_ = exports.arrayPushRightX_ = exports.arrayPushLeftX_ = exports.arrayPopRightX_ = exports.arrayPopLeftX_ = exports.arrayNlast_ = exports.arrayNinth_ = exports.arrayLength_ = exports.arrayLast_ = exports.arrayFourth_ = exports.arrayFirst_ = exports.arrayFifth_ = exports.arrayEighth_ = exports.arrayDrop_ = exports.arrayDropRight_ = exports.arrayCopy_ = exports.arrayConcat_ = exports.arrayAt_ = exports.aset_ = exports.aset = exports.arraySet = exports.aref = exports.aget_ = exports.aget = void 0;
+exports.iteratorToArray_ = exports.arrayp_ = exports.arrayThird_ = exports.arrayTenth_ = exports.arrayTake_ = exports.arraySort_ = exports.arraySortX_ = exports.arraySlice_ = exports.arraySixth_ = exports.arraySeventh_ = exports.arraySet_ = exports.arraySetX_ = exports.arraySecond_ = exports.arrayReverse_ = exports.arrayReverseX_ = exports.arrayRest_ = exports.arrayRef_ = exports.arrayPushRightX_ = exports.arrayPushLeftX_ = exports.arrayPopRightX_ = exports.arrayPopLeftX_ = exports.arrayNlast_ = exports.arrayNinth_ = exports.arrayLength_ = exports.arrayLast_ = exports.arrayFourth_ = exports.arrayFirst_ = exports.arrayFifth_ = exports.arrayEighth_ = exports.arrayDrop_ = exports.arrayDropRight_ = exports.arrayCopy_ = exports.arrayConcat_ = exports.arrayAt_ = exports.aset_ = exports.aset = exports.arraySet = exports.aref = exports.aget_ = exports.aget = void 0;
 /**
  * Whether something is an array.
  */
@@ -683,6 +683,22 @@ arraySortX_.compilerMacro = (() => {
         else {
             return [Symbol.for('send'), arr, Symbol.for('sort')];
         }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
+ * Convert an iterator to an array.
+ */
+function iteratorToArray_(iterator) {
+    return [...iterator];
+}
+exports.iteratorToArray_ = iteratorToArray_;
+iteratorToArray_.fsource = [Symbol.for('define'), [Symbol.for('iterator->array_'), Symbol.for('iterator')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('iterator')]]]];
+iteratorToArray_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [iterator] = exp.slice(1);
+        return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), iterator]]];
     };
     f.ftype = 'macro';
     return f;

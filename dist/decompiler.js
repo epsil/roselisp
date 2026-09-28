@@ -631,7 +631,7 @@ function decompileForStatement(node, options = {}) {
         let currentInit = inits[i];
         let currentInitExp = (0, rose_1.syntaxToDatum)(currentInit);
         if ((0, util_1.taggedListP)(currentInitExp, Symbol.for('define')) || (0, util_1.taggedListP)(currentInitExp, Symbol.for('set!'))) {
-            currentInit = (0, rose_1.datumToSyntax)(currentInit, [...currentInit.drop(1)]);
+            currentInit = (0, rose_1.datumToSyntax)(currentInit, currentInit.drop(1));
             currentInitExp = (0, rose_1.syntaxToDatum)(currentInit);
         }
         let currentUpdate = updates[i];

@@ -690,7 +690,7 @@
       (send super clone))
     (set-field! stack
                 env
-                `(,@(get-field stack this)))
+                (list-copy (get-field stack this)))
     env)
 
   ;;; Find an environment frame binding `key`.

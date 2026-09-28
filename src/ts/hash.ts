@@ -361,12 +361,12 @@ function hashKeys_(ht: any): any {
   return [...ht.keys()];
 }
 
-hashKeys_.fsource = [Symbol.for('define'), [Symbol.for('hash-keys_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('keys')]]]]];
+hashKeys_.fsource = [Symbol.for('define'), [Symbol.for('hash-keys_'), Symbol.for('ht')], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('keys')]]];
 
 hashKeys_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht]: any[] = exp.slice(1);
-    return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), ht, Symbol.for('keys')]]]];
+    return [Symbol.for('iterator->list'), [Symbol.for('send'), ht, Symbol.for('keys')]];
   };
   f.ftype = 'macro';
   return f;
@@ -383,12 +383,12 @@ function hashValues_(ht: any): any {
   return [...ht.values()];
 }
 
-hashValues_.fsource = [Symbol.for('define'), [Symbol.for('hash-values_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('values')]]]]];
+hashValues_.fsource = [Symbol.for('define'), [Symbol.for('hash-values_'), Symbol.for('ht')], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('values')]]];
 
 hashValues_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht]: any[] = exp.slice(1);
-    return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), ht, Symbol.for('values')]]]];
+    return [Symbol.for('iterator->list'), [Symbol.for('send'), ht, Symbol.for('values')]];
   };
   f.ftype = 'macro';
   return f;
@@ -401,12 +401,12 @@ function hashEntries_(ht: any): any {
   return [...ht.entries()];
 }
 
-hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symbol.for('ht')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('entries')]]]]];
+hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symbol.for('ht')], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('entries')]]];
 
 hashEntries_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht]: any[] = exp.slice(1);
-    return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('send'), ht, Symbol.for('entries')]]]];
+    return [Symbol.for('iterator->list'), [Symbol.for('send'), ht, Symbol.for('entries')]];
   };
   f.ftype = 'macro';
   return f;

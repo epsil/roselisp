@@ -36,8 +36,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.popRightX = exports.popLeftX = exports.popx_ = exports.popx = exports.pairp = exports.consp_ = exports.consp = exports.nullp = exports.nthcdr = exports.dottedListNthcdr_ = exports.dottedListNthcdr = exports.nth = exports.dottedListNth_ = exports.dottedListNth = exports.ninth = exports.nbutlast = exports.makePair = exports.makeList = exports.makeDottedList = exports.list = exports.properListP = exports.listp = exports.listStar = exports.length = exports.last = exports.lastPair = exports.lastCons_ = exports.lastCdr = exports.dottedListLastCdr_ = exports.improperListP = exports.fourth = exports.flatten = exports.head_ = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.drop = exports.dropRight = exports.dottedListP = exports.cons = exports.circularListP = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.buildList = exports.append = void 0;
-exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedProperListP_ = exports.dottedPairP_ = exports.dottedPairCdr_ = exports.dottedListP_ = exports.dottedListThird_ = exports.dottedListLink_ = exports.dottedListTenth_ = exports.dottedListTail_ = exports.dottedListSixth_ = exports.dottedListSeventh_ = exports.dottedListSet_ = exports.dottedListSetX_ = exports.dottedListSecond_ = exports.dottedListRef_ = exports.dottedListParse_ = exports.dottedListNinth_ = exports.dottedListLength_ = exports.dottedListLast_ = exports.dottedListHead_ = exports.dottedListFourth_ = exports.dottedListFirst_ = exports.dottedListFifth_ = exports.dottedListEighth_ = exports.dottedListToList_ = exports.dottedImproperListP_ = exports.cons_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.append_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = void 0;
-exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.reversex_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.pairp_ = exports.pairOrListP_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = exports.list_ = exports.listp_ = exports.listTail_ = exports.listStar_ = exports.listSet_ = exports.listSetX_ = exports.listRef_ = exports.listToDottedList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = void 0;
+exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedProperListP_ = exports.dottedPairP_ = exports.dottedPairCdr_ = exports.dottedListP_ = exports.dottedListThird_ = exports.dottedListTenth_ = exports.dottedListTail_ = exports.dottedListSixth_ = exports.dottedListSeventh_ = exports.dottedListSet_ = exports.dottedListSetX_ = exports.dottedListSecond_ = exports.dottedListRef_ = exports.dottedListParse_ = exports.dottedListNinth_ = exports.dottedListLink_ = exports.dottedListLength_ = exports.dottedListLast_ = exports.dottedListHead_ = exports.dottedListFourth_ = exports.dottedListFirst_ = exports.dottedListFifth_ = exports.dottedListEighth_ = exports.dottedListToList_ = exports.dottedImproperListP_ = exports.cons_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.append_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = void 0;
+exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.reversex_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.pairp_ = exports.pairOrListP_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = exports.list_ = exports.listp_ = exports.listTail_ = exports.listStar_ = exports.listSet_ = exports.listSetX_ = exports.listRef_ = exports.listCopy_ = exports.listToDottedList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.iteratorToList_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = void 0;
 const env_1 = require("./env");
 const util_1 = require("./util");
 const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListRef, dottedListLength, dottedListLast] = (() => {
@@ -1135,7 +1135,7 @@ function listSet_(lst, ...indicesAndValue) {
     }
 }
 exports.listSet_ = listSet_;
-listSet_.fsource = [Symbol.for('define'), [Symbol.for('list-set_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-set_'), Symbol.for('lst'), Symbol.for('indices-and-value')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('lst')]]]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('length'), Symbol.for('indices-and-value')], 2], [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('.'), Symbol.for('indices-and-value-1')], Symbol.for('indices-and-value')], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), [Symbol.for('apply'), Symbol.for('list-set_'), [Symbol.for('array-ref'), Symbol.for('result'), Symbol.for('pos')], Symbol.for('indices-and-value-1')]]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('val')], Symbol.for('indices-and-value')], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), Symbol.for('val')]]], Symbol.for('result')]]];
+listSet_.fsource = [Symbol.for('define'), [Symbol.for('list-set_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('dotted-list?'), Symbol.for('lst')], [Symbol.for('apply'), Symbol.for('dotted-list-set_'), Symbol.for('lst'), Symbol.for('indices-and-value')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list-copy'), Symbol.for('lst')]], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('length'), Symbol.for('indices-and-value')], 2], [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('.'), Symbol.for('indices-and-value-1')], Symbol.for('indices-and-value')], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), [Symbol.for('apply'), Symbol.for('list-set_'), [Symbol.for('array-ref'), Symbol.for('result'), Symbol.for('pos')], Symbol.for('indices-and-value-1')]]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('val')], Symbol.for('indices-and-value')], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), Symbol.for('val')]]], Symbol.for('result')]]];
 /**
  * Set a list position to a given value.
  * Modifies the original list.
@@ -1172,6 +1172,28 @@ listSetX_.compilerMacro = (() => {
         else {
             return [Symbol.for('array-set!'), lst, ...indicesAndValue];
         }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
+ * Copy a list.
+ *
+ * Similar to [`list-copy` in Guile][guile:list-copy]
+ * and [`copy-list` in Common Lisp][cl:copy-list].
+ *
+ * [guile:list-copy]: https://doc.guix.gnu.org/guile/latest/en/html_node/List-Constructors.html#index-list_002dcopy
+ * [cl:copy-list]: http://clhs.lisp.se/Body/f_cp_lis.htm#copy-list
+ */
+function listCopy_(lst) {
+    return [...lst];
+}
+exports.listCopy_ = listCopy_;
+listCopy_.fsource = [Symbol.for('define'), [Symbol.for('list-copy_'), Symbol.for('lst')], [Symbol.for('array-copy'), Symbol.for('lst')]];
+listCopy_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [lst] = exp.slice(1);
+        return [Symbol.for('array-copy'), lst];
     };
     f.ftype = 'macro';
     return f;
@@ -1377,7 +1399,7 @@ function butlast_(x, n = 1) {
 }
 exports.butlast = butlast_;
 exports.butlast_ = butlast_;
-butlast_.fsource = [Symbol.for('define'), [Symbol.for('butlast_'), Symbol.for('x'), [Symbol.for('n'), 1]], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('x')]]]], [Symbol.for('i'), Symbol.for('n')]], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('>'), [Symbol.for('length'), Symbol.for('result')], 0]], [Symbol.for('pop-right!'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('result')]];
+butlast_.fsource = [Symbol.for('define'), [Symbol.for('butlast_'), Symbol.for('x'), [Symbol.for('n'), 1]], [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('list-copy'), Symbol.for('x')]], [Symbol.for('i'), Symbol.for('n')]], [Symbol.for('while'), [Symbol.for('and'), [Symbol.for('>'), Symbol.for('i'), 0], [Symbol.for('>'), [Symbol.for('length'), Symbol.for('result')], 0]], [Symbol.for('pop-right!'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('i'), [Symbol.for('-'), Symbol.for('i'), 1]]], Symbol.for('result')]];
 /**
  * Return a list where the last `n` conses have been omitted.
  * Changes the original list.
@@ -1885,7 +1907,7 @@ function dottedListSet_(lst, ...indicesAndValue) {
     }
 }
 exports.dottedListSet_ = dottedListSet_;
-dottedListSet_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-set_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('length'), Symbol.for('indices-and-value')], 2], [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('.'), Symbol.for('indices-and-value-1')], Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('lst')]]]], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), [Symbol.for('apply'), Symbol.for('dotted-list-set_'), [Symbol.for('array-ref'), Symbol.for('result'), Symbol.for('pos')], Symbol.for('indices-and-value-1')]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('append'), [Symbol.for('array-drop-right'), Symbol.for('lst'), 1], [Symbol.for('list'), [Symbol.for('dotted-list-set_'), [Symbol.for('array-last'), Symbol.for('lst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('-'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]]], [Symbol.for('unquote-splicing'), Symbol.for('indices-and-value-1')]]]]]]]]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('val')], Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('lst')]]]], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), Symbol.for('val')], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('append'), [Symbol.for('array-drop-right'), Symbol.for('lst'), 1], [Symbol.for('list'), [Symbol.for('dotted-list-set_'), [Symbol.for('array-last'), Symbol.for('lst')], [Symbol.for('-'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], Symbol.for('val')]]]]]]]];
+dottedListSet_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-set_'), Symbol.for('lst'), Symbol.for('.'), Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('>'), [Symbol.for('length'), Symbol.for('indices-and-value')], 2], [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('.'), Symbol.for('indices-and-value-1')], Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list-copy'), Symbol.for('lst')]], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), [Symbol.for('apply'), Symbol.for('dotted-list-set_'), [Symbol.for('array-ref'), Symbol.for('result'), Symbol.for('pos')], Symbol.for('indices-and-value-1')]], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('append'), [Symbol.for('array-drop-right'), Symbol.for('lst'), 1], [Symbol.for('list'), [Symbol.for('dotted-list-set_'), [Symbol.for('array-last'), Symbol.for('lst')], [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('-'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]]], [Symbol.for('unquote-splicing'), Symbol.for('indices-and-value-1')]]]]]]]]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('pos'), Symbol.for('val')], Symbol.for('indices-and-value')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list-copy'), Symbol.for('lst')]], [Symbol.for('array-set!'), Symbol.for('result'), Symbol.for('pos'), Symbol.for('val')], Symbol.for('result')], [Symbol.for('else'), [Symbol.for('append'), [Symbol.for('array-drop-right'), Symbol.for('lst'), 1], [Symbol.for('list'), [Symbol.for('dotted-list-set_'), [Symbol.for('array-last'), Symbol.for('lst')], [Symbol.for('-'), Symbol.for('pos'), [Symbol.for('-'), [Symbol.for('array-length'), Symbol.for('lst')], 2]], Symbol.for('val')]]]]]]]];
 /**
  * Set a dotted list position to a given value.
  * Modifies the original list.
@@ -2096,3 +2118,19 @@ function dottedListToList_(x) {
 }
 exports.dottedListToList_ = dottedListToList_;
 dottedListToList_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list->list_'), Symbol.for('x')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), [Symbol.for('dotted-list-head'), Symbol.for('x')]], [Symbol.for('unquote'), [Symbol.for('dotted-list-tail'), Symbol.for('x')]]]]];
+/**
+ * Convert an iterator to a list.
+ */
+function iteratorToList_(iterator) {
+    return [...iterator];
+}
+exports.iteratorToList_ = iteratorToList_;
+iteratorToList_.fsource = [Symbol.for('define'), [Symbol.for('iterator->list_'), Symbol.for('iterator')], [Symbol.for('iterator->array'), Symbol.for('iterator')]];
+iteratorToList_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [iterator] = exp.slice(1);
+        return [Symbol.for('iterator->array'), iterator];
+    };
+    f.ftype = 'macro';
+    return f;
+})();

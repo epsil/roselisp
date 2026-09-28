@@ -167,7 +167,7 @@ declare namespace hashClearX_ {
  */
 declare function hashKeys_(ht: any): any;
 declare namespace hashKeys_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
 }
 /**
@@ -179,7 +179,7 @@ declare namespace hashKeys_ {
  */
 declare function hashValues_(ht: any): any;
 declare namespace hashValues_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
 }
 /**
@@ -187,7 +187,7 @@ declare namespace hashValues_ {
  */
 declare function hashEntries_(ht: any): any;
 declare namespace hashEntries_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[][])[])[];
+    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
 }
 /**

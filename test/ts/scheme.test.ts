@@ -494,6 +494,13 @@ describe('list', (): any => {
   return it('(compile \'(list (list 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('list'), [Symbol.for('list'), 1]]]], '[[1]];']));
 });
 
+describe('list-copy', (): any => {
+  it('(list-copy \'(1 2 3))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('list-copy'), [Symbol.for('quote'), [1, 2, 3]]], [Symbol.for('quote'), [1, 2, 3]]]));
+  it('(let* ((lst \'(1 2 3)) (lst1 (list-copy lst))) (equal? lst lst1))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('let*'), [[Symbol.for('lst'), [Symbol.for('quote'), [1, 2, 3]]], [Symbol.for('lst1'), [Symbol.for('list-copy'), Symbol.for('lst')]]], [Symbol.for('equal?'), Symbol.for('lst'), Symbol.for('lst1')]], true]));
+  it('(let* ((lst \'(1 2 3)) (lst1 (list-copy lst))) (eq? lst lst1))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('let*'), [[Symbol.for('lst'), [Symbol.for('quote'), [1, 2, 3]]], [Symbol.for('lst1'), [Symbol.for('list-copy'), Symbol.for('lst')]]], [Symbol.for('eq?'), Symbol.for('lst'), Symbol.for('lst1')]], false]));
+  return it('(compile \'(list-copy lst))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('list-copy'), Symbol.for('lst')]]], '[...lst];']));
+});
+
 describe('append', (): any => {
   it('(compile \'(append))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('append')]]], '[];']));
   it('(compile \'(append foo))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('append'), Symbol.for('foo')]]], '[...foo];']));

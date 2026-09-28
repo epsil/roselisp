@@ -850,6 +850,20 @@ rest(x);"
  > (compile '(list (list 1)))
  "[[1]];"
 
+ :describe "list-copy"
+ > (list-copy '(1 2 3))
+ '(1 2 3)
+ > (let* ((lst '(1 2 3))
+          (lst1 (list-copy lst)))
+     (equal? lst lst1))
+ #t
+ > (let* ((lst '(1 2 3))
+          (lst1 (list-copy lst)))
+     (eq? lst lst1))
+ #f
+ > (compile '(list-copy lst))
+ "[...lst];"
+
  :describe "append"
  > (compile '(append))
  "[];"

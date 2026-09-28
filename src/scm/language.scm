@@ -60,7 +60,8 @@
                   array-take_
                   array-tenth_
                   array-third_
-                  array?_))
+                  array?_
+                  iterator->array_))
 (require (only-in "./constants"
                   default-language
                   false_
@@ -291,6 +292,7 @@
                   dotted-list-last-cdr_
                   dotted-list-last_
                   dotted-list-length_
+                  dotted-list-link_
                   dotted-list-ninth_
                   dotted-list-nth_
                   dotted-list-nthcdr_
@@ -303,7 +305,6 @@
                   dotted-list-sixth_
                   dotted-list-tail_
                   dotted-list-tenth_
-                  dotted-list-link_
                   dotted-list-third_
                   dotted-list?_
                   dotted-pair-cdr_
@@ -317,11 +318,13 @@
                   flatten_
                   fourth_
                   improper-list?_
+                  iterator->list_
                   last-cdr_
                   last-pair_
                   last_
                   length_
                   list->dotted-list_
+                  list-copy_
                   list-ref_
                   list-set!_
                   list-set_
@@ -4374,7 +4377,7 @@
   (define internal-symbols '())
   (define external-symbols '())
   (define referenced-symbols
-    `(,@symbols))
+    (list-copy symbols))
   (define current-module
     (new Module))
   (define seen '())
@@ -8120,6 +8123,8 @@
          (consp ,pair?_ (-> Any * Any))
          (const ,const_ (-> Any * Any))
          (constantly ,const_ (-> Any * Any))
+         (copy-array ,array-copy_ (-> Any * Any))
+         (copy-list ,list-copy_ (-> Any * Any))
          (current-environment ,current-environment_ (-> Any * Any))
          (curry ,curry (-> Any * Any))
          (curry-n ,curry-n (-> Any * Any))
@@ -8236,6 +8241,8 @@
          (intern ,string->symbol_ (-> Any * Any))
          (intersection ,intersection_ (-> Any * Any))
          (is-a? ,is-a?_ (-> Any * Any))
+         (iterator->array ,iterator->array_ (-> Any * Any))
+         (iterator->list ,iterator->list_ (-> Any * Any))
          (js ,js/raw_ (-> Any * Any))
          (js-field ,list-ref_ (-> Any * Any))
          (js-keys ,js/keys_ (-> Any * Any))
@@ -8367,6 +8374,7 @@
          (list ,list_ (-> Any * Any))
          (list* ,list-star_ (-> Any * Any))
          (list->dotted-list_ ,list->dotted-list_ (-> Any * Any))
+         (list-copy ,list-copy_ (-> Any * Any))
          (list-or-cons? ,pair-or-list?_ (-> Any * Any))
          (list-or-pair? ,pair-or-list?_ (-> Any * Any))
          (list-ref ,list-ref_ (-> Any * Any))

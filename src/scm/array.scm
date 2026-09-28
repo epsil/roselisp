@@ -292,6 +292,10 @@
    (else
     `(send ,arr sort))))
 
+;;; Convert an iterator to an array.
+(define-inline (iterator->array_ iterator)
+  `(,@iterator))
+
 (provide
   (rename-out (array-ref_ aget))
   (rename-out (array-ref_ aget_))
@@ -326,9 +330,10 @@
   array-seventh_
   array-sixth_
   array-slice_
-  array-sort_
   array-sort!_
+  array-sort_
   array-take_
   array-tenth_
   array-third_
-  array?_)
+  array?_
+  iterator->array_)

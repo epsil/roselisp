@@ -216,7 +216,7 @@
 ;;;
 ;;; [rkt:hash-keys]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-keys%29%29
 (define-inline (hash-keys_ ht)
-  `(,@(send ht keys)))
+  (iterator->list (send ht keys)))
 
 ;;; Return a list of all the values in a hash map.
 ;;;
@@ -224,11 +224,11 @@
 ;;;
 ;;; [rkt:hash-values]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-keys%29%29
 (define-inline (hash-values_ ht)
-  `(,@(send ht values)))
+  (iterator->list (send ht values)))
 
 ;;; Convert a hash map to a list of `(key value)` tuples.
 (define-inline (hash-entries_ ht)
-  `(,@(send ht entries)))
+  (iterator->list (send ht entries)))
 
 ;;; Convert a hash map to a list of `(key . value)` pairs.
 ;;;

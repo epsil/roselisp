@@ -658,7 +658,7 @@ function decompileForStatement(node: any, options: any = {}): any {
     let currentInit: any = (inits as any)[i];
     let currentInitExp: any = syntaxToDatum(currentInit);
     if (taggedListP(currentInitExp, Symbol.for('define')) || taggedListP(currentInitExp, Symbol.for('set!'))) {
-      currentInit = datumToSyntax(currentInit, [...currentInit.drop(1)]);
+      currentInit = datumToSyntax(currentInit, currentInit.drop(1));
       currentInitExp = syntaxToDatum(currentInit);
     }
     let currentUpdate: any = (updates as any)[i];

@@ -893,7 +893,7 @@
       (set! current-init
             (datum->syntax
              current-init
-             `(,@(send current-init drop 1))))
+             (send current-init drop 1)))
       (set! current-init-exp
             (syntax->datum current-init)))
     (define current-update

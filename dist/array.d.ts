@@ -302,4 +302,12 @@ declare namespace arraySortX_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
     var compilerMacro: any;
 }
-export { arrayRef_ as aget, arrayRef_ as aget_, arrayRef_ as aref, arraySet_ as arraySet, arraySet_ as aset, arraySet_ as aset_, arrayAt_, arrayConcat_, arrayCopy_, arrayDropRight_, arrayDrop_, arrayEighth_, arrayFifth_, arrayFirst_, arrayFourth_, arrayLast_, arrayLength_, arrayNinth_, arrayNlast_, arrayPopLeftX_, arrayPopRightX_, arrayPushLeftX_, arrayPushRightX_, arrayRef_, arrayRest_, arrayReverseX_, arrayReverse_, arraySecond_, arraySetX_, arraySet_, arraySeventh_, arraySixth_, arraySlice_, arraySort_, arraySortX_, arrayTake_, arrayTenth_, arrayThird_, arrayp_ };
+/**
+ * Convert an iterator to an array.
+ */
+declare function iteratorToArray_(iterator: any): any;
+declare namespace iteratorToArray_ {
+    var fsource: (symbol | (symbol | symbol[][])[])[];
+    var compilerMacro: any;
+}
+export { arrayRef_ as aget, arrayRef_ as aget_, arrayRef_ as aref, arraySet_ as arraySet, arraySet_ as aset, arraySet_ as aset_, arrayAt_, arrayConcat_, arrayCopy_, arrayDropRight_, arrayDrop_, arrayEighth_, arrayFifth_, arrayFirst_, arrayFourth_, arrayLast_, arrayLength_, arrayNinth_, arrayNlast_, arrayPopLeftX_, arrayPopRightX_, arrayPushLeftX_, arrayPushRightX_, arrayRef_, arrayRest_, arrayReverseX_, arrayReverse_, arraySecond_, arraySetX_, arraySet_, arraySeventh_, arraySixth_, arraySlice_, arraySortX_, arraySort_, arrayTake_, arrayTenth_, arrayThird_, arrayp_, iteratorToArray_ };

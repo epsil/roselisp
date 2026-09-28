@@ -94,7 +94,7 @@
   (define (g . args)
     (define indices '())
     (define complete-args
-      `(,@args))
+      (list-copy args))
     (define arg)
     (for ((i (range 0 (length args))))
       (set! arg (list-ref args i))

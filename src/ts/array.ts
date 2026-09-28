@@ -735,6 +735,24 @@ arraySortX_.compilerMacro = ((): any => {
   return f;
 })();
 
+/**
+ * Convert an iterator to an array.
+ */
+function iteratorToArray_(iterator: any): any {
+  return [...iterator];
+}
+
+iteratorToArray_.fsource = [Symbol.for('define'), [Symbol.for('iterator->array_'), Symbol.for('iterator')], [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), Symbol.for('iterator')]]]];
+
+iteratorToArray_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const [iterator]: any[] = exp.slice(1);
+    return [Symbol.for('quasiquote'), [[Symbol.for('unquote-splicing'), iterator]]];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 export {
   arrayRef_ as aget,
   arrayRef_ as aget_,
@@ -769,10 +787,11 @@ export {
   arraySeventh_,
   arraySixth_,
   arraySlice_,
-  arraySort_,
   arraySortX_,
+  arraySort_,
   arrayTake_,
   arrayTenth_,
   arrayThird_,
-  arrayp_
+  arrayp_,
+  iteratorToArray_
 };

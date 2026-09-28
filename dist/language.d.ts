@@ -87,7 +87,7 @@ declare namespace compileFileX {
  */
 declare function compileSyntax(stx: any, env: any, options?: any): any;
 declare namespace compileSyntax {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[])[])[])[][])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[][])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[])[])[];
 }
 /**
  * Evaluate a Lisp expression `exp`.
@@ -202,7 +202,7 @@ declare namespace macroexpand1 {
  */
 declare function macroexpandstar1(exp: any, env?: any): any;
 declare namespace macroexpandstar1 {
-    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[])[][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[];
 }
 /**
  * Expand the macro call `exp` in `env`, and keep

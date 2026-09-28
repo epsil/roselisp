@@ -820,7 +820,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-          lang-env))
+         lang-env))
   (oset! compilation-options :language-environment lang-env)
   (set! compilation-options
         (js/obj-append
@@ -1102,11 +1102,11 @@
          ((has-compiler-macro? f)
           (set! result
                 (compile-syntax
-                 (datum->syntax
+                 (apply-macro
+                  (compiler-macro f)
                   stx
-                  ((compiler-macro f) exp env))
-                 env
-                 options)))
+                  env)
+                 env options)))
          ;; Macro call.
          ((or (macro?_ f)
               (macro-type? op-type))
@@ -1672,7 +1672,7 @@
                    object
                    Object))
           '()
-           (list superclass)))
+          (list superclass)))
     (transfer-comments
      stx
      (datum->syntax
@@ -3163,7 +3163,7 @@
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-         'funcall))
+        'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -3400,7 +3400,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3488,7 +3488,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3693,7 +3693,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3892,19 +3892,38 @@
       (send env1 get-typed-value op))
     (when (or (macro?_ macro-f)
               (macro-type? typ))
-      (cond
-       ((or (syntax-transformer?_ macro-f)
-            (syntax-transformer-type?_ typ))
-        (define stx
-          (if (syntax? exp)
-              exp
-              (datum->syntax #f exp)))
-        (set! expansion
-              (funcall macro-f stx)))
-       (else
-        (set! expansion
-              (funcall macro-f exp1 env1))))
+      (set! expansion (apply-macro macro-f exp env))
       (set! expanded #t))))
+  (values expansion expanded))
+
+;;; Apply a macro to an expression.
+;;;
+;;; Handles syntax macros and regular macros.
+;;; The expression can be a syntax object or
+;;; an S-expression; the return value is of
+;;; the same type.
+(define (apply-macro macro-f exp (env #u) (typ #u))
+  (define exp1
+    (if (syntax? exp)
+        (syntax->datum exp)
+        exp))
+  (define env1
+    (or env
+        (current-environment_)
+        (empty-environment)))
+  (define expansion exp)
+  (cond
+   ((or (syntax-transformer?_ macro-f)
+        (syntax-transformer-type?_ typ))
+    (define stx
+      (if (syntax? exp)
+          exp
+          (datum->syntax #f exp)))
+    (set! expansion
+          (funcall macro-f stx)))
+   (else
+    (set! expansion
+          (funcall macro-f exp1 env1))))
   (cond
    ((and (syntax? exp)
          (not (syntax? expansion)))
@@ -3912,7 +3931,7 @@
    ((and (not (syntax? exp))
          (syntax? expansion))
     (set! expansion (syntax->datum expansion))))
-  (values expansion expanded))
+  expansion)
 
 ;;; Expand the macro call `exp` in `env`, and keep
 ;;; expanding the result for a total number of `n`
@@ -4350,7 +4369,7 @@
   (define env1
     (new LispEnvironment
          '()
-          env))
+         env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4466,7 +4485,7 @@
     (define env1
       (new LispEnvironment
            '()
-            env))
+           env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -5633,7 +5652,7 @@
       (define return-type
         (if is-constructor
             'Void
-             #u))
+            #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -6345,7 +6364,7 @@
               (plist-get_ options :fold))
              'right)
         'foldr
-         'foldl))
+        'foldl))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
@@ -6353,7 +6372,7 @@
     (if (undefined? identity)
         `(,fold (lambda ,(if (eq? fold 'foldr)
                              '(left right)
-                              '(right left))
+                             '(right left))
                   (js/op ,op left right))
                 ,(if (eq? fold 'foldr)
                      `(last ,args)
@@ -6363,7 +6382,7 @@
                      `(rest ,args)))
         `(,fold (lambda ,(if (eq? fold 'foldr)
                              '(left right)
-                              '(right left))
+                             '(right left))
                   (js/op ,op left right))
                 ,identity
                 ,args)))
@@ -7483,17 +7502,17 @@
                 this
                 (new LispEnvironment
                      '()
-                      parent))
+                     parent))
     (set-field! main-environment
                 this
                 (new LispEnvironment
                      '()
-                      (get-field require-environment this)))
+                     (get-field require-environment this)))
     (set-field! provide-environment
                 this
                 (new LispEnvironment
                      '()
-                      (get-field main-environment this)))
+                     (get-field main-environment this)))
     (set-field! compilation-options
                 this
                 (js/obj-append

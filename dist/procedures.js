@@ -175,7 +175,7 @@ function macrop_(f) {
 }
 exports.macrop = macrop_;
 exports.macrop_ = macrop_;
-macrop_.fsource = [Symbol.for('define'), [Symbol.for('macro?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('macro-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
+macrop_.fsource = [Symbol.for('define'), [Symbol.for('macro?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('f')], [Symbol.for('macro-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
 /**
  * Whether `f` is a syntax transformer.
  */
@@ -184,7 +184,7 @@ function syntaxTransformerP_(f) {
 }
 exports.syntaxTransformerP = syntaxTransformerP_;
 exports.syntaxTransformerP_ = syntaxTransformerP_;
-syntaxTransformerP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('function?'), Symbol.for('f')], [Symbol.for('syntax-transformer-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
+syntaxTransformerP_.fsource = [Symbol.for('define'), [Symbol.for('syntax-transformer?_'), Symbol.for('f')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('f')], [Symbol.for('syntax-transformer-type?_'), [Symbol.for('get-field'), Symbol.for('ftype'), Symbol.for('f')]]]];
 /**
  * Whether `x` is the type of a variable.
  */

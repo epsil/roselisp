@@ -67,12 +67,12 @@
 
 ;;; Whether `f` is a macro function.
 (define (macro?_ f)
-  (and (function? f)
+  (and (procedure? f)
        (macro-type?_ (get-field ftype f))))
 
 ;;; Whether `f` is a syntax transformer.
 (define (syntax-transformer?_ f)
-  (and (function? f)
+  (and (procedure? f)
        (syntax-transformer-type?_ (get-field ftype f))))
 
 ;;; Whether `x` is the type of a variable.

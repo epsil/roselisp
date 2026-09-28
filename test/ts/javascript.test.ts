@@ -11,6 +11,15 @@ import {
 
 testMacro.ftype = 'macro';
 
+describe('js/eval', (): any => {
+  it('(js/eval "1 + 1;")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/eval'), '1 + 1;'], 2]));
+  it('(compile \'(js/eval "1 + 1;"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1 + 1;']]], 'eval(\'1 + 1;\');']));
+  it('(compile \'(js/eval "1  +  1;"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1  +  1;']]], 'eval(\'1  +  1;\');']));
+  it('(compile \'(js/eval "1 + 1;") :to "javascript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1 + 1;']], Symbol.for(':to'), 'javascript'], 'eval(\'1 + 1;\');']));
+  it('(compile \'(js/eval "1 + 1;") :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/eval'), '1 + 1;']], Symbol.for(':to'), 'typescript'], 'eval(\'1 + 1;\');']));
+  return it('(compile \'(module m scheme (js/eval "1;")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('js/eval'), '1;']]]], 'eval(\'1;\');']));
+});
+
 describe('js/is-NaN', (): any => {
   it('(js/is-NaN NaN)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/is-NaN'), Symbol.for('NaN')], true]));
   it('(js/is-NaN 0)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/is-NaN'), 0], false]));
@@ -694,5 +703,10 @@ describe('js/statement-or-expression', (): any => {
 
 describe('js/raw', (): any => {
   it('(compile \'(js/raw "1"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/raw'), '1']]], '1']));
+  it('(js/raw "1 + 1;")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/raw'), '1 + 1;'], 2]));
+  it('(compile \'(js/raw "1 + 1;"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/raw'), '1 + 1;']]], '1 + 1;']));
+  it('(compile \'(js/raw "1  +  1;"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/raw'), '1  +  1;']]], '1  +  1;']));
+  it('(compile \'(js/raw "1 + 1;") :to "javascript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/raw'), '1 + 1;']], Symbol.for(':to'), 'javascript'], '1 + 1;']));
+  it('(compile \'(js/raw "1 + 1;") :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/raw'), '1 + 1;']], Symbol.for(':to'), 'typescript'], '1 + 1;']));
   return it('(compile \'(js/raw "function I(x) { return x; }"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/raw'), 'function I(x) { return x; }']]], 'function I(x) { return x; }']));
 });

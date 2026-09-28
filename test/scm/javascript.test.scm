@@ -11,6 +11,23 @@
 (test-macro
  :repl #t
 
+ :describe "js/eval"
+ > (js/eval "1 + 1;")
+ 2
+ > (compile '(js/eval "1 + 1;"))
+ "eval('1 + 1;');"
+ > (compile '(js/eval "1  +  1;"))
+ "eval('1  +  1;');"
+ > (compile '(js/eval "1 + 1;")
+            :to "javascript")
+ "eval('1 + 1;');"
+ > (compile '(js/eval "1 + 1;")
+            :to "typescript")
+ "eval('1 + 1;');"
+ > (compile '(module m scheme
+               (js/eval "1;")))
+ "eval('1;');"
+
  :describe "js/is-NaN"
  > (js/is-NaN NaN)
  #t
@@ -1186,5 +1203,17 @@ z;"
  :describe "js/raw"
  > (compile '(js/raw "1"))
  "1"
+ > (js/raw "1 + 1;")
+ 2
+ > (compile '(js/raw "1 + 1;"))
+ "1 + 1;"
+ > (compile '(js/raw "1  +  1;"))
+ "1  +  1;"
+ > (compile '(js/raw "1 + 1;")
+            :to "javascript")
+ "1 + 1;"
+ > (compile '(js/raw "1 + 1;")
+            :to "typescript")
+ "1 + 1;"
  > (compile '(js/raw "function I(x) { return x; }"))
  "function I(x) { return x; }")

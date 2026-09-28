@@ -761,6 +761,12 @@ prop;"
  "obj[fooBar()] = 'baz';"
 
  :describe "Dot"
+ > '|.|
+ '|.|
+ > (array-ref '(1 . 2) 1)
+ '|.|
+ > (compile '|.|)
+ "Symbol.for('.');"
  > (compile '(. map get "foo"))
  "map.get('foo');"
  > (compile '(.get map "foo"))
@@ -1465,6 +1471,35 @@ export {
   ...fooBar,
   baz
 };"
+
+ :describe "parse"
+ > (parse "foo")
+ 'foo
+ > (parse "(foo)")
+ '(foo)
+
+ :describe "interpret"
+ > (interpret 1)
+ 1
+ > (interpret ''foo)
+ 'foo
+ > (interpret '(second '(1 . (2 . ())))
+              :fdottedlists #t)
+ 2
+ > (compile '(module m scheme
+               (interpret 1)))
+ "import {
+  interpret
+} from 'roselisp';
+
+interpret(1);"
+ > (compile '(module m scheme
+               (eval 1)))
+ "import {
+  interpret
+} from 'roselisp';
+
+interpret(1);"
 
  :describe "compile"
  > (compile #t)

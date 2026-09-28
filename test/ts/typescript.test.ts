@@ -30,3 +30,8 @@ describe('ts/as', (): any => {
   it('(compile \'((ts/as (lambda (x) x) Any) 1) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [[Symbol.for('ts/as'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')], Symbol.for('Any')], 1]], Symbol.for(':to'), 'typescript'], '((x: any): any => x as any)(1);']));
   return it('(compile \'(lambda (x) (ts/as (send x foo) Any)) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('ts/as'), [Symbol.for('send'), Symbol.for('x'), Symbol.for('foo')], Symbol.for('Any')]]], Symbol.for(':to'), 'typescript'], '(x: any): any => x.foo() as any;']));
 });
+
+describe('ts/raw', (): any => {
+  it('(compile \'(ts/raw "x as any;") :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ts/raw'), 'x as any;']], Symbol.for(':to'), 'typescript'], 'x as any;']));
+  return it('(compile \'(ts/raw "function I(x: any): any { return x; }") :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('ts/raw'), 'function I(x: any): any { return x; }']], Symbol.for(':to'), 'typescript'], 'function I(x: any): any { return x; }']));
+});

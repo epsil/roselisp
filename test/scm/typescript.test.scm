@@ -54,4 +54,12 @@
  "((x: any): any => x as any)(1);"
  > (compile '(lambda (x) (ts/as (send x foo) Any))
             :to "typescript")
- "(x: any): any => x.foo() as any;")
+ "(x: any): any => x.foo() as any;"
+
+ :describe "ts/raw"
+ > (compile '(ts/raw "x as any;")
+            :to "typescript")
+ "x as any;"
+ > (compile '(ts/raw "function I(x: any): any { return x; }")
+            :to "typescript")
+ "function I(x: any): any { return x; }")

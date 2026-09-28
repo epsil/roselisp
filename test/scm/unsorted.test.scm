@@ -67,68 +67,6 @@ myPlus.compilerMacro = (() => {
 
 let x = 1 + 2;"
 
- :describe "js/eval"
- > (js/eval "1 + 1;")
- 2
- > (compile '(js/eval "1 + 1;"))
- "eval('1 + 1;');"
- > (compile '(js/eval "1  +  1;"))
- "eval('1  +  1;');"
- > (compile '(js/eval "1 + 1;")
-            :to "javascript")
- "eval('1 + 1;');"
- > (compile '(js/eval "1 + 1;")
-            :to "typescript")
- "eval('1 + 1;');"
-
- :describe "js/raw"
- > (js/raw "1 + 1;")
- 2
- > (compile '(js/raw "1 + 1;"))
- "1 + 1;"
- > (compile '(js/raw "1  +  1;"))
- "1  +  1;"
- > (compile '(js/raw "1 + 1;")
-            :to "javascript")
- "1 + 1;"
- > (compile '(js/raw "1 + 1;")
-            :to "typescript")
- "1 + 1;"
-
- :describe "interpret"
- > (interpret 1)
- 1
- > (interpret ''foo)
- 'foo
- > (interpret '(second '(1 . (2 . ())))
-              :fdottedlists #t)
- 2
- > (compile '(module m scheme
-               (interpret 1)))
- "import {
-  interpret
-} from 'roselisp';
-
-interpret(1);"
- > (compile '(module m scheme
-               (eval 1)))
- "import {
-  interpret
-} from 'roselisp';
-
-interpret(1);"
- > (compile '(module m scheme
-               (js/eval "1;")))
- "eval('1;');"
-
- :describe "Dot"
- > '|.|
- '|.|
- > (array-ref '(1 . 2) 1)
- '|.|
- > (compile '|.|)
- "Symbol.for('.');"
-
  :describe "Assignment operators"
  xit> (compile '(js/+= x y))
  "x += y;"
@@ -163,10 +101,6 @@ let y = b;
 x + y[0];"
 
  :describe "parse"
- > (parse "foo")
- 'foo
- > (parse "(foo)")
- '(foo)
  xit> (parse "foo;" :as 'javascript)
  (js/obj
   "type"

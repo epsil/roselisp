@@ -472,6 +472,9 @@ describe('oset!', (): any => {
 });
 
 describe('Dot', (): any => {
+  it('\'.', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('quote'), Symbol.for('.')], [Symbol.for('quote'), Symbol.for('.')]]));
+  it('(array-ref \'(1 . 2) 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-ref'), [Symbol.for('quote'), [1, Symbol.for('.'), 2]], 1], [Symbol.for('quote'), Symbol.for('.')]]));
+  it('(compile \'.)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), Symbol.for('.')]], 'Symbol.for(\'.\');']));
   it('(compile \'(. map get "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('.'), Symbol.for('map'), Symbol.for('get'), 'foo']]], 'map.get(\'foo\');']));
   it('(compile \'(.get map "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('.get'), Symbol.for('map'), 'foo']]], 'map.get(\'foo\');']));
   return it('(compile \'(.-length arr))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('.-length'), Symbol.for('arr')]]], 'arr.length;']));
@@ -857,6 +860,27 @@ export {
   ...fooBar,
   baz
 };`]));
+});
+
+describe('parse', (): any => {
+  it('(parse "foo")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('parse'), 'foo'], [Symbol.for('quote'), Symbol.for('foo')]]));
+  return it('(parse "(foo)")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('parse'), '(foo)'], [Symbol.for('quote'), [Symbol.for('foo')]]]));
+});
+
+describe('interpret', (): any => {
+  it('(interpret 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), 1], 1]));
+  it('(interpret \'\'foo)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), [Symbol.for('quote'), [Symbol.for('quote'), Symbol.for('foo')]]], [Symbol.for('quote'), Symbol.for('foo')]]));
+  it('(interpret \'(second \'(1 . (2 . ()))) :fdottedlists #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('interpret'), [Symbol.for('quote'), [Symbol.for('second'), [Symbol.for('quote'), [1, Symbol.for('.'), [2, Symbol.for('.'), []]]]]], Symbol.for(':fdottedlists'), true], 2]));
+  it('(compile \'(module m scheme (interpret 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('interpret'), 1]]]], `import {
+  interpret
+} from 'roselisp';
+
+interpret(1);`]));
+  return it('(compile \'(module m scheme (eval 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('eval'), 1]]]], `import {
+  interpret
+} from 'roselisp';
+
+interpret(1);`]));
 });
 
 describe('compile', (): any => {

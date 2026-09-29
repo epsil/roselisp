@@ -195,4 +195,12 @@ declare function makeArityFunction(fun: any, n?: any, arrow?: any): any;
  * Returns other values as-is.
  */
 declare function unwrapQuoteExpression(exp: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP };
+/**
+ * Copy elements from the list `source` to the list `dest`
+ * so that the two become equal. Modifies `dest` in place.
+ * Only the beginning of `dest` is modified; the rest is
+ * assumed to be equal to that of `source`. Returns the
+ * modified `dest` list.
+ */
+declare function copyIntoArrayX(source: any, dest: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, copyIntoArrayX, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP };

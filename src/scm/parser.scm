@@ -219,9 +219,7 @@
       (("pipe")
        (cond
         ((>= pos len)
-         (push-right! result (new SymbolToken buffer))
-         (set! buffer "")
-         (set! state "read"))
+         (error "eof"))
         (else
          (set! char (list-ref str pos))
          (case char
@@ -236,9 +234,7 @@
       (("string")
        (cond
         ((>= pos len)
-         (push-right! result (new StringToken buffer))
-         (set! buffer "")
-         (set! state "read"))
+         (error "eof"))
         (else
          (set! char (list-ref str pos))
          (case char
@@ -447,6 +443,13 @@
         (set! current-val-node #u))
        ;; Closing parenthesis.
        ((eq? token-string ")")
+        (when (null? stack)
+          ;; If we are here, then there are unmatched closing
+          ;; parentheses at the end of the expession. However, most
+          ;; reader implementations seem quite error-tolerant when it
+          ;; comes to this particular scenario, so instead of throwing
+          ;; an error we perform an early return.
+          (return current-exp-node))
         (define entry
           (pop-right! stack))
         (set!-values (current-exp
@@ -486,6 +489,8 @@
       (set!-values (node comments)
                    (attach-comments exp comments options))
       (update! exp node))))
+  (unless (null? stack)
+    (error "eof"))
   current-exp-node)
 
 ;;; Take the array of tokens produced by `tokenize` and make a

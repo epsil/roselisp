@@ -16,7 +16,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unwrapQuoteExpression = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.validJsCasingStyleP = exports.unwrapQuoteExpression = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.copyIntoArrayX = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
 const [selfEvaluatingP, buildList, keywordp] = (() => {
@@ -892,3 +892,25 @@ function unwrapQuoteExpression(exp) {
     }
 }
 exports.unwrapQuoteExpression = unwrapQuoteExpression;
+/**
+ * Copy elements from the list `source` to the list `dest`
+ * so that the two become equal. Modifies `dest` in place.
+ * Only the beginning of `dest` is modified; the rest is
+ * assumed to be equal to that of `source`. Returns the
+ * modified `dest` list.
+ */
+function copyIntoArrayX(source, dest) {
+    // Remove extraneous elements.
+    while (dest.length > source.length) {
+        dest.shift();
+    }
+    // Replace the first element if necessary.
+    if (!(Array.isArray(dest) && (dest.length === 0))) {
+        if (dest[0] !== source[0]) {
+            dest.shift();
+            dest.unshift(source[0]);
+        }
+    }
+    return dest;
+}
+exports.copyIntoArrayX = copyIntoArrayX;

@@ -15,6 +15,7 @@
                   sexp))
 (require (only-in "./test-util"
                   assert-equal
+                  assert-throws
                   test-macro))
 
 (declare-macro test-macro)
@@ -331,6 +332,26 @@ test"
  '(quasiquote ((quote (quote (quote (unquote exp))))))
  > (read "(define foo `(,bar))")
  '(define foo (quasiquote ((unquote bar))))
+ ;; By convention, `read` is somewhat error-tolerant.
+ ;; Additional closing parentheses pose no issue.
+ > (read "())")
+ '()
+ ;; Missing closing parentheses, on the other hand,
+ ;; should cause it to throw.
+ > (it "(read \"(\")"
+       (assert-throws
+        (lambda ()
+          (read "("))))
+ ;; Unterminated strings are an error.
+ > (it "(read \"\\\"foo\")"
+       (assert-throws
+        (lambda ()
+          (read "\"foo"))))
+ ;; Unterminated symbols are an error.
+ > (it "(read \"|\")"
+       (assert-throws
+        (lambda ()
+          (read "|"))))
 
  :describe "read-syntax"
  > (syntax->datum

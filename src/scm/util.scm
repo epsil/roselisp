@@ -772,12 +772,29 @@
    (else
     exp)))
 
+;;; Copy elements from the list `source` to the list `dest`
+;;; so that the two become equal. Modifies `dest` in place.
+;;; Only the beginning of `dest` is modified; the rest is
+;;; assumed to be equal to that of `source`. Returns the
+;;; modified `dest` list.
+(define (copy-into-array! source dest)
+  ;; Remove extraneous elements.
+  (while (> (length dest) (length source))
+    (pop-left! dest))
+  ;; Replace the first element if necessary.
+  (unless (null? dest)
+    (unless (eq? (first dest) (first source))
+      (pop-left! dest)
+      (push-left dest (first source))))
+  dest)
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
   begin-wrap
   begin-wrap-smart
   colon-form?
+  copy-into-array!
   count-tree
   define->define-macro
   define-generic

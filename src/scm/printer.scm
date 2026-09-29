@@ -212,16 +212,17 @@
 (define (attach-comments result node (options (js/obj)))
   (define comments-option
     (oget options :comments))
+  (unless comments-option
+    (return result))
   (define comments
     (get-estree-field "comments" node))
+  (when (or (not comments)
+            (null? comments))
+    (return result))
   (define code
     (doc-value-string result))
   (define leading-comments "")
   (define trailing-comments "")
-  (when (or (eq? comments-option #f)
-            (not comments)
-            (= (length comments) 0))
-    (return result))
   (for ((i (range 0 (length comments))))
     (define comment
       (list-ref comments i))
@@ -275,7 +276,7 @@
              trailing-comment)))))
   (group
    (list leading-comments
-         code
+         result
          trailing-comments)
    (js/obj :should-break #t
            :has-comments #t)))

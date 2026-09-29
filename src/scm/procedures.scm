@@ -831,8 +831,16 @@
 ;;;
 ;;; [rkt:error]: https://docs.racket-lang.org/reference/exns.html#%28def._%28%28quote._~23~25kernel%29._error%29%29
 ;;; [cl:error]: http://clhs.lisp.se/Body/f_error.htm
-(define-inline (error_ (arg #u))
-  (throw (new Error arg)))
+(define (error_ . args)
+  (throw (apply make-error args)))
+
+;;; Compiler macro for `(error ...)` expressions.
+(define-compiler-macro (error_ &rest args)
+  `(throw (make-error ,@args)))
+
+;;; Make an error.
+(define-inline (make-error_ . args)
+  (new/apply Error args))
 
 ;;; Get the type of a value.
 ;;;
@@ -1013,6 +1021,7 @@
   lte_
   macro-type?_
   macro?_
+  make-error_
   map_
   member?_
   member_

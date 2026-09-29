@@ -598,7 +598,7 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
 result;`]));
 });
 
-describe('with-gensyms', (): any => it('(compile \'(with-gensyms (x) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('with-gensyms'), [Symbol.for('x')], Symbol.for('x')]]], `let x = Symbol('g');
+describe('with-gensyms', (): any => it('(compile \'(with-gensyms (x) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('with-gensyms'), [Symbol.for('x')], Symbol.for('x')]]], `let x = Symbol('x');
 
 x;`])));
 

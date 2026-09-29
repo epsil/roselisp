@@ -22,7 +22,7 @@ import {
   taggedListP
 } from './util';
 
-const [equalp, keywordp]: any[] = ((): any => {
+const [equalp, keywordp, makeError]: any[] = ((): any => {
   function equalp_(x: any, y: any): any {
     if (x === y) {
       return true;
@@ -77,7 +77,10 @@ const [equalp, keywordp]: any[] = ((): any => {
   function keywordp_(obj: any): any {
     return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
   }
-  return [equalp_, keywordp_];
+  function makeError_(...args: any[]): any {
+    return new Error(...args);
+  }
+  return [equalp_, keywordp_, makeError_];
 })();
 
 /**
@@ -1558,19 +1561,37 @@ display_.compilerMacro = ((): any => {
  * [rkt:error]: https://docs.racket-lang.org/reference/exns.html#%28def._%28%28quote._~23~25kernel%29._error%29%29
  * [cl:error]: http://clhs.lisp.se/Body/f_error.htm
  */
-function error_(arg: any = undefined): any {
-  throw new Error(arg);
+function error_(...args: any[]): any {
+  throw makeError(...args);
 }
 
-error_.fsource = [Symbol.for('define'), [Symbol.for('error_'), [Symbol.for('arg'), undefined]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('Error'), Symbol.for('arg')]]];
+error_.fsource = [Symbol.for('define'), [Symbol.for('error_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('throw'), [Symbol.for('apply'), Symbol.for('make-error'), Symbol.for('args')]]];
 
+/**
+ * Compiler macro for `(error ...)` expressions.
+ */
 error_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
-    let [arg]: any[] = exp.slice(1);
-    if (arg === undefined) {
-      arg = undefined;
-    }
-    return [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('Error'), arg]];
+    const args: any = exp.slice(1);
+    return [Symbol.for('throw'), [Symbol.for('make-error'), ...args]];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
+ * Make an error.
+ */
+function makeError_(...args: any[]): any {
+  return new Error(...args);
+}
+
+makeError_.fsource = [Symbol.for('define'), [Symbol.for('make-error_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('new/apply'), Symbol.for('Error'), Symbol.for('args')]];
+
+makeError_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const args: any = exp.slice(1);
+    return [Symbol.for('new/apply'), Symbol.for('Error'), [Symbol.for('list'), ...args]];
   };
   f.ftype = 'macro';
   return f;
@@ -1824,6 +1845,7 @@ export {
   lte_,
   macroTypeP_,
   macrop_,
+  makeError_,
   map_,
   memberp_,
   member_,

@@ -1008,7 +1008,7 @@ result;"
  :describe "with-gensyms"
  > (compile '(with-gensyms (x)
                            x))
- "let x = Symbol('g');
+ "let x = Symbol('x');
 
 x;"
 

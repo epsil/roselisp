@@ -21,6 +21,7 @@ import {
 
 import {
   assertEqual,
+  assertThrows,
   testMacro
 } from './test-util';
 
@@ -163,7 +164,11 @@ test`));
   it('(read "`(\',exp)")', (): any => assertEqual(read('`(\',exp)'), [Symbol.for('quasiquote'), [[Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('exp')]]]]));
   it('(read "`(\'\',exp)")', (): any => assertEqual(read('`(\'\',exp)'), [Symbol.for('quasiquote'), [[Symbol.for('quote'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('exp')]]]]]));
   it('(read "`(\'\'\',exp)")', (): any => assertEqual(read('`(\'\'\',exp)'), [Symbol.for('quasiquote'), [[Symbol.for('quote'), [Symbol.for('quote'), [Symbol.for('quote'), [Symbol.for('unquote'), Symbol.for('exp')]]]]]]));
-  return it('(read "(define foo `(,bar))")', (): any => assertEqual(read('(define foo `(,bar))'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('bar')]]]]));
+  it('(read "(define foo `(,bar))")', (): any => assertEqual(read('(define foo `(,bar))'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), Symbol.for('bar')]]]]));
+  it('(read "())")', (): any => assertEqual(read('())'), []));
+  it('(read "(")', (): any => assertThrows((): any => read('(')));
+  it('(read "\\"foo")', (): any => assertThrows((): any => read('"foo')));
+  return it('(read "|")', (): any => assertThrows((): any => read('|')));
 });
 
 describe('read-syntax', (): any => {

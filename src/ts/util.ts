@@ -860,12 +860,35 @@ function unwrapQuoteExpression(exp: any): any {
   }
 }
 
+/**
+ * Copy elements from the list `source` to the list `dest`
+ * so that the two become equal. Modifies `dest` in place.
+ * Only the beginning of `dest` is modified; the rest is
+ * assumed to be equal to that of `source`. Returns the
+ * modified `dest` list.
+ */
+function copyIntoArrayX(source: any, dest: any): any {
+  // Remove extraneous elements.
+  while (dest.length > source.length) {
+    dest.shift();
+  }
+  // Replace the first element if necessary.
+  if (!(Array.isArray(dest) && (dest.length === 0))) {
+    if (dest[0] !== source[0]) {
+      dest.shift();
+      dest.unshift(source[0]);
+    }
+  }
+  return dest;
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
   beginWrap,
   beginWrapSmart,
   colonFormP,
+  copyIntoArrayX,
   countTree,
   defineToDefineMacro,
   defineGeneric,

@@ -471,6 +471,7 @@
                   lte_
                   macro-type?
                   macro?_
+                  make-error_
                   map_
                   member?_
                   member_
@@ -8392,6 +8393,7 @@
          (macroexpand*-1 ,macroexpand*-1 (-> Any * Any))
          (macroexpand-1 ,macroexpand-1 (-> Any * Any))
          (make ,js/new_ (-> Any * Any))
+         (make-error ,make-error_ (-> Any * Any))
          (make-hash ,make-hash_ (-> Any * Any))
          (make-list ,make-list_ (-> Any * Any))
          (make-object ,js/new_ (-> Any * Any))

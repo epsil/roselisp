@@ -53,133 +53,221 @@ import {
   read
 } from './parser';
 
+import {
+  copyIntoArrayX
+} from './util';
+
 withEnvironment.ftype = 'macro';
 
 /**
- * REPL prompt.
+ * REPL class.
+ *
+ * Encapsulates a [`readline`][node:readline] instance that reads
+ * from standard input.
+ *
+ * [node:readline]: https://nodejs.org/api/readline.html
  */
-const replPrompt: any = '> ';
+class REPL {
+  /**
+   * REPL prompt.
+   */
+  private prompt: any = '> ';
 
-/**
- * Message displayed when starting the REPL.
- */
-const initialReplMessage: any = ';; Roselisp version ' + version + '.\n' +
-  ';; Type ,h for help and ,q to quit.';
+  /**
+   * REPL state.
+   */
+  private state: any = 'prompt';
 
-/**
- * Help message displayed by the REPL's `help` command.
- */
-const replHelpMessage: any = `Enter an S-expression to evaluate it.
-Use the up and down keys to access previous expressions.
+  /**
+   * REPL user input.
+   */
+  private input: any = '';
 
-Type ,q to quit.`;
+  /**
+   * REPL history.
+   *
+   * A list of strings. The latest entry is stored
+   * at the beginning of the list.
+   */
+  private history: any = [];
 
-/**
- * Read utility.
- */
-function r(input: any): any {
-  return read('(' + input + ')');
-}
+  /**
+   * Flag for printing values.
+   */
+  private printFlag: any = true;
 
-/**
- * Eval utility.
- */
-function e(input: any, env: any = makeInteractiveEnvironment()): any {
-  return input.map((exp: any): any => {
-    let result: any = undefined;
+  /**
+   * Flag for quitting.
+   */
+  private quitFlag: any = false;
+
+  /**
+   * `readline` instance.
+   */
+  private rl: any = undefined;
+
+  /**
+   * `readline` history.
+   */
+  private rlHistory: any = [];
+
+  /**
+   * The REPL environment.
+   */
+  private env: any;
+
+  /**
+   * Message displayed when starting the REPL.
+   */
+  private startupMessage: any = ';; Roselisp version ' + version + '.\n' +
+    ';; Type ,h for help and ,q to quit.';
+
+  /**
+   * Help message displayed by the REPL's `help` command.
+   */
+  private helpMessage: any = `;; Enter an S-expression to evaluate it.
+;; Use the up and down keys to access previous expressions.
+;;
+;; Type ,q to quit.`;
+
+  /**
+   * Create a new REPL.
+   */
+  constructor() {
+    this.env = makeInteractiveEnvironment({
+      help: (): any => {
+        this.printFlag = false;
+        return console.log(this.helpMessage);
+      },
+      quit: (): any => {
+        this.printFlag = false;
+        return this.quitFlag = true;
+      }
+    });
+  }
+
+  /**
+   * Start the REPL.
+   */
+  start(): any {
+    // Initialize the `readline` instance.
+    this.rl = readline.createInterface({
+      input: stdin,
+      output: stdout
+    });
+    this.rl.on('line', (input: any): any => withEnvironmentF(this.env, (): any => {
+      this.printFlag = true;
+      if (this.state === 'read') {
+        this.input = this.input + '\n' +
+          input;
+        this.state = 'prompt';
+      } else {
+        this.input = input;
+      }
+      let result: any = this.rep(this.input, this.env);
+      if (this.quitFlag) {
+        return this.rl.close();
+      } else if (this.state === 'read') {
+        return this.readLine();
+      } else {
+        if (this.printFlag) {
+          console.log(result);
+        }
+        return this.readLine();
+      }
+    }));
+    this.rl.on('history', (x: any): any => this.rlHistory = x);
+    // Start the read--eval--print loop.
+    this.printStartupMessage();
+    return this.readLine();
+  }
+
+  /**
+   * Read--eval--print method.
+   */
+  rep(input: any, env: any = this.env): any {
+    // Ignore leading whitespace.
+    if (input.match(/^\s*$/)) {
+      this.state = 'read';
+      return '';
+    }
+    // Parse user input into expressions. Note the plural: we allow
+    // for multiple expressions to be entered at a single prompt,
+    // so that what is processed here is not a single expression,
+    // but rather a list of expressions.
+    let parsedExpressions: any = [];
     try {
-      result = eval_(exp, env);
+      parsedExpressions = read('(' + input + ')');
     } catch (err) {
       if (err instanceof Error) {
-        console.log(err);
+        if (err.message === 'eof') {
+          // If we are reading a multi-line expression,
+          // then continue listening for user input.
+          this.state = 'read';
+          return '';
+        } else {
+          throw err;
+        }
       } else {
         throw err;
       }
     }
-    return result;
-  });
-}
-
-/**
- * Read--Eval utility.
- */
-function re(input: any, env: any = makeInteractiveEnvironment()): any {
-  return e(r(input), env);
-}
-
-/**
- * Print utility.
- */
-function p(input: any): any {
-  return input.map((printSexpAsExpression.length === 1) ? printSexpAsExpression : (x: any): any => printSexpAsExpression(x)).join('\n');
-}
-
-/**
- * Read--Eval--Print utility.
- */
-function rep(input: any, env: any = makeInteractiveEnvironment()): any {
-  return p(re(input, env));
-}
-
-/**
- * Start a simple REPL.
- *
- * The REPL reads from standard input using Node's
- * [`readline`][node:readline] module.
- *
- * [node:readline]: https://nodejs.org/api/readline.html
- */
-
-function repl(): void {
-  const rl: any = readline.createInterface({
-    input: stdin,
-    output: stdout
-  });
-  let printFlag: any = true;
-  let quitFlag: any = false;
-  function help(): any {
-    printFlag = false;
-    return console.log(replHelpMessage);
-  }
-  function quitx(): any {
-    printFlag = false;
-    quitFlag = true;
-    return rl.close();
-  }
-  const interactiveEnv: any = makeInteractiveEnvironment({
-    help,
-    quit: quitx
-  });
-  // Read-eval-print loop
-  function loopF(...args: any[]): any {
-    function callback(x: any): any {
-      return withEnvironmentF(interactiveEnv, (): any => {
-        // Read (R), Evaluate (E), Print (P).
-        printFlag = true;
-        let result: any = p(e(rewriteExpression(r(x)), interactiveEnv));
-        if (printFlag) {
-          console.log(result);
+    /**
+     * Update the REPL history.
+     */
+    this.history.unshift(input);
+    // Synchronize the `readline` instance's history with the
+    // REPL history. This is needed in order to handle multi-line
+    // expressions correctly, because otherwise the `readline`
+    // instance will create one history entry per line.
+    copyIntoArrayX(this.history, this.rlHistory);
+    // Rewrite the expressions slightly in order to handle REPL
+    // shortcuts such as `,h` and `,q`.
+    const rewrittenExpressions: any = rewriteExpressions(parsedExpressions);
+    // Evaluate the expressions one by one, producing a list
+    // of values.
+    const evaluatedExpressions: any = rewrittenExpressions.map((exp: any): any => {
+      let result: any = undefined;
+      if (!this.quitFlag) {
+        try {
+          result = eval_(exp, env);
+        } catch (err) {
+          if (err instanceof Error) {
+            console.log(err);
+          } else {
+            throw err;
+          }
         }
-        if (!quitFlag) {
-          return loopF();
-        }
-      });
+      }
+      return result;
+    });
+    // Continue unless the user has quit. If the user has quit,
+    // the return value is just the empty string.
+    let result: any = '';
+    if (!this.quitFlag) {
+      // Print the values, producing a list of value strings.
+      const printedExpressions: any = evaluatedExpressions.map((printSexpAsExpression.length === 1) ? printSexpAsExpression : (x: any): any => printSexpAsExpression(x));
+      // Concatenate the value strings into a single string,
+      // with each value string on its own line.
+      result = printedExpressions.join('\n');
     }
-    return rl.question(replPrompt, callback);
+    return result;
   }
-  console.log(initialReplMessage);
-  loopF();
-}
 
-/**
- * Make an environment for the REPL.
- */
-function makeInteractiveEnvironment(options: any = {}): any {
-  const help_: any = options['help'];
-  const quit_: any = options['quit'];
-  const parentEnv: any = new LispEnvironment([[Symbol.for('exit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('load'), load_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]], langEnvironment);
-  const env: any = new LispEnvironment([], parentEnv);
-  return env;
+  /**
+   * Read a line of user input.
+   */
+  private readLine(): any {
+    this.rl.setPrompt((this.state === 'read') ? '' : this.prompt);
+    return this.rl.prompt();
+  }
+
+  /**
+   * Print startup message.
+   */
+  private printStartupMessage(): any {
+    return console.log(this.startupMessage);
+  }
 }
 
 /**
@@ -197,17 +285,10 @@ function quitCmdP(exp: any): any {
 }
 
 /**
- * Print a value.
- */
-function printValue(x: any, options: any = {}): any {
-  return console.log(printSexpAsExpression(x, options));
-}
-
-/**
  * Rewrite `(unquote ...)` expressions to regular
  * function calls.
  */
-function rewriteExpression(exp: any): any {
+function rewriteExpressions(exp: any): any {
   if (Array.isArray(exp) && (exp.length >= 1) && Array.isArray(exp[0]) && (exp[0].length === 2) && (exp[0][0] === Symbol.for('unquote'))) {
     let [[, x], ...y]: any[] = exp;
     if (x === Symbol.for('h')) {
@@ -221,9 +302,34 @@ function rewriteExpression(exp: any): any {
   }
 }
 
+/**
+ * Make an environment for the REPL.
+ */
+function makeInteractiveEnvironment(options: any = {}): any {
+  const help_: any = options['help'];
+  const quit_: any = options['quit'];
+  const parentEnv: any = new LispEnvironment([[Symbol.for('exit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('load'), load_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]], langEnvironment);
+  const env: any = new LispEnvironment([], parentEnv);
+  return env;
+}
+
+/**
+ * Read--eval--print function.
+ */
+function rep(input: any): any {
+  return new REPL().rep(input);
+}
+
+/**
+ * Read--eval--print--loop function.
+ */
+
+function repl(): void {
+  new REPL().start();
+}
+
 export {
-  r,
-  re,
+  REPL,
   rep,
   repl
 };

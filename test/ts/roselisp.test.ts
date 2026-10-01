@@ -333,7 +333,8 @@ let x = 1;
 
 let bar = foo(Symbol.for('x'));`])));
 
-describe('define-inline', (): any => it('(compile \'(define-inline (my-plus x y) (+ x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-inline'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], `function myPlus(x, y) {
+describe('define-inline', (): any => {
+  it('(compile \'(define-inline (my-plus x y) (+ x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-inline'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], `function myPlus(x, y) {
   return x + y;
 }
 
@@ -344,7 +345,20 @@ myPlus.compilerMacro = (() => {
   };
   f.ftype = 'macro';
   return f;
-})();`])));
+})();`]));
+  return it('(compile \'(define-inline (my-plus . args) (foldl (lambda (x y) (+ x y)) args)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-inline'), [Symbol.for('my-plus'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], Symbol.for('args')]]]], `function myPlus(...args) {
+  return undefined.reduce((y, x) => x + y, args);
+}
+
+myPlus.compilerMacro = (() => {
+  let f = (exp, env) => {
+    let args = exp.slice(1);
+    return [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), ...args]];
+  };
+  f.ftype = 'macro';
+  return f;
+})();`]));
+});
 
 describe('define-subst', (): any => it('(compile \'(define-subst (my-plus x y) (+ x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-subst'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]]]], `function myPlus(x, y) {
   return x + y;
@@ -364,31 +378,6 @@ describe('syntax-macro', (): any => it('(compile \'(syntax-macro (x y) `(+ ,x ,y
 f.ftype = [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')];
 
 f;`])));
-
-describe('declare', (): any => {
-  it('(compile \'(define (foo x) (declare (ftype "macro")) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], `function foo(x) {
-  return x;
-}
-
-foo.ftype = 'macro';`]));
-  it('(compile \'(lambda (x) (declare (ftype "macro")) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('x')]]], `let f = x => x;
-
-f.ftype = 'macro';
-
-f;`]));
-  return it('(compile \'(begin (define (my-plus x y) (+ x y 0)) (declare my-plus (compiler-macro (macro (x y) `(+ ,x ,y))))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('my-plus'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y'), 0]], [Symbol.for('declare'), Symbol.for('my-plus'), [Symbol.for('compiler-macro'), [Symbol.for('macro'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('quasiquote'), [Symbol.for('+'), [Symbol.for('unquote'), Symbol.for('x')], [Symbol.for('unquote'), Symbol.for('y')]]]]]]]]], `function myPlus(x, y) {
-  return x + y + 0;
-}
-
-myPlus.compilerMacro = (() => {
-  let f = (exp, env) => {
-    let [x, y] = exp.slice(1);
-    return [Symbol.for('+'), x, y];
-  };
-  f.ftype = 'macro';
-  return f;
-})();`]));
-});
 
 describe('let-fields', (): any => it('(compile \'(let-fields (((prop) obj)) prop))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('let-fields'), [[[Symbol.for('prop')], Symbol.for('obj')]], Symbol.for('prop')]]], `let {prop} = obj;
 

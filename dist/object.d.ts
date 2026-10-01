@@ -25,8 +25,8 @@ import { jsObj_, jsObjP_, jsObjectTypeP_, jsObjAppend_, jsKeys_ } from './javasc
  */
 declare function objectRef_(obj: any, key: any): any;
 declare namespace objectRef_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Set the property `key` in `obj` to `val`.
@@ -51,7 +51,7 @@ declare namespace objectSetX_ {
  */
 declare function fieldNames_(obj: any): any;
 declare namespace fieldNames_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 export { objectRef_ as objectGet_, objectRef_ as oget_, objectSetX_ as objectSet_, objectSetX_ as osetx_, objectSetX_ as oset_, fieldNames_, jsKeys_, jsObjAppend_, jsObjP_, jsObj_, jsObjectTypeP_, objectRef_, objectSetX_ };

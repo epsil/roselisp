@@ -23,7 +23,8 @@
      ,@body))
 
 ;;; Whether something is a thunk.
-(define-inline (thunk?_ x)
+(define (thunk?_ x)
+  (declare (inline #t))
   (and (procedure? x)
        (zero? (arity x))))
 
@@ -56,21 +57,25 @@
      result))
 
 ;;; Whether something is a promise.
-(define-inline (promise?_ x)
+(define (promise?_ x)
+  (declare (inline #t))
   (and (js/function-type? x)
        (eq? (get-field ftype (ann x Any))
             "thunk")))
 
 ;;; Force a promise.
-(define-inline (force_ x)
+(define (force_ x)
+  (declare (inline #t))
   ((ann x Any)))
 
 ;;; Whether a promise has been forced.
-(define-inline (promise-forced?_ x)
+(define (promise-forced?_ x)
+  (declare (inline #t))
   (if (get-field forced x) #t #f))
 
 ;;; Whether a promise is running.
-(define-inline (promise-running?_ x)
+(define (promise-running?_ x)
+  (declare (inline #t))
   (undefined? (get-field forced x)))
 
 ;;; Map for storing promises in.

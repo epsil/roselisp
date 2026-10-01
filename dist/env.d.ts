@@ -448,7 +448,7 @@ declare class JavaScriptEnvironment extends DynamicEnvironment {
  */
 declare function makeEnvironment(variables?: any, parent?: any, isLisp2?: any): any;
 declare namespace makeEnvironment {
-    var fsource: (symbol | (symbol | (symbol | undefined)[] | (boolean | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (boolean | symbol)[] | (symbol | undefined)[])[])[];
 }
 /**
  * Extend the environment `env` with `parent` as its parent

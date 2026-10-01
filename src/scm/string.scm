@@ -38,7 +38,8 @@
     `(js/string-literal? ,x))))
 
 ;;; The length of a string.
-(define-inline (string-length_ x)
+(define (string-length_ x)
+  (declare (inline #t))
   (js/length x))
 
 ;;; Concatenate one or more strings together.
@@ -61,7 +62,8 @@
 ;;; Similar to [`string-ref` in Racket][rkt:string-ref].
 ;;;
 ;;; [rkt:string-ref]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-ref%29%29
-(define-inline (string-ref_ str n)
+(define (string-ref_ str n)
+  (declare (inline #t))
   (send str charAt n))
 
 ;;; Trim whitespace from the beginning and end of a string.
@@ -95,7 +97,8 @@
     `(funcall string-trim ,str ,@args))))
 
 ;;; Repeat a string `n` times.
-(define-inline (string-repeat_ str n)
+(define (string-repeat_ str n)
+  (declare (inline #t))
   (send str repeat n))
 
 ;;; Join a list of strings, using `sep` as the separator.
@@ -103,7 +106,8 @@
 ;;; Similar to [`string-join` in Racket][rkt:string-join].
 ;;;
 ;;; [rkt:string-join]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28lib._racket%2Fstring..rkt%29._string-join%29%29
-(define-inline (string-join_ lst (sep " "))
+(define (string-join_ lst (sep " "))
+  (declare (inline #t))
   (send lst join sep))
 
 ;;; Split a string into a list of strings.
@@ -111,7 +115,8 @@
 ;;; Similar to [`string-split` in Racket][rkt:string-split].
 ;;;
 ;;; [rkt:string-split]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28lib._racket%2Fstring..rkt%29._string-split%29%29
-(define-inline (string-split_ str (sep (regexp "\\s+" "g")))
+(define (string-split_ str (sep (regexp "\\s+" "g")))
+  (declare (inline #t))
   (send str split sep))
 
 ;;; Return a copy of `str` where `from` is replaced with `to`.
@@ -127,7 +132,8 @@
 ;;; Similar to [`string-upcase` in Racket][rkt:string-upcase].
 ;;;
 ;;; [rkt:string-upcase]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-upcase%29%29
-(define-inline (string-upcase_ str)
+(define (string-upcase_ str)
+  (declare (inline #t))
   (send str toUpperCase))
 
 ;;; Convert string to lower case.
@@ -135,7 +141,8 @@
 ;;; Similar to [`string-downcase` in Racket][rkt:string-downcase].
 ;;;
 ;;; [rkt:string-downcase]: https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-downcase%29%29
-(define-inline (string-downcase_ str)
+(define (string-downcase_ str)
+  (declare (inline #t))
   (send str toLowerCase))
 
 ;;; Return a substring of `str`, from `start` to `end`.
@@ -155,7 +162,8 @@
 ;;; Similar to [`string->number` in Racket][rkt:string-to-number].
 ;;;
 ;;; [rkt:string-to-number]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._string-~3enumber%29%29
-(define-inline (string->number_ str)
+(define (string->number_ str)
+  (declare (inline #t))
   (js/parse-float str))
 
 ;;; Convert a number to a string.
@@ -163,7 +171,8 @@
 ;;; Similar to [`number->string` in Racket][rkt:number-to-string].
 ;;;
 ;;; [rkt:number-to-string]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._number-~3estring%29%29
-(define-inline (number->string_ n)
+(define (number->string_ n)
+  (declare (inline #t))
   (send n toString))
 
 (provide

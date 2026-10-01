@@ -22,7 +22,8 @@
 ;;;
 ;;; [rkt:eqp]: https://docs.racket-lang.org/reference/Equality.html#%28def._%28%28quote._~23~25kernel%29._eq~3f%29%29
 ;;; [cl:eq]: http://clhs.lisp.se/Body/f_eq.htm#eq
-(define-inline (eq?_ x y)
+(define (eq?_ x y)
+  (declare (inline #t))
   (js/=== x y))
 
 ;;; Loose equality.
@@ -32,7 +33,8 @@
 ;;;
 ;;; [rkt:eqvp]: https://docs.racket-lang.org/reference/Equality.html#%28def._%28%28quote._~23~25kernel%29._eqv~3f%29%29
 ;;; [cl:eql]: http://clhs.lisp.se/Body/f_eql.htm#eql
-(define-inline (eqv?_ x y)
+(define (eqv?_ x y)
+  (declare (inline #t))
   (js/same-value? x y))
 
 ;;; Structural equality.

@@ -33,8 +33,6 @@ function plistp_(obj: any): any {
   return Array.isArray(obj) && ((obj.length % 2) === 0);
 }
 
-plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('obj')], [Symbol.for('even?'), [Symbol.for('length'), Symbol.for('obj')]]]];
-
 plistp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
@@ -49,14 +47,14 @@ plistp_.compilerMacro = ((): any => {
   return f;
 })();
 
+plistp_.fsource = [Symbol.for('define'), [Symbol.for('plist?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('obj')], [Symbol.for('even?'), [Symbol.for('length'), Symbol.for('obj')]]]];
+
 /**
  * Copy a property list.
  */
 function plistCopy_(plst: any): any {
   return [...plst];
 }
-
-plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('array-copy'), Symbol.for('plst')]];
 
 plistCopy_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -66,6 +64,8 @@ plistCopy_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+plistCopy_.fsource = [Symbol.for('define'), [Symbol.for('plist-copy_'), Symbol.for('plst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-copy'), Symbol.for('plst')]];
 
 /**
  * Return the value of a property in a property list.

@@ -25,8 +25,8 @@
  */
 declare function hashp_(v: any): any;
 declare namespace hashp_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Make a hash map from a list of `(key . value)` pairs.
@@ -49,8 +49,8 @@ declare namespace makeHash_ {
  */
 declare function hashSetX_(ht: any, key: any, v: any): any;
 declare namespace hashSetX_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Set `key` to `v` in the hash map `ht`,
@@ -87,8 +87,8 @@ declare namespace hashRef_ {
  */
 declare function hashHasKeyP_(ht: any, key: any): any;
 declare namespace hashHasKeyP_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Remove the value for a given key in a hash map
@@ -112,15 +112,15 @@ declare namespace hashRemove_ {
 declare function hashRemoveX_(ht: any, key: any): any;
 declare namespace hashRemoveX_ {
     var compilerMacro: any;
-    var fsource: (symbol | symbol[])[];
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return the number of keys in a hash table.
  */
 declare function hashSize_(ht: any): any;
 declare namespace hashSize_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Clone a hash map.
@@ -131,8 +131,8 @@ declare namespace hashSize_ {
  */
 declare function hashCopy_(ht: any): any;
 declare namespace hashCopy_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Delete all entries in a hash map,
@@ -167,8 +167,8 @@ declare namespace hashClearX_ {
  */
 declare function hashKeys_(ht: any): any;
 declare namespace hashKeys_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return a list of all the values in a hash map.
@@ -179,16 +179,16 @@ declare namespace hashKeys_ {
  */
 declare function hashValues_(ht: any): any;
 declare namespace hashValues_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert a hash map to a list of `(key value)` tuples.
  */
 declare function hashEntries_(ht: any): any;
 declare namespace hashEntries_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert a hash map to a list of `(key . value)` pairs.
@@ -199,7 +199,7 @@ declare namespace hashEntries_ {
  */
 declare function hashToList_(ht: any): any;
 declare namespace hashToList_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[];
 }
 export { hashToList_, hashClearX_, hashClear_, hashCopy_, hashEntries_, hashHasKeyP_, hashKeys_, hashRef_, hashRemoveX_, hashRemove_, hashSetX_, hashSet_, hashSize_, hashValues_, hashp_, makeHash_ };

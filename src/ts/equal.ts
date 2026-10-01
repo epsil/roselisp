@@ -30,8 +30,6 @@ function eqp_(x: any, y: any): any {
   return x === y;
 }
 
-eqp_.fsource = [Symbol.for('define'), [Symbol.for('eq?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
-
 eqp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x, y]: any[] = exp.slice(1);
@@ -40,6 +38,8 @@ eqp_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+eqp_.fsource = [Symbol.for('define'), [Symbol.for('eq?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * Loose equality.
@@ -54,8 +54,6 @@ function eqvp_(x: any, y: any): any {
   return Object.is(x, y);
 }
 
-eqvp_.fsource = [Symbol.for('define'), [Symbol.for('eqv?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/same-value?'), Symbol.for('x'), Symbol.for('y')]];
-
 eqvp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x, y]: any[] = exp.slice(1);
@@ -64,6 +62,8 @@ eqvp_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+eqvp_.fsource = [Symbol.for('define'), [Symbol.for('eqv?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/same-value?'), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * Structural equality.

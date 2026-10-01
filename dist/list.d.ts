@@ -42,8 +42,8 @@
  */
 declare function pairp_(x: any): any;
 declare namespace pairp_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
  * Whether something is the empty list.
@@ -54,8 +54,8 @@ declare namespace pairp_ {
  */
 declare function nullp_(x: any): any;
 declare namespace nullp_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
  * Whether something is a list.
@@ -368,7 +368,7 @@ declare namespace listSet_ {
  */
 declare function listSetX_(lst: any, ...indicesAndValue: any[]): any;
 declare namespace listSetX_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[])[])[])[];
     var compilerMacro: any;
 }
 /**
@@ -382,8 +382,8 @@ declare namespace listSetX_ {
  */
 declare function listCopy_(lst: any): any;
 declare namespace listCopy_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return the `n`-th CDR element of a list.
@@ -459,8 +459,8 @@ declare namespace reverse_ {
  */
 declare function reversex_(lst: any): any;
 declare namespace reversex_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return a list where the last `n` conses have been omitted.
@@ -494,8 +494,8 @@ declare namespace nbutlast_ {
  */
 declare function popLeftX_(lst: any): any;
 declare namespace popLeftX_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Pop an element off the end of a list.
@@ -506,8 +506,8 @@ declare namespace popLeftX_ {
  */
 declare function popRightX_(lst: any): any;
 declare namespace popRightX_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Push an element onto the beginning of a list.
@@ -518,8 +518,8 @@ declare namespace popRightX_ {
  */
 declare function pushLeftX_(lst: any, x: any): any;
 declare namespace pushLeftX_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Push an element onto the end of a list.
@@ -530,8 +530,8 @@ declare namespace pushLeftX_ {
  */
 declare function pushRightX_(lst: any, x: any): any;
 declare namespace pushRightX_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return the length of a list.
@@ -610,46 +610,46 @@ declare namespace setCdrX_ {
  */
 declare function dottedListP_(x: any): any;
 declare namespace dottedListP_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Whether something is a dotted pair.
  */
 declare function dottedPairP_(x: any): any;
 declare namespace dottedPairP_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Whether something is a proper dotted list.
  */
 declare function dottedProperListP_(x: any): any;
 declare namespace dottedProperListP_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Whether something is an improper dotted list.
  */
 declare function dottedImproperListP_(x: any): any;
 declare namespace dottedImproperListP_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Return the head of a dotted list.
  */
 declare function dottedListHead_(lst: any): any;
 declare namespace dottedListHead_ {
-    var fsource: (symbol | (number | symbol)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
 }
 /**
  * Return the tail of a dotted list.
  */
 declare function dottedListTail_(lst: any): any;
 declare namespace dottedListTail_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Create a dotted list link.
@@ -850,7 +850,7 @@ declare namespace dottedListToList_ {
  */
 declare function iteratorToList_(iterator: any): any;
 declare namespace iteratorToList_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 export { append_ as append, buildList_ as buildList, butlast_ as butlast, cdr_ as cdr, cdr_ as tail, cdr_ as tail_, circularListP_ as circularListP, cons_ as cons, dottedListP_ as dottedListP, dropRight_ as dropRight, drop_ as drop, eighth_ as eighth, fifth_ as fifth, first_ as car, first_ as car_, first_ as first, first_ as head, first_ as head_, flatten_ as flatten, fourth_ as fourth, improperListP_ as improperListP, lastCdr_ as dottedListLastCdr_, lastCdr_ as lastCdr, lastPair_ as lastCons_, lastPair_ as lastPair, last_ as last, length_ as length, listStar_ as listStar, listp_ as listp, listp_ as properListP, list_ as list, makeDottedList_ as makeDottedList, makeList_ as makeList, makePair_ as makePair, nbutlast_ as nbutlast, ninth_ as ninth, nth_ as dottedListNth, nth_ as dottedListNth_, nth_ as nth, nthcdr_ as dottedListNthcdr, nthcdr_ as dottedListNthcdr_, nthcdr_ as nthcdr, nullp_ as nullp, pairp_ as consp, pairp_ as consp_, pairp_ as pairp, popLeftX_ as popx, popLeftX_ as popx_, popLeftX_ as popLeftX, popRightX_ as popRightX, pushLeftX_ as pushx, pushLeftX_ as pushLeftX, pushRightX_ as appendToList, pushRightX_ as pushRightX, rest_ as rest, reverse_ as reverse, second_ as cadr_, second_ as second, setCarX_ as setCarX, setCdrX_ as setCdrX, seventh_ as seventh, sixth_ as sixth, take_ as take, tenth_ as tenth, third_ as third, append_, buildList_, butlast_, cdr_, circularListP_, cons_, dottedImproperListP_, dottedListToList_, dottedListEighth_, dottedListFifth_, dottedListFirst_, dottedListFourth_, dottedListHead_, dottedListLast_, dottedListLength_, dottedListLink_, dottedListNinth_, dottedListParse_, dottedListRef_, dottedListSecond_, dottedListSetX_, dottedListSet_, dottedListSeventh_, dottedListSixth_, dottedListTail_, dottedListTenth_, dottedListThird_, dottedListP_, dottedPairCdr_, dottedPairP_, dottedProperListP_, dropRight_, drop_, eighth_, fifth_, first_, flatten_, fourth_, improperListP_, iteratorToList_, lastCdr_, lastPair_, last_, length_, listToDottedList_, listCopy_, listRef_, listSetX_, listSet_, listStar_, listTail_, listp_, list_, makeDottedList_, makeList_, makePair_, nbutlast_, ninth_, nth_, nthcdr_, nullp_, pairOrListP_, pairp_, popLeftX_, popRightX_, properListP_, pushLeftX_, pushRightX_, rest_, reversex_, reverse_, second_, setCarX_, setCdrX_, seventh_, sixth_, take_, tenth_, third_ };

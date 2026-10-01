@@ -25,7 +25,8 @@
 ;;;
 ;;; [rkt:symbolp]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._symbol~3f%29%29
 ;;; [cl:symbolp]: http://clhs.lisp.se/Body/f_symbol.htm#symbolp
-(define-inline (symbol?_ obj)
+(define (symbol?_ obj)
+  (declare (inline #t))
   (eq? (type-of obj) "symbol"))
 
 ;;; Convert a symbol to a string.
@@ -35,7 +36,8 @@
 ;;;
 ;;; [rkt:symbol-to-string]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._symbol-~3estring%29%29
 ;;; [cl:symbol-name]: http://clhs.lisp.se/Body/f_symb_2.htm#symbol-name
-(define-inline (symbol->string_ sym)
+(define (symbol->string_ sym)
+  (declare (inline #t))
   (ann (get-field description sym)
        String))
 
@@ -46,7 +48,8 @@
 ;;;
 ;;; [rkt:string-to-symbol]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._string-~3esymbol%29%29
 ;;; [cl:intern]: http://clhs.lisp.se/Body/f_intern.htm#intern
-(define-inline (string->symbol_ str)
+(define (string->symbol_ str)
+  (declare (inline #t))
   ;; `Symbol.for()` returns the same symbol for a given string,
   ;; similar to `string->symbol`.
   (send Symbol for str))
@@ -58,13 +61,15 @@
 ;;;
 ;;; [rkt:gensym]: https://docs.racket-lang.org/reference/symbols.html#%28def._%28%28quote._~23~25kernel%29._gensym%29%29
 ;;; [cl:gensym]: http://clhs.lisp.se/Body/f_gensym.htm#gensym
-(define-inline (gensym_ (str "g"))
+(define (gensym_ (str "g"))
+  (declare (inline #t))
   ;; `Symbol()` returns a unique symbol for any string,
   ;; similar to `gensym`.
   (Symbol str))
 
 ;;; Whether something is a unique symbol.
-(define-inline (gensym?_ obj)
+(define (gensym?_ obj)
+  (declare (inline #t))
   ;; It is a unique symbol if it is a symbol that is different
   ;; from the one returned by `string->symbol`.
   (and (symbol? obj)
@@ -73,11 +78,13 @@
                   (symbol->string obj))))))
 
 ;;; Convert a unique symbol to a regular symbol.
-(define-inline (gensym->symbol_ x)
+(define (gensym->symbol_ x)
+  (declare (inline #t))
   (string->symbol (symbol->string x)))
 
 ;;; Convert a regular symbol to a unique symbol.
-(define-inline (symbol->gensym_ x)
+(define (symbol->gensym_ x)
+  (declare (inline #t))
   (gensym (symbol->string x)))
 
 (provide

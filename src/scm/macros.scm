@@ -242,11 +242,16 @@
   `(begin
      (define ,name-and-args
        ,@body)
-     (define-compiler-macro
-       ,@(rest
-          (define->define-macro
-            `(define ,name-and-args ,@body)
-            #t)))))
+     (define-inline-macro ,name-and-args
+       ,@body)))
+
+;;; Expand a `(define-inline-macro ...)` expression.
+(define-macro (define-inline-macro_ name-and-args &rest body)
+  `(define-compiler-macro
+     ,@(rest
+        (define->define-macro
+          `(define ,name-and-args ,@body)
+          #t))))
 
 ;;; Expand a `(define-fexpr ...)` expression.
 (define-macro (define-fexpr_ name-and-args &rest body)
@@ -1333,6 +1338,7 @@
   defclass_
   define-compiler-macro_
   define-fexpr_
+  define-inline-macro_
   define-inline_
   define-macro->function
   define-macro->lambda-form

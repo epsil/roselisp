@@ -33,8 +33,6 @@ function symbolp_(obj: any): any {
   return typeof obj === 'symbol';
 }
 
-symbolp_.fsource = [Symbol.for('define'), [Symbol.for('symbol?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'symbol']];
-
 symbolp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
@@ -43,6 +41,8 @@ symbolp_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+symbolp_.fsource = [Symbol.for('define'), [Symbol.for('symbol?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'symbol']];
 
 /**
  * Convert a symbol to a string.
@@ -57,8 +57,6 @@ function symbolToString_(sym: any): any {
   return sym.description as string;
 }
 
-symbolToString_.fsource = [Symbol.for('define'), [Symbol.for('symbol->string_'), Symbol.for('sym')], [Symbol.for('ann'), [Symbol.for('get-field'), Symbol.for('description'), Symbol.for('sym')], Symbol.for('String')]];
-
 symbolToString_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [sym]: any[] = exp.slice(1);
@@ -67,6 +65,8 @@ symbolToString_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+symbolToString_.fsource = [Symbol.for('define'), [Symbol.for('symbol->string_'), Symbol.for('sym')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('ann'), [Symbol.for('get-field'), Symbol.for('description'), Symbol.for('sym')], Symbol.for('String')]];
 
 /**
  * Convert a string to a symbol.
@@ -83,8 +83,6 @@ function stringToSymbol_(str: any): any {
   return Symbol.for(str);
 }
 
-stringToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('string->symbol_'), Symbol.for('str')], [Symbol.for('send'), Symbol.for('Symbol'), Symbol.for('for'), Symbol.for('str')]];
-
 stringToSymbol_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     let [str]: any[] = exp.slice(1);
@@ -93,6 +91,8 @@ stringToSymbol_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+stringToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('string->symbol_'), Symbol.for('str')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Symbol'), Symbol.for('for'), Symbol.for('str')]];
 
 /**
  * Create a unique symbol.
@@ -109,8 +109,6 @@ function gensym_(str: any = 'g'): any {
   return Symbol(str);
 }
 
-gensym_.fsource = [Symbol.for('define'), [Symbol.for('gensym_'), [Symbol.for('str'), 'g']], [Symbol.for('Symbol'), Symbol.for('str')]];
-
 gensym_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     let [str]: any[] = exp.slice(1);
@@ -123,6 +121,8 @@ gensym_.compilerMacro = ((): any => {
   return f;
 })();
 
+gensym_.fsource = [Symbol.for('define'), [Symbol.for('gensym_'), [Symbol.for('str'), 'g']], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('Symbol'), Symbol.for('str')]];
+
 /**
  * Whether something is a unique symbol.
  */
@@ -131,8 +131,6 @@ function gensymp_(obj: any): any {
   // from the one returned by `string->symbol`.
   return (typeof obj === 'symbol') && (obj !== Symbol.for(obj.description as string));
 }
-
-gensymp_.fsource = [Symbol.for('define'), [Symbol.for('gensym?_'), Symbol.for('obj')], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('obj'), [Symbol.for('string->symbol'), [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]];
 
 gensymp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -148,14 +146,14 @@ gensymp_.compilerMacro = ((): any => {
   return f;
 })();
 
+gensymp_.fsource = [Symbol.for('define'), [Symbol.for('gensym?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('symbol?'), Symbol.for('obj')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('obj'), [Symbol.for('string->symbol'), [Symbol.for('symbol->string'), Symbol.for('obj')]]]]]];
+
 /**
  * Convert a unique symbol to a regular symbol.
  */
 function gensymToSymbol_(x: any): any {
   return Symbol.for(x.description as string);
 }
-
-gensymToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('gensym->symbol_'), Symbol.for('x')], [Symbol.for('string->symbol'), [Symbol.for('symbol->string'), Symbol.for('x')]]];
 
 gensymToSymbol_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -166,14 +164,14 @@ gensymToSymbol_.compilerMacro = ((): any => {
   return f;
 })();
 
+gensymToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('gensym->symbol_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('string->symbol'), [Symbol.for('symbol->string'), Symbol.for('x')]]];
+
 /**
  * Convert a regular symbol to a unique symbol.
  */
 function symbolToGensym_(x: any): any {
   return Symbol(x.description as string);
 }
-
-symbolToGensym_.fsource = [Symbol.for('define'), [Symbol.for('symbol->gensym_'), Symbol.for('x')], [Symbol.for('gensym'), [Symbol.for('symbol->string'), Symbol.for('x')]]];
 
 symbolToGensym_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -183,6 +181,8 @@ symbolToGensym_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+symbolToGensym_.fsource = [Symbol.for('define'), [Symbol.for('symbol->gensym_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('gensym'), [Symbol.for('symbol->string'), Symbol.for('x')]]];
 
 export {
   stringToSymbol_ as intern_,

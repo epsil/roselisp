@@ -46,7 +46,8 @@
   (send/apply f call #n args))
 
 ;;; Return the arity of the function `f`.
-(define-inline (arity_ f)
+(define (arity_ f)
+  (declare (inline #t))
   (js/length f))
 
 ;;; Whether `obj` is a procedure (i.e., a function).
@@ -56,7 +57,8 @@
 ;;;
 ;;; [rkt:procedurep]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28quote._~23~25kernel%29._procedure~3f%29%29
 ;;; [cl:functionp]: http://clhs.lisp.se/Body/f_fnp.htm#functionp
-(define-inline (procedure?_ obj)
+(define (procedure?_ obj)
+  (declare (inline #t))
   (js/function? obj))
 
 ;;; Whether `obj` is a fexpr, that is, a procedure that
@@ -178,7 +180,8 @@
                         (,f x)))))))
 
 ;;; Call a procedure on each element of a list.
-(define-inline (for-each_ f lst)
+(define (for-each_ f lst)
+  (declare (inline #t))
   (send lst forEach f))
 
 ;;; Less than operator.
@@ -281,7 +284,8 @@
 ;;; Similar to [`add1` in Racket][rkt:add1].
 ;;;
 ;;; [rkt:add1]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._add1%29%29
-(define-inline (add1_ x)
+(define (add1_ x)
+  (declare (inline #t))
   (+ x 1))
 
 ;;; Subtraction.
@@ -309,7 +313,8 @@
 ;;; Similar to [`sub1` in Racket][rkt:sub1].
 ;;;
 ;;; [rkt:sub1]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._sub1%29%29
-(define-inline (sub1_ x)
+(define (sub1_ x)
+  (declare (inline #t))
   (- x 1))
 
 ;;; Multiplication.
@@ -365,7 +370,8 @@
 ;;;
 ;;; [rkt:sqrt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._sqrt%29%29
 ;;; [cl:sqrt]: http://clhs.lisp.se/Body/f_sqrt_.htm#sqrt
-(define-inline (sqrt_ x)
+(define (sqrt_ x)
+  (declare (inline #t))
   (send Math sqrt x))
 
 ;;; Whether a value is the number zero.
@@ -375,11 +381,13 @@
 ;;;
 ;;; [rkt:zerop]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._zero~3f%29%29
 ;;; [cl:zerop]: http://clhs.lisp.se/Body/f_zerop.htm#zerop
-(define-inline (zero?_ n)
+(define (zero?_ n)
+  (declare (inline #t))
   (= n 0))
 
 ;;; Whether a value is the number one.
-(define-inline (one?_ n)
+(define (one?_ n)
+  (declare (inline #t))
   (= n 1))
 
 ;;; Whether a number is odd.
@@ -389,7 +397,8 @@
 ;;;
 ;;; [rkt:oddp]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._odd~3f%29%29
 ;;; [cl:oddp]: http://clhs.lisp.se/Body/f_evenpc.htm#oddp
-(define-inline (odd?_ n)
+(define (odd?_ n)
+  (declare (inline #t))
   (not (even? n)))
 
 ;;; Whether a number is even.
@@ -399,15 +408,18 @@
 ;;;
 ;;; [rkt:oddp]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._even~3f%29%29
 ;;; [cl:oddp]: http://clhs.lisp.se/Body/f_evenpc.htm#evenp
-(define-inline (even?_ n)
+(define (even?_ n)
+  (declare (inline #t))
   (zero? (modulo n 2)))
 
 ;;; Whether a value is truthy.
-(define-inline (true?_ x)
+(define (true?_ x)
+  (declare (inline #t))
   (if x #t #f))
 
 ;;; Whether a value is falsy.
-(define-inline (false?_ x)
+(define (false?_ x)
+  (declare (inline #t))
   (if x #f #t))
 
 ;;; The identity function.
@@ -427,7 +439,8 @@
 ;;;
 ;;; [rkt:const]: https://docs.racket-lang.org/reference/procedures.html#%28def._%28%28lib._racket%2Ffunction..rkt%29._const%29%29
 ;;; [cl:constantly]: http://clhs.lisp.se/Body/f_cons_1.htm#constantly
-(define-inline (const_ (x #u))
+(define (const_ (x #u))
+  (declare (inline #t))
   (lambda args
     x))
 
@@ -461,26 +474,31 @@
                       (symbol->string obj))))
 
 ;;; Convert a keyword to a string without the `:` prefix.
-(define-inline (keyword->string_ x)
+(define (keyword->string_ x)
+  (declare (inline #t))
   (regexp-replace (regexp "^:")
                   (symbol->string x)
                   ""))
 
 ;;; Convert a keyword to a regular symbol
 ;;; (i.e., strip the `:` prefix).
-(define-inline (keyword->symbol_ x)
+(define (keyword->symbol_ x)
+  (declare (inline #t))
   (string->symbol (keyword->string x)))
 
 ;;; Convert a symbol to a keyword.
-(define-inline (symbol->keyword_ x)
+(define (symbol->keyword_ x)
+  (declare (inline #t))
   (string->keyword (symbol->string x)))
 
 ;;; Convert a string to a keyword.
-(define-inline (string->keyword_ x)
+(define (string->keyword_ x)
+  (declare (inline #t))
   (string->symbol (string-append ":" x)))
 
 ;;; Whether something is an atomic value.
-(define-inline (atom?_ x)
+(define (atom?_ x)
+  (declare (inline #t))
   (not (pair? x)))
 
 ;;; Whether something is a number.
@@ -490,7 +508,8 @@
 ;;;
 ;;; [rkt:numberp]: https://docs.racket-lang.org/reference/number-types.html#%28def._%28%28quote._~23~25kernel%29._number~3f%29%29
 ;;; [cl:numberp]: http://clhs.lisp.se/Body/f_nump.htm#numberp
-(define-inline (number?_ obj)
+(define (number?_ obj)
+  (declare (inline #t))
   (send Number isFinite obj))
 
 ;;; Whether something is a boolean value.
@@ -500,11 +519,13 @@
 ;;;
 ;;; [rkt:booleanp]: https://docs.racket-lang.org/reference/booleans.html#%28def._%28%28quote._~23~25kernel%29._boolean~3f%29%29
 ;;; [el:booleanp]: https://www.gnu.org/software/emacs/manual/html_node/elisp/nil-and-t.html#index-booleanp
-(define-inline (boolean?_ obj)
+(define (boolean?_ obj)
+  (declare (inline #t))
   (eq? (type-of obj) "boolean"))
 
 ;;; Whether something is the value `undefined`.
-(define-inline (undefined?_ obj)
+(define (undefined?_ obj)
+  (declare (inline #t))
   (eq? obj #u))
 
 ;;; Fold up a list left to right.
@@ -610,7 +631,8 @@
 ;;; Whether a list contains a value,
 ;;; using `eq?` for comparisons. Like `memq`,
 ;;; but always returns a boolean value.
-(define-inline (memq?_ v lst)
+(define (memq?_ v lst)
+  (declare (inline #t))
   ;; This construct maps neatly onto
   ;; [`Array.prototype.includes()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
   (send lst includes v))
@@ -632,7 +654,8 @@
 
 ;;; Whether a list contains a value matching a predicate.
 ;;; Like `memf`, but always returns a boolean value.
-(define-inline (memf?_ proc lst)
+(define (memf?_ proc lst)
+  (declare (inline #t))
   (>= (js/find-index proc lst) 0))
 
 ;;; Find a list element matching a predicate.
@@ -655,7 +678,8 @@
 ;;;
 ;;; [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
 ;;; [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
-(define-inline (findf-index_ proc seq (not-found #f))
+(define (findf-index_ proc seq (not-found #f))
+  (declare (inline #t))
   (let ((idx (js/find-index proc seq)))
     (if (>= idx 0)
         idx
@@ -668,7 +692,8 @@
 ;;;
 ;;; [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
 ;;; [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
-(define-inline (index-where_ seq proc (not-found #f))
+(define (index-where_ seq proc (not-found #f))
+  (declare (inline #t))
   (let ((idx (js/find-index proc seq)))
     (if (>= idx 0)
         idx
@@ -783,7 +808,8 @@
 ;;;
 ;;; [rkt:filter]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._filter%29%29
 ;;; [cl:remove-if-not]: http://clhs.lisp.se/Body/f_rm_rm.htm#remove-if-not
-(define-inline (filter_ pred lst)
+(define (filter_ pred lst)
+  (declare (inline #t))
   (send lst filter pred))
 
 ;;; Whether a value is self-evaluating.
@@ -839,7 +865,8 @@
   `(throw (make-error ,@args)))
 
 ;;; Make an error.
-(define-inline (make-error_ . args)
+(define (make-error_ . args)
+  (declare (inline #t))
   (new/apply Error args))
 
 ;;; Get the type of a value.
@@ -847,7 +874,8 @@
 ;;; Similar to [`type-of` in Common Lisp][cl:type-of].
 ;;;
 ;;; [cl:type-of]: http://clhs.lisp.se/Body/f_tp_of.htm#type-of
-(define-inline (type-of_ x)
+(define (type-of_ x)
+  (declare (inline #t))
   (js/typeof x))
 
 ;;; Whether `obj` is an instance of `cls`.
@@ -855,11 +883,13 @@
 ;;; Similar to [`is-a?` in Racket][rkt:is-a-p].
 ;;;
 ;;; [rkt:is-a-p]: https://docs.racket-lang.org/reference/objectutils.html#%28def._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._is-a~3f%29%29
-(define-inline (is-a?_ obj cls)
+(define (is-a?_ obj cls)
+  (declare (inline #t))
   (js/instanceof obj cls))
 
 ;;; Return the absolute value of `x`.
-(define-inline (abs_ x)
+(define (abs_ x)
+  (declare (inline #t))
   (js/abs x))
 
 ;;; Sort a list with a predicate.

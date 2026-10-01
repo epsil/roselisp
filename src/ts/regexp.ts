@@ -41,8 +41,6 @@ function regexpp_(obj: any): any {
   return obj instanceof RegExp;
 }
 
-regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('js/regexp?'), Symbol.for('obj')]];
-
 regexpp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
@@ -51,6 +49,8 @@ regexpp_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/regexp?'), Symbol.for('obj')]];
 
 /**
  * Make a regexp string suitable for matching the given string.
@@ -66,8 +66,6 @@ function regexpQuote_(str: any): any {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-regexpQuote_.fsource = [Symbol.for('define'), [Symbol.for('regexp-quote_'), Symbol.for('str')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '[.*+?^${}()|[\\]\\\\]', 'g'], Symbol.for('str'), '\\$&']];
-
 regexpQuote_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [str]: any[] = exp.slice(1);
@@ -76,6 +74,8 @@ regexpQuote_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+regexpQuote_.fsource = [Symbol.for('define'), [Symbol.for('regexp-quote_'), Symbol.for('str')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '[.*+?^${}()|[\\]\\\\]', 'g'], Symbol.for('str'), '\\$&']];
 
 /**
  * Match `pattern` against `input`.
@@ -95,8 +95,6 @@ function regexpMatch_(pattern: any, input: any): any {
   return input.match(pattern);
 }
 
-regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('js/regexp-match'), Symbol.for('input'), Symbol.for('pattern')]];
-
 regexpMatch_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [pattern, input]: any[] = exp.slice(1);
@@ -105,6 +103,8 @@ regexpMatch_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+regexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/regexp-match'), Symbol.for('input'), Symbol.for('pattern')]];
 
 /**
  * Match `pattern` against `input` and return `#t`
@@ -118,8 +118,6 @@ function regexpMatchP_(pattern: any, input: any): any {
   }
 }
 
-regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('true?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]];
-
 regexpMatchP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [pattern, input]: any[] = exp.slice(1);
@@ -128,6 +126,8 @@ regexpMatchP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+regexpMatchP_.fsource = [Symbol.for('define'), [Symbol.for('regexp-match?_'), Symbol.for('pattern'), Symbol.for('input')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('true?'), [Symbol.for('regexp-match'), Symbol.for('pattern'), Symbol.for('input')]]];
 
 /**
  * Match `pattern` against `input` and replace with `insert`.
@@ -144,8 +144,6 @@ function regexpReplace_(pattern: any, input: any, insert: any): any {
   return input.replace(pattern, insert);
 }
 
-regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('js/regexp-replace'), Symbol.for('input'), Symbol.for('pattern'), Symbol.for('insert')]];
-
 regexpReplace_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [pattern, input, insert]: any[] = exp.slice(1);
@@ -154,6 +152,8 @@ regexpReplace_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+regexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('regexp-replace_'), Symbol.for('pattern'), Symbol.for('input'), Symbol.for('insert')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/regexp-replace'), Symbol.for('input'), Symbol.for('pattern'), Symbol.for('insert')]];
 
 export {
   regexpMatchP_,

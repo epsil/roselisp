@@ -40,7 +40,8 @@
 ;;; JavaScript [sameValue][js:same-value] equality.
 ;;;
 ;;; [js:same-value]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#same-value_equality_using_object.is
-(define-inline (js/same-value?_ x y)
+(define (js/same-value?_ x y)
+  (declare (inline #t))
   (send Object is x y))
 
 ;;; JavaScript [sameValueZero][js:same-value-zero] equality.
@@ -52,17 +53,20 @@
            (js/nan? y))))
 
 ;;; Whether something is JavaScript's `null`.
-(define-inline (js/null?_ x)
+(define (js/null?_ x)
+  (declare (inline #t))
   (eq? x #n))
 
 ;;; Whether a number is JavaScript's [NaN][js:nan].
 ;;;
 ;;; [js:nan]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
-(define-inline (js/is-NaN_ x)
+(define (js/is-NaN_ x)
+  (declare (inline #t))
   (isNaN x))
 
 ;;; Whether `x` is a JavaScript function.
-(define-inline (js/function?_ x)
+(define (js/function?_ x)
+  (declare (inline #t))
   ;; In JavaScript, every function is a
   ;; [`Function` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function).
   (js/function-object? x))
@@ -70,11 +74,13 @@
 ;;; Whether `obj` is a [`Function`][js:Function] object.
 ;;;
 ;;; [js:Function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
-(define-inline (js/function-object?_ x)
+(define (js/function-object?_ x)
+  (declare (inline #t))
   (is-a? x Function))
 
 ;;; Whether `obj` is of type `"function"`.
-(define-inline (js/function-type?_ x)
+(define (js/function-type?_ x)
+  (declare (inline #t))
   (eq? (type-of x) "function"))
 
 ;;; Whether `obj` is an arrow function.
@@ -85,28 +91,32 @@
                       (js/source x)))))
 
 ;;; Returns the JavaScript source of a function.
-(define-inline (js/source_ f)
+(define (js/source_ f)
+  (declare (inline #t))
   (js/to-string f))
 
 ;;; JavaScript's [`typeof`][js:typeof] operator,
 ;;; as a function.
 ;;;
 ;;; [js:typeof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
-(define-inline (js/typeof_ x)
+(define (js/typeof_ x)
+  (declare (inline #t))
   (js/op typeof x))
 
 ;;; JavaScript's [`instanceof`][js:instanceof] operator,
 ;;; as a function.
 ;;;
 ;;; [js:instanceof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof
-(define-inline (js/instanceof_ x y)
+(define (js/instanceof_ x y)
+  (declare (inline #t))
   (js/op instanceof x y))
 
 ;;; JavaScript's [`in`][js:in] operator,
 ;;; as a function.
 ;;;
 ;;; [js:in]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in
-(define-inline (js/in_ prop obj)
+(define (js/in_ prop obj)
+  (declare (inline #t))
   (js/op in prop obj))
 
 ;;; Make a JavaScript object.
@@ -123,7 +133,8 @@
     (send Object fromEntries entries)))
 
 ;;; Whether something is a JavaScript object.
-(define-inline (js/obj?_ x)
+(define (js/obj?_ x)
+  (declare (inline #t))
   ;; This function avoids regarding JavaScript's `null` value as an
   ;; object (even if JavaScript does), because it has no properties;
   ;; and unlike the empty object, attempting to access a property on
@@ -136,7 +147,8 @@
 ;;; Whether something types as a JavaScript object.
 ;;;
 ;;; Note that this includes JavaScript's `null` value.
-(define-inline (js/object-type?_ x)
+(define (js/object-type?_ x)
+  (declare (inline #t))
   (eq? (type-of x) "object"))
 
 ;;; Combine multiple JavaScript objects into a new JavaScript object.
@@ -153,7 +165,8 @@
 ;;;
 ;;; Similar to [`js-keys` in ClojureScript][cljs:js-keys].
 ;;; [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
-(define-inline (js/keys_ obj)
+(define (js/keys_ obj)
+  (declare (inline #t))
   (send Object keys obj))
 
 ;;; Variadic version of JavaScript's `+` operator.
@@ -174,14 +187,16 @@
       result))))
 
 ;;; Return the absolute value of `x`.
-(define-inline (js/abs_ x)
+(define (js/abs_ x)
+  (declare (inline #t))
   (send Math abs x))
 
 ;;; Find the index of a list element matching a predicate.
 ;;;
 ;;; Like `findf-index`, but returns `-1` rather than `#f`
 ;;; if there is no match.
-(define-inline (js/find-index_ proc seq)
+(define (js/find-index_ proc seq)
+  (declare (inline #t))
   ;; This construct maps neatly onto
   ;; [`Array.prototype.findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex).
   (send seq findIndex proc))
@@ -206,11 +221,13 @@
   #u)
 
 ;;; Whether something is a JavaScript array.
-(define-inline (js/array?_ x)
+(define (js/array?_ x)
+  (declare (inline #t))
   (send Array isArray x))
 
 ;;; Return the length of a JavaScript string or array.
-(define-inline (js/length_ x)
+(define (js/length_ x)
+  (declare (inline #t))
   (get-field length x))
 
 ;;; Look up the property `key` in the JavaScript object `obj`.
@@ -235,28 +252,34 @@
     result))
 
 ;;; Slice a JavaScript array.
-(define-inline (js/slice_ arr . args)
+(define (js/slice_ arr . args)
+  (declare (inline #t))
   (send/apply arr slice args))
 
 ;;; Fold up a JavaScript array left to right.
-(define-inline (js/reduce_ arr . args)
+(define (js/reduce_ arr . args)
+  (declare (inline #t))
   (send/apply arr reduce args))
 
 ;;; Fold up a JavaScript array right to left.
-(define-inline (js/reduce-right_ arr . args)
+(define (js/reduce-right_ arr . args)
+  (declare (inline #t))
   (send/apply arr reduceRight args))
 
 ;;; Whether something is a JavaScript string.
-(define-inline (js/string?_ x)
+(define (js/string?_ x)
+  (declare (inline #t))
   (or (js/string-literal? x)
       (js/string-object? x)))
 
 ;;; Whether something is a JavaScript string literal.
-(define-inline (js/string-literal?_ x)
+(define (js/string-literal?_ x)
+  (declare (inline #t))
   (eq? (type-of x) "string"))
 
 ;;; Whether something is a JavaScript string object.
-(define-inline (js/string-object?_ x)
+(define (js/string-object?_ x)
+  (declare (inline #t))
   (is-a? x String))
 
 ;;; Concatenate two or more JavaScript strings together.
@@ -271,7 +294,8 @@
   `(js/op/apply + (list ,@args) :identity ""))
 
 ;;; Convert `x` to a string.
-(define-inline (js/to-string_ x)
+(define (js/to-string_ x)
+  (declare (inline #t))
   (js/+ x ""))
 
 ;;; Create a JavaScript regular expression.
@@ -279,18 +303,21 @@
   (new RegExp input flags))
 
 ;;; Whether `obj` is a JavaScript regular expression.
-(define-inline (js/regexp?_ obj)
+(define (js/regexp?_ obj)
+  (declare (inline #t))
   (is-a? obj RegExp))
 
 ;;; Match a string or regular expression against
 ;;; a JavaScript string.
-(define-inline (js/regexp-match_ str pattern)
+(define (js/regexp-match_ str pattern)
+  (declare (inline #t))
   (send str match pattern))
 
 ;;; Match a string or regular expression against
 ;;; a JavaScript string and replace the matches
 ;;; with a given string or replacement pattern.
-(define-inline (js/regexp-replace_ str pattern insert)
+(define (js/regexp-replace_ str pattern insert)
+  (declare (inline #t))
   (send str replace pattern insert))
 
 ;;; Create a JavaScript `new` expression.
@@ -367,55 +394,68 @@
   (js/! x))
 
 ;;; Logical AND.
-(define-inline (js/and_ . args)
+(define (js/and_ . args)
+  (declare (inline #t))
   (js/op/apply && args :identity #t))
 
 ;;; Logical OR.
-(define-inline (js/or_ . args)
+(define (js/or_ . args)
+  (declare (inline #t))
   (js/op/apply \|\| args :identity #f))
 
 ;;; Bitwise NOT.
-(define-inline (js/bitwise-not_ x)
+(define (js/bitwise-not_ x)
+  (declare (inline #t))
   (js/op ~ x))
 
 ;;; Bitwise AND.
-(define-inline (js/bitwise-and_ . args)
+(define (js/bitwise-and_ . args)
+  (declare (inline #t))
   (js/op/apply & args))
 
 ;;; Bitwise OR.
-(define-inline (js/bitwise-or_ . args)
+(define (js/bitwise-or_ . args)
+  (declare (inline #t))
   (js/op/apply \| args))
 
 ;;; Bitwise XOR.
-(define-inline (js/bitwise-xor_ . args)
+(define (js/bitwise-xor_ . args)
+  (declare (inline #t))
   (js/op/apply ^ args))
 
 ;;; Bitwise left shift.
-(define-inline (js/bitwise-shift-left_ . args)
+(define (js/bitwise-shift-left_ . args)
+  (declare (inline #t))
   (js/op/apply << args))
 
 ;;; Bitwise right shift.
-(define-inline (js/bitwise-shift-right_ . args)
+(define (js/bitwise-shift-right_ . args)
+  (declare (inline #t))
   (js/op/apply >> args))
 
 ;;; Bitwise unsigned right shift.
-(define-inline (js/unsigned-bitwise-shift-right_ . args)
+(define (js/unsigned-bitwise-shift-right_ . args)
+  (declare (inline #t))
   (js/op/apply >>> args))
 
 ;;; Exponentiation.
-(define-inline (js/expt_ . args)
+(define (js/expt_ . args)
+  (declare (inline #t))
   (js/op/apply ** args :identity 1 :fold right))
 
 ;;; Create a JavaScript `Promise`.
 (define (js/promise_ f)
+  (declare (inline #t))
   (new Promise f))
 
 ;;; Whether something is a JavaScript `Promise`.
 (define (js/promise?_ x)
+  (declare (inline #t))
   (is-a? x Promise))
 
 ;;; Convert a string to a number.
-(define-inline (js/parse-float_ str)
+(define (js/parse-float_ str)
+  (declare (inline #t))
   (parseFloat str))
 
 (provide

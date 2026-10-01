@@ -30,8 +30,8 @@ declare namespace regexp_ {
  */
 declare function regexpp_(obj: any): any;
 declare namespace regexpp_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Make a regexp string suitable for matching the given string.
@@ -43,8 +43,8 @@ declare namespace regexpp_ {
  */
 declare function regexpQuote_(str: any): any;
 declare namespace regexpQuote_ {
-    var fsource: (symbol | (string | symbol | (string | symbol)[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (string | symbol | (string | symbol)[])[])[];
 }
 /**
  * Match `pattern` against `input`.
@@ -62,8 +62,8 @@ declare namespace regexpQuote_ {
  */
 declare function regexpMatch_(pattern: any, input: any): any;
 declare namespace regexpMatch_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Match `pattern` against `input` and return `#t`
@@ -71,8 +71,8 @@ declare namespace regexpMatch_ {
  */
 declare function regexpMatchP_(pattern: any, input: any): any;
 declare namespace regexpMatchP_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Match `pattern` against `input` and replace with `insert`.
@@ -87,7 +87,7 @@ declare namespace regexpMatchP_ {
  */
 declare function regexpReplace_(pattern: any, input: any, insert: any): any;
 declare namespace regexpReplace_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 export { regexpMatchP_, regexpMatch_, regexpQuote_, regexpReplace_, regexpp_, regexp_ };

@@ -28,8 +28,8 @@
  */
 declare function symbolp_(obj: any): any;
 declare namespace symbolp_ {
-    var fsource: (symbol | (string | symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[];
 }
 /**
  * Convert a symbol to a string.
@@ -42,8 +42,8 @@ declare namespace symbolp_ {
  */
 declare function symbolToString_(sym: any): any;
 declare namespace symbolToString_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert a string to a symbol.
@@ -56,8 +56,8 @@ declare namespace symbolToString_ {
  */
 declare function stringToSymbol_(str: any): any;
 declare namespace stringToSymbol_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Create a unique symbol.
@@ -70,31 +70,31 @@ declare namespace stringToSymbol_ {
  */
 declare function gensym_(str?: any): any;
 declare namespace gensym_ {
-    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Whether something is a unique symbol.
  */
 declare function gensymp_(obj: any): any;
 declare namespace gensymp_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Convert a unique symbol to a regular symbol.
  */
 declare function gensymToSymbol_(x: any): any;
 declare namespace gensymToSymbol_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert a regular symbol to a unique symbol.
  */
 declare function symbolToGensym_(x: any): any;
 declare namespace symbolToGensym_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 export { stringToSymbol_ as intern_, gensymToSymbol_, gensymp_, gensym_, stringToSymbol_, symbolToGensym_, symbolToString_, symbolp_ };

@@ -44,7 +44,8 @@
 ;;;
 ;;; [rkt:pairp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._pair~3f%29%29
 ;;; [cl:consp]: http://clhs.lisp.se/Body/f_consp.htm
-(define-inline (pair?_ x)
+(define (pair?_ x)
+  (declare (inline #t))
   ;; All lists except the empty list qualify as pairs.
   (and (array? x)
        (> (array-length x) 0)))
@@ -54,7 +55,8 @@
 ;;; Similar to [`null?` in Racket][rkt:nullp].
 ;;;
 ;;; [rkt:nullp]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28quote._~23~25kernel%29._null~3f%29%29
-(define-inline (null?_ x)
+(define (null?_ x)
+  (declare (inline #t))
   (and (array? x)
        (= (array-length x) 0)))
 
@@ -202,7 +204,7 @@
   (foldl (lambda (x acc)
            (append acc x))
          '()
-          args))
+         args))
 
 ;;; Flatten an arbitrarily nested list.
 ;;;
@@ -219,7 +221,7 @@
             (else
              (push-right! acc x))))
          '()
-          lst))
+         lst))
 
 ;;; Return the first element of a list.
 ;;;
@@ -574,7 +576,8 @@
 ;;;
 ;;; [guile:list-copy]: https://doc.guix.gnu.org/guile/latest/en/html_node/List-Constructors.html#index-list_002dcopy
 ;;; [cl:copy-list]: http://clhs.lisp.se/Body/f_cp_lis.htm#copy-list
-(define-inline (list-copy_ lst)
+(define (list-copy_ lst)
+  (declare (inline #t))
   (array-copy lst))
 
 ;;; Return the `n`-th CDR element of a list.
@@ -680,7 +683,8 @@
     `(array-reverse ,lst))))
 
 ;;; Reverse the order of a list.
-(define-inline (reverse!_ lst)
+(define (reverse!_ lst)
+  (declare (inline #t))
   (array-reverse! lst))
 
 ;;; Return a list where the last `n` conses have been omitted.
@@ -716,7 +720,8 @@
 ;;; Similar to [`pop` in Common Lisp][cl:pop].
 ;;;
 ;;; [cl:pop]: http://clhs.lisp.se/Body/m_pop.htm#pop
-(define-inline (pop-left!_ lst)
+(define (pop-left!_ lst)
+  (declare (inline #t))
   (array-pop-left! lst))
 
 ;;; Pop an element off the end of a list.
@@ -724,7 +729,8 @@
 ;;; Similar to [`Array.prototype.pop()` in JavaScript][js:pop].
 ;;;
 ;;; [js:pop]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop
-(define-inline (pop-right!_ lst)
+(define (pop-right!_ lst)
+  (declare (inline #t))
   (array-pop-right! lst))
 
 ;;; Push an element onto the beginning of a list.
@@ -732,7 +738,8 @@
 ;;; Similar to [`push` in Common Lisp][cl:push].
 ;;;
 ;;; [cl:push]: http://clhs.lisp.se/Body/m_push.htm#push
-(define-inline (push-left!_ lst x)
+(define (push-left!_ lst x)
+  (declare (inline #t))
   (array-push-left! lst x))
 
 ;;; Push an element onto the end of a list.
@@ -740,7 +747,8 @@
 ;;; Similar to [`Array.prototype.push()` in JavaScript][js:push].
 ;;;
 ;;; [js:push]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push
-(define-inline (push-right!_ lst x)
+(define (push-right!_ lst x)
+  (declare (inline #t))
   (array-push-right! lst x))
 
 ;;; Return the length of a list.
@@ -863,13 +871,15 @@
 ;;; Similar to [`dotted-list?` in Racket][rkt:dotted-list-p].
 ;;;
 ;;; [rkt:dotted-list-p]: https://docs.racket-lang.org/srfi/srfi-std/srfi-1.html#dotted-list-p
-(define-inline (dotted-list?_ x)
+(define (dotted-list?_ x)
+  (declare (inline #t))
   (and (array? x)
        (>= (array-length x) 3)
        (eq? (array-nlast x 2) '|.|)))
 
 ;;; Whether something is a dotted pair.
-(define-inline (dotted-pair?_ x)
+(define (dotted-pair?_ x)
+  (declare (inline #t))
   (and (array? x)
        (= (array-length x) 3)
        (eq? (array-ref x 1) '|.|)))
@@ -889,11 +899,13 @@
        (not (null? (last-cdr x)))))
 
 ;;; Return the head of a dotted list.
-(define-inline (dotted-list-head_ lst)
+(define (dotted-list-head_ lst)
+  (declare (inline #t))
   (array-drop-right lst 2))
 
 ;;; Return the tail of a dotted list.
-(define-inline (dotted-list-tail_ lst)
+(define (dotted-list-tail_ lst)
+  (declare (inline #t))
   (array-last lst))
 
 ;;; Create a dotted list link.
@@ -1126,7 +1138,8 @@
   `(,@(dotted-list-head x) ,(dotted-list-tail x)))
 
 ;;; Convert an iterator to a list.
-(define-inline (iterator->list_ iterator)
+(define (iterator->list_ iterator)
+  (declare (inline #t))
   (iterator->array iterator))
 
 (provide

@@ -32,8 +32,8 @@ declare namespace stringp_ {
  */
 declare function stringLength_(x: any): any;
 declare namespace stringLength_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Concatenate one or more strings together.
@@ -56,8 +56,8 @@ declare namespace stringAppend_ {
  */
 declare function stringRef_(str: any, n: any): any;
 declare namespace stringRef_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Trim whitespace from the beginning and end of a string.
@@ -76,8 +76,8 @@ declare namespace stringTrim_ {
  */
 declare function stringRepeat_(str: any, n: any): any;
 declare namespace stringRepeat_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Join a list of strings, using `sep` as the separator.
@@ -88,8 +88,8 @@ declare namespace stringRepeat_ {
  */
 declare function stringJoin_(lst: any, sep?: any): any;
 declare namespace stringJoin_ {
-    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Split a string into a list of strings.
@@ -100,8 +100,8 @@ declare namespace stringJoin_ {
  */
 declare function stringSplit_(str: any, sep?: any): any;
 declare namespace stringSplit_ {
-    var fsource: (symbol | (symbol | (symbol | (string | symbol)[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[])[];
 }
 /**
  * Return a copy of `str` where `from` is replaced with `to`.
@@ -123,8 +123,8 @@ declare namespace stringReplace_ {
  */
 declare function stringUpcase_(str: any): any;
 declare namespace stringUpcase_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert string to lower case.
@@ -135,8 +135,8 @@ declare namespace stringUpcase_ {
  */
 declare function stringDowncase_(str: any): any;
 declare namespace stringDowncase_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return a substring of `str`, from `start` to `end`.
@@ -159,8 +159,8 @@ declare namespace substring_ {
  */
 declare function stringToNumber_(str: any): any;
 declare namespace stringToNumber_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert a number to a string.
@@ -171,7 +171,7 @@ declare namespace stringToNumber_ {
  */
 declare function numberToString_(n: any): any;
 declare namespace numberToString_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 export { numberToString_ as numberToString, stringToNumber_ as stringToNumber, stringAppend_ as stringAppend, stringReplace_ as stringReplace, stringp_ as stringp, substring_ as substring, numberToString_, stringAppend_, stringDowncase_, stringJoin_, stringLength_, stringRef_, stringRepeat_, stringReplace_, stringSplit_, stringToNumber_, stringTrim_, stringUpcase_, stringp_, substring_ };

@@ -22,16 +22,16 @@
  */
 declare function plistp_(obj: any): any;
 declare namespace plistp_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Copy a property list.
  */
 declare function plistCopy_(plst: any): any;
 declare namespace plistCopy_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return the value of a property in a property list.
@@ -50,7 +50,7 @@ declare namespace plistGet_ {
  */
 declare function plistHasP_(plst: any, prop: any): any;
 declare namespace plistHasP_ {
-    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | symbol[])[])[])[])[];
 }
 /**
  * Set the value of a property in a property list.
@@ -61,7 +61,7 @@ declare namespace plistHasP_ {
  */
 declare function plistSetX_(plst: any, prop: any, val: any): any;
 declare namespace plistSetX_ {
-    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[] | (boolean | symbol)[])[])[] | undefined)[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[])[])[])[] | undefined)[];
 }
 /**
  * Set the value of a property in a property list,

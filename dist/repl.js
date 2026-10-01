@@ -174,9 +174,7 @@ class REPL {
                 throw err;
             }
         }
-        /**
-         * Update the REPL history.
-         */
+        // Update the REPL history.
         this.history.unshift(input);
         // Synchronize the `readline` instance's history with the
         // REPL history. This is needed in order to handle multi-line

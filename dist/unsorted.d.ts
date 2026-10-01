@@ -24,7 +24,7 @@ declare namespace letEnv_ {
  */
 declare function indentString(str: any, n?: any, options?: any): any;
 declare namespace indentString {
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (number | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (number | symbol)[] | (symbol | symbol[])[])[])[];
 }
 /**
  * # Trampoline

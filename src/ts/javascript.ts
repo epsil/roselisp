@@ -63,8 +63,6 @@ function jsSameValueP_(x: any, y: any): any {
   return Object.is(x, y);
 }
 
-jsSameValueP_.fsource = [Symbol.for('define'), [Symbol.for('js/same-value?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('is'), Symbol.for('x'), Symbol.for('y')]];
-
 jsSameValueP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x, y]: any[] = exp.slice(1);
@@ -73,6 +71,8 @@ jsSameValueP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsSameValueP_.fsource = [Symbol.for('define'), [Symbol.for('js/same-value?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('is'), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * JavaScript [sameValueZero][js:same-value-zero] equality.
@@ -92,8 +92,6 @@ function jsNullP_(x: any): any {
   return x === null;
 }
 
-jsNullP_.fsource = [Symbol.for('define'), [Symbol.for('js/null?_'), Symbol.for('x')], [Symbol.for('eq?'), Symbol.for('x'), null]];
-
 jsNullP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -102,6 +100,8 @@ jsNullP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsNullP_.fsource = [Symbol.for('define'), [Symbol.for('js/null?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), Symbol.for('x'), null]];
 
 /**
  * Whether a number is JavaScript's [NaN][js:nan].
@@ -112,8 +112,6 @@ function jsIsNaN_(x: any): any {
   return isNaN(x);
 }
 
-jsIsNaN_.fsource = [Symbol.for('define'), [Symbol.for('js/is-NaN_'), Symbol.for('x')], [Symbol.for('isNaN'), Symbol.for('x')]];
-
 jsIsNaN_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -122,6 +120,8 @@ jsIsNaN_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsIsNaN_.fsource = [Symbol.for('define'), [Symbol.for('js/is-NaN_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('isNaN'), Symbol.for('x')]];
 
 /**
  * Whether `x` is a JavaScript function.
@@ -132,8 +132,6 @@ function jsFunctionP_(x: any): any {
   return x instanceof Function;
 }
 
-jsFunctionP_.fsource = [Symbol.for('define'), [Symbol.for('js/function?_'), Symbol.for('x')], [Symbol.for('js/function-object?'), Symbol.for('x')]];
-
 jsFunctionP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -142,6 +140,8 @@ jsFunctionP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsFunctionP_.fsource = [Symbol.for('define'), [Symbol.for('js/function?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/function-object?'), Symbol.for('x')]];
 
 /**
  * Whether `obj` is a [`Function`][js:Function] object.
@@ -152,8 +152,6 @@ function jsFunctionObjectP_(x: any): any {
   return x instanceof Function;
 }
 
-jsFunctionObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-object?_'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Function')]];
-
 jsFunctionObjectP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -163,14 +161,14 @@ jsFunctionObjectP_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsFunctionObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-object?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Function')]];
+
 /**
  * Whether `obj` is of type `"function"`.
  */
 function jsFunctionTypeP_(x: any): any {
   return typeof x === 'function';
 }
-
-jsFunctionTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-type?_'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'function']];
 
 jsFunctionTypeP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -180,6 +178,8 @@ jsFunctionTypeP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsFunctionTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/function-type?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'function']];
 
 /**
  * Whether `obj` is an arrow function.
@@ -201,8 +201,6 @@ function jsSource_(f: any): any {
   return f + '';
 }
 
-jsSource_.fsource = [Symbol.for('define'), [Symbol.for('js/source_'), Symbol.for('f')], [Symbol.for('js/to-string'), Symbol.for('f')]];
-
 jsSource_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [f]: any[] = exp.slice(1);
@@ -211,6 +209,8 @@ jsSource_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsSource_.fsource = [Symbol.for('define'), [Symbol.for('js/source_'), Symbol.for('f')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/to-string'), Symbol.for('f')]];
 
 /**
  * JavaScript's [`typeof`][js:typeof] operator,
@@ -222,8 +222,6 @@ function jsTypeof_(x: any): any {
   return typeof x;
 }
 
-jsTypeof_.fsource = [Symbol.for('define'), [Symbol.for('js/typeof_'), Symbol.for('x')], [Symbol.for('js/op'), Symbol.for('typeof'), Symbol.for('x')]];
-
 jsTypeof_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -232,6 +230,8 @@ jsTypeof_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsTypeof_.fsource = [Symbol.for('define'), [Symbol.for('js/typeof_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op'), Symbol.for('typeof'), Symbol.for('x')]];
 
 /**
  * JavaScript's [`instanceof`][js:instanceof] operator,
@@ -243,8 +243,6 @@ function jsInstanceof_(x: any, y: any): any {
   return x instanceof y;
 }
 
-jsInstanceof_.fsource = [Symbol.for('define'), [Symbol.for('js/instanceof_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/op'), Symbol.for('instanceof'), Symbol.for('x'), Symbol.for('y')]];
-
 jsInstanceof_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x, y]: any[] = exp.slice(1);
@@ -253,6 +251,8 @@ jsInstanceof_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsInstanceof_.fsource = [Symbol.for('define'), [Symbol.for('js/instanceof_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op'), Symbol.for('instanceof'), Symbol.for('x'), Symbol.for('y')]];
 
 /**
  * JavaScript's [`in`][js:in] operator,
@@ -264,8 +264,6 @@ function jsIn_(prop: any, obj: any): any {
   return prop in obj;
 }
 
-jsIn_.fsource = [Symbol.for('define'), [Symbol.for('js/in_'), Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('js/op'), Symbol.for('in'), Symbol.for('prop'), Symbol.for('obj')]];
-
 jsIn_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [prop, obj]: any[] = exp.slice(1);
@@ -274,6 +272,8 @@ jsIn_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsIn_.fsource = [Symbol.for('define'), [Symbol.for('js/in_'), Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op'), Symbol.for('in'), Symbol.for('prop'), Symbol.for('obj')]];
 
 /**
  * Make a JavaScript object.
@@ -306,8 +306,6 @@ function jsObjP_(x: any): any {
   return (x !== null) && (typeof x === 'object');
 }
 
-jsObjP_.fsource = [Symbol.for('define'), [Symbol.for('js/obj?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('js/null?'), Symbol.for('x')]], [Symbol.for('js/object-type?'), Symbol.for('x')]]];
-
 jsObjP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -322,6 +320,8 @@ jsObjP_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsObjP_.fsource = [Symbol.for('define'), [Symbol.for('js/obj?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('js/null?'), Symbol.for('x')]], [Symbol.for('js/object-type?'), Symbol.for('x')]]];
+
 /**
  * Whether something types as a JavaScript object.
  *
@@ -331,8 +331,6 @@ function jsObjectTypeP_(x: any): any {
   return typeof x === 'object';
 }
 
-jsObjectTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/object-type?_'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'object']];
-
 jsObjectTypeP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -341,6 +339,8 @@ jsObjectTypeP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsObjectTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/object-type?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'object']];
 
 /**
  * Combine multiple JavaScript objects into a new JavaScript object.
@@ -372,8 +372,6 @@ function jsKeys_(obj: any): any {
   return Object.keys(obj);
 }
 
-jsKeys_.fsource = [Symbol.for('define'), [Symbol.for('js/keys_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('keys'), Symbol.for('obj')]];
-
 jsKeys_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
@@ -382,6 +380,8 @@ jsKeys_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsKeys_.fsource = [Symbol.for('define'), [Symbol.for('js/keys_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('keys'), Symbol.for('obj')]];
 
 /**
  * Variadic version of JavaScript's `+` operator.
@@ -413,8 +413,6 @@ function jsAbs_(x: any): any {
   return Math.abs(x);
 }
 
-jsAbs_.fsource = [Symbol.for('define'), [Symbol.for('js/abs_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Math'), Symbol.for('abs'), Symbol.for('x')]];
-
 jsAbs_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -423,6 +421,8 @@ jsAbs_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsAbs_.fsource = [Symbol.for('define'), [Symbol.for('js/abs_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Math'), Symbol.for('abs'), Symbol.for('x')]];
 
 /**
  * Find the index of a list element matching a predicate.
@@ -436,8 +436,6 @@ function jsFindIndex_(proc: any, seq: any): any {
   return seq.findIndex(proc);
 }
 
-jsFindIndex_.fsource = [Symbol.for('define'), [Symbol.for('js/find-index_'), Symbol.for('proc'), Symbol.for('seq')], [Symbol.for('send'), Symbol.for('seq'), Symbol.for('findIndex'), Symbol.for('proc')]];
-
 jsFindIndex_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [proc, seq]: any[] = exp.slice(1);
@@ -446,6 +444,8 @@ jsFindIndex_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsFindIndex_.fsource = [Symbol.for('define'), [Symbol.for('js/find-index_'), Symbol.for('proc'), Symbol.for('seq')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('seq'), Symbol.for('findIndex'), Symbol.for('proc')]];
 
 /**
  * Placeholder function for JavaScript's
@@ -483,8 +483,6 @@ function jsArrayP_(x: any): any {
   return Array.isArray(x);
 }
 
-jsArrayP_.fsource = [Symbol.for('define'), [Symbol.for('js/array?_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('x')]];
-
 jsArrayP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -494,14 +492,14 @@ jsArrayP_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsArrayP_.fsource = [Symbol.for('define'), [Symbol.for('js/array?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Array'), Symbol.for('isArray'), Symbol.for('x')]];
+
 /**
  * Return the length of a JavaScript string or array.
  */
 function jsLength_(x: any): any {
   return x.length;
 }
-
-jsLength_.fsource = [Symbol.for('define'), [Symbol.for('js/length_'), Symbol.for('x')], [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('x')]];
 
 jsLength_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -511,6 +509,8 @@ jsLength_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsLength_.fsource = [Symbol.for('define'), [Symbol.for('js/length_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('x')]];
 
 /**
  * Look up the property `key` in the JavaScript object `obj`.
@@ -556,8 +556,6 @@ function jsSlice_(arr: any, ...args: any[]): any {
   return arr.slice(...args);
 }
 
-jsSlice_.fsource = [Symbol.for('define'), [Symbol.for('js/slice_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('args')]];
-
 jsSlice_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [arr, ...args]: any[] = exp.slice(1);
@@ -567,14 +565,14 @@ jsSlice_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsSlice_.fsource = [Symbol.for('define'), [Symbol.for('js/slice_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('slice'), Symbol.for('args')]];
+
 /**
  * Fold up a JavaScript array left to right.
  */
 function jsReduce_(arr: any, ...args: any[]): any {
   return arr.reduce(...args);
 }
-
-jsReduce_.fsource = [Symbol.for('define'), [Symbol.for('js/reduce_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('reduce'), Symbol.for('args')]];
 
 jsReduce_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -585,14 +583,14 @@ jsReduce_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsReduce_.fsource = [Symbol.for('define'), [Symbol.for('js/reduce_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('reduce'), Symbol.for('args')]];
+
 /**
  * Fold up a JavaScript array right to left.
  */
 function jsReduceRight_(arr: any, ...args: any[]): any {
   return arr.reduceRight(...args);
 }
-
-jsReduceRight_.fsource = [Symbol.for('define'), [Symbol.for('js/reduce-right_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('reduceRight'), Symbol.for('args')]];
 
 jsReduceRight_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -603,14 +601,14 @@ jsReduceRight_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsReduceRight_.fsource = [Symbol.for('define'), [Symbol.for('js/reduce-right_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send/apply'), Symbol.for('arr'), Symbol.for('reduceRight'), Symbol.for('args')]];
+
 /**
  * Whether something is a JavaScript string.
  */
 function jsStringP_(x: any): any {
   return (typeof x === 'string') || (x instanceof String);
 }
-
-jsStringP_.fsource = [Symbol.for('define'), [Symbol.for('js/string?_'), Symbol.for('x')], [Symbol.for('or'), [Symbol.for('js/string-literal?'), Symbol.for('x')], [Symbol.for('js/string-object?'), Symbol.for('x')]]];
 
 jsStringP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -626,14 +624,14 @@ jsStringP_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsStringP_.fsource = [Symbol.for('define'), [Symbol.for('js/string?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('or'), [Symbol.for('js/string-literal?'), Symbol.for('x')], [Symbol.for('js/string-object?'), Symbol.for('x')]]];
+
 /**
  * Whether something is a JavaScript string literal.
  */
 function jsStringLiteralP_(x: any): any {
   return typeof x === 'string';
 }
-
-jsStringLiteralP_.fsource = [Symbol.for('define'), [Symbol.for('js/string-literal?_'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'string']];
 
 jsStringLiteralP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -644,14 +642,14 @@ jsStringLiteralP_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsStringLiteralP_.fsource = [Symbol.for('define'), [Symbol.for('js/string-literal?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'string']];
+
 /**
  * Whether something is a JavaScript string object.
  */
 function jsStringObjectP_(x: any): any {
   return x instanceof String;
 }
-
-jsStringObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js/string-object?_'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('String')]];
 
 jsStringObjectP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -661,6 +659,8 @@ jsStringObjectP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsStringObjectP_.fsource = [Symbol.for('define'), [Symbol.for('js/string-object?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('String')]];
 
 /**
  * Concatenate two or more JavaScript strings together.
@@ -694,8 +694,6 @@ function jsToString_(x: any): any {
   return x + '';
 }
 
-jsToString_.fsource = [Symbol.for('define'), [Symbol.for('js/to-string_'), Symbol.for('x')], [Symbol.for('js/+'), Symbol.for('x'), '']];
-
 jsToString_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -704,6 +702,8 @@ jsToString_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsToString_.fsource = [Symbol.for('define'), [Symbol.for('js/to-string_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/+'), Symbol.for('x'), '']];
 
 /**
  * Create a JavaScript regular expression.
@@ -721,8 +721,6 @@ function jsRegexpP_(obj: any): any {
   return obj instanceof RegExp;
 }
 
-jsRegexpP_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp?_'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
-
 jsRegexpP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
@@ -732,6 +730,8 @@ jsRegexpP_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsRegexpP_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('RegExp')]];
+
 /**
  * Match a string or regular expression against
  * a JavaScript string.
@@ -739,8 +739,6 @@ jsRegexpP_.compilerMacro = ((): any => {
 function jsRegexpMatch_(str: any, pattern: any): any {
   return str.match(pattern);
 }
-
-jsRegexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp-match_'), Symbol.for('str'), Symbol.for('pattern')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('match'), Symbol.for('pattern')]];
 
 jsRegexpMatch_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -751,6 +749,8 @@ jsRegexpMatch_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsRegexpMatch_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp-match_'), Symbol.for('str'), Symbol.for('pattern')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('match'), Symbol.for('pattern')]];
+
 /**
  * Match a string or regular expression against
  * a JavaScript string and replace the matches
@@ -760,8 +760,6 @@ function jsRegexpReplace_(str: any, pattern: any, insert: any): any {
   return str.replace(pattern, insert);
 }
 
-jsRegexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp-replace_'), Symbol.for('str'), Symbol.for('pattern'), Symbol.for('insert')], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
-
 jsRegexpReplace_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [str, pattern, insert]: any[] = exp.slice(1);
@@ -770,6 +768,8 @@ jsRegexpReplace_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsRegexpReplace_.fsource = [Symbol.for('define'), [Symbol.for('js/regexp-replace_'), Symbol.for('str'), Symbol.for('pattern'), Symbol.for('insert')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('str'), Symbol.for('replace'), Symbol.for('pattern'), Symbol.for('insert')]];
 
 /**
  * Create a JavaScript `new` expression.
@@ -904,8 +904,6 @@ function jsAnd_(...args: any[]): any {
   return args.reduce((left: any, right: any): any => left && right, true);
 }
 
-jsAnd_.fsource = [Symbol.for('define'), [Symbol.for('js/and_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('&&'), Symbol.for('args'), Symbol.for(':identity'), true]];
-
 jsAnd_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const args: any = exp.slice(1);
@@ -915,14 +913,14 @@ jsAnd_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsAnd_.fsource = [Symbol.for('define'), [Symbol.for('js/and_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('&&'), Symbol.for('args'), Symbol.for(':identity'), true]];
+
 /**
  * Logical OR.
  */
 function jsOr_(...args: any[]): any {
   return args.reduce((left: any, right: any): any => left || right, false);
 }
-
-jsOr_.fsource = [Symbol.for('define'), [Symbol.for('js/or_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('||'), Symbol.for('args'), Symbol.for(':identity'), false]];
 
 jsOr_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -933,14 +931,14 @@ jsOr_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsOr_.fsource = [Symbol.for('define'), [Symbol.for('js/or_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('||'), Symbol.for('args'), Symbol.for(':identity'), false]];
+
 /**
  * Bitwise NOT.
  */
 function jsBitwiseNot_(x: any): any {
   return ~x;
 }
-
-jsBitwiseNot_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-not_'), Symbol.for('x')], [Symbol.for('js/op'), Symbol.for('~'), Symbol.for('x')]];
 
 jsBitwiseNot_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -951,14 +949,14 @@ jsBitwiseNot_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsBitwiseNot_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-not_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op'), Symbol.for('~'), Symbol.for('x')]];
+
 /**
  * Bitwise AND.
  */
 function jsBitwiseAnd_(...args: any[]): any {
   return args.slice(1).reduce((left: any, right: any): any => left & right, args[0]);
 }
-
-jsBitwiseAnd_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-and_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('&'), Symbol.for('args')]];
 
 jsBitwiseAnd_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -969,14 +967,14 @@ jsBitwiseAnd_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsBitwiseAnd_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-and_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('&'), Symbol.for('args')]];
+
 /**
  * Bitwise OR.
  */
 function jsBitwiseOr_(...args: any[]): any {
   return args.slice(1).reduce((left: any, right: any): any => left | right, args[0]);
 }
-
-jsBitwiseOr_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-or_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('|'), Symbol.for('args')]];
 
 jsBitwiseOr_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -987,14 +985,14 @@ jsBitwiseOr_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsBitwiseOr_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-or_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('|'), Symbol.for('args')]];
+
 /**
  * Bitwise XOR.
  */
 function jsBitwiseXor_(...args: any[]): any {
   return args.slice(1).reduce((left: any, right: any): any => left ^ right, args[0]);
 }
-
-jsBitwiseXor_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-xor_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('^'), Symbol.for('args')]];
 
 jsBitwiseXor_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1005,14 +1003,14 @@ jsBitwiseXor_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsBitwiseXor_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-xor_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('^'), Symbol.for('args')]];
+
 /**
  * Bitwise left shift.
  */
 function jsBitwiseShiftLeft_(...args: any[]): any {
   return args.slice(1).reduce((left: any, right: any): any => left << right, args[0]);
 }
-
-jsBitwiseShiftLeft_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-shift-left_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('<<'), Symbol.for('args')]];
 
 jsBitwiseShiftLeft_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1023,14 +1021,14 @@ jsBitwiseShiftLeft_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsBitwiseShiftLeft_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-shift-left_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('<<'), Symbol.for('args')]];
+
 /**
  * Bitwise right shift.
  */
 function jsBitwiseShiftRight_(...args: any[]): any {
   return args.slice(1).reduce((left: any, right: any): any => left >> right, args[0]);
 }
-
-jsBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('>>'), Symbol.for('args')]];
 
 jsBitwiseShiftRight_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1041,14 +1039,14 @@ jsBitwiseShiftRight_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('>>'), Symbol.for('args')]];
+
 /**
  * Bitwise unsigned right shift.
  */
 function jsUnsignedBitwiseShiftRight_(...args: any[]): any {
   return args.slice(1).reduce((left: any, right: any): any => left >>> right, args[0]);
 }
-
-jsUnsignedBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/unsigned-bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('>>>'), Symbol.for('args')]];
 
 jsUnsignedBitwiseShiftRight_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1059,14 +1057,14 @@ jsUnsignedBitwiseShiftRight_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsUnsignedBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/unsigned-bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('>>>'), Symbol.for('args')]];
+
 /**
  * Exponentiation.
  */
 function jsExpt_(...args: any[]): any {
   return args.reduceRight((right: any, left: any): any => left ** right, 1);
 }
-
-jsExpt_.fsource = [Symbol.for('define'), [Symbol.for('js/expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('js/op/apply'), Symbol.for('**'), Symbol.for('args'), Symbol.for(':identity'), 1, Symbol.for(':fold'), Symbol.for('right')]];
 
 jsExpt_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1077,6 +1075,8 @@ jsExpt_.compilerMacro = ((): any => {
   return f;
 })();
 
+jsExpt_.fsource = [Symbol.for('define'), [Symbol.for('js/expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('**'), Symbol.for('args'), Symbol.for(':identity'), 1, Symbol.for(':fold'), Symbol.for('right')]];
+
 /**
  * Create a JavaScript `Promise`.
  */
@@ -1084,7 +1084,16 @@ function jsPromise_(f: any): any {
   return new Promise(f);
 }
 
-jsPromise_.fsource = [Symbol.for('define'), [Symbol.for('js/promise_'), Symbol.for('f')], [Symbol.for('new'), Symbol.for('Promise'), Symbol.for('f')]];
+jsPromise_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const [f]: any[] = exp.slice(1);
+    return [Symbol.for('new'), Symbol.for('Promise'), f];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+jsPromise_.fsource = [Symbol.for('define'), [Symbol.for('js/promise_'), Symbol.for('f')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('new'), Symbol.for('Promise'), Symbol.for('f')]];
 
 /**
  * Whether something is a JavaScript `Promise`.
@@ -1093,7 +1102,16 @@ function jsPromiseP_(x: any): any {
   return x instanceof Promise;
 }
 
-jsPromiseP_.fsource = [Symbol.for('define'), [Symbol.for('js/promise?_'), Symbol.for('x')], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Promise')]];
+jsPromiseP_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const [x]: any[] = exp.slice(1);
+    return [Symbol.for('is-a?'), x, Symbol.for('Promise')];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+jsPromiseP_.fsource = [Symbol.for('define'), [Symbol.for('js/promise?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Promise')]];
 
 /**
  * Convert a string to a number.
@@ -1101,8 +1119,6 @@ jsPromiseP_.fsource = [Symbol.for('define'), [Symbol.for('js/promise?_'), Symbol
 function jsParseFloat_(str: any): any {
   return parseFloat(str);
 }
-
-jsParseFloat_.fsource = [Symbol.for('define'), [Symbol.for('js/parse-float_'), Symbol.for('str')], [Symbol.for('parseFloat'), Symbol.for('str')]];
 
 jsParseFloat_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1112,6 +1128,8 @@ jsParseFloat_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+jsParseFloat_.fsource = [Symbol.for('define'), [Symbol.for('js/parse-float_'), Symbol.for('str')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('parseFloat'), Symbol.for('str')]];
 
 export {
   jsInstanceof_ as jsInstanceOfP_,

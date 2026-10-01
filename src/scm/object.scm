@@ -28,7 +28,8 @@
 ;;;
 ;;; [rkt:object-get]: https://docs.racket-lang.org/javascript/runtime.html#%28def._%28%28lib._javascript%2Fruntime..rkt%29._object-get%29%29
 ;;; [cljs:oget]: https://github.com/binaryage/cljs-oops#object-operations
-(define-inline (object-ref_ obj key)
+(define (object-ref_ obj key)
+  (declare (inline #t))
   (js/get obj key))
 
 ;;; Set the property `key` in `obj` to `val`.
@@ -50,7 +51,8 @@
 ;;; Similar to [`field-names` in Racket][rkt:field-names].
 ;;;
 ;;; [rkt:field-names]: https://docs.racket-lang.org/reference/objectutils.html#%28def._%28%28lib._racket%2Fprivate%2Fclass-internal..rkt%29._field-names%29%29
-(define-inline (field-names_ obj)
+(define (field-names_ obj)
+  (declare (inline #t))
   (js/keys obj))
 
 (provide

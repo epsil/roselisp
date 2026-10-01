@@ -127,7 +127,6 @@ function arity_(f) {
     return f.length;
 }
 exports.arity_ = arity_;
-arity_.fsource = [Symbol.for('define'), [Symbol.for('arity_'), Symbol.for('f')], [Symbol.for('js/length'), Symbol.for('f')]];
 arity_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [f] = exp.slice(1);
@@ -136,6 +135,7 @@ arity_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+arity_.fsource = [Symbol.for('define'), [Symbol.for('arity_'), Symbol.for('f')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/length'), Symbol.for('f')]];
 /**
  * Whether `obj` is a procedure (i.e., a function).
  *
@@ -151,7 +151,6 @@ function procedurep_(obj) {
 exports.functionp = procedurep_;
 exports.procedurep = procedurep_;
 exports.procedurep_ = procedurep_;
-procedurep_.fsource = [Symbol.for('define'), [Symbol.for('procedure?_'), Symbol.for('obj')], [Symbol.for('js/function?'), Symbol.for('obj')]];
 procedurep_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [obj] = exp.slice(1);
@@ -160,6 +159,7 @@ procedurep_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+procedurep_.fsource = [Symbol.for('define'), [Symbol.for('procedure?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/function?'), Symbol.for('obj')]];
 /**
  * Whether `obj` is a fexpr, that is, a procedure that
  * does not evaluate its arguments.
@@ -339,7 +339,6 @@ function forEach_(f, lst) {
     return lst.forEach(f);
 }
 exports.forEach_ = forEach_;
-forEach_.fsource = [Symbol.for('define'), [Symbol.for('for-each_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('forEach'), Symbol.for('f')]];
 forEach_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [f, lst] = exp.slice(1);
@@ -348,6 +347,7 @@ forEach_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+forEach_.fsource = [Symbol.for('define'), [Symbol.for('for-each_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('forEach'), Symbol.for('f')]];
 /**
  * Less than operator.
  *
@@ -498,7 +498,6 @@ function add1_(x) {
 }
 exports.add1 = add1_;
 exports.add1_ = add1_;
-add1_.fsource = [Symbol.for('define'), [Symbol.for('add1_'), Symbol.for('x')], [Symbol.for('+'), Symbol.for('x'), 1]];
 add1_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -507,6 +506,7 @@ add1_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+add1_.fsource = [Symbol.for('define'), [Symbol.for('add1_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('+'), Symbol.for('x'), 1]];
 /**
  * Subtraction.
  *
@@ -549,7 +549,6 @@ function sub1_(x) {
 }
 exports.sub1 = sub1_;
 exports.sub1_ = sub1_;
-sub1_.fsource = [Symbol.for('define'), [Symbol.for('sub1_'), Symbol.for('x')], [Symbol.for('-'), Symbol.for('x'), 1]];
 sub1_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -558,6 +557,7 @@ sub1_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+sub1_.fsource = [Symbol.for('define'), [Symbol.for('sub1_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('-'), Symbol.for('x'), 1]];
 /**
  * Multiplication.
  *
@@ -643,7 +643,6 @@ function sqrt_(x) {
     return Math.sqrt(x);
 }
 exports.sqrt_ = sqrt_;
-sqrt_.fsource = [Symbol.for('define'), [Symbol.for('sqrt_'), Symbol.for('x')], [Symbol.for('send'), Symbol.for('Math'), Symbol.for('sqrt'), Symbol.for('x')]];
 sqrt_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -652,6 +651,7 @@ sqrt_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+sqrt_.fsource = [Symbol.for('define'), [Symbol.for('sqrt_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Math'), Symbol.for('sqrt'), Symbol.for('x')]];
 /**
  * Whether a value is the number zero.
  *
@@ -666,7 +666,6 @@ function zerop_(n) {
 }
 exports.zerop = zerop_;
 exports.zerop_ = zerop_;
-zerop_.fsource = [Symbol.for('define'), [Symbol.for('zero?_'), Symbol.for('n')], [Symbol.for('='), Symbol.for('n'), 0]];
 zerop_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [n] = exp.slice(1);
@@ -675,6 +674,7 @@ zerop_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+zerop_.fsource = [Symbol.for('define'), [Symbol.for('zero?_'), Symbol.for('n')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('='), Symbol.for('n'), 0]];
 /**
  * Whether a value is the number one.
  */
@@ -682,7 +682,6 @@ function onep_(n) {
     return n === 1;
 }
 exports.onep_ = onep_;
-onep_.fsource = [Symbol.for('define'), [Symbol.for('one?_'), Symbol.for('n')], [Symbol.for('='), Symbol.for('n'), 1]];
 onep_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [n] = exp.slice(1);
@@ -691,6 +690,7 @@ onep_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+onep_.fsource = [Symbol.for('define'), [Symbol.for('one?_'), Symbol.for('n')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('='), Symbol.for('n'), 1]];
 /**
  * Whether a number is odd.
  *
@@ -704,7 +704,6 @@ function oddp_(n) {
     return (n % 2) !== 0;
 }
 exports.oddp_ = oddp_;
-oddp_.fsource = [Symbol.for('define'), [Symbol.for('odd?_'), Symbol.for('n')], [Symbol.for('not'), [Symbol.for('even?'), Symbol.for('n')]]];
 oddp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [n] = exp.slice(1);
@@ -713,6 +712,7 @@ oddp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+oddp_.fsource = [Symbol.for('define'), [Symbol.for('odd?_'), Symbol.for('n')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('not'), [Symbol.for('even?'), Symbol.for('n')]]];
 /**
  * Whether a number is even.
  *
@@ -726,7 +726,6 @@ function evenp_(n) {
     return (n % 2) === 0;
 }
 exports.evenp_ = evenp_;
-evenp_.fsource = [Symbol.for('define'), [Symbol.for('even?_'), Symbol.for('n')], [Symbol.for('zero?'), [Symbol.for('modulo'), Symbol.for('n'), 2]]];
 evenp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [n] = exp.slice(1);
@@ -735,6 +734,7 @@ evenp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+evenp_.fsource = [Symbol.for('define'), [Symbol.for('even?_'), Symbol.for('n')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('zero?'), [Symbol.for('modulo'), Symbol.for('n'), 2]]];
 /**
  * Whether a value is truthy.
  */
@@ -748,7 +748,6 @@ function truep_(x) {
 }
 exports.truep = truep_;
 exports.truep_ = truep_;
-truep_.fsource = [Symbol.for('define'), [Symbol.for('true?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), true, false]];
 truep_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -757,6 +756,7 @@ truep_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+truep_.fsource = [Symbol.for('define'), [Symbol.for('true?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('if'), Symbol.for('x'), true, false]];
 /**
  * Whether a value is falsy.
  */
@@ -770,7 +770,6 @@ function falsep_(x) {
 }
 exports.falsep = falsep_;
 exports.falsep_ = falsep_;
-falsep_.fsource = [Symbol.for('define'), [Symbol.for('false?_'), Symbol.for('x')], [Symbol.for('if'), Symbol.for('x'), false, true]];
 falsep_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -779,6 +778,7 @@ falsep_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+falsep_.fsource = [Symbol.for('define'), [Symbol.for('false?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('if'), Symbol.for('x'), false, true]];
 /**
  * The identity function.
  *
@@ -806,7 +806,6 @@ function const_(x = undefined) {
     return (...args) => x;
 }
 exports.const_ = const_;
-const_.fsource = [Symbol.for('define'), [Symbol.for('const_'), [Symbol.for('x'), undefined]], [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('x')]];
 const_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -824,6 +823,7 @@ const_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+const_.fsource = [Symbol.for('define'), [Symbol.for('const_'), [Symbol.for('x'), undefined]], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('lambda'), Symbol.for('args'), Symbol.for('x')]];
 /**
  * Return a tuple of multiple values.
  *
@@ -876,7 +876,6 @@ function keywordToString_(x) {
 }
 exports.keywordToString = keywordToString_;
 exports.keywordToString_ = keywordToString_;
-keywordToString_.fsource = [Symbol.for('define'), [Symbol.for('keyword->string_'), Symbol.for('x')], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('x')], '']];
 keywordToString_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -885,6 +884,7 @@ keywordToString_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+keywordToString_.fsource = [Symbol.for('define'), [Symbol.for('keyword->string_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('regexp-replace'), [Symbol.for('regexp'), '^:'], [Symbol.for('symbol->string'), Symbol.for('x')], '']];
 /**
  * Convert a keyword to a regular symbol
  * (i.e., strip the `:` prefix).
@@ -894,7 +894,6 @@ function keywordToSymbol_(x) {
 }
 exports.keywordToSymbol = keywordToSymbol_;
 exports.keywordToSymbol_ = keywordToSymbol_;
-keywordToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('keyword->symbol_'), Symbol.for('x')], [Symbol.for('string->symbol'), [Symbol.for('keyword->string'), Symbol.for('x')]]];
 keywordToSymbol_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -903,6 +902,7 @@ keywordToSymbol_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+keywordToSymbol_.fsource = [Symbol.for('define'), [Symbol.for('keyword->symbol_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('string->symbol'), [Symbol.for('keyword->string'), Symbol.for('x')]]];
 /**
  * Convert a symbol to a keyword.
  */
@@ -910,7 +910,6 @@ function symbolToKeyword_(x) {
     return Symbol.for(':' + x.description);
 }
 exports.symbolToKeyword_ = symbolToKeyword_;
-symbolToKeyword_.fsource = [Symbol.for('define'), [Symbol.for('symbol->keyword_'), Symbol.for('x')], [Symbol.for('string->keyword'), [Symbol.for('symbol->string'), Symbol.for('x')]]];
 symbolToKeyword_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -919,6 +918,7 @@ symbolToKeyword_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+symbolToKeyword_.fsource = [Symbol.for('define'), [Symbol.for('symbol->keyword_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('string->keyword'), [Symbol.for('symbol->string'), Symbol.for('x')]]];
 /**
  * Convert a string to a keyword.
  */
@@ -926,7 +926,6 @@ function stringToKeyword_(x) {
     return Symbol.for(':' + x);
 }
 exports.stringToKeyword_ = stringToKeyword_;
-stringToKeyword_.fsource = [Symbol.for('define'), [Symbol.for('string->keyword_'), Symbol.for('x')], [Symbol.for('string->symbol'), [Symbol.for('string-append'), ':', Symbol.for('x')]]];
 stringToKeyword_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -935,6 +934,7 @@ stringToKeyword_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+stringToKeyword_.fsource = [Symbol.for('define'), [Symbol.for('string->keyword_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('string->symbol'), [Symbol.for('string-append'), ':', Symbol.for('x')]]];
 /**
  * Whether something is an atomic value.
  */
@@ -942,7 +942,6 @@ function atomp_(x) {
     return !(Array.isArray(x) && (x.length > 0));
 }
 exports.atomp_ = atomp_;
-atomp_.fsource = [Symbol.for('define'), [Symbol.for('atom?_'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('pair?'), Symbol.for('x')]]];
 atomp_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -951,6 +950,7 @@ atomp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+atomp_.fsource = [Symbol.for('define'), [Symbol.for('atom?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('not'), [Symbol.for('pair?'), Symbol.for('x')]]];
 /**
  * Whether something is a number.
  *
@@ -965,7 +965,6 @@ function numberp_(obj) {
 }
 exports.numberp = numberp_;
 exports.numberp_ = numberp_;
-numberp_.fsource = [Symbol.for('define'), [Symbol.for('number?_'), Symbol.for('obj')], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isFinite'), Symbol.for('obj')]];
 numberp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [obj] = exp.slice(1);
@@ -974,6 +973,7 @@ numberp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+numberp_.fsource = [Symbol.for('define'), [Symbol.for('number?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Number'), Symbol.for('isFinite'), Symbol.for('obj')]];
 /**
  * Whether something is a boolean value.
  *
@@ -987,7 +987,6 @@ function booleanp_(obj) {
     return typeof obj === 'boolean';
 }
 exports.booleanp_ = booleanp_;
-booleanp_.fsource = [Symbol.for('define'), [Symbol.for('boolean?_'), Symbol.for('obj')], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'boolean']];
 booleanp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [obj] = exp.slice(1);
@@ -996,6 +995,7 @@ booleanp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+booleanp_.fsource = [Symbol.for('define'), [Symbol.for('boolean?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('obj')], 'boolean']];
 /**
  * Whether something is the value `undefined`.
  */
@@ -1003,7 +1003,6 @@ function undefinedp_(obj) {
     return obj === undefined;
 }
 exports.undefinedp_ = undefinedp_;
-undefinedp_.fsource = [Symbol.for('define'), [Symbol.for('undefined?_'), Symbol.for('obj')], [Symbol.for('eq?'), Symbol.for('obj'), undefined]];
 undefinedp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [obj] = exp.slice(1);
@@ -1012,6 +1011,7 @@ undefinedp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+undefinedp_.fsource = [Symbol.for('define'), [Symbol.for('undefined?_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), Symbol.for('obj'), undefined]];
 /**
  * Fold up a list left to right.
  *
@@ -1173,7 +1173,6 @@ function memqp_(v, lst) {
     return lst.includes(v);
 }
 exports.memqp_ = memqp_;
-memqp_.fsource = [Symbol.for('define'), [Symbol.for('memq?_'), Symbol.for('v'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('includes'), Symbol.for('v')]];
 memqp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [v, lst] = exp.slice(1);
@@ -1182,6 +1181,7 @@ memqp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+memqp_.fsource = [Symbol.for('define'), [Symbol.for('memq?_'), Symbol.for('v'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('includes'), Symbol.for('v')]];
 /**
  * Whether a list contains a value matching a predicate.
  * Applies the predicate `proc` to elements in the list
@@ -1213,7 +1213,6 @@ function memfp_(proc, lst) {
     return lst.findIndex(proc) >= 0;
 }
 exports.memfp_ = memfp_;
-memfp_.fsource = [Symbol.for('define'), [Symbol.for('memf?_'), Symbol.for('proc'), Symbol.for('lst')], [Symbol.for('>='), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')], 0]];
 memfp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [proc, lst] = exp.slice(1);
@@ -1222,6 +1221,7 @@ memfp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+memfp_.fsource = [Symbol.for('define'), [Symbol.for('memf?_'), Symbol.for('proc'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('>='), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')], 0]];
 /**
  * Find a list element matching a predicate.
  *
@@ -1263,7 +1263,6 @@ function findfIndex_(proc, seq, notFound = false) {
 }
 exports.findfIndex = findfIndex_;
 exports.findfIndex_ = findfIndex_;
-findfIndex_.fsource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol.for('proc'), Symbol.for('seq'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 findfIndex_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [proc, seq, notFound] = exp.slice(1);
@@ -1275,6 +1274,7 @@ findfIndex_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+findfIndex_.fsource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol.for('proc'), Symbol.for('seq'), [Symbol.for('not-found'), false]], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 /**
  * Find the index of a list element matching a predicate.
  *
@@ -1294,7 +1294,6 @@ function indexWhere_(seq, proc, notFound = false) {
     }
 }
 exports.indexWhere_ = indexWhere_;
-indexWhere_.fsource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol.for('seq'), Symbol.for('proc'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 indexWhere_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [seq, proc, notFound] = exp.slice(1);
@@ -1306,6 +1305,7 @@ indexWhere_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+indexWhere_.fsource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol.for('seq'), Symbol.for('proc'), [Symbol.for('not-found'), false]], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 /**
  * Find the index of a list element.
  *
@@ -1453,7 +1453,6 @@ function filter_(pred, lst) {
     return lst.filter(pred);
 }
 exports.filter_ = filter_;
-filter_.fsource = [Symbol.for('define'), [Symbol.for('filter_'), Symbol.for('pred'), Symbol.for('lst')], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('filter'), Symbol.for('pred')]];
 filter_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [pred, lst] = exp.slice(1);
@@ -1462,6 +1461,7 @@ filter_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+filter_.fsource = [Symbol.for('define'), [Symbol.for('filter_'), Symbol.for('pred'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('filter'), Symbol.for('pred')]];
 /**
  * Whether a value is self-evaluating.
  */
@@ -1555,7 +1555,6 @@ function makeError_(...args) {
     return new Error(...args);
 }
 exports.makeError_ = makeError_;
-makeError_.fsource = [Symbol.for('define'), [Symbol.for('make-error_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('new/apply'), Symbol.for('Error'), Symbol.for('args')]];
 makeError_.compilerMacro = (() => {
     const f = (exp, env) => {
         const args = exp.slice(1);
@@ -1564,6 +1563,7 @@ makeError_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+makeError_.fsource = [Symbol.for('define'), [Symbol.for('make-error_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('new/apply'), Symbol.for('Error'), Symbol.for('args')]];
 /**
  * Get the type of a value.
  *
@@ -1576,7 +1576,6 @@ function typeOf_(x) {
 }
 exports.typeOf = typeOf_;
 exports.typeOf_ = typeOf_;
-typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('js/typeof'), Symbol.for('x')]];
 typeOf_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -1585,6 +1584,7 @@ typeOf_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+typeOf_.fsource = [Symbol.for('define'), [Symbol.for('type-of_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/typeof'), Symbol.for('x')]];
 /**
  * Whether `obj` is an instance of `cls`.
  *
@@ -1602,7 +1602,6 @@ exports.instanceOf_ = isAP_;
 exports.instanceofp = isAP_;
 exports.isAP = isAP_;
 exports.isAP_ = isAP_;
-isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('js/instanceof'), Symbol.for('obj'), Symbol.for('cls')]];
 isAP_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [obj, cls] = exp.slice(1);
@@ -1611,6 +1610,7 @@ isAP_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+isAP_.fsource = [Symbol.for('define'), [Symbol.for('is-a?_'), Symbol.for('obj'), Symbol.for('cls')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/instanceof'), Symbol.for('obj'), Symbol.for('cls')]];
 /**
  * Return the absolute value of `x`.
  */
@@ -1618,7 +1618,6 @@ function abs_(x) {
     return Math.abs(x);
 }
 exports.abs_ = abs_;
-abs_.fsource = [Symbol.for('define'), [Symbol.for('abs_'), Symbol.for('x')], [Symbol.for('js/abs'), Symbol.for('x')]];
 abs_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [x] = exp.slice(1);
@@ -1627,6 +1626,7 @@ abs_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+abs_.fsource = [Symbol.for('define'), [Symbol.for('abs_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/abs'), Symbol.for('x')]];
 /**
  * Sort a list with a predicate.
  */

@@ -72,6 +72,6 @@ declare namespace memoize2 {
  */
 declare function memoizeWithArg(f: any, arity?: any): any;
 declare namespace memoizeWithArg {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | ((symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol)[])[])[])[])[])[];
 }
 export { eof, memoize, memoize2, memoizeWithArg };

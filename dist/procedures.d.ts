@@ -26,7 +26,7 @@
  */
 declare function apply_(f: any, ...args: any[]): any;
 declare namespace apply_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[])[] | null)[])[];
+    var fsource: (symbol | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | (number | symbol)[])[])[] | null)[])[];
 }
 /**
  * Call `f` with `args`.
@@ -45,8 +45,8 @@ declare namespace funcall_ {
  */
 declare function arity_(f: any): any;
 declare namespace arity_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether `obj` is a procedure (i.e., a function).
@@ -59,8 +59,8 @@ declare namespace arity_ {
  */
 declare function procedurep_(obj: any): any;
 declare namespace procedurep_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether `obj` is a fexpr, that is, a procedure that
@@ -179,8 +179,8 @@ declare namespace map_ {
  */
 declare function forEach_(f: any, lst: any): any;
 declare namespace forEach_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Less than operator.
@@ -264,8 +264,8 @@ declare namespace add_ {
  */
 declare function add1_(x: any): any;
 declare namespace add1_ {
-    var fsource: (symbol | (number | symbol)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
 }
 /**
  * Subtraction.
@@ -288,8 +288,8 @@ declare namespace sub_ {
  */
 declare function sub1_(x: any): any;
 declare namespace sub1_ {
-    var fsource: (symbol | (number | symbol)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
 }
 /**
  * Multiplication.
@@ -338,8 +338,8 @@ declare namespace expt_ {
  */
 declare function sqrt_(x: any): any;
 declare namespace sqrt_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether a value is the number zero.
@@ -352,16 +352,16 @@ declare namespace sqrt_ {
  */
 declare function zerop_(n: any): any;
 declare namespace zerop_ {
-    var fsource: (symbol | (number | symbol)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
 }
 /**
  * Whether a value is the number one.
  */
 declare function onep_(n: any): any;
 declare namespace onep_ {
-    var fsource: (symbol | (number | symbol)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
 }
 /**
  * Whether a number is odd.
@@ -374,8 +374,8 @@ declare namespace onep_ {
  */
 declare function oddp_(n: any): any;
 declare namespace oddp_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether a number is even.
@@ -388,24 +388,24 @@ declare namespace oddp_ {
  */
 declare function evenp_(n: any): any;
 declare namespace evenp_ {
-    var fsource: (symbol | (symbol | (number | symbol)[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol)[])[])[];
 }
 /**
  * Whether a value is truthy.
  */
 declare function truep_(x: any): any;
 declare namespace truep_ {
-    var fsource: (symbol | (boolean | symbol)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether a value is falsy.
  */
 declare function falsep_(x: any): any;
 declare namespace falsep_ {
-    var fsource: (symbol | (boolean | symbol)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * The identity function.
@@ -431,8 +431,8 @@ declare namespace identity_ {
  */
 declare function const_(x?: any): any;
 declare namespace const_ {
-    var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Return a tuple of multiple values.
@@ -467,8 +467,8 @@ declare namespace keywordp_ {
  */
 declare function keywordToString_(x: any): any;
 declare namespace keywordToString_ {
-    var fsource: (symbol | (string | symbol | (string | symbol)[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (string | symbol | (string | symbol)[])[])[];
 }
 /**
  * Convert a keyword to a regular symbol
@@ -476,32 +476,32 @@ declare namespace keywordToString_ {
  */
 declare function keywordToSymbol_(x: any): any;
 declare namespace keywordToSymbol_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert a symbol to a keyword.
  */
 declare function symbolToKeyword_(x: any): any;
 declare namespace symbolToKeyword_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Convert a string to a keyword.
  */
 declare function stringToKeyword_(x: any): any;
 declare namespace stringToKeyword_ {
-    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Whether something is an atomic value.
  */
 declare function atomp_(x: any): any;
 declare namespace atomp_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether something is a number.
@@ -514,8 +514,8 @@ declare namespace atomp_ {
  */
 declare function numberp_(obj: any): any;
 declare namespace numberp_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether something is a boolean value.
@@ -528,16 +528,16 @@ declare namespace numberp_ {
  */
 declare function booleanp_(obj: any): any;
 declare namespace booleanp_ {
-    var fsource: (symbol | (string | symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[];
 }
 /**
  * Whether something is the value `undefined`.
  */
 declare function undefinedp_(obj: any): any;
 declare namespace undefinedp_ {
-    var fsource: (symbol | (symbol | undefined)[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | undefined)[])[];
 }
 /**
  * Fold up a list left to right.
@@ -612,8 +612,8 @@ declare namespace memq_ {
  */
 declare function memqp_(v: any, lst: any): any;
 declare namespace memqp_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether a list contains a value matching a predicate.
@@ -636,8 +636,8 @@ declare namespace memf_ {
  */
 declare function memfp_(proc: any, lst: any): any;
 declare namespace memfp_ {
-    var fsource: (symbol | (number | symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol | symbol[])[])[];
 }
 /**
  * Find a list element matching a predicate.
@@ -663,8 +663,8 @@ declare namespace findf_ {
  */
 declare function findfIndex_(proc: any, seq: any, notFound?: any): any;
 declare namespace findfIndex_ {
-    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -677,8 +677,8 @@ declare namespace findfIndex_ {
  */
 declare function indexWhere_(seq: any, proc: any, notFound?: any): any;
 declare namespace indexWhere_ {
-    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
 }
 /**
  * Find the index of a list element.
@@ -758,8 +758,8 @@ declare namespace pipe_ {
  */
 declare function filter_(pred: any, lst: any): any;
 declare namespace filter_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether a value is self-evaluating.
@@ -816,8 +816,8 @@ declare namespace error_ {
  */
 declare function makeError_(...args: any[]): any;
 declare namespace makeError_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Get the type of a value.
@@ -828,8 +828,8 @@ declare namespace makeError_ {
  */
 declare function typeOf_(x: any): any;
 declare namespace typeOf_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether `obj` is an instance of `cls`.
@@ -840,16 +840,16 @@ declare namespace typeOf_ {
  */
 declare function isAP_(obj: any, cls: any): any;
 declare namespace isAP_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return the absolute value of `x`.
  */
 declare function abs_(x: any): any;
 declare namespace abs_ {
-    var fsource: (symbol | symbol[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Sort a list with a predicate.

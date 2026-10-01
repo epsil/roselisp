@@ -31,7 +31,7 @@ import { quotep } from './util';
  */
 declare function compile_(exp: any, ...options: any[]): any;
 declare namespace compile_ {
-    var fsource: (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[] | ((string | symbol)[] | (symbol | (symbol | (boolean | symbol)[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[] | ((symbol | (symbol | (boolean | symbol)[])[])[] | (string | symbol)[])[])[])[];
 }
 /**
  * Decompile a JavaScript or TypeScript string to
@@ -56,7 +56,7 @@ declare namespace compileWithEnvironment {
  */
 declare function compileModules(modules: any, env: any, options?: any): any;
 declare namespace compileModules {
-    var fsource: (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (boolean | symbol)[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (boolean | symbol)[])[])[] | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 /**
  * Compile a module map.
@@ -72,7 +72,7 @@ declare namespace compileModuleMap {
  */
 declare function compileFilesX(files: any, options?: any): any;
 declare namespace compileFilesX {
-    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | string[])[])[])[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | string[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | string[])[])[])[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (boolean | symbol)[] | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | string[])[])[])[])[])[])[];
 }
 /**
  * Compile a file.
@@ -126,7 +126,7 @@ declare namespace lisp {
  */
 declare function makeLisp(variables?: any, isLisp2?: any): any;
 declare namespace makeLisp {
-    var fsource: (symbol | (symbol | (symbol | (symbol | never[])[])[] | (boolean | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (boolean | symbol)[] | (symbol | (symbol | never[])[])[])[])[];
 }
 /**
  * Split up a string containing multiple comments.
@@ -178,7 +178,7 @@ declare namespace macroexpand {
  */
 declare function macroexpandStar(exp: any, env?: any): any;
 declare namespace macroexpandStar {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | undefined)[])[] | (boolean | symbol)[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | undefined)[])[])[];
 }
 /**
  * Expand the macro call `exp` in `env` a single step.
@@ -202,7 +202,7 @@ declare namespace macroexpand1 {
  */
 declare function macroexpandstar1(exp: any, env?: any): any;
 declare namespace macroexpandstar1 {
-    var fsource: (symbol | (symbol | (symbol | undefined)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (boolean | symbol)[] | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Expand the macro call `exp` in `env`, and keep
@@ -224,7 +224,7 @@ declare namespace macroexpandN {
  */
 declare function macroexpandstarN(exp: any, env: any, n?: any): any;
 declare namespace macroexpandstarN {
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[];
 }
 /**
  * Expand the macro call `exp` in `env`, and keep
@@ -254,7 +254,7 @@ declare namespace macroexpandAll {
  */
 declare function macroexpandAllUntil(exp: any, env: any, pred?: any, stack?: any, bindings?: any): any;
 declare namespace macroexpandAllUntil {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (symbol | (boolean | symbol)[])[])[])[] | (symbol | (symbol | (symbol | never[])[])[] | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (boolean | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | never[])[])[] | (symbol | undefined)[])[])[];
 }
 /**
  * Expand a `(quote ...)` expression.
@@ -598,7 +598,7 @@ declare namespace mapSyntax {
  */
 declare function mapVisitStx(f: any, stx: any, env?: any, stack?: any, bindings?: any): any;
 declare namespace mapVisitStx {
-    var fsource: (symbol | (boolean | symbol | symbol[])[] | (symbol | (number | symbol)[] | (symbol | (number | symbol)[])[] | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (boolean | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | symbol[][])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | symbol[][])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (boolean | symbol | symbol[])[] | (symbol | (boolean | symbol)[] | (number | symbol)[] | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol)[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | symbol[][])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | symbol[][])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (boolean | symbol | (symbol | symbol[][])[])[])[])[])[])[])[])[];
 }
 /**
  * Map the function `f` over the S-expression `exp`.
@@ -720,7 +720,7 @@ declare namespace letVarsToConstVars {
  */
 declare function applyOptimizations(stx: any, env: any, rules?: any): any;
 declare namespace applyOptimizations {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (boolean | symbol)[])[];
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * List of `(predicate optimizer)` tuples.

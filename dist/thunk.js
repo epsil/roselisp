@@ -39,7 +39,6 @@ function thunkp_(x) {
 }
 exports.thunk = thunkp_;
 exports.thunkp_ = thunkp_;
-thunkp_.fsource = [Symbol.for('define'), [Symbol.for('thunk?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('x')], [Symbol.for('zero?'), [Symbol.for('arity'), Symbol.for('x')]]]];
 thunkp_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [x] = exp.slice(1);
@@ -54,6 +53,7 @@ thunkp_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+thunkp_.fsource = [Symbol.for('define'), [Symbol.for('thunk?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('procedure?'), Symbol.for('x')], [Symbol.for('zero?'), [Symbol.for('arity'), Symbol.for('x')]]]];
 /**
  * Make a promise.
  */
@@ -85,7 +85,6 @@ function promisep_(x) {
 }
 exports.promisep = promisep_;
 exports.promisep_ = promisep_;
-promisep_.fsource = [Symbol.for('define'), [Symbol.for('promise?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('js/function-type?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]], 'thunk']]];
 promisep_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [x] = exp.slice(1);
@@ -100,6 +99,7 @@ promisep_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+promisep_.fsource = [Symbol.for('define'), [Symbol.for('promise?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('js/function-type?'), Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('get-field'), Symbol.for('ftype'), [Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]], 'thunk']]];
 /**
  * Force a promise.
  */
@@ -108,7 +108,6 @@ function force_(x) {
 }
 exports.force = force_;
 exports.force_ = force_;
-force_.fsource = [Symbol.for('define'), [Symbol.for('force_'), Symbol.for('x')], [[Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]]];
 force_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [x] = exp.slice(1);
@@ -117,6 +116,7 @@ force_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+force_.fsource = [Symbol.for('define'), [Symbol.for('force_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [[Symbol.for('ann'), Symbol.for('x'), Symbol.for('Any')]]];
 /**
  * Whether a promise has been forced.
  */
@@ -130,7 +130,6 @@ function promiseForcedP_(x) {
 }
 exports.promiseForcedP = promiseForcedP_;
 exports.promiseForcedP_ = promiseForcedP_;
-promiseForcedP_.fsource = [Symbol.for('define'), [Symbol.for('promise-forced?_'), Symbol.for('x')], [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')], true, false]];
 promiseForcedP_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [x] = exp.slice(1);
@@ -139,6 +138,7 @@ promiseForcedP_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+promiseForcedP_.fsource = [Symbol.for('define'), [Symbol.for('promise-forced?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('if'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')], true, false]];
 /**
  * Whether a promise is running.
  */
@@ -147,7 +147,6 @@ function promiseRunningP_(x) {
 }
 exports.promiseRunningP = promiseRunningP_;
 exports.promiseRunningP_ = promiseRunningP_;
-promiseRunningP_.fsource = [Symbol.for('define'), [Symbol.for('promise-running?_'), Symbol.for('x')], [Symbol.for('undefined?'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')]]];
 promiseRunningP_.compilerMacro = (() => {
     const f = (exp, env) => {
         const [x] = exp.slice(1);
@@ -156,6 +155,7 @@ promiseRunningP_.compilerMacro = (() => {
     f.ftype = 'macro';
     return f;
 })();
+promiseRunningP_.fsource = [Symbol.for('define'), [Symbol.for('promise-running?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('undefined?'), [Symbol.for('get-field'), Symbol.for('forced'), Symbol.for('x')]]];
 /**
  * Map for storing promises in.
  *

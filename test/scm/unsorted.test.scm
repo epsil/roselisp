@@ -14,6 +14,12 @@
  :describe "To do"
  :repl #t
 
+ xit> (compile '(js/function :name foo ()
+                             0))
+ "function foo() {
+  return 0;
+}"
+
  :describe "Avoiding IIFEs"
  xit> (compile '(define x
                   (begin y z)))

@@ -855,6 +855,75 @@ f;"
   return f1;
 })();"
 
+ :describe "declare"
+ > (compile '(define (foo x)
+               (declare (ftype "macro"))
+               x))
+ "function foo(x) {
+  return x;
+}
+
+foo.ftype = 'macro';"
+ > (compile '(lambda (x)
+               (declare (ftype "macro"))
+               x))
+ "let f = x => x;
+
+f.ftype = 'macro';
+
+f;"
+ > (compile '(begin
+               (define (my-plus x y)
+                 (+ x y 0))
+               (declare my-plus
+                        (compiler-macro
+                         (macro (x y)
+                           `(+ ,x ,y))))))
+ "function myPlus(x, y) {
+  return x + y + 0;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = (exp, env) => {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();"
+ > (compile '(define (my-plus x y)
+               (declare (inline #t))
+               (+ x y)))
+ "function myPlus(x, y) {
+  return x + y;
+}
+
+myPlus.compilerMacro = (() => {
+  let f = (exp, env) => {
+    let [x, y] = exp.slice(1);
+    return [Symbol.for('+'), x, y];
+  };
+  f.ftype = 'macro';
+  return f;
+})();"
+ > (compile '(define (my-plus  . args)
+               (declare (inline #t))
+               (foldl (lambda (x y)
+                        (+ x y))
+                      args)))
+ "function myPlus(...args) {
+  return undefined.reduce((y, x) => x + y, args);
+}
+
+myPlus.compilerMacro = (() => {
+  let f = (exp, env) => {
+    let args = exp.slice(1);
+    return [Symbol.for('foldl'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('+'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('list'), ...args]];
+  };
+  f.ftype = 'macro';
+  return f;
+})();"
+
  :describe "unwind-protect"
  > (unwind-protect 1 2 3)
  1

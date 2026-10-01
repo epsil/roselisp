@@ -329,8 +329,6 @@ function pairp_(x: any): any {
   return Array.isArray(x) && (x.length > 0);
 }
 
-pairp_.fsource = [Symbol.for('define'), [Symbol.for('pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
-
 pairp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -345,6 +343,8 @@ pairp_.compilerMacro = ((): any => {
   return f;
 })();
 
+pairp_.fsource = [Symbol.for('define'), [Symbol.for('pair?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>'), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
+
 /**
  * Whether something is the empty list.
  *
@@ -355,8 +355,6 @@ pairp_.compilerMacro = ((): any => {
 function nullp_(x: any): any {
   return Array.isArray(x) && (x.length === 0);
 }
-
-nullp_.fsource = [Symbol.for('define'), [Symbol.for('null?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
 
 nullp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -371,6 +369,8 @@ nullp_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+nullp_.fsource = [Symbol.for('define'), [Symbol.for('null?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 0]]];
 
 /**
  * Whether something is a list.
@@ -1150,8 +1150,6 @@ function listCopy_(lst: any): any {
   return [...lst];
 }
 
-listCopy_.fsource = [Symbol.for('define'), [Symbol.for('list-copy_'), Symbol.for('lst')], [Symbol.for('array-copy'), Symbol.for('lst')]];
-
 listCopy_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [lst]: any[] = exp.slice(1);
@@ -1160,6 +1158,8 @@ listCopy_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+listCopy_.fsource = [Symbol.for('define'), [Symbol.for('list-copy_'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-copy'), Symbol.for('lst')]];
 
 /**
  * Return the `n`-th CDR element of a list.
@@ -1332,8 +1332,6 @@ function reversex_(lst: any): any {
   return lst.reverse();
 }
 
-reversex_.fsource = [Symbol.for('define'), [Symbol.for('reverse!_'), Symbol.for('lst')], [Symbol.for('array-reverse!'), Symbol.for('lst')]];
-
 reversex_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [lst]: any[] = exp.slice(1);
@@ -1342,6 +1340,8 @@ reversex_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+reversex_.fsource = [Symbol.for('define'), [Symbol.for('reverse!_'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-reverse!'), Symbol.for('lst')]];
 
 /**
  * Return a list where the last `n` conses have been omitted.
@@ -1392,8 +1392,6 @@ function popLeftX_(lst: any): any {
   return lst.shift();
 }
 
-popLeftX_.fsource = [Symbol.for('define'), [Symbol.for('pop-left!_'), Symbol.for('lst')], [Symbol.for('array-pop-left!'), Symbol.for('lst')]];
-
 popLeftX_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [lst]: any[] = exp.slice(1);
@@ -1402,6 +1400,8 @@ popLeftX_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+popLeftX_.fsource = [Symbol.for('define'), [Symbol.for('pop-left!_'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-pop-left!'), Symbol.for('lst')]];
 
 /**
  * Pop an element off the end of a list.
@@ -1414,8 +1414,6 @@ function popRightX_(lst: any): any {
   return lst.pop();
 }
 
-popRightX_.fsource = [Symbol.for('define'), [Symbol.for('pop-right!_'), Symbol.for('lst')], [Symbol.for('array-pop-right!'), Symbol.for('lst')]];
-
 popRightX_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [lst]: any[] = exp.slice(1);
@@ -1424,6 +1422,8 @@ popRightX_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+popRightX_.fsource = [Symbol.for('define'), [Symbol.for('pop-right!_'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-pop-right!'), Symbol.for('lst')]];
 
 /**
  * Push an element onto the beginning of a list.
@@ -1437,8 +1437,6 @@ function pushLeftX_(lst: any, x: any): any {
   return lst;
 }
 
-pushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('push-left!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-left!'), Symbol.for('lst'), Symbol.for('x')]];
-
 pushLeftX_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [lst, x]: any[] = exp.slice(1);
@@ -1447,6 +1445,8 @@ pushLeftX_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+pushLeftX_.fsource = [Symbol.for('define'), [Symbol.for('push-left!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-push-left!'), Symbol.for('lst'), Symbol.for('x')]];
 
 /**
  * Push an element onto the end of a list.
@@ -1460,8 +1460,6 @@ function pushRightX_(lst: any, x: any): any {
   return lst;
 }
 
-pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('array-push-right!'), Symbol.for('lst'), Symbol.for('x')]];
-
 pushRightX_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [lst, x]: any[] = exp.slice(1);
@@ -1470,6 +1468,8 @@ pushRightX_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+pushRightX_.fsource = [Symbol.for('define'), [Symbol.for('push-right!_'), Symbol.for('lst'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-push-right!'), Symbol.for('lst'), Symbol.for('x')]];
 
 /**
  * Return the length of a list.
@@ -1649,8 +1649,6 @@ function dottedListP_(x: any): any {
   return Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.'));
 }
 
-dottedListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]]]];
-
 dottedListP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [x]: any[] = exp.slice(1);
@@ -1665,14 +1663,14 @@ dottedListP_.compilerMacro = ((): any => {
   return f;
 })();
 
+dottedListP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('>='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-nlast'), Symbol.for('x'), 2], [Symbol.for('quote'), Symbol.for('.')]]]];
+
 /**
  * Whether something is a dotted pair.
  */
 function dottedPairP_(x: any): any {
   return Array.isArray(x) && (x.length === 3) && (x[1] === Symbol.for('.'));
 }
-
-dottedPairP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-pair?_'), Symbol.for('x')], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), Symbol.for('x'), 1], [Symbol.for('quote'), Symbol.for('.')]]]];
 
 dottedPairP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1687,6 +1685,8 @@ dottedPairP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+dottedPairP_.fsource = [Symbol.for('define'), [Symbol.for('dotted-pair?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('array?'), Symbol.for('x')], [Symbol.for('='), [Symbol.for('array-length'), Symbol.for('x')], 3], [Symbol.for('eq?'), [Symbol.for('array-ref'), Symbol.for('x'), 1], [Symbol.for('quote'), Symbol.for('.')]]]];
 
 /**
  * Whether something is a proper dotted list.
@@ -1713,8 +1713,6 @@ function dottedListHead_(lst: any): any {
   return lst.slice(0, -2);
 }
 
-dottedListHead_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-head_'), Symbol.for('lst')], [Symbol.for('array-drop-right'), Symbol.for('lst'), 2]];
-
 dottedListHead_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [lst]: any[] = exp.slice(1);
@@ -1724,14 +1722,14 @@ dottedListHead_.compilerMacro = ((): any => {
   return f;
 })();
 
+dottedListHead_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-head_'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-drop-right'), Symbol.for('lst'), 2]];
+
 /**
  * Return the tail of a dotted list.
  */
 function dottedListTail_(lst: any): any {
   return lst[lst.length - 1];
 }
-
-dottedListTail_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tail_'), Symbol.for('lst')], [Symbol.for('array-last'), Symbol.for('lst')]];
 
 dottedListTail_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -1741,6 +1739,8 @@ dottedListTail_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+dottedListTail_.fsource = [Symbol.for('define'), [Symbol.for('dotted-list-tail_'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('array-last'), Symbol.for('lst')]];
 
 /**
  * Create a dotted list link.
@@ -2093,8 +2093,6 @@ function iteratorToList_(iterator: any): any {
   return [...iterator];
 }
 
-iteratorToList_.fsource = [Symbol.for('define'), [Symbol.for('iterator->list_'), Symbol.for('iterator')], [Symbol.for('iterator->array'), Symbol.for('iterator')]];
-
 iteratorToList_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [iterator]: any[] = exp.slice(1);
@@ -2103,6 +2101,8 @@ iteratorToList_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+iteratorToList_.fsource = [Symbol.for('define'), [Symbol.for('iterator->list_'), Symbol.for('iterator')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('iterator->array'), Symbol.for('iterator')]];
 
 export {
   append_ as append,

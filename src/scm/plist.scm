@@ -22,14 +22,16 @@
 ;;; Similar to [`plistp` in Emacs Lisp][el:plistp].
 ;;;
 ;;; [el:plistp]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Property-Lists.html#index-plistp
-(define-inline (plist?_ obj)
+(define (plist?_ obj)
+  (declare (inline #t))
   ;; Since we permit properties to be any kind of value, it suffices
   ;; to verify that the input is an array of even length.
   (and (pair-or-list? obj)
        (even? (length obj))))
 
 ;;; Copy a property list.
-(define-inline (plist-copy_ plst)
+(define (plist-copy_ plst)
+  (declare (inline #t))
   (array-copy plst))
 
 ;;; Return the value of a property in a property list.

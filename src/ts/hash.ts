@@ -50,8 +50,6 @@ function hashp_(v: any): any {
   return v instanceof Map;
 }
 
-hashp_.fsource = [Symbol.for('define'), [Symbol.for('hash?_'), Symbol.for('v')], [Symbol.for('is-a?'), Symbol.for('v'), Symbol.for('Map')]];
-
 hashp_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [v]: any[] = exp.slice(1);
@@ -60,6 +58,8 @@ hashp_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashp_.fsource = [Symbol.for('define'), [Symbol.for('hash?_'), Symbol.for('v')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('v'), Symbol.for('Map')]];
 
 /**
  * Make a hash map from a list of `(key . value)` pairs.
@@ -115,8 +115,6 @@ function hashSetX_(ht: any, key: any, v: any): any {
   return ht.set(key, v);
 }
 
-hashSetX_.fsource = [Symbol.for('define'), [Symbol.for('hash-set!_'), Symbol.for('ht'), Symbol.for('key'), Symbol.for('v')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('set'), Symbol.for('key'), Symbol.for('v')]];
-
 hashSetX_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht, key, v]: any[] = exp.slice(1);
@@ -125,6 +123,8 @@ hashSetX_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashSetX_.fsource = [Symbol.for('define'), [Symbol.for('hash-set!_'), Symbol.for('ht'), Symbol.for('key'), Symbol.for('v')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('set'), Symbol.for('key'), Symbol.for('v')]];
 
 /**
  * Set `key` to `v` in the hash map `ht`,
@@ -204,8 +204,6 @@ function hashHasKeyP_(ht: any, key: any): any {
   return ht.has(key);
 }
 
-hashHasKeyP_.fsource = [Symbol.for('define'), [Symbol.for('hash-has-key?_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('has'), Symbol.for('key')]];
-
 hashHasKeyP_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht, key]: any[] = exp.slice(1);
@@ -214,6 +212,8 @@ hashHasKeyP_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashHasKeyP_.fsource = [Symbol.for('define'), [Symbol.for('hash-has-key?_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('has'), Symbol.for('key')]];
 
 /**
  * Remove the value for a given key in a hash map
@@ -259,8 +259,6 @@ function hashRemoveX_(ht: any, key: any): any {
   return ht.delete(key);
 }
 
-hashRemoveX_.fsource = [Symbol.for('define'), [Symbol.for('hash-remove!_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('delete'), Symbol.for('key')]];
-
 hashRemoveX_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht, key]: any[] = exp.slice(1);
@@ -270,14 +268,14 @@ hashRemoveX_.compilerMacro = ((): any => {
   return f;
 })();
 
+hashRemoveX_.fsource = [Symbol.for('define'), [Symbol.for('hash-remove!_'), Symbol.for('ht'), Symbol.for('key')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('ht'), Symbol.for('delete'), Symbol.for('key')]];
+
 /**
  * Return the number of keys in a hash table.
  */
 function hashSize_(ht: any): any {
   return ht.size;
 }
-
-hashSize_.fsource = [Symbol.for('define'), [Symbol.for('hash-size_'), Symbol.for('ht')], [Symbol.for('get-field'), Symbol.for('size'), Symbol.for('ht')]];
 
 hashSize_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -287,6 +285,8 @@ hashSize_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashSize_.fsource = [Symbol.for('define'), [Symbol.for('hash-size_'), Symbol.for('ht')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('get-field'), Symbol.for('size'), Symbol.for('ht')]];
 
 /**
  * Clone a hash map.
@@ -299,8 +299,6 @@ function hashCopy_(ht: any): any {
   return new Map(ht);
 }
 
-hashCopy_.fsource = [Symbol.for('define'), [Symbol.for('hash-copy_'), Symbol.for('ht')], [Symbol.for('new'), Symbol.for('Map'), Symbol.for('ht')]];
-
 hashCopy_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht]: any[] = exp.slice(1);
@@ -309,6 +307,8 @@ hashCopy_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashCopy_.fsource = [Symbol.for('define'), [Symbol.for('hash-copy_'), Symbol.for('ht')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('new'), Symbol.for('Map'), Symbol.for('ht')]];
 
 /**
  * Delete all entries in a hash map,
@@ -361,8 +361,6 @@ function hashKeys_(ht: any): any {
   return [...ht.keys()];
 }
 
-hashKeys_.fsource = [Symbol.for('define'), [Symbol.for('hash-keys_'), Symbol.for('ht')], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('keys')]]];
-
 hashKeys_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht]: any[] = exp.slice(1);
@@ -371,6 +369,8 @@ hashKeys_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashKeys_.fsource = [Symbol.for('define'), [Symbol.for('hash-keys_'), Symbol.for('ht')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('keys')]]];
 
 /**
  * Return a list of all the values in a hash map.
@@ -383,8 +383,6 @@ function hashValues_(ht: any): any {
   return [...ht.values()];
 }
 
-hashValues_.fsource = [Symbol.for('define'), [Symbol.for('hash-values_'), Symbol.for('ht')], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('values')]]];
-
 hashValues_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht]: any[] = exp.slice(1);
@@ -394,14 +392,14 @@ hashValues_.compilerMacro = ((): any => {
   return f;
 })();
 
+hashValues_.fsource = [Symbol.for('define'), [Symbol.for('hash-values_'), Symbol.for('ht')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('values')]]];
+
 /**
  * Convert a hash map to a list of `(key value)` tuples.
  */
 function hashEntries_(ht: any): any {
   return [...ht.entries()];
 }
-
-hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symbol.for('ht')], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('entries')]]];
 
 hashEntries_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
@@ -411,6 +409,8 @@ hashEntries_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashEntries_.fsource = [Symbol.for('define'), [Symbol.for('hash-entries_'), Symbol.for('ht')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('iterator->list'), [Symbol.for('send'), Symbol.for('ht'), Symbol.for('entries')]]];
 
 /**
  * Convert a hash map to a list of `(key . value)` pairs.
@@ -423,8 +423,6 @@ function hashToList_(ht: any): any {
   return [...ht.entries()].map((x: any): any => [x[0], ...((x1: any): any => Array.isArray(x1) ? x1 : [Symbol.for('.'), x1])(x[1])]);
 }
 
-hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];
-
 hashToList_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [ht]: any[] = exp.slice(1);
@@ -433,6 +431,8 @@ hashToList_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+hashToList_.fsource = [Symbol.for('define'), [Symbol.for('hash->list_'), Symbol.for('ht')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], [Symbol.for('hash-entries'), Symbol.for('ht')]]];
 
 export {
   hashToList_,

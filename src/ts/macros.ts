@@ -426,12 +426,24 @@ defsubst_.fsource = [Symbol.for('define'), [Symbol.for('defsubst_'), Symbol.for(
  */
 function defineInline_(exp: any, env: any): any {
   const [nameAndArgs, ...body]: any[] = exp.slice(1);
-  return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('define-compiler-macro'), ...defineToDefineMacro([Symbol.for('define'), nameAndArgs, ...body], true).slice(1)]];
+  return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('define-inline-macro'), nameAndArgs, ...body]];
 }
 
 defineInline_.ftype = 'macro';
 
-defineInline_.fsource = [Symbol.for('define'), [Symbol.for('define-inline_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('define-compiler-macro'), [Symbol.for('unquote-splicing'), [Symbol.for('rest'), [Symbol.for('define->define-macro'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]], true]]]]]]];
+defineInline_.fsource = [Symbol.for('define'), [Symbol.for('define-inline_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('define-inline-macro'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+
+/**
+ * Expand a `(define-inline-macro ...)` expression.
+ */
+function defineInlineMacro_(exp: any, env: any): any {
+  const [nameAndArgs, ...body]: any[] = exp.slice(1);
+  return [Symbol.for('define-compiler-macro'), ...defineToDefineMacro([Symbol.for('define'), nameAndArgs, ...body], true).slice(1)];
+}
+
+defineInlineMacro_.ftype = 'macro';
+
+defineInlineMacro_.fsource = [Symbol.for('define'), [Symbol.for('define-inline-macro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define-compiler-macro'), [Symbol.for('unquote-splicing'), [Symbol.for('rest'), [Symbol.for('define->define-macro'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]], true]]]]]];
 
 /**
  * Expand a `(define-fexpr ...)` expression.
@@ -1613,6 +1625,7 @@ export {
   defclass_,
   defineCompilerMacro_,
   defineFexpr_,
+  defineInlineMacro_,
   defineInline_,
   defineMacroToFunction,
   defineMacroToLambdaForm,

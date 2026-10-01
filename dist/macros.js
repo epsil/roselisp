@@ -17,8 +17,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.while_ = exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.syntaxMacro_ = exports.setq_ = exports.set_ = exports.rktNew_ = exports.quasisyntax_ = exports.or_ = exports.onceOnly_ = exports.nlambda_ = exports.newApply_ = exports.multipleValueBind_ = exports.match_ = exports.macro_ = exports.for_ = exports.elIf_ = exports.do_ = exports.defun_ = exports.defsubst_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineInline_ = exports.defineFexpr_ = exports.defineCompilerMacro_ = exports.defclass_ = exports.declare_ = exports.declareSyntaxMacro_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cond_ = exports.cljTry_ = exports.clLoop_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.ann_ = exports.and_ = exports.defineSubst_ = void 0;
-exports.withGensyms_ = void 0;
+exports.when_ = exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.syntaxMacro_ = exports.setq_ = exports.set_ = exports.rktNew_ = exports.quasisyntax_ = exports.or_ = exports.onceOnly_ = exports.nlambda_ = exports.newApply_ = exports.multipleValueBind_ = exports.match_ = exports.macro_ = exports.for_ = exports.elIf_ = exports.do_ = exports.defun_ = exports.defsubst_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineInline_ = exports.defineInlineMacro_ = exports.defineFexpr_ = exports.defineCompilerMacro_ = exports.defclass_ = exports.declare_ = exports.declareSyntaxMacro_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cond_ = exports.cljTry_ = exports.clLoop_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.ann_ = exports.and_ = exports.defineSubst_ = void 0;
+exports.withGensyms_ = exports.while_ = void 0;
 const eval_1 = require("./eval");
 const plist_1 = require("./plist");
 const rose_1 = require("./rose");
@@ -396,12 +396,22 @@ defsubst_.fsource = [Symbol.for('define'), [Symbol.for('defsubst_'), Symbol.for(
  */
 function defineInline_(exp, env) {
     const [nameAndArgs, ...body] = exp.slice(1);
-    return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('define-compiler-macro'), ...(0, util_1.defineToDefineMacro)([Symbol.for('define'), nameAndArgs, ...body], true).slice(1)]];
+    return [Symbol.for('begin'), [Symbol.for('define'), nameAndArgs, ...body], [Symbol.for('define-inline-macro'), nameAndArgs, ...body]];
 }
 exports.defineSubst_ = defineInline_;
 exports.defineInline_ = defineInline_;
 defineInline_.ftype = 'macro';
-defineInline_.fsource = [Symbol.for('define'), [Symbol.for('define-inline_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('define-compiler-macro'), [Symbol.for('unquote-splicing'), [Symbol.for('rest'), [Symbol.for('define->define-macro'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]], true]]]]]]];
+defineInline_.fsource = [Symbol.for('define'), [Symbol.for('define-inline_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]], [Symbol.for('define-inline-macro'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+/**
+ * Expand a `(define-inline-macro ...)` expression.
+ */
+function defineInlineMacro_(exp, env) {
+    const [nameAndArgs, ...body] = exp.slice(1);
+    return [Symbol.for('define-compiler-macro'), ...(0, util_1.defineToDefineMacro)([Symbol.for('define'), nameAndArgs, ...body], true).slice(1)];
+}
+exports.defineInlineMacro_ = defineInlineMacro_;
+defineInlineMacro_.ftype = 'macro';
+defineInlineMacro_.fsource = [Symbol.for('define'), [Symbol.for('define-inline-macro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('name-and-args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('define-compiler-macro'), [Symbol.for('unquote-splicing'), [Symbol.for('rest'), [Symbol.for('define->define-macro'), [Symbol.for('quasiquote'), [Symbol.for('define'), [Symbol.for('unquote'), Symbol.for('name-and-args')], [Symbol.for('unquote-splicing'), Symbol.for('body')]]], true]]]]]];
 /**
  * Expand a `(define-fexpr ...)` expression.
  */

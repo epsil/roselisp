@@ -15,64 +15,79 @@
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 ;;; Whether something is an array.
-(define-inline (array?_ x)
+(define (array?_ x)
+  (declare (inline #t))
   (js/array? x))
 
 ;;; Return the length of an array.
-(define-inline (array-length_ arr)
+(define (array-length_ arr)
+  (declare (inline #t))
   (js/length arr))
 
 ;;; Copy an array.
-(define-inline (array-copy_ arr)
+(define (array-copy_ arr)
+  (declare (inline #t))
   `(,@arr))
 
 ;;; Return the first element of an array.
-(define-inline (array-first_ arr)
+(define (array-first_ arr)
+  (declare (inline #t))
   (array-ref arr 0))
 
 ;;; Return the second element of an array.
-(define-inline (array-second_ arr)
+(define (array-second_ arr)
+  (declare (inline #t))
   (array-ref arr 1))
 
 ;;; Return the third element of an array.
-(define-inline (array-third_ arr)
+(define (array-third_ arr)
+  (declare (inline #t))
   (array-ref arr 2))
 
 ;;; Return the fourth element of an array.
-(define-inline (array-fourth_ arr)
+(define (array-fourth_ arr)
+  (declare (inline #t))
   (array-ref arr 3))
 
 ;;; Return the fifth element of an array.
-(define-inline (array-fifth_ arr)
+(define (array-fifth_ arr)
+  (declare (inline #t))
   (array-ref arr 4))
 
 ;;; Return the sixth element of an array.
-(define-inline (array-sixth_ arr)
+(define (array-sixth_ arr)
+  (declare (inline #t))
   (array-ref arr 5))
 
 ;;; Return the seventh element of an array.
-(define-inline (array-seventh_ arr)
+(define (array-seventh_ arr)
+  (declare (inline #t))
   (array-ref arr 6))
 
 ;;; Return the eight element of an array.
-(define-inline (array-eighth_ arr)
+(define (array-eighth_ arr)
+  (declare (inline #t))
   (array-ref arr 7))
 
 ;;; Return the ninth element of an array.
-(define-inline (array-ninth_ arr)
+(define (array-ninth_ arr)
+  (declare (inline #t))
   (array-ref arr 8))
 
 ;;; Return the tenth element of an array.
-(define-inline (array-tenth_ arr)
+(define (array-tenth_ arr)
+  (declare (inline #t))
   (array-ref arr 9))
 
 ;;; Return the last element of an array.
-(define-inline (array-last_ arr)
+(define (array-last_ arr)
+  (declare (inline #t))
   (array-nlast arr 1))
 
 ;;; Return the `n`-th element counting from
 ;;; the end of the array.
-(define-inline (array-nlast_ arr n)
+(define (array-nlast_ arr n)
+  (declare (inline #t))
   ;; We could have called `array-at` with a negative index,
   ;; but this has better backwards compatibility.
   (array-ref arr (- (array-length arr) n)))
@@ -100,7 +115,8 @@
 ;;; Return the `i`-th element of the array.
 ;;; Accepts negative values, counting back
 ;;; from the end of the array.
-(define-inline (array-at_ arr i)
+(define (array-at_ arr i)
+  (declare (inline #t))
   (send arr at i))
 
 ;;; Set an array position to a given value.
@@ -155,16 +171,19 @@
   `(js/= (js/get ,arr ,@indices) ,value))
 
 ;;; Take the `n` first elements from `arr`.
-(define-inline (array-take_ arr n)
+(define (array-take_ arr n)
+  (declare (inline #t))
   (array-drop-right arr
                     (- (array-length arr) n)))
 
 ;;; Return the tail of an array.
-(define-inline (array-rest_ arr)
+(define (array-rest_ arr)
+  (declare (inline #t))
   (array-drop arr 1))
 
 ;;; Slice a JavaScript array.
-(define-inline (array-slice_ arr . args)
+(define (array-slice_ arr . args)
+  (declare (inline #t))
   (send/apply arr slice args))
 
 ;;; Return the array obtained by dropping
@@ -218,20 +237,24 @@
 
 ;;; Reverse the order of an array.
 ;;; Returns a new array.
-(define-inline (array-reverse_ arr)
+(define (array-reverse_ arr)
+  (declare (inline #t))
   (array-reverse! (array-copy arr)))
 
 ;;; Reverse the order of an array.
 ;;; Returns a new array.
-(define-inline (array-reverse!_ arr)
+(define (array-reverse!_ arr)
+  (declare (inline #t))
   (send arr reverse))
 
 ;;; Pop an element off the beginning of an array.
-(define-inline (array-pop-left!_ arr)
+(define (array-pop-left!_ arr)
+  (declare (inline #t))
   (send arr shift))
 
 ;;; Pop an element off the end of an array.
-(define-inline (array-pop-right!_ arr)
+(define (array-pop-right!_ arr)
+  (declare (inline #t))
   (send arr pop))
 
 ;;; Push an element onto the beginning of an array.
@@ -293,7 +316,8 @@
     `(send ,arr sort))))
 
 ;;; Convert an iterator to an array.
-(define-inline (iterator->array_ iterator)
+(define (iterator->array_ iterator)
+  (declare (inline #t))
   `(,@iterator))
 
 (provide

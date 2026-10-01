@@ -29,8 +29,8 @@ declare namespace thunk_ {
  */
 declare function thunkp_(x: any): any;
 declare namespace thunkp_ {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Make a promise.
@@ -38,7 +38,7 @@ declare namespace thunkp_ {
 declare function delay_(exp: any, env: any): any;
 declare namespace delay_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | undefined)[] | (boolean | symbol | symbol[])[])[])[])[][][] | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | symbol[] | undefined)[] | (boolean | symbol | symbol[])[])[])[])[][][] | (string | symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Make a composable promise.
@@ -53,32 +53,32 @@ declare namespace lazy_ {
  */
 declare function promisep_(x: any): any;
 declare namespace promisep_ {
-    var fsource: (symbol | (symbol | (string | symbol | (symbol | symbol[])[])[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (string | symbol | (symbol | symbol[])[])[])[])[];
 }
 /**
  * Force a promise.
  */
 declare function force_(x: any): any;
 declare namespace force_ {
-    var fsource: (symbol | symbol[] | symbol[][])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Whether a promise has been forced.
  */
 declare function promiseForcedP_(x: any): any;
 declare namespace promiseForcedP_ {
-    var fsource: (symbol | (boolean | symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (boolean | symbol | symbol[])[])[];
 }
 /**
  * Whether a promise is running.
  */
 declare function promiseRunningP_(x: any): any;
 declare namespace promiseRunningP_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
     var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Map for storing promises in.

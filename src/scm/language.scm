@@ -371,6 +371,7 @@
                   defclass_
                   define-compiler-macro_
                   define-fexpr_
+                  define-inline-macro_
                   define-inline_
                   define-macro_
                   define-private_
@@ -823,7 +824,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-         lang-env))
+          lang-env))
   (oset! compilation-options :language-environment lang-env)
   (set! compilation-options
         (js/obj-append
@@ -1675,7 +1676,7 @@
                    object
                    Object))
           '()
-          (list superclass)))
+           (list superclass)))
     (transfer-comments
      stx
      (datum->syntax
@@ -2964,6 +2965,21 @@
   (cond
    ((and (> (length body-statements) 1)
          (tagged-list? (first body-statements) 'declare))
+    (define declare-stx
+      (first body-statements))
+    (define declare-exp
+      (syntax->datum declare-stx))
+    (define specs
+      (rest declare-exp))
+    (define specs1 '())
+    (define inline #f)
+    (for ((spec specs))
+      (cond
+       ((and (eq? (first spec) 'inline)
+             (second spec))
+        (set! inline #t))
+       (else
+        (push-right! specs1 spec))))
     (define name1
       (if name
           name
@@ -2973,9 +2989,10 @@
        stx
        `(,@(send stx take body-offset)
          ,@(send stx drop (+ body-offset 1)))))
-    (define declare-stx
-      `(declare ,name1
-                ,@(send (first body-statements) drop 1)))
+    (define args
+      (syntax->datum (send function-stx get 1)))
+    (define declare-stx-1
+      `(declare ,name1 ,@specs1))
     (return
      (compile-syntax
       (datum->syntax
@@ -2983,9 +3000,20 @@
        (if name
            `(begin
               ,function-stx
-              ,declare-stx)
+              ,declare-stx-1
+              ,@(if inline
+                    (list
+                     `(define-inline-macro
+                        ,(cons name args)
+                        ,@(rest body-statements)))
+                    '()))
            `(let* ((,name1 ,function-stx))
-              ,declare-stx
+              ,declare-stx-1
+              ,@(if inline
+                    (list
+                     `(define-inline-macro ,(cons name1 args)
+                        ,@(rest body-statements)))
+                    '())
               ,name1)))
       env options)))
    (else
@@ -3166,7 +3194,7 @@
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-        'funcall))
+         'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -3403,7 +3431,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3491,7 +3519,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3696,7 +3724,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4372,7 +4400,7 @@
   (define env1
     (new LispEnvironment
          '()
-         env))
+          env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4400,6 +4428,10 @@
                 (if (pair-or-list? (second exp))
                     (first (second exp))
                     (second exp)))
+          (when (tagged-list? (third exp) 'declare)
+            (set! exp
+                  (append (take exp 2)
+                          (drop exp 3))))
           (define referenced-symbols-1 '())
           (define env2
             (send env1 clone))
@@ -4488,7 +4520,7 @@
     (define env1
       (new LispEnvironment
            '()
-           env))
+            env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -5655,7 +5687,7 @@
       (define return-type
         (if is-constructor
             'Void
-            #u))
+             #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -6364,7 +6396,7 @@
               (plist-get_ options :fold))
              'right)
         'foldr
-        'foldl))
+         'foldl))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
@@ -6372,7 +6404,7 @@
     (if (undefined? identity)
         `(,fold (lambda ,(if (eq? fold 'foldr)
                              '(left right)
-                             '(right left))
+                              '(right left))
                   (js/op ,op left right))
                 ,(if (eq? fold 'foldr)
                      `(last ,args)
@@ -6382,7 +6414,7 @@
                      `(rest ,args)))
         `(,fold (lambda ,(if (eq? fold 'foldr)
                              '(left right)
-                             '(right left))
+                              '(right left))
                   (js/op ,op left right))
                 ,identity
                 ,args)))
@@ -7497,17 +7529,17 @@
                 this
                 (new LispEnvironment
                      '()
-                     parent))
+                      parent))
     (set-field! main-environment
                 this
                 (new LispEnvironment
                      '()
-                     (get-field require-environment this)))
+                      (get-field require-environment this)))
     (set-field! provide-environment
                 this
                 (new LispEnvironment
                      '()
-                     (get-field main-environment this)))
+                      (get-field main-environment this)))
     (set-field! compilation-options
                 this
                 (js/obj-append
@@ -8584,6 +8616,7 @@
          (define-fexpr ,define-fexpr_ (macro-> Any * Any))
          (define-fields ,define-fields_ (macro-> Any * Any))
          (define-inline ,define-inline_ (macro-> Any * Any))
+         (define-inline-macro ,define-inline-macro_ (macro-> Any * Any))
          (define-js/obj ,define-fields_ (macro-> Any * Any))
          (define-macro ,define-macro_ (macro-> Any * Any))
          (define-subst ,define-inline_ (macro-> Any * Any))

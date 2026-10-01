@@ -37,8 +37,6 @@ function objectRef_(obj: any, key: any): any {
   return (obj as any)[key];
 }
 
-objectRef_.fsource = [Symbol.for('define'), [Symbol.for('object-ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
-
 objectRef_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [obj, key]: any[] = exp.slice(1);
@@ -47,6 +45,8 @@ objectRef_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+objectRef_.fsource = [Symbol.for('define'), [Symbol.for('object-ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
 
 /**
  * Set the property `key` in `obj` to `val`.
@@ -86,8 +86,6 @@ function fieldNames_(obj: any): any {
   return Object.keys(obj);
 }
 
-fieldNames_.fsource = [Symbol.for('define'), [Symbol.for('field-names_'), Symbol.for('obj')], [Symbol.for('js/keys'), Symbol.for('obj')]];
-
 fieldNames_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [obj]: any[] = exp.slice(1);
@@ -96,6 +94,8 @@ fieldNames_.compilerMacro = ((): any => {
   f.ftype = 'macro';
   return f;
 })();
+
+fieldNames_.fsource = [Symbol.for('define'), [Symbol.for('field-names_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/keys'), Symbol.for('obj')]];
 
 export {
   objectRef_ as objectGet_,

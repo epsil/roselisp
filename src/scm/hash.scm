@@ -25,7 +25,8 @@
 ;;; Similar to [`hash?` in Racket][rkt:hashp].
 ;;;
 ;;; [rkt:hashp]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash~3f%29%29
-(define-inline (hash?_ v)
+(define (hash?_ v)
+  (declare (inline #t))
   (is-a? v Map))
 
 ;;; Make a hash map from a list of `(key . value)` pairs.
@@ -91,7 +92,8 @@
 ;;; Similar to [`hash-set!` in Racket][rkt:hash-set-x].
 ;;;
 ;;; [rkt:hash-set-x]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-set%21%29%29
-(define-inline (hash-set!_ ht key v)
+(define (hash-set!_ ht key v)
+  (declare (inline #t))
   (send ht set key v))
 
 ;;; Set `key` to `v` in the hash map `ht`,
@@ -138,7 +140,8 @@
 ;;; Similar to [`hash-has-key?` in Racket][rkt:hash-has-key-p].
 ;;;
 ;;; [rkt-hash-has-key-p]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fmore-scheme..rkt%29._hash-has-key~3f%29%29
-(define-inline (hash-has-key?_ ht key)
+(define (hash-has-key?_ ht key)
+  (declare (inline #t))
   (send ht has key))
 
 ;;; Remove the value for a given key in a hash map
@@ -166,11 +169,13 @@
 ;;; Similar to [`hash-remove` in Racket][rkt:hash-remove].
 ;;;
 ;;; [rkt:hash-remove]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-remove%29%29
-(define-inline (hash-remove!_ ht key)
+(define (hash-remove!_ ht key)
+  (declare (inline #t))
   (send ht delete key))
 
 ;;; Return the number of keys in a hash table.
-(define-inline (hash-size_ ht)
+(define (hash-size_ ht)
+  (declare (inline #t))
   (get-field size ht))
 
 ;;; Clone a hash map.
@@ -178,7 +183,8 @@
 ;;; Similar to [`hash-copy` in Racket][rkt:hash-copy].
 ;;;
 ;;; [rkt:hash-copy]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._hash-copy%29%29
-(define-inline (hash-copy_ ht)
+(define (hash-copy_ ht)
+  (declare (inline #t))
   (new Map ht))
 
 ;;; Delete all entries in a hash map,
@@ -215,7 +221,8 @@
 ;;; Similar to [`hash-keys` in Racket][rkt:hash-keys].
 ;;;
 ;;; [rkt:hash-keys]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-keys%29%29
-(define-inline (hash-keys_ ht)
+(define (hash-keys_ ht)
+  (declare (inline #t))
   (iterator->list (send ht keys)))
 
 ;;; Return a list of all the values in a hash map.
@@ -223,11 +230,13 @@
 ;;; Similar to [`hash-values` in Racket][rkt:hash-values].
 ;;;
 ;;; [rkt:hash-values]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-keys%29%29
-(define-inline (hash-values_ ht)
+(define (hash-values_ ht)
+  (declare (inline #t))
   (iterator->list (send ht values)))
 
 ;;; Convert a hash map to a list of `(key value)` tuples.
-(define-inline (hash-entries_ ht)
+(define (hash-entries_ ht)
+  (declare (inline #t))
   (iterator->list (send ht entries)))
 
 ;;; Convert a hash map to a list of `(key . value)` pairs.
@@ -235,7 +244,8 @@
 ;;; Similar to [`hash->list` in Racket][rkt:hash-to-list].
 ;;;
 ;;; [rkt:hash-to-list]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._hash-~3elist%29%29
-(define-inline (hash->list_ ht)
+(define (hash->list_ ht)
+  (declare (inline #t))
   (map (lambda (x)
          (cons (first x) (second x)))
        (hash-entries ht)))

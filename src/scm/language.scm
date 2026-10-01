@@ -5953,37 +5953,34 @@
 
 ;;; Compiler macro for `(current-environment)` expressions.
 (define-macro (compile-current-environment-macro)
-  (define arg-sym
-    (gensym "_arg"))
-  (define str-sym
-    (gensym "_str"))
-  (define identifier-regexp
-    '(regexp "^\\w+$"))
-  `(js/obj :get
-           (js/arrow (,arg-sym)
-             (try
-               (define ,str-sym
-                 (symbol->string ,arg-sym))
-               (cond
-                ((regexp-match? ,identifier-regexp ,str-sym)
-                 (return (js/eval ,str-sym)))
-                (else
-                 (return #u)))
-               (catch Error e
-                 (return #u))))
-           :has
-           (js/arrow (,arg-sym)
-             (try
-               (define ,str-sym
-                 (symbol->string ,arg-sym))
-               (cond
-                ((regexp-match? ,identifier-regexp ,str-sym)
-                 (js/eval ,str-sym)
-                 (return #t))
-                (else
-                 (return #f)))
-               (catch Error e
-                 (return #f))))))
+  (let ((identifier-regexp '(regexp "^\\w+$")))
+    (with-gensyms
+     (_arg _str)
+     `(js/obj :get
+              (js/arrow (,_arg)
+                (try
+                  (define ,_str
+                    (symbol->string ,_arg))
+                  (cond
+                   ((regexp-match? ,identifier-regexp ,_str)
+                    (return (js/eval ,_str)))
+                   (else
+                    (return #u)))
+                  (catch Error e
+                    (return #u))))
+              :has
+              (js/arrow (,_arg)
+                (try
+                  (define ,_str
+                    (symbol->string ,_arg))
+                  (cond
+                   ((regexp-match? ,identifier-regexp ,_str)
+                    (js/eval ,_str)
+                    (return #t))
+                   (else
+                    (return #f)))
+                  (catch Error e
+                    (return #f))))))))
 
 ;;; Compile a `(js/raw ...)` expression.
 (define (compile-js/raw stx env (options (js/obj)))
@@ -6421,9 +6418,9 @@
                   ,@options))
    ;; A function call can be stored in a variable.
    (else
-    (let ((args-var (gensym "_args")))
-      `(let ((,args-var ,args))
-         (js/op/apply ,op ,args-var ,@options))))))
+    (once-only
+     (args)
+     `(js/op/apply ,op ,args ,@options)))))
 
 ;;; Expand a `(js/if ...)` expression.
 (define-macro (js/if_ &whole exp &environment env)
@@ -7299,16 +7296,11 @@
     (make-identifier-string
      (symbol->string id)
      (current-compilation-options)))
-  (cond
-   ((symbol? obj)
-    `(and ,obj
-          (js/in ,prop ,obj)))
-   (else
-    (define obj-sym
-      (gensym "obj"))
-    `(let ((,obj-sym ,obj))
-       (and ,obj-sym
-            (js/in ,prop ,obj-sym))))))
+  (once-only
+   (obj)
+   :smart #t
+   `(and ,obj
+         (js/in ,prop ,obj))))
 
 ;;; Simple `call-with-current-continuation` implementation.
 ;;; Also known as `call/cc`.

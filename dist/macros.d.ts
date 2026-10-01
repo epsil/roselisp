@@ -79,7 +79,7 @@ declare namespace defineMacro_ {
 declare function macro_(exp: any, env: any): any;
 declare namespace macro_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(define-compiler-macro ...)` expression.
@@ -241,7 +241,7 @@ declare namespace declareFexpr_ {
 declare function begin0_(exp: any, env: any): any;
 declare namespace begin0_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[] | symbol[][][])[])[])[])[])[])[];
 }
 /**
  * Expand a `(multiple-value-bind ...)` expression.
@@ -312,7 +312,7 @@ declare namespace or_ {
 declare function cond_(stx: any): any;
 declare namespace cond_ {
     var ftype: symbol[];
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (symbol | (symbol | (number | symbol)[])[] | (number | symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | ((symbol | (number | symbol | symbol[])[] | (symbol | (symbol | (number | symbol)[])[])[])[] | (boolean | symbol | (symbol | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[] | (symbol | (boolean | symbol | (symbol | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | never[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (boolean | symbol | (symbol | (symbol | symbol[] | symbol[][])[])[])[])[])[])[];
 }
 /**
  * Expand a `(when ...)` expression.
@@ -446,7 +446,7 @@ declare namespace while_ {
 declare function for_(exp: any, env: any): any;
 declare namespace for_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[][] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[] | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[][] | (symbol | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[] | (symbol | (symbol | (number | symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[])[])[])[][])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(case ...)` expression.
@@ -540,7 +540,7 @@ declare namespace cljTry_ {
 declare function match_(exp1: any, env: any): any;
 declare namespace match_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol[])[] | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (boolean | symbol)[] | (boolean | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[])[])[][] | (boolean | symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][] | (symbol | ((boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[][] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[][])[] | (symbol | (number | symbol)[] | (symbol | (boolean | symbol)[])[])[])[][] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((number | symbol | symbol[])[] | (boolean | symbol | symbol[])[])[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | symbol[])[] | symbol[][][])[])[])[][] | (symbol | (symbol | (boolean | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (boolean | symbol[])[] | (symbol | (boolean | symbol)[] | (boolean | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[])[])[][] | (boolean | symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][] | (symbol | ((boolean | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[][] | (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (boolean | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[] | (symbol | (symbol | (symbol | symbol[])[][])[] | (symbol | (number | symbol)[] | (symbol | (boolean | symbol)[])[])[])[][] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((number | symbol | symbol[])[] | (boolean | symbol | symbol[])[])[])[])[])[][])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[] | (symbol | symbol[])[][])[])[] | (boolean | (symbol | (symbol | symbol[])[] | (boolean | symbol)[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (boolean | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | symbol[])[][])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(cl/loop ...)` expression.
@@ -552,10 +552,10 @@ declare namespace match_ {
 declare function clLoop_(exp: any, env: any): any;
 declare namespace clLoop_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[])[])[];
 }
 /**
- * `with-gensyms` macro as defined in
+ * `with-gensyms` macro, adapted from the one described in
  * Peter Seibel's [*Practical Common Lisp*][book:pcl].
  *
  * [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
@@ -563,19 +563,21 @@ declare namespace clLoop_ {
 declare function withGensyms_(exp: any, env: any): any;
 declare namespace withGensyms_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[][])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[][])[])[])[])[])[])[];
 }
 /**
  * `once-only` macro, adapted from the one described in
  * Peter Seibel's [*Practical Common Lisp*][book:pcl].
  *
- * Options may specified with a property list before
- * the body forms. The `:smart` option, if true, creates
- * a nested `cond` form that invokes `once-only` only on
- * variables that are bound to complex expressions. (Note
- * that this gets rather verbose when there are many
- * variables. In that case, it may be better to define a
- * recursive macro instead.)
+ * Options may specified with a property list before the body forms.
+ * The `:smart` option, if true, creates a nested `cond` form that
+ * invokes `once-only` only on variables that are bound to complex
+ * expressions. (Note that this gets rather verbose when there are
+ * many variables, since we have to create a tree to explore all
+ * possibilites, and so the total number of `cond` clauses has
+ * growth `O(2^n)`. For a large value of `n`, it may be better to
+ * define a recursive macro instead, in which case `n + 1` clauses
+ * should suffice.)
  *
  * [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
  */

@@ -1109,20 +1109,20 @@ describe('PromiseEnvironment', (): any => {
       promiseF.ftype = 'thunk';
       return promiseF;
     })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
-      const promiseF1: any = (): any => {
-        if (promiseF1.forced) {
-          return promiseF1.value;
+      const promiseF: any = (): any => {
+        if (promiseF.forced) {
+          return promiseF.value;
         } else {
-          promiseF1.forced = undefined;
-          promiseF1.value = 'bar';
-          promiseF1.forced = true;
-          return promiseF1.value;
+          promiseF.forced = undefined;
+          promiseF.value = 'bar';
+          promiseF.forced = true;
+          return promiseF.value;
         }
       };
-      promiseF1.value = undefined as any;
-      promiseF1.forced = false as any;
-      promiseF1.ftype = 'thunk';
-      return promiseF1;
+      promiseF.value = undefined as any;
+      promiseF.forced = false as any;
+      promiseF.ftype = 'thunk';
+      return promiseF;
     })()), Symbol.for('Any')]]));
     function filter(x: any): any {
       return x !== env;
@@ -1167,20 +1167,20 @@ describe('PromiseEnvironment', (): any => {
       promiseF.ftype = 'thunk';
       return promiseF;
     })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('bar'), new InternalPromise(((): any => {
-      const promiseF1: any = (): any => {
-        if (promiseF1.forced) {
-          return promiseF1.value;
+      const promiseF: any = (): any => {
+        if (promiseF.forced) {
+          return promiseF.value;
         } else {
-          promiseF1.forced = undefined;
-          promiseF1.value = 'bar';
-          promiseF1.forced = true;
-          return promiseF1.value;
+          promiseF.forced = undefined;
+          promiseF.value = 'bar';
+          promiseF.forced = true;
+          return promiseF.value;
         }
       };
-      promiseF1.value = undefined as any;
-      promiseF1.forced = false as any;
-      promiseF1.ftype = 'thunk';
-      return promiseF1;
+      promiseF.value = undefined as any;
+      promiseF.forced = false as any;
+      promiseF.ftype = 'thunk';
+      return promiseF;
     })()), Symbol.for('Any')]]));
     return env.hasPromiseP(Symbol.for('bar'));
   })(), true));
@@ -1220,20 +1220,20 @@ describe('PromiseEnvironment', (): any => {
       promiseF.ftype = 'thunk';
       return promiseF;
     })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('bar'), new InternalPromise(((): any => {
-      const promiseF1: any = (): any => {
-        if (promiseF1.forced) {
-          return promiseF1.value;
+      const promiseF: any = (): any => {
+        if (promiseF.forced) {
+          return promiseF.value;
         } else {
-          promiseF1.forced = undefined;
-          promiseF1.value = 'bar';
-          promiseF1.forced = true;
-          return promiseF1.value;
+          promiseF.forced = undefined;
+          promiseF.value = 'bar';
+          promiseF.forced = true;
+          return promiseF.value;
         }
       };
-      promiseF1.value = undefined as any;
-      promiseF1.forced = false as any;
-      promiseF1.ftype = 'thunk';
-      return promiseF1;
+      promiseF.value = undefined as any;
+      promiseF.forced = false as any;
+      promiseF.ftype = 'thunk';
+      return promiseF;
     })()), Symbol.for('Any')]]));
     return env.hasLocalPromiseP(Symbol.for('foo'));
   })(), true));
@@ -1254,20 +1254,20 @@ describe('PromiseEnvironment', (): any => {
       promiseF.ftype = 'thunk';
       return promiseF;
     })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('bar'), new InternalPromise(((): any => {
-      const promiseF1: any = (): any => {
-        if (promiseF1.forced) {
-          return promiseF1.value;
+      const promiseF: any = (): any => {
+        if (promiseF.forced) {
+          return promiseF.value;
         } else {
-          promiseF1.forced = undefined;
-          promiseF1.value = 'bar';
-          promiseF1.forced = true;
-          return promiseF1.value;
+          promiseF.forced = undefined;
+          promiseF.value = 'bar';
+          promiseF.forced = true;
+          return promiseF.value;
         }
       };
-      promiseF1.value = undefined as any;
-      promiseF1.forced = false as any;
-      promiseF1.ftype = 'thunk';
-      return promiseF1;
+      promiseF.value = undefined as any;
+      promiseF.forced = false as any;
+      promiseF.ftype = 'thunk';
+      return promiseF;
     })()), Symbol.for('Any')]]));
     return env.hasLocalPromiseP(Symbol.for('bar'));
   })(), false));

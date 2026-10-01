@@ -29,22 +29,22 @@
 
 ;;; Make a promise.
 (define-macro (delay_ &rest body)
-  (let ((sym (gensym "promise-f")))
-    `(begin
-       (define ,sym
-         (thunk
-          (cond
-           ((get-field forced ,sym)
-            (get-field value ,sym))
-           (else
-            (set-field! forced ,sym #u)
-            (set-field! value ,sym (begin ,@body))
-            (set-field! forced ,sym #t)
-            (get-field value ,sym)))))
-       (set-field! value ,sym (ann #u Any))
-       (set-field! forced ,sym (ann #f Any))
-       (set-field! ftype ,sym "thunk")
-       ,sym)))
+  (with-gensyms
+   (promise-f)
+   `(let* ((,promise-f
+            (thunk
+             (cond
+              ((get-field forced ,promise-f)
+               (get-field value ,promise-f))
+              (else
+               (set-field! forced ,promise-f #u)
+               (set-field! value ,promise-f (begin ,@body))
+               (set-field! forced ,promise-f #t)
+               (get-field value ,promise-f))))))
+      (set-field! value ,promise-f (ann #u Any))
+      (set-field! forced ,promise-f (ann #f Any))
+      (set-field! ftype ,promise-f "thunk")
+      ,promise-f)))
 
 ;;; Make a composable promise.
 (define-macro (lazy_ &rest body)

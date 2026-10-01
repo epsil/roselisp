@@ -85,13 +85,15 @@
 ;;;
 ;;; [el:macro]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Macros.html#index-defmacro
 (define-macro (macro_ args &rest body)
-  (define-macro->lambda-form
-    `(define-macro
-       ,(cons (gensym "f")
-              (if (symbol? args)
-                  `(&rest ,args)
-                  args))
-       ,@body)))
+  (with-gensyms
+   (f)
+   (define-macro->lambda-form
+     `(define-macro
+        ,(cons f
+               (if (symbol? args)
+                   `(&rest ,args)
+                   args))
+        ,@body))))
 
 ;;; Expand a `(define-compiler-macro ...)` expression.
 (define-macro (define-compiler-macro_ name-and-args &rest body)
@@ -319,11 +321,11 @@
    ((= (length xs) 0)
     x)
    (else
-    (define result
-      (gensym "begin0-result"))
-    `(let ((,result ,x))
-       ,@xs
-       ,result))))
+    (with-gensyms
+     (begin0-result)
+     `(let* ((,begin0-result ,x))
+        ,@xs
+        ,begin0-result)))))
 
 ;;; Expand a `(multiple-value-bind ...)` expression.
 ;;;
@@ -404,7 +406,9 @@
            (eq? (syntax->datum (send x get 1))
                 '=>))
       (unless cond-var
-        (set! cond-var (gensym "_cond-var")))
+        (with-gensyms
+         (_cond-var)
+         (set! cond-var _cond-var)))
       (datum->syntax
        #f
        `(if (set! ,cond-var ,(send x get 0))
@@ -717,11 +721,11 @@
         decl)
       (unless (tagged-list? val 'range)
         (unless (symbol? val)
-          (define val-var
-            (gensym "_val"))
-          (push-right! let-bindings
-                       `(,val-var ,val))
-          (set! val val-var))
+          (with-gensyms
+           (_val)
+           (push-right! let-bindings
+                        `(,_val ,val))
+           (set! val _val)))
         (define range-exp
           `(range 0 (length ,val)))
         (define index
@@ -741,23 +745,23 @@
       ;; then rewrite the expression to a `let` expression
       ;; so that the function is called only once.
       (when (pair-or-list? start)
-        (define start-var
-          (gensym "_start"))
-        (push-right! let-bindings
-                     `(,start-var ,start))
-        (set! start start-var))
+        (with-gensyms
+         (_start)
+         (push-right! let-bindings
+                      `(,_start ,start))
+         (set! start _start)))
       (when (pair-or-list? end)
-        (define end-var
-          (gensym "_end"))
-        (push-right! let-bindings
-                     `(,end-var ,end))
-        (set! end end-var))
+        (with-gensyms
+         (_end)
+         (push-right! let-bindings
+                      `(,_end ,end))
+         (set! end _end)))
       (when (pair-or-list? step)
-        (define step-var
-          (gensym "_step"))
-        (push-right! let-bindings
-                     `(,step-var ,step))
-        (set! step step-var))
+        (with-gensyms
+         (_step)
+         (push-right! let-bindings
+                      `(,_step ,step))
+         (set! step _step)))
       (set! init
             (combine-inits
              init
@@ -1036,9 +1040,10 @@
     (cond
      ((and make-let
            (pair-or-list? exp))
-      (let ((pattern-match-val (gensym "pattern-match-val")))
-        `(let ((,pattern-match-val ,exp))
-           ,(pattern-match pat pattern-match-val))))
+      (with-gensyms
+       (pattern-match-val)
+       `(let ((,pattern-match-val ,exp))
+          ,(pattern-match pat pattern-match-val))))
      ((symbol? pat)
       #t)
      ((pair-or-list? pat)
@@ -1169,10 +1174,11 @@
            (rest exps)))
   (cond
    ((pair-or-list? exp)
-    (let ((match-val (gensym "match-val")))
-      `(let ((,match-val ,exp))
-         (match ,match-val
-           ,@clauses))))
+    (with-gensyms
+     (match-val)
+     `(let ((,match-val ,exp))
+        (match ,match-val
+          ,@clauses))))
    (else
     (define cond-clauses
       (map (lambda (x)
@@ -1222,13 +1228,15 @@
   (define let-bindings '())
   (define body1 '())
   (unless (null? accumulation-plist)
-    (set! result-var (gensym "result"))
-    (push-right! let-bindings `(,result-var '()))
-    (define result-exp
-      `(push-right ,result-var
-                   ,(plist-get_ accumulation-plist
-                                'collect)))
-    (push-right! body1 result-exp))
+    (with-gensyms
+     (result)
+     (push-right! let-bindings
+                  `(,result '()))
+     (push-right! body1
+                  `(push-right ,result
+                               ,(plist-get_ accumulation-plist
+                                            'collect)))
+     (set! result-var result)))
   (define result
     `(for ,(map (lambda (x)
                   `(,(plist-get_ x 'for)
@@ -1242,25 +1250,27 @@
              ,result-var)))
   result)
 
-;;; `with-gensyms` macro as defined in
+;;; `with-gensyms` macro, adapted from the one described in
 ;;; Peter Seibel's [*Practical Common Lisp*][book:pcl].
 ;;;
 ;;; [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
 (define-macro (with-gensyms_ names &rest body)
   `(let ,(cl/loop for n in names
-                  collect `(,n (gensym)))
+                  collect `(,n (gensym ,(symbol->string n))))
      ,@body))
 
 ;;; `once-only` macro, adapted from the one described in
 ;;; Peter Seibel's [*Practical Common Lisp*][book:pcl].
 ;;;
-;;; Options may specified with a property list before
-;;; the body forms. The `:smart` option, if true, creates
-;;; a nested `cond` form that invokes `once-only` only on
-;;; variables that are bound to complex expressions. (Note
-;;; that this gets rather verbose when there are many
-;;; variables. In that case, it may be better to define a
-;;; recursive macro instead.)
+;;; Options may specified with a property list before the body forms.
+;;; The `:smart` option, if true, creates a nested `cond` form that
+;;; invokes `once-only` only on variables that are bound to complex
+;;; expressions. (Note that this gets rather verbose when there are
+;;; many variables, since we have to create a tree to explore all
+;;; possibilites, and so the total number of `cond` clauses has
+;;; growth `O(2^n)`. For a large value of `n`, it may be better to
+;;; define a recursive macro instead, in which case `n + 1` clauses
+;;; should suffice.)
 ;;;
 ;;; [book:pcl]: https://gigamonkeys.com/book/macros-defining-your-own#macro-writing-macros
 (define-macro (once-only_ names &rest body)

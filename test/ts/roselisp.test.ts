@@ -638,7 +638,7 @@ describe('define-class', (): any => {
     }
   }
 }`]));
-  return it('(compile \'(define-class Foo () (define/public arr) (define (constructor arr) (set-field! arr this arr)) (define/generator ((get-field iterator Symbol)) (for ((x (get-field arr this))) (yield x)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [[Symbol.for('get-field'), Symbol.for('iterator'), Symbol.for('Symbol')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]]], `class Foo {
+  it('(compile \'(define-class Foo () (define/public arr) (define (constructor arr) (set-field! arr this arr)) (define/generator ((get-field iterator Symbol)) (for ((x (get-field arr this))) (yield x)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define/public'), Symbol.for('arr')], [Symbol.for('define'), [Symbol.for('constructor'), Symbol.for('arr')], [Symbol.for('set-field!'), Symbol.for('arr'), Symbol.for('this'), Symbol.for('arr')]], [Symbol.for('define/generator'), [[Symbol.for('get-field'), Symbol.for('iterator'), Symbol.for('Symbol')]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('get-field'), Symbol.for('arr'), Symbol.for('this')]]], [Symbol.for('yield'), Symbol.for('x')]]]]]], `class Foo {
   arr;
 
   constructor(arr) {
@@ -649,6 +649,14 @@ describe('define-class', (): any => {
     for (let x of this.arr) {
       yield x;
     }
+  }
+}`]));
+  return it('(compile \'(define-class Foo () (define foo 0) (define (bar) (define (baz) (get-field foo this)) (baz))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define-class'), Symbol.for('Foo'), [], [Symbol.for('define'), Symbol.for('foo'), 0], [Symbol.for('define'), [Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('baz')], [Symbol.for('get-field'), Symbol.for('foo'), Symbol.for('this')]], [Symbol.for('baz')]]]]], `class Foo {
+  foo = 0;
+
+  bar() {
+    let baz = () => this.foo;
+    return baz();
   }
 }`]));
 });

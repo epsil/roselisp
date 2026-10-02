@@ -703,7 +703,7 @@ function parsePlistAndBody(plstAndBody: any): any {
   const _end: any = plstAndBody.length;
   for (let i: any = 0; i < _end; i = i + 2) {
     const prop: any = (plstAndBody as any)[i];
-    if (keywordp(prop)) {
+    if (keywordp(prop) || (syntaxp(prop) && keywordp(syntaxToDatum(prop)))) {
       plst.push(prop);
       const val: any = plstAndBody[i + 1];
       plst.push(val);

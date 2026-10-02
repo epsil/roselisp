@@ -76,14 +76,12 @@
  "function (): number {
   return 0;
 };"
- > (compile '(js/function ()
-               :name foo
-               0))
+ > (compile '(js/function :name foo ()
+                          0))
  "function foo() {
   return 0;
 }"
- > (compile '(js/function () : Number
-                          :name foo
+ > (compile '(js/function :name foo () : Number
                           0)
             :to "typescript")
  "function foo(): number {
@@ -123,12 +121,10 @@
                x)
             :to "typescript")
  "(x: any, y: any): any => x;"
- > (compile '(js/arrow ()
-               :name foo
-               0))
+ > (compile '(js/arrow :name foo ()
+                       0))
  "let foo = () => 0;"
- > (compile '(js/arrow () : Number
-                       :name foo
+ > (compile '(js/arrow :name foo () : Number
                        0)
             :to "typescript")
  "let foo: any = (): number => 0;"

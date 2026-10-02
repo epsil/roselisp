@@ -671,7 +671,9 @@
     (define prop
       (list-ref plst-and-body i))
     (cond
-     ((keyword? prop)
+     ((or (keyword? prop)
+          (and (syntax? prop)
+               (keyword? (syntax->datum prop))))
       (push-right! plst prop)
       (define val
         (list-ref plst-and-body (+ i 1)))

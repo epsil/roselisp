@@ -1100,6 +1100,23 @@ prop;"
     }
   }
 }"
+ ;; Local functions inside of class methods should be rewritten to
+ ;; `(define ... (lambda ...))` expressions so that they can safely
+ ;; reference `this`.
+ > (compile '(define-class Foo ()
+               (define foo 0)
+               (define (bar)
+                 (define (baz)
+                   (get-field foo this))
+                 (baz))))
+ "class Foo {
+  foo = 0;
+
+  bar() {
+    let baz = () => this.foo;
+    return baz();
+  }
+}"
 
  :describe "this"
  > (compile '(js/function (this)

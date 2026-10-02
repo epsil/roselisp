@@ -53,10 +53,10 @@ describe('js/function', (): any => {
   it('(compile \'(js/function () : Number 0) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [], Symbol.for(':'), Symbol.for('Number'), 0]], Symbol.for(':to'), 'typescript'], `function (): number {
   return 0;
 };`]));
-  it('(compile \'(js/function () :name foo 0))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [], Symbol.for(':name'), Symbol.for('foo'), 0]]], `function foo() {
+  it('(compile \'(js/function :name foo () 0))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), Symbol.for(':name'), Symbol.for('foo'), [], 0]]], `function foo() {
   return 0;
 }`]));
-  return it('(compile \'(js/function () : Number :name foo 0) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), [], Symbol.for(':'), Symbol.for('Number'), Symbol.for(':name'), Symbol.for('foo'), 0]], Symbol.for(':to'), 'typescript'], `function foo(): number {
+  return it('(compile \'(js/function :name foo () : Number 0) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), Symbol.for(':name'), Symbol.for('foo'), [], Symbol.for(':'), Symbol.for('Number'), 0]], Symbol.for(':to'), 'typescript'], `function foo(): number {
   return 0;
 }`]));
 });
@@ -71,8 +71,8 @@ describe('js/arrow', (): any => {
   it('(compile \'(js/arrow (x) x) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [Symbol.for('x')], Symbol.for('x')]], Symbol.for(':to'), 'typescript'], '(x: any): any => x;']));
   it('(compile \'(js/arrow (x y) x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], Symbol.for('x')]]], '(x, y) => x;']));
   it('(compile \'(js/arrow (x y) x) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [Symbol.for('x'), Symbol.for('y')], Symbol.for('x')]], Symbol.for(':to'), 'typescript'], '(x: any, y: any): any => x;']));
-  it('(compile \'(js/arrow () :name foo 0))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [], Symbol.for(':name'), Symbol.for('foo'), 0]]], 'let foo = () => 0;']));
-  it('(compile \'(js/arrow () : Number :name foo 0) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [], Symbol.for(':'), Symbol.for('Number'), Symbol.for(':name'), Symbol.for('foo'), 0]], Symbol.for(':to'), 'typescript'], 'let foo: any = (): number => 0;']));
+  it('(compile \'(js/arrow :name foo () 0))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), Symbol.for(':name'), Symbol.for('foo'), [], 0]]], 'let foo = () => 0;']));
+  it('(compile \'(js/arrow :name foo () : Number 0) :to "typescript")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), Symbol.for(':name'), Symbol.for('foo'), [], Symbol.for(':'), Symbol.for('Number'), 0]], Symbol.for(':to'), 'typescript'], 'let foo: any = (): number => 0;']));
   return it('(compile \'(js/arrow (x) (js/obj :foo x)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/arrow'), [Symbol.for('x')], [Symbol.for('js/obj'), Symbol.for(':foo'), Symbol.for('x')]]]], `x => ({
   foo: x
 });`]));

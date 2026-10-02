@@ -58,6 +58,10 @@
     :alias "e"
     :default ""
     :type "string")
+   :farrowseverywhere
+   (js/obj
+    :default #f
+    :type "boolean")
    :fcommonjs
    (js/obj
     :default #f

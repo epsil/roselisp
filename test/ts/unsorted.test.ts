@@ -13,9 +13,8 @@ import {
 
 testMacro.ftype = 'macro';
 
-describe('To do', (): any => xit('(compile \'(js/function :name foo () 0))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/function'), Symbol.for(':name'), Symbol.for('foo'), [], 0]]], `function foo() {
-  return 0;
-}`])));
+describe('To do', (): any => {
+});
 
 describe('Avoiding IIFEs', (): any => xit('(compile \'(define x (begin y z)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('xit>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('define'), Symbol.for('x'), [Symbol.for('begin'), Symbol.for('y'), Symbol.for('z')]]]], `let y;
 

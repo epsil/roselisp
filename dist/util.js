@@ -731,7 +731,7 @@ function parsePlistAndBody(plstAndBody) {
     const _end = plstAndBody.length;
     for (let i = 0; i < _end; i = i + 2) {
         const prop = plstAndBody[i];
-        if (keywordp(prop)) {
+        if (keywordp(prop) || ((0, rose_1.syntaxp)(prop) && keywordp((0, rose_1.syntaxToDatum)(prop)))) {
             plst.push(prop);
             const val = plstAndBody[i + 1];
             plst.push(val);

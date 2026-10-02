@@ -574,6 +574,7 @@
                   map-tree
                   number->letter
                   parse-params-list
+                  parse-plist-and-body
                   quote?
                   tagged-list?
                   text-of-quotation
@@ -824,7 +825,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-          lang-env))
+         lang-env))
   (oset! compilation-options :language-environment lang-env)
   (set! compilation-options
         (js/obj-append
@@ -1656,9 +1657,9 @@
   (datum->syntax
    #f
    `(,function-type
+     ,@plist
      ,params
      ,@return-type
-     ,@plist
      ,@body)))
 
 ;;; Convert a `(define ... (class ...))` expression to
@@ -1676,7 +1677,7 @@
                    object
                    Object))
           '()
-           (list superclass)))
+          (list superclass)))
     (transfer-comments
      stx
      (datum->syntax
@@ -2251,74 +2252,86 @@
   (cond
    ;; Function definition.
    ((pair-or-list? (second exp))
-    (define sym
-      (first (second exp)))
-    (when (pair-or-list? sym)
-      (set! sym (first (flatten sym))))
-    (define function-exp
-      (define->function stx))
-    (define return-type
-      (cond
-       ((eq? (~> stx
-                 (send _ get 2)
-                 (syntax->datum _))
-             ':)
-        (~> stx
-            (send _ get 3)
-            (syntax->datum _)))
-       (else
-        'Any)))
+    (define names-and-params
+      (second exp))
+    (define name
+      (car names-and-params))
     (define params
-      (~> function-exp
-          (send _ get 1)
-          (syntax->datum _)))
-    (define declared-type
-      (send env get-local-type sym))
+      (cdr names-and-params))
+    (when (pair-or-list? name)
+      (set! name (first (flatten name))))
+    (define farrowseverywhere
+      (oget options :farrowseverywhere))
     (cond
-     ((or (eq? declared-type 'Any)
-          (eq? declared-type 'Undefined))
-      (set! type_
-            `(->
-              ,@(cond
-                 ((symbol? params)
-                  (list '(Listof Any)))
-                 ((dotted-list? params)
-                  (append
-                   (make-list (- (length params) 2) 'Any)
-                   (list '(Listof Any))))
-                 (else
-                  (make-list (length params) 'Any)))
-              ,return-type)))
+     (farrowseverywhere
+      (compile-define
+       (datum->syntax
+        stx
+        `(define ,name
+           (lambda ,params
+             ,@(send stx drop 2))))
+       env options))
      (else
-      (set! type_ declared-type)))
-    (send env
-          set-local!
-          sym
-          (new InternalPromise
-               (delay
-                 (define result #u)
-                 (try
-                   (set! result
-                         (interpret_ `(begin ,exp ,sym)
-                                     :environment env))
-                   (catch Error e
-                     ;; Do nothing
-                     ))
-                 result))
-          type_)
-    (define result
-      (compile-js/function
-       function-exp env options
-       (js/obj :type type_)))
-    (cond
-     (inline-lisp-sources
-      (define lisp-code-exp
-        (compile-sexp
-         `(declare ,sym (fsource ',exp))
-         env options))
-      (new Program (list result lisp-code-exp)))
-     (else
-      result)))
+      (define function-exp
+        (define->function stx))
+      (define return-type
+        (cond
+         ((eq? (~> stx
+                   (send _ get 2)
+                   (syntax->datum _))
+               ':)
+          (~> stx
+              (send _ get 3)
+              (syntax->datum _)))
+         (else
+          'Any)))
+      (define declared-type
+        (send env get-local-type name))
+      (cond
+       ((or (eq? declared-type 'Any)
+            (eq? declared-type 'Undefined))
+        (set! type_
+              `(->
+                ,@(cond
+                   ((symbol? params)
+                    (list '(Listof Any)))
+                   ((dotted-list? params)
+                    (append
+                     (make-list (- (length params) 2) 'Any)
+                     (list '(Listof Any))))
+                   (else
+                    (make-list (length params) 'Any)))
+                ,return-type)))
+       (else
+        (set! type_ declared-type)))
+      (send env
+            set-local!
+            name
+            (new InternalPromise
+                 (delay
+                   (define result #u)
+                   (try
+                     (set! result
+                           (interpret_ `(begin ,exp ,name)
+                                       :environment env))
+                     (catch Error e
+                       ;; Do nothing
+                       ))
+                   result))
+            type_)
+      (define result
+        (compile-js/function
+         function-exp env options
+         (js/obj :type type_)))
+      (cond
+       (inline-lisp-sources
+        (define lisp-code-exp
+          (compile-sexp
+           `(declare ,name (fsource ',exp))
+           env options))
+        (new Program (list result lisp-code-exp)))
+       (else
+        result)))))
    ;; Uninitialized variable.
    ((= (length exp) 2)
     (compile-js/let stx env options))
@@ -2917,9 +2930,6 @@
   (define env1
     (extend-environment (new LispEnvironment)
                         env))
-  (define args-list)
-  (define regular-args)
-  (define rest-arg)
   (define (make-arrow-expression params body)
     (define body1
       (if (and (estree-type? body "BlockStatement")
@@ -2934,31 +2944,38 @@
     (new ArrowFunctionExpression
          params
          body1))
-  ;; Parse the parameter list: sort the regular parameters
-  ;; from the rest parameter, if any.
-  (cond
-   ((symbol? (second exp))
-    (set! rest-arg (second exp)))
-   ((dotted-list? (second exp))
-    (set! args-list (second exp))
-    (set! regular-args (dotted-list-head args-list))
-    (set! rest-arg (dotted-list-tail args-list)))
-   (else
-    (set! regular-args (second exp))))
   (define body-offset 2)
   (define body-statements
     (send stx drop body-offset))
+  (when (keyword? (second exp))
+    (define-values (plst)
+      (parse-plist-and-body (rest exp)))
+    (unless (null? plst)
+      (define len
+        (length plst))
+      (set! name (or (plist-get_ plst :name) name))
+      (set! body-statements (drop body-statements len))
+      (set! body-offset (+ body-offset len))
+      (set! exp (append (take exp 1)
+                        (drop exp (+ len 1))))))
+  ;; Parse the parameter list: sort the regular parameters
+  ;; from the rest parameter, if any.
+  (define args
+    (second exp))
+  (define regular-args)
+  (define rest-arg)
+  (cond
+   ((symbol? args)
+    (set! rest-arg args))
+   ((dotted-list? args)
+    (set! regular-args (dotted-list-head args))
+    (set! rest-arg (dotted-list-tail args)))
+   (else
+    (set! regular-args args)))
   (when (and (>= (length body-statements) 2)
              (eq? (syntax->datum (first body-statements))
                   ':))
     (set! return-type
-          (syntax->datum (second body-statements)))
-    (set! body-statements (drop body-statements 2))
-    (set! body-offset (+ body-offset 2)))
-  (when (and (>= (length body-statements) 2)
-             (eq? (syntax->datum (first body-statements))
-                  ':name))
-    (set! name
           (syntax->datum (second body-statements)))
     (set! body-statements (drop body-statements 2))
     (set! body-offset (+ body-offset 2)))
@@ -2989,8 +3006,6 @@
        stx
        `(,@(send stx take body-offset)
          ,@(send stx drop (+ body-offset 1)))))
-    (define args
-      (syntax->datum (send function-stx get 1)))
     (define declare-stx-1
       `(declare ,name1 ,@specs1))
     (return
@@ -3194,7 +3209,7 @@
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-         'funcall))
+        'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -3431,7 +3446,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3519,7 +3534,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -3724,7 +3739,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4400,7 +4415,7 @@
   (define env1
     (new LispEnvironment
          '()
-          env))
+         env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -4520,7 +4535,7 @@
     (define env1
       (new LispEnvironment
            '()
-            env))
+           env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -5687,7 +5702,7 @@
       (define return-type
         (if is-constructor
             'Void
-             #u))
+            #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -5709,8 +5724,10 @@
              (js/obj :function-type 'lambda
                      :curried #f))
            env1
-           (make-expression-options
-            inherited-options)
+           (js/obj-append
+            inherited-options
+            (js/obj :expression-type "expression"
+                    :farrowseverywhere #t))
            (js/obj :generator is-generator
                    :return-type return-type)))
          (else
@@ -6396,7 +6413,7 @@
               (plist-get_ options :fold))
              'right)
         'foldr
-         'foldl))
+        'foldl))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
@@ -6404,7 +6421,7 @@
     (if (undefined? identity)
         `(,fold (lambda ,(if (eq? fold 'foldr)
                              '(left right)
-                              '(right left))
+                             '(right left))
                   (js/op ,op left right))
                 ,(if (eq? fold 'foldr)
                      `(last ,args)
@@ -6414,7 +6431,7 @@
                      `(rest ,args)))
         `(,fold (lambda ,(if (eq? fold 'foldr)
                              '(left right)
-                              '(right left))
+                             '(right left))
                   (js/op ,op left right))
                 ,identity
                 ,args)))
@@ -7529,17 +7546,17 @@
                 this
                 (new LispEnvironment
                      '()
-                      parent))
+                     parent))
     (set-field! main-environment
                 this
                 (new LispEnvironment
                      '()
-                      (get-field require-environment this)))
+                     (get-field require-environment this)))
     (set-field! provide-environment
                 this
                 (new LispEnvironment
                      '()
-                      (get-field main-environment this)))
+                     (get-field main-environment this)))
     (set-field! compilation-options
                 this
                 (js/obj-append

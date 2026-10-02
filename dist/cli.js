@@ -56,6 +56,10 @@ const cliOptions = {
         default: '',
         type: 'string'
     },
+    farrowseverywhere: {
+        default: false,
+        type: 'boolean'
+    },
     fcommonjs: {
         default: false,
         type: 'boolean'

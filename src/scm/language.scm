@@ -3859,7 +3859,7 @@
   ;; Only expand the macro a single step, as there might be
   ;; compilers defined for the immediate expansion.
   (define expansion
-    (macroexpand-1 stx env))
+    (macroexpand-1_ stx env))
   (compile-syntax expansion env options))
 
 ;;; Expand the macro call `exp` in `env`, and keep
@@ -3871,9 +3871,9 @@
 ;;;
 ;;; [guile:macroexpand]: https://doc.guix.gnu.org/guile/latest/en/html_node/Macro-Expansion.html
 ;;; [el:macroexpand]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand
-(define (macroexpand exp (env #u))
+(define (macroexpand_ exp (env #u))
   (define-values (expansion)
-    (macroexpand* exp env))
+    (macroexpand*_ exp env))
   expansion)
 
 ;;; Expand the macro call `exp` in `env`, and keep
@@ -3885,7 +3885,7 @@
 ;;; Similar to [`macroexpand` in Common Lisp][cl:macroexpand].
 ;;;
 ;;; [cl:macroexpand]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand
-(define (macroexpand* exp (env #u))
+(define (macroexpand*_ exp (env #u))
   (define expansion exp)
   (define expanded #f)
   (define expanded1 #t)
@@ -3900,7 +3900,7 @@
 ;;; Similar to [`macroexpand-1` in Emacs Lisp][el:macroexpand-1].
 ;;;
 ;;; [el:macroexpand-1]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand_002d1
-(define (macroexpand-1 exp (env #u))
+(define (macroexpand-1_ exp (env #u))
   (define-values (expansion)
     (macroexpand*-1 exp env))
   expansion)
@@ -3912,7 +3912,7 @@
 ;;; Similar to [`macroexpand-1` in Common Lisp][cl:macroexpand-1].
 ;;;
 ;;; [cl:macroexpand-1]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand-1
-(define (macroexpand*-1 exp (env #u))
+(define (macroexpand*-1_ exp (env #u))
   (define exp1
     (if (syntax? exp)
         (syntax->datum exp)
@@ -3983,9 +3983,9 @@
 ;;; expanding the result for a total number of `n`
 ;;; expansions, or until something that is not a
 ;;; macro call is obtained.
-(define (macroexpand-n exp env (n 1))
+(define (macroexpand-n_ exp env (n 1))
   (define-values (expansion)
-    (macroexpand*-n exp env n))
+    (macroexpand*-n_ exp env n))
   expansion)
 
 ;;; Expand the macro call `exp` in `env`, and keep
@@ -3994,7 +3994,7 @@
 ;;; macro call is obtained. Returns a tuple
 ;;; `(expansion expanded)`, where `expanded` is `#t`
 ;;; if macro expansion took place and `#f` otherwise.
-(define (macroexpand*-n exp env (n 1))
+(define (macroexpand*-n_ exp env (n 1))
   (define i n)
   (define expansion exp)
   (define expanded #f)
@@ -4002,7 +4002,7 @@
   (while (and expanded1
               (> i 0))
     (set!-values (expansion expanded1)
-                 (macroexpand*-1 expansion env))
+                 (macroexpand*-1_ expansion env))
     (set! expanded (or expanded expanded1))
     (set! i (- i 1)))
   (values expansion expanded))
@@ -4016,7 +4016,7 @@
   (while (and (macro-call? expansion env)
               (pred expansion))
     (set!-values (expansion)
-                 (macroexpand*-1 expansion env)))
+                 (macroexpand*-1_ expansion env)))
   expansion)
 
 ;;; Expand all macro calls in `exp` in `env`.
@@ -4304,27 +4304,6 @@
   (define body
     (send stx drop 1))
   (define compiled-body '())
-  ;; TODO: Remove kludge that looks ahead and adds defined variables
-  ;; to the environment. Should replace this with something better
-  ;; (e.g., delayed compilation of `gensym`'ed symbols).
-  (for ((i (range 0 (length body))))
-    (define exp
-      (syntax->datum (list-ref body i)))
-    (cond
-     ((form? exp define_ env)
-      (define sym
-        (if (pair-or-list? (second exp))
-            (first (second exp))
-            (second exp)))
-      (make-type-binding env sym 'Any lang-filter))
-     ((form? exp define-macro_ env)
-      (define sym
-        (first (second exp)))
-      (make-type-binding env sym '(macro-> Any * Any) lang-filter))
-     ((form? exp defmacro_ env)
-      (define sym
-        (second exp))
-      (make-type-binding env sym '(macro-> Any * Any) lang-filter))))
   (cond
    ((eq? expression-type "expression")
     (cond
@@ -4359,11 +4338,6 @@
    (else
     (define statements
       (compile-statements body env options))
-    ;; Note that this returns a `Program` stx, but in
-    ;; some contexts, a `BlockStatement` stx is wanted.
-    ;; One can convert a `Program` stx to a
-    ;; `BlockStatement` stx with
-    ;; `wrap-in-block-statement`.
     (make-program-fragment statements))))
 
 ;;; Compile a `(js/block ...)` expression.
@@ -4437,7 +4411,7 @@
       (set! value (send env1 get symbol))
       (cond
        ((source? value)
-        (set! exp (source value))
+        (set! exp (source_ value))
         (when (tagged-list? exp 'define)
           (set! internal-symbol
                 (if (pair-or-list? (second exp))
@@ -4959,11 +4933,11 @@
     ;; Compile `all-from-out` expressions.
     (define results '())
     (for ((x all-from-out-expressions))
-      (define source
+      (define src
         (send x get 1))
       (define result
         (new ExportAllDeclaration
-             (compile-expression source env options)))
+             (compile-expression src env options)))
       (push-right! results result))
     ;; Compile other expressions.
     (when (> (length other-expressions) 0)
@@ -6639,7 +6613,7 @@
   (js/eval str))
 
 ;;; Get the Lisp source of a function.
-(define (source x)
+(define (source_ x)
   (get-field fsource x))
 
 ;;; Whether a function has Lisp source.
@@ -8437,10 +8411,10 @@
          (listp ,list?_ (-> Any * Any))
          (log ,(get-field log console) (-> Any * Any))
          (macro? ,macro?_ (-> Any * Any))
-         (macroexpand ,macroexpand (-> Any * Any))
-         (macroexpand* ,macroexpand* (-> Any * Any))
-         (macroexpand*-1 ,macroexpand*-1 (-> Any * Any))
-         (macroexpand-1 ,macroexpand-1 (-> Any * Any))
+         (macroexpand ,macroexpand_ (-> Any * Any))
+         (macroexpand* ,macroexpand*_ (-> Any * Any))
+         (macroexpand*-1 ,macroexpand*-1_ (-> Any * Any))
+         (macroexpand-1 ,macroexpand-1_ (-> Any * Any))
          (make ,js/new_ (-> Any * Any))
          (make-error ,make-error_ (-> Any * Any))
          (make-hash ,make-hash_ (-> Any * Any))
@@ -8545,7 +8519,7 @@
          (sixth ,sixth_ (-> Any * Any))
          (sort ,sort_ (-> Any * Any))
          (sort! ,sort!_ (-> Any * Any))
-         (source ,source (-> Any * Any))
+         (source ,source_ (-> Any * Any))
          (sqrt ,sqrt_ (-> Any * Any))
          (string->keyword ,string->keyword_ (-> Any * Any))
          (string->number ,string->number_ (-> Any * Any))
@@ -8857,6 +8831,12 @@
   (rename-out (let-values_ let-values))
   (rename-out (let-values_ letrec-values))
   (rename-out (lisp-environment lisp-1-environment))
+  (rename-out (macroexpand*-1_ macroexpand*-1))
+  (rename-out (macroexpand*-n_ macroexpand*-n))
+  (rename-out (macroexpand*_ macroexpand*))
+  (rename-out (macroexpand-1_ macroexpand-1))
+  (rename-out (macroexpand-n_ macroexpand-n))
+  (rename-out (macroexpand_ macroexpand))
   (rename-out (new_ js/new))
   (rename-out (new_ make))
   (rename-out (new_ make-object))
@@ -8886,6 +8866,7 @@
   (rename-out (set-values_ set-values))
   (rename-out (setq_ setq))
   (rename-out (sexp read-from-string))
+  (rename-out (source_ source))
   Module
   and_
   ann_
@@ -8936,15 +8917,15 @@
   lisp
   lisp-environment
   load_
-  macroexpand
-  macroexpand*
-  macroexpand*-1
-  macroexpand*-n
-  macroexpand-1
+  macroexpand*-1_
+  macroexpand*-n_
+  macroexpand*_
+  macroexpand-1_
   macroexpand-all
   macroexpand-all-until
-  macroexpand-n
+  macroexpand-n_
   macroexpand-until
+  macroexpand_
   make-lisp
   make-module-map
   map-sexp
@@ -8979,8 +8960,8 @@
   set-values_
   setq_
   sexp
-  source
   source?
+  source_
   split-comments
   throw_
   tokenize

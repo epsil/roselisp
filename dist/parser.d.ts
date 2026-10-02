@@ -89,15 +89,15 @@ declare class SymbolToken extends Token {
 /**
  * Parse a string of Lisp code and return an S-expression.
  */
-declare function read(str: any, options?: any): any;
-declare namespace read {
+declare function read_(str: any, options?: any): any;
+declare namespace read_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
  * Parse a string of Lisp code and return a syntax object.
  */
-declare function readSyntax(str: any, options?: any): any;
-declare namespace readSyntax {
+declare function readSyntax_(str: any, options?: any): any;
+declare namespace readSyntax_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -112,8 +112,8 @@ declare namespace readSyntax {
  *
  * The output of this function is passed to `parse-syntax`.
  */
-declare function tokenize(str: any, options?: any): any;
-declare namespace tokenize {
+declare function tokenize_(str: any, options?: any): any;
+declare namespace tokenize_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[] | (string | symbol)[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (string | symbol)[])[] | (string[] | (symbol | (string | symbol)[][] | (symbol | (symbol | (symbol | (string | symbol)[])[] | (string | (symbol | (number | symbol)[])[] | (string | symbol)[])[] | (string | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (string | symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[])[])[])[] | (string[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[] | ((symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[] | (symbol | (string | symbol)[])[])[])[])[] | (string[] | (symbol | (string | symbol)[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (string | symbol)[])[] | (string[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | ((symbol | (string | symbol)[])[] | string[])[])[])[])[])[])[])[])[])[] | (string[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | ((symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[])[] | ((symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (string | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (string | symbol)[])[])[])[])[])[])[])[])[];
 }
 /**
@@ -135,9 +135,9 @@ declare namespace tokenize {
  * The output of this function is a S-expression wrapped in a
  * syntax object.
  */
-declare function parseSyntax(tokens: any, options?: any): any;
-declare namespace parseSyntax {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[] | ((symbol | undefined)[] | (string | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
+declare function parseSyntax_(tokens: any, options?: any): any;
+declare namespace parseSyntax_ {
+    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[] | ((symbol | undefined)[] | (string | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
 }
 /**
  * Take the array of tokens produced by `tokenize` and make a
@@ -146,8 +146,8 @@ declare namespace parseSyntax {
  * The output of this function is a fully valid S-expression which
  * can be evaluated in a Lisp environment.
  */
-declare function parse(tokens: any, options?: any): any;
-declare namespace parse {
+declare function parse_(tokens: any, options?: any): any;
+declare namespace parse_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -166,4 +166,4 @@ declare function commentLevelP(comment: any, level: any): any;
 declare namespace commentLevelP {
     var fsource: (symbol | (symbol | symbol[])[])[];
 }
-export { parse as parseSexp, read as readSexp, CommentToken, LeadingCommentToken, NumberToken, StringToken, SymbolToken, Token, TrailingCommentToken, commentLevelP, getCommentLevel, parse, parseSyntax, read, readSyntax, tokenize };
+export { parseSyntax_ as parseSyntax, parse_ as parse, parse_ as parseSexp, readSyntax_ as readSyntax, read_ as read, read_ as readSexp, tokenize_ as tokenize, CommentToken, LeadingCommentToken, NumberToken, StringToken, SymbolToken, Token, TrailingCommentToken, commentLevelP, getCommentLevel, parseSyntax_, parse_, readSyntax_, read_, tokenize_ };

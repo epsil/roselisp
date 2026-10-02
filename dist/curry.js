@@ -24,7 +24,7 @@
  * [r:dash]: https://ramdajs.com/docs/#__
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isPlaceholder = exports.dashify = exports.curryN = exports.curry = exports.placeholder = exports._ = exports.__ = void 0;
+exports.placeholderp = exports.dashify_ = exports.curry_ = exports.curryN_ = exports.__ = exports.isPlaceholder = exports.dashify = exports.curry = exports.curryN = exports.placeholder = exports._ = void 0;
 /**
  * Ramda-compatible placeholder value.
  *
@@ -35,17 +35,18 @@ exports.isPlaceholder = exports.dashify = exports.curryN = exports.curry = expor
 const __ = {
     '@@functional/placeholder': true
 };
-exports.__ = __;
 exports._ = __;
 exports.placeholder = __;
+exports.__ = __;
 /**
  * Whether a value is the placeholder value, `__`.
  */
-function isPlaceholder(x, placeholder = __) {
+function placeholderp(x, placeholder = __) {
     return x === placeholder;
 }
-exports.isPlaceholder = isPlaceholder;
-isPlaceholder.fsource = [Symbol.for('define'), [Symbol.for('is-placeholder'), Symbol.for('x'), [Symbol.for('placeholder'), Symbol.for('__')]], [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('placeholder')]];
+exports.isPlaceholder = placeholderp;
+exports.placeholderp = placeholderp;
+placeholderp.fsource = [Symbol.for('define'), [Symbol.for('placeholder?'), Symbol.for('x'), [Symbol.for('placeholder'), Symbol.for('__')]], [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('placeholder')]];
 /**
  * Creates a function that accepts arguments of `f` and either invokes `f`
  * returning its result, if at least `arity` number of arguments have been
@@ -57,11 +58,12 @@ isPlaceholder.fsource = [Symbol.for('define'), [Symbol.for('is-placeholder'), Sy
  *
  * [r:curry]: https://ramdajs.com/docs/#curry
  */
-function curry(f, arity = f.length) {
-    return curryN(arity, f);
+function curry_(f, ar = f.length) {
+    return curryN_(ar, f);
 }
-exports.curry = curry;
-curry.fsource = [Symbol.for('define'), [Symbol.for('curry'), Symbol.for('f'), [Symbol.for('arity'), [Symbol.for('get-field'), Symbol.for('length'), Symbol.for('f')]]], [Symbol.for('curry-n'), Symbol.for('arity'), Symbol.for('f')]];
+exports.curry = curry_;
+exports.curry_ = curry_;
+curry_.fsource = [Symbol.for('define'), [Symbol.for('curry_'), Symbol.for('f'), [Symbol.for('ar'), [Symbol.for('arity'), Symbol.for('f')]]], [Symbol.for('curry-n_'), Symbol.for('ar'), Symbol.for('f')]];
 /**
  * Make a curried function. `f` is the function to call, `arity` is
  * the arity of the function, and `placeholder` is a placeholder value
@@ -72,7 +74,7 @@ curry.fsource = [Symbol.for('define'), [Symbol.for('curry'), Symbol.for('f'), [S
  *
  * [r:curryn]: https://ramdajs.com/docs/#curryN
  */
-function curryN(arity, f, received = []) {
+function curryN_(arity, f, received = []) {
     function curriedF(...args) {
         if (args.length === 0) {
             return curriedF;
@@ -101,20 +103,21 @@ function curryN(arity, f, received = []) {
                 return f(...combined);
             }
             else {
-                return curryN(arity, f, combined);
+                return curryN_(arity, f, combined);
             }
         }
     }
-    curriedF.fsource = [Symbol.for('define'), [Symbol.for('curried-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 0], Symbol.for('curried-f')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('args-idx'), 0], [Symbol.for('define'), Symbol.for('left'), Symbol.for('arity')], [Symbol.for('define'), Symbol.for('combined'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('combined-idx'), 0], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('while'), [Symbol.for('or'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('<'), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('or'), [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')], Symbol.for('__')]], [Symbol.for('>='), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('args-idx')]], [Symbol.for('set!'), Symbol.for('args-idx'), [Symbol.for('+'), Symbol.for('args-idx'), 1]]]], [Symbol.for('list-set!'), Symbol.for('combined'), Symbol.for('combined-idx'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('result'), Symbol.for('__')], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('-'), Symbol.for('left'), 1]]], [Symbol.for('set!'), Symbol.for('combined-idx'), [Symbol.for('+'), Symbol.for('combined-idx'), 1]]], [Symbol.for('cond'), [[Symbol.for('<='), Symbol.for('left'), 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('combined')]], [Symbol.for('else'), [Symbol.for('curry-n'), Symbol.for('arity'), Symbol.for('f'), Symbol.for('combined')]]]]]];
+    curriedF.fsource = [Symbol.for('define'), [Symbol.for('curried-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 0], Symbol.for('curried-f')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('args-idx'), 0], [Symbol.for('define'), Symbol.for('left'), Symbol.for('arity')], [Symbol.for('define'), Symbol.for('combined'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('combined-idx'), 0], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('while'), [Symbol.for('or'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('<'), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('or'), [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')], Symbol.for('__')]], [Symbol.for('>='), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('args-idx')]], [Symbol.for('set!'), Symbol.for('args-idx'), [Symbol.for('+'), Symbol.for('args-idx'), 1]]]], [Symbol.for('list-set!'), Symbol.for('combined'), Symbol.for('combined-idx'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('result'), Symbol.for('__')], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('-'), Symbol.for('left'), 1]]], [Symbol.for('set!'), Symbol.for('combined-idx'), [Symbol.for('+'), Symbol.for('combined-idx'), 1]]], [Symbol.for('cond'), [[Symbol.for('<='), Symbol.for('left'), 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('combined')]], [Symbol.for('else'), [Symbol.for('curry-n_'), Symbol.for('arity'), Symbol.for('f'), Symbol.for('combined')]]]]]];
     return curriedF;
 }
-exports.curryN = curryN;
-curryN.fsource = [Symbol.for('define'), [Symbol.for('curry-n'), Symbol.for('arity'), Symbol.for('f'), [Symbol.for('received'), [Symbol.for('quote'), []]]], [Symbol.for('define'), [Symbol.for('curried-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 0], Symbol.for('curried-f')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('args-idx'), 0], [Symbol.for('define'), Symbol.for('left'), Symbol.for('arity')], [Symbol.for('define'), Symbol.for('combined'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('combined-idx'), 0], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('while'), [Symbol.for('or'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('<'), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('or'), [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')], Symbol.for('__')]], [Symbol.for('>='), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('args-idx')]], [Symbol.for('set!'), Symbol.for('args-idx'), [Symbol.for('+'), Symbol.for('args-idx'), 1]]]], [Symbol.for('list-set!'), Symbol.for('combined'), Symbol.for('combined-idx'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('result'), Symbol.for('__')], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('-'), Symbol.for('left'), 1]]], [Symbol.for('set!'), Symbol.for('combined-idx'), [Symbol.for('+'), Symbol.for('combined-idx'), 1]]], [Symbol.for('cond'), [[Symbol.for('<='), Symbol.for('left'), 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('combined')]], [Symbol.for('else'), [Symbol.for('curry-n'), Symbol.for('arity'), Symbol.for('f'), Symbol.for('combined')]]]]]], Symbol.for('curried-f')];
+exports.curryN = curryN_;
+exports.curryN_ = curryN_;
+curryN_.fsource = [Symbol.for('define'), [Symbol.for('curry-n_'), Symbol.for('arity'), Symbol.for('f'), [Symbol.for('received'), [Symbol.for('quote'), []]]], [Symbol.for('define'), [Symbol.for('curried-f'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 0], Symbol.for('curried-f')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('args-idx'), 0], [Symbol.for('define'), Symbol.for('left'), Symbol.for('arity')], [Symbol.for('define'), Symbol.for('combined'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('combined-idx'), 0], [Symbol.for('define'), Symbol.for('result')], [Symbol.for('while'), [Symbol.for('or'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('<'), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('<'), Symbol.for('combined-idx'), [Symbol.for('length'), Symbol.for('received')]], [Symbol.for('or'), [Symbol.for('not'), [Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')], Symbol.for('__')]], [Symbol.for('>='), Symbol.for('args-idx'), [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('received'), Symbol.for('combined-idx')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('args-idx')]], [Symbol.for('set!'), Symbol.for('args-idx'), [Symbol.for('+'), Symbol.for('args-idx'), 1]]]], [Symbol.for('list-set!'), Symbol.for('combined'), Symbol.for('combined-idx'), Symbol.for('result')], [Symbol.for('unless'), [Symbol.for('eq?'), Symbol.for('result'), Symbol.for('__')], [Symbol.for('set!'), Symbol.for('left'), [Symbol.for('-'), Symbol.for('left'), 1]]], [Symbol.for('set!'), Symbol.for('combined-idx'), [Symbol.for('+'), Symbol.for('combined-idx'), 1]]], [Symbol.for('cond'), [[Symbol.for('<='), Symbol.for('left'), 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('combined')]], [Symbol.for('else'), [Symbol.for('curry-n_'), Symbol.for('arity'), Symbol.for('f'), Symbol.for('combined')]]]]]], Symbol.for('curried-f')];
 /**
  * Add support for partial application with
  * a placeholder value like {@link __ `R.__`}.
  */
-function dashify(f, placeholder = __) {
+function dashify_(f, placeholder = __) {
     // `g` is a wrapper around `f` that adds support for
     // the placeholder value.
     function g(...args) {
@@ -162,5 +165,6 @@ function dashify(f, placeholder = __) {
     g.fsource = [Symbol.for('define'), [Symbol.for('g'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('complete-args'), [Symbol.for('list-copy'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('arg')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('arg'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('arg'), Symbol.for('placeholder')], [Symbol.for('push-right!'), Symbol.for('indices'), Symbol.for('i')]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), [Symbol.for('h'), Symbol.for('.'), Symbol.for('remaining-args')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('remaining-args')]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('break')]], [[Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('remaining-args'), Symbol.for('i')], Symbol.for('placeholder')], [Symbol.for('continue')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('j'), [Symbol.for('pop!'), Symbol.for('indices')]], [Symbol.for('list-set!'), Symbol.for('complete-args'), Symbol.for('j'), [Symbol.for('list-ref'), Symbol.for('remaining-args'), Symbol.for('i')]]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('complete-args')]], [Symbol.for('else'), Symbol.for('h')]]], Symbol.for('h')]]];
     return g;
 }
-exports.dashify = dashify;
-dashify.fsource = [Symbol.for('define'), [Symbol.for('dashify'), Symbol.for('f'), [Symbol.for('placeholder'), Symbol.for('__')]], [Symbol.for('define'), [Symbol.for('g'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('complete-args'), [Symbol.for('list-copy'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('arg')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('arg'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('arg'), Symbol.for('placeholder')], [Symbol.for('push-right!'), Symbol.for('indices'), Symbol.for('i')]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), [Symbol.for('h'), Symbol.for('.'), Symbol.for('remaining-args')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('remaining-args')]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('break')]], [[Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('remaining-args'), Symbol.for('i')], Symbol.for('placeholder')], [Symbol.for('continue')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('j'), [Symbol.for('pop!'), Symbol.for('indices')]], [Symbol.for('list-set!'), Symbol.for('complete-args'), Symbol.for('j'), [Symbol.for('list-ref'), Symbol.for('remaining-args'), Symbol.for('i')]]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('complete-args')]], [Symbol.for('else'), Symbol.for('h')]]], Symbol.for('h')]]], Symbol.for('g')];
+exports.dashify = dashify_;
+exports.dashify_ = dashify_;
+dashify_.fsource = [Symbol.for('define'), [Symbol.for('dashify_'), Symbol.for('f'), [Symbol.for('placeholder'), Symbol.for('__')]], [Symbol.for('define'), [Symbol.for('g'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('indices'), [Symbol.for('quote'), []]], [Symbol.for('define'), Symbol.for('complete-args'), [Symbol.for('list-copy'), Symbol.for('args')]], [Symbol.for('define'), Symbol.for('arg')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('arg'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('arg'), Symbol.for('placeholder')], [Symbol.for('push-right!'), Symbol.for('indices'), Symbol.for('i')]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('define'), [Symbol.for('h'), Symbol.for('.'), Symbol.for('remaining-args')], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('remaining-args')]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('break')]], [[Symbol.for('eq?'), [Symbol.for('list-ref'), Symbol.for('remaining-args'), Symbol.for('i')], Symbol.for('placeholder')], [Symbol.for('continue')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('j'), [Symbol.for('pop!'), Symbol.for('indices')]], [Symbol.for('list-set!'), Symbol.for('complete-args'), Symbol.for('j'), [Symbol.for('list-ref'), Symbol.for('remaining-args'), Symbol.for('i')]]]]], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('indices')], 0], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('complete-args')]], [Symbol.for('else'), Symbol.for('h')]]], Symbol.for('h')]]], Symbol.for('g')];

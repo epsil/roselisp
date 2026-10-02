@@ -161,8 +161,8 @@ declare namespace nop_ {
  * [guile:macroexpand]: https://doc.guix.gnu.org/guile/latest/en/html_node/Macro-Expansion.html
  * [el:macroexpand]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand
  */
-declare function macroexpand(exp: any, env?: any): any;
-declare namespace macroexpand {
+declare function macroexpand_(exp: any, env?: any): any;
+declare namespace macroexpand_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
@@ -176,8 +176,8 @@ declare namespace macroexpand {
  *
  * [cl:macroexpand]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand
  */
-declare function macroexpandStar(exp: any, env?: any): any;
-declare namespace macroexpandStar {
+declare function macroexpandstar_(exp: any, env?: any): any;
+declare namespace macroexpandstar_ {
     var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | undefined)[])[])[];
 }
 /**
@@ -187,8 +187,8 @@ declare namespace macroexpandStar {
  *
  * [el:macroexpand-1]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Expansion.html#index-macroexpand_002d1
  */
-declare function macroexpand1(exp: any, env?: any): any;
-declare namespace macroexpand1 {
+declare function macroexpand1_(exp: any, env?: any): any;
+declare namespace macroexpand1_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
@@ -200,8 +200,8 @@ declare namespace macroexpand1 {
  *
  * [cl:macroexpand-1]: http://clhs.lisp.se/Body/f_mexp_.htm#macroexpand-1
  */
-declare function macroexpandstar1(exp: any, env?: any): any;
-declare namespace macroexpandstar1 {
+declare function macroexpandstar1_(exp: any, env?: any): any;
+declare namespace macroexpandstar1_ {
     var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (symbol | (boolean | symbol)[] | (symbol | symbol[])[])[])[])[])[];
 }
 /**
@@ -210,8 +210,8 @@ declare namespace macroexpandstar1 {
  * expansions, or until something that is not a
  * macro call is obtained.
  */
-declare function macroexpandN(exp: any, env: any, n?: any): any;
-declare namespace macroexpandN {
+declare function macroexpandN_(exp: any, env: any, n?: any): any;
+declare namespace macroexpandN_ {
     var fsource: (symbol | (symbol | (number | symbol)[])[])[];
 }
 /**
@@ -222,8 +222,8 @@ declare namespace macroexpandN {
  * `(expansion expanded)`, where `expanded` is `#t`
  * if macro expansion took place and `#f` otherwise.
  */
-declare function macroexpandstarN(exp: any, env: any, n?: any): any;
-declare namespace macroexpandstarN {
+declare function macroexpandstarN_(exp: any, env: any, n?: any): any;
+declare namespace macroexpandstarN_ {
     var fsource: (symbol | (boolean | symbol)[] | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[])[];
 }
 /**
@@ -582,8 +582,8 @@ declare namespace jsRaw_ {
 /**
  * Get the Lisp source of a function.
  */
-declare function source(x: any): any;
-declare namespace source {
+declare function source_(x: any): any;
+declare namespace source_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -829,4 +829,4 @@ export * from './rose';
 export * from './string';
 export * from './symbol';
 export * from './thunk';
-export { and_ as and, ann_ as ann, begin_ as begin, callWithCurrentContinuation_ as callWithCurrentContinuation, callWithCurrentContinuation_ as callCc, colon_ as colon, compileSyntax as compileRose, compileWithEnvironment as compileLisp, compileWithEnvironment as compileLispToJavascript, compile_ as compile, cond_ as cond, decompile_ as decompile, defineAsync_ as defineAsync, defineClass_ as defineClass, defineFields_ as defineFields, defineFields_ as defineJsObj, defineGenerator_ as defineGenerator, defineMacro_ as defineMacro, definePublic_ as definePublic, defineType_ as defineType, defineValues_ as defineValues, define_ as define, dot_ as dot, getField_ as getField, interpret_ as interpret, jsAsync_ as async, jsAsync_ as async_, jsAsync_ as jsAsync, jsAwait_ as await, jsAwait_ as await_, jsAwait_ as jsAwait, jsBlock_ as block, jsBlock_ as block_, jsRaw_ as js, jsRaw_ as jsRaw, jsRaw_ as js_, lambda_ as fn, lambda_ as lambda, letFields_ as letFields, letFields_ as letJsObj, letStar_ as letStar, letStar_ as letrec, letValues_ as letstarValues, letValues_ as letValues, letValues_ as letrecValues, lispEnvironment as lisp1Environment, new_ as jsNew, new_ as make, new_ as makeObject, new_ as makeObject_, new_ as newStar, new_ as rktMakeObject, new_ as scmNew, nop_ as nop, optimizeSyntax as optimizeRose, or_ as or, provide_ as provide, quasiquote_ as quasiquote, quote_ as quote, readSyntax as readRose, require_ as require, sendApply_ as sendApply, send_ as callMethod, send_ as send, setx_ as setx, setField_ as setFieldX, setField_ as setField, setFields_ as setXFields, setFields_ as setXJsObj, setFields_ as setFieldsX, setFields_ as setFields, setValues_ as setXValues, setValues_ as setValues, setq_ as setq, sexp as readFromString, Module, and_, ann_, applyOptimizations, begin_, break_, class_, cljTry_, colon_, compilationEnvironment, compileFileX, compileFilesX, compileModuleMap, compileModules, compileWithEnvironment, compile_, cond_, continue_, decompile_, defineToDefineClass, defineAsync_, defineFields_, defineGenerator_, defineMacro_, defineType_, defineValues_, define_, dot_, findEstree, for_, getField_, interpretFiles, interpretString, interpret_, interpretationEnvironment, isAP_, iterateStx, jsAsync_, jsAwait_, jsRaw_, lambda_, langEnvironment, letFields_, letStar_, letValues_, letVarsToConstVars, let_, lisp, lispEnvironment, load_, macroexpand, macroexpandStar, macroexpandstar1, macroexpandstarN, macroexpand1, macroexpandAll, macroexpandAllUntil, macroexpandN, macroexpandUntil, makeLisp, makeModuleMap, mapSexp, mapSyntax, mapVisitStx, moduleExpressionToModuleObject, module_, new_, nop_, optimizations, optimizeEstree, optimizeModule, optimizeSexp, optimizeSyntax, or_, provide_, quasiquote_, quotep, quote_, read, readSexp, readSyntax, require_, return_, s, sendMethod, sendApply_, send_, setx_, setField_, setFields_, setValues_, setq_, sexp, source, sourcep, splitComments, throw_, tokenize, traverseEstree, try_, typeOf_, yield_ };
+export { and_ as and, ann_ as ann, begin_ as begin, callWithCurrentContinuation_ as callWithCurrentContinuation, callWithCurrentContinuation_ as callCc, colon_ as colon, compileSyntax as compileRose, compileWithEnvironment as compileLisp, compileWithEnvironment as compileLispToJavascript, compile_ as compile, cond_ as cond, decompile_ as decompile, defineAsync_ as defineAsync, defineClass_ as defineClass, defineFields_ as defineFields, defineFields_ as defineJsObj, defineGenerator_ as defineGenerator, defineMacro_ as defineMacro, definePublic_ as definePublic, defineType_ as defineType, defineValues_ as defineValues, define_ as define, dot_ as dot, getField_ as getField, interpret_ as interpret, jsAsync_ as async, jsAsync_ as async_, jsAsync_ as jsAsync, jsAwait_ as await, jsAwait_ as await_, jsAwait_ as jsAwait, jsBlock_ as block, jsBlock_ as block_, jsRaw_ as js, jsRaw_ as jsRaw, jsRaw_ as js_, lambda_ as fn, lambda_ as lambda, letFields_ as letFields, letFields_ as letJsObj, letStar_ as letStar, letStar_ as letrec, letValues_ as letstarValues, letValues_ as letValues, letValues_ as letrecValues, lispEnvironment as lisp1Environment, macroexpandstar1_ as macroexpandstar1, macroexpandstarN_ as macroexpandstarN, macroexpandstar_ as macroexpandStar, macroexpand1_ as macroexpand1, macroexpandN_ as macroexpandN, macroexpand_ as macroexpand, new_ as jsNew, new_ as make, new_ as makeObject, new_ as makeObject_, new_ as newStar, new_ as rktMakeObject, new_ as scmNew, nop_ as nop, optimizeSyntax as optimizeRose, or_ as or, provide_ as provide, quasiquote_ as quasiquote, quote_ as quote, readSyntax as readRose, require_ as require, sendApply_ as sendApply, send_ as callMethod, send_ as send, setx_ as setx, setField_ as setFieldX, setField_ as setField, setFields_ as setXFields, setFields_ as setXJsObj, setFields_ as setFieldsX, setFields_ as setFields, setValues_ as setXValues, setValues_ as setValues, setq_ as setq, sexp as readFromString, source_ as source, Module, and_, ann_, applyOptimizations, begin_, break_, class_, cljTry_, colon_, compilationEnvironment, compileFileX, compileFilesX, compileModuleMap, compileModules, compileWithEnvironment, compile_, cond_, continue_, decompile_, defineToDefineClass, defineAsync_, defineFields_, defineGenerator_, defineMacro_, defineType_, defineValues_, define_, dot_, findEstree, for_, getField_, interpretFiles, interpretString, interpret_, interpretationEnvironment, isAP_, iterateStx, jsAsync_, jsAwait_, jsRaw_, lambda_, langEnvironment, letFields_, letStar_, letValues_, letVarsToConstVars, let_, lisp, lispEnvironment, load_, macroexpandstar1_, macroexpandstarN_, macroexpandstar_, macroexpand1_, macroexpandAll, macroexpandAllUntil, macroexpandN_, macroexpandUntil, macroexpand_, makeLisp, makeModuleMap, mapSexp, mapSyntax, mapVisitStx, moduleExpressionToModuleObject, module_, new_, nop_, optimizations, optimizeEstree, optimizeModule, optimizeSexp, optimizeSyntax, or_, provide_, quasiquote_, quotep, quote_, read, readSexp, readSyntax, require_, return_, s, sendMethod, sendApply_, send_, setx_, setField_, setFields_, setValues_, setq_, sexp, sourcep, source_, splitComments, throw_, tokenize, traverseEstree, try_, typeOf_, yield_ };

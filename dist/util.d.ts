@@ -203,4 +203,8 @@ declare function unwrapQuoteExpression(exp: any): any;
  * modified `dest` list.
  */
 declare function copyIntoArrayX(source: any, dest: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, copyIntoArrayX, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP };
+/**
+ * Remove indentation from a multi-line string.
+ */
+declare function removeIndentation(str: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, copyIntoArrayX, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, removeIndentation, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP };

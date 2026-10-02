@@ -790,6 +790,12 @@
       (push-left dest (first source))))
   dest)
 
+;;; Remove indentation from a multi-line string.
+(define (remove-indentation str)
+  (regexp-replace (regexp "^[^\\S\\r\\n]+$" "gm")
+                  str
+                  ""))
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
@@ -820,6 +826,7 @@
   parse-plist-and-body
   quasiquote?
   quote?
+  remove-indentation
   tagged-list?
   text-of-quotation
   unquote-splicing?

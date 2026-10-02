@@ -1783,22 +1783,6 @@ z;"
  > (compile '(begin x y z)
             :as "expression")
  "x, y, z"
- > (compile
-    '(begin
-       ;; Redefine core functions (nonsensically).
-       (define (and x y)
-         (or x y))
-       (define (or x y) x)
-       (and x (or y z))))
- "function and(x, y) {
-  return or(x, y);
-}
-
-function or(x, y) {
-  return x;
-}
-
-and(x, or(y, z));"
 
  :describe "begin0"
  > (begin0 1

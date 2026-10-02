@@ -59,8 +59,8 @@ declare namespace print {
 /**
  * Print an ESTree node.
  */
-declare function printEstree(node: any, options?: any): any;
-declare namespace printEstree {
+declare function printEstree_(node: any, options?: any): any;
+declare namespace printEstree_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -88,8 +88,8 @@ declare namespace printSexpAsExpression {
 /**
  * Print an S-expression to a string.
  */
-declare function writeToString(obj: any, options?: any): any;
-declare namespace writeToString {
+declare function writeToString_(obj: any, options?: any): any;
+declare namespace writeToString_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -99,4 +99,4 @@ declare function printNode(node: any, options?: any): any;
 declare namespace printNode {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
-export { printSyntax as printRose, printNode as printEstreeNode, printSexpAsExpression as printAsExpression, print, printEstree, printNode, printSyntax, printSexp, printSexpAsExpression, writeToString };
+export { printEstree_ as printEstree, printNode as printEstreeNode, printSexpAsExpression as printAsExpression, printSyntax as printRose, writeToString_ as writeToString, print, printEstree_, printNode, printSexp, printSexpAsExpression, printSyntax, writeToString_ };

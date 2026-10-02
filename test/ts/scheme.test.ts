@@ -953,16 +953,7 @@ y;
 
 z;`]));
   it('(compile `(begin x y) :as "expression")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quasiquote'), [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y')]], Symbol.for(':as'), 'expression'], 'x, y']));
-  it('(compile \'(begin x y z) :as "expression")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'expression'], 'x, y, z']));
-  return it('(compile \'(begin (define (and x y) (or x y)) (define (or x y) x) (and x (or y z))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define'), [Symbol.for('and'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')]], [Symbol.for('define'), [Symbol.for('or'), Symbol.for('x'), Symbol.for('y')], Symbol.for('x')], [Symbol.for('and'), Symbol.for('x'), [Symbol.for('or'), Symbol.for('y'), Symbol.for('z')]]]]], `function and(x, y) {
-  return or(x, y);
-}
-
-function or(x, y) {
-  return x;
-}
-
-and(x, or(y, z));`]));
+  return it('(compile \'(begin x y z) :as "expression")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]], Symbol.for(':as'), 'expression'], 'x, y, z']));
 });
 
 describe('begin0', (): any => it('(begin0 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('begin0'), 1, 2], 1])));

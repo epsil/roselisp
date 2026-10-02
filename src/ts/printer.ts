@@ -455,22 +455,22 @@ estreeHasTrailingCommentP.fsource = [Symbol.for('define'), [Symbol.for('estree-h
  */
 function print(obj: any, options: any = {}): any {
   if (estreep(obj)) {
-    return printEstree(obj, options);
+    return printEstree_(obj, options);
   } else {
     return printSexp(obj, options);
   }
 }
 
-print.fsource = [Symbol.for('define'), [Symbol.for('print'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('cond'), [[Symbol.for('estree?'), Symbol.for('obj')], [Symbol.for('print-estree'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('print-sexp'), Symbol.for('obj'), Symbol.for('options')]]]];
+print.fsource = [Symbol.for('define'), [Symbol.for('print'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('cond'), [[Symbol.for('estree?'), Symbol.for('obj')], [Symbol.for('print-estree_'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('print-sexp'), Symbol.for('obj'), Symbol.for('options')]]]];
 
 /**
  * Print an ESTree node.
  */
-function printEstree(node: any, options: any = {}): any {
+function printEstree_(node: any, options: any = {}): any {
   return printToString(node, addDefaultOptions(options));
 }
 
-printEstree.fsource = [Symbol.for('define'), [Symbol.for('print-estree'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('print-to-string'), Symbol.for('node'), [Symbol.for('add-default-options'), Symbol.for('options')]]];
+printEstree_.fsource = [Symbol.for('define'), [Symbol.for('print-estree_'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('print-to-string'), Symbol.for('node'), [Symbol.for('add-default-options'), Symbol.for('options')]]];
 
 /**
  * Print a syntax object.
@@ -486,10 +486,10 @@ printSyntax.fsource = [Symbol.for('define'), [Symbol.for('print-syntax'), Symbol
  * Print an S-expression.
  */
 function printSexp(exp: any, options: any = {}): any {
-  return writeToString(exp, options);
+  return writeToString_(exp, options);
 }
 
-printSexp.fsource = [Symbol.for('define'), [Symbol.for('print-sexp'), Symbol.for('exp'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('write-to-string'), Symbol.for('exp'), Symbol.for('options')]];
+printSexp.fsource = [Symbol.for('define'), [Symbol.for('print-sexp'), Symbol.for('exp'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('write-to-string_'), Symbol.for('exp'), Symbol.for('options')]];
 
 /**
  * Print an S-expression as an expression
@@ -507,7 +507,7 @@ printSexpAsExpression.fsource = [Symbol.for('define'), [Symbol.for('print-sexp-a
 /**
  * Print an S-expression to a string.
  */
-function writeToString(obj: any, options: any = {}): any {
+function writeToString_(obj: any, options: any = {}): any {
   let result: any = writeToDoc(obj, options);
   if (!options['doc']) {
     result = printDoc(result, options);
@@ -515,7 +515,7 @@ function writeToString(obj: any, options: any = {}): any {
   return result;
 }
 
-writeToString.fsource = [Symbol.for('define'), [Symbol.for('write-to-string'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('write-to-doc'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('unless'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':doc')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('print-doc'), Symbol.for('result'), Symbol.for('options')]]], Symbol.for('result')];
+writeToString_.fsource = [Symbol.for('define'), [Symbol.for('write-to-string_'), Symbol.for('obj'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('write-to-doc'), Symbol.for('obj'), Symbol.for('options')]], [Symbol.for('unless'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':doc')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('print-doc'), Symbol.for('result'), Symbol.for('options')]]], Symbol.for('result')];
 
 /**
  * Print an S-expression to a `Doc` object.
@@ -567,10 +567,10 @@ prettyPrintForm.fsource = [Symbol.for('define'), [Symbol.for('pretty-print-form'
 function prettyPrintWithOffset(offset: any, form: any, options: any): any {
   const prettyOption: any = options['pretty'];
   if (!prettyOption) {
-    return writeToString(form, options);
+    return writeToString_(form, options);
   }
   if (!Array.isArray(form)) {
-    return writeToString(form, options);
+    return writeToString_(form, options);
   }
   const op: any = form[0];
   const elements: any = form.map((x: any): any => writeToDoc(x, {
@@ -584,7 +584,7 @@ function prettyPrintWithOffset(offset: any, form: any, options: any): any {
   return result;
 }
 
-prettyPrintWithOffset.fsource = [Symbol.for('define'), [Symbol.for('pretty-print-with-offset'), Symbol.for('offset'), Symbol.for('form'), Symbol.for('options')], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('unless'), Symbol.for('pretty-option'), [Symbol.for('return'), [Symbol.for('write-to-string'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('pair-or-list?'), Symbol.for('form')], [Symbol.for('return'), [Symbol.for('write-to-string'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('write-to-doc'), Symbol.for('x'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':quote-toplevel'), false]]]], Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements1'), [Symbol.for('take'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('elements2'), [Symbol.for('drop'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list'), [Symbol.for('join'), Symbol.for('space'), Symbol.for('elements1')], [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('elements2')], 0], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('indent'), [Symbol.for('join'), Symbol.for('line'), Symbol.for('elements2')]]], Symbol.for('empty')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '(', Symbol.for('result'), ')']], Symbol.for('result')];
+prettyPrintWithOffset.fsource = [Symbol.for('define'), [Symbol.for('pretty-print-with-offset'), Symbol.for('offset'), Symbol.for('form'), Symbol.for('options')], [Symbol.for('define'), Symbol.for('pretty-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':pretty')]], [Symbol.for('unless'), Symbol.for('pretty-option'), [Symbol.for('return'), [Symbol.for('write-to-string_'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('unless'), [Symbol.for('pair-or-list?'), Symbol.for('form')], [Symbol.for('return'), [Symbol.for('write-to-string_'), Symbol.for('form'), Symbol.for('options')]]], [Symbol.for('define'), Symbol.for('op'), [Symbol.for('first'), Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('write-to-doc'), Symbol.for('x'), [Symbol.for('js/obj-append'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':quote-toplevel'), false]]]], Symbol.for('form')]], [Symbol.for('define'), Symbol.for('elements1'), [Symbol.for('take'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('elements2'), [Symbol.for('drop'), Symbol.for('elements'), [Symbol.for('+'), Symbol.for('offset'), 1]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('list'), [Symbol.for('join'), Symbol.for('space'), Symbol.for('elements1')], [Symbol.for('if'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('elements2')], 0], [Symbol.for('list'), Symbol.for('line'), [Symbol.for('indent'), [Symbol.for('join'), Symbol.for('line'), Symbol.for('elements2')]]], Symbol.for('empty')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('list'), '(', Symbol.for('result'), ')']], Symbol.for('result')];
 
 /**
  * Pretty-print a `cond` expression.
@@ -1993,14 +1993,16 @@ const defaultOptions: any = {
 const printerMap: any = new Map([['ArrayExpression', printArrayExpression], ['ArrayPattern', printArrayPattern], ['ArrowFunctionExpression', printArrowFunctionExpression], ['AssignmentExpression', printAssignmentExpression], ['AssignmentPattern', printAssignmentPattern], ['AwaitExpression', printAwaitExpression], ['BinaryExpression', printBinaryExpression], ['BlockStatement', printBlockStatement], ['BreakStatement', printBreakStatement], ['CallExpression', printCallExpression], ['ClassBody', printClassBody], ['ClassDeclaration', printClassDeclaration], ['ClassExpression', printClassExpression], ['ConditionalExpression', printConditionalExpression], ['ContinueStatement', printContinueStatement], ['DoWhileStatement', printDoWhileStatement], ['ExportAllDeclaration', printExportAllDeclaration], ['ExportNamedDeclaration', printExportNamedDeclaration], ['ExportSpecifier', printExportSpecifier], ['ExpressionStatement', printExpressionStatement], ['ForInStatement', printForInStatement], ['ForOfStatement', printForOfStatement], ['ForStatement', printForStatement], ['FunctionDeclaration', printFunctionDeclaration], ['FunctionExpression', printFunctionExpression], ['Identifier', printIdentifier], ['IfStatement', printIfStatement], ['ImportDeclaration', printImportDeclaration], ['ImportDefaultSpecifier', printImportDefaultSpecifier], ['ImportNamespaceSpecifier', printImportNamespaceSpecifier], ['ImportSpecifier', printImportSpecifier], ['Literal', printLiteral], ['LogicalExpression', printLogicalExpression], ['MemberExpression', printMemberExpression], ['MethodDefinition', printMethodDefinition], ['NewExpression', printNewExpression], ['ObjectExpression', printObjectExpression], ['ObjectPattern', printObjectPattern], ['Program', printProgram], ['Property', printProperty], ['PropertyDefinition', printPropertyDefinition], ['RestElement', printRestElement], ['ReturnStatement', printReturnStatement], ['SequenceExpression', printSequenceExpression], ['SpreadElement', printSpreadElement], ['SwitchStatement', printSwitchStatement], ['SwitchCase', printSwitchCase], ['TSAnyKeyword', printTsAnyKeyword], ['TSArrayType', printTsArrayType], ['TSAsExpression', printTsAsExpression], ['TSBooleanKeyword', printTsBooleanKeyword], ['TSFunctionType', printTsFunctionType], ['TSLiteralType', printTsLiteralType], ['TSNumberKeyword', printTsNumberKeyword], ['TSStringKeyword', printTsStringKeyword], ['TSTupleType', printTsTupleType], ['TSTypeAliasDeclaration', printTsTypeAliasDeclaration], ['TSTypeAnnotation', printTsTypeAnnotation], ['TSTypeParameterInstantiation', printTsTypeParameterInstantiation], ['TSTypeReference', printTsTypeReference], ['TSUndefinedKeyword', printTsUndefinedKeyword], ['TSUnionType', printTsUnionType], ['TSVoidKeyword', printTsVoidKeyword], ['TaggedTemplateExpression', printTaggedTemplateExpression], ['TemplateElement', printTemplateElement], ['TemplateLiteral', printTemplateLiteral], ['ThisExpression', printThisExpression], ['ThrowStatement', printThrowStatement], ['TryStatement', printTryStatement], ['UnaryExpression', printUnaryExpression], ['UpdateExpression', printUpdateExpression], ['VariableDeclaration', printVariableDeclaration], ['VariableDeclarator', printVariableDeclarator], ['WhileStatement', printWhileStatement], ['YieldExpression', printYieldExpression], ['XRawJavaScript', printXRawJavascript]] as any);
 
 export {
-  printSyntax as printRose,
+  printEstree_ as printEstree,
   printNode as printEstreeNode,
   printSexpAsExpression as printAsExpression,
+  printSyntax as printRose,
+  writeToString_ as writeToString,
   print,
-  printEstree,
+  printEstree_,
   printNode,
-  printSyntax,
   printSexp,
   printSexpAsExpression,
-  writeToString
+  printSyntax,
+  writeToString_
 };

@@ -30,7 +30,7 @@
   (js/obj "@@functional/placeholder" #t))
 
 ;;; Whether a value is the placeholder value, `__`.
-(define (is-placeholder x (placeholder __))
+(define (placeholder? x (placeholder __))
   (eq? x placeholder))
 
 ;;; Creates a function that accepts arguments of `f` and either invokes `f`
@@ -42,8 +42,8 @@
 ;;; Loosely based on [`curry` from Ramda][r:curry].
 ;;;
 ;;; [r:curry]: https://ramdajs.com/docs/#curry
-(define (curry f (arity (get-field length f)))
-  (curry-n arity f))
+(define (curry_ f (ar (arity f)))
+  (curry-n_ ar f))
 
 ;;; Make a curried function. `f` is the function to call, `arity` is
 ;;; the arity of the function, and `placeholder` is a placeholder value
@@ -53,7 +53,7 @@
 ;;; Loosely based on [`curryN` from Ramda][r:curryn].
 ;;;
 ;;; [r:curryn]: https://ramdajs.com/docs/#curryN
-(define (curry-n arity f (received '()))
+(define (curry-n_ arity f (received '()))
   (define (curried-f . args)
     (cond
      ((= (length args) 0)
@@ -83,12 +83,12 @@
        ((<= left 0)
         (apply f combined))
        (else
-        (curry-n arity f combined))))))
+        (curry-n_ arity f combined))))))
   curried-f)
 
 ;;; Add support for partial application with
 ;;; a placeholder value like {@link __ `R.__`}.
-(define (dashify f (placeholder __))
+(define (dashify_ f (placeholder __))
   ;; `g` is a wrapper around `f` that adds support for
   ;; the placeholder value.
   (define (g . args)
@@ -128,10 +128,14 @@
   g)
 
 (provide
-  __
   (rename-out (__ _))
   (rename-out (__ placeholder))
-  curry
-  curry-n
-  dashify
-  is-placeholder)
+  (rename-out (curry-n_ curry-n))
+  (rename-out (curry_ curry))
+  (rename-out (dashify_ dashify))
+  (rename-out (placeholder? is-placeholder))
+  __
+  curry-n_
+  curry_
+  dashify_
+  placeholder?)

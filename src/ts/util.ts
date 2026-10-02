@@ -882,6 +882,13 @@ function copyIntoArrayX(source: any, dest: any): any {
   return dest;
 }
 
+/**
+ * Remove indentation from a multi-line string.
+ */
+function removeIndentation(str: any): any {
+  return str.replace(/^[^\S\r\n]+$/gm, '');
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
@@ -912,6 +919,7 @@ export {
   parsePlistAndBody,
   quasiquotep,
   quotep,
+  removeIndentation,
   taggedListP,
   textOfQuotation,
   unquoteSplicingP,

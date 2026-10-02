@@ -385,12 +385,12 @@
 (define (print obj (options (js/obj)))
   (cond
    ((estree? obj)
-    (print-estree obj options))
+    (print-estree_ obj options))
    (else
     (print-sexp obj options))))
 
 ;;; Print an ESTree node.
-(define (print-estree node (options (js/obj)))
+(define (print-estree_ node (options (js/obj)))
   (print-to-string node
                    (add-default-options options)))
 
@@ -402,7 +402,7 @@
 
 ;;; Print an S-expression.
 (define (print-sexp exp (options (js/obj)))
-  (write-to-string exp options))
+  (write-to-string_ exp options))
 
 ;;; Print an S-expression as an expression
 ;;; that can be evaluated.
@@ -413,7 +413,7 @@
                (js/obj :quote-toplevel #t))))
 
 ;;; Print an S-expression to a string.
-(define (write-to-string obj (options (js/obj)))
+(define (write-to-string_ obj (options (js/obj)))
   (define result
     (write-to-doc obj options))
   (unless (oget options :doc)
@@ -525,9 +525,9 @@
   (define pretty-option
     (oget options :pretty))
   (unless pretty-option
-    (return (write-to-string form options)))
+    (return (write-to-string_ form options)))
   (unless (pair-or-list? form)
-    (return (write-to-string form options)))
+    (return (write-to-string_ form options)))
   (define op
     (first form))
   (define elements
@@ -2545,13 +2545,15 @@
      ("XRawJavaScript" . ,print-x-raw-javascript))))
 
 (provide
-  (rename-out (print-syntax print-rose))
+  (rename-out (print-estree_ print-estree))
   (rename-out (print-node print-estree-node))
   (rename-out (print-sexp-as-expression print-as-expression))
+  (rename-out (print-syntax print-rose))
+  (rename-out (write-to-string_ write-to-string))
   print
-  print-estree
+  print-estree_
   print-node
-  print-syntax
   print-sexp
   print-sexp-as-expression
-  write-to-string)
+  print-syntax
+  write-to-string_)

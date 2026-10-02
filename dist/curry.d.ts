@@ -31,8 +31,8 @@ declare const __: any;
 /**
  * Whether a value is the placeholder value, `__`.
  */
-declare function isPlaceholder(x: any, placeholder?: any): any;
-declare namespace isPlaceholder {
+declare function placeholderp(x: any, placeholder?: any): any;
+declare namespace placeholderp {
     var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
@@ -46,8 +46,8 @@ declare namespace isPlaceholder {
  *
  * [r:curry]: https://ramdajs.com/docs/#curry
  */
-declare function curry(f: any, arity?: any): any;
-declare namespace curry {
+declare function curry_(f: any, ar?: any): any;
+declare namespace curry_ {
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
 }
 /**
@@ -60,16 +60,16 @@ declare namespace curry {
  *
  * [r:curryn]: https://ramdajs.com/docs/#curryN
  */
-declare function curryN(arity: any, f: any, received?: any): any;
-declare namespace curryN {
+declare function curryN_(arity: any, f: any, received?: any): any;
+declare namespace curryN_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (number | symbol)[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[][])[])[])[])[])[])[];
 }
 /**
  * Add support for partial application with
  * a placeholder value like {@link __ `R.__`}.
  */
-declare function dashify(f: any, placeholder?: any): any;
-declare namespace dashify {
+declare function dashify_(f: any, placeholder?: any): any;
+declare namespace dashify_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (number | symbol | symbol[])[])[][])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[][])[])[] | (symbol | symbol[] | (number | symbol | symbol[])[][])[])[])[])[])[])[];
 }
-export { __, __ as _, __ as placeholder, curry, curryN, dashify, isPlaceholder };
+export { __ as _, __ as placeholder, curryN_ as curryN, curry_ as curry, dashify_ as dashify, placeholderp as isPlaceholder, __, curryN_, curry_, dashify_, placeholderp };

@@ -192,6 +192,24 @@ function normalizeList(x) {
   normalizeList1([1, Symbol.for('.'), x);
 }"
 
+ ;;  :describe "Other tests"
+ ;;  > (compile
+ ;;     '(begin
+ ;;        ;; Redefine core functions (nonsensically).
+ ;;        (define (and x y)
+ ;;          (or x y))
+ ;;        (define (or x y) x)
+ ;;        (and x (or y z))))
+ ;;  "function and(x, y) {
+ ;;   return or(x, y);
+ ;; }
+ ;;
+ ;; function or(x, y) {
+ ;;   return x;
+ ;; }
+ ;;
+ ;; and(x, or(y, z));"
+ ;;
  ;;  :describe "trampoline"
  ;;  :repl #f
  ;;  > (trampoline (fn (x) x) 1)

@@ -1482,12 +1482,10 @@ function clLoop_(exp: any, env: any): any {
   const letBindings: any = [];
   const body1: any = [];
   if (!(Array.isArray(accumulationPlist) && (accumulationPlist.length === 0))) {
-    {
-      let result: any = Symbol('result');
-      letBindings.push([result, [Symbol.for('quote'), []]]);
-      body1.push([Symbol.for('push-right'), result, plistGet_(accumulationPlist, Symbol.for('collect'))]);
-      resultVar = result;
-    }
+    let result: any = Symbol('result');
+    letBindings.push([result, [Symbol.for('quote'), []]]);
+    body1.push([Symbol.for('push-right'), result, plistGet_(accumulationPlist, Symbol.for('collect'))]);
+    resultVar = result;
   }
   let result: any = [Symbol.for('for'), forPlists.map((x: any): any => [plistGet_(x, Symbol.for('for')), plistGet_(x, Symbol.for('in'))]), ...body1];
   if (!(Array.isArray(letBindings) && (letBindings.length === 0))) {

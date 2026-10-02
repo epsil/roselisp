@@ -25,6 +25,8 @@
                   datum->syntax
                   syntax->datum
                   syntax?))
+(require (only-in "./util"
+                  remove-indentation))
 
 ;;; Map of operator symbols.
 ;;; Used by `parse-syntax`.
@@ -106,13 +108,13 @@
     (super value "symbol")))
 
 ;;; Parse a string of Lisp code and return an S-expression.
-(define (read str (options (js/obj)))
+(define (read_ str (options (js/obj)))
   (~> str
-      (read-syntax _ options)
+      (read-syntax_ _ options)
       (syntax->datum _)))
 
 ;;; Parse a string of Lisp code and return a syntax object.
-(define (read-syntax str (options (js/obj)))
+(define (read-syntax_ str (options (js/obj)))
   ;; Parsing is implemented in two stages: a lexical analysis stage
   ;; (`tokenize`) and a syntax analysis stage (`parse-syntax`).
   ;; The lexical analysis stage converts a string to a stream of
@@ -120,8 +122,8 @@
   ;; The syntax analysis stage converts the token stream to a syntax
   ;; object, which contains an S-expression that can be evaluated.
   (~> str
-      (tokenize _ options)
-      (parse-syntax _ options)))
+      (tokenize_ _ options)
+      (parse-syntax_ _ options)))
 
 ;;; Convert a string of Lisp code to an array of tokens.
 ;;; For example, the string:
@@ -133,7 +135,7 @@
 ;;;     [s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]
 ;;;
 ;;; The output of this function is passed to `parse-syntax`.
-(define (tokenize str (options (js/obj)))
+(define (tokenize_ str (options (js/obj)))
   (define comments
     (oget options :comments))
   (when (undefined? comments)
@@ -316,7 +318,7 @@
 ;;;
 ;;; The output of this function is a S-expression wrapped in a
 ;;; syntax object.
-(define (parse-syntax tokens (options (js/obj)))
+(define (parse-syntax_ tokens (options (js/obj)))
   ;; In order to implement this function in a non-recursive way, a
   ;; stack is needed to keep track of expressions and their
   ;; subexpressions. Each stack entry is a list
@@ -395,8 +397,8 @@
         (set! exp
               (list (hash-ref operator-symbols
                               token-string)))
-        (set!-values (node comments)
-                     (attach-comments exp comments options))
+        (set! node (attach-comments! exp comments options))
+        (set! comments '())
         (cond
          (current-val
           (insert! exp current-val node current-val-node)
@@ -410,8 +412,8 @@
        ;; Opening parenthesis.
        ((eq? token-string "(")
         (set! exp '())
-        (set!-values (node comments)
-                     (attach-comments exp comments options))
+        (set! node (attach-comments! exp comments options))
+        (set! comments '())
         (cond
          (current-val
           (insert! exp current-val node current-val-node)
@@ -471,8 +473,8 @@
        ;; Literal value.
        ((hash-has-key? literal-values token-string)
         (set! exp (hash-ref literal-values token-string))
-        (set!-values (node comments)
-                     (attach-comments exp comments options))
+        (set! node (attach-comments! exp comments options))
+        (set! comments '())
         (update! exp node))
        ;; Symbolic value.
        (else
@@ -480,14 +482,14 @@
               (~> (send token get-value)
                   (regexp-replace (regexp "^#") _ "")
                   (string->symbol _)))
-        (set!-values (node comments)
-                     (attach-comments exp comments options))
+        (set! node (attach-comments! exp comments options))
+        (set! comments '())
         (update! exp node))))
      ;; Non-symbolic value.
      (else
       (set! exp (send token get-value))
-      (set!-values (node comments)
-                   (attach-comments exp comments options))
+      (set! node (attach-comments! exp comments options))
+      (set! comments '())
       (update! exp node))))
   (unless (null? stack)
     (error "eof"))
@@ -498,16 +500,10 @@
 ;;;
 ;;; The output of this function is a fully valid S-expression which
 ;;; can be evaluated in a Lisp environment.
-(define (parse tokens (options (js/obj)))
+(define (parse_ tokens (options (js/obj)))
   (~> tokens
-      (parse-syntax _ options)
+      (parse-syntax_ _ options)
       (syntax->datum _)))
-
-;;; Remove indentation from a multi-line string.
-(define (remove-indentation str)
-  (regexp-replace (regexp "^[^\\S\\r\\n]+$" "gm")
-                  str
-                  ""))
 
 ;;; Whether a character is whitespace
 ;;; (i.e., tabs, spaces or newlines).
@@ -541,21 +537,21 @@
   (eq? char "\\"))
 
 ;;; Attach comments to a syntax object, conditional on options.
-;;; Returns the resulting node and an empty list of comments.
-(define (attach-comments node comments (options (js/obj)))
+;;; Returns the modified object.
+(define (attach-comments! stx comments (options (js/obj)))
   (define comments-option
     (oget options :comments))
   (when (undefined? comments-option)
     (set! comments-option #t))
   (define result
-    (if (syntax? node)
-        node
-        (datum->syntax #f node)))
+    (if (syntax? stx)
+        stx
+        (datum->syntax #f stx)))
   (when (and comments-option
              comments
              (> (length comments) 0))
     (send result set-property "comments" comments))
-  (values result '()))
+  result)
 
 ;;; Whether `comment` is a `;;`-comment (level 2),
 ;;; a `;;;`-comment (level 3), or some other level.
@@ -577,8 +573,13 @@
   (= (get-comment-level comment) level))
 
 (provide
-  (rename-out (parse parse-sexp))
-  (rename-out (read read-sexp))
+  (rename-out (parse-syntax_ parse-syntax))
+  (rename-out (parse_ parse))
+  (rename-out (parse_ parse-sexp))
+  (rename-out (read-syntax_ read-syntax))
+  (rename-out (read_ read))
+  (rename-out (read_ read-sexp))
+  (rename-out (tokenize_ tokenize))
   CommentToken
   LeadingCommentToken
   NumberToken
@@ -588,8 +589,8 @@
   TrailingCommentToken
   comment-level?
   get-comment-level
-  parse
-  parse-syntax
-  read
-  read-syntax
-  tokenize)
+  parse-syntax_
+  parse_
+  read-syntax_
+  read_
+  tokenize_)

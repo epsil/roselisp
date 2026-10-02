@@ -61,7 +61,7 @@ declare namespace defclass_ {
  * Similar to [`define-macro` in Guile][guile:define-macro] and
  * [`defmacro` in Common Lisp][cl:defmacro].
  *
- * [guile:define-macro]: https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/Defmacros.html
+ * [guile:define-macro]: https://doc.guix.gnu.org/guile/latest/en/html_node/Defmacros.html
  * [cl:defmacro]: http://clhs.lisp.se/Body/m_defmac.htm#defmacro
  */
 declare function defineMacro_(exp: any, env: any): any;
@@ -283,7 +283,7 @@ declare namespace rktNew_ {
  * [`and` in Common Lisp][cl:and] and [`and` in Emacs Lisp][el:and].
  *
  * [rkt:and]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._and%29%29
- * [guile:and]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-and
+ * [guile:and]: https://doc.guix.gnu.org/guile/latest/en/html_node/and-or.html#index-and
  * [cl:and]: http://clhs.lisp.se/Body/m_and.htm
  * [el:and]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-and
  */
@@ -299,7 +299,7 @@ declare namespace and_ {
  * [`or` in Common Lisp][cl:or] and [`or` in Emacs Lisp][el:or].
  *
  * [rkt:or]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._or%29%29
- * [guile:or]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/and-or.html#index-or
+ * [guile:or]: https://doc.guix.gnu.org/guile/latest/en/html_node/and-or.html#index-or
  * [cl:or]: http://clhs.lisp.se/Body/m_or.htm
  * [el:or]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Combining-Conditions.html#index-or
  */
@@ -315,7 +315,7 @@ declare namespace or_ {
  * [`cond` in Guile][guile:cond].
  *
  * [rkt:cond]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._cond%29%29
- * [guile:cond]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-cond-1
+ * [guile:cond]: https://doc.guix.gnu.org/guile/latest/en/html_node/Conditionals.html#index-cond-1
  */
 declare function cond_(stx: any): any;
 declare namespace cond_ {
@@ -329,7 +329,7 @@ declare namespace cond_ {
  * [`when` in Common Lisp][cl:when] and [`when` in Emacs Lisp][el:when].
  *
  * [rkt:when]: https://docs.racket-lang.org/reference/when_unless.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._when%29%29
- * [guile:when]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-when-1
+ * [guile:when]: https://doc.guix.gnu.org/guile/latest/en/html_node/Conditionals.html#index-when-1
  * [cl:when]: http://clhs.lisp.se/Body/m_when_.htm
  * [el:when]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-when
  */
@@ -345,7 +345,7 @@ declare namespace when_ {
  * [`unless` in Common Lisp][cl:unless] and [`unless` in Emacs Lisp][el:unless].
  *
  * [rkt:unless]: https://docs.racket-lang.org/reference/when_unless.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._unless%29%29
- * [guile:unless]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-unless-1
+ * [guile:unless]: https://doc.guix.gnu.org/guile/latest/en/html_node/Conditionals.html#index-unless-1
  * [cl:unless]: http://clhs.lisp.se/Body/m_when_.htm
  * [el:unless]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html#index-unless
  */
@@ -423,7 +423,7 @@ declare namespace unwindProtect_ {
  * [`do` in Guile][guile:do].
  *
  * [rkt:do]: https://docs.racket-lang.org/reference/for.html#%28form._%28%28lib._racket%2Fprivate%2Fmore-scheme..rkt%29._do%29%29
- * [guile:do]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-do
+ * [guile:do]: https://doc.guix.gnu.org/guile/latest/en/html_node/while-do.html#index-do
  */
 declare function do_(exp: any, env: any): any;
 declare namespace do_ {
@@ -436,7 +436,7 @@ declare namespace do_ {
  * Similar to [`while` in Guile][guile:while] and
  * [`while` in Emacs Lisp][el:while].
  *
- * [guile:while]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/while-do.html#index-while
+ * [guile:while]: https://doc.guix.gnu.org/guile/latest/en/html_node/while-do.html#index-while
  * [el:while]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Iteration.html#index-while
  */
 declare function while_(stx: any): any;

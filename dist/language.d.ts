@@ -390,6 +390,10 @@ declare namespace defineAsync_ {
 }
 /**
  * Expand a `(break)` expression.
+ *
+ * Similar to [`break` in Guile][guile:break].
+ *
+ * [guile:break]: https://doc.guix.gnu.org/guile/latest/en/html_node/while-do.html#index-break-1
  */
 declare function break_(exp: any, env: any): any;
 declare namespace break_ {
@@ -398,6 +402,10 @@ declare namespace break_ {
 }
 /**
  * Expand a `(continue)` expression.
+ *
+ * Similar to [`continue` in Guile][guile:continue].
+ *
+ * [guile:continue]: https://doc.guix.gnu.org/guile/latest/en/html_node/while-do.html#index-continue
  */
 declare function continue_(exp: any, env: any): any;
 declare namespace continue_ {

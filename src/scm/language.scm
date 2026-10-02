@@ -6289,6 +6289,10 @@
    (current-compilation-options)))
 
 ;;; Expand a `(break)` expression.
+;;;
+;;; Similar to [`break` in Guile][guile:break].
+;;;
+;;; [guile:break]: https://doc.guix.gnu.org/guile/latest/en/html_node/while-do.html#index-break-1
 (define-macro (break_ &whole exp &environment env)
   ;; TODO: Convert to fexpr.
   (compile-sexp
@@ -6297,6 +6301,10 @@
    (current-compilation-options)))
 
 ;;; Expand a `(continue)` expression.
+;;;
+;;; Similar to [`continue` in Guile][guile:continue].
+;;;
+;;; [guile:continue]: https://doc.guix.gnu.org/guile/latest/en/html_node/while-do.html#index-continue
 (define-macro (continue_ &whole exp &environment env)
   ;; TODO: Convert to fexpr.
   (compile-sexp
@@ -6493,7 +6501,7 @@
 ;;; and [`if` in Common Lisp][cl:if].
 ;;;
 ;;; [rkt:if]: https://docs.racket-lang.org/reference/if.html#%28form._%28%28quote._~23~25kernel%29._if%29%29
-;;; [guile:if]: https://doc.guix.gnu.org/guile/2.0.14/en/html_node/Conditionals.html#index-if-1
+;;; [guile:if]: https://doc.guix.gnu.org/guile/latest/en/html_node/Conditionals.html#index-if-1
 ;;; [cl:if]: http://clhs.lisp.se/Body/s_if.htm#if
 (define-macro (if_ &whole exp &environment env)
   ;; TODO: Convert to fexpr.

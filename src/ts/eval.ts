@@ -40,6 +40,7 @@ import {
 import {
   Environment,
   EnvironmentStack,
+  JavaScriptModuleEnvironment,
   LispEnvironment,
   TypedEnvironment,
   currentEnvironment,
@@ -91,7 +92,8 @@ import {
 
 import {
   makeArityFunction,
-  taggedListP
+  taggedListP,
+  withCwd
 } from './util';
 
 const [keywordp]: any[] = ((): any => {
@@ -194,7 +196,7 @@ function evalSexp(exp: any, env: any, options: any = {}): any {
         if ((match = name.match(/^\.(.+)$/))) {
           // Method call expression
           const method: any = match[1];
-          const [obj, ...fargs]: any[] = args;
+          let [obj, ...fargs]: any[] = args;
           const dotExp: any = [Symbol.for('.'), obj, Symbol.for(method), ...fargs];
           return evalSexp(dotExp, env, options);
         } else {
@@ -342,7 +344,7 @@ evalEstreeProgram.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-prog
  * [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
  */
 function evalEstreeBlockStatement(node: any, env: any, options: any = {}): any {
-  const env1: any = extendEnvironment(new LispEnvironment(), env);
+  let env1: any = extendEnvironment(new LispEnvironment(), env);
   return withEnvironmentF(env1, (): any => {
     try {
     } catch (e) {
@@ -469,7 +471,7 @@ function evalEstreeCallExpression(node: any, env: any, options: any = {}): any {
     if ((methodVal === undefined) && getEstreeField('optional', callee)) {
       return undefined;
     } else {
-      const obj: any = getEstreeField('object', callee);
+      let obj: any = getEstreeField('object', callee);
       const objVal: any = evalEstree(obj, env, options);
       return methodVal.apply(objVal, argsVals);
     }
@@ -765,7 +767,7 @@ function evalEstreeUnaryExpression(node: any, env: any, options: any = {}): any 
     if (prefix) {
       return evalEstree(assignment, env, options);
     } else {
-      const val: any = evalEstree(assignment, env, options);
+      let val: any = evalEstree(assignment, env, options);
       const valOrig: any = isAdd ? (val - 1) : (val + 1);
       return valOrig;
     }
@@ -1194,7 +1196,7 @@ function evalEstreeAssignmentExpressionHelper(node: any, env: any, options: any 
       }
       return val;
     } else if (estreeTypeP(pattern, 'MemberExpression')) {
-      const obj: any = getEstreeField('object', pattern);
+      let obj: any = getEstreeField('object', pattern);
       const objVal: any = evalEstree(obj, env, options);
       const computed: any = getEstreeField('computed', pattern);
       const prop: any = getEstreeField('property', pattern);
@@ -1309,6 +1311,74 @@ function evalEstreeFunctionExpressionHelper(node: any, env: any, options: any = 
 evalEstreeFunctionExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-function-expression-helper'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]], [Symbol.for('settings'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('arrow-setting'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':arrow')]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('get-estree-field'), 'params', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('rest-param'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('params')], 0], [Symbol.for('estree-type?'), [Symbol.for('last'), Symbol.for('params')], 'RestElement']], [Symbol.for('last'), Symbol.for('params')], undefined]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('arrow-setting'), [Symbol.for('make-arity-function'), [Symbol.for('js/arrow'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('estree-type?'), Symbol.for('body'), 'BlockStatement'], [Symbol.for('get-estree-field'), 'body', Symbol.for('body')], [Symbol.for('list'), Symbol.for('body')]]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]], true]], [Symbol.for('else'), [Symbol.for('make-arity-function'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('with-this-value'), Symbol.for('this'), [Symbol.for('js/function'), [], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('estree-type?'), Symbol.for('body'), 'BlockStatement'], [Symbol.for('get-estree-field'), 'body', Symbol.for('body')], [Symbol.for('list'), Symbol.for('body')]]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')]]], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]]]]]];
 
 /**
+ * Evaluate an ESTree [`ImportDeclaration`][estree:importdeclaration] node.
+ *
+ * [estree:importdeclaration]: https://github.com/estree/estree/blob/master/es2015.md#importdeclaration
+ */
+function evalEstreeImportDeclaration(node: any, env: any, options: any = {}): any {
+  const currentModule: any = options['currentModule'];
+  const inDirOption: any = options['inDir'];
+  const src: any = getEstreeField('source', node);
+  const srcVal: any = evalEstree(src, env, options);
+  const specifiers: any = getEstreeField('specifiers', node);
+  let m: any = undefined;
+  let env1: any = undefined;
+  const moduleRegexp: any = new RegExp('^\\.+/');
+  if (srcVal.match(moduleRegexp)) {
+    if (currentModule) {
+      m = currentModule.getModule(srcVal);
+    }
+  }
+  if (m) {
+    env1 = m.getProvideEnvironment();
+  } else {
+    withCwd(inDirOption, (): any => {
+      try {
+        return env1 = new JavaScriptModuleEnvironment(require(srcVal));
+      } catch (e) {
+        if (e instanceof Error) {
+          return undefined;
+        } else {
+          throw e;
+        }
+      }
+    });
+  }
+  for (let specifier of specifiers) {
+    if (estreeTypeP(specifier, 'ImportSpecifier')) {
+      const local: any = getEstreeField('local', specifier);
+      const localVal: any = evalEstree(local, env, options);
+      const localSym: any = Symbol.for(localVal);
+      const imported: any = getEstreeField('imported', specifier);
+      const importedVal: any = evalEstree(imported, env, options);
+      const importedSym: any = Symbol.for(importedVal);
+      let val: any = undefined;
+      let typ: any = Symbol.for('Any');
+      if (env1) {
+        if (env1 instanceof TypedEnvironment) {
+          [val, typ] = env1.getTypedValue(importedSym);
+        } else {
+          val = env1.get(importedSym);
+        }
+      }
+      env.setLocalX(localSym, val, typ);
+    } else if (estreeTypeP(specifier, ['ImportDefaultSpecifier', 'ImportNamespaceSpecifier'])) {
+      const local: any = getEstreeField('local', specifier);
+      const str: any = local ? local.name : srcVal;
+      const sym: any = Symbol.for(str);
+      let obj: any = undefined;
+      if (env1) {
+        obj = env1.toObject();
+      }
+      env.setLocalX(sym, obj, Symbol.for('Any'));
+    }
+  }
+  return undefined;
+}
+
+evalEstreeImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-import-declaration'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('current-module'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':current-module')]], [Symbol.for('define'), Symbol.for('in-dir-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':in-dir')]], [Symbol.for('define'), Symbol.for('src'), [Symbol.for('get-estree-field'), 'source', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('src-val'), [Symbol.for('eval-estree'), Symbol.for('src'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('m'), undefined], [Symbol.for('define'), Symbol.for('env1'), undefined], [Symbol.for('define'), Symbol.for('module-regexp'), [Symbol.for('regexp'), '^\\.+/']], [Symbol.for('when'), [Symbol.for('regexp-match'), Symbol.for('module-regexp'), Symbol.for('src-val')], [Symbol.for('when'), Symbol.for('current-module'), [Symbol.for('set!'), Symbol.for('m'), [Symbol.for('send'), Symbol.for('current-module'), Symbol.for('get-module'), Symbol.for('src-val')]]]], [Symbol.for('cond'), [Symbol.for('m'), [Symbol.for('set!'), Symbol.for('env1'), [Symbol.for('send'), Symbol.for('m'), Symbol.for('get-provide-environment')]]], [Symbol.for('else'), [Symbol.for('with-cwd'), Symbol.for('in-dir-option'), [Symbol.for('thunk'), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('env1'), [Symbol.for('new'), Symbol.for('JavaScriptModuleEnvironment'), [Symbol.for('js/require'), Symbol.for('src-val')]]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e'), [Symbol.for('return'), undefined]]]]]]], [Symbol.for('for'), [[Symbol.for('specifier'), Symbol.for('specifiers')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('specifier'), 'ImportSpecifier'], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('specifier')]], [Symbol.for('define'), Symbol.for('local-val'), [Symbol.for('eval-estree'), Symbol.for('local'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('local-sym'), [Symbol.for('string->symbol'), Symbol.for('local-val')]], [Symbol.for('define'), Symbol.for('imported'), [Symbol.for('get-estree-field'), 'imported', Symbol.for('specifier')]], [Symbol.for('define'), Symbol.for('imported-val'), [Symbol.for('eval-estree'), Symbol.for('imported'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported-sym'), [Symbol.for('string->symbol'), Symbol.for('imported-val')]], [Symbol.for('define'), Symbol.for('val'), undefined], [Symbol.for('define'), Symbol.for('typ'), [Symbol.for('quote'), Symbol.for('Any')]], [Symbol.for('when'), Symbol.for('env1'), [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('env1'), Symbol.for('TypedEnvironment')], [Symbol.for('set!-values'), [Symbol.for('val'), Symbol.for('typ')], [Symbol.for('send'), Symbol.for('env1'), Symbol.for('get-typed-value'), Symbol.for('imported-sym')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('send'), Symbol.for('env1'), Symbol.for('get'), Symbol.for('imported-sym')]]]]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('local-sym'), Symbol.for('val'), Symbol.for('typ')]], [[Symbol.for('estree-type?'), Symbol.for('specifier'), [Symbol.for('quote'), ['ImportDefaultSpecifier', 'ImportNamespaceSpecifier']]], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('specifier')]], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('if'), Symbol.for('local'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('local')], Symbol.for('src-val')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), Symbol.for('str')]], [Symbol.for('define'), Symbol.for('obj'), undefined], [Symbol.for('when'), Symbol.for('env1'), [Symbol.for('set!'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('env1'), Symbol.for('to-object')]]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('sym'), Symbol.for('obj'), [Symbol.for('quote'), Symbol.for('Any')]]]]], undefined];
+
+/**
  * Evaluate a TSESTree `TSAsExpression` node.
  */
 function evalEstreeTsAsExpression(node: any, env: any, options: any = {}): any {
@@ -1332,7 +1402,7 @@ evalEstreeXRawJavascript.fsource = [Symbol.for('define'), [Symbol.for('eval-estr
 /**
  * Mapping from ESTree node types to evaluator functions.
  */
-const evalEstreeMap: any = new Map([['ArrayExpression', evalEstreeArrayExpression], ['ArrayPattern', evalEstreeArrayPattern], ['ArrowFunctionExpression', evalEstreeArrowFunctionExpression], ['AssignmentExpression', evalEstreeAssignmentExpression], ['BinaryExpression', evalEstreeBinaryExpression], ['BlockStatement', evalEstreeBlockStatement], ['BreakStatement', evalEstreeBreakStatement], ['CallExpression', evalEstreeCallExpression], ['ClassDeclaration', evalEstreeClassDeclaration], ['ClassExpression', evalEstreeClassExpression], ['ConditionalExpression', evalEstreeConditionalExpression], ['ContinueStatement', evalEstreeContinueStatement], ['ExpressionStatement', evalEstreeExpressionStatement], ['ForOfStatement', evalEstreeForOfStatement], ['ForStatement', evalEstreeForStatement], ['FunctionDeclaration', evalEstreeFunctionDeclaration], ['FunctionExpression', evalEstreeFunctionExpression], ['Identifier', evalEstreeIdentifier], ['IfStatement', evalEstreeIfStatement], ['Literal', evalEstreeLiteral], ['LogicalExpression', evalEstreeLogicalExpression], ['MemberExpression', evalEstreeMemberExpression], ['NewExpression', evalEstreeNewExpression], ['ObjectExpression', evalEstreeObjectExpression], ['Program', evalEstreeProgram], ['RestElement', evalEstreeRestElement], ['ReturnStatement', evalEstreeReturnStatement], ['SequenceExpression', evalEstreeSequenceExpression], ['SpreadElement', evalEstreeSpreadElement], ['SwitchCase', evalEstreeSwitchCase], ['SwitchStatement', evalEstreeSwitchStatement], ['TSAsExpression', evalEstreeTsAsExpression], ['TemplateElement', evalEstreeTemplateElement], ['TemplateLiteral', evalEstreeTemplateLiteral], ['ThisExpression', evalEstreeThisExpression], ['ThrowStatement', evalEstreeThrowStatement], ['TryStatement', evalEstreeTryStatement], ['UnaryExpression', evalEstreeUnaryExpression], ['UpdateExpression', evalEstreeUpdateExpression], ['VariableDeclaration', evalEstreeVariableDeclaration], ['VariableDeclarator', evalEstreeVariableDeclarator], ['WhileStatement', evalEstreeWhileStatement], ['XRawJavaScript', evalEstreeXRawJavascript], ['YieldExpression', evalEstreeYieldExpression]] as any);
+const evalEstreeMap: any = new Map([['ArrayExpression', evalEstreeArrayExpression], ['ArrayPattern', evalEstreeArrayPattern], ['ArrowFunctionExpression', evalEstreeArrowFunctionExpression], ['AssignmentExpression', evalEstreeAssignmentExpression], ['BinaryExpression', evalEstreeBinaryExpression], ['BlockStatement', evalEstreeBlockStatement], ['BreakStatement', evalEstreeBreakStatement], ['CallExpression', evalEstreeCallExpression], ['ClassDeclaration', evalEstreeClassDeclaration], ['ClassExpression', evalEstreeClassExpression], ['ConditionalExpression', evalEstreeConditionalExpression], ['ContinueStatement', evalEstreeContinueStatement], ['ExpressionStatement', evalEstreeExpressionStatement], ['ForOfStatement', evalEstreeForOfStatement], ['ForStatement', evalEstreeForStatement], ['FunctionDeclaration', evalEstreeFunctionDeclaration], ['FunctionExpression', evalEstreeFunctionExpression], ['Identifier', evalEstreeIdentifier], ['IfStatement', evalEstreeIfStatement], ['ImportDeclaration', evalEstreeImportDeclaration], ['Literal', evalEstreeLiteral], ['LogicalExpression', evalEstreeLogicalExpression], ['MemberExpression', evalEstreeMemberExpression], ['NewExpression', evalEstreeNewExpression], ['ObjectExpression', evalEstreeObjectExpression], ['Program', evalEstreeProgram], ['RestElement', evalEstreeRestElement], ['ReturnStatement', evalEstreeReturnStatement], ['SequenceExpression', evalEstreeSequenceExpression], ['SpreadElement', evalEstreeSpreadElement], ['SwitchCase', evalEstreeSwitchCase], ['SwitchStatement', evalEstreeSwitchStatement], ['TSAsExpression', evalEstreeTsAsExpression], ['TemplateElement', evalEstreeTemplateElement], ['TemplateLiteral', evalEstreeTemplateLiteral], ['ThisExpression', evalEstreeThisExpression], ['ThrowStatement', evalEstreeThrowStatement], ['TryStatement', evalEstreeTryStatement], ['UnaryExpression', evalEstreeUnaryExpression], ['UpdateExpression', evalEstreeUpdateExpression], ['VariableDeclaration', evalEstreeVariableDeclaration], ['VariableDeclarator', evalEstreeVariableDeclarator], ['WhileStatement', evalEstreeWhileStatement], ['XRawJavaScript', evalEstreeXRawJavascript], ['YieldExpression', evalEstreeYieldExpression]] as any);
 
 export {
   evalSyntax as evalRose,

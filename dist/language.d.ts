@@ -15,7 +15,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 import { jsNew_ as new_ } from './javascript';
-import { and_, ann_, cljTry_, cond_, defineMacro_, definePublic_, for_, or_, setq_, try_ } from './macros';
+import { and_, ann_, cljTry_, cond_, defineMacro_, definePublic_, for_, or_, provide_, require_, setq_, try_ } from './macros';
 import { read, readSyntax, readSexp, tokenize } from './parser';
 import { isAP_, typeOf_ } from './procedures';
 import { s, sexp } from './sexp';
@@ -553,22 +553,6 @@ declare namespace class_ {
  */
 declare function defineClass_(exp: any, env: any): any;
 declare namespace defineClass_ {
-    var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
-}
-/**
- * Expand a `(provide ...)` expression.
- */
-declare function provide_(exp: any, env: any): any;
-declare namespace provide_ {
-    var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[])[];
-}
-/**
- * Expand a `(require ...)` expression.
- */
-declare function require_(exp: any, env: any): any;
-declare namespace require_ {
     var ftype: string;
     var fsource: (symbol | (symbol | (string | symbol)[])[])[];
 }

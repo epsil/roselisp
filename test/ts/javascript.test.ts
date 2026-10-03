@@ -701,6 +701,92 @@ describe('js/statement-or-expression', (): any => {
   return it('(compile \'(js/statement-or-expression :statement 1) :as "return")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1]], Symbol.for(':as'), 'return'], 'return 1;']));
 });
 
+describe('js/import', (): any => {
+  it('(compile \'(js/import * :as foo :from "bar"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), Symbol.for('*'), Symbol.for(':as'), Symbol.for('foo'), Symbol.for(':from'), 'bar']]], 'import * as foo from \'bar\';']));
+  it('(compile \'(js/import * :as foo-bar :from "foo-bar"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), Symbol.for('*'), Symbol.for(':as'), Symbol.for('foo-bar'), Symbol.for(':from'), 'foo-bar']]], 'import * as fooBar from \'foo-bar\';']));
+  it('(compile \'(js/import (bar) :from "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), [Symbol.for('bar')], Symbol.for(':from'), 'foo']]], `import {
+  bar
+} from 'foo';`]));
+  it('(compile \'(js/import ((bar :as baz)) :from "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), [[Symbol.for('bar'), Symbol.for(':as'), Symbol.for('baz')]], Symbol.for(':from'), 'foo']]], `import {
+  bar as baz
+} from 'foo';`]));
+  it('(compile \'(js/import (bar bar) :from "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), [Symbol.for('bar'), Symbol.for('bar')], Symbol.for(':from'), 'foo']]], `import {
+  bar
+} from 'foo';`]));
+  it('(compile \'(js/import (bar (baz :as bar)) :from "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), [Symbol.for('bar'), [Symbol.for('baz'), Symbol.for(':as'), Symbol.for('bar')]], Symbol.for(':from'), 'foo']]], `import {
+  bar
+} from 'foo';`]));
+  it('(compile \'(js/import * :as foo :from "foo") :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), Symbol.for('*'), Symbol.for(':as'), Symbol.for('foo'), Symbol.for(':from'), 'foo']], Symbol.for(':fcommonjs'), true], 'let foo = require(\'foo\');']));
+  it('(compile \'(js/import foo :from "foo") :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), Symbol.for('foo'), Symbol.for(':from'), 'foo']], Symbol.for(':fcommonjs'), true], 'let foo = require(\'foo\');']));
+  it('(compile \'(js/import foo :from "bar") :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), Symbol.for('foo'), Symbol.for(':from'), 'bar']], Symbol.for(':fcommonjs'), true], 'let foo = require(\'bar\');']));
+  it('(compile \'(js/import foo :from "bar") :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), Symbol.for('foo'), Symbol.for(':from'), 'bar']], Symbol.for(':fcommonjs'), true], 'let foo = require(\'bar\');']));
+  it('(compile \'(js/import (bar) :from "foo") :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), [Symbol.for('bar')], Symbol.for(':from'), 'foo']], Symbol.for(':fcommonjs'), true], 'let {bar} = require(\'foo\');']));
+  return it('(compile \'(js/import ((bar :as baz)) :from "foo") :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), [[Symbol.for('bar'), Symbol.for(':as'), Symbol.for('baz')]], Symbol.for(':from'), 'foo']], Symbol.for(':fcommonjs'), true], 'let {bar: baz} = require(\'foo\');']));
+});
+
+describe('js/export', (): any => {
+  it('(compile \'(js/export))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export')]]], '']));
+  it('(compile \'(js/export :specifiers ()))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), []]]], '']));
+  it('(compile \'(js/export :specifiers (x)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x')]]]], `export {
+  x
+};`]));
+  it('(compile \'(js/export :specifiers (x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x'), Symbol.for('y')]]]], `export {
+  x,
+  y
+};`]));
+  it('(compile \'(js/export :specifiers ((x :as y))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [[Symbol.for('x'), Symbol.for(':as'), Symbol.for('y')]]]]], `export {
+  x as y
+};`]));
+  it('(compile \'(js/export :specifiers ((x :as y) (w :as z))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [[Symbol.for('x'), Symbol.for(':as'), Symbol.for('y')], [Symbol.for('w'), Symbol.for(':as'), Symbol.for('z')]]]]], `export {
+  x as y,
+  w as z
+};`]));
+  it('(compile \'(js/export :specifiers (x (y :as z))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x'), [Symbol.for('y'), Symbol.for(':as'), Symbol.for('z')]]]]], `export {
+  x,
+  y as z
+};`]));
+  it('(compile \'(js/export :specifiers (x x)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x'), Symbol.for('x')]]]], `export {
+  x
+};`]));
+  it('(compile \'(js/export :specifiers (x (y :as x))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x'), [Symbol.for('y'), Symbol.for(':as'), Symbol.for('x')]]]]], `export {
+  x
+};`]));
+  it('(compile \'(js/export :specifiers ((x :as js/undefined))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [[Symbol.for('x'), Symbol.for(':as'), Symbol.for('js/undefined')]]]]], `export {
+  x as jsUndefined
+};`]));
+  it('(compile \'(js/export * :from "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for('*'), Symbol.for(':from'), 'foo']]], 'export * from \'foo\';']));
+  it('(compile \'(js/export :specifiers ((js/export * :from "foo") bar)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [[Symbol.for('js/export'), Symbol.for('*'), Symbol.for(':from'), 'foo'], Symbol.for('bar')]]]], `export * from 'foo';
+
+export {
+  bar
+};`]));
+  it('(compile \'(js/export :specifiers (x)) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x')]]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  x
+};`]));
+  it('(compile \'(js/export :specifiers (x y)) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x'), Symbol.for('y')]]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  x,
+  y
+};`]));
+  it('(compile \'(js/export :specifiers (foo-bar)) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('foo-bar')]]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  fooBar
+};`]));
+  it('(compile \'(js/export :specifiers ((x :as y))) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [[Symbol.for('x'), Symbol.for(':as'), Symbol.for('y')]]]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  x: y
+};`]));
+  it('(compile \'(js/export :specifiers ((js/export * :from "foo-bar") baz)) :fcommonjs #t)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [[Symbol.for('js/export'), Symbol.for('*'), Symbol.for(':from'), 'foo-bar'], Symbol.for('baz')]]], Symbol.for(':fcommonjs'), true], `module.exports = {
+  ...fooBar,
+  baz
+};`]));
+  it('(compile \'(js/export :specifiers (x) :from "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':specifiers'), [Symbol.for('x')], Symbol.for(':from'), 'foo']]], `export {
+  x
+} from 'foo';`]));
+  it('(compile \'(js/export :declaration (js/var foo 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), Symbol.for(':declaration'), [Symbol.for('js/var'), Symbol.for('foo'), 1]]]], 'export var foo = 1;']));
+  it('(compile \'(js/export (js/var foo 1)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), [Symbol.for('js/var'), Symbol.for('foo'), 1]]]], 'export var foo = 1;']));
+  return it('(compile \'(js/export (list x) :from "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/export'), [Symbol.for('list'), Symbol.for('x')], Symbol.for(':from'), 'foo']]], `export {
+  x
+} from 'foo';`]));
+});
+
 describe('js/raw', (): any => {
   it('(compile \'(js/raw "1"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/raw'), '1']]], '1']));
   it('(js/raw "1 + 1;")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/raw'), '1 + 1;'], 2]));

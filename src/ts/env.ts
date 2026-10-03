@@ -356,6 +356,19 @@ class Environment {
     // Alias for `.set`.
     return this.setx(key, value);
   }
+
+  /**
+   * Convert the environment to a JavaScript object.
+   */
+  toObject(): any {
+    let result: any = this.parent ? this.parent.toObject() : {};
+    for (let key of [...this.table.keys()]) {
+      const keyStr: any = (typeof key === 'symbol') ? (key.description as string) : key;
+      let val: any = this.get(key);
+      (result as any)[keyStr] = val;
+    }
+    return result;
+  }
 }
 
 /**
@@ -959,6 +972,22 @@ class EnvironmentStack extends PromiseEnvironment {
     }
     return this;
   }
+
+  /**
+   * Convert the environment stack to a JavaScript object.
+   */
+  toObject(): any {
+    let result: any = this.parent ? this.parent.toObject() : {};
+    const _start: any = this.stack.length - 1;
+    for (let i: any = _start; i > -1; i--) {
+      let env: any = (this.stack as any)[i];
+      result = {
+        ...result,
+        ...env.toObject()
+      };
+    }
+    return result;
+  }
 }
 
 /**
@@ -1111,6 +1140,33 @@ class JavaScriptEnvironment extends DynamicEnvironment {
 }
 
 /**
+ * JavaScript environment.
+ *
+ * A dynamic environment that looks up JavaScript values
+ * in a JavaScript module.
+ */
+class JavaScriptModuleEnvironment extends DynamicEnvironment {
+  private jsModule: any;
+
+  constructor(jsModule: any) {
+    super((name: any): any => {
+      const str: any = (typeof name === 'symbol') ? (name.description as string) : name;
+      const jsModule: any = this.jsModule;
+      if (jsModule) {
+        return (jsModule as any)[str];
+      } else {
+        return undefined;
+      }
+    });
+    this.jsModule = jsModule;
+  }
+
+  toObject(): any {
+    return this.jsModule;
+  }
+}
+
+/**
  * Make an environment.
  */
 function makeEnvironment(variables: any = undefined, parent: any = undefined, isLisp2: any = false): any {
@@ -1259,12 +1315,12 @@ withEnvironmentF.fsource = [Symbol.for('define'), [Symbol.for('with-environment-
  */
 function withEnvironment(exp: any, env: any): any {
   const [environment, ...body]: any[] = exp.slice(1);
-  return [Symbol.for('with-environment-f'), environment, [Symbol.for('js/arrow'), [], ...body]];
+  return [Symbol.for('with-environment-f'), environment, [Symbol.for('thunk'), ...body]];
 }
 
 withEnvironment.ftype = 'macro';
 
-withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment-f'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('js/arrow'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment-f'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('thunk'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
 
 /**
  * Pointer to the current compilation options.
@@ -1308,6 +1364,7 @@ export {
   EnvironmentPipe,
   EnvironmentStack,
   JavaScriptEnvironment,
+  JavaScriptModuleEnvironment,
   LispEnvironment,
   PromiseEnvironment,
   TypedEnvironment,

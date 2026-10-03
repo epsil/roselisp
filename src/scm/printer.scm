@@ -2027,28 +2027,28 @@
 
 ;;; Print an `ImportSpecifier` ESTree node to a `Doc` object.
 (define (print-import-specifier node (options (js/obj)))
-  (define local
-    (get-estree-field "local" node))
-  (define local-printed
-    (print-node local options))
-  (define local-printed-str
-    (print-doc local-printed options))
   (define imported
     (get-estree-field "imported" node))
   (define imported-printed
     (print-node imported options))
   (define imported-printed-str
     (print-doc imported-printed options))
+  (define local
+    (get-estree-field "local" node))
+  (define local-printed
+    (print-node local options))
+  (define local-printed-str
+    (print-doc local-printed options))
   (cond
    ((eq? local-printed-str imported-printed-str)
-    local-printed)
+    imported-printed)
    (else
     (list
-     local-printed
+     imported-printed
      space
      "as"
      space
-     imported-printed))))
+     local-printed))))
 
 ;;; Print an `ImportDefaultSpecifier` ESTree node to a `Doc` object.
 (define (print-import-default-specifier node (options (js/obj)))
@@ -2067,30 +2067,50 @@
 (define (print-export-named-declaration node (options (js/obj)))
   (define fsemicolon
     (oget options :fsemicolon))
-  (define specifiers
-    (get-estree-field "specifiers" node))
-  (define specifiers-printed
-    (~> specifiers
-        (map (lambda (x)
-               (print-node x options))
-             _)
-        (join (list "," line) _)
-        (indent _)))
-  (define specifiers-printed-str
-    (print-doc specifiers-printed options))
-  (list
-   "export"
-   space
-   "{"
-   line
-   specifiers-printed
-   (if (eq? specifiers-printed-str "")
-       empty
-       line)
-   "}"
-   (if fsemicolon
-       ";"
-       empty)))
+  (define src
+    (get-estree-field "source" node))
+  (define declaration
+    (get-estree-field "declaration" node))
+  (cond
+   (declaration
+    (define declaration-printed
+      (print-node declaration options))
+    (list
+     "export"
+     space
+     declaration-printed))
+   (else
+    (define specifiers
+      (get-estree-field "specifiers" node))
+    (define specifiers-printed
+      (~> specifiers
+          (map (lambda (x)
+                 (print-node x options))
+               _)
+          (join (list "," line) _)
+          (indent _)))
+    (define specifiers-printed-str
+      (print-doc specifiers-printed options))
+    (list
+     "export"
+     space
+     "{"
+     line
+     specifiers-printed
+     (if (eq? specifiers-printed-str "")
+         empty
+         line)
+     "}"
+     (if src
+         (list
+          space
+          "from"
+          space
+          (print-node src options))
+         empty)
+     (if fsemicolon
+         ";"
+         empty)))))
 
 ;;; Print an `ExportSpecifier` ESTree node to a `Doc` object.
 (define (print-export-specifier node (options (js/obj)))

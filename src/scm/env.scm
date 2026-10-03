@@ -308,7 +308,23 @@
   ;;; Set `key` to `value` in the environment.
   (define/public (set-value! key value)
     ;; Alias for `.set`.
-    (send this set! key value)))
+    (send this set! key value))
+
+  ;;; Convert the environment to a JavaScript object.
+  (define/public (to-object)
+    (define result
+      (if (get-field parent this)
+          (send (get-field parent this) to-object)
+          (js/obj)))
+    (for ((key (hash-keys (get-field table this))))
+      (define key-str
+        (if (symbol? key)
+            (symbol->string key)
+            key))
+      (define val
+        (send this get key))
+      (oset! result key-str val))
+    result))
 
 ;;; Typed environment.
 ;;;
@@ -855,7 +871,24 @@
         (send env set-local! key value type))
        (else
         (send key set-local! value))))
-    this))
+    this)
+
+  ;;; Convert the environment stack to a JavaScript object.
+  (define/public (to-object)
+    (define result
+      (if (get-field parent this)
+          (send (get-field parent this) to-object)
+          (js/obj)))
+
+    (for ((i (range (- (length (get-field stack this)) 1)
+                    -1
+                    -1)))
+      (define env
+        (list-ref (get-field stack this) i))
+      (set! result (js/obj-append
+                    result
+                    (send env to-object))))
+    result))
 
 ;;; Compose environments left-to-right.
 (define-class EnvironmentPipe (TypedEnvironment)
@@ -978,6 +1011,29 @@
   (define/public (constructor)
     (super lookup-js-value)))
 
+;;; JavaScript environment.
+;;;
+;;; A dynamic environment that looks up JavaScript values
+;;; in a JavaScript module.
+(define-class JavaScriptModuleEnvironment (DynamicEnvironment)
+  (define js-module)
+
+  (define/public (constructor js-module)
+    (super (lambda (name)
+             (define str
+               (if (symbol? name)
+                   (symbol->string name)
+                   name))
+             (define js-module
+               (get-field js-module this))
+             (if js-module
+                 (oget js-module str)
+                 #u)))
+    (set-field! js-module this js-module))
+
+  (define/public (to-object)
+    (get-field js-module this)))
+
 ;;; Make an environment.
 (define (make-environment (variables #u)
                           (parent #u)
@@ -1079,7 +1135,7 @@
 (define-macro (with-environment environment &rest body)
   `(with-environment-f
     ,environment
-    (js/arrow () ,@body)))
+    (thunk ,@body)))
 
 ;;; Pointer to the current compilation options.
 (define current-compilation-options-pointer
@@ -1111,6 +1167,7 @@
   EnvironmentPipe
   EnvironmentStack
   JavaScriptEnvironment
+  JavaScriptModuleEnvironment
   LispEnvironment
   PromiseEnvironment
   TypedEnvironment

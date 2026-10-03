@@ -490,11 +490,11 @@ exports.ImportDeclaration = ImportDeclaration;
  * [estree:importspecifier]: https://github.com/estree/estree/blob/master/es2015.md#importspecifier
  */
 class ImportSpecifier extends ModuleSpecifier {
-    constructor(local, imported = undefined) {
-        super(local);
+    constructor(imported, local = undefined) {
+        super(imported);
         this.type = 'ImportSpecifier';
-        this.local = local;
-        this.imported = imported || local;
+        this.imported = imported;
+        this.local = local || imported;
     }
 }
 exports.ImportSpecifier = ImportSpecifier;

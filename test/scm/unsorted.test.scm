@@ -14,6 +14,28 @@
  :describe "To do"
  :repl #t
 
+ :describe "Assignment operators"
+ xit> (compile '(js/+= x y))
+ "x += y;"
+ xit> (compile '(js/-= x y))
+ "x -= y;"
+ xit> (compile '(js/*= x y))
+ "x *= y;"
+ xit> (compile '(js//= x y))
+ "x /= y;"
+ xit> (compile '(js/^= x y))
+ "x ^= y;"
+ xit> (compile '(js/&= x y))
+ "x &= y;"
+ xit> (compile '(js/\|= x y))
+ "x |= y;"
+ xit> (compile '(js/<<= x y))
+ "x <<= y;"
+ xit> (compile '(js/>>= x y))
+ "x >>= y;"
+ xit> (compile '(js/>>>= x y))
+ "x >>>= y;"
+
  :describe "Avoiding IIFEs"
  xit> (compile '(define x
                   (begin y z)))
@@ -66,28 +88,6 @@ myPlus.compilerMacro = (() => {
 })();
 
 let x = 1 + 2;"
-
- :describe "Assignment operators"
- xit> (compile '(js/+= x y))
- "x += y;"
- xit> (compile '(js/-= x y))
- "x -= y;"
- xit> (compile '(js/*= x y))
- "x *= y;"
- xit> (compile '(js//= x y))
- "x /= y;"
- xit> (compile '(js/^= x y))
- "x ^= y;"
- xit> (compile '(js/&= x y))
- "x &= y;"
- xit> (compile '(js/\|= x y))
- "x |= y;"
- xit> (compile '(js/<<= x y))
- "x <<= y;"
- xit> (compile '(js/>>= x y))
- "x >>= y;"
- xit> (compile '(js/>>>= x y))
- "x >>>= y;"
 
  :describe "js/iife"
  xit> (compile '(js/iife (js/arrow (x . y)

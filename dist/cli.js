@@ -22,6 +22,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const minimist = require("minimist");
 const buildOptions = require("minimist-options");
+const path_1 = require("path");
 const decompiler_1 = require("./decompiler");
 const language_1 = require("./language");
 const repl_1 = require("./repl");
@@ -112,6 +113,11 @@ const cliOptions = {
         default: true,
         type: 'boolean'
     },
+    inDir: {
+        alias: 'in-dir',
+        default: '.',
+        type: 'string'
+    },
     outDir: {
         alias: 'out-dir',
         default: '.',
@@ -177,8 +183,9 @@ Options:
  */
 function normalizeCliOptions(options) {
     const languageOption = options['language'].toLowerCase();
+    const inDirOption = (0, path_1.resolve)(options['inDir']);
     const toOption = (languageOption === '') ? options['to'] : languageOption;
-    return Object.assign(Object.assign({}, options), { to: toOption });
+    return Object.assign(Object.assign({}, options), { inDir: inDirOption, to: toOption });
 }
 /**
  * `main` function. Invoked when the program is

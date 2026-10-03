@@ -14,6 +14,8 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "./env"
+                  current-compilation-options))
 (require (only-in "./eval"
                   eval_))
 (require (only-in "./plist"
@@ -975,11 +977,12 @@
       (third (first clj-catch-clauses)))
     (cond
      ((and (= (length clj-catch-clauses) 1)
-           (memq? exception
-                  '(_
-                    js/Object
-                    Object
-                    object%)))
+           (or (eq? sym '_)
+               (memq? exception
+                      '(_
+                        js/Object
+                        Object
+                        object%))))
       (define clj-catch-clause
         (first clj-catch-clauses))
       (define catch-clause
@@ -1317,6 +1320,66 @@
                               collect `(,n ,g)))
                ,@body)))))))
 
+;;; Expand a `(require ...)` expression.
+;;;
+;;; Similar to [`require` in Racket][rkt:require].
+;;;
+;;; [rkt:require]: https://docs.racket-lang.org/reference/require.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._require%29%29
+(define-macro (require_ &rest forms)
+  (define x
+    (first forms))
+  (cond
+   ((tagged-list? x 'only-in)
+    (define y
+      (second x))
+    (when (symbol? y)
+      (set! y (symbol->string y)))
+    `(js/import
+      ,(map (lambda (x)
+              (cond
+               ((pair-or-list? x)
+                `(,(first x) :as ,(last x)))
+               (else
+                x)))
+            (drop x 2))
+      :from
+      ,y))
+   (else
+    (define-fields (fes-module-interop)
+      (current-compilation-options))
+    (define y
+      (or (second forms)
+          x))
+    (when (string? x)
+      (set! x (string->symbol x)))
+    (when (symbol? y)
+      (set! y (symbol->string y)))
+    `(js/import
+      ,@(if fes-module-interop
+            '()
+            `(* :as))
+      ,x :from ,y))))
+
+;;; Expand a `(provide ...)` expression.
+;;;
+;;; Similar to [`provide` in Racket][rkt:provide].
+;;;
+;;; [rkt:provide]: https://docs.racket-lang.org/reference/require.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._provide%29%29
+(define-macro (provide_ &rest forms)
+  (define specifiers '())
+  (for ((x forms))
+    (cond
+     ((tagged-list? x 'all-from-out)
+      (push-right! specifiers
+                   `(js/export * :from ,(last x))))
+     ((tagged-list? x 'rename-out)
+      (for ((x1 (rest x)))
+        (push-right! specifiers
+                     `(,(first x1) :as ,(last x1)))))
+     (else
+      (push-right! specifiers x))))
+  `(js/export :specifiers ,specifiers))
+
 ;;; Expand an `(ann ...)` expression.
 (define-macro (ann_ exp typ)
   `(ts/as ,exp ,typ))
@@ -1359,7 +1422,9 @@
   nlambda_
   once-only_
   or_
+  provide_
   quasisyntax_
+  require_
   rkt/new_
   set_
   setq_

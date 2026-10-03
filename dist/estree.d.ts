@@ -388,7 +388,7 @@ declare class ImportSpecifier extends ModuleSpecifier {
     type: any;
     local: any;
     imported: any;
-    constructor(local: any, imported?: any);
+    constructor(imported: any, local?: any);
 }
 /**
  * ImportDefaultSpecifier

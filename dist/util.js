@@ -16,7 +16,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validJsCasingStyleP = exports.unwrapQuoteExpression = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.removeIndentation = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.copyIntoArrayX = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.withCwd = exports.validJsCasingStyleP = exports.unwrapQuoteExpression = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.removeIndentation = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.copyIntoArrayX = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+const process_1 = require("process");
 const constants_1 = require("./constants");
 const rose_1 = require("./rose");
 const [selfEvaluatingP, buildList, keywordp] = (() => {
@@ -921,3 +922,37 @@ function removeIndentation(str) {
     return str.replace(/^[^\S\r\n]+$/gm, '');
 }
 exports.removeIndentation = removeIndentation;
+/**
+ * Call the thunk `f` with the current working directory
+ * temporarily set to `dir`. Restores the previous
+ * working directory afterwards.
+ */
+function withCwd(dir, f) {
+    const tmp = (0, process_1.cwd)();
+    try {
+        try {
+            (0, process_1.chdir)(dir);
+        }
+        catch (err) {
+            if (err instanceof Error) {
+            }
+            else {
+                throw err;
+            }
+        }
+        return f();
+    }
+    finally {
+        try {
+            (0, process_1.chdir)(tmp);
+        }
+        catch (err) {
+            if (err instanceof Error) {
+            }
+            else {
+                throw err;
+            }
+        }
+    }
+}
+exports.withCwd = withCwd;

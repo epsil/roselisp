@@ -19,6 +19,8 @@
 
 (require "minimist")
 (require build-options "minimist-options")
+(require (only-in "path"
+                  resolve))
 (require (only-in "./decompiler"
                   decompile-files!))
 (require (only-in "./language"
@@ -114,6 +116,11 @@
    (js/obj
     :default #t
     :type "boolean")
+   :in-dir
+   (js/obj
+    :alias "in-dir"
+    :default "."
+    :type "string")
    :out-dir
    (js/obj
     :alias "out-dir"
@@ -178,13 +185,16 @@ Options:
 (define (normalize-cli-options options)
   (define language-option
     (string-downcase (oget options :language)))
+  (define in-dir-option
+    (resolve (oget options :in-dir)))
   (define to-option
     (if (eq? language-option "")
         (oget options :to)
         language-option))
   (js/obj-append
    options
-   (js/obj :to to-option)))
+   (js/obj :in-dir in-dir-option
+           :to to-option)))
 
 ;;; `main` function. Invoked when the program is
 ;;; run from the command line.

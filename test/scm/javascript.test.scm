@@ -1196,6 +1196,136 @@ z;"
             :as "return")
  "return 1;"
 
+ :describe "js/import"
+ > (compile '(js/import * :as foo :from "bar"))
+ "import * as foo from 'bar';"
+ > (compile '(js/import * :as foo-bar :from "foo-bar"))
+ "import * as fooBar from 'foo-bar';"
+ > (compile '(js/import (bar) :from "foo"))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(js/import ((bar :as baz)) :from "foo"))
+ "import {
+  bar as baz
+} from 'foo';"
+ > (compile '(js/import (bar bar) :from "foo"))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(js/import (bar (baz :as bar)) :from "foo"))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(js/import * :as foo :from "foo")
+            :fcommonjs #t)
+ "let foo = require('foo');"
+ > (compile '(js/import foo :from "foo")
+            :fcommonjs #t)
+ "let foo = require('foo');"
+ > (compile '(js/import foo :from "bar")
+            :fcommonjs #t)
+ "let foo = require('bar');"
+ > (compile '(js/import foo :from "bar")
+            :fcommonjs #t)
+ "let foo = require('bar');"
+ > (compile '(js/import (bar) :from "foo")
+            :fcommonjs #t)
+ "let {bar} = require('foo');"
+ > (compile '(js/import ((bar :as baz)) :from "foo")
+            :fcommonjs #t)
+ "let {bar: baz} = require('foo');"
+
+ :describe "js/export"
+ > (compile '(js/export))
+ ""
+ > (compile '(js/export :specifiers ()))
+ ""
+ > (compile '(js/export :specifiers (x)))
+ "export {
+  x
+};"
+ > (compile '(js/export :specifiers (x y)))
+ "export {
+  x,
+  y
+};"
+ > (compile '(js/export :specifiers ((x :as y))))
+ "export {
+  x as y
+};"
+ > (compile '(js/export :specifiers ((x :as y) (w :as z))))
+ "export {
+  x as y,
+  w as z
+};"
+ > (compile '(js/export :specifiers (x (y :as z))))
+ "export {
+  x,
+  y as z
+};"
+ > (compile '(js/export :specifiers (x x)))
+ "export {
+  x
+};"
+ > (compile '(js/export :specifiers (x (y :as x))))
+ "export {
+  x
+};"
+ > (compile '(js/export :specifiers ((x :as js/undefined))))
+ "export {
+  x as jsUndefined
+};"
+ > (compile '(js/export * :from "foo"))
+ "export * from 'foo';"
+ > (compile '(js/export :specifiers ((js/export * :from "foo")
+                                     bar)))
+ "export * from 'foo';
+
+export {
+  bar
+};"
+ > (compile '(js/export :specifiers (x))
+            :fcommonjs #t)
+ "module.exports = {
+  x
+};"
+ > (compile '(js/export :specifiers (x y))
+            :fcommonjs #t)
+ "module.exports = {
+  x,
+  y
+};"
+ > (compile '(js/export :specifiers (foo-bar))
+            :fcommonjs #t)
+ "module.exports = {
+  fooBar
+};"
+ > (compile '(js/export :specifiers ((x :as y)))
+            :fcommonjs #t)
+ "module.exports = {
+  x: y
+};"
+ > (compile '(js/export :specifiers ((js/export * :from "foo-bar")
+                                     baz))
+            :fcommonjs #t)
+ "module.exports = {
+  ...fooBar,
+  baz
+};"
+ > (compile '(js/export :specifiers (x) :from "foo"))
+ "export {
+  x
+} from 'foo';"
+ > (compile '(js/export :declaration (js/var foo 1)))
+ "export var foo = 1;"
+ > (compile '(js/export (js/var foo 1)))
+ "export var foo = 1;"
+ > (compile '(js/export (list x) :from "foo"))
+ "export {
+  x
+} from 'foo';"
+
  :describe "js/raw"
  > (compile '(js/raw "1"))
  "1"

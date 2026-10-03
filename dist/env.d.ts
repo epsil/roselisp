@@ -159,6 +159,10 @@ declare class Environment {
      * Set `key` to `value` in the environment.
      */
     setValueX(key: any, value: any): any;
+    /**
+     * Convert the environment to a JavaScript object.
+     */
+    toObject(): any;
 }
 /**
  * Typed environment.
@@ -371,6 +375,10 @@ declare class EnvironmentStack extends PromiseEnvironment {
      * environment in the stack.
      */
     setLocalX(key: any, value: any, type?: any): any;
+    /**
+     * Convert the environment stack to a JavaScript object.
+     */
+    toObject(): any;
 }
 /**
  * Compose environments left-to-right.
@@ -442,6 +450,17 @@ declare class DynamicEnvironment extends TypedEnvironment {
  */
 declare class JavaScriptEnvironment extends DynamicEnvironment {
     constructor();
+}
+/**
+ * JavaScript environment.
+ *
+ * A dynamic environment that looks up JavaScript values
+ * in a JavaScript module.
+ */
+declare class JavaScriptModuleEnvironment extends DynamicEnvironment {
+    private jsModule;
+    constructor(jsModule: any);
+    toObject(): any;
 }
 /**
  * Make an environment.
@@ -551,4 +570,4 @@ declare function withCompilationOptions(options: any, f: any): any;
 declare namespace withCompilationOptions {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[][])[])[];
 }
-export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentCompilationOptions, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withCompilationOptions, withEnvironment, withEnvironmentF };
+export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, JavaScriptModuleEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentCompilationOptions, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withCompilationOptions, withEnvironment, withEnvironmentF };

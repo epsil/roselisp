@@ -1367,20 +1367,20 @@ printImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-impor
  * Print an `ImportSpecifier` ESTree node to a `Doc` object.
  */
 function printImportSpecifier(node, options = {}) {
-    const local = (0, estree_1.getEstreeField)('local', node);
-    const localPrinted = printNode(local, options);
-    const localPrintedStr = printDoc(localPrinted, options);
     const imported = (0, estree_1.getEstreeField)('imported', node);
     const importedPrinted = printNode(imported, options);
     const importedPrintedStr = printDoc(importedPrinted, options);
+    const local = (0, estree_1.getEstreeField)('local', node);
+    const localPrinted = printNode(local, options);
+    const localPrintedStr = printDoc(localPrinted, options);
     if (localPrintedStr === importedPrintedStr) {
-        return localPrinted;
+        return importedPrinted;
     }
     else {
-        return [localPrinted, space, 'as', space, importedPrinted];
+        return [importedPrinted, space, 'as', space, localPrinted];
     }
 }
-printImportSpecifier.fsource = [Symbol.for('define'), [Symbol.for('print-import-specifier'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('local-printed'), [Symbol.for('print-node'), Symbol.for('local'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('local-printed-str'), [Symbol.for('print-doc'), Symbol.for('local-printed'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported'), [Symbol.for('get-estree-field'), 'imported', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('imported-printed'), [Symbol.for('print-node'), Symbol.for('imported'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported-printed-str'), [Symbol.for('print-doc'), Symbol.for('imported-printed'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('local-printed-str'), Symbol.for('imported-printed-str')], Symbol.for('local-printed')], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('local-printed'), Symbol.for('space'), 'as', Symbol.for('space'), Symbol.for('imported-printed')]]]];
+printImportSpecifier.fsource = [Symbol.for('define'), [Symbol.for('print-import-specifier'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('imported'), [Symbol.for('get-estree-field'), 'imported', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('imported-printed'), [Symbol.for('print-node'), Symbol.for('imported'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported-printed-str'), [Symbol.for('print-doc'), Symbol.for('imported-printed'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('local-printed'), [Symbol.for('print-node'), Symbol.for('local'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('local-printed-str'), [Symbol.for('print-doc'), Symbol.for('local-printed'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('local-printed-str'), Symbol.for('imported-printed-str')], Symbol.for('imported-printed')], [Symbol.for('else'), [Symbol.for('list'), Symbol.for('imported-printed'), Symbol.for('space'), 'as', Symbol.for('space'), Symbol.for('local-printed')]]]];
 /**
  * Print an `ImportDefaultSpecifier` ESTree node to a `Doc` object.
  */
@@ -1400,12 +1400,20 @@ printImportNamespaceSpecifier.fsource = [Symbol.for('define'), [Symbol.for('prin
  */
 function printExportNamedDeclaration(node, options = {}) {
     const fsemicolon = options['fsemicolon'];
-    const specifiers = (0, estree_1.getEstreeField)('specifiers', node);
-    const specifiersPrinted = indent(join([',', line], specifiers.map((x) => printNode(x, options))));
-    const specifiersPrintedStr = printDoc(specifiersPrinted, options);
-    return ['export', space, '{', line, specifiersPrinted, (specifiersPrintedStr === '') ? empty : line, '}', fsemicolon ? ';' : empty];
+    const src = (0, estree_1.getEstreeField)('source', node);
+    const declaration = (0, estree_1.getEstreeField)('declaration', node);
+    if (declaration) {
+        const declarationPrinted = printNode(declaration, options);
+        return ['export', space, declarationPrinted];
+    }
+    else {
+        const specifiers = (0, estree_1.getEstreeField)('specifiers', node);
+        const specifiersPrinted = indent(join([',', line], specifiers.map((x) => printNode(x, options))));
+        const specifiersPrintedStr = printDoc(specifiersPrinted, options);
+        return ['export', space, '{', line, specifiersPrinted, (specifiersPrintedStr === '') ? empty : line, '}', src ? [space, 'from', space, printNode(src, options)] : empty, fsemicolon ? ';' : empty];
+    }
 }
-printExportNamedDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-named-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':fsemicolon')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('specifiers-printed'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]]], [Symbol.for('define'), Symbol.for('specifiers-printed-str'), [Symbol.for('print-doc'), Symbol.for('specifiers-printed'), Symbol.for('options')]], [Symbol.for('list'), 'export', Symbol.for('space'), '{', Symbol.for('line'), Symbol.for('specifiers-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('specifiers-printed-str'), ''], Symbol.for('empty'), Symbol.for('line')], '}', [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]];
+printExportNamedDeclaration.fsource = [Symbol.for('define'), [Symbol.for('print-export-named-declaration'), Symbol.for('node'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('fsemicolon'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':fsemicolon')]], [Symbol.for('define'), Symbol.for('src'), [Symbol.for('get-estree-field'), 'source', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('declaration'), [Symbol.for('get-estree-field'), 'declaration', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('declaration'), [Symbol.for('define'), Symbol.for('declaration-printed'), [Symbol.for('print-node'), Symbol.for('declaration'), Symbol.for('options')]], [Symbol.for('list'), 'export', Symbol.for('space'), Symbol.for('declaration-printed')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('specifiers-printed'), [Symbol.for('~>'), Symbol.for('specifiers'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('print-node'), Symbol.for('x'), Symbol.for('options')]], Symbol.for('_')], [Symbol.for('join'), [Symbol.for('list'), ',', Symbol.for('line')], Symbol.for('_')], [Symbol.for('indent'), Symbol.for('_')]]], [Symbol.for('define'), Symbol.for('specifiers-printed-str'), [Symbol.for('print-doc'), Symbol.for('specifiers-printed'), Symbol.for('options')]], [Symbol.for('list'), 'export', Symbol.for('space'), '{', Symbol.for('line'), Symbol.for('specifiers-printed'), [Symbol.for('if'), [Symbol.for('eq?'), Symbol.for('specifiers-printed-str'), ''], Symbol.for('empty'), Symbol.for('line')], '}', [Symbol.for('if'), Symbol.for('src'), [Symbol.for('list'), Symbol.for('space'), 'from', Symbol.for('space'), [Symbol.for('print-node'), Symbol.for('src'), Symbol.for('options')]], Symbol.for('empty')], [Symbol.for('if'), Symbol.for('fsemicolon'), ';', Symbol.for('empty')]]]]];
 /**
  * Print an `ExportSpecifier` ESTree node to a `Doc` object.
  */

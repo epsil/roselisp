@@ -534,7 +534,7 @@ declare namespace try_ {
 declare function cljTry_(exp: any, env: any): any;
 declare namespace cljTry_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[])[])[])[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[])[])[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(match ...)` expression.
@@ -595,6 +595,30 @@ declare namespace onceOnly_ {
     var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[][])[])[])[])[])[][] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[][])[])[])[][])[])[])[])[])[])[])[])[])[])[];
 }
 /**
+ * Expand a `(require ...)` expression.
+ *
+ * Similar to [`require` in Racket][rkt:require].
+ *
+ * [rkt:require]: https://docs.racket-lang.org/reference/require.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._require%29%29
+ */
+declare function require_(exp: any, env: any): any;
+declare namespace require_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[][])[])[];
+}
+/**
+ * Expand a `(provide ...)` expression.
+ *
+ * Similar to [`provide` in Racket][rkt:provide].
+ *
+ * [rkt:provide]: https://docs.racket-lang.org/reference/require.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._provide%29%29
+ */
+declare function provide_(exp: any, env: any): any;
+declare namespace provide_ {
+    var ftype: string;
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[];
+}
+/**
  * Expand an `(ann ...)` expression.
  */
 declare function ann_(exp1: any, env: any): any;
@@ -602,4 +626,4 @@ declare namespace ann_ {
     var ftype: string;
     var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[];
 }
-export { defineInline_ as defineSubst_, and_, ann_, begin0_, caseEq_, case_, clLoop_, cljTry_, cond_, declareFexpr_, declareMacro_, declareSyntaxMacro_, declare_, defclass_, defineCompilerMacro_, defineFexpr_, defineInlineMacro_, defineInline_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defsubst_, defun_, do_, elIf_, for_, macro_, match_, multipleValueBind_, newApply_, nlambda_, onceOnly_, or_, quasisyntax_, rktNew_, set_, setq_, syntaxMacro_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_, withGensyms_ };
+export { defineInline_ as defineSubst_, and_, ann_, begin0_, caseEq_, case_, clLoop_, cljTry_, cond_, declareFexpr_, declareMacro_, declareSyntaxMacro_, declare_, defclass_, defineCompilerMacro_, defineFexpr_, defineInlineMacro_, defineInline_, defineMacroToFunction, defineMacroToLambdaForm, defineMacro_, definePrivate_, definePublic_, defineSyntax_, defmacro_, defsubst_, defun_, do_, elIf_, for_, macro_, match_, multipleValueBind_, newApply_, nlambda_, onceOnly_, or_, provide_, quasisyntax_, require_, rktNew_, set_, setq_, syntaxMacro_, syntax_, threadAs_, threadFirst_, threadLast_, try_, unless_, unwindProtect_, when_, while_, withGensyms_ };

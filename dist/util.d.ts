@@ -207,4 +207,10 @@ declare function copyIntoArrayX(source: any, dest: any): any;
  * Remove indentation from a multi-line string.
  */
 declare function removeIndentation(str: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, copyIntoArrayX, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, removeIndentation, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP };
+/**
+ * Call the thunk `f` with the current working directory
+ * temporarily set to `dir`. Restores the previous
+ * working directory afterwards.
+ */
+declare function withCwd(dir: any, f: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, copyIntoArrayX, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, removeIndentation, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP, withCwd };

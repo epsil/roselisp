@@ -18,7 +18,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withEnvironmentF = exports.withEnvironment = exports.withCompilationOptions = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.currentCompilationOptions = exports.TypedEnvironment = exports.PromiseEnvironment = exports.LispEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = exports.ThunkedEnvironment = void 0;
+exports.withEnvironmentF = exports.withEnvironment = exports.withCompilationOptions = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.currentCompilationOptions = exports.TypedEnvironment = exports.PromiseEnvironment = exports.LispEnvironment = exports.JavaScriptModuleEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = exports.ThunkedEnvironment = void 0;
 const lookup_1 = require("./lookup");
 const thunk_1 = require("./thunk");
 /**
@@ -317,6 +317,18 @@ class Environment {
     setValueX(key, value) {
         // Alias for `.set`.
         return this.setx(key, value);
+    }
+    /**
+     * Convert the environment to a JavaScript object.
+     */
+    toObject() {
+        let result = this.parent ? this.parent.toObject() : {};
+        for (let key of [...this.table.keys()]) {
+            const keyStr = (typeof key === 'symbol') ? key.description : key;
+            let val = this.get(key);
+            result[keyStr] = val;
+        }
+        return result;
     }
 }
 exports.Environment = Environment;
@@ -870,6 +882,18 @@ class EnvironmentStack extends PromiseEnvironment {
         }
         return this;
     }
+    /**
+     * Convert the environment stack to a JavaScript object.
+     */
+    toObject() {
+        let result = this.parent ? this.parent.toObject() : {};
+        const _start = this.stack.length - 1;
+        for (let i = _start; i > -1; i--) {
+            let env = this.stack[i];
+            result = Object.assign(Object.assign({}, result), env.toObject());
+        }
+        return result;
+    }
 }
 exports.EnvironmentStack = EnvironmentStack;
 /**
@@ -1009,6 +1033,31 @@ class JavaScriptEnvironment extends DynamicEnvironment {
     }
 }
 exports.JavaScriptEnvironment = JavaScriptEnvironment;
+/**
+ * JavaScript environment.
+ *
+ * A dynamic environment that looks up JavaScript values
+ * in a JavaScript module.
+ */
+class JavaScriptModuleEnvironment extends DynamicEnvironment {
+    constructor(jsModule) {
+        super((name) => {
+            const str = (typeof name === 'symbol') ? name.description : name;
+            const jsModule = this.jsModule;
+            if (jsModule) {
+                return jsModule[str];
+            }
+            else {
+                return undefined;
+            }
+        });
+        this.jsModule = jsModule;
+    }
+    toObject() {
+        return this.jsModule;
+    }
+}
+exports.JavaScriptModuleEnvironment = JavaScriptModuleEnvironment;
 /**
  * Make an environment.
  */
@@ -1153,11 +1202,11 @@ withEnvironmentF.fsource = [Symbol.for('define'), [Symbol.for('with-environment-
  */
 function withEnvironment(exp, env) {
     const [environment, ...body] = exp.slice(1);
-    return [Symbol.for('with-environment-f'), environment, [Symbol.for('js/arrow'), [], ...body]];
+    return [Symbol.for('with-environment-f'), environment, [Symbol.for('thunk'), ...body]];
 }
 exports.withEnvironment = withEnvironment;
 withEnvironment.ftype = 'macro';
-withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment-f'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('js/arrow'), [], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment-f'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('thunk'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
 /**
  * Pointer to the current compilation options.
  */

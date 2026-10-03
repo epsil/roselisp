@@ -296,6 +296,21 @@
        (assert-equal
         (send env get 'foo)
         "quux"))
+ > (it "to-object"
+       (define env
+         (new Environment
+              '((foo "bar"))))
+       (send env to-object))
+ (js/obj :foo "bar")
+ > (it "to-object, parent environment"
+       (define env
+         (new Environment
+              '((foo "foo"))
+              (new Environment
+                   '((bar "bar")))))
+       (send env to-object))
+ (js/obj :bar "bar"
+         :foo "foo")
 
  :describe "TypedEnvironment"
  > (it "get"
@@ -554,6 +569,21 @@
        (assert-equal
         (send env get 'foo)
         "quux"))
+ > (it "to-object"
+       (define env
+         (new TypedEnvironment
+              '((foo "bar" Any))))
+       (send env to-object))
+ (js/obj :foo "bar")
+ > (it "to-object, parent environment"
+       (define env
+         (new TypedEnvironment
+              '((foo "foo" Any))
+              (new TypedEnvironment
+                   '((bar "bar" Any)))))
+       (send env to-object))
+ (js/obj :bar "bar"
+         :foo "foo")
 
  :describe "LispEnvironment"
  > (it "get"
@@ -804,6 +834,21 @@
        (assert-equal
         (send env get 'foo)
         "quux"))
+ > (it "to-object"
+       (define env
+         (new LispEnvironment
+              '((foo "bar" Any))))
+       (send env to-object))
+ (js/obj :foo "bar")
+ > (it "to-object, parent environment"
+       (define env
+         (new LispEnvironment
+              '((foo "foo" Any))
+              (new LispEnvironment
+                   '((bar "bar" Any)))))
+       (send env to-object))
+ (js/obj :bar "bar"
+         :foo "foo")
 
  :describe "EnvironmentStack"
  > (it "get"
@@ -1025,6 +1070,25 @@
                       Any)))))
        (send env has-local-promise? 'foo))
  #t
+ > (it "to-object"
+       (define env
+         (new EnvironmentStack
+              (new LispEnvironment
+                   '((foo "bar" Any)))))
+       (send env to-object))
+ (js/obj :foo "bar")
+ > (it "to-object, parent environment"
+       (define env
+         (new EnvironmentStack
+              (new LispEnvironment
+                   '((foo "foo" Any)))))
+       (define env1
+         (new LispEnvironment
+              '((bar "bar" Any))))
+       (send env set-parent! env1)
+       (send env to-object))
+ (js/obj :bar "bar"
+         :foo "foo")
 
  :describe "EnvironmentPipe"
  > (it "get"
@@ -1424,6 +1488,30 @@
                        (delay 'Number))))))
        (send env get-local-type 'foo))
  'Number
+ > (it "to-object"
+       (define env
+         (new PromiseEnvironment
+              `((foo
+                 ,(new InternalPromise
+                       (delay "bar"))
+                 Any))))
+       (send env to-object))
+ (js/obj :foo "bar")
+ > (it "to-object, parent environment"
+       (define env
+         (new PromiseEnvironment
+              `((foo
+                 ,(new InternalPromise
+                       (delay "foo"))
+                 Any))
+              (new PromiseEnvironment
+                   `((bar
+                      ,(new InternalPromise
+                            (delay "bar"))
+                      Any)))))
+       (send env to-object))
+ (js/obj :bar "bar"
+         :foo "foo")
 
  :describe "JavaScriptEnvironment"
  > (it "get"
@@ -1503,4 +1591,9 @@
        (define (filter x)
          #f)
        (send env has-local? 'Map (js/obj :filter filter)))
- #f)
+ #f
+ > (it "to-object"
+       (define env
+         (new JavaScriptEnvironment))
+       (send env to-object))
+ (js/obj))

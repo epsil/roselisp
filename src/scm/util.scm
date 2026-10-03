@@ -13,6 +13,9 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "process"
+                  cwd
+                  chdir))
 (require (only-in "./constants"
                   quote-sym_
                   quasiquote-sym_
@@ -796,6 +799,21 @@
                   str
                   ""))
 
+;;; Call the thunk `f` with the current working directory
+;;; temporarily set to `dir`. Restores the previous
+;;; working directory afterwards.
+(define (with-cwd dir f)
+  (let ((tmp (cwd)))
+    (try
+      (try
+        (chdir dir)
+        (catch Error err))
+      (f)
+      (finally
+        (try
+          (chdir tmp)
+          (catch Error err))))))
+
 (provide
   (rename-out (map-has? map-has))
   (rename-out (map-set! map-set))
@@ -832,4 +850,5 @@
   unquote-splicing?
   unquote?
   unwrap-quote-expression
-  valid-js-casing-style?)
+  valid-js-casing-style?
+  with-cwd)

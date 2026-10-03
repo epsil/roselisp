@@ -4279,4 +4279,144 @@ if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal
   constructor(x: number, ...args: any[]) {
     this.x = x;
   }
-}")
+}"
+
+ :describe "require"
+ > (compile '(require foo))
+ "import * as foo from 'foo';"
+ > (compile '(require "foo"))
+ "import * as foo from 'foo';"
+ > (compile '(require "foo-bar"))
+ "import * as fooBar from 'foo-bar';"
+ > (compile '(require foo "bar"))
+ "import * as foo from 'bar';"
+ > (compile '(require (only-in foo
+                               bar)))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require (only-in foo
+                               (bar baz))))
+ "import {
+  bar as baz
+} from 'foo';"
+ > (compile '(require (only-in "foo"
+                               (bar baz))))
+ "import {
+  bar as baz
+} from 'foo';"
+ > (compile '(require (only-in foo bar bar)))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require (only-in foo
+                               bar
+                               (baz bar))))
+ "import {
+  bar
+} from 'foo';"
+ > (compile '(require "foo")
+            :fes-module-interop #t)
+ "import foo from 'foo';"
+ > (compile '(require "foo-bar")
+            :fes-module-interop #t)
+ "import fooBar from 'foo-bar';"
+ > (compile '(require foo "bar")
+            :fes-module-interop #t)
+ "import foo from 'bar';"
+ > (compile '(require "foo" "bar")
+            :fes-module-interop #t)
+ "import foo from 'bar';"
+ > (compile '(require "foo")
+            :fcommonjs #t)
+ "let foo = require('foo');"
+ > (compile '(require foo "bar")
+            :fcommonjs #t)
+ "let foo = require('bar');"
+ > (compile '(require "foo" "bar")
+            :fcommonjs #t)
+ "let foo = require('bar');"
+ > (compile '(require (only-in "foo"
+                               bar))
+            :fcommonjs #t)
+ "let {bar} = require('foo');"
+ > (compile '(require (only-in "foo"
+                               (bar baz)))
+            :fcommonjs #t)
+ "let {bar: baz} = require('foo');"
+
+ :describe "provide"
+ > (compile '(provide))
+ ""
+ > (compile '(provide x))
+ "export {
+  x
+};"
+ > (compile '(provide x y))
+ "export {
+  x,
+  y
+};"
+ > (compile '(provide (rename-out (x y))))
+ "export {
+  x as y
+};"
+ > (compile '(provide (rename-out (x y) (w z))))
+ "export {
+  x as y,
+  w as z
+};"
+ > (compile '(provide x (rename-out (y z))))
+ "export {
+  x,
+  y as z
+};"
+ > (compile '(provide x x))
+ "export {
+  x
+};"
+ > (compile '(provide x (rename-out (y x))))
+ "export {
+  x
+};"
+ > (compile '(provide (rename-out (x js/undefined))))
+ "export {
+  x as jsUndefined
+};"
+ > (compile '(provide (all-from-out "foo")))
+ "export * from 'foo';"
+ > (compile '(provide
+               (all-from-out "foo")
+               bar))
+ "export * from 'foo';
+
+export {
+  bar
+};"
+ > (compile '(provide x)
+            :fcommonjs #t)
+ "module.exports = {
+  x
+};"
+ > (compile '(provide x y)
+            :fcommonjs #t)
+ "module.exports = {
+  x,
+  y
+};"
+ > (compile '(provide foo-bar)
+            :fcommonjs #t)
+ "module.exports = {
+  fooBar
+};"
+ > (compile '(provide (rename-out (x y)))
+            :fcommonjs #t)
+ "module.exports = {
+  x: y
+};"
+ > (compile '(provide (all-from-out "foo-bar") baz)
+            :fcommonjs #t)
+ "module.exports = {
+  ...fooBar,
+  baz
+};")

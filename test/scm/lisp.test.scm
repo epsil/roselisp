@@ -1044,6 +1044,54 @@ myPlus.compilerMacro = (() => {
 } finally {
   console.log('cleanup');
 }"
+ > (compile '(module m scheme
+               (clj/try
+                (set! x (/ 2 1))
+                (catch Object length
+                  (display "there was an error: " length)
+                  (return #f))
+                (finally
+                  (display "cleanup")))))
+ "try {
+  x = 2 / 1;
+} catch (length) {
+  console.log('there was an error: ', length);
+  return false;
+} finally {
+  console.log('cleanup');
+}"
+ > (compile '(module m scheme
+               (clj/try
+                (set! x (/ 2 1))
+                (catch Object _
+                  (display "there was an error")
+                  (return #f))
+                (finally
+                  (display "cleanup")))))
+ "try {
+  x = 2 / 1;
+} catch {
+  console.log('there was an error');
+  return false;
+} finally {
+  console.log('cleanup');
+}"
+ > (compile '(module m scheme
+               (clj/try
+                (set! x (/ 2 1))
+                (catch Error _
+                  (display "there was an error")
+                  (return #f))
+                (finally
+                  (display "cleanup")))))
+ "try {
+  x = 2 / 1;
+} catch {
+  console.log('there was an error');
+  return false;
+} finally {
+  console.log('cleanup');
+}"
 
  :describe "cl/loop"
  > (compile '(cl/loop

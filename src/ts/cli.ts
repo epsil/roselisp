@@ -24,6 +24,10 @@ import * as minimist from 'minimist';
 import * as buildOptions from 'minimist-options';
 
 import {
+  resolve
+} from 'path';
+
+import {
   decompileFilesX
 } from './decompiler';
 
@@ -124,6 +128,11 @@ const cliOptions: any = {
     default: true,
     type: 'boolean'
   },
+  inDir: {
+    alias: 'in-dir',
+    default: '.',
+    type: 'string'
+  },
   outDir: {
     alias: 'out-dir',
     default: '.',
@@ -191,9 +200,11 @@ Options:
  */
 function normalizeCliOptions(options: any): any {
   const languageOption: any = options['language'].toLowerCase();
+  const inDirOption: any = resolve(options['inDir']);
   const toOption: any = (languageOption === '') ? options['to'] : languageOption;
   return {
     ...options,
+    inDir: inDirOption,
     to: toOption
   };
 }

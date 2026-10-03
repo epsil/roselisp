@@ -432,10 +432,10 @@
   (define/public local)
   (define/public imported)
 
-  (define/public (constructor local (imported #u))
-    (super local)
-    (set-field! local this local)
-    (set-field! imported this (or imported local))))
+  (define/public (constructor imported (local #u))
+    (super imported)
+    (set-field! imported this imported)
+    (set-field! local this (or local imported))))
 
 ;;; ImportDefaultSpecifier
 ;;;

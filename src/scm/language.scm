@@ -27,6 +27,8 @@
                   extname
                   join
                   relative))
+(require (only-in "process"
+                  cwd))
 (require (only-in "./array"
                   array-at_
                   array-concat_
@@ -85,6 +87,7 @@
                   EnvironmentPipe
                   EnvironmentStack
                   JavaScriptEnvironment
+                  JavaScriptModuleEnvironment
                   LispEnvironment
                   TypedEnvironment
                   current-compilation-options
@@ -390,7 +393,9 @@
                   nlambda_
                   once-only_
                   or_
+                  provide_
                   quasisyntax_
+                  require_
                   rkt/new_
                   set_
                   setq_
@@ -579,7 +584,8 @@
                   tagged-list?
                   text-of-quotation
                   unwrap-quote-expression
-                  valid-js-casing-style?))
+                  valid-js-casing-style?
+                  with-cwd))
 (require (only-in "./visitor"
                   make-visitor
                   visit))
@@ -675,6 +681,7 @@
      (,js/do-while_ . ,compile-js/do-while)
      (,js/dot_ . ,compile-js/dot)
      (,js/eval_ . ,compile-js/eval)
+     (,js/export_ . ,compile-js/export)
      (,js/for-in_ . ,compile-js/for-in)
      (,js/for-of_ . ,compile-js/for-of)
      (,js/for_ . ,compile-js/for)
@@ -683,6 +690,7 @@
      (,js/gt_ . ,compile-greater-than)
      (,js/gte_ . ,compile-greater-than-or-equal)
      (,js/if_ . ,compile-js/if)
+     (,js/import_ . ,compile-js/import)
      (,js/let_ . ,compile-js/let)
      (,js/loosely-equal?_ . ,compile-js/loosely-equal)
      (,js/lt_ . ,compile-less-than)
@@ -721,10 +729,8 @@
      (,modulo_ . ,compile-modulo)
      (,mul_ . ,compile-mul)
      (,not_ . ,compile-not)
-     (,provide_ . ,compile-provide)
      (,quasiquote_ . ,compile-quasiquote)
      (,quote_ . ,compile-quote)
-     (,require_ . ,compile-require)
      (,return_ . ,compile-return)
      (,send/apply_ . ,compile-send/apply)
      (,send_ . ,compile-send)
@@ -925,6 +931,8 @@
   (define to-language-option
     (or (oget options :to)
         default-language))
+  (define in-dir-option
+    (or (oget options :in-dir) "."))
   (define out-dir-option
     (or (oget options :out-dir) ""))
   (define comments-option
@@ -961,15 +969,12 @@
       (delay
         (define data
           (~> file
+              (join in-dir-option _)
               (readFileSync _ (js/obj :encoding "utf8"))
               (regexp-replace (regexp "^#!.*") _ "")
-              (string-append
-               "(begin\n"
-               _
-               "\n)")))
+              (string-append "(begin\n" _ "\n)")))
         (define begin-stx
-          (read-syntax data
-                       (js/obj :comments comments-option)))
+          (read-syntax data (js/obj :comments comments-option)))
         (define module-stx
           (datum->syntax
            #f
@@ -1396,24 +1401,11 @@
     (make-block-statement
      (list node)))))
 
-;;; Wrap `exp` in a `lambda` call.
-(define (wrap-in-lambda-call exp)
+;;; Make an immediately invoked function expression (IIFE).
+(define (make-iife exp)
   (datum->syntax
    #f
-   `((lambda () ,exp))))
-
-;;; Wrap `exp` in a `js/arrow` call.
-(define (wrap-in-arrow-call exp)
-  (datum->syntax
-   #f
-   `((js/arrow () ,exp))))
-
-;;; Make an immediately invoked function expression
-;;; (IIFE). Defaults to using an arrow function.
-(define (make-iife exp (arrow #t))
-  (if arrow
-      (wrap-in-arrow-call exp)
-      (wrap-in-lambda-call exp)))
+   `((thunk ,exp))))
 
 ;;; Make a `BlockStatement`.
 ;;; Handles `Program` fragments.
@@ -2314,9 +2306,7 @@
                      (set! result
                            (interpret_ `(begin ,exp ,name)
                                        :environment env))
-                     (catch Error e
-                       ;; Do nothing
-                       ))
+                     (catch Error _))
                    result))
             type_)
       (define result
@@ -2417,9 +2407,7 @@
                  (set! result
                        (interpret_ val-exp
                                    :environment env))
-                 (catch Error e
-                   ;; Do nothing
-                   ))
+                 (catch Error _))
                result)))
       (send env set-local! sym-exp val-promise type_)
       (define declarator
@@ -3568,9 +3556,7 @@
         (set! result
               (interpret_ expression
                           :environment env))
-        (catch Error e
-          ;; Do nothing
-          ))
+        (catch Error _))
       result))
   (define i 0)
   (cond
@@ -3601,9 +3587,7 @@
                  (try
                    (set! result
                          (list-ref (force expression-promise) idx))
-                   (catch Error e
-                     ;; Do nothing
-                     ))
+                   (catch Error _))
                  result)))
         (send env set-local! x var-promise 'Any))
       (set! i (+ i 1)))
@@ -3616,9 +3600,7 @@
                (try
                  (set! result
                        (drop (force expression-promise) idx))
-                 (catch Error e
-                   ;; Do nothing
-                   ))
+                 (catch Error _))
                result)))
       (send env set-local! rest-var rest-var-promise 'Any))))
   (assignment-expression->variable-declaration
@@ -3770,9 +3752,7 @@
         (set! result
               (interpret_ obj-exp
                           :environment env))
-        (catch Error e
-          ;; Do nothing
-          ))
+        (catch Error _))
       result))
   (for ((f fields-exp))
     (define is-array
@@ -3794,9 +3774,7 @@
              (try
                (set! result
                      (oget (force obj-promise) prop-str))
-               (catch Error e
-                 ;; Do nothing
-                 ))
+               (catch Error _))
              result)))
     (send env set-local! sym prop-promise 'Any))
   (assignment-expression->variable-declaration
@@ -4730,47 +4708,103 @@
      (else
       (compile-expression stx env options))))))
 
-;;; Compile a `(require ...)` expression.
-(define (compile-require stx env (options (js/obj)))
+;;; Compile a `(js/import ...)` expression.
+(define (compile-js/import stx env (options (js/obj)))
   (define fcommonjs
     (oget options :fcommonjs))
-  (define fes-module-interop
-    (oget options :fes-module-interop))
-  (define language-env
-    (oget options :language-environment))
-  (define (lang-filter x)
-    (not (eq? x language-env)))
-  (define x-stx
-    (send stx get 1))
-  (define x-exp
-    (syntax->datum x-stx))
-  (define y-stx
-    (or (send stx get 2) x-stx))
-  (define y-exp
-    (syntax->datum y-stx))
   (define current-module
     (oget options :current-module))
+  (define env1
+    (if current-module
+        (get-field require-environment current-module)
+        env))
+  (define specifier
+    (send stx get 1))
+  (define specifier-exp
+    (syntax->datum specifier))
+  (define src
+    (send stx last))
+  (define src-exp
+    (syntax->datum src))
+  (define src-compiled
+    (compile-expression src env options))
+  (define module-name src-exp)
+  (define module-name-str
+    (if (symbol? module-name)
+        (symbol->string module-name)
+        module-name))
+  (define module-regexp
+    (regexp "^\\.+/"))
+  (define module-promise
+    (delay
+      (define m #u)
+      (when (regexp-match module-regexp module-name-str)
+        (when current-module
+          (set! m
+                (send current-module
+                      get-module
+                      module-name-str)))
+        (unless m
+          (set! m
+                (load-module module-name-str
+                             env
+                             (js/obj-append
+                              options
+                              (js/obj :relative-to
+                                      (cwd)))))))
+      m))
   (cond
-   ((tagged-list? x-exp 'only-in)
-    (define module-name (second x-exp))
+   ((symbol? specifier-exp)
+    (define spec
+      (if (eq? specifier-exp '*)
+          (syntax->datum (send stx get 3))
+          specifier-exp))
+    (define module-obj-promise
+      (delay
+        (define m
+          (force module-promise))
+        (cond
+         (m
+          (send m to-object))
+         (else
+          (define in-dir-option
+            (oget options :in-dir))
+          (with-cwd
+           in-dir-option
+           (thunk
+            (try
+              (js/require module-name-str)
+              (catch Error e
+                (return #u)))))))))
+    (send env1
+          set-local!
+          spec
+          module-obj-promise
+          'Any))
+   (else
     (define module-env-promise
       (delay
+        (define m
+          (force module-promise))
         (cond
-         (current-module
-          (define m
-            (send current-module get-module module-name))
-          (cond
-           (m
-            (send m get-provide-environment))
-           (else
-            #u)))
+         (m
+          (send m get-provide-environment))
          (else
-          #u))))
-    (for ((exp1 (drop x-exp 2)))
+          (define in-dir-option
+            (oget options :in-dir))
+          (with-cwd
+           in-dir-option
+           (thunk
+            (try
+              (new JavaScriptModuleEnvironment
+                   (js/require module-name-str))
+              (catch Error e
+                (return #u)))))))))
+    (for ((spec (syntax->datum specifier)))
       (define-values (imported local)
-        (if (pair-or-list? exp1)
-            (values (first exp1) (second exp1))
-            (values exp1 exp1)))
+        (if (pair-or-list? spec)
+            (values (first spec) (last spec))
+            (values spec spec)))
       (define val-promise
         (new InternalPromise
              (delay
@@ -4778,216 +4812,241 @@
                (try
                  (set! val
                        (send (force module-env-promise) get imported))
-                 (catch Error e
-                   ;; Do nothing
-                   ))
+                 (catch Error _))
                val)))
-      (define env1
-        (if current-module
-            (get-field require-environment current-module)
-            env))
-      (send env1 set-local! local val-promise 'Any)))
-   (else
-    ;; TODO: `require` forms that do not contain `only-in`.
-    ))
+      (send env1 set-local! local val-promise 'Any))))
   (cond
-   (fcommonjs
-    (define env1
-      (extend-environment (new LispEnvironment)
-                          env))
+   ((eq? specifier-exp '*)
+    (set! specifier (send stx get 3))
     (cond
-     ((tagged-list? x-exp 'only-in)
+     (fcommonjs
       (compile-statement
        (datum->syntax
         #f
-        `(define-fields ,(drop x-exp 2)
-           (js/require ,(second x-exp))))
-       env1 options))
-     (else
-      (when (string? x-exp)
-        (set! x-exp (string->symbol x-exp)))
-      (compile-statement
-       (datum->syntax
-        #f
-        `(define ,x-exp
-           (js/require ,y-stx)))
-       env1 options))))
-   (else
-    (define specifiers '())
-    (define seen '())
-    (define src #n)
-    (cond
-     ((tagged-list? x-exp 'only-in)
-      (for ((x (send x-stx drop 2)))
-        (define exp
-          (syntax->datum x))
-        (cond
-         ((pair-or-list? exp)
-          (define x1
-            (first exp))
-          (define x2
-            (second exp))
-          (unless (memq? x2 seen)
-            (push-right! seen x2)
-            (push-right! specifiers
-                         (new ImportSpecifier
-                              (compile-symbol
-                               (datum->syntax #f x1)
-                               env
-                               options
-                               (js/obj :literal-symbol #t))
-                              (compile-symbol
-                               (datum->syntax #f x2)
-                               env
-                               options
-                               (js/obj :literal-symbol #t))))))
-         (else
-          (define x1 exp)
-          (unless (memq? x1 seen)
-            (push-right! seen x1)
-            (push-right! specifiers
-                         (new ImportSpecifier
-                              (compile-symbol
-                               (datum->syntax #f x1)
-                               env
-                               options
-                               (js/obj :literal-symbol #t))))))))
-      (set! y-exp (second x-exp)))
-     (else
-      (when (string? x-exp)
-        (set! x-exp (string->symbol x-exp)))
-      (set! specifiers
-            (list
-             (if fes-module-interop
-                 (new ImportDefaultSpecifier
-                      (compile-symbol
-                       (datum->syntax #f x-exp)
-                       env
-                       options
-                       (js/obj :literal-symbol #t)))
-                 (new ImportNamespaceSpecifier
-                      (compile-symbol
-                       (datum->syntax #f x-exp)
-                       env
-                       options
-                       (js/obj :literal-symbol #t))))))))
-    (when (symbol? y-exp)
-      (set! y-exp (symbol->string y-exp)))
-    (set! src
-          (compile-expression
-           (datum->syntax #f y-exp)
-           env
-           options))
-    (when (symbol? x-exp)
-      ;; TODO: Remove this.
-      (unless (send env has? x-exp (js/obj :filter lang-filter))
-        (make-type-binding env x-exp 'Any lang-filter)))
-    (cond
-     ((null? specifiers)
-      (empty-program))
+        `(define ,specifier
+           (js/require ,src)))
+       env options))
      (else
       (new ImportDeclaration
-           specifiers
-           src))))))
-
-;;; Compile a `(provide ...)` expression.
-(define (compile-provide stx env (options (js/obj)))
-  (define fcommonjs
-    (oget options :fcommonjs))
-  (define expressions
-    (send stx drop 1))
-  (cond
-   (fcommonjs
-    (define properties '())
-    (for ((exp expressions))
-      (cond
-       ((tagged-list? exp 'all-from-out)
-        (define name
-          (~> (send exp get 1)
-              (syntax->datum _)
-              (string->symbol _)))
-        (push-right! properties `(js/obj-spread ,name)))
-       ((tagged-list? exp 'rename-out)
-        (push-right! properties `(quote ,(send exp get 1 0)))
-        (push-right! properties (send exp get 1 1)))
-       (else
-        (push-right! properties `(quote ,exp))
-        (push-right! properties exp))))
-    (compile-statement
-     (datum->syntax
-      #f
-      `(set-field! exports
-                   module
-                   (js/obj ,@properties)))
-     env options))
-   (else
-    ;; Sort `all-from-out` expressions from the rest.
-    (define all-from-out-expressions '())
-    (define other-expressions '())
-    (for ((x expressions))
-      (cond
-       ((tagged-list? (syntax->datum x) 'all-from-out)
-        (push-right! all-from-out-expressions x))
-       (else
-        (push-right! other-expressions x))))
-    ;; Compile `all-from-out` expressions.
-    (define results '())
-    (for ((x all-from-out-expressions))
-      (define src
-        (send x get 1))
-      (define result
-        (new ExportAllDeclaration
-             (compile-expression src env options)))
-      (push-right! results result))
-    ;; Compile other expressions.
-    (when (> (length other-expressions) 0)
-      (define specifiers '())
-      (define seen '())
-      (for ((x other-expressions))
-        (define exp
-          (syntax->datum x))
-        (cond
-         ((tagged-list? exp 'rename-out)
-          (for ((pair (rest exp)))
-            (define x1
-              (first pair))
-            (define x2
-              (second pair))
-            (unless (memq? x2 seen)
-              (push-right! seen x2)
-              (push-right! specifiers
-                           (new ExportSpecifier
-                                (compile-symbol
-                                 (datum->syntax #f x1)
-                                 env
-                                 options
-                                 (js/obj :literal-symbol #t))
-                                (compile-symbol
-                                 (datum->syntax #f x2)
-                                 env
-                                 options
-                                 (js/obj :literal-symbol #t)))))))
-         (else
-          (define x1 exp)
-          (unless (memq? x1 seen)
-            (push-right! seen x1)
-            (push-right! specifiers
-                         (new ExportSpecifier
-                              (compile-symbol
-                               (datum->syntax #f x1)
-                               env
-                               options
-                               (js/obj :literal-symbol #t))))))))
-      (define result
-        (new ExportNamedDeclaration
-             #n
-             specifiers))
-      (push-right! results result))
+           (list
+            (new ImportNamespaceSpecifier
+                 (compile-symbol
+                  specifier env options
+                  (js/obj :literal-symbol #t))))
+           src-compiled))))
+   ((symbol? specifier-exp)
     (cond
-     ((= (length results) 1)
-      (first results))
+     (fcommonjs
+      (compile-statement
+       (datum->syntax
+        #f
+        `(define ,specifier
+           (js/require ,src)))
+       env options))
      (else
-      (make-program-fragment results))))))
+      (new ImportDeclaration
+           (list
+            (new ImportDefaultSpecifier
+                 (compile-symbol
+                  specifier env options
+                  (js/obj :literal-symbol #t))))
+           src-compiled))))
+   (else
+    (define specifiers
+      (syntax->list specifier))
+    (cond
+     (fcommonjs
+      (compile-statement
+       (datum->syntax
+        #f
+        `(define-fields
+           ,(map (lambda (x)
+                   (cond
+                    ((pair-or-list? (syntax->datum x))
+                     (list (send x first)
+                           (send x last)))
+                    (else
+                     x)))
+                 specifiers)
+           (js/require ,src)))
+       env options))
+     (else
+      (define specifiers-compiled '())
+      (define seen '())
+      (for ((x specifiers))
+        (cond
+         ((pair-or-list? (syntax->datum x))
+          (define imported
+            (send x first))
+          (define imported-exp
+            (syntax->datum imported))
+          (define imported-compiled
+            (compile-symbol
+             imported env options
+             (js/obj :literal-symbol #t)))
+          (define local
+            (send x last))
+          (define local-exp
+            (syntax->datum local))
+          (define local-compiled
+            (compile-symbol
+             local env options
+             (js/obj :literal-symbol #t)))
+          (unless (memq? local-exp seen)
+            (push-right! specifiers-compiled
+                         (new ImportSpecifier
+                              imported-compiled
+                              local-compiled))
+            (push-right! seen local-exp)))
+         (else
+          (define imported-exp
+            (syntax->datum x))
+          (define imported-compiled
+            (compile-symbol
+             x env options
+             (js/obj :literal-symbol #t)))
+          (unless (memq? imported-exp seen)
+            (push-right! specifiers-compiled
+                         (new ImportSpecifier
+                              imported-compiled))
+            (push-right! seen imported-exp)))))
+      (new ImportDeclaration
+           specifiers-compiled
+           src-compiled))))))
+
+;;; Compile a `(js/export ...)` expression.
+(define (compile-js/export stx env (options (js/obj)))
+  (cond
+   ((< (send stx size) 2)
+    (empty-program))
+   (else
+    (define fcommonjs
+      (oget options :fcommonjs))
+    (define stx1
+      (send stx get 1))
+    (define exp1
+      (syntax->datum stx1))
+    (define src
+      (if (or (eq? exp1 '*)
+              (> (send stx size) 3))
+          (send stx last)
+          #u))
+    (define src-compiled
+      (if src
+          (compile-expression src env options)
+          #n))
+    (cond
+     ((eq? exp1 '*)
+      (new ExportAllDeclaration
+           src-compiled))
+     ((eq? exp1 ':declaration)
+      (new ExportNamedDeclaration
+           (compile-statement (send stx get 2) env options)))
+     ((eq? exp1 ':specifiers)
+      (define specifiers
+        (send stx get 2))
+      (define specifier-stxs
+        (syntax->list specifiers))
+      (cond
+       ((null? specifier-stxs)
+        (empty-program))
+       (fcommonjs
+        (define properties '())
+        (for ((spec-stx specifier-stxs))
+          (define spec-exp
+            (syntax->datum spec-stx))
+          (cond
+           ((tagged-list? spec-exp 'js/export)
+            (define name
+              (string->symbol (last spec-exp)))
+            (push-right! properties `(js/obj-spread ,name)))
+           ((pair-or-list? spec-exp)
+            (push-right! properties `(quote ,(send spec-stx first)))
+            (push-right! properties (send spec-stx last)))
+           (else
+            (push-right! properties `(quote ,spec-stx))
+            (push-right! properties spec-stx))))
+        (compile-statement
+         (datum->syntax
+          #f
+          `(set-field! exports
+                       module
+                       (js/obj ,@properties)))
+         env options))
+       (else
+        (define statements '())
+        (define specifiers-compiled '())
+        (define seen '())
+        (for ((spec-stx specifier-stxs))
+          (define spec-exp
+            (syntax->datum spec-stx))
+          (cond
+           ((tagged-list? spec-exp 'js/export)
+            (define result
+              (compile-js/export spec-stx env options))
+            (cond
+             ((estree-type? result "Program")
+              (set! statements (append statements (get-field body result))))
+             (else
+              (push-right! statements result))))
+           ((pair-or-list? spec-exp)
+            (define exported
+              (send spec-stx last))
+            (define exported-exp
+              (syntax->datum exported))
+            (unless (memq? exported-exp seen)
+              (define exported-compiled
+                (compile-symbol
+                 exported env options
+                 (js/obj :literal-symbol #t)))
+              (define local
+                (send spec-stx first))
+              (define local-compiled
+                (compile-symbol
+                 local env options
+                 (js/obj :literal-symbol #t)))
+              (push-right! specifiers-compiled
+                           (new ExportSpecifier
+                                local-compiled
+                                exported-compiled))
+              (push-right! seen exported-exp)))
+           (else
+            (define local-exp
+              (syntax->datum spec-stx))
+            (unless (memq? local-exp seen)
+              (define local-compiled
+                (compile-symbol
+                 spec-stx env options
+                 (js/obj :literal-symbol #t)))
+              (push-right! specifiers-compiled
+                           (new ExportSpecifier
+                                local-compiled))
+              (push-right! seen local-exp)))))
+        (unless (null? specifiers-compiled)
+          (push-right! statements
+                       (new ExportNamedDeclaration
+                            #n
+                            specifiers-compiled
+                            src-compiled)))
+        (if (one? (length statements))
+            (first statements)
+            (make-program statements)))))
+     ((tagged-list? exp1 'list)
+      (compile-js/export
+       (datum->syntax
+        stx
+        `(js/export :specifiers
+                    ,(send stx1 drop 1)
+                    ,@(send stx drop 2)))
+       env options))
+     (else
+      (compile-js/export
+       (datum->syntax
+        stx
+        `(js/export :declaration
+                    ,stx1
+                    ,@(send stx drop 2)))
+       env options))))))
 
 ;;; Compile a `(set! ...)` expression.
 (define (compile-set stx env (options (js/obj)))
@@ -5596,9 +5655,7 @@
                    (set! result
                          (interpret_ `(begin ,exp ,class-name)
                                      :environment env))
-                   (catch Error e
-                     ;; Do nothing
-                     ))
+                   (catch Error _))
                  result))
           'Any))
   (define super-class
@@ -5916,11 +5973,15 @@
       (send catch-clause get 1))
     (define param-exp
       (syntax->datum param))
+    (define env1
+      (extend-environment (new LispEnvironment)
+                          env))
+    (send env1 set-local! param-exp #u 'Any)
     (define param-compiled
       (if (eq? param-exp '_)
           #n
           (compile-expression
-           param env options)))
+           param env1 options)))
     (define body
       (datum->syntax
        #f
@@ -5928,11 +5989,14 @@
     (define body-compiled
       (wrap-in-block-statement-smart
        (compile-statement
-        body env options)))
+        body env1 options)))
     (set! handler
           (new CatchClause
                param-compiled
                body-compiled)))
+  (define env2
+    (extend-environment (new LispEnvironment)
+                        env))
   (define finalizer
     (if finally-clause
         (wrap-in-block-statement-smart
@@ -5940,7 +6004,7 @@
           (datum->syntax
            #f
            `(begin ,@(send finally-clause drop 1)))
-          env options))
+          env2 options))
         #n))
   (make-expression-or-statement
    (new TryStatement
@@ -6592,16 +6656,16 @@
    env
    (current-compilation-options)))
 
-;;; Expand a `(provide ...)` expression.
-(define-macro (provide_ &whole exp &environment env)
+;;; Expand a `(js/import ...)` expression.
+(define-macro (js/import_ &whole exp &environment env)
   ;; TODO: Convert to fexpr.
   (compile-sexp
    exp
    env
    (current-compilation-options)))
 
-;;; Expand a `(require ...)` expression.
-(define-macro (require_ &whole exp &environment env)
+;;; Expand a `(js/export ...)` expression.
+(define-macro (js/export_ &whole exp &environment env)
   ;; TODO: Convert to fexpr.
   (compile-sexp
    exp
@@ -7548,59 +7612,62 @@
 
   (define/public (compile (env (get-field main-environment this))
                           (options (get-field compilation-options this)))
-    (define result
-      (get-field compiled-module-stx this))
-    (unless result
-      (define compilation-options
-        (get-field compilation-options this))
-      (define env1
-        (get-field main-environment this))
-      (define env2
-        (extend-environment (new LispEnvironment)
-                            env1))
-      (define inline-lisp-sources
-        (send this get-inline-lisp-sources-flag))
-      (define options1
-        (js/obj-append
-         (js/obj :referenced-symbols '()
-                 :inline-lisp-sources inline-lisp-sources)
-         options
-         (js/obj :current-module this)))
-      (define header-statements
-        (compile-statement
-         (begin-wrap-stx
-          (get-field header-stxs this))
-         env1 options1))
-      (define require-statements
-        (compile-statement
-         (begin-wrap-stx
-          (get-field require-stxs this))
-         env1 options1))
-      (define main-statements
-        (compile-statement-or-return-statement
-         (begin-wrap-stx
-          (get-field main-stxs this))
-         env1 options1))
-      (define provide-statements
-        (compile-statement
-         (begin-wrap-stx
-          (get-field provide-stxs this))
-         env1 options1))
-      (define global-environment
-        (build-global-environment
-         (oget options1 :referenced-symbols)
-         env2 ; env1
-         options))
-      (define program
-        (make-program
-         (append (get-field body header-statements)
-                 (get-field body require-statements)
-                 (get-field body global-environment)
-                 (get-field body main-statements)
-                 (get-field body provide-statements))))
-      (set! result program)
-      (set-field! compiled-module-stx this result))
-    result)
+    (with-cwd
+     (get-field module-path this)
+     (thunk
+      (define result
+        (get-field compiled-module-stx this))
+      (unless result
+        (define compilation-options
+          (get-field compilation-options this))
+        (define env1
+          (get-field main-environment this))
+        (define env2
+          (extend-environment (new LispEnvironment)
+                              env1))
+        (define inline-lisp-sources
+          (send this get-inline-lisp-sources-flag))
+        (define options1
+          (js/obj-append
+           (js/obj :referenced-symbols '()
+                   :inline-lisp-sources inline-lisp-sources)
+           options
+           (js/obj :current-module this)))
+        (define header-statements
+          (compile-statement
+           (begin-wrap-stx
+            (get-field header-stxs this))
+           env1 options1))
+        (define require-statements
+          (compile-statement
+           (begin-wrap-stx
+            (get-field require-stxs this))
+           env1 options1))
+        (define main-statements
+          (compile-statement-or-return-statement
+           (begin-wrap-stx
+            (get-field main-stxs this))
+           env1 options1))
+        (define provide-statements
+          (compile-statement
+           (begin-wrap-stx
+            (get-field provide-stxs this))
+           env1 options1))
+        (define global-environment
+          (build-global-environment
+           (oget options1 :referenced-symbols)
+           env2 ; env1
+           options))
+        (define program
+          (make-program
+           (append (get-field body header-statements)
+                   (get-field body require-statements)
+                   (get-field body global-environment)
+                   (get-field body main-statements)
+                   (get-field body provide-statements))))
+        (set! result program)
+        (set-field! compiled-module-stx this result))
+      result)))
 
   (define/public (find-inline-lisp-sources-comment (comments '()))
     (unless (send this get-inline-lisp-sources-flag)
@@ -7929,6 +7996,32 @@
         (string-append "(module m scheme\n" _ "\n)")
         (read-syntax _)))
   (interpret_ exp))
+
+;;; Load a module from disk.
+;;; Returns a module object or `#u` if not found.
+(define (load-module module-path env (options (js/obj)))
+  (define relative-to
+    (or (oget options :relative-to) "."))
+  (define module-path-1
+    (~> (if (symbol? module-path)
+            (symbol->string module-path)
+            module-path)
+        (join relative-to _)
+        (string-append _ ".scm")))
+  (define file-contents #u)
+  (try
+    (set! file-contents
+          (readFileSync module-path-1
+                        (js/obj :encoding "utf8")))
+    (catch Object e
+      (return #u)))
+  (define stx
+    (~> file-contents
+        (string-append "(module m scheme\n" _ "\n)")
+        (read-syntax _)))
+  (define m
+    (module-expression->module-object stx env options))
+  m)
 
 ;;; Rewrite `[...[x]]` to `[x]`, recursively.
 (define (insert-into-array-exp! x arr)
@@ -8587,7 +8680,6 @@
          (~>> ,thread-last_ (macro-> Any * Any))
          (and ,and_ (macro-> Any * Any))
          (ann ,ann_ (macro-> Any * Any))
-         (ts/as ,ts/as_ (macro-> Any * Any))
          (as-> ,thread-as_ (macro-> Any * Any))
          (async ,js/async_ (macro-> Any * Any))
          (as~> ,thread-as_ (macro-> Any * Any))
@@ -8652,12 +8744,14 @@
          (js/const ,js/const_ (macro-> Any * Any))
          (js/define ,js/let_ (macro-> Any * Any))
          (js/do-while ,js/do-while_ (macro-> Any * Any))
+         (js/export ,js/export_ (macro-> Any * Any))
          (js/for ,js/for_ (macro-> Any * Any))
          (js/for-in ,js/for-in_ (macro-> Any * Any))
          (js/for-of ,js/for-of_ (macro-> Any * Any))
          (js/function ,js/function_ (macro-> Any * Any))
          (js/if ,js/if_ (macro-> Any * Any))
          (js/iife ,js/iife_ (macro-> Any * Any))
+         (js/import ,js/import_ (macro-> Any * Any))
          (js/let ,js/let_ (macro-> Any * Any))
          (js/op ,js/op_ (macro-> Any * Any))
          (js/op/apply ,js/op/apply_ (macro-> Any * Any))
@@ -8710,6 +8804,7 @@
          (throw ,throw_ (macro-> Any * Any))
          (thunk ,thunk_ (macro-> Any * Any))
          (try ,try_ (macro-> Any * Any))
+         (ts/as ,ts/as_ (macro-> Any * Any))
          (unless ,unless_ (macro-> Any * Any))
          (unwind-protect ,unwind-protect_ (macro-> Any * Any))
          (when ,when_ (macro-> Any * Any))

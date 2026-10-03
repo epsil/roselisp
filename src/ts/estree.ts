@@ -584,10 +584,10 @@ class ImportSpecifier extends ModuleSpecifier {
 
   imported: any;
 
-  constructor(local: any, imported: any = undefined) {
-    super(local);
-    this.local = local;
-    this.imported = imported || local;
+  constructor(imported: any, local: any = undefined) {
+    super(imported);
+    this.imported = imported;
+    this.local = local || imported;
   }
 }
 

@@ -16,6 +16,11 @@
  */
 
 import {
+  cwd,
+  chdir
+} from 'process';
+
+import {
   quoteSym_,
   quasiquoteSym_,
   unquoteSym_,
@@ -889,6 +894,35 @@ function removeIndentation(str: any): any {
   return str.replace(/^[^\S\r\n]+$/gm, '');
 }
 
+/**
+ * Call the thunk `f` with the current working directory
+ * temporarily set to `dir`. Restores the previous
+ * working directory afterwards.
+ */
+function withCwd(dir: any, f: any): any {
+  const tmp: any = cwd();
+  try {
+    try {
+      chdir(dir);
+    } catch (err) {
+      if (err instanceof Error) {
+      } else {
+        throw err;
+      }
+    }
+    return f();
+  } finally {
+    try {
+      chdir(tmp);
+    } catch (err) {
+      if (err instanceof Error) {
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
 export {
   mapHasP as mapHas,
   mapSetX as mapSet,
@@ -925,5 +959,6 @@ export {
   unquoteSplicingP,
   unquotep,
   unwrapQuoteExpression,
-  validJsCasingStyleP
+  validJsCasingStyleP,
+  withCwd
 };

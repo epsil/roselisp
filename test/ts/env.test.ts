@@ -241,7 +241,7 @@ describe('Environment', (): any => {
     env.setLocalX(Symbol.for('foo'), 'bar');
     return env.getLocal(Symbol.for('foo'));
   })(), 'bar'));
-  return it('set!, mutate existing value in parent environment', (): any => {
+  it('set!, mutate existing value in parent environment', (): any => {
     const parent: any = new Environment([[Symbol.for('foo'), 'bar']]);
     const env: any = extendEnvironment(new Environment(), parent);
     env.setx(Symbol.for('foo'), 'quux');
@@ -249,6 +249,19 @@ describe('Environment', (): any => {
     assertEqual(env.getLocal(Symbol.for('foo')), undefined);
     return assertEqual(env.get(Symbol.for('foo')), 'quux');
   });
+  it('to-object', (): any => assertEqual(((): any => {
+    const env: any = new Environment([[Symbol.for('foo'), 'bar']]);
+    return env.toObject();
+  })(), {
+    foo: 'bar'
+  }));
+  return it('to-object, parent environment', (): any => assertEqual(((): any => {
+    const env: any = new Environment([[Symbol.for('foo'), 'foo']], new Environment([[Symbol.for('bar'), 'bar']]));
+    return env.toObject();
+  })(), {
+    bar: 'bar',
+    foo: 'foo'
+  }));
 });
 
 describe('TypedEnvironment', (): any => {
@@ -461,7 +474,7 @@ describe('TypedEnvironment', (): any => {
     env.setLocalX(Symbol.for('foo'), 'bar', Symbol.for('Any'));
     return env.getLocal(Symbol.for('foo'));
   })(), 'bar'));
-  return it('set!, mutate existing value in parent environment', (): any => {
+  it('set!, mutate existing value in parent environment', (): any => {
     const parent: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', Symbol.for('Any')]]);
     const env: any = extendEnvironment(new TypedEnvironment(), parent);
     env.setx(Symbol.for('foo'), 'quux', Symbol.for('Any'));
@@ -469,6 +482,19 @@ describe('TypedEnvironment', (): any => {
     assertEqual(env.getLocal(Symbol.for('foo')), undefined);
     return assertEqual(env.get(Symbol.for('foo')), 'quux');
   });
+  it('to-object', (): any => assertEqual(((): any => {
+    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'bar', Symbol.for('Any')]]);
+    return env.toObject();
+  })(), {
+    foo: 'bar'
+  }));
+  return it('to-object, parent environment', (): any => assertEqual(((): any => {
+    const env: any = new TypedEnvironment([[Symbol.for('foo'), 'foo', Symbol.for('Any')]], new TypedEnvironment([[Symbol.for('bar'), 'bar', Symbol.for('Any')]]));
+    return env.toObject();
+  })(), {
+    bar: 'bar',
+    foo: 'foo'
+  }));
 });
 
 describe('LispEnvironment', (): any => {
@@ -672,7 +698,7 @@ describe('LispEnvironment', (): any => {
     env.setLocalX(Symbol.for('foo'), 'bar', Symbol.for('Any'));
     return env.getLocal(Symbol.for('foo'));
   })(), 'bar'));
-  return it('set!, mutate existing value in parent environment', (): any => {
+  it('set!, mutate existing value in parent environment', (): any => {
     const parent: any = new LispEnvironment([[Symbol.for('foo'), 'bar', Symbol.for('Any')]]);
     const env: any = extendEnvironment(new LispEnvironment(), parent);
     env.setx(Symbol.for('foo'), 'quux', Symbol.for('Any'));
@@ -680,6 +706,19 @@ describe('LispEnvironment', (): any => {
     assertEqual(env.getLocal(Symbol.for('foo')), undefined);
     return assertEqual(env.get(Symbol.for('foo')), 'quux');
   });
+  it('to-object', (): any => assertEqual(((): any => {
+    const env: any = new LispEnvironment([[Symbol.for('foo'), 'bar', Symbol.for('Any')]]);
+    return env.toObject();
+  })(), {
+    foo: 'bar'
+  }));
+  return it('to-object, parent environment', (): any => assertEqual(((): any => {
+    const env: any = new LispEnvironment([[Symbol.for('foo'), 'foo', Symbol.for('Any')]], new LispEnvironment([[Symbol.for('bar'), 'bar', Symbol.for('Any')]]));
+    return env.toObject();
+  })(), {
+    bar: 'bar',
+    foo: 'foo'
+  }));
 });
 
 describe('EnvironmentStack', (): any => {
@@ -833,7 +872,7 @@ describe('EnvironmentStack', (): any => {
     })()), Symbol.for('Any')]]));
     return env.hasPromiseP(Symbol.for('foo'));
   })(), true));
-  return it('has-local-promise?', (): any => assertEqual(((): any => {
+  it('has-local-promise?', (): any => assertEqual(((): any => {
     const env: any = new EnvironmentStack(new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
       const promiseF: any = (): any => {
         if (promiseF.forced) {
@@ -852,6 +891,21 @@ describe('EnvironmentStack', (): any => {
     })()), Symbol.for('Any')]]));
     return env.hasLocalPromiseP(Symbol.for('foo'));
   })(), true));
+  it('to-object', (): any => assertEqual(((): any => {
+    const env: any = new EnvironmentStack(new LispEnvironment([[Symbol.for('foo'), 'bar', Symbol.for('Any')]]));
+    return env.toObject();
+  })(), {
+    foo: 'bar'
+  }));
+  return it('to-object, parent environment', (): any => assertEqual(((): any => {
+    const env: any = new EnvironmentStack(new LispEnvironment([[Symbol.for('foo'), 'foo', Symbol.for('Any')]]));
+    const env1: any = new LispEnvironment([[Symbol.for('bar'), 'bar', Symbol.for('Any')]]);
+    env.setParentX(env1);
+    return env.toObject();
+  })(), {
+    bar: 'bar',
+    foo: 'foo'
+  }));
 });
 
 describe('EnvironmentPipe', (): any => {
@@ -1298,7 +1352,7 @@ describe('PromiseEnvironment', (): any => {
     const env: any = new PromiseEnvironment([[Symbol.for('foo'), 1, Symbol.for('Number')]]);
     return env.getLocalType(Symbol.for('foo'));
   })(), Symbol.for('Number')));
-  return it('get-local-type, promise', (): any => assertEqual(((): any => {
+  it('get-local-type, promise', (): any => assertEqual(((): any => {
     const env: any = new PromiseEnvironment([[Symbol.for('foo'), 1, new InternalPromise(((): any => {
       const promiseF: any = (): any => {
         if (promiseF.forced) {
@@ -1317,6 +1371,64 @@ describe('PromiseEnvironment', (): any => {
     })())]]);
     return env.getLocalType(Symbol.for('foo'));
   })(), Symbol.for('Number')));
+  it('to-object', (): any => assertEqual(((): any => {
+    const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+      const promiseF: any = (): any => {
+        if (promiseF.forced) {
+          return promiseF.value;
+        } else {
+          promiseF.forced = undefined;
+          promiseF.value = 'bar';
+          promiseF.forced = true;
+          return promiseF.value;
+        }
+      };
+      promiseF.value = undefined as any;
+      promiseF.forced = false as any;
+      promiseF.ftype = 'thunk';
+      return promiseF;
+    })()), Symbol.for('Any')]]);
+    return env.toObject();
+  })(), {
+    foo: 'bar'
+  }));
+  return it('to-object, parent environment', (): any => assertEqual(((): any => {
+    const env: any = new PromiseEnvironment([[Symbol.for('foo'), new InternalPromise(((): any => {
+      const promiseF: any = (): any => {
+        if (promiseF.forced) {
+          return promiseF.value;
+        } else {
+          promiseF.forced = undefined;
+          promiseF.value = 'foo';
+          promiseF.forced = true;
+          return promiseF.value;
+        }
+      };
+      promiseF.value = undefined as any;
+      promiseF.forced = false as any;
+      promiseF.ftype = 'thunk';
+      return promiseF;
+    })()), Symbol.for('Any')]], new PromiseEnvironment([[Symbol.for('bar'), new InternalPromise(((): any => {
+      const promiseF: any = (): any => {
+        if (promiseF.forced) {
+          return promiseF.value;
+        } else {
+          promiseF.forced = undefined;
+          promiseF.value = 'bar';
+          promiseF.forced = true;
+          return promiseF.value;
+        }
+      };
+      promiseF.value = undefined as any;
+      promiseF.forced = false as any;
+      promiseF.ftype = 'thunk';
+      return promiseF;
+    })()), Symbol.for('Any')]]));
+    return env.toObject();
+  })(), {
+    bar: 'bar',
+    foo: 'foo'
+  }));
 });
 
 describe('JavaScriptEnvironment', (): any => {
@@ -1391,7 +1503,7 @@ describe('JavaScriptEnvironment', (): any => {
     const env: any = new JavaScriptEnvironment();
     return env.hasLocalP(Symbol.for('quux'));
   })(), false));
-  return it('has-local?, filter option', (): any => assertEqual(((): any => {
+  it('has-local?, filter option', (): any => assertEqual(((): any => {
     const env: any = new JavaScriptEnvironment();
     function filter(x: any): any {
       return false;
@@ -1400,4 +1512,8 @@ describe('JavaScriptEnvironment', (): any => {
       filter
     });
   })(), false));
+  return it('to-object', (): any => assertEqual(((): any => {
+    const env: any = new JavaScriptEnvironment();
+    return env.toObject();
+  })(), {}));
 });

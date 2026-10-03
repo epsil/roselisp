@@ -34,6 +34,7 @@
 (require (only-in "./env"
                   Environment
                   EnvironmentStack
+                  JavaScriptModuleEnvironment
                   LispEnvironment
                   TypedEnvironment
                   current-environment
@@ -71,7 +72,8 @@
                   InternalPromise))
 (require (only-in "./util"
                   make-arity-function
-                  tagged-list?))
+                  tagged-list?
+                  with-cwd))
 
 (declare-macro with-environment)
 
@@ -1244,6 +1246,83 @@
          #u
          (length params))))))
 
+;;; Evaluate an ESTree [`ImportDeclaration`][estree:importdeclaration] node.
+;;;
+;;; [estree:importdeclaration]: https://github.com/estree/estree/blob/master/es2015.md#importdeclaration
+(define (eval-estree-import-declaration node env (options (js/obj)))
+  (define current-module
+    (oget options :current-module))
+  (define in-dir-option
+    (oget options :in-dir))
+  (define src
+    (get-estree-field "source" node))
+  (define src-val
+    (eval-estree src env options))
+  (define specifiers
+    (get-estree-field "specifiers" node))
+  (define m #u)
+  (define env1 #u)
+  (define module-regexp
+    (regexp "^\\.+/"))
+  (when (regexp-match module-regexp src-val)
+    (when current-module
+      (set! m (send current-module get-module src-val))))
+  (cond
+   (m
+    (set! env1 (send m get-provide-environment)))
+   (else
+    (with-cwd
+     in-dir-option
+     (thunk
+      (try
+        (set! env1
+              (new JavaScriptModuleEnvironment
+                   (js/require src-val)))
+        (catch Error e
+          (return #u)))))))
+  (for ((specifier specifiers))
+    (cond
+     ((estree-type? specifier "ImportSpecifier")
+      (define local
+        (get-estree-field "local" specifier))
+      (define local-val
+        (eval-estree local env options))
+      (define local-sym
+        (string->symbol local-val))
+      (define imported
+        (get-estree-field "imported" specifier))
+      (define imported-val
+        (eval-estree imported env options))
+      (define imported-sym
+        (string->symbol imported-val))
+      (define val #u)
+      (define typ 'Any)
+      (when env1
+        (cond
+         ((is-a? env1 TypedEnvironment)
+          (set!-values (val typ)
+                       (send env1
+                             get-typed-value
+                             imported-sym)))
+         (else
+          (set! val (send env1 get imported-sym)))))
+      (send env set-local! local-sym val typ))
+     ((estree-type? specifier '("ImportDefaultSpecifier"
+                                "ImportNamespaceSpecifier"))
+      (define local
+        (get-estree-field "local" specifier))
+      (define str
+        (if local
+            (get-field name local)
+            src-val))
+      (define sym
+        (string->symbol str))
+      (define obj #u)
+      (when env1
+        (set! obj (send env1 to-object)))
+      (send env set-local! sym obj 'Any))))
+  #u)
+
 ;;; Evaluate a TSESTree `TSAsExpression` node.
 (define (eval-estree-ts-as-expression node env (options (js/obj)))
   (define expression
@@ -1279,6 +1358,7 @@
      ("FunctionExpression" . ,eval-estree-function-expression)
      ("Identifier" . ,eval-estree-identifier)
      ("IfStatement" . ,eval-estree-if-statement)
+     ("ImportDeclaration" . ,eval-estree-import-declaration)
      ("Literal" . ,eval-estree-literal)
      ("LogicalExpression" . ,eval-estree-logical-expression)
      ("MemberExpression" . ,eval-estree-member-expression)

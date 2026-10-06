@@ -46,7 +46,7 @@ declare namespace delay_ {
 declare function lazy_(exp: any, env: any): any;
 declare namespace lazy_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Whether something is a promise.

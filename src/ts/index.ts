@@ -19,7 +19,7 @@ import {
   license
 } from './constants';
 
-export * from './language';
+export * from './core';
 
 export {
   license

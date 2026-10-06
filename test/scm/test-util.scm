@@ -3,7 +3,7 @@
 ;;; Various helper functions for testing Lisp code.
 
 (require chai "chai")
-(require (only-in "../../src/ts/language"
+(require (only-in "../../src/ts/core"
                   (compile-with-environment compile)
                   LispEnvironment
                   compile-lisp

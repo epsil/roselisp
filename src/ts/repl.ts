@@ -33,6 +33,13 @@ import {
 } from './constants';
 
 import {
+  interpret as eval_,
+  langEnvironment,
+  load_,
+  printSexpAsExpression
+} from './core';
+
+import {
   equalp_
 } from './equal';
 
@@ -41,13 +48,6 @@ import {
   withEnvironment,
   withEnvironmentF
 } from './env';
-
-import {
-  interpret as eval_,
-  langEnvironment,
-  load_,
-  printSexpAsExpression
-} from './language';
 
 import {
   read

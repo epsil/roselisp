@@ -2,14 +2,19 @@
 // SPDX-License-Identifier: MPL-2.0
 // inline-lisp-sources: true
 /**
- * # Language
+ * # Language core
  *
- * Language environment and compiler implementation.
+ * Language interpreter, compiler and environment.
  *
  * ## Description
  *
- * This file defines the language environment. It also contains most
- * of the compiler code.
+ * Core functionality includes the language interpreter, the language
+ * compiler and the language environment. These have to be defined
+ * together in the same file because of how interdependent they are,
+ * thus forming an indivisible "core" that cannot be split up into
+ * multiple files. With further refactoring, it might be possible to
+ * reduce the size of this core, but it seems inevitable that there
+ * will be one.
  *
  * ## License
  *
@@ -32,10 +37,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.macroexpand1 = exports.macroexpandStar = exports.macroexpandstarN = exports.macroexpandstar1 = exports.lisp1Environment = exports.letrecValues = exports.letValues = exports.letstarValues = exports.letrec = exports.letStar = exports.letJsObj = exports.letFields = exports.lambda = exports.fn = exports.js_ = exports.jsRaw = exports.js = exports.block_ = exports.block = exports.jsAwait = exports.await_ = exports.await = exports.jsAsync = exports.async_ = exports.async = exports.interpret = exports.getField = exports.dot = exports.define = exports.defineValues = exports.defineType = exports.definePublic = exports.defineMacro = exports.defineGenerator = exports.defineJsObj = exports.defineFields = exports.defineClass = exports.defineAsync = exports.decompile = exports.cond = exports.compile = exports.compileLispToJavascript = exports.compileLisp = exports.compileRose = exports.colon = exports.callCc = exports.callWithCurrentContinuation = exports.begin = exports.ann = exports.and = void 0;
-exports.continue_ = exports.cond_ = exports.compile_ = exports.compileWithEnvironment = exports.compileModules = exports.compileModuleMap = exports.compileFilesX = exports.compileFileX = exports.compilationEnvironment = exports.colon_ = exports.cljTry_ = exports.class_ = exports.break_ = exports.begin_ = exports.applyOptimizations = exports.ann_ = exports.and_ = exports.Module = exports.source = exports.readFromString = exports.setq = exports.setValues = exports.setXValues = exports.setFields = exports.setFieldsX = exports.setXJsObj = exports.setXFields = exports.setField = exports.setFieldX = exports.setx = exports.send = exports.callMethod = exports.sendApply = exports.require = exports.readRose = exports.quote = exports.quasiquote = exports.provide = exports.or = exports.optimizeRose = exports.nop = exports.scmNew = exports.rktMakeObject = exports.newStar = exports.makeObject_ = exports.makeObject = exports.make = exports.jsNew = exports.macroexpand = exports.macroexpandN = void 0;
-exports.nop_ = exports.new_ = exports.module_ = exports.moduleExpressionToModuleObject = exports.mapVisitStx = exports.mapSyntax = exports.mapSexp = exports.makeModuleMap = exports.makeLisp = exports.macroexpand_ = exports.macroexpandUntil = exports.macroexpandN_ = exports.macroexpandAllUntil = exports.macroexpandAll = exports.macroexpand1_ = exports.macroexpandstar_ = exports.macroexpandstarN_ = exports.macroexpandstar1_ = exports.load_ = exports.lispEnvironment = exports.lisp = exports.let_ = exports.letVarsToConstVars = exports.letValues_ = exports.letStar_ = exports.letFields_ = exports.langEnvironment = exports.lambda_ = exports.jsRaw_ = exports.jsAwait_ = exports.jsAsync_ = exports.iterateStx = exports.isAP_ = exports.interpretationEnvironment = exports.interpret_ = exports.interpretString = exports.interpretFiles = exports.getField_ = exports.for_ = exports.findEstree = exports.dot_ = exports.define_ = exports.defineValues_ = exports.defineType_ = exports.defineMacro_ = exports.defineGenerator_ = exports.defineFields_ = exports.defineAsync_ = exports.defineToDefineClass = exports.decompile_ = void 0;
-exports.yield_ = exports.typeOf_ = exports.try_ = exports.traverseEstree = exports.tokenize = exports.throw_ = exports.splitComments = exports.source_ = exports.sourcep = exports.sexp = exports.setq_ = exports.setValues_ = exports.setFields_ = exports.setField_ = exports.setx_ = exports.send_ = exports.sendApply_ = exports.sendMethod = exports.s = exports.return_ = exports.require_ = exports.readSyntax = exports.readSexp = exports.read = exports.quote_ = exports.quotep = exports.quasiquote_ = exports.provide_ = exports.or_ = exports.optimizeSyntax = exports.optimizeSexp = exports.optimizeModule = exports.optimizeEstree = exports.optimizations = void 0;
+exports.macroexpandstarN = exports.macroexpandstar1 = exports.lisp1Environment = exports.letrecValues = exports.letValues = exports.letstarValues = exports.letrec = exports.letStar = exports.letJsObj = exports.letFields = exports.lambda = exports.fn = exports.js_ = exports.jsRaw = exports.js = exports.block_ = exports.block = exports.jsAwait = exports.await_ = exports.await = exports.jsAsync = exports.async_ = exports.async = exports.interpret = exports.getField = exports.seval = exports.evalRose = exports.dot = exports.define = exports.defineValues = exports.defineType = exports.definePublic = exports.defineMacro = exports.defineGenerator = exports.defineJsObj = exports.defineFields = exports.defineClass = exports.defineAsync = exports.decompile = exports.cond = exports.compile = exports.compileLispToJavascript = exports.compileLisp = exports.compileRose = exports.colon = exports.callCc = exports.callWithCurrentContinuation = exports.begin = exports.ann = exports.and = void 0;
+exports.compileModules = exports.compileModuleMap = exports.compileFilesX = exports.compileFileX = exports.compilationEnvironment = exports.colon_ = exports.cljTry_ = exports.class_ = exports.callEvaluator = exports.break_ = exports.begin_ = exports.applyOptimizations = exports.ann_ = exports.and_ = exports.Module = exports.Evaluator = exports.source = exports.readFromString = exports.setq = exports.setValues = exports.setXValues = exports.setFields = exports.setFieldsX = exports.setXJsObj = exports.setXFields = exports.setField = exports.setFieldX = exports.setx = exports.send = exports.callMethod = exports.sendApply = exports.require = exports.readRose = exports.quote = exports.quasiquote = exports.provide = exports.or = exports.optimizeRose = exports.nop = exports.scmNew = exports.rktMakeObject = exports.newStar = exports.makeObject_ = exports.makeObject = exports.make = exports.jsNew = exports.macroexpand = exports.macroexpandN = exports.macroexpand1 = exports.macroexpandStar = void 0;
+exports.macroexpandAllUntil = exports.macroexpandAll = exports.macroexpand1_ = exports.macroexpandstar_ = exports.macroexpandstarN_ = exports.macroexpandstar1_ = exports.load_ = exports.lispEnvironment = exports.lisp = exports.let_ = exports.letVarsToConstVars = exports.letValues_ = exports.letStar_ = exports.letFields_ = exports.langEnvironment = exports.lambda_ = exports.jsRaw_ = exports.jsEval_ = exports.jsAwait_ = exports.jsAsync_ = exports.iterateStx = exports.isAP_ = exports.interpretationEnvironment = exports.interpret_ = exports.interpretString = exports.interpretFiles = exports.getField_ = exports.for_ = exports.findEstree = exports.evaluatorp = exports.eval_ = exports.eval1 = exports.evalSyntax = exports.evalSexp = exports.evalEstree = exports.dot_ = exports.define_ = exports.defineValues_ = exports.defineType_ = exports.defineMacro_ = exports.defineGenerator_ = exports.defineFields_ = exports.defineAsync_ = exports.defineToDefineClass = exports.defaultEvaluator = exports.decompile_ = exports.continue_ = exports.cond_ = exports.compile_ = exports.compileWithEnvironment = void 0;
+exports.yield_ = exports.typeOf_ = exports.try_ = exports.traverseEstree = exports.tokenize = exports.throw_ = exports.splitComments = exports.source_ = exports.sourcep = exports.sexp = exports.setq_ = exports.setValues_ = exports.setFields_ = exports.setField_ = exports.setx_ = exports.send_ = exports.sendApply_ = exports.sendMethod = exports.s = exports.return_ = exports.require_ = exports.readSyntax = exports.readSexp = exports.read = exports.quote_ = exports.quotep = exports.quasiquote_ = exports.provide_ = exports.or_ = exports.optimizeSyntax = exports.optimizeSexp = exports.optimizeModule = exports.optimizeEstree = exports.optimizations = exports.nop_ = exports.new_ = exports.module_ = exports.moduleExpressionToModuleObject = exports.mapVisitStx = exports.mapSyntax = exports.mapSexp = exports.makeModuleMap = exports.makeLisp = exports.macroexpand_ = exports.macroexpandUntil = exports.macroexpandN_ = void 0;
 const fs_1 = require("fs");
 const path_1 = require("path");
 const process_1 = require("process");
@@ -46,7 +51,7 @@ const decompiler_1 = require("./decompiler");
 const env_1 = require("./env");
 const equal_1 = require("./equal");
 const estree_1 = require("./estree");
-const eval_1 = require("./eval");
+const exception_1 = require("./exception");
 const hash_1 = require("./hash");
 const javascript_1 = require("./javascript");
 Object.defineProperty(exports, "jsNew", { enumerable: true, get: function () { return javascript_1.jsNew_; } });
@@ -57,6 +62,7 @@ Object.defineProperty(exports, "newStar", { enumerable: true, get: function () {
 Object.defineProperty(exports, "rktMakeObject", { enumerable: true, get: function () { return javascript_1.jsNew_; } });
 Object.defineProperty(exports, "scmNew", { enumerable: true, get: function () { return javascript_1.jsNew_; } });
 Object.defineProperty(exports, "new_", { enumerable: true, get: function () { return javascript_1.jsNew_; } });
+Object.defineProperty(exports, "jsEval_", { enumerable: true, get: function () { return javascript_1.jsEval_; } });
 const list_1 = require("./list");
 const macros_1 = require("./macros");
 Object.defineProperty(exports, "and", { enumerable: true, get: function () { return macros_1.and_; } });
@@ -103,7 +109,10 @@ const thunk_1 = require("./thunk");
 const util_1 = require("./util");
 Object.defineProperty(exports, "quotep", { enumerable: true, get: function () { return util_1.quotep; } });
 const visitor_1 = require("./visitor");
-const [flatten, keywordp, symbolToString, makeList, macroexpandstar1, findf] = (() => {
+const [keywordp, flatten, symbolToString, makeList, macroexpandstar1, findf] = (() => {
+    function keywordp_(obj) {
+        return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
+    }
     function flatten_(lst) {
         return lst.reduce((acc, x) => {
             if (Array.isArray(x)) {
@@ -118,9 +127,6 @@ const [flatten, keywordp, symbolToString, makeList, macroexpandstar1, findf] = (
             }
         }, []);
     }
-    function keywordp_(obj) {
-        return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
-    }
     function symbolToString_(sym) {
         return sym.description;
     }
@@ -133,7 +139,7 @@ const [flatten, keywordp, symbolToString, makeList, macroexpandstar1, findf] = (
     }
     function macroexpandstar1_(exp, env = undefined) {
         const exp1 = (0, rose_1.syntaxp)(exp) ? (0, rose_1.syntaxToDatum)(exp) : exp;
-        const env1 = env || (0, env_1.currentEnvironment_)() || (0, env_1.emptyEnvironment)();
+        let env1 = env || (0, env_1.currentEnvironment_)() || (0, env_1.emptyEnvironment)();
         let expansion = exp;
         let expanded = false;
         if (!(Array.isArray(exp1) && !((exp1.length >= 3) && (exp1[exp1.length - 2] === Symbol.for('.')) && !Array.isArray(exp1[exp1.length - 1])))) {
@@ -147,7 +153,7 @@ const [flatten, keywordp, symbolToString, makeList, macroexpandstar1, findf] = (
         }
         else {
             let op = exp1[0];
-            const [macroF, typ] = env1.getTypedValue(op);
+            let [macroF, typ] = env1.getTypedValue(op);
             if ((0, procedures_1.macrop_)(macroF) || (0, procedures_1.macroTypeP)(typ)) {
                 expansion = applyMacro(macroF, exp, env);
                 expanded = true;
@@ -164,22 +170,1293 @@ const [flatten, keywordp, symbolToString, makeList, macroexpandstar1, findf] = (
             return notFound;
         }
     }
-    return [flatten_, keywordp_, symbolToString_, makeList_, macroexpandstar1_, findf_];
+    return [keywordp_, flatten_, symbolToString_, makeList_, macroexpandstar1_, findf_];
 })();
+env_1.withEnvironment.ftype = 'macro';
 /**
- * Default options for interpretation and compilation.
- * See also `default-compilation-options`.
+ * Evaluate a S-expression `exp` in the Lisp environment `env`.
+ *
+ * `env` may be an {@link Environment}, or it may be an
+ * {@link Evaluator}. In the latter case, evaluation takes place
+ * by calling its `.eval()` method.
+ *
+ * This function is more fundamental and basic than `interpret`, which
+ * is probably what you want. `interpret` stacks the given environment
+ * on top of a Lisp environment, while `eval_` is a low-level function
+ * that performs no such stacking.
  */
-const defaultOptions = {
-    comments: true,
-    compileEnvironment: true,
-    expressionType: 'expression',
-    fevalBindings: false,
-    finlineFunctions: false,
-    fsemicolon: true,
-    gensymMap: new Map(),
-    shouldImport: true
-};
+const eval_ = (0, curry_1.dashify)((exp, env = undefined, options = {}) => {
+    const evaluator = options['evaluator'] || defaultEvaluator;
+    return callEvaluator(evaluator, exp, env, options);
+});
+exports.seval = eval_;
+exports.eval_ = eval_;
+/**
+ * Call an evaluator on an expression.
+ */
+function callEvaluator(evaluator, exp, env = undefined, options = {}) {
+    if (evaluator instanceof Evaluator) {
+        return evaluator.eval(exp, env, options);
+    }
+    else if (evaluator instanceof Function) {
+        return evaluator(exp, env, options);
+    }
+    else {
+        return undefined;
+    }
+}
+exports.callEvaluator = callEvaluator;
+callEvaluator.fsource = [Symbol.for('define'), [Symbol.for('call-evaluator'), Symbol.for('evaluator'), Symbol.for('exp'), [Symbol.for('env'), undefined], [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('evaluator'), Symbol.for('Evaluator')], [Symbol.for('send'), Symbol.for('evaluator'), Symbol.for('eval'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('procedure?'), Symbol.for('evaluator')], [Symbol.for('evaluator'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), undefined]]];
+/**
+ * Whether something is an evaluator.
+ */
+function evaluatorp(obj) {
+    return (obj instanceof Function) || (obj instanceof Evaluator);
+}
+exports.evaluatorp = evaluatorp;
+evaluatorp.fsource = [Symbol.for('define'), [Symbol.for('evaluator?'), Symbol.for('obj')], [Symbol.for('or'), [Symbol.for('procedure?'), Symbol.for('obj')], [Symbol.for('is-a?'), Symbol.for('obj'), Symbol.for('Evaluator')]]];
+/**
+ * Evaluator class.
+ */
+class Evaluator {
+    /**
+     * The simplest possible evaluator is the
+     * identity function.
+     */
+    eval(exp, env = undefined, options = {}) {
+        return exp;
+    }
+}
+exports.Evaluator = Evaluator;
+/**
+ * Lisp-1 evaluator function.
+ */
+function eval1(exp, env, options = {}) {
+    if ((0, rose_1.syntaxp)(exp)) {
+        return evalSyntax(exp, env, options);
+    }
+    else {
+        return evalSexp(exp, env, options);
+    }
+}
+exports.eval1 = eval1;
+eval1.fsource = [Symbol.for('define'), [Symbol.for('eval1'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('cond'), [[Symbol.for('syntax?'), Symbol.for('exp')], [Symbol.for('eval-syntax'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('eval-sexp'), Symbol.for('exp'), Symbol.for('env'), Symbol.for('options')]]]];
+/**
+ * Evaluate an S-expression.
+ *
+ * This is a case-by-case function.
+ */
+function evalSexp(exp, env, options = {}) {
+    return (0, env_1.withEnvironmentF)(env, () => {
+        if (exp instanceof thunk_1.InternalPromise) {
+            return evalSexp(exp.force(), env, options);
+        }
+        else if (Array.isArray(exp) && (exp.length === 0)) {
+            return exp;
+        }
+        else if (Array.isArray(exp) && !((exp.length >= 3) && (exp[exp.length - 2] === Symbol.for('.')) && !Array.isArray(exp[exp.length - 1]))) {
+            let [op, ...args] = exp;
+            if (typeof op === 'symbol') {
+                let name = op.description;
+                let match;
+                if ((match = name.match(/^\.(.+)$/))) {
+                    // Method call expression
+                    const method = match[1];
+                    let [obj, ...fargs] = args;
+                    const dotExp = [Symbol.for('.'), obj, Symbol.for(method), ...fargs];
+                    return evalSexp(dotExp, env, options);
+                }
+                else {
+                    const [f, bindingType] = env.getTypedValue(op);
+                    if ((0, procedures_1.macroTypeP)(bindingType)) {
+                        // Macros are implemented with a macro function that
+                        // has the signature `(exp, env) => value`. The arguments
+                        // to the macro are *not* evaluated, but the macro's
+                        // return value---the macro expansion---*is* evaluated:
+                        // that is, it is pushed back on the expressions stack
+                        // for further evaluation.
+                        let expansion = f(exp, env);
+                        return evalSexp(expansion, env, options);
+                    }
+                    else if ((0, procedures_1.fexprTypeP)(bindingType)) {
+                        // A fexpr is a function that receives its arguments
+                        // unevaluated, like a macro. However, unlike a macro,
+                        // the return value is not re-evaluated---it is simply
+                        // returned.
+                        return f(...args);
+                    }
+                    else if ((0, procedures_1.specialTypeP)(bindingType)) {
+                        // Special form
+                        return f(exp, env);
+                    }
+                    else if ((0, procedures_1.procedureTypeP)(bindingType) || ((0, procedures_1.variableTypeP)(bindingType) && (f instanceof Function))) {
+                        // Function call
+                        if ((0, procedures_1.fexprp_)(f)) {
+                            return f(...args);
+                        }
+                        else if ((0, procedures_1.macrop_)(f)) {
+                            // Macro function
+                            let expansion = f(exp, env);
+                            return evalSexp(expansion, env, options);
+                        }
+                        else {
+                            // Apply `f` to evaluated arguments
+                            return f(...args.map((arg) => evalSexp(arg, env, options)));
+                        }
+                    }
+                }
+            }
+            else if (!op) {
+                return undefined;
+            }
+            else if (op instanceof Function) {
+                // `(<fn> ...)` call. The first element is a
+                // function object. If it is a fexpr call, the function
+                // is called with its arguments unevaluated. Otherwise,
+                // the arguments have to be evaluated first.
+                const f = op;
+                if ((args.length === 0) || (0, procedures_1.fexprp_)(f)) {
+                    // Fexpr call. The function is called with its
+                    // arguments unevaluated.
+                    return f(...args);
+                }
+                else {
+                    // Regular call. The arguments are evaluated,
+                    // and the values are passed to the function.
+                    return f(...args.map((arg) => evalSexp(arg, env, options)));
+                }
+            }
+            else {
+                // `((...) ...)` call. The first element is a expression
+                // that has to be evaluated before function application
+                // can proceed.
+                return evalSexp([evalSexp(op, env, options), ...(Array.isArray(args) ? args : [Symbol.for('.'), args])], env, options);
+            }
+        }
+        else if (keywordp(exp)) {
+            // Keyword
+            return exp;
+        }
+        else if (exp === Symbol.for('.')) {
+            // Dot
+            return exp;
+        }
+        else if (typeof exp === 'symbol') {
+            // Variable
+            let name = exp.description;
+            const binding = env.getTypedValue(exp);
+            if (binding) {
+                let [value] = binding;
+                return value;
+            }
+            else {
+                throw new Error('Could not find symbol: ' + exp.description);
+            }
+        }
+        else if (typeof exp === 'string') {
+            // String
+            return exp;
+        }
+        else if ((0, estree_1.estreep)(exp)) {
+            // ESTree
+            return evalEstree(exp, env);
+        }
+        else {
+            // Self-evaluating value
+            return exp;
+        }
+    });
+}
+exports.evalSexp = evalSexp;
+evalSexp.fsource = [Symbol.for('define'), [Symbol.for('eval-sexp'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('with-environment'), Symbol.for('env'), [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('exp'), Symbol.for('InternalPromise')], [Symbol.for('eval-sexp'), [Symbol.for('send'), Symbol.for('exp'), Symbol.for('force')], Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('null?'), Symbol.for('exp')], Symbol.for('exp')], [[Symbol.for('list?'), Symbol.for('exp')], [Symbol.for('define-values'), [Symbol.for('op'), Symbol.for('.'), Symbol.for('args')], Symbol.for('exp')], [Symbol.for('cond'), [[Symbol.for('symbol?'), Symbol.for('op')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('symbol->string'), Symbol.for('op')]], [Symbol.for('define'), Symbol.for('match')], [Symbol.for('cond'), [[Symbol.for('set!'), Symbol.for('match'), [Symbol.for('regexp-match'), [Symbol.for('regexp'), '^\\.(.+)$'], Symbol.for('name')]], [Symbol.for('define'), Symbol.for('method'), [Symbol.for('second'), Symbol.for('match')]], [Symbol.for('define-values'), [Symbol.for('obj'), Symbol.for('.'), Symbol.for('fargs')], Symbol.for('args')], [Symbol.for('define'), Symbol.for('dot-exp'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('string->symbol'), '.']], [Symbol.for('unquote'), Symbol.for('obj')], [Symbol.for('unquote'), [Symbol.for('string->symbol'), Symbol.for('method')]], [Symbol.for('unquote-splicing'), Symbol.for('fargs')]]]], [Symbol.for('eval-sexp'), Symbol.for('dot-exp'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define-values'), [Symbol.for('f'), Symbol.for('binding-type')], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get-typed-value'), Symbol.for('op')]], [Symbol.for('cond'), [[Symbol.for('macro-type?'), Symbol.for('binding-type')], [Symbol.for('define'), Symbol.for('expansion'), [Symbol.for('f'), Symbol.for('exp'), Symbol.for('env')]], [Symbol.for('eval-sexp'), Symbol.for('expansion'), Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('fexpr-type?'), Symbol.for('binding-type')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [[Symbol.for('special-type?'), Symbol.for('binding-type')], [Symbol.for('f'), Symbol.for('exp'), Symbol.for('env')]], [[Symbol.for('or'), [Symbol.for('procedure-type?'), Symbol.for('binding-type')], [Symbol.for('and'), [Symbol.for('variable-type?'), Symbol.for('binding-type')], [Symbol.for('procedure?'), Symbol.for('f')]]], [Symbol.for('cond'), [[Symbol.for('fexpr?_'), Symbol.for('f')], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [[Symbol.for('macro?_'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('expansion'), [Symbol.for('f'), Symbol.for('exp'), Symbol.for('env')]], [Symbol.for('eval-sexp'), Symbol.for('expansion'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('arg')], [Symbol.for('eval-sexp'), Symbol.for('arg'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('args')]]]]]]]]], [[Symbol.for('not'), Symbol.for('op')], undefined], [[Symbol.for('procedure?'), Symbol.for('op')], [Symbol.for('define'), Symbol.for('f'), Symbol.for('op')], [Symbol.for('cond'), [[Symbol.for('or'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 0], [Symbol.for('fexpr?_'), Symbol.for('f')]], [Symbol.for('apply'), Symbol.for('f'), Symbol.for('args')]], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('arg')], [Symbol.for('eval-sexp'), Symbol.for('arg'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('args')]]]]], [Symbol.for('else'), [Symbol.for('eval-sexp'), [Symbol.for('cons'), [Symbol.for('eval-sexp'), Symbol.for('op'), Symbol.for('env'), Symbol.for('options')], Symbol.for('args')], Symbol.for('env'), Symbol.for('options')]]]], [[Symbol.for('keyword?'), Symbol.for('exp')], Symbol.for('exp')], [[Symbol.for('eq?'), Symbol.for('exp'), [Symbol.for('quote'), Symbol.for('.')]], Symbol.for('exp')], [[Symbol.for('symbol?'), Symbol.for('exp')], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('symbol->string'), Symbol.for('exp')]], [Symbol.for('define'), Symbol.for('binding'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('get-typed-value'), Symbol.for('exp')]], [Symbol.for('cond'), [Symbol.for('binding'), [Symbol.for('define-values'), [Symbol.for('value')], Symbol.for('binding')], Symbol.for('value')], [Symbol.for('else'), [Symbol.for('error'), [Symbol.for('string-append'), 'Could not find symbol: ', [Symbol.for('symbol->string'), Symbol.for('exp')]]]]]], [[Symbol.for('string?'), Symbol.for('exp')], Symbol.for('exp')], [[Symbol.for('estree?'), Symbol.for('exp')], [Symbol.for('eval-estree'), Symbol.for('exp'), Symbol.for('env')]], [Symbol.for('else'), Symbol.for('exp')]]]];
+/**
+ * Evaluate a syntax object.
+ */
+function evalSyntax(node, env, options = {}) {
+    return evalSexp((0, rose_1.syntaxToDatum)(node), env, options);
+}
+exports.evalRose = evalSyntax;
+exports.evalSyntax = evalSyntax;
+evalSyntax.fsource = [Symbol.for('define'), [Symbol.for('eval-syntax'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('syntax->datum'), Symbol.for('_')], [Symbol.for('eval-sexp'), Symbol.for('_'), Symbol.for('env'), Symbol.for('options')]]];
+/**
+ * Evaluate an [ESTree][github:estree] node
+ * (i.e., a JavaScript [AST][w:Abstract syntax tree]).
+ *
+ * [github:estree]: https://github.com/estree/estree
+ * [w:Abstract syntax tree]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+ */
+function evalEstree(node, env, options = {}) {
+    if (!node) {
+        return undefined;
+    }
+    else if (node instanceof thunk_1.InternalPromise) {
+        return evalEstree(node.force(), env, options);
+    }
+    else {
+        let type_ = (0, estree_1.estreeType)(node);
+        const evaluator = evalEstreeMap.get(type_);
+        if (evaluator) {
+            return (0, env_1.withEnvironmentF)(env, () => evaluator(node, env, options));
+        }
+        else {
+            return undefined;
+        }
+    }
+}
+exports.evalEstree = evalEstree;
+evalEstree.fsource = [Symbol.for('define'), [Symbol.for('eval-estree'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('node')], undefined], [[Symbol.for('is-a?'), Symbol.for('node'), Symbol.for('InternalPromise')], [Symbol.for('eval-estree'), [Symbol.for('send'), Symbol.for('node'), Symbol.for('force')], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('type_'), [Symbol.for('estree-type'), Symbol.for('node')]], [Symbol.for('define'), Symbol.for('evaluator'), [Symbol.for('send'), Symbol.for('eval-estree-map'), Symbol.for('get'), Symbol.for('type_')]], [Symbol.for('cond'), [Symbol.for('evaluator'), [Symbol.for('with-environment'), Symbol.for('env'), [Symbol.for('evaluator'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('else'), undefined]]]]];
+/**
+ * Evaluate an ESTree [`Program`][estree:program] node
+ * (i.e., a JavaScript program).
+ *
+ * [estree:program]: https://github.com/estree/estree/blob/master/es5.md#programs
+ */
+function evalEstreeProgram(node, env, options = {}) {
+    let body = (0, estree_1.getEstreeField)('body', node);
+    let result = undefined;
+    for (let statement of body) {
+        result = evalEstree(statement, env, options);
+    }
+    return result;
+}
+evalEstreeProgram.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-program'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('for'), [[Symbol.for('statement'), Symbol.for('body')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('statement'), Symbol.for('env'), Symbol.for('options')]]], Symbol.for('result')];
+/**
+ * Evaluate an ESTree [`BlockStatement`][estree:blockstatement] node.
+ *
+ * [estree:blockstatement]: https://github.com/estree/estree/blob/master/es5.md#blockstatement
+ */
+function evalEstreeBlockStatement(node, env, options = {}) {
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    return (0, env_1.withEnvironmentF)(env1, () => {
+        try {
+        }
+        catch (e) {
+            if (e instanceof Error) {
+            }
+            else {
+                throw e;
+            }
+        }
+        return evalEstreeProgram(node, env1, options);
+    });
+}
+evalEstreeBlockStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-block-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('env1'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')]], [Symbol.for('with-environment'), Symbol.for('env1'), [Symbol.for('try'), [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e')]], [Symbol.for('eval-estree-program'), Symbol.for('node'), Symbol.for('env1'), Symbol.for('options')]]];
+/**
+ * Evaluate an ESTree [`SequenceExpression`][estree:sequenceexpression] node.
+ *
+ * [estree:sequenceexpression]: https://github.com/estree/estree/blob/master/es5.md#sequenceexpression
+ */
+function evalEstreeSequenceExpression(node, env, options = {}) {
+    const expressions = (0, estree_1.getEstreeField)('expressions', node);
+    const program = new estree_1.Program(expressions);
+    return evalEstreeProgram(program, env, options);
+}
+evalEstreeSequenceExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-sequence-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expressions'), [Symbol.for('get-estree-field'), 'expressions', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('program'), [Symbol.for('new'), Symbol.for('Program'), Symbol.for('expressions')]], [Symbol.for('eval-estree-program'), Symbol.for('program'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`Literal`][estree:literal] node.
+ *
+ * [estree:literal]: https://github.com/estree/estree/blob/master/es5.md#literal
+ */
+function evalEstreeLiteral(node, env, options = {}) {
+    const regex = (0, estree_1.getEstreeField)('regex', node);
+    if (regex) {
+        return new RegExp(regex.pattern, regex.flags);
+    }
+    else {
+        return (0, estree_1.getEstreeField)('value', node);
+    }
+}
+evalEstreeLiteral.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-literal'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('regex'), [Symbol.for('get-estree-field'), 'regex', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('regex'), [Symbol.for('new'), Symbol.for('RegExp'), [Symbol.for('get-field'), Symbol.for('pattern'), Symbol.for('regex')], [Symbol.for('get-field'), Symbol.for('flags'), Symbol.for('regex')]]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'value', Symbol.for('node')]]]];
+/**
+ * Evaluate an ESTree [`TemplateLiteral`][estree:templateliteral] node.
+ *
+ * [estree:templateliteral]: https://github.com/estree/estree/blob/master/es2015.md#templateliteral
+ */
+function evalEstreeTemplateLiteral(node, env, options = {}) {
+    const quasis = (0, estree_1.getEstreeField)('quasis', node);
+    const quasi = quasis[0];
+    return evalEstree(quasi, env, options);
+}
+evalEstreeTemplateLiteral.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-template-literal'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('quasis'), [Symbol.for('get-estree-field'), 'quasis', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('quasi'), [Symbol.for('first'), Symbol.for('quasis')]], [Symbol.for('eval-estree'), Symbol.for('quasi'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`TemplateElement`][estree:templateelement] node.
+ *
+ * [estree:templateelement]: https://github.com/estree/estree/blob/master/es2015.md#templateelement
+ */
+function evalEstreeTemplateElement(node, env, options = {}) {
+    return (0, estree_1.getEstreeField)('value', node)['cooked'];
+}
+evalEstreeTemplateElement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-template-element'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('~>'), Symbol.for('node'), [Symbol.for('get-estree-field'), 'value', Symbol.for('_')], [Symbol.for('oget'), Symbol.for('_'), Symbol.for(':cooked')]]];
+/**
+ * Evaluate an ESTree [`Identifier`][estree:identifier] node.
+ *
+ * [estree:identifier]: https://github.com/estree/estree/blob/master/es5.md#identifier
+ */
+function evalEstreeIdentifier(node, env, options = {}) {
+    let name = (0, estree_1.getEstreeField)('name', node);
+    if (name === 'undefined') {
+        // JavaScript's `undefined` is parsed as an `Identifier`
+        // (and not as a `Literal`, as one might expect), so it
+        // has to be handled here.
+        return undefined;
+    }
+    else if (name === 'NaN') {
+        // Likewise, `NaN` is also parsed as an identifier.
+        return NaN;
+    }
+    else {
+        let sym = Symbol.for(name);
+        return env.get(sym);
+    }
+}
+evalEstreeIdentifier.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-identifier'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('get-estree-field'), 'name', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('name'), 'undefined'], undefined], [[Symbol.for('eq?'), Symbol.for('name'), 'NaN'], Symbol.for('NaN')], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), Symbol.for('name')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('get'), Symbol.for('sym')]]]];
+/**
+ * Evaluate an ESTree [`MemberExpression`][estree:memberexpression] node.
+ *
+ * [estree:memberexpression]: https://github.com/estree/estree/blob/master/es5.md#memberexpression
+ */
+function evalEstreeMemberExpression(node, env, options = {}) {
+    const object = (0, estree_1.getEstreeField)('object', node);
+    const property = (0, estree_1.getEstreeField)('property', node);
+    let computed = (0, estree_1.getEstreeField)('computed', node);
+    const optional = (0, estree_1.getEstreeField)('optional', node);
+    const objectVal = evalEstree(object, env, options);
+    const propertyVal = computed ? evalEstree(property, env, options) : (0, estree_1.getEstreeField)('name', property);
+    if (optional && (objectVal === undefined)) {
+        return undefined;
+    }
+    else {
+        return objectVal[propertyVal];
+    }
+}
+evalEstreeMemberExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-member-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('object'), [Symbol.for('get-estree-field'), 'object', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('property'), [Symbol.for('get-estree-field'), 'property', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-estree-field'), 'computed', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('optional'), [Symbol.for('get-estree-field'), 'optional', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('object-val'), [Symbol.for('eval-estree'), Symbol.for('object'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('property-val'), [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('eval-estree'), Symbol.for('property'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'name', Symbol.for('property')]]]], [Symbol.for('cond'), [[Symbol.for('and'), Symbol.for('optional'), [Symbol.for('undefined?'), Symbol.for('object-val')]], undefined], [Symbol.for('else'), [Symbol.for('oget'), Symbol.for('object-val'), Symbol.for('property-val')]]]];
+/**
+ * Evaluate an ESTree [`CallExpression`][estree:callexpression] node.
+ *
+ * [estree:callexpression]: https://github.com/estree/estree/blob/master/es5.md#callexpression
+ */
+function evalEstreeCallExpression(node, env, options = {}) {
+    // TODO: Handle `js/eval` calls directly?
+    const callee = (0, estree_1.getEstreeField)('callee', node);
+    const args = (0, estree_1.getEstreeField)('arguments', node);
+    const argsVals = evalEstreeArrayExpressionHelper(args, env, options);
+    if ((0, estree_1.estreeTypeP)(callee, 'MemberExpression')) {
+        const methodVal = evalEstree(callee, env, options);
+        if ((methodVal === undefined) && (0, estree_1.getEstreeField)('optional', callee)) {
+            return undefined;
+        }
+        else {
+            let obj = (0, estree_1.getEstreeField)('object', callee);
+            const objVal = evalEstree(obj, env, options);
+            return methodVal.apply(objVal, argsVals);
+        }
+    }
+    else {
+        const f = callee;
+        const fVal = evalEstree(f, env, options);
+        if ((fVal === undefined) && (0, estree_1.getEstreeField)('optional', node)) {
+            return undefined;
+        }
+        else {
+            return fVal(...argsVals);
+        }
+    }
+}
+evalEstreeCallExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-call-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('callee'), [Symbol.for('get-estree-field'), 'callee', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-estree-field'), 'arguments', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args-vals'), [Symbol.for('eval-estree-array-expression-helper'), Symbol.for('args'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('callee'), 'MemberExpression'], [Symbol.for('define'), Symbol.for('method-val'), [Symbol.for('eval-estree'), Symbol.for('callee'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('undefined?'), Symbol.for('method-val')], [Symbol.for('get-estree-field'), 'optional', Symbol.for('callee')]], undefined], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('get-estree-field'), 'object', Symbol.for('callee')]], [Symbol.for('define'), Symbol.for('obj-val'), [Symbol.for('eval-estree'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('method-val'), Symbol.for('apply'), Symbol.for('obj-val'), Symbol.for('args-vals')]]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('f'), Symbol.for('callee')], [Symbol.for('define'), Symbol.for('f-val'), [Symbol.for('eval-estree'), Symbol.for('f'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('and'), [Symbol.for('undefined?'), Symbol.for('f-val')], [Symbol.for('get-estree-field'), 'optional', Symbol.for('node')]], undefined], [Symbol.for('else'), [Symbol.for('apply'), Symbol.for('f-val'), Symbol.for('args-vals')]]]]]];
+/**
+ * Evaluate an ESTree [`BreakStatement`][estree:breakstatement] node.
+ *
+ * [estree:breakstatement]: https://github.com/estree/estree/blob/master/es5.md#breakstatement
+ */
+function evalEstreeBreakStatement(node, env, options = {}) {
+    throw new exception_1.BreakException();
+}
+evalEstreeBreakStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-break-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('BreakException')]]];
+/**
+ * Evaluate an ESTree [`ContinueStatement`][estree:continuestatement] node.
+ *
+ * [estree:continuestatement]: https://github.com/estree/estree/blob/master/es5.md#continuestatement
+ */
+function evalEstreeContinueStatement(node, env, options = {}) {
+    throw new exception_1.ContinueException();
+}
+evalEstreeContinueStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-continue-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('ContinueException')]]];
+/**
+ * Evaluate an ESTree [`YieldExpression`][estree:yieldexpression] node.
+ *
+ * [estree:yieldexpression]: https://github.com/estree/estree/blob/master/es2015.md#yieldexpression
+ */
+function evalEstreeYieldExpression(node, env, options = {}) {
+    const argument = (0, estree_1.getEstreeField)('argument', node);
+    const argumentVal = evalEstree(argument, env, options);
+    throw new exception_1.YieldException(argumentVal);
+}
+evalEstreeYieldExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-yield-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('argument-val'), [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('YieldException'), Symbol.for('argument-val')]]];
+/**
+ * Evaluate an ESTree [`ReturnStatement`][estree:returnstatement] node.
+ *
+ * [estree:returnstatement]: https://github.com/estree/estree/blob/master/es5.md#returnstatement
+ */
+function evalEstreeReturnStatement(node, env, options = {}) {
+    const argument = (0, estree_1.getEstreeField)('argument', node);
+    const argumentVal = evalEstree(argument, env, options);
+    throw new exception_1.ReturnException(argumentVal);
+}
+evalEstreeReturnStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-return-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('argument-val'), [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('ReturnException'), Symbol.for('argument-val')]]];
+/**
+ * Evaluate an ESTree [`ThrowStatement`][estree:throwstatement] node.
+ *
+ * [estree:throwstatement]: https://github.com/estree/estree/blob/master/es5.md#throwstatement
+ */
+function evalEstreeThrowStatement(node, env, options = {}) {
+    const argument = (0, estree_1.getEstreeField)('argument', node);
+    const argumentVal = evalEstree(argument, env, options);
+    throw argumentVal;
+}
+evalEstreeThrowStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-throw-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('argument-val'), [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('throw'), Symbol.for('argument-val')]];
+/**
+ * Evaluate an ESTree [`ThisExpression`][estree:thisexpression] node.
+ *
+ * [estree:thisexpression]: https://github.com/estree/estree/blob/master/es5.md#thisexpression
+ */
+function evalEstreeThisExpression(node, env, options = {}) {
+    return currentThisValue;
+}
+evalEstreeThisExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-this-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], Symbol.for('current-this-value')];
+/**
+ * Evaluate an ESTree [`NewExpression`][estree:newexpression] node.
+ *
+ * [estree:newexpression]: https://github.com/estree/estree/blob/master/es2015.md#expressions
+ */
+function evalEstreeNewExpression(node, env, options = {}) {
+    const callee = (0, estree_1.getEstreeField)('callee', node);
+    const args = (0, estree_1.getEstreeField)('arguments', node);
+    const calleeVal = evalEstree(callee, env, options);
+    const argsVals = args.map((x) => evalEstree(x, env, options));
+    return new calleeVal(...argsVals);
+}
+evalEstreeNewExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-new-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('callee'), [Symbol.for('get-estree-field'), 'callee', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('args'), [Symbol.for('get-estree-field'), 'arguments', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('callee-val'), [Symbol.for('eval-estree'), Symbol.for('callee'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('args-vals'), [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], Symbol.for('args')]], [Symbol.for('apply'), Symbol.for('new'), Symbol.for('callee-val'), Symbol.for('args-vals')]];
+/**
+ * Evaluate an ESTree [`ObjectExpression`][estree:objectexpression] node.
+ *
+ * [estree:objectexpression]: https://github.com/estree/estree/blob/master/es5.md#objectexpression
+ */
+function evalEstreeObjectExpression(node, env, options = {}) {
+    let result = {};
+    const properties = (0, estree_1.getEstreeField)('properties', node);
+    for (let prop of properties) {
+        if ((0, estree_1.estreeTypeP)(prop, 'SpreadElement')) {
+            const argument = (0, estree_1.getEstreeField)('argument', prop);
+            const argumentVal = evalEstree(argument, env, options);
+            result = Object.assign(Object.assign({}, result), argumentVal);
+        }
+        else {
+            const key = (0, estree_1.getEstreeField)('key', prop);
+            let value = (0, estree_1.getEstreeField)('value', prop);
+            const keyVal = (0, estree_1.estreeTypeP)(key, 'Identifier') ? (0, estree_1.getEstreeField)('name', key) : (0, estree_1.getEstreeField)('value', key);
+            const valueVal = evalEstree(value, env, options);
+            result[keyVal] = valueVal;
+        }
+    }
+    return result;
+}
+evalEstreeObjectExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-object-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('js/obj')]], [Symbol.for('define'), Symbol.for('properties'), [Symbol.for('get-estree-field'), 'properties', Symbol.for('node')]], [Symbol.for('for'), [[Symbol.for('prop'), Symbol.for('properties')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('prop'), 'SpreadElement'], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('prop')]], [Symbol.for('define'), Symbol.for('argument-val'), [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/obj-append'), Symbol.for('result'), Symbol.for('argument-val')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('prop')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('prop')]], [Symbol.for('define'), Symbol.for('key-val'), [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('key'), 'Identifier'], [Symbol.for('get-estree-field'), 'name', Symbol.for('key')]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'value', Symbol.for('key')]]]], [Symbol.for('define'), Symbol.for('value-val'), [Symbol.for('eval-estree'), Symbol.for('value'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('oset!'), Symbol.for('result'), Symbol.for('key-val'), Symbol.for('value-val')]]]], Symbol.for('result')];
+/**
+ * Evaluate an ESTree [`VariableDeclaration`][estree:variabledeclaration] node.
+ *
+ * [estree:variabledeclaration]: https://github.com/estree/estree/blob/master/es5.md#variabledeclaration
+ */
+function evalEstreeVariableDeclaration(node, env, options = {}) {
+    const declarations = (0, estree_1.getEstreeField)('declarations', node);
+    for (let x of declarations) {
+        evalEstree(x, env, options);
+    }
+    return undefined;
+}
+evalEstreeVariableDeclaration.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-variable-declaration'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('declarations'), [Symbol.for('get-estree-field'), 'declarations', Symbol.for('node')]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('declarations')]], [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]], undefined];
+/**
+ * Evaluate an ESTree [`VariableDeclarator`][estree:variabledeclarator] node.
+ *
+ * [estree:variabledeclarator]: https://github.com/estree/estree/blob/master/es5.md#variabledeclarator
+ */
+function evalEstreeVariableDeclarator(node, env, options = {}) {
+    let id = (0, estree_1.getEstreeField)('id', node);
+    let init = (0, estree_1.getEstreeField)('init', node);
+    const assignment = new estree_1.AssignmentExpression('=', id, init);
+    return evalEstreeAssignmentExpressionHelper(assignment, env, options, {
+        local: true
+    });
+}
+evalEstreeVariableDeclarator.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-variable-declarator'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('get-estree-field'), 'id', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-estree-field'), 'init', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('assignment'), [Symbol.for('new'), Symbol.for('AssignmentExpression'), '=', Symbol.for('id'), Symbol.for('init')]], [Symbol.for('eval-estree-assignment-expression-helper'), Symbol.for('assignment'), Symbol.for('env'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':local'), true]]];
+/**
+ * Evaluate an ESTree [`AssignmentExpression`][estree:assignmentexpression] node.
+ *
+ * [estree:assignmentexpression]: https://github.com/estree/estree/blob/master/es5.md#assignmentexpression
+ */
+function evalEstreeAssignmentExpression(node, env, options = {}) {
+    return evalEstreeAssignmentExpressionHelper(node, env, options);
+}
+evalEstreeAssignmentExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-assignment-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('eval-estree-assignment-expression-helper'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`ArrayExpression`][estree:arrayexpression] node.
+ *
+ * [estree:arrayexpression]: https://github.com/estree/estree/blob/master/es5.md#arrayexpression
+ */
+function evalEstreeArrayExpression(node, env, options = {}) {
+    const elements = (0, estree_1.getEstreeField)('elements', node);
+    return evalEstreeArrayExpressionHelper(elements, env, options);
+}
+evalEstreeArrayExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-array-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('get-estree-field'), 'elements', Symbol.for('node')]], [Symbol.for('eval-estree-array-expression-helper'), Symbol.for('elements'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`ArrayPattern`][estree:arraypattern] node.
+ *
+ * [estree:arraypattern]: https://github.com/estree/estree/blob/master/es2015.md#arraypattern
+ */
+function evalEstreeArrayPattern(node, env, options = {}) {
+    return evalEstreeArrayExpression(node, env, options);
+}
+evalEstreeArrayPattern.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-array-pattern'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('eval-estree-array-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`RestElement`][estree:restelement] node.
+ *
+ * [estree:restelement]: https://github.com/estree/estree/blob/master/es2015.md#restelement
+ */
+function evalEstreeRestElement(node, env, options = {}) {
+    const argument = (0, estree_1.getEstreeField)('argument', node);
+    return evalEstree(argument, env, options);
+}
+evalEstreeRestElement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-rest-element'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('node')]], [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`SpreadElement`][estree:spreadelement] node.
+ *
+ * [estree:spreadelement]: https://github.com/estree/estree/blob/master/es2015.md#expressions
+ */
+function evalEstreeSpreadElement(node, env, options = {}) {
+    const argument = (0, estree_1.getEstreeField)('argument', node);
+    return evalEstree(argument, env, options);
+}
+evalEstreeSpreadElement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-spread-element'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('node')]], [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`ExpressionStatement`][estree:expressionstatement] node.
+ *
+ * [estree:expressionstatement]: https://github.com/estree/estree/blob/master/es5.md#expressionstatement
+ */
+function evalEstreeExpressionStatement(node, env, options = {}) {
+    let expression = (0, estree_1.getEstreeField)('expression', node);
+    return evalEstree(expression, env, options);
+}
+evalEstreeExpressionStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-expression-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-estree-field'), 'expression', Symbol.for('node')]], [Symbol.for('eval-estree'), Symbol.for('expression'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`FunctionDeclaration`][estree:functiondeclaration] node.
+ *
+ * [estree:functiondeclaration]: https://github.com/estree/estree/blob/master/es5.md#functiondeclaration
+ */
+function evalEstreeFunctionDeclaration(node, env, options = {}) {
+    let id = (0, estree_1.getEstreeField)('id', node);
+    let name = Symbol.for((0, estree_1.getEstreeField)('name', id));
+    const f = evalEstreeFunctionExpression(node, env, options);
+    env.setLocalX(name, f, [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]);
+    return undefined;
+}
+evalEstreeFunctionDeclaration.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-function-declaration'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('get-estree-field'), 'id', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('name'), [Symbol.for('string->symbol'), [Symbol.for('get-estree-field'), 'name', Symbol.for('id')]]], [Symbol.for('define'), Symbol.for('f'), [Symbol.for('eval-estree-function-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('name'), Symbol.for('f'), [Symbol.for('quote'), [Symbol.for('->*'), Symbol.for(':rest'), Symbol.for('Any'), Symbol.for('Any')]]], undefined];
+/**
+ * Evaluate an ESTree [`FunctionExpression`][estree:functionexpression] node.
+ *
+ * <https://docs.esprima.org/en/latest/syntax-tree-format.html#function-expression>
+ *
+ * [estree:functionexpression]: https://github.com/estree/estree/blob/master/es5.md#functionexpression
+ */
+function evalEstreeFunctionExpression(node, env, options = {}) {
+    return evalEstreeFunctionExpressionHelper(node, env, options);
+}
+evalEstreeFunctionExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-function-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('eval-estree-function-expression-helper'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`ArrowFunctionExpression`][estree:arrowfunctionexpression] node.
+ *
+ * [estree:arrowfunctionexpression]: https://github.com/estree/estree/blob/master/es2015.md#arrowfunctionexpression
+ */
+function evalEstreeArrowFunctionExpression(node, env, options = {}) {
+    return evalEstreeFunctionExpressionHelper(node, env, options, {
+        arrow: true
+    });
+}
+evalEstreeArrowFunctionExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-arrow-function-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('eval-estree-function-expression-helper'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options'), [Symbol.for('js/obj'), Symbol.for(':arrow'), true]]];
+/**
+ * Evaluate an ESTree [`UnaryExpression`][estree:unaryexpression] node.
+ *
+ * [estree:unaryexpression]: https://github.com/estree/estree/blob/master/es5.md#unaryexpression
+ */
+function evalEstreeUnaryExpression(node, env, options = {}) {
+    const operator = (0, estree_1.getEstreeField)('operator', node);
+    const prefix = (0, estree_1.getEstreeField)('prefix', node);
+    const argument = (0, estree_1.getEstreeField)('argument', node);
+    if (operator === '!') {
+        return !evalEstree(argument, env, options);
+    }
+    else if (operator === '+') {
+        return evalEstree(argument, env, options);
+    }
+    else if (operator === '-') {
+        return -evalEstree(argument, env, options);
+    }
+    else if ((operator === '++') || (operator === '--')) {
+        const isAdd = operator === '++';
+        const assignment = new estree_1.AssignmentExpression('=', argument, new estree_1.BinaryExpression(isAdd ? '+' : '-', argument, new estree_1.Literal(1)));
+        if (prefix) {
+            return evalEstree(assignment, env, options);
+        }
+        else {
+            let val = evalEstree(assignment, env, options);
+            const valOrig = isAdd ? (val - 1) : (val + 1);
+            return valOrig;
+        }
+    }
+    else if (operator === 'typeof') {
+        return typeof evalEstree(argument, env, options);
+    }
+    else {
+        return undefined;
+    }
+}
+evalEstreeUnaryExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-unary-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('operator'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('prefix'), [Symbol.for('get-estree-field'), 'prefix', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('argument'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('operator'), '!'], [Symbol.for('not'), [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]]], [[Symbol.for('eq?'), Symbol.for('operator'), '+'], [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('eq?'), Symbol.for('operator'), '-'], [Symbol.for('-'), [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]]], [[Symbol.for('or'), [Symbol.for('eq?'), Symbol.for('operator'), '++'], [Symbol.for('eq?'), Symbol.for('operator'), '--']], [Symbol.for('define'), Symbol.for('is-add'), [Symbol.for('eq?'), Symbol.for('operator'), '++']], [Symbol.for('define'), Symbol.for('assignment'), [Symbol.for('new'), Symbol.for('AssignmentExpression'), '=', Symbol.for('argument'), [Symbol.for('new'), Symbol.for('BinaryExpression'), [Symbol.for('if'), Symbol.for('is-add'), '+', '-'], Symbol.for('argument'), [Symbol.for('new'), Symbol.for('Literal'), 1]]]], [Symbol.for('cond'), [Symbol.for('prefix'), [Symbol.for('eval-estree'), Symbol.for('assignment'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('val'), [Symbol.for('eval-estree'), Symbol.for('assignment'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('val-orig'), [Symbol.for('cond'), [Symbol.for('is-add'), [Symbol.for('-'), Symbol.for('val'), 1]], [Symbol.for('else'), [Symbol.for('+'), Symbol.for('val'), 1]]]], Symbol.for('val-orig')]]], [[Symbol.for('eq?'), Symbol.for('operator'), 'typeof'], [Symbol.for('type-of'), [Symbol.for('eval-estree'), Symbol.for('argument'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('else'), undefined]]];
+/**
+ * Evaluate an ESTree [`UpdateExpression`][estree:updateexpression] node.
+ *
+ * [estree:updateexpression]: https://github.com/estree/estree/blob/master/es5.md#updateexpression
+ */
+function evalEstreeUpdateExpression(node, env, options = {}) {
+    return evalEstreeUnaryExpression(node, env, options);
+}
+evalEstreeUpdateExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-update-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('eval-estree-unary-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`BinaryExpression`][estree:binaryexpression] node.
+ *
+ * [estree:binaryexpression]: https://github.com/estree/estree/blob/master/es5.md#binaryexpression
+ */
+function evalEstreeBinaryExpression(node, env, options = {}) {
+    const operator = (0, estree_1.getEstreeField)('operator', node);
+    let left = (0, estree_1.getEstreeField)('left', node);
+    const leftVal = evalEstree(left, env, options);
+    let right = (0, estree_1.getEstreeField)('right', node);
+    const rightVal = evalEstree(right, env, options);
+    if (operator === '+') {
+        return leftVal + rightVal;
+    }
+    else if (operator === '-') {
+        return leftVal - rightVal;
+    }
+    else if (operator === '*') {
+        return leftVal * rightVal;
+    }
+    else if (operator === '/') {
+        return leftVal / rightVal;
+    }
+    else if (operator === '<') {
+        return leftVal < rightVal;
+    }
+    else if (operator === '<=') {
+        return leftVal <= rightVal;
+    }
+    else if (operator === '>') {
+        return leftVal > rightVal;
+    }
+    else if (operator === '>=') {
+        return leftVal >= rightVal;
+    }
+    else if (operator === '==') {
+        return leftVal == rightVal;
+    }
+    else if (operator === '===') {
+        return leftVal === rightVal;
+    }
+    else if (operator === '!=') {
+        return leftVal != rightVal;
+    }
+    else if (operator === '!==') {
+        return leftVal !== rightVal;
+    }
+    else if (operator === 'in') {
+        return leftVal in rightVal;
+    }
+    else if (operator === 'instanceof') {
+        return leftVal instanceof rightVal;
+    }
+    else {
+        return eval('(' + (0, printer_1.printEstree)((0, estree_1.estreeQuote)(leftVal)) + ') ' + operator + ' (' + (0, printer_1.printEstree)((0, estree_1.estreeQuote)(rightVal)) + ')');
+    }
+}
+evalEstreeBinaryExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-binary-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('operator'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left-val'), [Symbol.for('eval-estree'), Symbol.for('left'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-val'), [Symbol.for('eval-estree'), Symbol.for('right'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('operator'), '+'], [Symbol.for('+'), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '-'], [Symbol.for('-'), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '*'], [Symbol.for('*'), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '/'], [Symbol.for('/'), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '<'], [Symbol.for('<'), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '<='], [Symbol.for('<='), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '>'], [Symbol.for('>'), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '>='], [Symbol.for('>='), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '=='], [Symbol.for('js/=='), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '==='], [Symbol.for('js/==='), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), '!='], [Symbol.for('not'), [Symbol.for('js/=='), Symbol.for('left-val'), Symbol.for('right-val')]]], [[Symbol.for('eq?'), Symbol.for('operator'), '!=='], [Symbol.for('not'), [Symbol.for('js/==='), Symbol.for('left-val'), Symbol.for('right-val')]]], [[Symbol.for('eq?'), Symbol.for('operator'), 'in'], [Symbol.for('js/in'), Symbol.for('left-val'), Symbol.for('right-val')]], [[Symbol.for('eq?'), Symbol.for('operator'), 'instanceof'], [Symbol.for('is-a?'), Symbol.for('left-val'), Symbol.for('right-val')]], [Symbol.for('else'), [Symbol.for('js/eval'), [Symbol.for('string-append'), '(', [Symbol.for('print-estree'), [Symbol.for('estree-quote'), Symbol.for('left-val')]], ') ', Symbol.for('operator'), ' (', [Symbol.for('print-estree'), [Symbol.for('estree-quote'), Symbol.for('right-val')]], ')']]]]];
+/**
+ * Evaluate an ESTree [`LogicalExpression`][estree:logicalexpression] node.
+ *
+ * [estree:logicalexpression]: https://github.com/estree/estree/blob/master/es5.md#logicalexpression
+ */
+function evalEstreeLogicalExpression(node, env, options = {}) {
+    const operator = (0, estree_1.getEstreeField)('operator', node);
+    let left = (0, estree_1.getEstreeField)('left', node);
+    let right = (0, estree_1.getEstreeField)('right', node);
+    if (operator === '&&') {
+        const leftVal = evalEstree(left, env, options);
+        if (leftVal) {
+            return evalEstree(right, env, options);
+        }
+        else {
+            return false;
+        }
+    }
+    else if (operator === '||') {
+        const leftVal = evalEstree(left, env, options);
+        if (leftVal) {
+            return leftVal;
+        }
+        else {
+            return evalEstree(right, env, options);
+        }
+    }
+    else {
+        return undefined;
+    }
+}
+evalEstreeLogicalExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-logical-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('operator'), [Symbol.for('get-estree-field'), 'operator', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('eq?'), Symbol.for('operator'), '&&'], [Symbol.for('define'), Symbol.for('left-val'), [Symbol.for('eval-estree'), Symbol.for('left'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [Symbol.for('left-val'), [Symbol.for('eval-estree'), Symbol.for('right'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), false]]], [[Symbol.for('eq?'), Symbol.for('operator'), '||'], [Symbol.for('define'), Symbol.for('left-val'), [Symbol.for('eval-estree'), Symbol.for('left'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('cond'), [Symbol.for('left-val'), Symbol.for('left-val')], [Symbol.for('else'), [Symbol.for('eval-estree'), Symbol.for('right'), Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('else'), undefined]]];
+/**
+ * Evaluate an ESTree [`IfStatement`][estree:ifstatement] node.
+ *
+ * [estree:ifstatement]: https://github.com/estree/estree/blob/master/es5.md#ifstatement
+ */
+function evalEstreeIfStatement(node, env, options = {}) {
+    return evalEstreeConditionalExpression(node, env, options);
+}
+evalEstreeIfStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-if-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('eval-estree-conditional-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree [`ConditionalExpression`][estree:conditionalexpression] node.
+ *
+ * [estree:conditionalexpression]: https://github.com/estree/estree/blob/master/es5.md#conditionalexpression
+ */
+function evalEstreeConditionalExpression(node, env, options = {}) {
+    const test = (0, estree_1.getEstreeField)('test', node);
+    let consequent = (0, estree_1.getEstreeField)('consequent', node);
+    const alternate = (0, estree_1.getEstreeField)('alternate', node);
+    if (evalEstree(test, env, options)) {
+        return evalEstree(consequent, env, options);
+    }
+    else if (alternate) {
+        return evalEstree(alternate, env, options);
+    }
+    else {
+        return undefined;
+    }
+}
+evalEstreeConditionalExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-conditional-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('alternate'), [Symbol.for('get-estree-field'), 'alternate', Symbol.for('node')]], [Symbol.for('cond'), [[Symbol.for('eval-estree'), Symbol.for('test'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('eval-estree'), Symbol.for('consequent'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('alternate'), [Symbol.for('eval-estree'), Symbol.for('alternate'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), undefined]]];
+/**
+ * Evaluate an ESTree [`WhileStatement`][estree:whilestatement] node.
+ *
+ * [estree:whilestatement]: https://github.com/estree/estree/blob/master/es5.md#whilestatement
+ */
+function evalEstreeWhileStatement(node, env, options = {}) {
+    // TODO: Convert `BlockStatement` to `Program` fragment
+    // and extend the environment manually, only once.
+    const test = (0, estree_1.getEstreeField)('test', node);
+    let body = (0, estree_1.getEstreeField)('body', node);
+    try {
+        while (evalEstree(test, env, options)) {
+            try {
+                evalEstree(body, env, options);
+            }
+            catch (e) {
+                if (e instanceof exception_1.ContinueException) {
+                }
+                else {
+                    throw e;
+                }
+            }
+        }
+    }
+    catch (e) {
+        if (e instanceof exception_1.BreakException) {
+        }
+        else {
+            throw e;
+        }
+    }
+    return undefined;
+}
+evalEstreeWhileStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-while-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('try'), [Symbol.for('while'), [Symbol.for('eval-estree'), Symbol.for('test'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('try'), [Symbol.for('eval-estree'), Symbol.for('body'), Symbol.for('env'), Symbol.for('options')], [Symbol.for('catch'), Symbol.for('ContinueException'), Symbol.for('e')]]], [Symbol.for('catch'), Symbol.for('BreakException'), Symbol.for('e')]], undefined];
+/**
+ * Evaluate an ESTree [`ForStatement`][estree:forstatement] node.
+ *
+ * [estree:forstatement]: https://github.com/estree/estree/blob/master/es5.md#forstatement
+ */
+function evalEstreeForStatement(node, env, options = {}) {
+    let init = (0, estree_1.getEstreeField)('init', node);
+    const test = (0, estree_1.getEstreeField)('test', node);
+    let update = (0, estree_1.getEstreeField)('update', node);
+    let body = (0, estree_1.getEstreeField)('body', node);
+    const forEnv = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    return (0, env_1.withEnvironmentF)(forEnv, () => {
+        evalEstree(init, forEnv, options);
+        try {
+            while (test ? evalEstree(test, forEnv, options) : true) {
+                try {
+                    if (body) {
+                        evalEstree(body, forEnv, options);
+                    }
+                }
+                catch (e) {
+                    if (e instanceof exception_1.ContinueException) {
+                    }
+                    else {
+                        throw e;
+                    }
+                }
+                if (update) {
+                    evalEstree(update, forEnv, options);
+                }
+            }
+        }
+        catch (e) {
+            if (e instanceof exception_1.BreakException) {
+            }
+            else {
+                throw e;
+            }
+        }
+        return undefined;
+    });
+}
+evalEstreeForStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-for-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('init'), [Symbol.for('get-estree-field'), 'init', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('update'), [Symbol.for('get-estree-field'), 'update', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('for-env'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')]], [Symbol.for('with-environment'), Symbol.for('for-env'), [Symbol.for('eval-estree'), Symbol.for('init'), Symbol.for('for-env'), Symbol.for('options')], [Symbol.for('try'), [Symbol.for('while'), [Symbol.for('if'), Symbol.for('test'), [Symbol.for('eval-estree'), Symbol.for('test'), Symbol.for('for-env'), Symbol.for('options')], true], [Symbol.for('try'), [Symbol.for('when'), Symbol.for('body'), [Symbol.for('eval-estree'), Symbol.for('body'), Symbol.for('for-env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ContinueException'), Symbol.for('e')]], [Symbol.for('when'), Symbol.for('update'), [Symbol.for('eval-estree'), Symbol.for('update'), Symbol.for('for-env'), Symbol.for('options')]]], [Symbol.for('catch'), Symbol.for('BreakException'), Symbol.for('e')]], undefined]];
+/**
+ * Evaluate an ESTree [`ForOfStatement`][estree:forofstatement] node.
+ *
+ * [estree:forofstatement]: https://github.com/estree/estree/blob/master/es2015.md#forofstatement
+ */
+function evalEstreeForOfStatement(node, env, options = {}) {
+    let left = (0, estree_1.getEstreeField)('left', node);
+    let right = (0, estree_1.getEstreeField)('right', node);
+    let body = (0, estree_1.getEstreeField)('body', node);
+    const forOfEnv = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    return (0, env_1.withEnvironmentF)(forOfEnv, () => {
+        let identifier = (0, estree_1.estreeTypeP)(left, 'VariableDeclaration') ? (0, estree_1.getEstreeField)('id', (0, estree_1.getEstreeField)('declarations', left)[0]) : (0, estree_1.getEstreeField)('left', left);
+        const rightVal = evalEstree(right, forOfEnv, options);
+        try {
+            for (let x of rightVal) {
+                const declaration = new estree_1.VariableDeclaration([new estree_1.VariableDeclarator(identifier, new estree_1.Literal(x))], 'let');
+                try {
+                    evalEstree(declaration, forOfEnv, options);
+                    evalEstree(body, forOfEnv, options);
+                }
+                catch (e) {
+                    if (e instanceof exception_1.ContinueException) {
+                    }
+                    else {
+                        throw e;
+                    }
+                }
+            }
+        }
+        catch (e) {
+            if (e instanceof exception_1.BreakException) {
+            }
+            else {
+                throw e;
+            }
+        }
+        return undefined;
+    });
+}
+evalEstreeForOfStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-for-of-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('for-of-env'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')]], [Symbol.for('with-environment'), Symbol.for('for-of-env'), [Symbol.for('define'), Symbol.for('identifier'), [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('left'), 'VariableDeclaration'], [Symbol.for('~>'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'declarations', Symbol.for('_')], [Symbol.for('first'), Symbol.for('_')], [Symbol.for('get-estree-field'), 'id', Symbol.for('_')]]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'left', Symbol.for('left')]]]], [Symbol.for('define'), Symbol.for('right-val'), [Symbol.for('eval-estree'), Symbol.for('right'), Symbol.for('for-of-env'), Symbol.for('options')]], [Symbol.for('try'), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('right-val')]], [Symbol.for('define'), Symbol.for('declaration'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), Symbol.for('identifier'), [Symbol.for('new'), Symbol.for('Literal'), Symbol.for('x')]]], 'let']], [Symbol.for('try'), [Symbol.for('eval-estree'), Symbol.for('declaration'), Symbol.for('for-of-env'), Symbol.for('options')], [Symbol.for('eval-estree'), Symbol.for('body'), Symbol.for('for-of-env'), Symbol.for('options')], [Symbol.for('catch'), Symbol.for('ContinueException'), Symbol.for('e')]]], [Symbol.for('catch'), Symbol.for('BreakException'), Symbol.for('e')]], undefined]];
+/**
+ * Evaluate an ESTree [`TryStatement`][estree:trystatement] node.
+ *
+ * [estree:trystatement]: https://github.com/estree/estree/blob/master/es5.md#trystatement
+ */
+function evalEstreeTryStatement(node, env, options = {}) {
+    const block = (0, estree_1.getEstreeField)('block', node);
+    let handler = (0, estree_1.getEstreeField)('handler', node);
+    const finalizer = (0, estree_1.getEstreeField)('finalizer', node);
+    let result = undefined;
+    try {
+        result = evalEstree(block, env, options);
+    }
+    catch (err) {
+        if (handler) {
+            const handlerParam = (0, estree_1.getEstreeField)('param', handler);
+            const handlerParamSym = Symbol.for((0, estree_1.getEstreeField)('name', handlerParam));
+            const handlerBody = (0, estree_1.getEstreeField)('body', handler);
+            const handlerEnv = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+            (0, env_1.withEnvironmentF)(handlerEnv, () => {
+                handlerEnv.setLocalX(handlerParamSym, err);
+                return result = evalEstree(handlerBody, handlerEnv, options);
+            });
+        }
+        else {
+            throw err;
+        }
+    }
+    finally {
+        if (finalizer) {
+            evalEstree(finalizer, env, options);
+        }
+    }
+    return result;
+}
+evalEstreeTryStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-try-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('block'), [Symbol.for('get-estree-field'), 'block', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('handler'), [Symbol.for('get-estree-field'), 'handler', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('finalizer'), [Symbol.for('get-estree-field'), 'finalizer', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('block'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('err'), [Symbol.for('cond'), [Symbol.for('handler'), [Symbol.for('define'), Symbol.for('handler-param'), [Symbol.for('get-estree-field'), 'param', Symbol.for('handler')]], [Symbol.for('define'), Symbol.for('handler-param-sym'), [Symbol.for('string->symbol'), [Symbol.for('get-estree-field'), 'name', Symbol.for('handler-param')]]], [Symbol.for('define'), Symbol.for('handler-body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('handler')]], [Symbol.for('define'), Symbol.for('handler-env'), [Symbol.for('extend-environment'), [Symbol.for('new'), Symbol.for('LispEnvironment')], Symbol.for('env')]], [Symbol.for('with-environment'), Symbol.for('handler-env'), [Symbol.for('send'), Symbol.for('handler-env'), Symbol.for('set-local!'), Symbol.for('handler-param-sym'), Symbol.for('err')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('handler-body'), Symbol.for('handler-env'), Symbol.for('options')]]]], [Symbol.for('else'), [Symbol.for('throw'), Symbol.for('err')]]]], [Symbol.for('finally'), [Symbol.for('when'), Symbol.for('finalizer'), [Symbol.for('eval-estree'), Symbol.for('finalizer'), Symbol.for('env'), Symbol.for('options')]]]], Symbol.for('result')];
+/**
+ * Evaluate an ESTree [`ClassDeclaration`][estree:classdeclaration] node.
+ *
+ * [estree:classdeclaration]: https://github.com/estree/estree/blob/master/es2015.md#classdeclaration
+ */
+function evalEstreeClassDeclaration(node, env, options = {}) {
+    let id = (0, estree_1.getEstreeField)('id', node);
+    let sym = Symbol.for((0, estree_1.getEstreeField)('name', id));
+    const classExpression = evalEstreeClassExpression(node, env, options);
+    env.setx(sym, classExpression);
+    return undefined;
+}
+evalEstreeClassDeclaration.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-class-declaration'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('id'), [Symbol.for('get-estree-field'), 'id', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), [Symbol.for('get-estree-field'), 'name', Symbol.for('id')]]], [Symbol.for('define'), Symbol.for('class-expression'), [Symbol.for('eval-estree-class-expression'), Symbol.for('node'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('class-expression')], undefined];
+/**
+ * Evaluate an ESTree [`ClassExpression`][estree:classexpression] node.
+ *
+ * [estree:classexpression]: https://github.com/estree/estree/blob/master/es2015.md#classexpression
+ */
+function evalEstreeClassExpression(node, env, options = {}) {
+    let superClass = (0, estree_1.getEstreeField)('superClass', node);
+    const classBody = (0, estree_1.getEstreeField)('body', node);
+    const classBodyStatements = (0, estree_1.getEstreeField)('body', classBody);
+    const constructorF = function (...args) {
+        let constructorInnerF = undefined;
+        for (let x of classBodyStatements) {
+            // TODO: Move evaluation outside---no reason to do it each
+            // time we are instantiating.
+            const key = (0, estree_1.getEstreeField)('key', x);
+            const keyStr = (0, estree_1.getEstreeField)('name', key);
+            let value = (0, estree_1.getEstreeField)('value', x);
+            const valueVal = value ? evalEstree(value, env, options) : undefined;
+            this[keyStr] = valueVal;
+            if (keyStr === 'constructor') {
+                constructorInnerF = valueVal;
+            }
+        }
+        if (constructorInnerF) {
+            constructorInnerF.apply(this, args);
+        }
+        return undefined;
+    };
+    if (superClass) {
+        const superClassVal = evalEstree(superClass, env, options);
+        // <https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Inheritance#setting_teachers_prototype_and_constructor_reference>
+        constructorF['prototype'] = Object.create(superClassVal['prototype']);
+    }
+    return constructorF;
+}
+evalEstreeClassExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-class-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('super-class'), [Symbol.for('get-estree-field'), 'superClass', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('class-body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('class-body-statements'), [Symbol.for('get-estree-field'), 'body', Symbol.for('class-body')]], [Symbol.for('define'), Symbol.for('constructor-f'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('define'), Symbol.for('constructor-inner-f'), undefined], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('class-body-statements')]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('x')]], [Symbol.for('define'), Symbol.for('key-str'), [Symbol.for('get-estree-field'), 'name', Symbol.for('key')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('x')]], [Symbol.for('define'), Symbol.for('value-val'), [Symbol.for('cond'), [Symbol.for('value'), [Symbol.for('eval-estree'), Symbol.for('value'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('else'), undefined]]], [Symbol.for('oset!'), Symbol.for('this'), Symbol.for('key-str'), Symbol.for('value-val')], [Symbol.for('when'), [Symbol.for('eq?'), Symbol.for('key-str'), 'constructor'], [Symbol.for('set!'), Symbol.for('constructor-inner-f'), Symbol.for('value-val')]]], [Symbol.for('when'), Symbol.for('constructor-inner-f'), [Symbol.for('send'), Symbol.for('constructor-inner-f'), Symbol.for('apply'), Symbol.for('this'), Symbol.for('args')]], undefined]], [Symbol.for('when'), Symbol.for('super-class'), [Symbol.for('define'), Symbol.for('super-class-val'), [Symbol.for('eval-estree'), Symbol.for('super-class'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('oset!'), Symbol.for('constructor-f'), Symbol.for(':prototype'), [Symbol.for('send'), Symbol.for('Object'), Symbol.for('create'), [Symbol.for('oget'), Symbol.for('super-class-val'), Symbol.for(':prototype')]]]], Symbol.for('constructor-f')];
+/**
+ * Evaluate an ESTree [`SwitchStatement`][estree:switchstatement] node.
+ *
+ * [estree:switchstatement]: https://github.com/estree/estree/blob/master/es5.md#switchstatement
+ */
+function evalEstreeSwitchStatement(node, env, options = {}) {
+    const discriminant = (0, estree_1.getEstreeField)('discriminant', node);
+    const discriminantVal = evalEstree(discriminant, env, options);
+    const cases = (0, estree_1.getEstreeField)('cases', node);
+    let result = undefined;
+    try {
+        for (let x of cases) {
+            const test = (0, estree_1.getEstreeField)('test', x);
+            if (!test || (discriminantVal === evalEstree(test, env, options))) {
+                result = evalEstree(x, env, options);
+            }
+        }
+    }
+    catch (e) {
+        if (e instanceof exception_1.BreakException) {
+            result = (0, estree_1.getEstreeField)('value', e);
+        }
+        else {
+            throw e;
+        }
+    }
+    return result;
+}
+evalEstreeSwitchStatement.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-switch-statement'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('discriminant'), [Symbol.for('get-estree-field'), 'discriminant', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('discriminant-val'), [Symbol.for('eval-estree'), Symbol.for('discriminant'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('cases'), [Symbol.for('get-estree-field'), 'cases', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('cases')]], [Symbol.for('define'), Symbol.for('test'), [Symbol.for('get-estree-field'), 'test', Symbol.for('x')]], [Symbol.for('when'), [Symbol.for('or'), [Symbol.for('not'), Symbol.for('test')], [Symbol.for('eq?'), Symbol.for('discriminant-val'), [Symbol.for('eval-estree'), Symbol.for('test'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]]], [Symbol.for('catch'), Symbol.for('BreakException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')];
+/**
+ * Evaluate an ESTree [`SwitchCase`][estree:switchcase] node.
+ *
+ * [estree:switchcase]: https://github.com/estree/estree/blob/master/es5.md#switchcase
+ */
+function evalEstreeSwitchCase(node, env, options = {}) {
+    let consequent = (0, estree_1.getEstreeField)('consequent', node);
+    if ((consequent.length === 1) && (0, estree_1.estreeTypeP)(consequent[0], 'BlockStatement')) {
+        consequent = (0, estree_1.getEstreeField)('body', consequent[0]);
+    }
+    let result = undefined;
+    try {
+        for (let x of consequent) {
+            result = evalEstree(x, env, options);
+        }
+    }
+    catch (e) {
+        if (e instanceof exception_1.BreakException) {
+            throw new exception_1.BreakException(result);
+        }
+        else {
+            throw e;
+        }
+    }
+    return result;
+}
+evalEstreeSwitchCase.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-switch-case'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'consequent', Symbol.for('node')]], [Symbol.for('when'), [Symbol.for('and'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('consequent')], 1], [Symbol.for('estree-type?'), [Symbol.for('first'), Symbol.for('consequent')], 'BlockStatement']], [Symbol.for('set!'), Symbol.for('consequent'), [Symbol.for('get-estree-field'), 'body', [Symbol.for('first'), Symbol.for('consequent')]]]], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('consequent')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('catch'), Symbol.for('BreakException'), Symbol.for('e'), [Symbol.for('throw'), [Symbol.for('new'), Symbol.for('BreakException'), Symbol.for('result')]]]], Symbol.for('result')];
+/**
+ * Global variable used for storing the value of `this`.
+ * Used for evaluating `ThisExpression`.
+ */
+let currentThisValue = undefined;
+/**
+ * Temporarily set `current-this-value` to `val`,
+ * call `f`, and restore the original value.
+ * Returns the result of calling `f`.
+ */
+function withThisValue(val, f) {
+    let result = undefined;
+    const tmp = currentThisValue;
+    try {
+        currentThisValue = val;
+        result = f();
+    }
+    finally {
+        currentThisValue = tmp;
+    }
+    return result;
+}
+withThisValue.fsource = [Symbol.for('define'), [Symbol.for('with-this-value'), Symbol.for('val'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-this-value')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-this-value'), Symbol.for('val')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-this-value'), Symbol.for('tmp')]]], Symbol.for('result')];
+/**
+ * Helper function for `eval-estree-assignment-expression`.
+ */
+function evalEstreeAssignmentExpressionHelper(node, env, options = {}, settings = {}) {
+    const localSetting = settings['local'];
+    let left = (0, estree_1.getEstreeField)('left', node);
+    let right = (0, estree_1.getEstreeField)('right', node);
+    const rightVal = right ? evalEstree(right, env, options) : undefined;
+    function evalPattern(pattern, val) {
+        if ((0, estree_1.estreeTypeP)(pattern, 'Identifier')) {
+            let sym = Symbol.for((0, estree_1.getEstreeField)('name', pattern));
+            if (localSetting) {
+                env.setLocalX(sym, val);
+            }
+            else {
+                env.setx(sym, val);
+            }
+            return val;
+        }
+        else if ((0, estree_1.estreeTypeP)(pattern, 'MemberExpression')) {
+            let obj = (0, estree_1.getEstreeField)('object', pattern);
+            const objVal = evalEstree(obj, env, options);
+            let computed = (0, estree_1.getEstreeField)('computed', pattern);
+            let prop = (0, estree_1.getEstreeField)('property', pattern);
+            const propVal = computed ? evalEstree(prop, env, options) : ((0, estree_1.estreeTypeP)(prop, 'Identifier') ? (0, estree_1.getEstreeField)('name', prop) : (0, estree_1.getEstreeField)('value', prop));
+            objVal[propVal] = val;
+            return val;
+        }
+        else if ((0, estree_1.estreeTypeP)(pattern, 'ObjectPattern')) {
+            const properties = (0, estree_1.getEstreeField)('properties', pattern);
+            for (let prop of properties) {
+                const key = (0, estree_1.getEstreeField)('key', prop);
+                let value = (0, estree_1.getEstreeField)('value', prop);
+                let sym = Symbol.for((0, estree_1.getEstreeField)('name', value));
+                let val1 = val[(0, estree_1.getEstreeField)('name', key)];
+                if (localSetting) {
+                    env.setLocalX(sym, val1);
+                }
+                else {
+                    env.setx(sym, val1);
+                }
+            }
+            return val;
+        }
+        else if ((0, estree_1.estreeTypeP)(pattern, 'ArrayPattern')) {
+            const elements = (0, estree_1.getEstreeField)('elements', pattern);
+            const _end = elements.length;
+            for (let i = 0; i < _end; i++) {
+                let x = elements[i];
+                const x1 = (x instanceof thunk_1.InternalPromise) ? x.force() : x;
+                if (!x1) {
+                    continue;
+                }
+                else if ((0, estree_1.estreeTypeP)(x1, 'RestElement')) {
+                    evalPattern((0, estree_1.getEstreeField)('argument', x1), val.slice(i));
+                }
+                else {
+                    evalPattern(x1, val[i]);
+                }
+            }
+            return val;
+        }
+        else if ((0, estree_1.estreeTypeP)(pattern, 'AssignmentPattern')) {
+            let left = (0, estree_1.getEstreeField)('left', pattern);
+            let right = (0, estree_1.getEstreeField)('right', pattern);
+            let val1 = (val === undefined) ? evalEstree(right, env, options) : val;
+            return evalPattern(left, val1);
+        }
+        else {
+            // TODO: Chain expressions
+            return undefined;
+        }
+    }
+    evalPattern.fsource = [Symbol.for('define'), [Symbol.for('eval-pattern'), Symbol.for('pattern'), Symbol.for('val')], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'Identifier'], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), [Symbol.for('get-estree-field'), 'name', Symbol.for('pattern')]]], [Symbol.for('cond'), [Symbol.for('local-setting'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('sym'), Symbol.for('val')]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('val')]]], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'MemberExpression'], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('get-estree-field'), 'object', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('obj-val'), [Symbol.for('eval-estree'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-estree-field'), 'computed', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('get-estree-field'), 'property', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('prop-val'), [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('eval-estree'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('estree-type?'), Symbol.for('prop'), 'Identifier'], [Symbol.for('get-estree-field'), 'name', Symbol.for('prop')]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'value', Symbol.for('prop')]]]], [Symbol.for('oset!'), Symbol.for('obj-val'), Symbol.for('prop-val'), Symbol.for('val')], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'ObjectPattern'], [Symbol.for('define'), Symbol.for('properties'), [Symbol.for('get-estree-field'), 'properties', Symbol.for('pattern')]], [Symbol.for('for'), [[Symbol.for('prop'), Symbol.for('properties')]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('prop')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('prop')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), [Symbol.for('get-estree-field'), 'name', Symbol.for('value')]]], [Symbol.for('define'), Symbol.for('val1'), [Symbol.for('oget'), Symbol.for('val'), [Symbol.for('get-estree-field'), 'name', Symbol.for('key')]]], [Symbol.for('cond'), [Symbol.for('local-setting'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('sym'), Symbol.for('val1')]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('val1')]]]], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'ArrayPattern'], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('get-estree-field'), 'elements', Symbol.for('pattern')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('elements')]]]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('list-ref'), Symbol.for('elements'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('x1'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('InternalPromise')], [Symbol.for('send'), Symbol.for('x'), Symbol.for('force')], Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('x1')], [Symbol.for('continue')]], [[Symbol.for('estree-type?'), Symbol.for('x1'), 'RestElement'], [Symbol.for('eval-pattern'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('x1')], [Symbol.for('drop'), Symbol.for('val'), Symbol.for('i')]]], [Symbol.for('else'), [Symbol.for('eval-pattern'), Symbol.for('x1'), [Symbol.for('list-ref'), Symbol.for('val'), Symbol.for('i')]]]]], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'AssignmentPattern'], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('val1'), [Symbol.for('if'), [Symbol.for('undefined?'), Symbol.for('val')], [Symbol.for('eval-estree'), Symbol.for('right'), Symbol.for('env'), Symbol.for('options')], Symbol.for('val')]], [Symbol.for('eval-pattern'), Symbol.for('left'), Symbol.for('val1')]], [Symbol.for('else'), undefined]]];
+    return evalPattern(left, rightVal);
+}
+evalEstreeAssignmentExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-assignment-expression-helper'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]], [Symbol.for('settings'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('local-setting'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':local')]], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('right-val'), [Symbol.for('if'), Symbol.for('right'), [Symbol.for('eval-estree'), Symbol.for('right'), Symbol.for('env'), Symbol.for('options')], undefined]], [Symbol.for('define'), [Symbol.for('eval-pattern'), Symbol.for('pattern'), Symbol.for('val')], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'Identifier'], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), [Symbol.for('get-estree-field'), 'name', Symbol.for('pattern')]]], [Symbol.for('cond'), [Symbol.for('local-setting'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('sym'), Symbol.for('val')]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('val')]]], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'MemberExpression'], [Symbol.for('define'), Symbol.for('obj'), [Symbol.for('get-estree-field'), 'object', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('obj-val'), [Symbol.for('eval-estree'), Symbol.for('obj'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('computed'), [Symbol.for('get-estree-field'), 'computed', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('prop'), [Symbol.for('get-estree-field'), 'property', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('prop-val'), [Symbol.for('cond'), [Symbol.for('computed'), [Symbol.for('eval-estree'), Symbol.for('prop'), Symbol.for('env'), Symbol.for('options')]], [[Symbol.for('estree-type?'), Symbol.for('prop'), 'Identifier'], [Symbol.for('get-estree-field'), 'name', Symbol.for('prop')]], [Symbol.for('else'), [Symbol.for('get-estree-field'), 'value', Symbol.for('prop')]]]], [Symbol.for('oset!'), Symbol.for('obj-val'), Symbol.for('prop-val'), Symbol.for('val')], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'ObjectPattern'], [Symbol.for('define'), Symbol.for('properties'), [Symbol.for('get-estree-field'), 'properties', Symbol.for('pattern')]], [Symbol.for('for'), [[Symbol.for('prop'), Symbol.for('properties')]], [Symbol.for('define'), Symbol.for('key'), [Symbol.for('get-estree-field'), 'key', Symbol.for('prop')]], [Symbol.for('define'), Symbol.for('value'), [Symbol.for('get-estree-field'), 'value', Symbol.for('prop')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), [Symbol.for('get-estree-field'), 'name', Symbol.for('value')]]], [Symbol.for('define'), Symbol.for('val1'), [Symbol.for('oget'), Symbol.for('val'), [Symbol.for('get-estree-field'), 'name', Symbol.for('key')]]], [Symbol.for('cond'), [Symbol.for('local-setting'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('sym'), Symbol.for('val1')]], [Symbol.for('else'), [Symbol.for('send'), Symbol.for('env'), Symbol.for('set!'), Symbol.for('sym'), Symbol.for('val1')]]]], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'ArrayPattern'], [Symbol.for('define'), Symbol.for('elements'), [Symbol.for('get-estree-field'), 'elements', Symbol.for('pattern')]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('elements')]]]], [Symbol.for('define'), Symbol.for('x'), [Symbol.for('list-ref'), Symbol.for('elements'), Symbol.for('i')]], [Symbol.for('define'), Symbol.for('x1'), [Symbol.for('if'), [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('InternalPromise')], [Symbol.for('send'), Symbol.for('x'), Symbol.for('force')], Symbol.for('x')]], [Symbol.for('cond'), [[Symbol.for('not'), Symbol.for('x1')], [Symbol.for('continue')]], [[Symbol.for('estree-type?'), Symbol.for('x1'), 'RestElement'], [Symbol.for('eval-pattern'), [Symbol.for('get-estree-field'), 'argument', Symbol.for('x1')], [Symbol.for('drop'), Symbol.for('val'), Symbol.for('i')]]], [Symbol.for('else'), [Symbol.for('eval-pattern'), Symbol.for('x1'), [Symbol.for('list-ref'), Symbol.for('val'), Symbol.for('i')]]]]], Symbol.for('val')], [[Symbol.for('estree-type?'), Symbol.for('pattern'), 'AssignmentPattern'], [Symbol.for('define'), Symbol.for('left'), [Symbol.for('get-estree-field'), 'left', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('right'), [Symbol.for('get-estree-field'), 'right', Symbol.for('pattern')]], [Symbol.for('define'), Symbol.for('val1'), [Symbol.for('if'), [Symbol.for('undefined?'), Symbol.for('val')], [Symbol.for('eval-estree'), Symbol.for('right'), Symbol.for('env'), Symbol.for('options')], Symbol.for('val')]], [Symbol.for('eval-pattern'), Symbol.for('left'), Symbol.for('val1')]], [Symbol.for('else'), undefined]]], [Symbol.for('eval-pattern'), Symbol.for('left'), Symbol.for('right-val')]];
+/**
+ * Helper function for `eval-estree-array-expression`.
+ */
+function evalEstreeArrayExpressionHelper(elements, env, options = {}) {
+    let result = [];
+    for (let x of elements) {
+        if ((0, estree_1.estreeTypeP)(x, 'SpreadElement')) {
+            for (let y of evalEstree(x, env, options)) {
+                result.push(y);
+            }
+        }
+        else {
+            result.push(evalEstree(x, env, options));
+        }
+    }
+    return result;
+}
+evalEstreeArrayExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-array-expression-helper'), Symbol.for('elements'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('result'), [Symbol.for('quote'), []]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('elements')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('x'), 'SpreadElement'], [Symbol.for('for'), [[Symbol.for('y'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]], [Symbol.for('push-right!'), Symbol.for('result'), Symbol.for('y')]]], [Symbol.for('else'), [Symbol.for('push-right!'), Symbol.for('result'), [Symbol.for('eval-estree'), Symbol.for('x'), Symbol.for('env'), Symbol.for('options')]]]]], Symbol.for('result')];
+/**
+ * Helper function for `eval-estree-function-expression`.
+ */
+function evalEstreeFunctionExpressionHelper(node, env, options = {}, settings = {}) {
+    const arrowSetting = settings['arrow'];
+    let params = (0, estree_1.getEstreeField)('params', node);
+    let restParam = ((params.length > 0) && (0, estree_1.estreeTypeP)(params[params.length - 1], 'RestElement')) ? params[params.length - 1] : undefined;
+    let body = (0, estree_1.getEstreeField)('body', node);
+    if (arrowSetting) {
+        return (0, util_1.makeArityFunction)((...args) => {
+            let result = undefined;
+            try {
+                result = evalEstree((params.length === 0) ? body : new estree_1.BlockStatement([new estree_1.VariableDeclaration([new estree_1.VariableDeclarator(new estree_1.ArrayPattern(params), (0, estree_1.estreeQuote)(args))], 'let'), ...((0, estree_1.estreeTypeP)(body, 'BlockStatement') ? (0, estree_1.getEstreeField)('body', body) : [body])]), env, options);
+            }
+            catch (e) {
+                if (e instanceof exception_1.ReturnException) {
+                    result = (0, estree_1.getEstreeField)('value', e);
+                }
+                else {
+                    throw e;
+                }
+            }
+            return result;
+        }, restParam ? undefined : params.length, true);
+    }
+    else {
+        return (0, util_1.makeArityFunction)(function (...args) {
+            return withThisValue(this, function () {
+                let result = undefined;
+                try {
+                    result = evalEstree((params.length === 0) ? body : new estree_1.BlockStatement([new estree_1.VariableDeclaration([new estree_1.VariableDeclarator(new estree_1.ArrayPattern(params), (0, estree_1.estreeQuote)(args))], 'let'), ...((0, estree_1.estreeTypeP)(body, 'BlockStatement') ? (0, estree_1.getEstreeField)('body', body) : [body])]), env, options);
+                }
+                catch (e) {
+                    if (e instanceof exception_1.ReturnException) {
+                        result = (0, estree_1.getEstreeField)('value', e);
+                    }
+                    else {
+                        throw e;
+                    }
+                }
+                return result;
+            });
+        }, restParam ? undefined : params.length);
+    }
+}
+evalEstreeFunctionExpressionHelper.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-function-expression-helper'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]], [Symbol.for('settings'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('arrow-setting'), [Symbol.for('oget'), Symbol.for('settings'), Symbol.for(':arrow')]], [Symbol.for('define'), Symbol.for('params'), [Symbol.for('get-estree-field'), 'params', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('rest-param'), [Symbol.for('if'), [Symbol.for('and'), [Symbol.for('>'), [Symbol.for('length'), Symbol.for('params')], 0], [Symbol.for('estree-type?'), [Symbol.for('last'), Symbol.for('params')], 'RestElement']], [Symbol.for('last'), Symbol.for('params')], undefined]], [Symbol.for('define'), Symbol.for('body'), [Symbol.for('get-estree-field'), 'body', Symbol.for('node')]], [Symbol.for('cond'), [Symbol.for('arrow-setting'), [Symbol.for('make-arity-function'), [Symbol.for('js/arrow'), Symbol.for('args'), [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('estree-type?'), Symbol.for('body'), 'BlockStatement'], [Symbol.for('get-estree-field'), 'body', Symbol.for('body')], [Symbol.for('list'), Symbol.for('body')]]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]], true]], [Symbol.for('else'), [Symbol.for('make-arity-function'), [Symbol.for('js/function'), [Symbol.for('this'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('with-this-value'), Symbol.for('this'), [Symbol.for('js/function'), [], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('eval-estree'), [Symbol.for('if'), [Symbol.for('='), [Symbol.for('length'), Symbol.for('params')], 0], Symbol.for('body'), [Symbol.for('new'), Symbol.for('BlockStatement'), [Symbol.for('quasiquote'), [[Symbol.for('unquote'), [Symbol.for('new'), Symbol.for('VariableDeclaration'), [Symbol.for('list'), [Symbol.for('new'), Symbol.for('VariableDeclarator'), [Symbol.for('new'), Symbol.for('ArrayPattern'), Symbol.for('params')], [Symbol.for('estree-quote'), Symbol.for('args')]]], 'let']], [Symbol.for('unquote-splicing'), [Symbol.for('if'), [Symbol.for('estree-type?'), Symbol.for('body'), 'BlockStatement'], [Symbol.for('get-estree-field'), 'body', Symbol.for('body')], [Symbol.for('list'), Symbol.for('body')]]]]]]], Symbol.for('env'), Symbol.for('options')]], [Symbol.for('catch'), Symbol.for('ReturnException'), Symbol.for('e'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('get-estree-field'), 'value', Symbol.for('e')]]]], Symbol.for('result')]]], [Symbol.for('if'), Symbol.for('rest-param'), undefined, [Symbol.for('length'), Symbol.for('params')]]]]]];
+/**
+ * Evaluate an ESTree [`ImportDeclaration`][estree:importdeclaration] node.
+ *
+ * [estree:importdeclaration]: https://github.com/estree/estree/blob/master/es2015.md#importdeclaration
+ */
+function evalEstreeImportDeclaration(node, env, options = {}) {
+    const currentModule = options['currentModule'];
+    const inDirOption = options['inDir'];
+    const src = (0, estree_1.getEstreeField)('source', node);
+    const srcVal = evalEstree(src, env, options);
+    const specifiers = (0, estree_1.getEstreeField)('specifiers', node);
+    let m = undefined;
+    let env1 = undefined;
+    const moduleRegexp = new RegExp('^\\.+/');
+    if (srcVal.match(moduleRegexp)) {
+        if (currentModule) {
+            m = currentModule.getModule(srcVal);
+        }
+    }
+    if (m) {
+        env1 = m.getProvideEnvironment();
+    }
+    else {
+        (0, util_1.withCwd)(inDirOption, () => {
+            try {
+                return env1 = new env_1.JavaScriptModuleEnvironment(require(srcVal));
+            }
+            catch (e) {
+                if (e instanceof Error) {
+                    return undefined;
+                }
+                else {
+                    throw e;
+                }
+            }
+        });
+    }
+    for (let specifier of specifiers) {
+        if ((0, estree_1.estreeTypeP)(specifier, 'ImportSpecifier')) {
+            const local = (0, estree_1.getEstreeField)('local', specifier);
+            const localVal = evalEstree(local, env, options);
+            const localSym = Symbol.for(localVal);
+            const imported = (0, estree_1.getEstreeField)('imported', specifier);
+            const importedVal = evalEstree(imported, env, options);
+            const importedSym = Symbol.for(importedVal);
+            let val = undefined;
+            let typ = Symbol.for('Any');
+            if (env1) {
+                if (env1 instanceof env_1.TypedEnvironment) {
+                    [val, typ] = env1.getTypedValue(importedSym);
+                }
+                else {
+                    val = env1.get(importedSym);
+                }
+            }
+            env.setLocalX(localSym, val, typ);
+        }
+        else if ((0, estree_1.estreeTypeP)(specifier, ['ImportDefaultSpecifier', 'ImportNamespaceSpecifier'])) {
+            const local = (0, estree_1.getEstreeField)('local', specifier);
+            const str = local ? local.name : srcVal;
+            let sym = Symbol.for(str);
+            let obj = undefined;
+            if (env1) {
+                obj = env1.toObject();
+            }
+            env.setLocalX(sym, obj, Symbol.for('Any'));
+        }
+    }
+    return undefined;
+}
+evalEstreeImportDeclaration.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-import-declaration'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('current-module'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':current-module')]], [Symbol.for('define'), Symbol.for('in-dir-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':in-dir')]], [Symbol.for('define'), Symbol.for('src'), [Symbol.for('get-estree-field'), 'source', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('src-val'), [Symbol.for('eval-estree'), Symbol.for('src'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('specifiers'), [Symbol.for('get-estree-field'), 'specifiers', Symbol.for('node')]], [Symbol.for('define'), Symbol.for('m'), undefined], [Symbol.for('define'), Symbol.for('env1'), undefined], [Symbol.for('define'), Symbol.for('module-regexp'), [Symbol.for('regexp'), '^\\.+/']], [Symbol.for('when'), [Symbol.for('regexp-match'), Symbol.for('module-regexp'), Symbol.for('src-val')], [Symbol.for('when'), Symbol.for('current-module'), [Symbol.for('set!'), Symbol.for('m'), [Symbol.for('send'), Symbol.for('current-module'), Symbol.for('get-module'), Symbol.for('src-val')]]]], [Symbol.for('cond'), [Symbol.for('m'), [Symbol.for('set!'), Symbol.for('env1'), [Symbol.for('send'), Symbol.for('m'), Symbol.for('get-provide-environment')]]], [Symbol.for('else'), [Symbol.for('with-cwd'), Symbol.for('in-dir-option'), [Symbol.for('thunk'), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('env1'), [Symbol.for('new'), Symbol.for('JavaScriptModuleEnvironment'), [Symbol.for('js/require'), Symbol.for('src-val')]]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e'), [Symbol.for('return'), undefined]]]]]]], [Symbol.for('for'), [[Symbol.for('specifier'), Symbol.for('specifiers')]], [Symbol.for('cond'), [[Symbol.for('estree-type?'), Symbol.for('specifier'), 'ImportSpecifier'], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('specifier')]], [Symbol.for('define'), Symbol.for('local-val'), [Symbol.for('eval-estree'), Symbol.for('local'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('local-sym'), [Symbol.for('string->symbol'), Symbol.for('local-val')]], [Symbol.for('define'), Symbol.for('imported'), [Symbol.for('get-estree-field'), 'imported', Symbol.for('specifier')]], [Symbol.for('define'), Symbol.for('imported-val'), [Symbol.for('eval-estree'), Symbol.for('imported'), Symbol.for('env'), Symbol.for('options')]], [Symbol.for('define'), Symbol.for('imported-sym'), [Symbol.for('string->symbol'), Symbol.for('imported-val')]], [Symbol.for('define'), Symbol.for('val'), undefined], [Symbol.for('define'), Symbol.for('typ'), [Symbol.for('quote'), Symbol.for('Any')]], [Symbol.for('when'), Symbol.for('env1'), [Symbol.for('cond'), [[Symbol.for('is-a?'), Symbol.for('env1'), Symbol.for('TypedEnvironment')], [Symbol.for('set!-values'), [Symbol.for('val'), Symbol.for('typ')], [Symbol.for('send'), Symbol.for('env1'), Symbol.for('get-typed-value'), Symbol.for('imported-sym')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('val'), [Symbol.for('send'), Symbol.for('env1'), Symbol.for('get'), Symbol.for('imported-sym')]]]]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('local-sym'), Symbol.for('val'), Symbol.for('typ')]], [[Symbol.for('estree-type?'), Symbol.for('specifier'), [Symbol.for('quote'), ['ImportDefaultSpecifier', 'ImportNamespaceSpecifier']]], [Symbol.for('define'), Symbol.for('local'), [Symbol.for('get-estree-field'), 'local', Symbol.for('specifier')]], [Symbol.for('define'), Symbol.for('str'), [Symbol.for('if'), Symbol.for('local'), [Symbol.for('get-field'), Symbol.for('name'), Symbol.for('local')], Symbol.for('src-val')]], [Symbol.for('define'), Symbol.for('sym'), [Symbol.for('string->symbol'), Symbol.for('str')]], [Symbol.for('define'), Symbol.for('obj'), undefined], [Symbol.for('when'), Symbol.for('env1'), [Symbol.for('set!'), Symbol.for('obj'), [Symbol.for('send'), Symbol.for('env1'), Symbol.for('to-object')]]], [Symbol.for('send'), Symbol.for('env'), Symbol.for('set-local!'), Symbol.for('sym'), Symbol.for('obj'), [Symbol.for('quote'), Symbol.for('Any')]]]]], undefined];
+/**
+ * Evaluate a TSESTree `TSAsExpression` node.
+ */
+function evalEstreeTsAsExpression(node, env, options = {}) {
+    let expression = (0, estree_1.getEstreeField)('expression', node);
+    return evalEstree(expression, env, options);
+}
+evalEstreeTsAsExpression.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-ts-as-expression'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('expression'), [Symbol.for('get-estree-field'), 'expression', Symbol.for('node')]], [Symbol.for('eval-estree'), Symbol.for('expression'), Symbol.for('env'), Symbol.for('options')]];
+/**
+ * Evaluate an ESTree `XRawJavaScript` node.
+ * This is an unofficial ESTree extension.
+ */
+function evalEstreeXRawJavascript(node, env, options = {}) {
+    const js = (0, estree_1.getEstreeField)('js', node);
+    return eval(js);
+}
+evalEstreeXRawJavascript.fsource = [Symbol.for('define'), [Symbol.for('eval-estree-x-raw-javascript'), Symbol.for('node'), Symbol.for('env'), [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('js'), [Symbol.for('get-estree-field'), 'js', Symbol.for('node')]], [Symbol.for('js/eval'), Symbol.for('js')]];
 /**
  * Add `default-options` to an options object.
  * If `modify` is `#t`, the original object
@@ -204,19 +1481,6 @@ addDefaultOptions.fsource = [Symbol.for('define'), [Symbol.for('add-default-opti
  */
 class CompilationEnvironment extends env_1.TypedEnvironment {
 }
-/**
- * Compilation variables map.
- *
- * A hashmap from literal Lisp values to their
- * JavaScript equivalents.
- */
-const compilationVariablesMap = new Map([[Symbol.for('#f'), new estree_1.Literal(false)], [Symbol.for('#t'), new estree_1.Literal(true)], [Symbol.for('#n'), new estree_1.Literal(null)], [Symbol.for('#u'), new estree_1.Identifier('undefined')], [Symbol.for('NaN'), new estree_1.Identifier('NaN')], [Symbol.for('js-null'), new estree_1.Literal(null)], [Symbol.for('js-undefined'), new estree_1.Identifier('undefined')], [Symbol.for('js/arguments'), new estree_1.Identifier('arguments')], [Symbol.for('js/null'), new estree_1.Literal(null)], [Symbol.for('js/require'), new estree_1.Identifier('require')], [Symbol.for('js/undefined'), new estree_1.Identifier('undefined')], [Symbol.for('nil'), new estree_1.ArrayExpression()], [Symbol.for('null'), new estree_1.ArrayExpression()], [Symbol.for('t'), new estree_1.Literal(true)], [Symbol.for('undefined'), new estree_1.Identifier('undefined')]]);
-/**
- * Compilation procedures map.
- *
- * A hashmap from Lisp functions to compiler procedures.
- */
-const compilationProceduresMap = new Map([[procedures_1.add_, compileAdd], [list_1.append_, compileAppend], [procedures_1.apply_, compileApply], [begin_, compileBegin], [break_, compileBreak], [class_, compileClass], [colon_, compileColon], [continue_, compileContinue], [macros_1.declare_, compileDeclare], [defineAsync_, compileDefineAsync], [defineClass_, compileDefineClass], [defineFields_, compileDefineFields], [defineGenerator_, compileDefineGenerator], [defineType_, compileDefineType], [defineValues_, compileDefineValues], [define_, compileDefine], [procedures_1.div_, compileDiv], [dot_, compileSend], [procedures_1.funcall_, compileFuncall], [procedures_1.gt_, compileGreaterThan], [procedures_1.gte_, compileGreaterThanOrEqual], [if_, compileIf], [jsArrow_, compileJsArrow], [jsAssignment_, compileJsAssignment], [jsAsync_, compileJsAsync], [jsAwait_, compileJsAwait], [jsBlock_, compileJsBlock], [jsConst_, compileJsConst], [javascript_1.jsDelete_, compileJsDelete], [jsDoWhile_, compileJsDoWhile], [javascript_1.jsDot_, compileJsDot], [javascript_1.jsEval_, compileJsEval], [jsExport_, compileJsExport], [jsForIn_, compileJsForIn], [jsForOf_, compileJsForOf], [jsFor_, compileJsFor], [jsFunction_, compileJsFunction], [javascript_1.jsGet_, compileJsGet], [javascript_1.jsGt_, compileGreaterThan], [javascript_1.jsGte_, compileGreaterThanOrEqual], [jsIf_, compileJsIf], [jsImport_, compileJsImport], [jsLet_, compileJsLet], [javascript_1.jsLooselyEqualP_, compileJsLooselyEqual], [javascript_1.jsLt_, compileLessThan], [javascript_1.jsLte_, compileLessThanOrEqual], [javascript_1.jsMod_, compileModulo], [javascript_1.jsNew_, compileJsNew], [javascript_1.jsNot_, compileNot], [javascript_1.jsObjAppend_, compileJsObjAppend], [javascript_1.jsObjSpread_, compileJsObjSpread], [javascript_1.jsObj_, compileJsObj], [jsOp_, compileJsOp], [javascript_1.jsOptionalChaining_, compileJsOptionalChaining], [javascript_1.jsPlus_, compileAdd], [jsRaw_, compileJsRaw], [javascript_1.jsRegexp_, compileJsRegexp], [javascript_1.jsReturn_, compileReturn], [jsSequence_, compileJsSequence], [jsStatementOrExpression_, compileJsStatementOrExpression], [javascript_1.jsStrictlyEqualP_, compileJsStrictlyEqual], [jsSwitch_, compileJsSwitch], [javascript_1.jsTaggedTemplate_, compileJsTaggedTemplate], [jsTernaryOperator_, compileJsTernaryOperator], [jsTry_, compileJsTry], [jsVar_, compileJsVar], [jsWhile_, compileJsWhile], [javascript_1.jsYield_, compileYield], [lambda_, compileLambda], [letFields_, compileLetFields], [letStar_, compileLetStar], [letValues_, compileLetValues], [let_, compileLet], [list_1.list_, compileList], [procedures_1.lt_, compileLessThan], [procedures_1.lte_, compileLessThanOrEqual], [module_, compileModule], [procedures_1.modulo_, compileModulo], [procedures_1.mul_, compileMul], [procedures_1.not_, compileNot], [quasiquote_, compileQuasiquote], [quote_, compileQuote], [return_, compileReturn], [sendApply_, compileSendApply], [send_, compileSend], [setx_, compileSet], [setField_, compileSetField], [setFields_, compileSetFields], [setValues_, compileSetValues], [procedures_1.sub_, compileSub], [throw_, compileThrow], [tsAs_, compileTsAs], [yield_, compileYield]]);
 /**
  * Compile a Lisp expression to JavaScript or TypeScript.
  * Returns a string of JavaScript or TypeScript code.
@@ -648,9 +1912,9 @@ function interpret_(exp, ...options) {
     const env = options1['environment'] || (0, env_1.defaultEnvironment)();
     const expressionType = options1['expressionType'] || 'statement';
     const inheritedOptions = Object.assign(Object.assign({}, options1), { case: 'none', expressionType, estree: true, optimize: false, shouldImport: false });
-    const env1 = makeInterpretationEnvironment(env, inheritedOptions);
+    let env1 = makeInterpretationEnvironment(env, inheritedOptions);
     let ast = compileWithEnvironment(exp, env1, inheritedOptions);
-    let result = (0, eval_1.evalEstree)(ast, env1, inheritedOptions);
+    let result = evalEstree(ast, env1, inheritedOptions);
     return result;
 }
 exports.interpret = interpret_;
@@ -2119,7 +3383,7 @@ function compileFunction(stx, env, options = {}, settings = {}) {
         return x !== languageEnv;
     }
     langFilter.fsource = [Symbol.for('define'), [Symbol.for('lang-filter'), Symbol.for('x')], [Symbol.for('not'), [Symbol.for('eq?'), Symbol.for('x'), Symbol.for('language-env')]]];
-    const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
     function makeArrowExpression(params, body) {
         const body1 = ((0, estree_1.estreeTypeP)(body, 'BlockStatement') && (body.body.length === 1) && (0, estree_1.estreeTypeP)(body.body[0], 'ReturnStatement')) ? body.body[0].argument : body;
         return new estree_1.ArrowFunctionExpression(params, body1);
@@ -2187,7 +3451,7 @@ function compileFunction(stx, env, options = {}, settings = {}) {
             for (let arg of regularArgs) {
                 if ((0, util_1.colonFormP)(arg)) {
                     let sym = arg[0];
-                    const typ = arg[2];
+                    let typ = arg[2];
                     makeTypeBinding(env1, sym, Symbol.for('Any'), langFilter);
                     let result = setType((arg.length === 4) ? new estree_1.AssignmentPattern(compileSymbol((0, rose_1.datumToSyntax)(false, sym), env1, inheritedOptions), compileExpression((0, rose_1.datumToSyntax)(false, arg[3]), env1, inheritedOptions)) : compileSymbol((0, rose_1.datumToSyntax)(false, sym), env1, inheritedOptions), compileType(typ, env1, options));
                     params.push(result);
@@ -2473,7 +3737,7 @@ function compileLetStar(stx, env, options = {}) {
                 return (0, rose_1.datumToSyntax)(x, [Symbol.for('define'), x]);
             }
         });
-        const env1 = makeBlock ? (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env) : env;
+        let env1 = makeBlock ? (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env) : env;
         let result = compileSyntax((0, rose_1.datumToSyntax)(stx, [makeBlock ? Symbol.for('js/block') : Symbol.for('begin'), ...definitions, ...body]), env1, inheritedOptions);
         return result;
     }
@@ -2535,7 +3799,7 @@ function compileLetValues(stx, env, options = {}) {
                 return (0, rose_1.datumToSyntax)(x, [Symbol.for('define-values'), x.get(0), x.get(1)]);
             }
         });
-        const env1 = makeBlock ? (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env) : env;
+        let env1 = makeBlock ? (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env) : env;
         let result = compileSyntax((0, rose_1.datumToSyntax)(stx, [makeBlock ? Symbol.for('js/block') : Symbol.for('begin'), ...definitions, ...body]), env1, inheritedOptions);
         return result;
     }
@@ -2734,7 +3998,7 @@ function compileLetFields(stx, env, options = {}) {
             }
             return (0, rose_1.datumToSyntax)(x, [Symbol.for('define-fields'), fields, obj]);
         });
-        const env1 = makeBlock ? (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env) : env;
+        let env1 = makeBlock ? (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env) : env;
         let result = compileSyntax((0, rose_1.datumToSyntax)(stx, [makeBlock ? Symbol.for('js/block') : Symbol.for('begin'), ...definitions, ...body]), env1, inheritedOptions);
         return result;
     }
@@ -2930,7 +4194,7 @@ macroexpand1_.fsource = [Symbol.for('define'), [Symbol.for('macroexpand-1_'), Sy
  */
 function macroexpandstar1_(exp, env = undefined) {
     const exp1 = (0, rose_1.syntaxp)(exp) ? (0, rose_1.syntaxToDatum)(exp) : exp;
-    const env1 = env || (0, env_1.currentEnvironment_)() || (0, env_1.emptyEnvironment)();
+    let env1 = env || (0, env_1.currentEnvironment_)() || (0, env_1.emptyEnvironment)();
     let expansion = exp;
     let expanded = false;
     if (!(Array.isArray(exp1) && !((exp1.length >= 3) && (exp1[exp1.length - 2] === Symbol.for('.')) && !Array.isArray(exp1[exp1.length - 1])))) {
@@ -2944,7 +4208,7 @@ function macroexpandstar1_(exp, env = undefined) {
     }
     else {
         let op = exp1[0];
-        const [macroF, typ] = env1.getTypedValue(op);
+        let [macroF, typ] = env1.getTypedValue(op);
         if ((0, procedures_1.macrop_)(macroF) || (0, procedures_1.macroTypeP)(typ)) {
             expansion = applyMacro(macroF, exp, env);
             expanded = true;
@@ -2965,7 +4229,7 @@ macroexpandstar1_.fsource = [Symbol.for('define'), [Symbol.for('macroexpand*-1_'
  */
 function applyMacro(macroF, exp, env = undefined, typ = undefined) {
     const exp1 = (0, rose_1.syntaxp)(exp) ? (0, rose_1.syntaxToDatum)(exp) : exp;
-    const env1 = env || (0, env_1.currentEnvironment_)() || (0, env_1.emptyEnvironment)();
+    let env1 = env || (0, env_1.currentEnvironment_)() || (0, env_1.emptyEnvironment)();
     let expansion = exp;
     if ((0, procedures_1.syntaxTransformerP_)(macroF) || (0, procedures_1.syntaxTransformerTypeP_)(typ)) {
         let stx = (0, rose_1.syntaxp)(exp) ? exp : (0, rose_1.datumToSyntax)(false, exp);
@@ -3338,7 +4602,7 @@ makeGlobalEnvironmentExp.fsource = [Symbol.for('define'), [Symbol.for('make-glob
  */
 function makeDefineValuesExp(symbols, env, options) {
     const inlineFunctionsOption = options['finlineFunctions'];
-    const env1 = new env_1.LispEnvironment([], env);
+    let env1 = new env_1.LispEnvironment([], env);
     let definitions = false;
     const defineForms = [];
     const internalSymbols = [];
@@ -3436,7 +4700,7 @@ function compileGlobalEnvironment(exp, env, options = {}) {
     }
     else {
         // Compile in a sandboxed environment.
-        const env1 = new env_1.LispEnvironment([], env);
+        let env1 = new env_1.LispEnvironment([], env);
         if ((0, util_1.taggedListP)(exp, Symbol.for('define-values'))) {
             const defineValuesForm = [exp[0], exp[1], [Symbol.for('list')]];
             let body = exp[2];
@@ -3601,7 +4865,7 @@ compileQuasiquoteHelper.fsource = [Symbol.for('define'), [Symbol.for('compile-qu
 function compileJsImport(stx, env, options = {}) {
     const fcommonjs = options['fcommonjs'];
     const currentModule = options['currentModule'];
-    const env1 = currentModule ? currentModule.requireEnvironment : env;
+    let env1 = currentModule ? currentModule.requireEnvironment : env;
     let specifier = stx.get(1);
     const specifierExp = (0, rose_1.syntaxToDatum)(specifier);
     const src = stx.last();
@@ -4157,7 +5421,7 @@ compileJsNew.fsource = [Symbol.for('define'), [Symbol.for('compile-js/new'), Sym
  * Compile a `(js/do-while ...)` expression.
  */
 function compileJsDoWhile(stx, env, options = {}) {
-    const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
     let body = stx.get(1);
     let bodyExp = (0, rose_1.datumToSyntax)(stx, [Symbol.for('js/block'), ...(0, rose_1.syntaxToList)(body)]);
     const test = stx.get(2);
@@ -4168,7 +5432,7 @@ compileJsDoWhile.fsource = [Symbol.for('define'), [Symbol.for('compile-js/do-whi
  * Compile a `(js/while ...)` expression.
  */
 function compileJsWhile(stx, env, options = {}) {
-    const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
     const test = stx.get(1);
     let body = (0, rose_1.beginWrapStx)(stx.drop(2));
     return new estree_1.WhileStatement(compileExpression(test, env1, options), wrapInBlockStatementSmart(compileStatementOrReturnStatement(body, env1, options)));
@@ -4178,7 +5442,7 @@ compileJsWhile.fsource = [Symbol.for('define'), [Symbol.for('compile-js/while'),
  * Compile a `(js/for ...)` expression.
  */
 function compileJsFor(stx, env, options = {}) {
-    const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
     let body = (0, rose_1.datumToSyntax)(stx, [Symbol.for('js/block'), ...stx.drop(2)]);
     let init = stx.get(1, 0);
     const initExp = (0, rose_1.syntaxToDatum)(init);
@@ -4238,7 +5502,7 @@ compileJsFor.fsource = [Symbol.for('define'), [Symbol.for('compile-js/for'), Sym
  * Compile a `(js/for-in ...)` expression.
  */
 function compileJsForIn(stx, env, options = {}) {
-    const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
     let left = (0, rose_1.datumToSyntax)(stx, [Symbol.for('define'), stx.get(1, 0, 0)]);
     let right = stx.get(1, 0, 1);
     let body = (0, rose_1.datumToSyntax)(stx, [Symbol.for('js/block'), ...stx.drop(2)]);
@@ -4252,7 +5516,7 @@ compileJsForIn.fsource = [Symbol.for('define'), [Symbol.for('compile-js/for-in')
  * Compile a `(js/for-of ...)` expression.
  */
 function compileJsForOf(stx, env, options = {}) {
-    const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
     let left = (0, rose_1.datumToSyntax)(stx, [Symbol.for('define'), stx.get(1, 0, 0)]);
     let right = stx.get(1, 0, 1);
     let body = (0, rose_1.datumToSyntax)(stx, [Symbol.for('js/block'), ...stx.drop(2)]);
@@ -4397,7 +5661,7 @@ function compileClassHelper(stx, env, options = {}) {
     let id = hasName ? compileSymbol(classNameStx, env, inheritedOptions) : null;
     let bodyStx = (id === null) ? (0, rose_1.sliceStx)(stx, 1) : (0, rose_1.sliceStx)(stx, 2);
     let bodyExp = (0, rose_1.syntaxToDatum)(bodyStx);
-    const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+    let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
     makeTypeBinding(env1, Symbol.for('super'), Symbol.for('Any'));
     if (Array.isArray(bodyExp[0]) && !(0, util_1.formp)(bodyExp[0], define_, env1)) {
         const superClassesStx = bodyStx.get(0);
@@ -4595,7 +5859,7 @@ function compileJsTry(stx, env, options = {}) {
         // TODO: Permit destructuring.
         let param = catchClause.get(1);
         const paramExp = (0, rose_1.syntaxToDatum)(param);
-        const env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
+        let env1 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env);
         env1.setLocalX(paramExp, undefined, Symbol.for('Any'));
         const paramCompiled = (paramExp === Symbol.for('_')) ? null : compileExpression(param, env1, options);
         let body = (0, rose_1.datumToSyntax)(false, [Symbol.for('begin'), ...catchClause.drop(2)]);
@@ -6026,7 +7290,7 @@ function compileJsSwitch(stx, env, options = {}) {
             if (op === Symbol.for('case')) {
                 const test = x.get(1);
                 testCompiled = compileExpression(test, env, options);
-                const consequent = x.drop(2);
+                let consequent = x.drop(2);
                 const hasBreak = (0, util_1.formp)(consequent[consequent.length - 1], break_, env);
                 // It is advisable to wrap cases in a block statement.
                 // <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch#lexical_scoping>
@@ -6035,7 +7299,7 @@ function compileJsSwitch(stx, env, options = {}) {
             }
             else {
                 testCompiled = null;
-                const consequent = x.drop(1);
+                let consequent = x.drop(1);
                 consequentCompiled = [compileStatementOrReturnStatement((0, rose_1.datumToSyntax)(false, [Symbol.for('js/block'), ...consequent]), env, options)];
             }
             return new estree_1.SwitchCase(testCompiled, consequentCompiled);
@@ -6302,7 +7566,7 @@ class Module {
             let result = this.compiledModuleStx;
             if (!result) {
                 let compilationOptions = this.compilationOptions;
-                const env1 = this.mainEnvironment;
+                let env1 = this.mainEnvironment;
                 const env2 = (0, env_1.extendEnvironment)(new env_1.LispEnvironment(), env1);
                 const inlineLispSources = this.getInlineLispSourcesFlag();
                 const options1 = Object.assign(Object.assign({ referencedSymbols: [], inlineLispSources }, options), { currentModule: this });
@@ -6310,8 +7574,7 @@ class Module {
                 const requireStatements = compileStatement((0, rose_1.beginWrapStx)(this.requireStxs), env1, options1);
                 const mainStatements = compileStatementOrReturnStatement((0, rose_1.beginWrapStx)(this.mainStxs), env1, options1);
                 const provideStatements = compileStatement((0, rose_1.beginWrapStx)(this.provideStxs), env1, options1);
-                const globalEnvironment = buildGlobalEnvironment(options1['referencedSymbols'], env2, // env1
-                options);
+                const globalEnvironment = buildGlobalEnvironment(options1['referencedSymbols'], env2, options);
                 const program = makeProgram([...headerStatements.body, ...requireStatements.body, ...globalEnvironment.body, ...mainStatements.body, ...provideStatements.body]);
                 result = program;
                 this.compiledModuleStx = result;
@@ -6777,6 +8040,23 @@ function hasCompilerMacroP(f) {
 }
 hasCompilerMacroP.fsource = [Symbol.for('define'), [Symbol.for('has-compiler-macro?'), Symbol.for('f')], [Symbol.for('and'), Symbol.for('f'), [Symbol.for('get-field'), Symbol.for('compiler-macro'), Symbol.for('f')]]];
 /**
+ * Mapping from ESTree node types to evaluator functions.
+ */
+const evalEstreeMap = new Map([['ArrayExpression', evalEstreeArrayExpression], ['ArrayPattern', evalEstreeArrayPattern], ['ArrowFunctionExpression', evalEstreeArrowFunctionExpression], ['AssignmentExpression', evalEstreeAssignmentExpression], ['BinaryExpression', evalEstreeBinaryExpression], ['BlockStatement', evalEstreeBlockStatement], ['BreakStatement', evalEstreeBreakStatement], ['CallExpression', evalEstreeCallExpression], ['ClassDeclaration', evalEstreeClassDeclaration], ['ClassExpression', evalEstreeClassExpression], ['ConditionalExpression', evalEstreeConditionalExpression], ['ContinueStatement', evalEstreeContinueStatement], ['ExpressionStatement', evalEstreeExpressionStatement], ['ForOfStatement', evalEstreeForOfStatement], ['ForStatement', evalEstreeForStatement], ['FunctionDeclaration', evalEstreeFunctionDeclaration], ['FunctionExpression', evalEstreeFunctionExpression], ['Identifier', evalEstreeIdentifier], ['IfStatement', evalEstreeIfStatement], ['ImportDeclaration', evalEstreeImportDeclaration], ['Literal', evalEstreeLiteral], ['LogicalExpression', evalEstreeLogicalExpression], ['MemberExpression', evalEstreeMemberExpression], ['NewExpression', evalEstreeNewExpression], ['ObjectExpression', evalEstreeObjectExpression], ['Program', evalEstreeProgram], ['RestElement', evalEstreeRestElement], ['ReturnStatement', evalEstreeReturnStatement], ['SequenceExpression', evalEstreeSequenceExpression], ['SpreadElement', evalEstreeSpreadElement], ['SwitchCase', evalEstreeSwitchCase], ['SwitchStatement', evalEstreeSwitchStatement], ['TSAsExpression', evalEstreeTsAsExpression], ['TemplateElement', evalEstreeTemplateElement], ['TemplateLiteral', evalEstreeTemplateLiteral], ['ThisExpression', evalEstreeThisExpression], ['ThrowStatement', evalEstreeThrowStatement], ['TryStatement', evalEstreeTryStatement], ['UnaryExpression', evalEstreeUnaryExpression], ['UpdateExpression', evalEstreeUpdateExpression], ['VariableDeclaration', evalEstreeVariableDeclaration], ['VariableDeclarator', evalEstreeVariableDeclarator], ['WhileStatement', evalEstreeWhileStatement], ['XRawJavaScript', evalEstreeXRawJavascript], ['YieldExpression', evalEstreeYieldExpression]]);
+/**
+ * Compilation variables map.
+ *
+ * A hashmap from literal Lisp values to their
+ * JavaScript equivalents.
+ */
+const compilationVariablesMap = new Map([[Symbol.for('#f'), new estree_1.Literal(false)], [Symbol.for('#t'), new estree_1.Literal(true)], [Symbol.for('#n'), new estree_1.Literal(null)], [Symbol.for('#u'), new estree_1.Identifier('undefined')], [Symbol.for('NaN'), new estree_1.Identifier('NaN')], [Symbol.for('js-null'), new estree_1.Literal(null)], [Symbol.for('js-undefined'), new estree_1.Identifier('undefined')], [Symbol.for('js/arguments'), new estree_1.Identifier('arguments')], [Symbol.for('js/null'), new estree_1.Literal(null)], [Symbol.for('js/require'), new estree_1.Identifier('require')], [Symbol.for('js/undefined'), new estree_1.Identifier('undefined')], [Symbol.for('nil'), new estree_1.ArrayExpression()], [Symbol.for('null'), new estree_1.ArrayExpression()], [Symbol.for('t'), new estree_1.Literal(true)], [Symbol.for('undefined'), new estree_1.Identifier('undefined')]]);
+/**
+ * Compilation procedures map.
+ *
+ * A hashmap from Lisp functions to compiler procedures.
+ */
+const compilationProceduresMap = new Map([[procedures_1.add_, compileAdd], [list_1.append_, compileAppend], [procedures_1.apply_, compileApply], [begin_, compileBegin], [break_, compileBreak], [class_, compileClass], [colon_, compileColon], [continue_, compileContinue], [macros_1.declare_, compileDeclare], [defineAsync_, compileDefineAsync], [defineClass_, compileDefineClass], [defineFields_, compileDefineFields], [defineGenerator_, compileDefineGenerator], [defineType_, compileDefineType], [defineValues_, compileDefineValues], [define_, compileDefine], [procedures_1.div_, compileDiv], [dot_, compileSend], [procedures_1.funcall_, compileFuncall], [procedures_1.gt_, compileGreaterThan], [procedures_1.gte_, compileGreaterThanOrEqual], [if_, compileIf], [jsArrow_, compileJsArrow], [jsAssignment_, compileJsAssignment], [jsAsync_, compileJsAsync], [jsAwait_, compileJsAwait], [jsBlock_, compileJsBlock], [jsConst_, compileJsConst], [javascript_1.jsDelete_, compileJsDelete], [jsDoWhile_, compileJsDoWhile], [javascript_1.jsDot_, compileJsDot], [javascript_1.jsEval_, compileJsEval], [jsExport_, compileJsExport], [jsForIn_, compileJsForIn], [jsForOf_, compileJsForOf], [jsFor_, compileJsFor], [jsFunction_, compileJsFunction], [javascript_1.jsGet_, compileJsGet], [javascript_1.jsGt_, compileGreaterThan], [javascript_1.jsGte_, compileGreaterThanOrEqual], [jsIf_, compileJsIf], [jsImport_, compileJsImport], [jsLet_, compileJsLet], [javascript_1.jsLooselyEqualP_, compileJsLooselyEqual], [javascript_1.jsLt_, compileLessThan], [javascript_1.jsLte_, compileLessThanOrEqual], [javascript_1.jsMod_, compileModulo], [javascript_1.jsNew_, compileJsNew], [javascript_1.jsNot_, compileNot], [javascript_1.jsObjAppend_, compileJsObjAppend], [javascript_1.jsObjSpread_, compileJsObjSpread], [javascript_1.jsObj_, compileJsObj], [jsOp_, compileJsOp], [javascript_1.jsOptionalChaining_, compileJsOptionalChaining], [javascript_1.jsPlus_, compileAdd], [jsRaw_, compileJsRaw], [javascript_1.jsRegexp_, compileJsRegexp], [javascript_1.jsReturn_, compileReturn], [jsSequence_, compileJsSequence], [jsStatementOrExpression_, compileJsStatementOrExpression], [javascript_1.jsStrictlyEqualP_, compileJsStrictlyEqual], [jsSwitch_, compileJsSwitch], [javascript_1.jsTaggedTemplate_, compileJsTaggedTemplate], [jsTernaryOperator_, compileJsTernaryOperator], [jsTry_, compileJsTry], [jsVar_, compileJsVar], [jsWhile_, compileJsWhile], [javascript_1.jsYield_, compileYield], [lambda_, compileLambda], [letFields_, compileLetFields], [letStar_, compileLetStar], [letValues_, compileLetValues], [let_, compileLet], [list_1.list_, compileList], [procedures_1.lt_, compileLessThan], [procedures_1.lte_, compileLessThanOrEqual], [module_, compileModule], [procedures_1.modulo_, compileModulo], [procedures_1.mul_, compileMul], [procedures_1.not_, compileNot], [quasiquote_, compileQuasiquote], [quote_, compileQuote], [return_, compileReturn], [sendApply_, compileSendApply], [send_, compileSend], [setx_, compileSet], [setField_, compileSetField], [setFields_, compileSetFields], [setValues_, compileSetValues], [procedures_1.sub_, compileSub], [throw_, compileThrow], [tsAs_, compileTsAs], [yield_, compileYield]]);
+/**
  * Lisp environment.
  */
 const lispEnvironment = new env_1.LispEnvironment([[Symbol.for('_'), curry_1.__, Symbol.for('Any')], [Symbol.for('__'), curry_1.__, Symbol.for('Any')], [Symbol.for('#f'), constants_1.false_, Symbol.for('Any')], [Symbol.for('#t'), constants_1.true_, Symbol.for('Any')], [Symbol.for('#n'), constants_1.jsNull_, Symbol.for('Any')], [Symbol.for('#u'), constants_1.undefined_, Symbol.for('Any')], [Symbol.for('false'), constants_1.false_, Symbol.for('Any')], [Symbol.for('nil'), constants_1.null_, Symbol.for('Any')], [Symbol.for('null'), constants_1.null_, Symbol.for('Any')], [Symbol.for('js/null'), constants_1.jsNull_, Symbol.for('Any')], [Symbol.for('js-null'), constants_1.jsNull_, Symbol.for('Any')], [Symbol.for('t'), constants_1.true_, Symbol.for('Any')], [Symbol.for('true'), constants_1.true_, Symbol.for('Any')], [Symbol.for('js-undefined'), constants_1.undefined_, Symbol.for('Any')], [Symbol.for('js/undefined'), constants_1.undefined_, Symbol.for('Any')], [Symbol.for('undefined'), constants_1.undefined_, Symbol.for('Any')], [Symbol.for('license'), constants_1.license, Symbol.for('Any')], [Symbol.for('Rose'), rose_1.Syntax, Symbol.for('Any')], [Symbol.for('Syntax'), rose_1.Syntax, Symbol.for('Any')], [Symbol.for('$'), procedures_1.funcall_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('%'), procedures_1.modulo_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('*'), procedures_1.mul_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('+'), procedures_1.add_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('-'), procedures_1.sub_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('/'), procedures_1.div_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('<'), procedures_1.lt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('<='), procedures_1.lte_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('='), equal_1.eqp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('=?'), equal_1.eqp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('>'), procedures_1.gt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('>='), procedures_1.gte_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('NaN?'), javascript_1.jsIsNaN_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('abs'), procedures_1.abs_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('add'), procedures_1.add_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('add1'), procedures_1.add1_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('aget'), list_1.listRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('append'), list_1.append_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('apply'), procedures_1.apply_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('aref'), array_1.arrayRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('arity'), procedures_1.arity_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-at'), array_1.arrayAt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-concat'), array_1.arrayConcat_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-copy'), array_1.arrayCopy_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-drop'), array_1.arrayDrop_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-drop-right'), array_1.arrayDropRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-eighth'), array_1.arrayEighth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-fifth'), array_1.arrayFifth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-first'), array_1.arrayFirst_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-fourth'), array_1.arrayFourth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-get'), array_1.arrayRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-last'), array_1.arrayLast_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-length'), array_1.arrayLength_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-ninth'), array_1.arrayNinth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-nlast'), array_1.arrayNlast_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-pop-left'), array_1.arrayPopLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-pop-left!'), array_1.arrayPopLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-pop-right'), array_1.arrayPopRightX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-pop-right!'), array_1.arrayPopRightX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-push-left!'), array_1.arrayPushLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-push-right!'), array_1.arrayPushRightX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-ref'), array_1.arrayRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-rest'), array_1.arrayRest_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-reverse'), array_1.arrayReverse_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-reverse!'), array_1.arrayReverseX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-second'), array_1.arraySecond_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-set'), array_1.arraySet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-set!'), array_1.arraySetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-seventh'), array_1.arraySeventh_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-sixth'), array_1.arraySixth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-slice'), array_1.arraySlice_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-sort'), array_1.arraySort_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-sort!'), array_1.arraySortX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-take'), array_1.arrayTake_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-tenth'), array_1.arrayTenth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array-third'), array_1.arrayThird_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('array?'), array_1.arrayp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('aset'), array_1.arraySet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('aset!'), array_1.arraySetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('assert'), procedures_1.assert_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('atom?'), procedures_1.atomp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bit-and'), javascript_1.jsBitwiseAnd_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bit-not'), javascript_1.jsBitwiseNot_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bit-or'), javascript_1.jsBitwiseOr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bit-shift-left'), javascript_1.jsBitwiseShiftLeft_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bit-shift-right'), javascript_1.jsBitwiseShiftRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bit-xor'), javascript_1.jsBitwiseXor_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bitwise-and'), javascript_1.jsBitwiseAnd_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bitwise-negation'), javascript_1.jsBitwiseNot_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bitwise-not'), javascript_1.jsBitwiseNot_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bitwise-or'), javascript_1.jsBitwiseOr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bitwise-shift-left'), javascript_1.jsBitwiseShiftLeft_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bitwise-shift-right'), javascript_1.jsBitwiseShiftRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('bitwise-xor'), javascript_1.jsBitwiseXor_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('boolean?'), procedures_1.booleanp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('booleanp'), procedures_1.booleanp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('build-list'), list_1.buildList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cadr'), list_1.cadr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('call-cc'), callWithCurrentContinuation_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('call-with-current-continuation'), callWithCurrentContinuation_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('call/cc'), callWithCurrentContinuation_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('car'), list_1.car_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cdr'), list_1.cdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('circular-list-p'), list_1.circularListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('circular-list?'), list_1.circularListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cl/listp'), list_1.pairOrListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('compile'), compile_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cons'), list_1.cons_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cons*'), list_1.listStar_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cons-or-list?'), list_1.pairOrListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cons?'), list_1.pairp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('console.log'), console.log, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('consp'), list_1.pairp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('const'), procedures_1.const_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('constantly'), procedures_1.const_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('copy-array'), array_1.arrayCopy_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('copy-list'), list_1.listCopy_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('current-environment'), env_1.currentEnvironment_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('curry'), curry_1.curry, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('curry-n'), curry_1.curryN, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('datum->syntax'), rose_1.datumToSyntax, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('decompile'), decompile_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('delete'), javascript_1.jsDelete_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('display'), procedures_1.display_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('div'), procedures_1.div_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-improper-list?'), list_1.dottedImproperListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list->list'), list_1.dottedListToList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list->list'), list_1.dottedListToList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list->proper-list'), list_1.dottedListToList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-car'), list_1.car_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-cdr'), list_1.cdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-eighth'), list_1.dottedListEighth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-fifth'), list_1.dottedListFifth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-first'), list_1.dottedListFirst_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-fourth'), list_1.dottedListFourth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-head'), list_1.dottedListHead_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-last'), list_1.dottedListLast_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-last-cdr'), list_1.dottedListLastCdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-last-pair'), list_1.dottedListLastCdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-length'), list_1.dottedListLength_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-link'), list_1.dottedListLink_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-ninth'), list_1.dottedListNinth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-nth'), list_1.dottedListNth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-nthcdr'), list_1.dottedListNthcdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-p'), list_1.dottedListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-parse'), list_1.dottedListParse_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-ref'), list_1.dottedListRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-second'), list_1.dottedListSecond_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-set'), list_1.dottedListSet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-set!'), list_1.dottedListSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-seventh'), list_1.dottedListSeventh_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-sixth'), list_1.dottedListSixth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-tail'), list_1.dottedListTail_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-tenth'), list_1.dottedListTenth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list-third'), list_1.dottedListThird_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-list?'), list_1.dottedListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-pair-car'), list_1.car_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-pair-cdr'), list_1.dottedPairCdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-pair-p'), list_1.dottedPairP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-pair?'), list_1.dottedPairP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('dotted-proper-list?'), list_1.dottedProperListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('drop'), list_1.drop_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('drop-right'), list_1.dropRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('eighth'), list_1.eighth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('el/listp'), list_1.pairOrListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('eq'), equal_1.eqp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('eq?'), equal_1.eqp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('eql'), equal_1.eqvp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('eql?'), equal_1.eqvp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('equal'), equal_1.equalp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('equal?'), equal_1.equalp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('eqv'), equal_1.eqvp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('eqv?'), equal_1.eqvp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('error'), procedures_1.error_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('even?'), procedures_1.evenp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('expt'), procedures_1.expt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('extend-environment'), env_1.extendEnvironment, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('false?'), procedures_1.falsep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('falsep'), procedures_1.falsep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('fexpr?'), procedures_1.fexprp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('fexprp'), procedures_1.fexprp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('field-names'), object_1.fieldNames_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('fifth'), list_1.fifth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('filter'), procedures_1.filter_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('findf'), procedures_1.findf_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('findf-index'), procedures_1.findfIndex_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('first'), list_1.first_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('flatten'), list_1.flatten_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('foldl'), procedures_1.foldl_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('foldr'), procedures_1.foldr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('for-each'), procedures_1.forEach_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('force'), thunk_1.force_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('fourth'), list_1.fourth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('funcall'), procedures_1.funcall_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('function-object?'), javascript_1.jsFunctionObjectP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('function-type?'), javascript_1.jsFunctionTypeP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('function?'), procedures_1.procedurep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('functionp'), procedures_1.procedurep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('gensym'), symbol_1.gensym_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('gensym->symbol'), symbol_1.gensymToSymbol_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('gensym?'), symbol_1.gensymp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('get'), list_1.listRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash'), hash_1.makeHash_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash->list'), hash_1.hashToList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-clear'), hash_1.hashClear_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-clear!'), hash_1.hashClearX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-copy'), hash_1.hashCopy_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-entries'), hash_1.hashEntries_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-has-key?'), hash_1.hashHasKeyP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-keys'), hash_1.hashKeys_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-ref'), hash_1.hashRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-remove'), hash_1.hashRemove_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-remove!'), hash_1.hashRemoveX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-set'), hash_1.hashSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-set!'), hash_1.hashSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-size'), hash_1.hashSize_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash-values'), hash_1.hashValues_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('hash?'), hash_1.hashp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('head'), list_1.car_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('id'), procedures_1.identity_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('identity'), procedures_1.identity_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('improper-list-p'), list_1.improperListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('improper-list?'), list_1.improperListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('in-range'), procedures_1.range_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('index-of'), procedures_1.indexOf_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('index-where'), procedures_1.indexWhere_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('instance-of'), procedures_1.isAP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('instance-of?'), procedures_1.isAP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('instanceof'), procedures_1.isAP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('instanceof?'), procedures_1.isAP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('intern'), symbol_1.stringToSymbol_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('intersection'), procedures_1.intersection_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('is-a?'), procedures_1.isAP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('iterator->array'), array_1.iteratorToArray_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('iterator->list'), list_1.iteratorToList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js'), jsRaw_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js-field'), list_1.listRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js-keys'), javascript_1.jsKeys_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js-obj'), javascript_1.jsObj_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js-obj-append'), javascript_1.jsObjAppend_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js-obj-keys'), javascript_1.jsKeys_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js-obj?'), javascript_1.jsObjP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/!'), javascript_1.jsNot_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/%'), javascript_1.jsMod_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/&'), javascript_1.jsBitwiseAnd_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/&&'), javascript_1.jsAnd_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/*'), procedures_1.mul_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/**'), javascript_1.jsExpt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/+'), procedures_1.add_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/+'), javascript_1.jsPlus_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/-'), procedures_1.sub_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/.'), javascript_1.jsDot_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js//'), procedures_1.div_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/<'), javascript_1.jsLt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/<<'), javascript_1.jsBitwiseShiftLeft_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/<='), javascript_1.jsLte_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/=='), javascript_1.jsLooselyEqualP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/==='), javascript_1.jsStrictlyEqualP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/===?'), javascript_1.jsStrictlyEqualP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/==?'), javascript_1.jsLooselyEqualP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/>'), javascript_1.jsGt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/>='), javascript_1.jsGte_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/>>'), javascript_1.jsBitwiseShiftRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/>>>'), javascript_1.jsUnsignedBitwiseShiftRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/?.'), javascript_1.jsOptionalChaining_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/()'), procedures_1.funcall_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/[]'), list_1.listRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/|'), javascript_1.jsBitwiseOr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/||'), javascript_1.jsOr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/^'), javascript_1.jsBitwiseXor_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/abs'), javascript_1.jsAbs_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/append'), javascript_1.jsPlus_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/array?'), javascript_1.jsArrayP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/arrow?'), javascript_1.jsArrowP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/console.log'), console.log, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/delete'), javascript_1.jsDelete_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/dot'), javascript_1.jsDot_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/eighth'), array_1.arrayEighth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/field'), list_1.listRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/fifth'), array_1.arrayFifth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/find-index'), javascript_1.jsFindIndex_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/findf-index'), javascript_1.jsFindIndex_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/first'), array_1.arrayFirst_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/fourth'), array_1.arrayFourth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/function-object?'), javascript_1.jsFunctionObjectP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/function-type?'), javascript_1.jsFunctionTypeP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/function?'), javascript_1.jsFunctionP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/get'), javascript_1.jsGet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/in'), javascript_1.jsIn_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/instance-of'), javascript_1.jsInstanceof_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/instance-of?'), javascript_1.jsInstanceof_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/instanceof'), javascript_1.jsInstanceof_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/instanceof?'), javascript_1.jsInstanceof_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/is-NaN'), javascript_1.jsIsNaN_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/is-loosely-equal?'), javascript_1.jsLooselyEqualP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/is-strictly-equal?'), javascript_1.jsStrictlyEqualP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/js-obj'), javascript_1.jsObj_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/js-obj-append'), javascript_1.jsObjAppend_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/js-obj?'), javascript_1.jsObjP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/keys'), javascript_1.jsKeys_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/last'), array_1.arrayLast_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/length'), javascript_1.jsLength_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/nan?'), javascript_1.jsIsNaN_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/new'), javascript_1.jsNew_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/ninth'), array_1.arrayNinth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/nth'), list_1.nth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/null?'), javascript_1.jsNullP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/obj'), javascript_1.jsObj_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/obj-append'), javascript_1.jsObjAppend_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/obj-keys'), javascript_1.jsKeys_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/obj-spread'), javascript_1.jsObjSpread_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/obj?'), javascript_1.jsObjP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/object'), javascript_1.jsObj_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/object-type?'), javascript_1.jsObjectTypeP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/object?'), javascript_1.jsObjectTypeP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/parse-float'), javascript_1.jsParseFloat_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/promise'), javascript_1.jsPromise_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/promise?'), javascript_1.jsPromiseP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/raw'), jsRaw_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/reduce'), javascript_1.jsReduce_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/reduce-right'), javascript_1.jsReduceRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/ref'), javascript_1.jsGet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/regexp'), javascript_1.jsRegexp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/regexp-match'), javascript_1.jsRegexpMatch_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/regexp-quote'), regexp_1.regexpQuote_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/regexp-replace'), javascript_1.jsRegexpReplace_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/regexp?'), javascript_1.jsRegexpP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/rest'), array_1.arrayRest_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/return'), javascript_1.jsReturn_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/reverse'), array_1.arrayReverse_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/same-value-zero?'), javascript_1.jsSameValueZeroP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/same-value?'), javascript_1.jsSameValueP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/second'), array_1.arraySecond_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/seventh'), array_1.arraySeventh_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/sixth'), array_1.arraySixth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/slice'), javascript_1.jsSlice_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/source'), javascript_1.jsSource_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/string-append'), javascript_1.jsStringConcat_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/string-concat'), javascript_1.jsStringConcat_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/string-literal?'), javascript_1.jsStringLiteralP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/string-object?'), javascript_1.jsStringObjectP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/string?'), javascript_1.jsStringP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/tag'), javascript_1.jsTaggedTemplate_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/tagged-template'), javascript_1.jsTaggedTemplate_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/take'), array_1.arrayTake_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/tenth'), array_1.arrayTenth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/third'), array_1.arrayThird_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/to-string'), javascript_1.jsToString_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/type-of'), javascript_1.jsTypeof_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/typeof'), javascript_1.jsTypeof_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/yield'), yield_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/~'), javascript_1.jsBitwiseNot_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('keyword->string'), procedures_1.keywordToString_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('keyword->symbol'), procedures_1.keywordToSymbol_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('keyword?'), procedures_1.keywordp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('keywordp'), procedures_1.keywordp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('last'), list_1.last_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('last-cdr'), list_1.lastCdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('last-cons'), list_1.lastPair_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('last-pair'), list_1.lastPair_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('last-pair'), list_1.lastPair_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('length'), list_1.length_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('length*'), list_1.length_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list'), list_1.list_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list*'), list_1.listStar_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list->dotted-list_'), list_1.listToDottedList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-copy'), list_1.listCopy_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-or-cons?'), list_1.pairOrListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-or-pair?'), list_1.pairOrListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-ref'), list_1.listRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-set'), list_1.listSet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-set!'), list_1.listSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-star'), list_1.listStar_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list-tail'), list_1.listTail_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('list?'), list_1.listp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('listlike?'), list_1.pairOrListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('listp'), list_1.listp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('log'), console.log, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('macro?'), procedures_1.macrop_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('macroexpand'), macroexpand_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('macroexpand*'), macroexpandstar_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('macroexpand*-1'), macroexpandstar1_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('macroexpand-1'), macroexpand1_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('make'), javascript_1.jsNew_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('make-error'), procedures_1.makeError_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('make-hash'), hash_1.makeHash_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('make-list'), list_1.makeList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('make-object'), javascript_1.jsNew_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('map'), procedures_1.map_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('mapcar'), procedures_1.map_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('member'), procedures_1.member_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('member-p'), procedures_1.memberp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('member?'), procedures_1.memberp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('memberp'), procedures_1.memberp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('memf'), procedures_1.memf_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('memf?'), procedures_1.memfp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('memq'), procedures_1.memq_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('memq?'), procedures_1.memqp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('mod'), procedures_1.modulo_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('modulo'), procedures_1.modulo_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('mul'), procedures_1.mul_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('nan?'), javascript_1.jsIsNaN_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('new'), javascript_1.jsNew_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('new*'), javascript_1.jsNew_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('ninth'), list_1.ninth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('not'), procedures_1.not_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('nth'), list_1.nth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('nthcdr'), list_1.nthcdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('null?'), list_1.nullp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('nullp'), list_1.nullp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('number->string'), string_1.numberToString_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('number?'), procedures_1.numberp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('numberp'), procedures_1.numberp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('object?'), javascript_1.jsObjP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('objectp'), javascript_1.jsObjP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('odd?'), procedures_1.oddp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('oget'), object_1.objectRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('one?'), procedures_1.onep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('onep'), procedures_1.onep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('order'), procedures_1.sort_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('order!'), procedures_1.sortx_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('oref'), list_1.listRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('oset'), object_1.objectSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('oset!'), object_1.objectSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pair-or-list?'), list_1.pairOrListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pair?'), list_1.pairp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('parse'), parser_1.read, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist->alist'), plist_1.plistToAlist_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist->object'), plist_1.plistToObject_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist-copy'), plist_1.plistCopy_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist-get'), plist_1.plistGet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist-has'), plist_1.plistHasP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist-has?'), plist_1.plistHasP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist-ref'), plist_1.plistGet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist-set'), plist_1.plistSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist-set!'), plist_1.plistSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('plist?'), plist_1.plistp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pop'), list_1.popLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pop!'), list_1.popLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pop-left'), list_1.popLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pop-left!'), list_1.popLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pop-right'), list_1.popRightX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pop-right!'), list_1.popRightX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('pow'), procedures_1.expt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('print'), procedures_1.display_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('print-estree'), printer_1.printEstree, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('procedure?'), procedures_1.procedurep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('promise-forced?'), thunk_1.promiseForcedP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('promise-running?'), thunk_1.promiseRunningP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('promise?'), thunk_1.promisep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('proper-list->dotted-list'), list_1.listToDottedList_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('proper-list-p'), list_1.properListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('proper-list?'), list_1.properListP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('push'), list_1.pushLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('push!'), list_1.pushLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('push-left'), list_1.pushLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('push-left!'), list_1.pushLeftX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('push-right'), list_1.pushRightX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('push-right!'), list_1.pushRightX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('range'), procedures_1.range_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('re'), javascript_1.jsRegexp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('re-pattern'), javascript_1.jsRegexp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('read'), parser_1.read, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('read-syntax'), parser_1.readSyntax, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('regexp'), javascript_1.jsRegexp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('regexp-match'), regexp_1.regexpMatch_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('regexp-match?'), regexp_1.regexpMatchP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('regexp-quote'), regexp_1.regexpQuote_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('regexp-replace'), regexp_1.regexpReplace_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('regexp?'), regexp_1.regexpp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('rest'), list_1.rest_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('reverse'), list_1.reverse_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('reverse!'), list_1.reversex_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('rx'), javascript_1.jsRegexp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('scm/new'), javascript_1.jsNew_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('second'), list_1.second_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('self-evaluating?'), procedures_1.selfEvaluatingP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set-car!'), list_1.setCarX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set-cdr!'), list_1.setCdrX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set-mcar!'), list_1.setCarX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set-mcdr!'), list_1.setCdrX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set-nth'), list_1.listSet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set-nth!'), list_1.listSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('seventh'), list_1.seventh_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('sixth'), list_1.sixth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('sort'), procedures_1.sort_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('sort!'), procedures_1.sortx_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('source'), source_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('sqrt'), procedures_1.sqrt_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string->keyword'), procedures_1.stringToKeyword_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string->number'), string_1.stringToNumber_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string->symbol'), symbol_1.stringToSymbol_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-append'), string_1.stringAppend_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-downcase'), string_1.stringDowncase_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-join'), string_1.stringJoin_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-length'), string_1.stringLength_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-literal?'), javascript_1.jsStringLiteralP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-object?'), javascript_1.jsStringObjectP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-primitive?'), javascript_1.jsStringLiteralP_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-ref'), string_1.stringRef_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-repeat'), string_1.stringRepeat_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-replace'), string_1.stringReplace_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-split'), string_1.stringSplit_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-to-symbol'), symbol_1.stringToSymbol_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-trim'), string_1.stringTrim_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string-upcase'), string_1.stringUpcase_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('string?'), string_1.stringp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('stringp'), string_1.stringp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('sub'), procedures_1.sub_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('sub1'), procedures_1.sub1_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('substring'), string_1.substring_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('symbol->gensym'), symbol_1.symbolToGensym_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('symbol->keyword'), procedures_1.symbolToKeyword_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('symbol->string'), symbol_1.symbolToString_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('symbol-to-string'), symbol_1.symbolToString_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('symbol?'), symbol_1.symbolp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('symbolp'), symbol_1.symbolp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('syntax->datum'), rose_1.syntaxToDatum, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('syntax->list'), rose_1.syntaxToList, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('syntax-e'), rose_1.syntaxE, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('syntax?'), rose_1.syntaxp, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('tail'), list_1.cdr_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('take'), list_1.take_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('tenth'), list_1.tenth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('third'), list_1.third_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('thunk?'), thunk_1.thunkp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('true?'), procedures_1.truep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('truep'), procedures_1.truep_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('ts/raw'), jsRaw_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('type-of'), procedures_1.typeOf_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('typeof'), procedures_1.typeOf_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('undefined?'), procedures_1.undefinedp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('union'), procedures_1.union_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('unsigned-bit-shift-right'), javascript_1.jsUnsignedBitwiseShiftRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('unsigned-bitwise-shift-right'), javascript_1.jsUnsignedBitwiseShiftRight_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('values'), procedures_1.values_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('vector'), list_1.list_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('vector-ref'), list_1.nth_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('vector-set'), list_1.listSet_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('vector-set!'), list_1.listSetX_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('vector?'), array_1.arrayp_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('write-to-string'), printer_1.writeToString, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('zero?'), procedures_1.zerop_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('zerop'), procedures_1.zerop_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('.'), dot_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for(':'), colon_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [constants_1.quasiquoteSym_, quasiquote_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [constants_1.quoteSym_, quote_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('->'), macros_1.threadFirst_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('->>'), macros_1.threadLast_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('~>'), macros_1.threadFirst_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('~>>'), macros_1.threadLast_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('and'), macros_1.and_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('ann'), macros_1.ann_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('as->'), macros_1.threadAs_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('async'), jsAsync_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('as~>'), macros_1.threadAs_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('await'), jsAwait_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('begin'), begin_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('begin0'), macros_1.begin0_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('block'), jsBlock_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('break'), break_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('call-method'), send_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('case'), macros_1.case_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('case/eq'), macros_1.caseEq_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cl/loop'), macros_1.clLoop_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('class'), class_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('clj/try'), macros_1.cljTry_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('cond'), macros_1.cond_, [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]], [Symbol.for('continue'), continue_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('declare'), macros_1.declare_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('declare-fexpr'), macros_1.declareFexpr_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('declare-macro'), macros_1.declareMacro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('declare-syntax-macro'), macros_1.declareSyntaxMacro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('defclass'), macros_1.defclass_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define'), define_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-class'), defineClass_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-compiler-macro'), macros_1.defineCompilerMacro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-fexpr'), macros_1.defineFexpr_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-fields'), defineFields_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-inline'), macros_1.defineInline_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-inline-macro'), macros_1.defineInlineMacro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-js/obj'), defineFields_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-macro'), macros_1.defineMacro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-subst'), macros_1.defineInline_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-syntax'), macros_1.defineSyntax_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-type'), defineType_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define-values'), defineValues_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define/async'), defineAsync_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define/generator'), defineGenerator_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define/private'), macros_1.definePrivate_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('define/public'), macros_1.definePublic_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('defmacro'), macros_1.defmacro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('defsubst'), macros_1.defsubst_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('defun'), macros_1.defun_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('delay'), thunk_1.delay_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('destructuring-bind'), macros_1.multipleValueBind_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('do'), macros_1.do_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('el/if'), macros_1.elIf_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('field-bound?'), fieldBoundP_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('fn'), lambda_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('for'), macros_1.for_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('fset'), macros_1.set_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('get-field'), getField_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('if'), if_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/='), jsAssignment_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/=>'), jsArrow_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/?'), jsTernaryOperator_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/,'), jsSequence_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/;'), begin_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/{}'), jsBlock_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/arrow'), jsArrow_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/async'), jsAsync_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/await'), jsAwait_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/block'), jsBlock_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/const'), jsConst_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/define'), jsLet_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/do-while'), jsDoWhile_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/export'), jsExport_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/for'), jsFor_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/for-in'), jsForIn_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/for-of'), jsForOf_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/function'), jsFunction_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/if'), jsIf_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/iife'), jsIife_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/import'), jsImport_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/let'), jsLet_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/op'), jsOp_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/op/apply'), jsOpApply_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/operator'), jsOp_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/rename'), jsRename_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/sequence'), jsSequence_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/statement-or-expression'), jsStatementOrExpression_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/switch'), jsSwitch_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/try'), jsTry_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/var'), jsVar_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/while'), jsWhile_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('λ'), lambda_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('lambda'), lambda_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('lazy'), thunk_1.lazy_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('let'), let_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('let*'), letStar_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('let*-values'), letValues_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('let-fields'), letFields_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('let-js/obj'), letFields_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('let-values'), letValues_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('letrec'), letStar_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('letrec-values'), letValues_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('macro'), macros_1.macro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('match'), macros_1.match_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('module'), module_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('multiple-value-bind'), macros_1.multipleValueBind_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('multiple-values-bind'), macros_1.multipleValueBind_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('new/apply'), macros_1.newApply_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('nlambda'), macros_1.nlambda_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('once-only'), macros_1.onceOnly_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('or'), macros_1.or_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('prog1'), macros_1.begin0_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('progn'), begin_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('provide'), macros_1.provide_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('quasisyntax'), macros_1.quasisyntax_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('require'), macros_1.require_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('return'), return_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('rkt/new'), macros_1.rktNew_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('send'), send_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('send/apply'), sendApply_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set'), macros_1.set_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set!'), setx_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set!-fields'), setFields_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set!-js/obj'), setFields_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set!-values'), setValues_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('set-field!'), setField_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('setq'), macros_1.setq_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('syntax'), macros_1.syntax_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('syntax-macro'), macros_1.syntaxMacro_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('throw'), throw_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('thunk'), thunk_1.thunk_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('try'), macros_1.try_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('ts/as'), tsAs_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('unless'), macros_1.unless_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('unwind-protect'), macros_1.unwindProtect_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('when'), macros_1.when_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('while'), macros_1.while_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('with-gensyms'), macros_1.withGensyms_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('yield'), yield_, [Symbol.for('macro->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]);
@@ -6785,7 +8065,7 @@ exports.lispEnvironment = lispEnvironment;
 /**
  * Evaluation environment.
  */
-const evalEnvironment = new env_1.LispEnvironment([[Symbol.for('eval'), scmEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('evaluate'), scmEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('interpret'), interpret_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/eval'), javascript_1.jsEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('scm/eval'), scmEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('seval'), eval_1.eval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]);
+const evalEnvironment = new env_1.LispEnvironment([[Symbol.for('eval'), scmEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('evaluate'), scmEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('interpret'), interpret_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('js/eval'), javascript_1.jsEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('scm/eval'), scmEval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]], [Symbol.for('seval'), eval_, [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]);
 /**
  * JavaScript environment.
  */
@@ -6812,6 +8092,25 @@ exports.compilationEnvironment = compilationEnvironment;
 const langEnvironment = interpretationEnvironment;
 exports.langEnvironment = langEnvironment;
 /**
+ * The default evaluator.
+ */
+const defaultEvaluator = eval1;
+exports.defaultEvaluator = defaultEvaluator;
+/**
+ * Default options for interpretation and compilation.
+ * See also `default-compilation-options`.
+ */
+const defaultOptions = {
+    comments: true,
+    compileEnvironment: true,
+    expressionType: 'expression',
+    fevalBindings: false,
+    finlineFunctions: false,
+    fsemicolon: true,
+    gensymMap: new Map(),
+    shouldImport: true
+};
+/**
  * Default options used when compiling.
  */
 const defaultCompilationOptions = {
@@ -6824,7 +8123,6 @@ __exportStar(require("./constants"), exports);
 __exportStar(require("./curry"), exports);
 __exportStar(require("./env"), exports);
 __exportStar(require("./equal"), exports);
-__exportStar(require("./eval"), exports);
 __exportStar(require("./hash"), exports);
 __exportStar(require("./javascript"), exports);
 __exportStar(require("./list"), exports);

@@ -1,7 +1,7 @@
 import {
   lispEnvironment,
   mapSyntax
-} from '../../src/ts/language';
+} from '../../src/ts/core';
 
 import {
   assertEqual,

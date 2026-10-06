@@ -26,9 +26,9 @@ exports.repl = exports.rep = exports.REPL = void 0;
 const process_1 = require("process");
 const readline = require("readline");
 const constants_1 = require("./constants");
+const core_1 = require("./core");
 const equal_1 = require("./equal");
 const env_1 = require("./env");
-const language_1 = require("./language");
 const parser_1 = require("./parser");
 const util_1 = require("./util");
 env_1.withEnvironment.ftype = 'macro';
@@ -190,7 +190,7 @@ class REPL {
             let result = undefined;
             if (!this.quitFlag) {
                 try {
-                    result = (0, language_1.interpret)(exp, env);
+                    result = (0, core_1.interpret)(exp, env);
                 }
                 catch (err) {
                     if (err instanceof Error) {
@@ -208,7 +208,7 @@ class REPL {
         let result = '';
         if (!this.quitFlag) {
             // Print the values, producing a list of value strings.
-            const printedExpressions = evaluatedExpressions.map((language_1.printSexpAsExpression.length === 1) ? language_1.printSexpAsExpression : (x) => (0, language_1.printSexpAsExpression)(x));
+            const printedExpressions = evaluatedExpressions.map((core_1.printSexpAsExpression.length === 1) ? core_1.printSexpAsExpression : (x) => (0, core_1.printSexpAsExpression)(x));
             // Concatenate the value strings into a single string,
             // with each value string on its own line.
             result = printedExpressions.join('\n');
@@ -267,7 +267,7 @@ function rewriteExpressions(exp) {
 function makeInteractiveEnvironment(options = {}) {
     const help_ = options['help'];
     const quit_ = options['quit'];
-    const parentEnv = new env_1.LispEnvironment([[Symbol.for('exit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('load'), language_1.load_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]], language_1.langEnvironment);
+    const parentEnv = new env_1.LispEnvironment([[Symbol.for('exit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('help'), help_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('quit'), quit_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]], [Symbol.for('load'), core_1.load_, [Symbol.for('quote'), [Symbol.for('->'), Symbol.for('Any'), Symbol.for('*'), Symbol.for('Any')]]]], core_1.langEnvironment);
     const env = new env_1.LispEnvironment([], parentEnv);
     return env;
 }

@@ -1,6 +1,6 @@
 (require (only-in "../../src/ts/combinators"
                   I))
-(require (only-in "../../src/ts/language"
+(require (only-in "../../src/ts/core"
                   decompile))
 (require (only-in "../../src/ts/printer"
                   write-to-string))

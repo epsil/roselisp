@@ -1,4 +1,11 @@
 import {
+  letVarsToConstVars,
+  lispEnvironment,
+  optimizeSexp,
+  sexp
+} from '../../src/ts/core';
+
+import {
   ArrayExpression,
   ArrayPattern,
   AssignmentExpression,
@@ -10,13 +17,6 @@ import {
   VariableDeclaration,
   VariableDeclarator
 } from '../../src/ts/estree';
-
-import {
-  letVarsToConstVars,
-  lispEnvironment,
-  optimizeSexp,
-  sexp
-} from '../../src/ts/language';
 
 import {
   assertEqual,

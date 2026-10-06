@@ -1,6 +1,6 @@
 ;;; # Interpreter tests
 
-(require (only-in "../../src/ts/language"
+(require (only-in "../../src/ts/core"
                   __
                   LispEnvironment
                   interpret

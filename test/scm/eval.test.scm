@@ -1,5 +1,14 @@
 ;;; # Evaluation tests
 
+(require (only-in "../../src/ts/core"
+                  LispEnvironment
+                  __
+                  eval-estree
+                  eval-lisp
+                  eval-syntax
+                  eval_
+                  lang-environment
+                  lisp-1-environment))
 (require (only-in "../../src/ts/estree"
                   ArrayExpression
                   ArrayPattern
@@ -40,16 +49,6 @@
                   VariableDeclaration
                   VariableDeclarator
                   WhileStatement))
-(require (only-in "../../src/ts/eval"
-                  eval_
-                  eval-estree
-                  eval-syntax))
-(require (only-in "../../src/ts/language"
-                  __
-                  LispEnvironment
-                  lang-environment
-                  lisp-1-environment
-                  eval-lisp))
 (require (only-in "../../src/ts/rose"
                   datum->syntax))
 (require (only-in "../../src/ts/sexp"

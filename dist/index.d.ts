@@ -14,5 +14,5 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 import { license } from './constants';
-export * from './language';
+export * from './core';
 export { license };

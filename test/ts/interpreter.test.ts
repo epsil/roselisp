@@ -7,7 +7,7 @@ import {
   LispEnvironment,
   interpret,
   lisp
-} from '../../src/ts/language';
+} from '../../src/ts/core';
 
 import {
   s,

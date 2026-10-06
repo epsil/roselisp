@@ -4,7 +4,7 @@ import {
 
 import {
   decompile
-} from '../../src/ts/language';
+} from '../../src/ts/core';
 
 import {
   writeToString

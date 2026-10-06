@@ -35,6 +35,13 @@
     (string-repeat whitespace n))
   (regexp-replace pattern str indentation))
 
+;; ;;; Create a macro function on the basis of a
+;; ;;; `(define-macro ...)` expression.
+;; (define (define-macro->function exp env)
+;;   (define macro-fn
+;;     (define-macro->lambda-form exp))
+;;   (eval_ macro-fn env))
+
 ;;; # Trampoline
 ;;;
 ;;; Trampoline implementation.

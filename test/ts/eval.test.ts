@@ -3,6 +3,17 @@
  */
 
 import {
+  LispEnvironment,
+  __,
+  evalEstree,
+  evalLisp,
+  evalSyntax,
+  eval_,
+  langEnvironment,
+  lisp1Environment
+} from '../../src/ts/core';
+
+import {
   ArrayExpression,
   ArrayPattern,
   ArrowFunctionExpression,
@@ -43,20 +54,6 @@ import {
   VariableDeclarator,
   WhileStatement
 } from '../../src/ts/estree';
-
-import {
-  eval_,
-  evalEstree,
-  evalSyntax
-} from '../../src/ts/eval';
-
-import {
-  __,
-  LispEnvironment,
-  langEnvironment,
-  lisp1Environment,
-  evalLisp
-} from '../../src/ts/language';
 
 import {
   datumToSyntax

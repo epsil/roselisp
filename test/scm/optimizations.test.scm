@@ -1,3 +1,8 @@
+(require (only-in "../../src/ts/core"
+                  let-vars-to-const-vars
+                  lisp-environment
+                  optimize-sexp
+                  sexp))
 (require (only-in "../../src/ts/estree"
                   ArrayExpression
                   ArrayPattern
@@ -9,11 +14,6 @@
                   UpdateExpression
                   VariableDeclaration
                   VariableDeclarator))
-(require (only-in "../../src/ts/language"
-                  let-vars-to-const-vars
-                  lisp-environment
-                  optimize-sexp
-                  sexp))
 (require (only-in "./test-util"
                   assert-equal
                   test-macro))

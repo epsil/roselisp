@@ -17,5 +17,5 @@
                   license))
 
 (provide
-  (all-from-out "./language")
+  (all-from-out "./core")
   license)

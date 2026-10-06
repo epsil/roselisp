@@ -1,12 +1,17 @@
 /**
- * # Language
+ * # Language core
  *
- * Language environment and compiler implementation.
+ * Language interpreter, compiler and environment.
  *
  * ## Description
  *
- * This file defines the language environment. It also contains most
- * of the compiler code.
+ * Core functionality includes the language interpreter, the language
+ * compiler and the language environment. These have to be defined
+ * together in the same file because of how interdependent they are,
+ * thus forming an indivisible "core" that cannot be split up into
+ * multiple files. With further refactoring, it might be possible to
+ * reduce the size of this core, but it seems inevitable that there
+ * will be one.
  *
  * ## License
  *
@@ -14,12 +19,83 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-import { jsNew_ as new_ } from './javascript';
+import { jsNew_ as new_, jsEval_ } from './javascript';
 import { and_, ann_, cljTry_, cond_, defineMacro_, definePublic_, for_, or_, provide_, require_, setq_, try_ } from './macros';
 import { read, readSyntax, readSexp, tokenize } from './parser';
 import { isAP_, typeOf_ } from './procedures';
 import { s, sexp } from './sexp';
 import { quotep } from './util';
+/**
+ * Evaluate a S-expression `exp` in the Lisp environment `env`.
+ *
+ * `env` may be an {@link Environment}, or it may be an
+ * {@link Evaluator}. In the latter case, evaluation takes place
+ * by calling its `.eval()` method.
+ *
+ * This function is more fundamental and basic than `interpret`, which
+ * is probably what you want. `interpret` stacks the given environment
+ * on top of a Lisp environment, while `eval_` is a low-level function
+ * that performs no such stacking.
+ */
+declare const eval_: any;
+/**
+ * Call an evaluator on an expression.
+ */
+declare function callEvaluator(evaluator: any, exp: any, env?: any, options?: any): any;
+declare namespace callEvaluator {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[] | (symbol | undefined)[])[])[];
+}
+/**
+ * Whether something is an evaluator.
+ */
+declare function evaluatorp(obj: any): any;
+declare namespace evaluatorp {
+    var fsource: (symbol | (symbol | symbol[])[])[];
+}
+/**
+ * Evaluator class.
+ */
+declare class Evaluator {
+    /**
+     * The simplest possible evaluator is the
+     * identity function.
+     */
+    eval(exp: any, env?: any, options?: any): any;
+}
+/**
+ * Lisp-1 evaluator function.
+ */
+declare function eval1(exp: any, env: any, options?: any): any;
+declare namespace eval1 {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+}
+/**
+ * Evaluate an S-expression.
+ *
+ * This is a case-by-case function.
+ */
+declare function evalSexp(exp: any, env: any, options?: any): any;
+declare namespace evalSexp {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol[] | undefined)[] | (symbol | ((symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol)[])[][])[])[])[] | (symbol | (symbol | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[][])[])[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[][])[][] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[][])[])[])[];
+}
+/**
+ * Evaluate a syntax object.
+ */
+declare function evalSyntax(node: any, env: any, options?: any): any;
+declare namespace evalSyntax {
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[])[];
+}
+/**
+ * Evaluate an [ESTree][github:estree] node
+ * (i.e., a JavaScript [AST][w:Abstract syntax tree]).
+ *
+ * [github:estree]: https://github.com/estree/estree
+ * [w:Abstract syntax tree]: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+ */
+declare function evalEstree(node: any, env: any, options?: any): any;
+declare namespace evalEstree {
+    var fsource: (symbol | (symbol | (symbol[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[])[])[])[];
+}
 /**
  * Compile a Lisp expression to JavaScript or TypeScript.
  * Returns a string of JavaScript or TypeScript code.
@@ -56,7 +132,7 @@ declare namespace compileWithEnvironment {
  */
 declare function compileModules(modules: any, env: any, options?: any): any;
 declare namespace compileModules {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (boolean | symbol)[])[])[] | (symbol | (string | symbol | (string | symbol)[])[])[] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (boolean | symbol)[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (string | symbol | (string | symbol)[])[])[])[])[];
 }
 /**
  * Compile a module map.
@@ -87,7 +163,7 @@ declare namespace compileFileX {
  */
 declare function compileSyntax(stx: any, env: any, options?: any): any;
 declare namespace compileSyntax {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[][])[] | (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (string | symbol)[])[][] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[][])[] | (symbol | (symbol | (number | symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[])[];
 }
 /**
  * Evaluate a Lisp expression `exp`.
@@ -794,12 +870,15 @@ declare const compilationEnvironment: any;
  * Language environment.
  */
 declare const langEnvironment: any;
+/**
+ * The default evaluator.
+ */
+declare const defaultEvaluator: any;
 export * from './array';
 export * from './constants';
 export * from './curry';
 export * from './env';
 export * from './equal';
-export * from './eval';
 export * from './hash';
 export * from './javascript';
 export * from './list';
@@ -813,4 +892,4 @@ export * from './rose';
 export * from './string';
 export * from './symbol';
 export * from './thunk';
-export { and_ as and, ann_ as ann, begin_ as begin, callWithCurrentContinuation_ as callWithCurrentContinuation, callWithCurrentContinuation_ as callCc, colon_ as colon, compileSyntax as compileRose, compileWithEnvironment as compileLisp, compileWithEnvironment as compileLispToJavascript, compile_ as compile, cond_ as cond, decompile_ as decompile, defineAsync_ as defineAsync, defineClass_ as defineClass, defineFields_ as defineFields, defineFields_ as defineJsObj, defineGenerator_ as defineGenerator, defineMacro_ as defineMacro, definePublic_ as definePublic, defineType_ as defineType, defineValues_ as defineValues, define_ as define, dot_ as dot, getField_ as getField, interpret_ as interpret, jsAsync_ as async, jsAsync_ as async_, jsAsync_ as jsAsync, jsAwait_ as await, jsAwait_ as await_, jsAwait_ as jsAwait, jsBlock_ as block, jsBlock_ as block_, jsRaw_ as js, jsRaw_ as jsRaw, jsRaw_ as js_, lambda_ as fn, lambda_ as lambda, letFields_ as letFields, letFields_ as letJsObj, letStar_ as letStar, letStar_ as letrec, letValues_ as letstarValues, letValues_ as letValues, letValues_ as letrecValues, lispEnvironment as lisp1Environment, macroexpandstar1_ as macroexpandstar1, macroexpandstarN_ as macroexpandstarN, macroexpandstar_ as macroexpandStar, macroexpand1_ as macroexpand1, macroexpandN_ as macroexpandN, macroexpand_ as macroexpand, new_ as jsNew, new_ as make, new_ as makeObject, new_ as makeObject_, new_ as newStar, new_ as rktMakeObject, new_ as scmNew, nop_ as nop, optimizeSyntax as optimizeRose, or_ as or, provide_ as provide, quasiquote_ as quasiquote, quote_ as quote, readSyntax as readRose, require_ as require, sendApply_ as sendApply, send_ as callMethod, send_ as send, setx_ as setx, setField_ as setFieldX, setField_ as setField, setFields_ as setXFields, setFields_ as setXJsObj, setFields_ as setFieldsX, setFields_ as setFields, setValues_ as setXValues, setValues_ as setValues, setq_ as setq, sexp as readFromString, source_ as source, Module, and_, ann_, applyOptimizations, begin_, break_, class_, cljTry_, colon_, compilationEnvironment, compileFileX, compileFilesX, compileModuleMap, compileModules, compileWithEnvironment, compile_, cond_, continue_, decompile_, defineToDefineClass, defineAsync_, defineFields_, defineGenerator_, defineMacro_, defineType_, defineValues_, define_, dot_, findEstree, for_, getField_, interpretFiles, interpretString, interpret_, interpretationEnvironment, isAP_, iterateStx, jsAsync_, jsAwait_, jsRaw_, lambda_, langEnvironment, letFields_, letStar_, letValues_, letVarsToConstVars, let_, lisp, lispEnvironment, load_, macroexpandstar1_, macroexpandstarN_, macroexpandstar_, macroexpand1_, macroexpandAll, macroexpandAllUntil, macroexpandN_, macroexpandUntil, macroexpand_, makeLisp, makeModuleMap, mapSexp, mapSyntax, mapVisitStx, moduleExpressionToModuleObject, module_, new_, nop_, optimizations, optimizeEstree, optimizeModule, optimizeSexp, optimizeSyntax, or_, provide_, quasiquote_, quotep, quote_, read, readSexp, readSyntax, require_, return_, s, sendMethod, sendApply_, send_, setx_, setField_, setFields_, setValues_, setq_, sexp, sourcep, source_, splitComments, throw_, tokenize, traverseEstree, try_, typeOf_, yield_ };
+export { and_ as and, ann_ as ann, begin_ as begin, callWithCurrentContinuation_ as callWithCurrentContinuation, callWithCurrentContinuation_ as callCc, colon_ as colon, compileSyntax as compileRose, compileWithEnvironment as compileLisp, compileWithEnvironment as compileLispToJavascript, compile_ as compile, cond_ as cond, decompile_ as decompile, defineAsync_ as defineAsync, defineClass_ as defineClass, defineFields_ as defineFields, defineFields_ as defineJsObj, defineGenerator_ as defineGenerator, defineMacro_ as defineMacro, definePublic_ as definePublic, defineType_ as defineType, defineValues_ as defineValues, define_ as define, dot_ as dot, evalSyntax as evalRose, eval_ as seval, getField_ as getField, interpret_ as interpret, jsAsync_ as async, jsAsync_ as async_, jsAsync_ as jsAsync, jsAwait_ as await, jsAwait_ as await_, jsAwait_ as jsAwait, jsBlock_ as block, jsBlock_ as block_, jsRaw_ as js, jsRaw_ as jsRaw, jsRaw_ as js_, lambda_ as fn, lambda_ as lambda, letFields_ as letFields, letFields_ as letJsObj, letStar_ as letStar, letStar_ as letrec, letValues_ as letstarValues, letValues_ as letValues, letValues_ as letrecValues, lispEnvironment as lisp1Environment, macroexpandstar1_ as macroexpandstar1, macroexpandstarN_ as macroexpandstarN, macroexpandstar_ as macroexpandStar, macroexpand1_ as macroexpand1, macroexpandN_ as macroexpandN, macroexpand_ as macroexpand, new_ as jsNew, new_ as make, new_ as makeObject, new_ as makeObject_, new_ as newStar, new_ as rktMakeObject, new_ as scmNew, nop_ as nop, optimizeSyntax as optimizeRose, or_ as or, provide_ as provide, quasiquote_ as quasiquote, quote_ as quote, readSyntax as readRose, require_ as require, sendApply_ as sendApply, send_ as callMethod, send_ as send, setx_ as setx, setField_ as setFieldX, setField_ as setField, setFields_ as setXFields, setFields_ as setXJsObj, setFields_ as setFieldsX, setFields_ as setFields, setValues_ as setXValues, setValues_ as setValues, setq_ as setq, sexp as readFromString, source_ as source, Evaluator, Module, and_, ann_, applyOptimizations, begin_, break_, callEvaluator, class_, cljTry_, colon_, compilationEnvironment, compileFileX, compileFilesX, compileModuleMap, compileModules, compileWithEnvironment, compile_, cond_, continue_, decompile_, defaultEvaluator, defineToDefineClass, defineAsync_, defineFields_, defineGenerator_, defineMacro_, defineType_, defineValues_, define_, dot_, evalEstree, evalSexp, evalSyntax, eval1, eval_, evaluatorp, findEstree, for_, getField_, interpretFiles, interpretString, interpret_, interpretationEnvironment, isAP_, iterateStx, jsAsync_, jsAwait_, jsEval_, jsRaw_, lambda_, langEnvironment, letFields_, letStar_, letValues_, letVarsToConstVars, let_, lisp, lispEnvironment, load_, macroexpandstar1_, macroexpandstarN_, macroexpandstar_, macroexpand1_, macroexpandAll, macroexpandAllUntil, macroexpandN_, macroexpandUntil, macroexpand_, makeLisp, makeModuleMap, mapSexp, mapSyntax, mapVisitStx, moduleExpressionToModuleObject, module_, new_, nop_, optimizations, optimizeEstree, optimizeModule, optimizeSexp, optimizeSyntax, or_, provide_, quasiquote_, quotep, quote_, read, readSexp, readSyntax, require_, return_, s, sendMethod, sendApply_, send_, setx_, setField_, setFields_, setValues_, setq_, sexp, sourcep, source_, splitComments, throw_, tokenize, traverseEstree, try_, typeOf_, yield_ };

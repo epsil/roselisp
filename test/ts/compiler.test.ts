@@ -11,7 +11,7 @@ import {
   compileModules,
   compileWithEnvironment,
   splitComments
-} from '../../src/ts/language';
+} from '../../src/ts/core';
 
 import {
   defineMacroToLambdaForm

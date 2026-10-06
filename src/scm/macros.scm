@@ -16,8 +16,6 @@
 
 (require (only-in "./env"
                   current-compilation-options))
-(require (only-in "./eval"
-                  eval_))
 (require (only-in "./plist"
                   plist-get_))
 (require (only-in "./rose"
@@ -134,13 +132,6 @@
   `(lambda ,args
      (declare (ftype '(macro-> Syntax Syntax)))
      ,@body))
-
-;;; Create a macro function on the basis of a
-;;; `(define-macro ...)` expression.
-(define (define-macro->function exp env)
-  (define macro-fn
-    (define-macro->lambda-form exp))
-  (eval_ macro-fn env))
 
 ;;; Create a `(lambda ...)` form for a macro function
 ;;; on the basis of a `(define-macro ...)` expression.
@@ -1403,7 +1394,6 @@
   define-fexpr_
   define-inline-macro_
   define-inline_
-  define-macro->function
   define-macro->lambda-form
   define-macro_
   define-private_

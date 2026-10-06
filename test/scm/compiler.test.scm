@@ -2,7 +2,7 @@
 ;;;
 ;;; Various compiler tests.
 
-(require (only-in "../../src/ts/language"
+(require (only-in "../../src/ts/core"
                   LispEnvironment
                   compilation-environment
                   compile

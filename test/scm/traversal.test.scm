@@ -1,4 +1,4 @@
-(require (only-in "../../src/ts/language"
+(require (only-in "../../src/ts/core"
                   lisp-environment
                   map-syntax))
 (require (only-in "./test-util"

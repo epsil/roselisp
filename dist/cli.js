@@ -23,8 +23,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const minimist = require("minimist");
 const buildOptions = require("minimist-options");
 const path_1 = require("path");
+const core_1 = require("./core");
 const decompiler_1 = require("./decompiler");
-const language_1 = require("./language");
 const repl_1 = require("./repl");
 /**
  * Command line options. Passed to
@@ -203,7 +203,7 @@ function main() {
         console.log(helpMessage);
     }
     else if (evalFlag) {
-        console.log((0, language_1.interpretString)(evalFlag));
+        console.log((0, core_1.interpretString)(evalFlag));
     }
     else if (replFlag || (input.length === 0)) {
         (0, repl_1.repl)();
@@ -212,10 +212,10 @@ function main() {
         (0, decompiler_1.decompileFilesX)(input, flags);
     }
     else if (compileFlag) {
-        (0, language_1.compileFilesX)(input, flags);
+        (0, core_1.compileFilesX)(input, flags);
     }
     else {
-        (0, language_1.interpretFiles)(input);
+        (0, core_1.interpretFiles)(input);
     }
 }
 // Invoke the `main` function.

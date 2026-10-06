@@ -17,10 +17,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.syntaxMacro_ = exports.setq_ = exports.set_ = exports.rktNew_ = exports.require_ = exports.quasisyntax_ = exports.provide_ = exports.or_ = exports.onceOnly_ = exports.nlambda_ = exports.newApply_ = exports.multipleValueBind_ = exports.match_ = exports.macro_ = exports.for_ = exports.elIf_ = exports.do_ = exports.defun_ = exports.defsubst_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineMacroToFunction = exports.defineInline_ = exports.defineInlineMacro_ = exports.defineFexpr_ = exports.defineCompilerMacro_ = exports.defclass_ = exports.declare_ = exports.declareSyntaxMacro_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cond_ = exports.cljTry_ = exports.clLoop_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.ann_ = exports.and_ = exports.defineSubst_ = void 0;
-exports.withGensyms_ = exports.while_ = exports.when_ = exports.unwindProtect_ = void 0;
+exports.unwindProtect_ = exports.unless_ = exports.try_ = exports.threadLast_ = exports.threadFirst_ = exports.threadAs_ = exports.syntax_ = exports.syntaxMacro_ = exports.setq_ = exports.set_ = exports.rktNew_ = exports.require_ = exports.quasisyntax_ = exports.provide_ = exports.or_ = exports.onceOnly_ = exports.nlambda_ = exports.newApply_ = exports.multipleValueBind_ = exports.match_ = exports.macro_ = exports.for_ = exports.elIf_ = exports.do_ = exports.defun_ = exports.defsubst_ = exports.defmacro_ = exports.defineSyntax_ = exports.definePublic_ = exports.definePrivate_ = exports.defineMacro_ = exports.defineMacroToLambdaForm = exports.defineInline_ = exports.defineInlineMacro_ = exports.defineFexpr_ = exports.defineCompilerMacro_ = exports.defclass_ = exports.declare_ = exports.declareSyntaxMacro_ = exports.declareMacro_ = exports.declareFexpr_ = exports.cond_ = exports.cljTry_ = exports.clLoop_ = exports.case_ = exports.caseEq_ = exports.begin0_ = exports.ann_ = exports.and_ = exports.defineSubst_ = void 0;
+exports.withGensyms_ = exports.while_ = exports.when_ = void 0;
 const env_1 = require("./env");
-const eval_1 = require("./eval");
 const plist_1 = require("./plist");
 const rose_1 = require("./rose");
 const util_1 = require("./util");
@@ -285,16 +284,6 @@ function syntaxMacro_(exp, env) {
 exports.syntaxMacro_ = syntaxMacro_;
 syntaxMacro_.ftype = 'macro';
 syntaxMacro_.fsource = [Symbol.for('define'), [Symbol.for('syntax-macro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('unquote'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('ftype'), [Symbol.for('quote'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-/**
- * Create a macro function on the basis of a
- * `(define-macro ...)` expression.
- */
-function defineMacroToFunction(exp, env) {
-    const macroFn = defineMacroToLambdaForm(exp);
-    return (0, eval_1.eval_)(macroFn, env);
-}
-exports.defineMacroToFunction = defineMacroToFunction;
-defineMacroToFunction.fsource = [Symbol.for('define'), [Symbol.for('define-macro->function'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('macro-fn'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')]], [Symbol.for('eval_'), Symbol.for('macro-fn'), Symbol.for('env')]];
 /**
  * Create a `(lambda ...)` form for a macro function
  * on the basis of a `(define-macro ...)` expression.

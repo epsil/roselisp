@@ -21,12 +21,12 @@
 (require build-options "minimist-options")
 (require (only-in "path"
                   resolve))
-(require (only-in "./decompiler"
-                  decompile-files!))
-(require (only-in "./language"
+(require (only-in "./core"
                   compile-files!
                   interpret-files
                   interpret-string))
+(require (only-in "./decompiler"
+                  decompile-files!))
 (require (only-in "./repl"
                   repl))
 

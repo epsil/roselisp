@@ -28,14 +28,14 @@ import {
 } from 'path';
 
 import {
-  decompileFilesX
-} from './decompiler';
-
-import {
   compileFilesX,
   interpretFiles,
   interpretString
-} from './language';
+} from './core';
+
+import {
+  decompileFilesX
+} from './decompiler';
 
 import {
   repl

@@ -35,6 +35,12 @@ function indentString(str, n = 2, options = {}) {
     return str.replace(pattern, indentation);
 }
 indentString.fsource = [Symbol.for('define'), [Symbol.for('indent-string'), Symbol.for('str'), [Symbol.for('n'), 2], [Symbol.for('options'), [Symbol.for('js/obj')]]], [Symbol.for('define'), Symbol.for('whitespace-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':whitespace')]], [Symbol.for('define'), Symbol.for('whitespace'), [Symbol.for('or'), Symbol.for('whitespace-option'), ' ']], [Symbol.for('define'), Symbol.for('include-empty-lines-option'), [Symbol.for('oget'), Symbol.for('options'), Symbol.for(':include-empty-lines')]], [Symbol.for('define'), Symbol.for('pattern'), [Symbol.for('if'), Symbol.for('include-empty-lines-option'), [Symbol.for('regexp'), '^', 'gm'], [Symbol.for('regexp'), '^(?!s*$)', 'gm']]], [Symbol.for('define'), Symbol.for('indentation'), [Symbol.for('string-repeat'), Symbol.for('whitespace'), Symbol.for('n')]], [Symbol.for('regexp-replace'), Symbol.for('pattern'), Symbol.for('str'), Symbol.for('indentation')]];
+// ;;; Create a macro function on the basis of a
+// ;;; `(define-macro ...)` expression.
+// (define (define-macro->function exp env)
+//   (define macro-fn
+//     (define-macro->lambda-form exp))
+//   (eval_ macro-fn env))
 /**
  * # Trampoline
  *

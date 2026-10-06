@@ -17,7 +17,7 @@
 declare function letEnv_(exp: any, env: any): any;
 declare namespace letEnv_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (string | symbol)[])[])[];
 }
 /**
  * Indent a string by prepending each line with `n` spaces.

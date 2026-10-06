@@ -21,10 +21,6 @@ import {
 } from './env';
 
 import {
-  eval_
-} from './eval';
-
-import {
   plistGet_
 } from './plist';
 
@@ -318,17 +314,6 @@ function syntaxMacro_(exp: any, env: any): any {
 syntaxMacro_.ftype = 'macro';
 
 syntaxMacro_.fsource = [Symbol.for('define'), [Symbol.for('syntax-macro_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('args'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('lambda'), [Symbol.for('unquote'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('ftype'), [Symbol.for('quote'), [Symbol.for('macro->'), Symbol.for('Syntax'), Symbol.for('Syntax')]]]], [Symbol.for('unquote-splicing'), Symbol.for('body')]]]];
-
-/**
- * Create a macro function on the basis of a
- * `(define-macro ...)` expression.
- */
-function defineMacroToFunction(exp: any, env: any): any {
-  const macroFn: any = defineMacroToLambdaForm(exp);
-  return eval_(macroFn, env);
-}
-
-defineMacroToFunction.fsource = [Symbol.for('define'), [Symbol.for('define-macro->function'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('define'), Symbol.for('macro-fn'), [Symbol.for('define-macro->lambda-form'), Symbol.for('exp')]], [Symbol.for('eval_'), Symbol.for('macro-fn'), Symbol.for('env')]];
 
 /**
  * Create a `(lambda ...)` form for a macro function
@@ -1696,7 +1681,6 @@ export {
   defineFexpr_,
   defineInlineMacro_,
   defineInline_,
-  defineMacroToFunction,
   defineMacroToLambdaForm,
   defineMacro_,
   definePrivate_,

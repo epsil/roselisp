@@ -25,17 +25,17 @@
 (require readline "readline")
 (require (only-in "./constants"
                   version))
+(require (only-in "./core"
+                  (interpret eval_)
+                  lang-environment
+                  load_
+                  print-sexp-as-expression))
 (require (only-in "./equal"
                   equal?_))
 (require (only-in "./env"
                   LispEnvironment
                   with-environment
                   with-environment-f))
-(require (only-in "./language"
-                  (interpret eval_)
-                  lang-environment
-                  load_
-                  print-sexp-as-expression))
 (require (only-in "./parser"
                   read))
 (require (only-in "./util"

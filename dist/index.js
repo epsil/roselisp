@@ -33,4 +33,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.license = void 0;
 const constants_1 = require("./constants");
 Object.defineProperty(exports, "license", { enumerable: true, get: function () { return constants_1.license; } });
-__exportStar(require("./language"), exports);
+__exportStar(require("./core"), exports);

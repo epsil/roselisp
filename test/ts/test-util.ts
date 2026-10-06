@@ -14,7 +14,7 @@ import {
   interpret,
   printSexp,
   writeToString
-} from '../../src/ts/language';
+} from '../../src/ts/core';
 
 const [equalp, first, keywordp]: any[] = ((): any => {
   function equalp_(x: any, y: any): any {

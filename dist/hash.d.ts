@@ -29,13 +29,14 @@ declare namespace hashp_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
- * Make a hash map from a list of `(key . value)` pairs.
+ * Make a hash map from an association list, i.e., a list
+ * on the form `((key1 . val1) (key2 . val2) ...)`.
  *
  * Similar to [`make-hash` in Racket][rkt:make-hash].
  *
  * [rkt:make-hash]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._make-hash%29%29
  */
-declare function makeHash_(assocs?: any): any;
+declare function makeHash_(alst?: any): any;
 declare namespace makeHash_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | never[])[])[])[])[];
     var compilerMacro: any;

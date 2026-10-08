@@ -41,10 +41,16 @@
 ;;; Used by `parse-syntax`.
 (define literal-values
   (make-hash
-   `(("#f" . ,#f)
-     ("#t" . ,#t)
+   `(("#<void>" . ,#u)
+     ("#f" . ,#f)
+     ("#false" . ,#f)
      ("#n" . ,#n)
-     ("#u" . ,#u))))
+     ("#null" . ,#n)
+     ("#t" . ,#t)
+     ("#true" . ,#t)
+     ("#u" . ,#u)
+     ("#undefined" . ,#u)
+     ("#void" . ,#u))))
 
 ;;; Token class.
 (define-class Token ()
@@ -108,13 +114,13 @@
     (super value "symbol")))
 
 ;;; Parse a string of Lisp code and return an S-expression.
-(define (read_ str (options (js/obj)))
+(define (read_ str (options (object)))
   (~> str
       (read-syntax_ _ options)
       (syntax->datum _)))
 
 ;;; Parse a string of Lisp code and return a syntax object.
-(define (read-syntax_ str (options (js/obj)))
+(define (read-syntax_ str (options (object)))
   ;; Parsing is implemented in two stages: a lexical analysis stage
   ;; (`tokenize`) and a syntax analysis stage (`parse-syntax`).
   ;; The lexical analysis stage converts a string to a stream of
@@ -135,9 +141,9 @@
 ;;;     [s`(`, s`(`, s`lambda`, s`(`, s`x`, s`)`, s`x`, s`)`, 'Lisp', s`)`]
 ;;;
 ;;; The output of this function is passed to `parse-syntax`.
-(define (tokenize_ str (options (js/obj)))
+(define (tokenize_ str (options (object)))
   (define comments
-    (oget options :comments))
+    (object-ref options :comments))
   (when (undefined? comments)
     (set! comments #t))
   (define pos 0)
@@ -318,7 +324,7 @@
 ;;;
 ;;; The output of this function is a S-expression wrapped in a
 ;;; syntax object.
-(define (parse-syntax_ tokens (options (js/obj)))
+(define (parse-syntax_ tokens (options (object)))
   ;; In order to implement this function in a non-recursive way, a
   ;; stack is needed to keep track of expressions and their
   ;; subexpressions. Each stack entry is a list
@@ -500,7 +506,7 @@
 ;;;
 ;;; The output of this function is a fully valid S-expression which
 ;;; can be evaluated in a Lisp environment.
-(define (parse_ tokens (options (js/obj)))
+(define (parse_ tokens (options (object)))
   (~> tokens
       (parse-syntax_ _ options)
       (syntax->datum _)))
@@ -538,9 +544,9 @@
 
 ;;; Attach comments to a syntax object, conditional on options.
 ;;; Returns the modified object.
-(define (attach-comments! stx comments (options (js/obj)))
+(define (attach-comments! stx comments (options (object)))
   (define comments-option
-    (oget options :comments))
+    (object-ref options :comments))
   (when (undefined? comments-option)
     (set! comments-option #t))
   (define result

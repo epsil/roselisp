@@ -85,7 +85,7 @@ declare const defaultLanguage: any;
 /**
  * Roselisp package name.
  */
-declare const packageName: any;
+declare const name: any;
 /**
  * Roselisp version.
  */
@@ -94,4 +94,4 @@ declare const version: any;
  * Roselisp license.
  */
 declare const license: any;
-export { defaultLanguage, false_, jsNull_, license, null_, packageName, quasiquoteSym_, quoteSym_, true_, undefined_, unquoteSplicingSym_, unquoteSym_, version };
+export { name as packageName, defaultLanguage, false_, jsNull_, license, name, null_, quasiquoteSym_, quoteSym_, true_, undefined_, unquoteSplicingSym_, unquoteSym_, version };

@@ -44,6 +44,11 @@ declare function makeUniqueSymbol(lst?: any, prefix?: any): any;
  */
 declare function validJsCasingStyleP(casingStyle: any): any;
 /**
+ * Whether we are compiling to JavaScript code,
+ * rather than an ESTree intended for evaluation.
+ */
+declare function compilingToJsP(options: any): any;
+/**
  * Transform a string to a valid JavaScript identifier
  * string, provided an appropriate casing style
  * (camel case or snake case) is specified in `options`.
@@ -196,6 +201,10 @@ declare function makeArityFunction(fun: any, n?: any, arrow?: any): any;
  */
 declare function unwrapQuoteExpression(exp: any): any;
 /**
+ * Rewrite `[...[x]]` to `[x]`, recursively.
+ */
+declare function insertIntoArrayExpX(x: any, arr: any): any;
+/**
  * Copy elements from the list `source` to the list `dest`
  * so that the two become equal. Modifies `dest` in place.
  * Only the beginning of `dest` is modified; the rest is
@@ -213,4 +222,25 @@ declare function removeIndentation(str: any): any;
  * working directory afterwards.
  */
 declare function withCwd(dir: any, f: any): any;
-export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, copyIntoArrayX, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, removeIndentation, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP, withCwd };
+/**
+ * Macro for fetching a package property from `package.json`
+ * during compile time.
+ */
+declare function getPackageProperty(exp: any, env: any): any;
+declare namespace getPackageProperty {
+    var ftype: string;
+}
+/**
+ * Locate the `node_modules/` directory nearest to `dir`.
+ * Returns the absolute path as a string, or `#f` if
+ * not found.
+ *
+ * This function searches for `node_modules/` in `dir`, then in the
+ * parent directory of `dir`, then in the parent of the parent, and
+ * so on, in a manner similar to
+ * [Node's `require` algorithm][nodejs:require-algorithm].
+ *
+ * [nodejs:require-algorithm]: https://nodejs.org/api/modules.html#all-together
+ */
+declare function getNodeModulesPath(dir?: any): any;
+export { mapHasP as mapHas, mapSetX as mapSet, beginWrap, beginWrapSmart, colonFormP, compilingToJsP, copyIntoArrayX, countTree, defineToDefineMacro, defineGeneric, defineMethod, flipFunctionExpression, formp, getNodeModulesPath, getPackageProperty, insertIntoArrayExpX, kebabCaseToCamelCase, kebabCaseToSnakeCase, lambdaToLet, listExpressionToPattern, makeArityFunction, makeIdentifierString, makeUniqueSymbol, mapGet, mapGetTuple, mapHasP, mapSetX, mapTree, numberToLetter, parseParamsList, parsePlistAndBody, quasiquotep, quotep, removeIndentation, taggedListP, textOfQuotation, unquoteSplicingP, unquotep, unwrapQuoteExpression, validJsCasingStyleP, withCwd };

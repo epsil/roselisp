@@ -114,9 +114,9 @@
   alst)
 
 ;;; Convert a property list to a JavaScript object.
-(define (plist->object_ plst (options (js/obj)))
+(define (plist->object_ plst (options (object)))
   (define result
-    (js/obj))
+    (object))
   (for ((i (range 0 (length plst) 2)))
     (define prop
       (list-ref plst i))
@@ -126,7 +126,7 @@
       (~> prop
           (keyword->string _)
           (make-identifier-string _ options)))
-    (oset! result key val))
+    (object-set! result key val))
   result)
 
 (provide

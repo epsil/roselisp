@@ -17,13 +17,13 @@ describe('equal?', (): any => {
   it('(equal?_ \'(1 2 3) \'(1 2 3))', (): any => assertEqual(equalp_([1, 2, 3], [1, 2, 3]), true));
   it('(equal?_ (make-hash) (make-hash))', (): any => assertEqual(equalp_(new Map(), new Map()), true));
   it('(equal?_ (make-hash \'(("foo" . "bar"))) (make-hash \'(("foo" . "bar"))))', (): any => assertEqual(equalp_(new Map([['foo', 'bar']] as any), new Map([['foo', 'bar']] as any)), true));
-  it('(equal?_ (js/obj) (js/obj))', (): any => assertEqual(equalp_({}, {}), true));
-  it('(equal?_ (js/obj "foo" "bar") (js/obj "foo" "bar"))', (): any => assertEqual(equalp_({
+  it('(equal?_ (object) (object))', (): any => assertEqual(equalp_({}, {}), true));
+  it('(equal?_ (object "foo" "bar") (object "foo" "bar"))', (): any => assertEqual(equalp_({
     foo: 'bar'
   }, {
     foo: 'bar'
   }), true));
-  return it('(equal?_ (js/obj "foo" (js/obj "bar" "baz")) (js/obj "foo" (js/obj "bar" "baz")))', (): any => assertEqual(equalp_({
+  return it('(equal?_ (object "foo" (object "bar" "baz")) (object "foo" (object "bar" "baz")))', (): any => assertEqual(equalp_({
     foo: {
       bar: 'baz'
     }

@@ -36,108 +36,117 @@
 ;;;
 ;;; [npm:minimist-options]: https://www.npmjs.com/package/minimist-options
 (define cli-options
-  (js/obj
+  (object
    :case
-   (js/obj
+   (object
     :default "camelcase"
     :type "string")
    :comments
-   (js/obj
+   (object
     :default #t
     :type "boolean")
    :compile
-   (js/obj
+   (object
     :alias "c"
     :default #f
     :type "boolean")
    :decompile
-   (js/obj
+   (object
     :alias "d"
     :default #f
     :type "boolean")
    :eval
-   (js/obj
+   (object
     :alias "e"
     :default ""
     :type "string")
    :farrowseverywhere
-   (js/obj
+   (object
     :default #f
     :type "boolean")
    :fcommonjs
-   (js/obj
+   (object
     :default #f
     :type "boolean")
    :fes-module-interop
-   (js/obj
+   (object
     :alias "fes-module-interop"
     :default #f
     :type "boolean")
    :feval-bindings
-   (js/obj
+   (object
     :alias "feval-bindings"
     :default #f
     :type "boolean")
    :finline-functions
-   (js/obj
+   (object
     :alias "finline-functions"
     :default #f
     :type "boolean")
    :fdottedlists
-   (js/obj
+   (object
     :default #f
     :type "boolean")
    :fsemicolon
-   (js/obj
+   (object
     :default #t
     :type "boolean")
    :fstringobjects
-   (js/obj
+   (object
     :default #f
     :type "boolean")
    :from
-   (js/obj
+   (object
     :default "roselisp"
     :type "string")
    :help
-   (js/obj
+   (object
     :alias "h"
     :default #f
     :type "boolean")
    :indent
-   (js/obj
+   (object
     :default 2
     :type "number")
    :language
-   (js/obj
+   (object
     :default ""
     :type "string")
    :optimize
-   (js/obj
+   (object
     :default #t
     :type "boolean")
    :in-dir
-   (js/obj
+   (object
     :alias "in-dir"
     :default "."
     :type "string")
    :out-dir
-   (js/obj
+   (object
     :alias "out-dir"
     :default "."
     :type "string")
    :quick
-   (js/obj
+   (object
     :alias "q"
     :default #f
     :type "boolean")
    :repl
-   (js/obj
+   (object
     :alias "i"
     :default #f
     :type "boolean")
+   :repl-history
+   (object
+    :default #t
+    :type "boolean")
+   :sparse-repl
+   (object
+    :alias "sparse-repl"
+    :default #f
+    :type "boolean")
    :to
-   (js/obj
+   (object
     :default "javascript"
     :type "string")))
 
@@ -184,16 +193,16 @@ Options:
 ;;; Normalize CLI options.
 (define (normalize-cli-options options)
   (define language-option
-    (string-downcase (oget options :language)))
+    (string-downcase (object-ref options :language)))
   (define in-dir-option
-    (resolve (oget options :in-dir)))
+    (resolve (object-ref options :in-dir)))
   (define to-option
     (if (eq? language-option "")
-        (oget options :to)
+        (object-ref options :to)
         language-option))
-  (js/obj-append
+  (object-append
    options
-   (js/obj :in-dir in-dir-option
+   (object :in-dir in-dir-option
            :to to-option)))
 
 ;;; `main` function. Invoked when the program is
@@ -226,7 +235,7 @@ Options:
     (display (interpret-string eval-flag)))
    ((or repl-flag
         (= (length input) 0))
-    (repl))
+    (repl flags))
    (decompile-flag
     (decompile-files! input flags))
    (compile-flag

@@ -1142,6 +1142,127 @@
   (declare (inline #t))
   (iterator->array iterator))
 
+;;; Find the first element of an association list
+;;; whose CAR is equal to `key`.
+;;;
+;;; Similar to [`assoc` in Racket][rkt:assoc] and
+;;; [`assoc` in Common Lisp][cl:assoc].
+;;;
+;;; [rkt:assoc]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._assoc%29%29
+;;; [cl:assoc]: http://clhs.lisp.se/Body/f_assocc.htm#assoc
+(define (assoc_ key alst (is-equal? equal?))
+  (findf (lambda (x)
+           (is-equal? (car x) key))
+         alst))
+
+;;; Find the first element of an association list
+;;; whose CAR is identical to `key`.
+;;;
+;;; Similar to [`assq` in Racket][rkt:assq] and
+;;; [`assq` in Emacs Lisp][el:assq].
+;;;
+;;; [rkt:assq]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._assq%29%29
+;;; [el:assq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html#index-assq
+(define (assq_ key alst)
+  (declare (inline #t))
+  (findf (lambda (x)
+           (eq? (car x) key))
+         alst))
+
+;;; Convert an association list to a list of tuples.
+;;; For example, `((a . x) (b . y))` becomes `((a x) (b y))`.
+(define (alist->tuples_ alst)
+  (map (lambda (x)
+         (list (car x) (cdr x)))
+       alst))
+
+;;; Compiler macro for `(alist->tuples ...)` expressions.
+(define-compiler-macro (alist->tuples_ alst)
+  (cond
+   ((tagged-list? alst 'tuples->alist)
+    (second alst))
+   ((and (or (tagged-list? alst 'quasiquote)
+             (tagged-list? alst 'quote))
+         (list? (second alst))
+         (= (length
+             (filter
+              (lambda (x)
+                ;; TODO: Use `match` here.
+                (or (not (pair-or-list? x))
+                    (and (= (length x) 2)
+                         (or (tagged-list? x 'unquote)
+                             (and (tagged-list? x 'unquote-splicing)
+                                  (not (tagged-list?
+                                        (second x)
+                                        'tuples->alist)))))))
+              (second alst)))
+            0))
+    ;; If we have a quoted list of pairs, rewrite it to a simpler
+    ;; expression.
+    `(,(first alst)
+      ,(map (lambda (x)
+              (cond
+               ((and (tagged-list? x 'unquote-splicing)
+                     (tagged-list? (second x) 'tuples->alist))
+                `(,(first x)
+                  ,(second (second x))))
+               (else
+                (list (car x) (cdr x)))))
+            (second alst))))
+   (else
+    ;; If the `alst` form is not simple, then we have to map
+    ;; over it in.
+    `(map (lambda (x)
+            (list (car x) (cdr x)))
+          ,alst))))
+
+;;; Convert a list of tuples to an association list.
+;;; For example, `((a x) (b y))` becomes `((a . x) (b . y))`.
+(define (tuples->alist_ lst)
+  (map (lambda (x)
+         (cons (first x) (second x)))
+       lst))
+
+;;; Compiler macro for `(tuples->alist ...)` expressions.
+(define-compiler-macro (tuples->alist_ lst)
+  (cond
+   ((tagged-list? lst 'alist->tuples)
+    (second lst))
+   ((and (or (tagged-list? lst 'quasiquote)
+             (tagged-list? lst 'quote))
+         (list? (second lst))
+         (= (length
+             (filter
+              (lambda (x)
+                ;; TODO: Use `match` here.
+                (or (not (pair-or-list? x))
+                    (and (= (length x) 2)
+                         (or (tagged-list? x 'unquote)
+                             (and (tagged-list? x 'unquote-splicing)
+                                  (not (tagged-list?
+                                        (second x)
+                                        'alist->tuples)))))))
+              (second lst)))
+            0))
+    ;; If we have a quoted list of pairs, rewrite it to a simpler
+    ;; expression.
+    `(,(first lst)
+      ,(map (lambda (x)
+              (cond
+               ((and (tagged-list? x 'unquote-splicing)
+                     (tagged-list? (second x) 'alist->tuples))
+                `(,(first x)
+                  ,(second (second x))))
+               (else
+                (cons (first x) (second x)))))
+            (second lst))))
+   (else
+    ;; If the `lst` form is not simple, then we have to map
+    ;; over it.
+    `(map (lambda (x)
+            (cons (first x) (second x)))
+          ,lst))))
+
 (provide
   (rename-out (append_ append))
   (rename-out (build-list_ build-list))
@@ -1209,7 +1330,10 @@
   (rename-out (take_ take))
   (rename-out (tenth_ tenth))
   (rename-out (third_ third))
+  alist->tuples_
   append_
+  assoc_
+  assq_
   build-list_
   butlast_
   cdr_
@@ -1287,4 +1411,5 @@
   sixth_
   take_
   tenth_
-  third_)
+  third_
+  tuples->alist_)

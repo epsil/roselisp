@@ -248,6 +248,18 @@ return x + y;"
  > (compile '(js/= (define-fields (x)) y))
  "let {x} = y;"
 
+ :describe "js/=="
+ > (compile '(js/== x y))
+ "x == y;"
+ > (compile '(js/== x y z))
+ "x == y == z;"
+
+ :describe "js/==="
+ > (compile '(js/=== x y))
+ "x === y;"
+ > (compile '(js/=== x y z))
+ "x === y === z;"
+
  :describe "js/\,"
  > (compile '(js/\, x))
  "x;"
@@ -1195,6 +1207,10 @@ z;"
               :statement 1)
             :as "return")
  "return 1;"
+
+ :describe "js/require"
+ > (compile '(js/require "foo"))
+ "require('foo');"
 
  :describe "js/import"
  > (compile '(js/import * :as foo :from "bar"))

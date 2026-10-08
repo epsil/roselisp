@@ -16,8 +16,18 @@
  */
 
 import {
-  cwd,
-  chdir
+  existsSync,
+  readFileSync
+} from 'fs';
+
+import {
+  join,
+  resolve
+} from 'path';
+
+import {
+  chdir,
+  cwd
 } from 'process';
 
 import {
@@ -26,6 +36,15 @@ import {
   unquoteSym_,
   unquoteSplicingSym_
 } from './constants';
+
+import {
+  ArrayExpression,
+  estreeTypeP
+} from './estree';
+
+import {
+  plistGet_
+} from './plist';
 
 import {
   syntaxp,
@@ -190,6 +209,16 @@ function validJsCasingStyleP(casingStyle: any): any {
 }
 
 /**
+ * Whether we are compiling to JavaScript code,
+ * rather than an ESTree intended for evaluation.
+ */
+function compilingToJsP(options: any): any {
+  // FIXME: Kludge. This should look at the `:to` option
+  // instead.
+  return validJsCasingStyleP(options['case']);
+}
+
+/**
  * Transform a string to a valid JavaScript identifier
  * string, provided an appropriate casing style
  * (camel case or snake case) is specified in `options`.
@@ -308,7 +337,7 @@ function formp(exp: any, f: any, env: any): any {
         // it is a user-defined binding.
         return false;
       } else {
-        const val: any = env.get(op);
+        let val: any = env.get(op);
         return f === val;
       }
     } else {
@@ -710,7 +739,7 @@ function parsePlistAndBody(plstAndBody: any): any {
     const prop: any = (plstAndBody as any)[i];
     if (keywordp(prop) || (syntaxp(prop) && keywordp(syntaxToDatum(prop)))) {
       plst.push(prop);
-      const val: any = plstAndBody[i + 1];
+      let val: any = plstAndBody[i + 1];
       plst.push(val);
     } else {
       body = plstAndBody.slice(i);
@@ -866,6 +895,23 @@ function unwrapQuoteExpression(exp: any): any {
 }
 
 /**
+ * Rewrite `[...[x]]` to `[x]`, recursively.
+ */
+function insertIntoArrayExpX(x: any, arr: any): any {
+  if (estreeTypeP(x, 'SpreadElement') && estreeTypeP(x.argument, 'ArrayExpression')) {
+    const elements: any = x.argument.elements;
+    for (let y of elements) {
+      insertIntoArrayExpX(y, arr);
+    }
+  } else if (estreeTypeP(arr, 'ArrayExpression')) {
+    return insertIntoArrayExpX(x, arr.elements);
+  } else {
+    arr.push(x);
+    return arr;
+  }
+}
+
+/**
  * Copy elements from the list `source` to the list `dest`
  * so that the two become equal. Modifies `dest` in place.
  * Only the beginning of `dest` is modified; the rest is
@@ -904,23 +950,74 @@ function withCwd(dir: any, f: any): any {
   try {
     try {
       chdir(dir);
-    } catch (err) {
-      if (err instanceof Error) {
+    } catch (e) {
+      if (e instanceof Error) {
       } else {
-        throw err;
+        throw e;
       }
     }
-    return f();
+    return (f as any)();
   } finally {
     try {
       chdir(tmp);
-    } catch (err) {
-      if (err instanceof Error) {
+    } catch (e) {
+      if (e instanceof Error) {
       } else {
-        throw err;
+        throw e;
       }
     }
   }
+}
+
+/**
+ * Macro for fetching a package property from `package.json`
+ * during compile time.
+ */
+function getPackageProperty(exp: any, env: any): any {
+  const [prop, ...options]: any[] = exp.slice(1);
+  const obj: any = JSON.parse(readFileSync('../../package.json', {
+    encoding: 'utf8'
+  }));
+  let val: any = (obj as any)[prop];
+  const asOption: any = plistGet_(options, Symbol.for(':as'));
+  if (asOption === Symbol.for('symbol')) {
+    if (typeof val === 'string') {
+      val = Symbol.for(val);
+    }
+  } else if (asOption === Symbol.for('string')) {
+    if (typeof val === 'symbol') {
+      val = val.description as string;
+    }
+  }
+  const valExp: any = selfEvaluatingP(val) ? val : [Symbol.for('quote'), val];
+  return valExp;
+}
+
+getPackageProperty.ftype = 'macro';
+
+/**
+ * Locate the `node_modules/` directory nearest to `dir`.
+ * Returns the absolute path as a string, or `#f` if
+ * not found.
+ *
+ * This function searches for `node_modules/` in `dir`, then in the
+ * parent directory of `dir`, then in the parent of the parent, and
+ * so on, in a manner similar to
+ * [Node's `require` algorithm][nodejs:require-algorithm].
+ *
+ * [nodejs:require-algorithm]: https://nodejs.org/api/modules.html#all-together
+ */
+function getNodeModulesPath(dir: any = '.'): any {
+  const segments: any = ['/', ...((x: any): any => Array.isArray(x) ? x : [Symbol.for('.'), x])(resolve(dir).split('/').filter((x: any): any => x !== ''))];
+  const _start: any = segments.length;
+  for (let i: any = _start; i > 0; i--) {
+    const segments1: any = [...segments.slice(0, -(segments.length - i) || undefined), 'node_modules'];
+    const pathStr: any = join(...segments1);
+    if (existsSync(pathStr)) {
+      return pathStr;
+    }
+  }
+  return false;
 }
 
 export {
@@ -929,6 +1026,7 @@ export {
   beginWrap,
   beginWrapSmart,
   colonFormP,
+  compilingToJsP,
   copyIntoArrayX,
   countTree,
   defineToDefineMacro,
@@ -936,6 +1034,9 @@ export {
   defineMethod,
   flipFunctionExpression,
   formp,
+  getNodeModulesPath,
+  getPackageProperty,
+  insertIntoArrayExpX,
   kebabCaseToCamelCase,
   kebabCaseToSnakeCase,
   lambdaToLet,

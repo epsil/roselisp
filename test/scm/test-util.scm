@@ -76,7 +76,7 @@
 ;;; [4]: https://github.com/IUCompilerCourse/Essentials-of-Compilation
 (define (test-lisp (exp #u)
                    (val #u)
-                   (options (js/obj)))
+                   (options (object)))
   ;; FIXME: `exp` *might* be modified by side-effect. If so, the
   ;; compilation test will receive a different value. We should
   ;; clone the value to avoid this.
@@ -94,12 +94,12 @@
         (interpret val env)
         val))
   (define evaluation-options
-    (js/obj-append options))
+    (object-append options))
   (js/delete (get-field compile evaluation-options))
   (define compilation-options
-    (js/obj-append
+    (object-append
      evaluation-options
-     (js/obj :case "camelcase")))
+     (object :case "camelcase")))
   (set! interpret-flag
         (if (eq? interpret-flag #u)
             #t
@@ -157,7 +157,7 @@
       compiled-value))
 
 ;;; Test a REPL form.
-(define (test-repl exp (options (js/obj)))
+(define (test-repl exp (options (object)))
   (define-fields (env)
     options)
   (set! env (or env (new LispEnvironment)))
@@ -180,12 +180,12 @@
       (assert-equal expected actual))))
 
 ;;; Test a Roselisp REPL form.
-(define (test-roselisp-repl exp (options (js/obj)))
+(define (test-roselisp-repl exp (options (object)))
   (define-fields ((compile compile-option)
                   (verbose verbose-option)
                   env)
-    (js/obj-append
-     (js/obj :compile #f ; #t
+    (object-append
+     (object :compile #f ; #t
              )
      options))
   (when verbose-option
@@ -207,7 +207,7 @@
     (define node-repl-form
       (compile-repl-form
        (simplify-repl-form exp)
-       (js/obj :from "roselisp"
+       (object :from "roselisp"
                :to "node")))
     (when verbose-option
       (display "Node REPL form: " node-repl-form))
@@ -267,7 +267,7 @@
 
 ;;; Compile a REPL form from one language
 ;;; to another.
-(define (compile-repl-form exp (options (js/obj)))
+(define (compile-repl-form exp (options (object)))
   (define from-option
     (oget options :from))
   (define to-option

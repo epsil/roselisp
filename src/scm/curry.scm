@@ -27,7 +27,7 @@
 ;;;
 ;;; [r:dash]: https://ramdajs.com/docs/#__
 (define __
-  (js/obj "@@functional/placeholder" #t))
+  (object "@@functional/placeholder" #t))
 
 ;;; Whether a value is the placeholder value, `__`.
 (define (placeholder? x (placeholder __))

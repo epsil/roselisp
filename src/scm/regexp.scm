@@ -38,7 +38,7 @@
 ;;; [rkt:regexp-quote]: https://docs.racket-lang.org/reference/regexp.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._regexp-quote%29%29
 (define (regexp-quote_ str)
   (declare (inline #t))
-  ;; Based on `escapeRegExp()` from
+  ;; Adapted from `escapeRegExp()` from
   ;; <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping>.
   (regexp-replace (regexp "[.*+?^${}()|[\\]\\\\]" "g")
                   str

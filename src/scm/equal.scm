@@ -98,12 +98,12 @@
    ;; Compare objects.
    ((and (object? x)
          (object? y))
-    (unless (= (length (js/keys x))
-               (length (js/keys y)))
+    (unless (= (length (object-keys x))
+               (length (object-keys y)))
       (return #f))
-    (for ((key (js/keys x)))
-      (unless (equal?_ (oget x key)
-                       (oget y key))
+    (for ((key (object-keys x)))
+      (unless (equal?_ (object-ref x key)
+                       (object-ref y key))
         (return #f)))
     #t)
    (else

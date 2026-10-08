@@ -36,11 +36,11 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.popRightX = exports.popLeftX = exports.popx_ = exports.popx = exports.pairp = exports.consp_ = exports.consp = exports.nullp = exports.nthcdr = exports.dottedListNthcdr_ = exports.dottedListNthcdr = exports.nth = exports.dottedListNth_ = exports.dottedListNth = exports.ninth = exports.nbutlast = exports.makePair = exports.makeList = exports.makeDottedList = exports.list = exports.properListP = exports.listp = exports.listStar = exports.length = exports.last = exports.lastPair = exports.lastCons_ = exports.lastCdr = exports.dottedListLastCdr_ = exports.improperListP = exports.fourth = exports.flatten = exports.head_ = exports.head = exports.first = exports.car_ = exports.car = exports.fifth = exports.eighth = exports.drop = exports.dropRight = exports.dottedListP = exports.cons = exports.circularListP = exports.tail_ = exports.tail = exports.cdr = exports.butlast = exports.buildList = exports.append = void 0;
-exports.fifth_ = exports.eighth_ = exports.drop_ = exports.dropRight_ = exports.dottedProperListP_ = exports.dottedPairP_ = exports.dottedPairCdr_ = exports.dottedListP_ = exports.dottedListThird_ = exports.dottedListTenth_ = exports.dottedListTail_ = exports.dottedListSixth_ = exports.dottedListSeventh_ = exports.dottedListSet_ = exports.dottedListSetX_ = exports.dottedListSecond_ = exports.dottedListRef_ = exports.dottedListParse_ = exports.dottedListNinth_ = exports.dottedListLink_ = exports.dottedListLength_ = exports.dottedListLast_ = exports.dottedListHead_ = exports.dottedListFourth_ = exports.dottedListFirst_ = exports.dottedListFifth_ = exports.dottedListEighth_ = exports.dottedListToList_ = exports.dottedImproperListP_ = exports.cons_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.append_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = void 0;
-exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.reversex_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.pairp_ = exports.pairOrListP_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = exports.list_ = exports.listp_ = exports.listTail_ = exports.listStar_ = exports.listSet_ = exports.listSetX_ = exports.listRef_ = exports.listCopy_ = exports.listToDottedList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.iteratorToList_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = void 0;
+exports.dropRight_ = exports.dottedProperListP_ = exports.dottedPairP_ = exports.dottedPairCdr_ = exports.dottedListP_ = exports.dottedListThird_ = exports.dottedListTenth_ = exports.dottedListTail_ = exports.dottedListSixth_ = exports.dottedListSeventh_ = exports.dottedListSet_ = exports.dottedListSetX_ = exports.dottedListSecond_ = exports.dottedListRef_ = exports.dottedListParse_ = exports.dottedListNinth_ = exports.dottedListLink_ = exports.dottedListLength_ = exports.dottedListLast_ = exports.dottedListHead_ = exports.dottedListFourth_ = exports.dottedListFirst_ = exports.dottedListFifth_ = exports.dottedListEighth_ = exports.dottedListToList_ = exports.dottedImproperListP_ = exports.cons_ = exports.circularListP_ = exports.cdr_ = exports.butlast_ = exports.buildList_ = exports.assq_ = exports.assoc_ = exports.append_ = exports.alistToTuples_ = exports.third = exports.tenth = exports.take = exports.sixth = exports.seventh = exports.setCdrX = exports.setCarX = exports.second = exports.cadr_ = exports.reverse = exports.rest = exports.pushRightX = exports.appendToList = exports.pushLeftX = exports.pushx = void 0;
+exports.tuplesToAlist_ = exports.third_ = exports.tenth_ = exports.take_ = exports.sixth_ = exports.seventh_ = exports.setCdrX_ = exports.setCarX_ = exports.second_ = exports.reverse_ = exports.reversex_ = exports.rest_ = exports.pushRightX_ = exports.pushLeftX_ = exports.properListP_ = exports.popRightX_ = exports.popLeftX_ = exports.pairp_ = exports.pairOrListP_ = exports.nullp_ = exports.nthcdr_ = exports.nth_ = exports.ninth_ = exports.nbutlast_ = exports.makePair_ = exports.makeList_ = exports.makeDottedList_ = exports.list_ = exports.listp_ = exports.listTail_ = exports.listStar_ = exports.listSet_ = exports.listSetX_ = exports.listRef_ = exports.listCopy_ = exports.listToDottedList_ = exports.length_ = exports.last_ = exports.lastPair_ = exports.lastCdr_ = exports.iteratorToList_ = exports.improperListP_ = exports.fourth_ = exports.flatten_ = exports.first_ = exports.fifth_ = exports.eighth_ = exports.drop_ = void 0;
 const env_1 = require("./env");
 const util_1 = require("./util");
-const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListRef, dottedListLength, dottedListLast] = (() => {
+const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListRef, dottedListLength, dottedListLast, equalp] = (() => {
     function lastCdr_(lst) {
         if (!Array.isArray(lst)) {
             return undefined;
@@ -319,10 +319,69 @@ const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dotte
         }
         return result;
     }
+    function equalp_(x, y) {
+        if (x === y) {
+            return true;
+        }
+        else if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && Array.isArray(y)) {
+            const cdrX = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
+            if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX[cdrX.length - 2] === Symbol.for('.')))) {
+                return false;
+            }
+            else if (equalp_(x[0], y[0])) {
+                return equalp_(cdrX, ((y.length === 3) && (y[1] === Symbol.for('.'))) ? y[2] : y.slice(1));
+            }
+            else {
+                return false;
+            }
+        }
+        else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y[y.length - 2] === Symbol.for('.'))) {
+            return equalp_(y, x);
+        }
+        else if (Array.isArray(x) && Array.isArray(y)) {
+            if (x.length !== y.length) {
+                return false;
+            }
+            const _end = x.length;
+            for (let i = 0; i < _end; i++) {
+                if (!equalp_(x[i], y[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else if ((x instanceof Map) && (y instanceof Map)) {
+            if (x.size !== y.size) {
+                return false;
+            }
+            for (let entry of x.entries()) {
+                const [key1, value1] = entry;
+                const value2 = y.get(key1);
+                if (!equalp_(value1, value2)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else if ((x !== null) && (typeof x === 'object') && (y !== null) && (typeof y === 'object')) {
+            if (Object.keys(x).length !== Object.keys(y).length) {
+                return false;
+            }
+            for (let key of Object.keys(x)) {
+                if (!equalp_(x[key], y[key])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     function keywordp_(obj) {
         return (typeof obj === 'symbol') && (obj.description.match(/^:/) ? true : false);
     }
-    return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListRef_, dottedListLength_, dottedListLast_];
+    return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListRef_, dottedListLength_, dottedListLast_, equalp_];
 })();
 /**
  * Whether something is a pair, i.e., a cons cell.
@@ -2134,3 +2193,119 @@ iteratorToList_.compilerMacro = (() => {
     return f;
 })();
 iteratorToList_.fsource = [Symbol.for('define'), [Symbol.for('iterator->list_'), Symbol.for('iterator')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('iterator->array'), Symbol.for('iterator')]];
+/**
+ * Find the first element of an association list
+ * whose CAR is equal to `key`.
+ *
+ * Similar to [`assoc` in Racket][rkt:assoc] and
+ * [`assoc` in Common Lisp][cl:assoc].
+ *
+ * [rkt:assoc]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._assoc%29%29
+ * [cl:assoc]: http://clhs.lisp.se/Body/f_assocc.htm#assoc
+ */
+function assoc_(key, alst, isEqualP = equalp) {
+    const idx = alst.findIndex((x) => isEqualP(x[0], key));
+    return (idx >= 0) ? alst[idx] : false;
+}
+exports.assoc_ = assoc_;
+assoc_.fsource = [Symbol.for('define'), [Symbol.for('assoc_'), Symbol.for('key'), Symbol.for('alst'), [Symbol.for('is-equal?'), Symbol.for('equal?')]], [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal?'), [Symbol.for('car'), Symbol.for('x')], Symbol.for('key')]], Symbol.for('alst')]];
+/**
+ * Find the first element of an association list
+ * whose CAR is identical to `key`.
+ *
+ * Similar to [`assq` in Racket][rkt:assq] and
+ * [`assq` in Emacs Lisp][el:assq].
+ *
+ * [rkt:assq]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._assq%29%29
+ * [el:assq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html#index-assq
+ */
+function assq_(key, alst) {
+    const idx = alst.findIndex((x) => x[0] === key);
+    return (idx >= 0) ? alst[idx] : false;
+}
+exports.assq_ = assq_;
+assq_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [key, alst] = exp.slice(1);
+        if (!(Array.isArray(key) && (key.length > 0))) {
+            return [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('car'), Symbol.for('x')], key]], alst];
+        }
+        else {
+            const key1 = Symbol('key');
+            return [Symbol.for('let'), [[key1, key]], ((key) => [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('car'), Symbol.for('x')], key]], alst])(key1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+assq_.fsource = [Symbol.for('define'), [Symbol.for('assq_'), Symbol.for('key'), Symbol.for('alst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('car'), Symbol.for('x')], Symbol.for('key')]], Symbol.for('alst')]];
+/**
+ * Convert an association list to a list of tuples.
+ * For example, `((a . x) (b . y))` becomes `((a x) (b y))`.
+ */
+function alistToTuples_(alst) {
+    return alst.map((x) => [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)]);
+}
+exports.alistToTuples_ = alistToTuples_;
+alistToTuples_.fsource = [Symbol.for('define'), [Symbol.for('alist->tuples_'), Symbol.for('alst')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('list'), [Symbol.for('car'), Symbol.for('x')], [Symbol.for('cdr'), Symbol.for('x')]]], Symbol.for('alst')]];
+/**
+ * Compiler macro for `(alist->tuples ...)` expressions.
+ */
+alistToTuples_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [alst] = exp.slice(1);
+        if ((0, util_1.taggedListP)(alst, Symbol.for('tuples->alist'))) {
+            return alst[1];
+        }
+        else if (((0, util_1.taggedListP)(alst, Symbol.for('quasiquote')) || (0, util_1.taggedListP)(alst, Symbol.for('quote'))) && ((x) => Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1])))(alst[1]) && (alst[1].filter((x) => !Array.isArray(x) || ((x.length === 2) && ((0, util_1.taggedListP)(x, Symbol.for('unquote')) || ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && !(0, util_1.taggedListP)(x[1], Symbol.for('tuples->alist')))))).length === 0)) {
+            return [alst[0], alst[1].map((x) => {
+                    if ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && (0, util_1.taggedListP)(x[1], Symbol.for('tuples->alist'))) {
+                        return [x[0], x[1][1]];
+                    }
+                    else {
+                        return [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)];
+                    }
+                })];
+        }
+        else {
+            return [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('list'), [Symbol.for('car'), Symbol.for('x')], [Symbol.for('cdr'), Symbol.for('x')]]], alst];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
+ * Convert a list of tuples to an association list.
+ * For example, `((a x) (b y))` becomes `((a . x) (b . y))`.
+ */
+function tuplesToAlist_(lst) {
+    return lst.map((x) => [x[0], ...((x1) => Array.isArray(x1) ? x1 : [Symbol.for('.'), x1])(x[1])]);
+}
+exports.tuplesToAlist_ = tuplesToAlist_;
+tuplesToAlist_.fsource = [Symbol.for('define'), [Symbol.for('tuples->alist_'), Symbol.for('lst')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], Symbol.for('lst')]];
+/**
+ * Compiler macro for `(tuples->alist ...)` expressions.
+ */
+tuplesToAlist_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [lst] = exp.slice(1);
+        if ((0, util_1.taggedListP)(lst, Symbol.for('alist->tuples'))) {
+            return lst[1];
+        }
+        else if (((0, util_1.taggedListP)(lst, Symbol.for('quasiquote')) || (0, util_1.taggedListP)(lst, Symbol.for('quote'))) && ((x) => Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1])))(lst[1]) && (lst[1].filter((x) => !Array.isArray(x) || ((x.length === 2) && ((0, util_1.taggedListP)(x, Symbol.for('unquote')) || ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && !(0, util_1.taggedListP)(x[1], Symbol.for('alist->tuples')))))).length === 0)) {
+            return [lst[0], lst[1].map((x) => {
+                    if ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && (0, util_1.taggedListP)(x[1], Symbol.for('alist->tuples'))) {
+                        return [x[0], x[1][1]];
+                    }
+                    else {
+                        return [x[0], ...((x1) => Array.isArray(x1) ? x1 : [Symbol.for('.'), x1])(x[1])];
+                    }
+                })];
+        }
+        else {
+            return [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], lst];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();

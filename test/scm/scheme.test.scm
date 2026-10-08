@@ -147,7 +147,7 @@ let lst = [Symbol.for('a'), Symbol.for('b'), Symbol.for('c')].map((symbolp.lengt
  #f
  > (symbol? "foo")
  #f
- > (symbol? (js/obj))
+ > (symbol? (object))
  #f
  > (symbol? '())
  #f
@@ -1234,12 +1234,12 @@ rest(x);"
   return matrix;
 }"
  > (compile
-    '(define _ (js/obj "dash" #t)))
+    '(define _ (object "dash" #t)))
  "let _ = {
   dash: true
 };"
  > (compile
-    '(define __ (js/obj "dash" #t)))
+    '(define __ (object "dash" #t)))
  "let __ = {
   dash: true
 };"
@@ -1474,7 +1474,7 @@ console.log(x);
  > (compile
     '(define make-compilation-evaluator
        (memoize
-        (lambda (env (options (js/obj)))
+        (lambda (env (options (object)))
           (let ((language (oget options "language")))
             (set! language (or language default-language))
             (let ((compilation-env (or (.get compilation-map
@@ -1667,7 +1667,7 @@ let z = x + y + w + z;"
                 surname))
             :to "typescript")
  "(given: any, surname: any = 'Smith'): any => 'Hello, ' + given + ' ' + surname;"
- > (compile '(lambda (arg (options (js/obj)))
+ > (compile '(lambda (arg (options (object)))
                arg)
             :to "typescript")
  "(arg: any, options: any = {}): any => arg;"
@@ -2586,7 +2586,7 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
 }"
 
  :describe "get-field"
- > (let ((obj (js/obj "foo" "bar")))
+ > (let ((obj (object "foo" "bar")))
      (get-field foo obj))
  "bar"
  > (compile '(get-field foo obj))
@@ -2603,7 +2603,7 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
  "arr.length;"
 
  :describe "set-field!"
- > (let ((obj (js/obj)))
+ > (let ((obj (object)))
      (set-field! foo-bar obj "baz")
      (get-field foo-bar obj))
  "baz"
@@ -2631,12 +2631,12 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
 };"
 
  :describe "field-bound?"
- > (let ((obj (js/obj "foo" "bar")))
+ > (let ((obj (object "foo" "bar")))
      (field-bound? foo obj))
  #t
  > (compile '(begin
                (define foo
-                 (js/obj))
+                 (object))
                (define bar
                  (field-bound? baz foo))))
  "let foo = {};
@@ -2644,7 +2644,7 @@ for (let i = 0, j = 0; (i < _end) && (j < _end1); i++, j++) {
 let bar = foo && ('baz' in foo);"
  > (compile '(begin
                (define foo
-                 (js/obj))
+                 (object))
                (define bar
                  (field-bound? baz-baz foo))))
  "let foo = {};
@@ -2652,7 +2652,7 @@ let bar = foo && ('baz' in foo);"
 let bar = foo && ('bazBaz' in foo);"
 
  :describe "send"
- > (let ((obj (js/obj "add" (lambda (x y) (+ x y)))))
+ > (let ((obj (object "add" (lambda (x y) (+ x y)))))
      (send obj add 1 1))
  2
  > (let ((obj (make-hash '(("foo" . "foo")))))
@@ -3019,10 +3019,12 @@ let y = 2;"
  (new Map)
  > (make-hash '(("foo" . "bar")))
  (new Map '(("foo" "bar")))
- > (apply new make-hash '())
+ > (new/apply make-hash '())
  (new Map)
  > (compile '(make-hash))
  "new Map();"
+ > (compile '(make-hash '()))
+ "new Map([]);"
  > (compile '(make-hash '(("foo" . "bar"))))
  "new Map([['foo', 'bar']]);"
  > (compile '(make-hash
@@ -3030,23 +3032,23 @@ let y = 2;"
                 ("baz" . "quux"))))
  "new Map([['foo', 'bar'], ['baz', 'quux']]);"
  > (compile '(make-hash
-              '(("foo" "bar")
-                ("baz" "quux"))))
- "new Map([['foo', ['bar']], ['baz', ['quux']]]);"
- > (compile '(make-hash
               `(("foo" . "bar")
                 ("baz" . "quux"))))
  "new Map([['foo', 'bar'], ['baz', 'quux']]);"
  > (compile '(make-hash
-              `(("foo" . "bar")
-                ("baz" . "quux")
-                (unquote-splicing
-                 (hash->list xyzzy)))))
- "new Map([['foo', 'bar'], ['baz', 'quux'], ...xyzzy.entries()]);"
+              '(("foo" "bar")
+                ("baz" "quux"))))
+ "new Map([['foo', ['bar']], ['baz', ['quux']]]);"
  > (compile '(make-hash
               `(("foo" "bar")
                 ("baz" "quux"))))
  "new Map([['foo', ['bar']], ['baz', ['quux']]]);"
+ > (compile '(make-hash
+              `(("foo" . "bar")
+                ("baz" . "quux")
+                (unquote-splicing
+                 (tuples->alist xyzzy)))))
+ "new Map([['foo', 'bar'], ['baz', 'quux'], ...xyzzy]);"
 
  :describe "hash?"
  > (hash? (make-hash))
@@ -3659,17 +3661,17 @@ lst.sort((x, y) => pred(x, y) ? -1 : 1);"
  #t
  > (string? 1)
  #f
- > (string? (js/obj))
+ > (string? (object))
  #f
  > (string? (list "foo"))
  #f
- > (string? (js/obj "foo" ""))
+ > (string? (object "foo" ""))
  #f
- > (string? (js/obj "foo" (quote ())))
+ > (string? (object "foo" (quote ())))
  #f
- > (string? (js/obj "foo" (js/obj)))
+ > (string? (object "foo" (object)))
  #f
- > (string? (js/obj "foo" "foo"))
+ > (string? (object "foo" "foo"))
  #f
  > (string? (quote ()))
  #f
@@ -3747,6 +3749,33 @@ lst.sort((x, y) => pred(x, y) ? -1 : 1);"
  "str.substring(i);"
  > (compile '(substring str i j))
  "str.substring(i, j);"
+
+ :describe "assoc"
+ > (assoc 'foo '((foo . bar)))
+ '(foo . bar)
+ > (assoc 'bar '((foo . bar)))
+ #f
+
+ :describe "assq"
+ > (assq 'foo '((foo . bar)))
+ '(foo . bar)
+ > (assq 'bar '((foo . bar)))
+ #f
+ > (compile '(define foo
+               (assq bar alst)))
+ "let foo = (idx => (idx >= 0) ? alst[idx] : false)(alst.findIndex(x => x[0] === bar));"
+ > (compile '(define foo
+               (assq (bar) alst)))
+ "let foo = ((key) => {
+  let idx = alst.findIndex(x => x[0] === key);
+  return (idx >= 0) ? alst[idx] : false;
+})(bar());"
+
+ :describe "findf"
+ > (compile '(define foo
+               (findf (lambda (x) (number? x))
+                      lst)))
+ "let foo = (idx => (idx >= 0) ? lst[idx] : false)(lst.findIndex(x => Number.isFinite(x)));"
 
  :describe "case"
  > (case "foo"
@@ -4248,7 +4277,7 @@ if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal
  "function f(x: number = 1): number {
   return x;
 }"
- > (compile '(define (f (options : Any (js/obj))) : Any
+ > (compile '(define (f (options : Any (object))) : Any
                x)
             :to "typescript")
  "function f(options: any = {}): any {
@@ -4290,6 +4319,12 @@ if (Array.isArray(matchVal) && (matchVal.length === 3) && Array.isArray(matchVal
  "import * as fooBar from 'foo-bar';"
  > (compile '(require foo "bar"))
  "import * as foo from 'bar';"
+ > (compile '(require "./foo"))
+ "import * as foo from './foo';"
+ > (compile '(require "./foo/bar"))
+ "import * as bar from './foo/bar';"
+ > (compile '(require "./foo/bar-baz"))
+ "import * as barBaz from './foo/bar-baz';"
  > (compile '(require (only-in foo
                                bar)))
  "import {

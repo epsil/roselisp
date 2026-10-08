@@ -42,7 +42,7 @@ import {
   taggedListP
 } from './util';
 
-const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListRef, dottedListLength, dottedListLast]: any[] = ((): any => {
+const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dottedListFourth, dottedListFifth, dottedListSixth, dottedListSeventh, dottedListEighth, dottedListNinth, dottedListTenth, dottedListRef, dottedListLength, dottedListLast, equalp]: any[] = ((): any => {
   function lastCdr_(lst: any): any {
     if (!Array.isArray(lst)) {
       return undefined;
@@ -309,10 +309,61 @@ const [lastCdr, selfEvaluatingP, range, dottedListSecond, dottedListThird, dotte
     }
     return result;
   }
+  function equalp_(x: any, y: any): any {
+    if (x === y) {
+      return true;
+    } else if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && Array.isArray(y)) {
+      const cdrX: any = ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1);
+      if (Array.isArray(x) && (x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && (x.length === 3) && !Array.isArray(cdrX) && !(Array.isArray(cdrX) && (cdrX.length >= 3) && (cdrX[cdrX.length - 2] === Symbol.for('.')))) {
+        return false;
+      } else if (equalp_(x[0], y[0])) {
+        return equalp_(cdrX, ((y.length === 3) && (y[1] === Symbol.for('.'))) ? y[2] : y.slice(1));
+      } else {
+        return false;
+      }
+    } else if (Array.isArray(x) && Array.isArray(y) && (y.length >= 3) && (y[y.length - 2] === Symbol.for('.'))) {
+      return equalp_(y, x);
+    } else if (Array.isArray(x) && Array.isArray(y)) {
+      if (x.length !== y.length) {
+        return false;
+      }
+      const _end: any = x.length;
+      for (let i: any = 0; i < _end; i++) {
+        if (!equalp_((x as any)[i], (y as any)[i])) {
+          return false;
+        }
+      }
+      return true;
+    } else if ((x instanceof Map) && (y instanceof Map)) {
+      if (x.size !== y.size) {
+        return false;
+      }
+      for (let entry of x.entries()) {
+        const [key1, value1]: any[] = entry;
+        const value2: any = y.get(key1);
+        if (!equalp_(value1, value2)) {
+          return false;
+        }
+      }
+      return true;
+    } else if ((x !== null) && (typeof x === 'object') && (y !== null) && (typeof y === 'object')) {
+      if (Object.keys(x).length !== Object.keys(y).length) {
+        return false;
+      }
+      for (let key of Object.keys(x)) {
+        if (!equalp_((x as any)[key], (y as any)[key])) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
   function keywordp_(obj: any): any {
     return (typeof obj === 'symbol') && ((obj.description as string).match(/^:/) ? true : false);
   }
-  return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListRef_, dottedListLength_, dottedListLast_];
+  return [lastCdr_, selfEvaluatingP_, range_, dottedListSecond_, dottedListThird_, dottedListFourth_, dottedListFifth_, dottedListSixth_, dottedListSeventh_, dottedListEighth_, dottedListNinth_, dottedListTenth_, dottedListRef_, dottedListLength_, dottedListLast_, equalp_];
 })();
 
 /**
@@ -2104,6 +2155,122 @@ iteratorToList_.compilerMacro = ((): any => {
 
 iteratorToList_.fsource = [Symbol.for('define'), [Symbol.for('iterator->list_'), Symbol.for('iterator')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('iterator->array'), Symbol.for('iterator')]];
 
+/**
+ * Find the first element of an association list
+ * whose CAR is equal to `key`.
+ *
+ * Similar to [`assoc` in Racket][rkt:assoc] and
+ * [`assoc` in Common Lisp][cl:assoc].
+ *
+ * [rkt:assoc]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._assoc%29%29
+ * [cl:assoc]: http://clhs.lisp.se/Body/f_assocc.htm#assoc
+ */
+function assoc_(key: any, alst: any, isEqualP: any = equalp): any {
+  const idx: any = alst.findIndex((x: any): any => isEqualP(x[0], key));
+  return (idx >= 0) ? (alst as any)[idx] : false;
+}
+
+assoc_.fsource = [Symbol.for('define'), [Symbol.for('assoc_'), Symbol.for('key'), Symbol.for('alst'), [Symbol.for('is-equal?'), Symbol.for('equal?')]], [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal?'), [Symbol.for('car'), Symbol.for('x')], Symbol.for('key')]], Symbol.for('alst')]];
+
+/**
+ * Find the first element of an association list
+ * whose CAR is identical to `key`.
+ *
+ * Similar to [`assq` in Racket][rkt:assq] and
+ * [`assq` in Emacs Lisp][el:assq].
+ *
+ * [rkt:assq]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Fprivate%2Flist..rkt%29._assq%29%29
+ * [el:assq]: https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html#index-assq
+ */
+function assq_(key: any, alst: any): any {
+  const idx: any = alst.findIndex((x: any): any => x[0] === key);
+  return (idx >= 0) ? (alst as any)[idx] : false;
+}
+
+assq_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const [key, alst]: any[] = exp.slice(1);
+    if (!(Array.isArray(key) && (key.length > 0))) {
+      return [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('car'), Symbol.for('x')], key]], alst];
+    } else {
+      const key1: any = Symbol('key');
+      return [Symbol.for('let'), [[key1, key]], ((key: any): any => [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('car'), Symbol.for('x')], key]], alst])(key1)];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+assq_.fsource = [Symbol.for('define'), [Symbol.for('assq_'), Symbol.for('key'), Symbol.for('alst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('findf'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('eq?'), [Symbol.for('car'), Symbol.for('x')], Symbol.for('key')]], Symbol.for('alst')]];
+
+/**
+ * Convert an association list to a list of tuples.
+ * For example, `((a . x) (b . y))` becomes `((a x) (b y))`.
+ */
+function alistToTuples_(alst: any): any {
+  return alst.map((x: any): any => [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)]);
+}
+
+alistToTuples_.fsource = [Symbol.for('define'), [Symbol.for('alist->tuples_'), Symbol.for('alst')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('list'), [Symbol.for('car'), Symbol.for('x')], [Symbol.for('cdr'), Symbol.for('x')]]], Symbol.for('alst')]];
+
+/**
+ * Compiler macro for `(alist->tuples ...)` expressions.
+ */
+alistToTuples_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const [alst]: any[] = exp.slice(1);
+    if (taggedListP(alst, Symbol.for('tuples->alist'))) {
+      return alst[1];
+    } else if ((taggedListP(alst, Symbol.for('quasiquote')) || taggedListP(alst, Symbol.for('quote'))) && ((x: any): any => Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1])))(alst[1]) && (alst[1].filter((x: any): any => !Array.isArray(x) || ((x.length === 2) && (taggedListP(x, Symbol.for('unquote')) || (taggedListP(x, Symbol.for('unquote-splicing')) && !taggedListP(x[1], Symbol.for('tuples->alist')))))).length === 0)) {
+      return [alst[0], alst[1].map((x: any): any => {
+        if (taggedListP(x, Symbol.for('unquote-splicing')) && taggedListP(x[1], Symbol.for('tuples->alist'))) {
+          return [x[0], x[1][1]];
+        } else {
+          return [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)];
+        }
+      })];
+    } else {
+      return [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('list'), [Symbol.for('car'), Symbol.for('x')], [Symbol.for('cdr'), Symbol.for('x')]]], alst];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
+ * Convert a list of tuples to an association list.
+ * For example, `((a x) (b y))` becomes `((a . x) (b . y))`.
+ */
+function tuplesToAlist_(lst: any): any {
+  return lst.map((x: any): any => [x[0], ...((x1: any): any => Array.isArray(x1) ? x1 : [Symbol.for('.'), x1])(x[1])]);
+}
+
+tuplesToAlist_.fsource = [Symbol.for('define'), [Symbol.for('tuples->alist_'), Symbol.for('lst')], [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], Symbol.for('lst')]];
+
+/**
+ * Compiler macro for `(tuples->alist ...)` expressions.
+ */
+tuplesToAlist_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const [lst]: any[] = exp.slice(1);
+    if (taggedListP(lst, Symbol.for('alist->tuples'))) {
+      return lst[1];
+    } else if ((taggedListP(lst, Symbol.for('quasiquote')) || taggedListP(lst, Symbol.for('quote'))) && ((x: any): any => Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1])))(lst[1]) && (lst[1].filter((x: any): any => !Array.isArray(x) || ((x.length === 2) && (taggedListP(x, Symbol.for('unquote')) || (taggedListP(x, Symbol.for('unquote-splicing')) && !taggedListP(x[1], Symbol.for('alist->tuples')))))).length === 0)) {
+      return [lst[0], lst[1].map((x: any): any => {
+        if (taggedListP(x, Symbol.for('unquote-splicing')) && taggedListP(x[1], Symbol.for('alist->tuples'))) {
+          return [x[0], x[1][1]];
+        } else {
+          return [x[0], ...((x1: any): any => Array.isArray(x1) ? x1 : [Symbol.for('.'), x1])(x[1])];
+        }
+      })];
+    } else {
+      return [Symbol.for('map'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('cons'), [Symbol.for('first'), Symbol.for('x')], [Symbol.for('second'), Symbol.for('x')]]], lst];
+    }
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
 export {
   append_ as append,
   buildList_ as buildList,
@@ -2170,7 +2337,10 @@ export {
   take_ as take,
   tenth_ as tenth,
   third_ as third,
+  alistToTuples_,
   append_,
+  assoc_,
+  assq_,
   buildList_,
   butlast_,
   cdr_,
@@ -2248,5 +2418,6 @@ export {
   sixth_,
   take_,
   tenth_,
-  third_
+  third_,
+  tuplesToAlist_
 };

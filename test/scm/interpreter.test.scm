@@ -79,20 +79,20 @@
  #f
 
  :describe "dot"
- > (let ((obj (js/obj "add1" (lambda (x) (+ x 1)))))
+ > (let ((obj (object "add1" (lambda (x) (+ x 1)))))
      (. obj add1 1))
  2
- > (let ((obj (js/obj "add1" (lambda (x) (+ x 1)))))
+ > (let ((obj (object "add1" (lambda (x) (+ x 1)))))
      (.add1 obj 1))
  2
- > (let ((obj (js/obj "add" (lambda (x y) (+ x y)))))
+ > (let ((obj (object "add" (lambda (x y) (+ x y)))))
      (.add obj 1 1))
  2
- > (let ((obj (js/obj)))
+ > (let ((obj (object)))
      (set! (.-prop obj) "bar")
      (.-prop obj))
  "bar"
- > (let ((obj (js/obj "prop" "foo")))
+ > (let ((obj (object "prop" "foo")))
      (.-prop obj))
  "foo"
 

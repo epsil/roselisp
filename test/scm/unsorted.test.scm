@@ -93,7 +93,7 @@ let x = 1 + 2;"
  xit> (compile '(js/iife (js/arrow (x . y)
                            (+ x (first y)))
                          (list* a b))
-               :as 'statement)
+               :as "statement")
  "let x = a;
 
 let y = b;
@@ -101,16 +101,16 @@ let y = b;
 x + y[0];"
 
  :describe "parse"
- xit> (parse "foo;" :as 'javascript)
- (js/obj
+ xit> (parse "foo;" :as "javascript")
+ (object
   "type"
   "Program"
   "body"
   (list
-   (js/obj "type"
+   (object "type"
            "ExpressionStatement"
            "expression"
-           (js/obj "type"
+           (object "type"
                    "Identifier"
                    "name"
                    "foo"))))
@@ -155,44 +155,43 @@ let x1 = 2;
 
 x1;"
 
- :describe "Dotted lists"
- xit> '(1 . 2)
- '(1 . 2)
- xit> '(1 . ())
- '(1)
- xit> '(1 . (2 . ()))
- '(1 2)
- xit> '(1 . (2 . 3))
- '(1 2 . 3)
- xit> (dotted-list? '(1 . ()))
- #f
- xit> (dotted-list? '(1 . (2 . ())))
- #f
- xit> (dotted-pair? '(1 . ()))
- #f
- xit> (dotted-pair? '(1 . (2 . ())))
- #f
- xit> (compile '(module m scheme
-                  '(1 . ()))
-               :fdottedlists #t)
- "import {
-  normalizeList
-} from 'roselisp';
-
-normalizeList([1, Symbol.for('.'), []);"
- xit> (compile '(module m scheme
-                  (define (normalize-list x)
-                    '(1 . x)))
-               :fdottedlists #t)
- "import {
-  normalizeList1
-} from 'roselisp';
-
-function normalizeList(x) {
-  normalizeList1([1, Symbol.for('.'), x);
-}"
-
  ;;  :describe "Other tests"
+ ;;  :describe "Dotted lists"
+ ;;  xit> '(1 . 2)
+ ;;  '(1 . 2)
+ ;;  xit> '(1 . ())
+ ;;  '(1)
+ ;;  xit> '(1 . (2 . ()))
+ ;;  '(1 2)
+ ;;  xit> '(1 . (2 . 3))
+ ;;  '(1 2 . 3)
+ ;;  xit> (dotted-list? '(1 . ()))
+ ;;  #f
+ ;;  xit> (dotted-list? '(1 . (2 . ())))
+ ;;  #f
+ ;;  xit> (dotted-pair? '(1 . ()))
+ ;;  #f
+ ;;  xit> (dotted-pair? '(1 . (2 . ())))
+ ;;  #f
+ ;;  xit> (compile '(module m scheme
+ ;;                   '(1 . ()))
+ ;;                :fdottedlists #t)
+ ;;  "import {
+ ;;   normalizeList
+ ;; } from 'roselisp';
+ ;;
+ ;; normalizeList([1, Symbol.for('.'), []);"
+ ;;  xit> (compile '(module m scheme
+ ;;                   (define (normalize-list x)
+ ;;                     '(1 . x)))
+ ;;                :fdottedlists #t)
+ ;;  "import {
+ ;;   normalizeList1
+ ;; } from 'roselisp';
+ ;;
+ ;; function normalizeList(x) {
+ ;;   normalizeList1([1, Symbol.for('.'), x);
+ ;; }"
  ;;  > (compile
  ;;     '(begin
  ;;        ;; Redefine core functions (nonsensically).

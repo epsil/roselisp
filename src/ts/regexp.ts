@@ -61,7 +61,7 @@ regexpp_.fsource = [Symbol.for('define'), [Symbol.for('regexp?_'), Symbol.for('o
  * [rkt:regexp-quote]: https://docs.racket-lang.org/reference/regexp.html#%28def._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._regexp-quote%29%29
  */
 function regexpQuote_(str: any): any {
-  // Based on `escapeRegExp()` from
+  // Adapted from `escapeRegExp()` from
   // <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping>.
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

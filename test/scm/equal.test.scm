@@ -29,14 +29,14 @@
  > (equal?_ (make-hash '(("foo" . "bar")))
             (make-hash '(("foo" . "bar"))))
  #t
- > (equal?_ (js/obj)
-            (js/obj))
+ > (equal?_ (object)
+            (object))
  #t
- > (equal?_ (js/obj "foo" "bar")
-            (js/obj "foo" "bar"))
+ > (equal?_ (object "foo" "bar")
+            (object "foo" "bar"))
  #t
- > (equal?_ (js/obj "foo"
-                    (js/obj "bar" "baz"))
-            (js/obj "foo"
-                    (js/obj "bar" "baz")))
+ > (equal?_ (object "foo"
+                    (object "bar" "baz"))
+            (object "foo"
+                    (object "bar" "baz")))
  #t)

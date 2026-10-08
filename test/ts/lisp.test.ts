@@ -394,7 +394,7 @@ function bar(exp, env) {
 bar.ftype = 'macro';
 
 let baz = 1;`]));
-  it('(compile \'(begin (define-fields (foo) (js/obj "foo" (lambda (x) x))) (defmacro bar (x) (foo x)) (define baz (bar 1))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-fields'), [Symbol.for('foo')], [Symbol.for('js/obj'), 'foo', [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], [Symbol.for('foo'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]]]]], `let {foo} = {
+  it('(compile \'(begin (define-fields (foo) (object "foo" (lambda (x) x))) (defmacro bar (x) (foo x)) (define baz (bar 1))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-fields'), [Symbol.for('foo')], [Symbol.for('object'), 'foo', [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], [Symbol.for('foo'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]]]]], `let {foo} = {
   foo: x => x
 };
 
@@ -406,7 +406,7 @@ function bar(exp, env) {
 bar.ftype = 'macro';
 
 let baz = 1;`]));
-  it('(compile \'(begin (define-fields ((foo foo1)) (js/obj "foo" (lambda (x) x))) (defmacro bar (x) (foo1 x)) (define baz (bar 1))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-fields'), [[Symbol.for('foo'), Symbol.for('foo1')]], [Symbol.for('js/obj'), 'foo', [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], [Symbol.for('foo1'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]]]]], `let {foo: foo1} = {
+  it('(compile \'(begin (define-fields ((foo foo1)) (object "foo" (lambda (x) x))) (defmacro bar (x) (foo1 x)) (define baz (bar 1))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('begin'), [Symbol.for('define-fields'), [[Symbol.for('foo'), Symbol.for('foo1')]], [Symbol.for('object'), 'foo', [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], [Symbol.for('foo1'), Symbol.for('x')]], [Symbol.for('define'), Symbol.for('baz'), [Symbol.for('bar'), 1]]]]], `let {foo: foo1} = {
   foo: x => x
 };
 
@@ -565,29 +565,69 @@ describe('unwind-protect', (): any => {
 });
 
 describe('clj/try', (): any => {
-  it('(clj/try (/ 1 2) (catch Exception e "there was an error") (finally (display "finally")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('Exception'), Symbol.for('e'), 'there was an error'], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]], 0.5]));
-  it('(clj/try (/ 1 3) (/ 1 2) (catch Exception e "there was an error") (finally (display "finally")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 3], [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('Exception'), Symbol.for('e'), 'there was an error'], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]], 0.5]));
+  it('(clj/try (/ 1 2) (catch Error e "there was an error") (finally (display "finally")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e'), 'there was an error'], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]], 0.5]));
+  it('(clj/try (/ 1 3) (/ 1 2) (catch Error e "there was an error") (finally (display "finally")))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 3], [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e'), 'there was an error'], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]], 0.5]));
   it('(compile \'(clj/try))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try')]]], `try {
 }`]));
   it('(compile \'(clj/try (set! x (/ 2 1))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]]]]], `try {
   x = 2 / 1;
+}`]));
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch Error e (display e))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e'), [Symbol.for('display'), Symbol.for('e')]]]]], `try {
+  x = 2 / 1;
+} catch (e) {
+  if (e instanceof Error) {
+    console.log(e);
+  } else {
+    throw e;
+  }
+}`]));
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch _ e (display e))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('e'), [Symbol.for('display'), Symbol.for('e')]]]]], `try {
+  x = 2 / 1;
+} catch (e) {
+  console.log(e);
+}`]));
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch Error _ (display "error"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('_'), [Symbol.for('display'), 'error']]]]], `try {
+  x = 2 / 1;
+} catch (e) {
+  if (e instanceof Error) {
+    console.log('error');
+  } else {
+    throw e;
+  }
+}`]));
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch _ _ (display "error"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('_'), [Symbol.for('display'), 'error']]]]], `try {
+  x = 2 / 1;
+} catch {
+  console.log('error');
+}`]));
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch _ _)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('_')]]]], `try {
+  x = 2 / 1;
+} catch {
+}`]));
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch _)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_')]]]], `try {
+  x = 2 / 1;
+} catch {
+}`]));
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch')]]]], `try {
+  x = 2 / 1;
+} catch {
 }`]));
   it('(compile \'(clj/try (set! x (/ 2 1)) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
   x = 2 / 1;
 } finally {
   console.log('cleanup');
 }`]));
-  it('(compile \'(clj/try (/ 1 2) (catch Object e (display "there was an error")) (finally (display "finally"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('e'), [Symbol.for('display'), 'there was an error']], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]]]], `try {
+  it('(compile \'(clj/try (/ 1 2) (catch _ e (display "there was an error")) (finally (display "finally"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('e'), [Symbol.for('display'), 'there was an error']], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]]]], `try {
   1 / 2;
 } catch (e) {
   console.log('there was an error');
 } finally {
   console.log('finally');
 }`]));
-  it('(compile \'(clj/try (/ 1 2) (catch Exception e (display "there was an error")) (finally (display "finally"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('Exception'), Symbol.for('e'), [Symbol.for('display'), 'there was an error']], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]]]], `try {
+  it('(compile \'(clj/try (/ 1 2) (catch Error e (display "there was an error")) (finally (display "finally"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('/'), 1, 2], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('e'), [Symbol.for('display'), 'there was an error']], [Symbol.for('finally'), [Symbol.for('display'), 'finally']]]]], `try {
   1 / 2;
 } catch (e) {
-  if (e instanceof Exception) {
+  if (e instanceof Error) {
     console.log('there was an error');
   } else {
     throw e;
@@ -595,17 +635,17 @@ describe('clj/try', (): any => {
 } finally {
   console.log('finally');
 }`]));
-  it('(compile \'(clj/try (set! x (/ 2 1)) (catch Object e (display "there was an error")) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('e'), [Symbol.for('display'), 'there was an error']], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch _ e (display "there was an error")) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('e'), [Symbol.for('display'), 'there was an error']], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
   x = 2 / 1;
 } catch (e) {
   console.log('there was an error');
 } finally {
   console.log('cleanup');
 }`]));
-  it('(compile \'(clj/try (set! x (/ 2 1)) (catch MyException e (display "there was an error") (return #f)) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('MyException'), Symbol.for('e'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch MyError e (display "there was an error") (return #f)) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('MyError'), Symbol.for('e'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
   x = 2 / 1;
 } catch (e) {
-  if (e instanceof MyException) {
+  if (e instanceof MyError) {
     console.log('there was an error');
     return false;
   } else {
@@ -614,7 +654,7 @@ describe('clj/try', (): any => {
 } finally {
   console.log('cleanup');
 }`]));
-  it('(compile \'(clj/try (set! x (/ 2 1)) (catch Object e (display "there was an error") (return #f)) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('e'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch _ e (display "there was an error") (return #f)) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('e'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
   x = 2 / 1;
 } catch (e) {
   console.log('there was an error');
@@ -622,7 +662,7 @@ describe('clj/try', (): any => {
 } finally {
   console.log('cleanup');
 }`]));
-  it('(compile \'(module m scheme (clj/try (set! x (/ 2 1)) (catch Object length (display "there was an error: " length) (return #f)) (finally (display "cleanup")))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('length'), [Symbol.for('display'), 'there was an error: ', Symbol.for('length')], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]]], `try {
+  it('(compile \'(module m scheme (clj/try (set! x (/ 2 1)) (catch _ length (display "there was an error: " length) (return #f)) (finally (display "cleanup")))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('length'), [Symbol.for('display'), 'there was an error: ', Symbol.for('length')], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]]], `try {
   x = 2 / 1;
 } catch (length) {
   console.log('there was an error: ', length);
@@ -630,7 +670,7 @@ describe('clj/try', (): any => {
 } finally {
   console.log('cleanup');
 }`]));
-  it('(compile \'(module m scheme (clj/try (set! x (/ 2 1)) (catch Object _ (display "there was an error") (return #f)) (finally (display "cleanup")))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Object'), Symbol.for('_'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]]], `try {
+  it('(compile \'(clj/try (set! x (/ 2 1)) (catch _ _ (display "there was an error") (return #f)) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('_'), Symbol.for('_'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
   x = 2 / 1;
 } catch {
   console.log('there was an error');
@@ -638,11 +678,15 @@ describe('clj/try', (): any => {
 } finally {
   console.log('cleanup');
 }`]));
-  return it('(compile \'(module m scheme (clj/try (set! x (/ 2 1)) (catch Error _ (display "there was an error") (return #f)) (finally (display "cleanup")))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('_'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]]], `try {
+  return it('(compile \'(clj/try (set! x (/ 2 1)) (catch Error _ (display "there was an error") (return #f)) (finally (display "cleanup"))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('clj/try'), [Symbol.for('set!'), Symbol.for('x'), [Symbol.for('/'), 2, 1]], [Symbol.for('catch'), Symbol.for('Error'), Symbol.for('_'), [Symbol.for('display'), 'there was an error'], [Symbol.for('return'), false]], [Symbol.for('finally'), [Symbol.for('display'), 'cleanup']]]]], `try {
   x = 2 / 1;
-} catch {
-  console.log('there was an error');
-  return false;
+} catch (e) {
+  if (e instanceof Error) {
+    console.log('there was an error');
+    return false;
+  } else {
+    throw e;
+  }
 } finally {
   console.log('cleanup');
 }`]));

@@ -119,7 +119,7 @@
        (eval-estree
         (new ObjectExpression)
         lisp-1-environment))
- (js/obj)
+ (object)
  > (it "{ foo: 'bar' }"
        (eval-estree
         (new ObjectExpression
@@ -128,7 +128,7 @@
                    (new Identifier "foo")
                    (new Literal "bar"))))
         lisp-1-environment))
- (js/obj "foo" "bar")
+ (object "foo" "bar")
  > (it "{ const foo = { bar: 'baz' }; {...foo}; }"
        (eval-estree
         (new BlockStatement
@@ -145,7 +145,7 @@
                     (new SpreadElement
                          (new Identifier "foo"))))))
         lisp-1-environment))
- (js/obj "bar" "baz")
+ (object "bar" "baz")
  > (it "!false"
        (eval-estree
         (new UnaryExpression

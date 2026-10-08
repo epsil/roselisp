@@ -1244,6 +1244,27 @@ exports.findf = findf_;
 exports.findf_ = findf_;
 findf_.fsource = [Symbol.for('define'), [Symbol.for('findf_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), false]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], [Symbol.for('list-ref'), Symbol.for('lst'), Symbol.for('idx')], Symbol.for('not-found')]]];
 /**
+ * Compiler macro for `(findf ...)` expressions.
+ */
+findf_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        let [proc, lst, notFound] = exp.slice(1);
+        if (notFound === undefined) {
+            notFound = false;
+        }
+        const idx = Symbol('idx');
+        if (!(Array.isArray(lst) && (lst.length > 0))) {
+            return [Symbol.for('let'), [[idx, [Symbol.for('js/find-index'), proc, lst]]], [Symbol.for('js/?'), [Symbol.for('>='), idx, 0], [Symbol.for('list-ref'), lst, idx], notFound]];
+        }
+        else {
+            const lst1 = Symbol('lst');
+            return [Symbol.for('let'), [[lst1, lst]], ((lst) => [Symbol.for('let'), [[idx, [Symbol.for('js/find-index'), proc, lst]]], [Symbol.for('js/?'), [Symbol.for('>='), idx, 0], [Symbol.for('list-ref'), lst, idx], notFound]])(lst1)];
+        }
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+/**
  * Find the index of a list element matching a predicate.
  *
  * Similar to [`index-where` in Racket][rkt:index-where] and
@@ -1252,8 +1273,8 @@ findf_.fsource = [Symbol.for('define'), [Symbol.for('findf_'), Symbol.for('proc'
  * [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
  * [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
  */
-function findfIndex_(proc, seq, notFound = false) {
-    const idx = seq.findIndex(proc);
+function findfIndex_(proc, lst, notFound = false) {
+    const idx = lst.findIndex(proc);
     if (idx >= 0) {
         return idx;
     }
@@ -1265,16 +1286,16 @@ exports.findfIndex = findfIndex_;
 exports.findfIndex_ = findfIndex_;
 findfIndex_.compilerMacro = (() => {
     const f = (exp, env) => {
-        let [proc, seq, notFound] = exp.slice(1);
+        let [proc, lst, notFound] = exp.slice(1);
         if (notFound === undefined) {
             notFound = false;
         }
-        return [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), proc, seq]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), notFound]];
+        return [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), proc, lst]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), notFound]];
     };
     f.ftype = 'macro';
     return f;
 })();
-findfIndex_.fsource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol.for('proc'), Symbol.for('seq'), [Symbol.for('not-found'), false]], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
+findfIndex_.fsource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol.for('proc'), Symbol.for('lst'), [Symbol.for('not-found'), false]], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 /**
  * Find the index of a list element matching a predicate.
  *
@@ -1284,8 +1305,8 @@ findfIndex_.fsource = [Symbol.for('define'), [Symbol.for('findf-index_'), Symbol
  * [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
  * [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
  */
-function indexWhere_(seq, proc, notFound = false) {
-    const idx = seq.findIndex(proc);
+function indexWhere_(lst, proc, notFound = false) {
+    const idx = lst.findIndex(proc);
     if (idx >= 0) {
         return idx;
     }
@@ -1296,16 +1317,16 @@ function indexWhere_(seq, proc, notFound = false) {
 exports.indexWhere_ = indexWhere_;
 indexWhere_.compilerMacro = (() => {
     const f = (exp, env) => {
-        let [seq, proc, notFound] = exp.slice(1);
+        let [lst, proc, notFound] = exp.slice(1);
         if (notFound === undefined) {
             notFound = false;
         }
-        return [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), proc, seq]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), notFound]];
+        return [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), proc, lst]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), notFound]];
     };
     f.ftype = 'macro';
     return f;
 })();
-indexWhere_.fsource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol.for('seq'), Symbol.for('proc'), [Symbol.for('not-found'), false]], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('seq')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
+indexWhere_.fsource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol.for('lst'), Symbol.for('proc'), [Symbol.for('not-found'), false]], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('let'), [[Symbol.for('idx'), [Symbol.for('js/find-index'), Symbol.for('proc'), Symbol.for('lst')]]], [Symbol.for('if'), [Symbol.for('>='), Symbol.for('idx'), 0], Symbol.for('idx'), Symbol.for('not-found')]]];
 /**
  * Find the index of a list element.
  *
@@ -1315,8 +1336,8 @@ indexWhere_.fsource = [Symbol.for('define'), [Symbol.for('index-where_'), Symbol
  * [rkt:index-of]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-of%29%29
  * [cl:position]: http://clhs.lisp.se/Body/f_pos_p.htm#position
  */
-function indexOf_(seq, v, isEqual = undefined) {
-    const idx = seq.findIndex(isEqual ? (x) => isEqual(x, v) : (x) => equalp(x, v));
+function indexOf_(lst, v, isEqual = undefined) {
+    const idx = lst.findIndex(isEqual ? (x) => isEqual(x, v) : (x) => equalp(x, v));
     if (idx >= 0) {
         return idx;
     }
@@ -1325,7 +1346,7 @@ function indexOf_(seq, v, isEqual = undefined) {
     }
 }
 exports.indexOf_ = indexOf_;
-indexOf_.fsource = [Symbol.for('define'), [Symbol.for('index-of_'), Symbol.for('seq'), Symbol.for('v'), [Symbol.for('is-equal'), undefined]], [Symbol.for('index-where'), Symbol.for('seq'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('x'), Symbol.for('v')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('x'), Symbol.for('v')]]]]];
+indexOf_.fsource = [Symbol.for('define'), [Symbol.for('index-of_'), Symbol.for('lst'), Symbol.for('v'), [Symbol.for('is-equal'), undefined]], [Symbol.for('index-where'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('is-equal'), [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('is-equal'), Symbol.for('x'), Symbol.for('v')]], [Symbol.for('lambda'), [Symbol.for('x')], [Symbol.for('equal?'), Symbol.for('x'), Symbol.for('v')]]]]];
 /**
  * Return the intersection of multiple lists.
  *

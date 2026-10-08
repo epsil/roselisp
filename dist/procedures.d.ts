@@ -651,6 +651,7 @@ declare namespace memfp_ {
 declare function findf_(proc: any, lst: any, notFound?: any): any;
 declare namespace findf_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
+    var compilerMacro: any;
 }
 /**
  * Find the index of a list element matching a predicate.
@@ -661,7 +662,7 @@ declare namespace findf_ {
  * [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
  * [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
  */
-declare function findfIndex_(proc: any, seq: any, notFound?: any): any;
+declare function findfIndex_(proc: any, lst: any, notFound?: any): any;
 declare namespace findfIndex_ {
     var compilerMacro: any;
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
@@ -675,7 +676,7 @@ declare namespace findfIndex_ {
  * [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
  * [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
  */
-declare function indexWhere_(seq: any, proc: any, notFound?: any): any;
+declare function indexWhere_(lst: any, proc: any, notFound?: any): any;
 declare namespace indexWhere_ {
     var compilerMacro: any;
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | (number | symbol)[])[] | (symbol | symbol[])[][])[])[];
@@ -689,7 +690,7 @@ declare namespace indexWhere_ {
  * [rkt:index-of]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-of%29%29
  * [cl:position]: http://clhs.lisp.se/Body/f_pos_p.htm#position
  */
-declare function indexOf_(seq: any, v: any, isEqual?: any): any;
+declare function indexOf_(lst: any, v: any, isEqual?: any): any;
 declare namespace indexOf_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | undefined)[])[])[];
 }

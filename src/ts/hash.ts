@@ -19,26 +19,6 @@
  * [js:Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
  */
 
-import {
-  taggedListP
-} from './util';
-
-const [flatten]: any[] = ((): any => {
-  function flatten_(lst: any): any {
-    return lst.reduce((acc: any, x: any): any => {
-      if (Array.isArray(x)) {
-        return [...acc, ...flatten_(x)];
-      } else if (x === Symbol.for('.')) {
-        return acc;
-      } else {
-        acc.push(x);
-        return acc;
-      }
-    }, []);
-  }
-  return [flatten_];
-})();
-
 /**
  * Whether something is a hash map.
  *
@@ -62,43 +42,29 @@ hashp_.compilerMacro = ((): any => {
 hashp_.fsource = [Symbol.for('define'), [Symbol.for('hash?_'), Symbol.for('v')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('v'), Symbol.for('Map')]];
 
 /**
- * Make a hash map from a list of `(key . value)` pairs.
+ * Make a hash map from an association list, i.e., a list
+ * on the form `((key1 . val1) (key2 . val2) ...)`.
  *
  * Similar to [`make-hash` in Racket][rkt:make-hash].
  *
  * [rkt:make-hash]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._make-hash%29%29
  */
-function makeHash_(assocs: any = []): any {
-  // TODO: Instead of `(map flatten ...)`, define a converter function
-  // `alist->tuples` and call that here. That function can then be given
-  // a compiler macro that deals with quasiquoted association lists and
-  // the like.
-  return new Map(assocs.map((flatten.length === 1) ? flatten : (x: any): any => flatten(x)));
+function makeHash_(alst: any = []): any {
+  return new Map(alst.map((x: any): any => [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)]));
 }
 
-makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('assocs'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), Symbol.for('assocs')]]];
+makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('alst'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('alist->tuples'), Symbol.for('alst')]]];
 
 /**
  * Compiler macro for `(make-hash ...)` expressions.
  */
 makeHash_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
-    const [assocs]: any[] = exp.slice(1);
-    if (assocs) {
-      if ((taggedListP(assocs, Symbol.for('quasiquote')) || taggedListP(assocs, Symbol.for('quote'))) && ((x: any): any => Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1])))(assocs[1]) && (assocs[1].filter((x: any): any => !Array.isArray(x) || ((x.length === 2) && (taggedListP(x, Symbol.for('unquote')) || (taggedListP(x, Symbol.for('unquote-splicing')) && !taggedListP(x[1], Symbol.for('hash->list')))))).length === 0)) {
-        return [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('ann'), [assocs[0], assocs[1].map((x: any): any => {
-          if (taggedListP(x, Symbol.for('unquote-splicing')) && taggedListP(x[1], Symbol.for('hash->list'))) {
-            return [x[0], [Symbol.for('send'), x[1][1], Symbol.for('entries')]];
-          } else {
-            return [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)];
-          }
-        })], Symbol.for('Any')]];
-      } else {
-        return [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), assocs]];
-      }
-    } else {
-      return [Symbol.for('new'), Symbol.for('Map')];
+    let [alst]: any[] = exp.slice(1);
+    if (alst === undefined) {
+      alst = undefined;
     }
+    return [Symbol.for('new'), Symbol.for('Map'), ...(alst ? [[Symbol.for('ann'), [Symbol.for('alist->tuples'), alst], Symbol.for('Any')]] : [])];
   };
   f.ftype = 'macro';
   return f;

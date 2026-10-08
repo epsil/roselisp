@@ -16,9 +16,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withCwd = exports.validJsCasingStyleP = exports.unwrapQuoteExpression = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.removeIndentation = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.copyIntoArrayX = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+exports.withCwd = exports.validJsCasingStyleP = exports.unwrapQuoteExpression = exports.unquotep = exports.unquoteSplicingP = exports.textOfQuotation = exports.taggedListP = exports.removeIndentation = exports.quotep = exports.quasiquotep = exports.parsePlistAndBody = exports.parseParamsList = exports.numberToLetter = exports.mapTree = exports.mapSetX = exports.mapHasP = exports.mapGetTuple = exports.mapGet = exports.makeUniqueSymbol = exports.makeIdentifierString = exports.makeArityFunction = exports.listExpressionToPattern = exports.lambdaToLet = exports.kebabCaseToSnakeCase = exports.kebabCaseToCamelCase = exports.insertIntoArrayExpX = exports.getPackageProperty = exports.getNodeModulesPath = exports.formp = exports.flipFunctionExpression = exports.defineMethod = exports.defineGeneric = exports.defineToDefineMacro = exports.countTree = exports.copyIntoArrayX = exports.compilingToJsP = exports.colonFormP = exports.beginWrapSmart = exports.beginWrap = exports.mapSet = exports.mapHas = void 0;
+const fs_1 = require("fs");
+const path_1 = require("path");
 const process_1 = require("process");
 const constants_1 = require("./constants");
+const estree_1 = require("./estree");
+const plist_1 = require("./plist");
 const rose_1 = require("./rose");
 const [selfEvaluatingP, buildList, keywordp] = (() => {
     function selfEvaluatingP_(x) {
@@ -176,6 +180,16 @@ function validJsCasingStyleP(casingStyle) {
 }
 exports.validJsCasingStyleP = validJsCasingStyleP;
 /**
+ * Whether we are compiling to JavaScript code,
+ * rather than an ESTree intended for evaluation.
+ */
+function compilingToJsP(options) {
+    // FIXME: Kludge. This should look at the `:to` option
+    // instead.
+    return validJsCasingStyleP(options['case']);
+}
+exports.compilingToJsP = compilingToJsP;
+/**
  * Transform a string to a valid JavaScript identifier
  * string, provided an appropriate casing style
  * (camel case or snake case) is specified in `options`.
@@ -304,7 +318,7 @@ function formp(exp, f, env) {
                 return false;
             }
             else {
-                const val = env.get(op);
+                let val = env.get(op);
                 return f === val;
             }
         }
@@ -734,7 +748,7 @@ function parsePlistAndBody(plstAndBody) {
         const prop = plstAndBody[i];
         if (keywordp(prop) || ((0, rose_1.syntaxp)(prop) && keywordp((0, rose_1.syntaxToDatum)(prop)))) {
             plst.push(prop);
-            const val = plstAndBody[i + 1];
+            let val = plstAndBody[i + 1];
             plst.push(val);
         }
         else {
@@ -894,6 +908,25 @@ function unwrapQuoteExpression(exp) {
 }
 exports.unwrapQuoteExpression = unwrapQuoteExpression;
 /**
+ * Rewrite `[...[x]]` to `[x]`, recursively.
+ */
+function insertIntoArrayExpX(x, arr) {
+    if ((0, estree_1.estreeTypeP)(x, 'SpreadElement') && (0, estree_1.estreeTypeP)(x.argument, 'ArrayExpression')) {
+        const elements = x.argument.elements;
+        for (let y of elements) {
+            insertIntoArrayExpX(y, arr);
+        }
+    }
+    else if ((0, estree_1.estreeTypeP)(arr, 'ArrayExpression')) {
+        return insertIntoArrayExpX(x, arr.elements);
+    }
+    else {
+        arr.push(x);
+        return arr;
+    }
+}
+exports.insertIntoArrayExpX = insertIntoArrayExpX;
+/**
  * Copy elements from the list `source` to the list `dest`
  * so that the two become equal. Modifies `dest` in place.
  * Only the beginning of `dest` is modified; the rest is
@@ -933,11 +966,11 @@ function withCwd(dir, f) {
         try {
             (0, process_1.chdir)(dir);
         }
-        catch (err) {
-            if (err instanceof Error) {
+        catch (e) {
+            if (e instanceof Error) {
             }
             else {
-                throw err;
+                throw e;
             }
         }
         return f();
@@ -946,13 +979,64 @@ function withCwd(dir, f) {
         try {
             (0, process_1.chdir)(tmp);
         }
-        catch (err) {
-            if (err instanceof Error) {
+        catch (e) {
+            if (e instanceof Error) {
             }
             else {
-                throw err;
+                throw e;
             }
         }
     }
 }
 exports.withCwd = withCwd;
+/**
+ * Macro for fetching a package property from `package.json`
+ * during compile time.
+ */
+function getPackageProperty(exp, env) {
+    const [prop, ...options] = exp.slice(1);
+    const obj = JSON.parse((0, fs_1.readFileSync)('../../package.json', {
+        encoding: 'utf8'
+    }));
+    let val = obj[prop];
+    const asOption = (0, plist_1.plistGet_)(options, Symbol.for(':as'));
+    if (asOption === Symbol.for('symbol')) {
+        if (typeof val === 'string') {
+            val = Symbol.for(val);
+        }
+    }
+    else if (asOption === Symbol.for('string')) {
+        if (typeof val === 'symbol') {
+            val = val.description;
+        }
+    }
+    const valExp = selfEvaluatingP(val) ? val : [Symbol.for('quote'), val];
+    return valExp;
+}
+exports.getPackageProperty = getPackageProperty;
+getPackageProperty.ftype = 'macro';
+/**
+ * Locate the `node_modules/` directory nearest to `dir`.
+ * Returns the absolute path as a string, or `#f` if
+ * not found.
+ *
+ * This function searches for `node_modules/` in `dir`, then in the
+ * parent directory of `dir`, then in the parent of the parent, and
+ * so on, in a manner similar to
+ * [Node's `require` algorithm][nodejs:require-algorithm].
+ *
+ * [nodejs:require-algorithm]: https://nodejs.org/api/modules.html#all-together
+ */
+function getNodeModulesPath(dir = '.') {
+    const segments = ['/', ...((x) => Array.isArray(x) ? x : [Symbol.for('.'), x])((0, path_1.resolve)(dir).split('/').filter((x) => x !== ''))];
+    const _start = segments.length;
+    for (let i = _start; i > 0; i--) {
+        const segments1 = [...segments.slice(0, -(segments.length - i) || undefined), 'node_modules'];
+        const pathStr = (0, path_1.join)(...segments1);
+        if ((0, fs_1.existsSync)(pathStr)) {
+            return pathStr;
+        }
+    }
+    return false;
+}
+exports.getNodeModulesPath = getNodeModulesPath;

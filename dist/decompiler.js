@@ -31,7 +31,7 @@ const estree_1 = require("./estree");
 const rose_1 = require("./rose");
 const printer_1 = require("./printer");
 const util_1 = require("./util");
-const [listStar, findf] = (() => {
+const [listStar] = (() => {
     function listStar_(...args) {
         if (args.length === 0) {
             return undefined;
@@ -50,16 +50,7 @@ const [listStar, findf] = (() => {
             }
         }
     }
-    function findf_(proc, lst, notFound = false) {
-        const idx = lst.findIndex(proc);
-        if (idx >= 0) {
-            return lst[idx];
-        }
-        else {
-            return notFound;
-        }
-    }
-    return [listStar_, findf_];
+    return [listStar_];
 })();
 /**
  * Decompile a JavaScript or TypeScript program.
@@ -246,8 +237,8 @@ function decompileAssignmentExpression(node, options = {}) {
     else if ((0, util_1.taggedListP)(leftExp, Symbol.for('list-ref'))) {
         return (0, rose_1.datumToSyntax)(false, [Symbol.for('list-set!'), ...leftDecompiled.drop(1), rightDecompiled]);
     }
-    else if ((0, util_1.taggedListP)(leftExp, Symbol.for('oget'))) {
-        return (0, rose_1.datumToSyntax)(false, [Symbol.for('oset!'), ...leftDecompiled.drop(1), rightDecompiled]);
+    else if ((0, util_1.taggedListP)(leftExp, Symbol.for('object-ref'))) {
+        return (0, rose_1.datumToSyntax)(false, [Symbol.for('object-set!'), ...leftDecompiled.drop(1), rightDecompiled]);
     }
     else if ((0, estree_1.estreeTypeP)(left, 'ArrayPattern')) {
         return (0, rose_1.datumToSyntax)(false, [Symbol.for('set!-values'), leftDecompiled, rightDecompiled]);
@@ -437,7 +428,7 @@ function decompileMemberExpression(node, options = {}) {
             return (0, rose_1.datumToSyntax)(false, [Symbol.for('list-ref'), ...((0, util_1.taggedListP)(objectExp, Symbol.for('list-ref')) ? object.drop(1) : [object]), property]);
         }
         else {
-            return (0, rose_1.datumToSyntax)(false, [Symbol.for('oget'), object, property]);
+            return (0, rose_1.datumToSyntax)(false, [Symbol.for('object-ref'), object, property]);
         }
     }
     else if (optional) {
@@ -700,7 +691,7 @@ function decompileForInStatement(node, options = {}) {
     }
     const right = decompileEstree(node.right, options);
     const body = decompileEstree(node.body, options);
-    return (0, rose_1.datumToSyntax)(false, [Symbol.for('for'), [[left, [Symbol.for('js/keys'), right]]], ...body.drop(1)]);
+    return (0, rose_1.datumToSyntax)(false, [Symbol.for('for'), [[left, [Symbol.for('object-keys'), right]]], ...body.drop(1)]);
 }
 /**
  * Decompile an ESTree [`BreakStatement`][estree:breakstatement] node.
@@ -840,10 +831,10 @@ function decompileObjectExpression(node, options = {}) {
         }
     }
     if (spreads.length === 0) {
-        return (0, rose_1.datumToSyntax)(false, [Symbol.for('js/obj'), ...properties]);
+        return (0, rose_1.datumToSyntax)(false, [Symbol.for('object'), ...properties]);
     }
     else {
-        return (0, rose_1.datumToSyntax)(false, [Symbol.for('js/obj-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('js/obj'), ...properties]] : [])]);
+        return (0, rose_1.datumToSyntax)(false, [Symbol.for('object-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('object'), ...properties]] : [])]);
     }
 }
 /**
@@ -910,7 +901,7 @@ function decompileArrayExpression(node, options = {}) {
         const restElement = decompileElement(elements[elements.length - 1]);
         return (0, rose_1.datumToSyntax)(false, listStar(...[...regularElements, restElement]));
     }
-    else if (findf((x) => x && (0, estree_1.estreeTypeP)(x, 'SpreadElement'), elements)) {
+    else if (((idx) => (idx >= 0) ? elements[idx] : false)(elements.findIndex((x) => x && (0, estree_1.estreeTypeP)(x, 'SpreadElement')))) {
         const elementsDecompiled = elements.map((x) => {
             let result = decompileElement(x);
             if (x && (0, estree_1.estreeTypeP)(x, 'SpreadElement')) {

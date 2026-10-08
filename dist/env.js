@@ -18,9 +18,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withEnvironmentF = exports.withEnvironment = exports.withCompilationOptions = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.currentCompilationOptions = exports.TypedEnvironment = exports.PromiseEnvironment = exports.LispEnvironment = exports.JavaScriptModuleEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = exports.ThunkedEnvironment = void 0;
+exports.withEnvironment = exports.withCompilationOptions = exports.prefixBindings = exports.makeEnvironment = exports.linkEnvironmentFrames = exports.extendEnvironment = exports.environmentFrames = exports.emptyEnvironment = exports.defaultEnvironment = exports.currentEnvironment_ = exports.currentEnvironmentPointer = exports.currentCompilationOptions = exports.TypedEnvironment = exports.PromiseEnvironment = exports.LispEnvironment = exports.JavaScriptModuleEnvironment = exports.JavaScriptEnvironment = exports.EnvironmentStack = exports.EnvironmentPipe = exports.EnvironmentComposition = exports.Environment = exports.DynamicEnvironment = exports.withCurrentEnvironment = exports.currentEnvironment = exports.ThunkedEnvironment = void 0;
 const lookup_1 = require("./lookup");
 const thunk_1 = require("./thunk");
+const util_1 = require("./util");
 /**
  * Environment.
  *
@@ -321,10 +322,10 @@ class Environment {
     /**
      * Convert the environment to a JavaScript object.
      */
-    toObject() {
-        let result = this.parent ? this.parent.toObject() : {};
+    toObject(options = {}) {
+        let result = this.parent ? this.parent.toObject(options) : {};
         for (let key of [...this.table.keys()]) {
-            const keyStr = (typeof key === 'symbol') ? key.description : key;
+            const keyStr = (0, util_1.makeIdentifierString)((typeof key === 'symbol') ? key.description : key, options);
             let val = this.get(key);
             result[keyStr] = val;
         }
@@ -885,12 +886,12 @@ class EnvironmentStack extends PromiseEnvironment {
     /**
      * Convert the environment stack to a JavaScript object.
      */
-    toObject() {
-        let result = this.parent ? this.parent.toObject() : {};
+    toObject(options = {}) {
+        let result = this.parent ? this.parent.toObject(options) : {};
         const _start = this.stack.length - 1;
         for (let i = _start; i > -1; i--) {
             let env = this.stack[i];
-            result = Object.assign(Object.assign({}, result), env.toObject());
+            result = Object.assign(Object.assign({}, result), env.toObject(options));
         }
         return result;
     }
@@ -1042,18 +1043,21 @@ exports.JavaScriptEnvironment = JavaScriptEnvironment;
 class JavaScriptModuleEnvironment extends DynamicEnvironment {
     constructor(jsModule) {
         super((name) => {
-            const str = (typeof name === 'symbol') ? name.description : name;
-            const jsModule = this.jsModule;
-            if (jsModule) {
-                return jsModule[str];
+            let val = undefined;
+            let found = false;
+            const obj = this.jsModule;
+            if (obj) {
+                const name1 = (typeof name === 'symbol') ? name.description : name;
+                if (name1 in obj) {
+                    val = obj[name1];
+                    found = true;
+                }
             }
-            else {
-                return undefined;
-            }
+            return [val, found];
         });
         this.jsModule = jsModule;
     }
-    toObject() {
+    toObject(options = {}) {
         return this.jsModule;
     }
 }
@@ -1177,12 +1181,12 @@ function defaultEnvironment() {
 exports.defaultEnvironment = defaultEnvironment;
 defaultEnvironment.fsource = [Symbol.for('define'), [Symbol.for('default-environment')], [Symbol.for('or'), [Symbol.for('current-environment_')], [Symbol.for('empty-environment')]]];
 /**
- * Run `f` with `currentEnvironmentPointer` bound to `env`.
+ * Run `f` with `current-environment-pointer` bound to `env`.
  * This makes the current environment available through the
- * function {@link currentEnvironment}. The original value
- * of `currentEnvironmentPointer` is restored afterwards.
+ * function {@link current-environment}. The original value
+ * of `current-environment-pointer` is restored afterwards.
  */
-function withEnvironmentF(env, f) {
+function withEnvironment(env, f) {
     let result = undefined;
     const tmp = currentEnvironmentPointer;
     try {
@@ -1194,19 +1198,9 @@ function withEnvironmentF(env, f) {
     }
     return result;
 }
-exports.withCurrentEnvironment = withEnvironmentF;
-exports.withEnvironmentF = withEnvironmentF;
-withEnvironmentF.fsource = [Symbol.for('define'), [Symbol.for('with-environment-f'), Symbol.for('env'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-environment-pointer')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('tmp')]]], Symbol.for('result')];
-/**
- * Macro for `with-environment-f`.
- */
-function withEnvironment(exp, env) {
-    const [environment, ...body] = exp.slice(1);
-    return [Symbol.for('with-environment-f'), environment, [Symbol.for('thunk'), ...body]];
-}
+exports.withCurrentEnvironment = withEnvironment;
 exports.withEnvironment = withEnvironment;
-withEnvironment.ftype = 'macro';
-withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('environment'), Symbol.for('.'), Symbol.for('body')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('quasiquote'), [Symbol.for('with-environment-f'), [Symbol.for('unquote'), Symbol.for('environment')], [Symbol.for('thunk'), [Symbol.for('unquote-splicing'), Symbol.for('body')]]]]];
+withEnvironment.fsource = [Symbol.for('define'), [Symbol.for('with-environment'), Symbol.for('env'), Symbol.for('f')], [Symbol.for('define'), Symbol.for('result'), undefined], [Symbol.for('define'), Symbol.for('tmp'), Symbol.for('current-environment-pointer')], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('env')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('force'), Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-environment-pointer'), Symbol.for('tmp')]]], Symbol.for('result')];
 /**
  * Pointer to the current compilation options.
  */
@@ -1236,4 +1230,4 @@ function withCompilationOptions(options, f) {
     return result;
 }
 exports.withCompilationOptions = withCompilationOptions;
-withCompilationOptions.fsource = [Symbol.for('define'), [Symbol.for('with-compilation-options'), Symbol.for('options'), Symbol.for('f')], [Symbol.for('let'), [[Symbol.for('result'), undefined], [Symbol.for('tmp'), Symbol.for('current-compilation-options-pointer')]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-compilation-options-pointer'), Symbol.for('options')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-compilation-options-pointer'), Symbol.for('tmp')]]], Symbol.for('result')]];
+withCompilationOptions.fsource = [Symbol.for('define'), [Symbol.for('with-compilation-options'), Symbol.for('options'), Symbol.for('f')], [Symbol.for('let'), [[Symbol.for('result'), undefined], [Symbol.for('tmp'), Symbol.for('current-compilation-options-pointer')]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('current-compilation-options-pointer'), Symbol.for('options')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('force'), Symbol.for('f')]], [Symbol.for('finally'), [Symbol.for('set!'), Symbol.for('current-compilation-options-pointer'), Symbol.for('tmp')]]], Symbol.for('result')]];

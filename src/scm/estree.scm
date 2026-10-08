@@ -16,11 +16,11 @@
 ;;;
 ;;; amounts to the same as
 ;;;
-;;;     (js/obj "type" "BlockStatement"
+;;;     (object "type" "BlockStatement"
 ;;;             "body" (list ...))
 ;;;
 ;;; Objects instantiated with `new` are compatible with objects
-;;; created with `js/obj`.
+;;; created with `object`.
 ;;;
 ;;; There are no private fields. For maximum compatibility with
 ;;; existing implementations, every field and method is public.
@@ -639,11 +639,11 @@
   (define/public regex)
 
   (define/public (constructor pattern (flags ""))
-    (super (js/obj)
+    (super (object)
            (string-append "/" pattern "/" flags))
     (set-field! regex
                 this
-                (js/obj :pattern pattern
+                (object :pattern pattern
                         :flags flags))))
 
 ;;; CallExpression
@@ -1130,7 +1130,7 @@
     (set-field! tail this tail)
     (set-field! value
                 this
-                (js/obj
+                (object
                  :cooked
                  cooked
                  :raw
@@ -1474,7 +1474,7 @@
   (when (is-a? node-val InternalPromise)
     (set! node-val (send node-val force)))
   (define field-val
-    (oget node-val field))
+    (object-ref node-val field))
   (when (is-a? field-val InternalPromise)
     (set! field-val (send field-val force)))
   field-val)

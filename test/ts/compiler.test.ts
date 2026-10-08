@@ -187,6 +187,72 @@ foo.ftype = 'macro';
 function bar(x) {
   return x;
 }`]));
+  it('import macro foo-bar from another module', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('defmacro'), Symbol.for('foo-bar'), [Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('foo-bar')]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('require'), [Symbol.for('only-in'), './a', Symbol.for('foo-bar')]], [Symbol.for('declare-macro'), Symbol.for('foo-bar')], [Symbol.for('define'), [Symbol.for('baz'), Symbol.for('x')], [Symbol.for('foo-bar'), Symbol.for('x')]]]], compilationEnvironment, {
+    case: 'camelcase',
+    language: 'javascript',
+    optimize: true
+  }), [`function fooBar(exp, env) {
+  const [x] = exp.slice(1);
+  return x;
+}
+
+fooBar.ftype = 'macro';
+
+export {
+  fooBar
+};`, `import {
+  fooBar
+} from './a';
+
+fooBar.ftype = 'macro';
+
+function baz(x) {
+  return x;
+}`]));
+  it('import macro foo from another module loaded entirely', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('defmacro'), Symbol.for('foo'), [Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('foo')]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('require'), Symbol.for('a'), './a'], [Symbol.for('define-fields'), [Symbol.for('foo')], Symbol.for('a')], [Symbol.for('declare-macro'), Symbol.for('foo')], [Symbol.for('define'), [Symbol.for('baz'), Symbol.for('x')], [Symbol.for('foo'), Symbol.for('x')]]]], compilationEnvironment, {
+    case: 'camelcase',
+    language: 'javascript',
+    optimize: true
+  }), [`function foo(exp, env) {
+  const [x] = exp.slice(1);
+  return x;
+}
+
+foo.ftype = 'macro';
+
+export {
+  foo
+};`, `import * as a from './a';
+
+const {foo} = a;
+
+foo.ftype = 'macro';
+
+function baz(x) {
+  return x;
+}`]));
+  it('import macro foo-bar from another module loaded entirely', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('defmacro'), Symbol.for('foo-bar'), [Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('foo-bar')]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('require'), Symbol.for('a'), './a'], [Symbol.for('define-fields'), [Symbol.for('foo-bar')], Symbol.for('a')], [Symbol.for('declare-macro'), Symbol.for('foo-bar')], [Symbol.for('define'), [Symbol.for('baz'), Symbol.for('x')], [Symbol.for('foo-bar'), Symbol.for('x')]]]], compilationEnvironment, {
+    case: 'camelcase',
+    language: 'javascript',
+    optimize: true
+  }), [`function fooBar(exp, env) {
+  const [x] = exp.slice(1);
+  return x;
+}
+
+fooBar.ftype = 'macro';
+
+export {
+  fooBar
+};`, `import * as a from './a';
+
+const {fooBar} = a;
+
+fooBar.ftype = 'macro';
+
+function baz(x) {
+  return x;
+}`]));
   it('import macro from a module defined later', (): any => assertEqual(compileModules([[Symbol.for('module'), Symbol.for('a'), Symbol.for('scheme'), [Symbol.for('require'), [Symbol.for('only-in'), './b', Symbol.for('bar')]], [Symbol.for('declare-macro'), Symbol.for('bar')], [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], [Symbol.for('bar'), Symbol.for('x')]]], [Symbol.for('module'), Symbol.for('b'), Symbol.for('scheme'), [Symbol.for('defmacro'), Symbol.for('bar'), [Symbol.for('x')], Symbol.for('x')], [Symbol.for('provide'), Symbol.for('bar')]]], compilationEnvironment, {
     language: 'javascript',
     optimize: true
@@ -917,7 +983,7 @@ I.fsource = [Symbol.for('define'), [Symbol.for('I'), Symbol.for('x')], Symbol.fo
 type NN = (a: number) => number;
 
 const f: NN = (x: any): any => x;`));
-  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')]], compilationEnvironment, {
+  it('(compile-with-environment \'(module m scheme (define (foo x) x)) compilation-environment (object :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')]], compilationEnvironment, {
     to: 'javascript',
     inlineLispSources: true,
     optimize: true
@@ -926,14 +992,14 @@ const f: NN = (x: any): any => x;`));
 }
 
 foo.fsource = [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')];`));
-  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], compilationEnvironment, {
+  xit('(compile-with-environment \'(module m scheme (define foo (lambda (x) x))) compilation-environment (object :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]], compilationEnvironment, {
     to: 'javascript',
     inlineLispSources: true,
     optimize: true
   }), `const foo = (x) => x;
 
 foo.fsource = [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')];`));
-  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (js/obj :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], compilationEnvironment, {
+  return it('(compile-with-environment \'(module m scheme (define foo (async (lambda (x) x)))) compilation-environment (object :to "javascript" :inline-lisp-sources #t :optimize #t))', (): any => assertEqual(compileWithEnvironment([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('foo'), [Symbol.for('async'), [Symbol.for('lambda'), [Symbol.for('x')], Symbol.for('x')]]]], compilationEnvironment, {
     to: 'javascript',
     inlineLispSources: true,
     optimize: true
@@ -945,24 +1011,24 @@ foo.fsource = [Symbol.for('define/async'), [Symbol.for('foo'), Symbol.for('x')],
 });
 
 describe('define-macro->lambda-form', (): any => {
-  it('(define-macro->lambda-form \'(define-macro (foo x) x) (js/obj :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], {
+  it('(define-macro->lambda-form \'(define-macro (foo x) x) (object :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], {
     exp: Symbol.for('exp'),
     env: Symbol.for('env')
   }), [Symbol.for('lambda'), [Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('x')], [Symbol.for('rest'), Symbol.for('exp')]], Symbol.for('x')]));
-  it('(define-macro->lambda-form \'(define-macro (foo &whole expression x) x) (js/obj :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&whole'), Symbol.for('expression'), Symbol.for('x')], Symbol.for('x')], {
+  it('(define-macro->lambda-form \'(define-macro (foo &whole expression x) x) (object :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&whole'), Symbol.for('expression'), Symbol.for('x')], Symbol.for('x')], {
     env: Symbol.for('env')
   }), [Symbol.for('lambda'), [Symbol.for('expression'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('x')], [Symbol.for('rest'), Symbol.for('expression')]], Symbol.for('x')]));
   it('(define-macro->lambda-form \'(define-macro (foo &whole exp &environment env) exp))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&whole'), Symbol.for('exp'), Symbol.for('&environment'), Symbol.for('env')], Symbol.for('exp')]), [Symbol.for('lambda'), [Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], Symbol.for('exp')]));
   it('(define-macro->lambda-form \'(define-macro (foo &whole exp &environment env x) x))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&whole'), Symbol.for('exp'), Symbol.for('&environment'), Symbol.for('env'), Symbol.for('x')], Symbol.for('x')]), [Symbol.for('lambda'), [Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('x')], [Symbol.for('rest'), Symbol.for('exp')]], Symbol.for('x')]));
-  it('(define-macro->lambda-form \'(define-macro (foo &rest x) x) (js/obj :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&rest'), Symbol.for('x')], Symbol.for('x')], {
+  it('(define-macro->lambda-form \'(define-macro (foo &rest x) x) (object :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('&rest'), Symbol.for('x')], Symbol.for('x')], {
     exp: Symbol.for('exp'),
     env: Symbol.for('env')
   }), [Symbol.for('lambda'), [Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), Symbol.for('x'), [Symbol.for('rest'), Symbol.for('exp')]], Symbol.for('x')]));
-  it('(define-macro->lambda-form \'(define-macro (foo x &rest y) x) (js/obj :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('x'), Symbol.for('&rest'), Symbol.for('y')], Symbol.for('x')], {
+  it('(define-macro->lambda-form \'(define-macro (foo x &rest y) x) (object :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), Symbol.for('x'), Symbol.for('&rest'), Symbol.for('y')], Symbol.for('x')], {
     exp: Symbol.for('exp'),
     env: Symbol.for('env')
   }), [Symbol.for('lambda'), [Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('x'), Symbol.for('.'), Symbol.for('y')], [Symbol.for('rest'), Symbol.for('exp')]], Symbol.for('x')]));
-  return it('(define-macro->lambda-form \'(define-macro (foo (x 1)) x) (js/obj :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), [Symbol.for('x'), 1]], Symbol.for('x')], {
+  return it('(define-macro->lambda-form \'(define-macro (foo (x 1)) x) (object :exp \'exp :env \'env))', (): any => assertEqual(defineMacroToLambdaForm([Symbol.for('define-macro'), [Symbol.for('foo'), [Symbol.for('x'), 1]], Symbol.for('x')], {
     exp: Symbol.for('exp'),
     env: Symbol.for('env')
   }), [Symbol.for('lambda'), [Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('define-values'), [Symbol.for('x')], [Symbol.for('rest'), Symbol.for('exp')]], [Symbol.for('when'), [Symbol.for('undefined?'), Symbol.for('x')], [Symbol.for('set!'), Symbol.for('x'), 1]], Symbol.for('x')]));

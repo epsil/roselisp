@@ -46,7 +46,7 @@
     (try
       (set! value (js/eval str))
       (set! found #t)
-      (catch Error e)))
+      (catch Error _)))
   (values value found))
 
 (provide

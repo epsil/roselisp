@@ -14,6 +14,8 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "path"
+                  basename))
 (require (only-in "./env"
                   current-compilation-options))
 (require (only-in "./plist"
@@ -135,7 +137,7 @@
 
 ;;; Create a `(lambda ...)` form for a macro function
 ;;; on the basis of a `(define-macro ...)` expression.
-(define (define-macro->lambda-form exp (options (js/obj)))
+(define (define-macro->lambda-form exp (options (object)))
   (define name-and-params
     (second exp))
   (define name
@@ -145,10 +147,10 @@
   (define body
     (drop exp 2))
   (define exp-param
-    (or (oget options :exp)
+    (or (object-ref options :exp)
         (gensym "exp")))
   (define env-param
-    (or (oget options :env)
+    (or (object-ref options :env)
         (gensym "env")))
   (define macro-params '())
   (define initializers '())
@@ -962,36 +964,41 @@
      (else
       (push-right! body-exps x))))
   (when (> (length clj-catch-clauses) 0)
-    (define exception
-      (second (first clj-catch-clauses)))
-    (define sym
-      (third (first clj-catch-clauses)))
+    (define exception-class
+      (or (second (first clj-catch-clauses))
+          '_))
+    (define exception-var
+      (or (third (first clj-catch-clauses))
+          '_))
     (cond
      ((and (= (length clj-catch-clauses) 1)
-           (or (eq? sym '_)
-               (memq? exception
-                      '(_
-                        js/Object
-                        Object
-                        object%))))
+           (memq? exception-class
+                  '(_
+                    js/Object
+                    Object
+                    object%)))
       (define clj-catch-clause
         (first clj-catch-clauses))
       (define catch-clause
-        `(catch ,sym
+        `(catch ,exception-var
              ,@(drop clj-catch-clause 3)))
       (set! catch-clauses
             (list catch-clause)))
      (else
+      (when (eq? exception-var '_)
+        (with-gensyms
+         (e)
+         (set! exception-var e)))
       (define cond-exp
         `(cond
           ,@(map (lambda (x)
-                   `((is-a? ,sym ,(second x))
+                   `((is-a? ,exception-var ,(second x))
                      ,@(drop x 3)))
                  clj-catch-clauses)
           (else
-           (throw ,sym))))
+           (throw ,exception-var))))
       (define catch-clause
-        `(catch ,sym
+        `(catch ,exception-var
              ,cond-exp))
       (set! catch-clauses
             (list catch-clause)))))
@@ -1333,8 +1340,7 @@
                (else
                 x)))
             (drop x 2))
-      :from
-      ,y))
+      :from ,y))
    (else
     (define-fields (fes-module-interop)
       (current-compilation-options))
@@ -1342,14 +1348,17 @@
       (or (second forms)
           x))
     (when (string? x)
-      (set! x (string->symbol x)))
+      (set! x
+            (~> x
+                (basename _)
+                (string->symbol _))))
     (when (symbol? y)
       (set! y (symbol->string y)))
     `(js/import
       ,@(if fes-module-interop
-            '()
-            `(* :as))
-      ,x :from ,y))))
+            `(,x)
+            `(* :as ,x))
+      :from ,y))))
 
 ;;; Expand a `(provide ...)` expression.
 ;;;

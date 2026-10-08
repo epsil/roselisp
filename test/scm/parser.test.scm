@@ -61,12 +61,12 @@
        (new StringToken "bar")
        (new SymbolToken ")"))
  > (tokenize "(foo) ; bar"
-             (js/obj :comments #f))
+             (object :comments #f))
  (list (new SymbolToken "(")
        (new SymbolToken "foo")
        (new SymbolToken ")"))
  xit> (tokenize "'(foo) ; bar"
-                (js/obj :comments #f))
+                (object :comments #f))
  (list (new SymbolToken "'")
        (new SymbolToken "(")
        (new SymbolToken "foo")
@@ -79,7 +79,7 @@ bar)")
        (new SymbolToken ")"))
  xit> (tokenize "(foo ; baz
 bar)"
-                (js/obj :comments #t))
+                (object :comments #t))
  (list (new SymbolToken "(")
        (new SymbolToken "foo")
        (new SymbolToken "bar")
@@ -88,7 +88,7 @@ bar)"
             "; baz"))
  > (tokenize ";; baz
 (foo bar)"
-             (js/obj :comments #t))
+             (object :comments #t))
  (list (new LeadingCommentToken
             ";; baz\n")
        (new SymbolToken "(")
@@ -97,7 +97,7 @@ bar)"
        (new SymbolToken ")"))
  > (tokenize "  ;; baz
   (foo bar)"
-             (js/obj :comments #t))
+             (object :comments #t))
  (list (new LeadingCommentToken
             ";; baz\n")
        (new SymbolToken "(")
@@ -107,7 +107,7 @@ bar)"
  > (tokenize ";; baz
 ;; quux
 (foo bar)"
-             (js/obj :comments #t))
+             (object :comments #t))
  (list (new LeadingCommentToken
             ";; baz
 ;; quux
@@ -120,7 +120,7 @@ bar)"
 ;;
 ;; quux
 (foo bar)"
-             (js/obj :comments #t))
+             (object :comments #t))
  (list (new LeadingCommentToken
             ";; baz
 ;;
@@ -134,7 +134,7 @@ bar)"
 
 ;; quux
 (foo bar)"
-             (js/obj :comments #t))
+             (object :comments #t))
  (list (new LeadingCommentToken
             ";; baz
 
@@ -146,7 +146,7 @@ bar)"
        (new SymbolToken ")"))
  > (tokenize ";; foo
 `(foo)"
-             (js/obj :comments #t))
+             (object :comments #t))
  (list (new LeadingCommentToken
             ";; foo\n")
        (new SymbolToken "`")
@@ -175,7 +175,7 @@ bar)"
  > (tokenize "(define (foo)
   ;; this
   this)"
-             (js/obj :comments #t))
+             (object :comments #t))
  (list (new SymbolToken "(")
        (new SymbolToken "define")
        (new SymbolToken "(")
@@ -287,6 +287,26 @@ bar)"
  '(unquote-splicing foo)
 
  :describe "read"
+ > (read "#t")
+ #t
+ > (read "#true")
+ #t
+ > (read "#f")
+ #f
+ > (read "#false")
+ #f
+ > (read "#n")
+ #n
+ > (read "#null")
+ #n
+ > (read "#u")
+ #u
+ > (read "#undefined")
+ #u
+ > (read "#void")
+ #u
+ > (read "#<void>")
+ #u
  > (read "(foo) ;comment")
  (list 'foo)
  > (read "(foo) ;; this is a comment")
@@ -363,7 +383,7 @@ test"
        (define actual
          (read-syntax ";; comment
 (foo)"
-                      (js/obj :comments #t)))
+                      (object :comments #t)))
        (assert-equal
         (send actual get-value)
         (list 'foo))
@@ -376,7 +396,7 @@ test"
        (define actual
          (read-syntax ";; comment
 `(foo)"
-                      (js/obj :comments #t)))
+                      (object :comments #t)))
        (assert-equal
         (send actual get-value)
         (list 'quasiquote

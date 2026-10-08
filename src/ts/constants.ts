@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// inline-lisp-sources: true
 /**
  * # Constants
  *
@@ -15,6 +14,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
+
+import {
+  getPackageProperty
+} from './util';
+
+getPackageProperty.ftype = 'macro';
 
 /**
  * Boolean true value, `#t`.
@@ -98,12 +103,12 @@ const defaultLanguage: any = 'javascript';
 /**
  * Roselisp package name.
  */
-const packageName: any = 'roselisp';
+const name: any = 'roselisp';
 
 /**
  * Roselisp version.
  */
-const version: any = '0.0.1';
+const version: any = '0.0.2';
 
 /**
  * Roselisp license.
@@ -111,12 +116,13 @@ const version: any = '0.0.1';
 const license: any = Symbol.for('MPL-2.0');
 
 export {
+  name as packageName,
   defaultLanguage,
   false_,
   jsNull_,
   license,
+  name,
   null_,
-  packageName,
   quasiquoteSym_,
   quoteSym_,
   true_,

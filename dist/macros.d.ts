@@ -67,7 +67,7 @@ declare namespace defclass_ {
 declare function defineMacro_(exp: any, env: any): any;
 declare namespace defineMacro_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (number | symbol)[])[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Expand a `(macro ...)` expression.
@@ -87,7 +87,7 @@ declare namespace macro_ {
 declare function defineCompilerMacro_(exp: any, env: any): any;
 declare namespace defineCompilerMacro_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | (symbol | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[];
 }
 /**
  * Expand a `(syntax ...)` expression.
@@ -494,7 +494,7 @@ declare namespace set_ {
 declare function setq_(exp: any, env: any): any;
 declare namespace setq_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (symbol | (number | symbol)[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (number | symbol)[])[])[])[])[];
 }
 /**
  * Expand a `(new/apply ...)` expression.
@@ -526,7 +526,7 @@ declare namespace try_ {
 declare function cljTry_(exp: any, env: any): any;
 declare namespace cljTry_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (number | symbol | symbol[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[])[])[])[])[])[])[])[])[])[])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (number | symbol | symbol[])[] | (symbol | ((symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol | symbol[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | ((symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[])[])[])[])[])[])[])[])[])[])[])[])[];
 }
 /**
  * Expand a `(match ...)` expression.
@@ -596,7 +596,7 @@ declare namespace onceOnly_ {
 declare function require_(exp: any, env: any): any;
 declare namespace require_ {
     var ftype: string;
-    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[][])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (number | symbol)[] | (symbol | (symbol | symbol[] | (symbol | (symbol | (symbol | symbol[])[])[])[][])[])[])[])[])[])[][])[])[];
 }
 /**
  * Expand a `(provide ...)` expression.

@@ -17,6 +17,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import {
+  join
+} from 'path';
+
+import {
+  cwd
+} from 'process';
+
+import {
+  getNodeModulesPath
+} from './util';
+
 /**
  * JavaScript's [`eval` function][js:eval].
  *
@@ -35,11 +47,20 @@ jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js/eval_'), Symbol.for('st
  * [js:strict-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#strict_equality_using
  * [js:strict-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
  */
-function jsStrictlyEqualP_(x: any, y: any): any {
-  return x === y;
+function jsStrictlyEqualP_(...args: any[]): any {
+  return args.slice(1).reduce((left: any, right: any): any => left === right, args[0]);
 }
 
-jsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js/strictly-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]];
+jsStrictlyEqualP_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const args: any = exp.slice(1);
+    return [Symbol.for('js/op/apply'), Symbol.for('==='), [Symbol.for('list'), ...args]];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+jsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js/strictly-equal?_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('==='), Symbol.for('args')]];
 
 /**
  * JavaScript [loose equality][js:loose-equality],
@@ -48,11 +69,20 @@ jsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js/strictly-equa
  * [js:loose-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#loose_equality_using
  * [js:loose-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
  */
-function jsLooselyEqualP_(x: any, y: any): any {
-  return x == y;
+function jsLooselyEqualP_(...args: any[]): any {
+  return args.slice(1).reduce((left: any, right: any): any => left == right, args[0]);
 }
 
-jsLooselyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js/loosely-equal?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]];
+jsLooselyEqualP_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    const args: any = exp.slice(1);
+    return [Symbol.for('js/op/apply'), Symbol.for('=='), [Symbol.for('list'), ...args]];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+jsLooselyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js/loosely-equal?_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('=='), Symbol.for('args')]];
 
 /**
  * JavaScript [sameValue][js:same-value] equality.
@@ -80,10 +110,10 @@ jsSameValueP_.fsource = [Symbol.for('define'), [Symbol.for('js/same-value?_'), S
  * [js:same-value-zero]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#same-value-zero_equality
  */
 function jsSameValueZeroP_(x: any, y: any): any {
-  return (x === y) || (isNaN(x) && isNaN(y));
+  return Object.is(x, y) || (isNaN(x) && isNaN(y));
 }
 
-jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js/same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('js/nan?'), Symbol.for('x')], [Symbol.for('js/nan?'), Symbol.for('y')]]]];
+jsSameValueZeroP_.fsource = [Symbol.for('define'), [Symbol.for('js/same-value-zero?_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('or'), [Symbol.for('js/same-value?'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('and'), [Symbol.for('js/nan?'), Symbol.for('x')], [Symbol.for('js/nan?'), Symbol.for('y')]]]];
 
 /**
  * Whether something is JavaScript's `null`.
@@ -276,114 +306,6 @@ jsIn_.compilerMacro = ((): any => {
 jsIn_.fsource = [Symbol.for('define'), [Symbol.for('js/in_'), Symbol.for('prop'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op'), Symbol.for('in'), Symbol.for('prop'), Symbol.for('obj')]];
 
 /**
- * Make a JavaScript object.
- *
- * Similar to [`js-obj` in ClojureScript][cljs:js-obj].
- *
- * [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
- */
-function jsObj_(...args: any[]): any {
-  const entries: any = [];
-  const _end: any = args.length;
-  for (let i: any = 0; i < _end; i = i + 2) {
-    entries.push([(args as any)[i], args[i + 1]]);
-  }
-  return Object.fromEntries(entries);
-}
-
-jsObj_.fsource = [Symbol.for('define'), [Symbol.for('js/obj_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('entries'), [Symbol.for('quote'), []]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 0, [Symbol.for('length'), Symbol.for('args')], 2]]], [Symbol.for('push-right!'), Symbol.for('entries'), [Symbol.for('list'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')], [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('+'), Symbol.for('i'), 1]]]]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('fromEntries'), Symbol.for('entries')]]];
-
-/**
- * Whether something is a JavaScript object.
- */
-function jsObjP_(x: any): any {
-  // This function avoids regarding JavaScript's `null` value as an
-  // object (even if JavaScript does), because it has no properties;
-  // and unlike the empty object, attempting to access a property on
-  // it causes an error to be thrown. This is more trouble than it is
-  // worth, so only non-`null` object values are considered to be
-  // proper objects here.
-  return (x !== null) && (typeof x === 'object');
-}
-
-jsObjP_.compilerMacro = ((): any => {
-  const f: any = (exp: any, env: any): any => {
-    const [x]: any[] = exp.slice(1);
-    if (!(Array.isArray(x) && (x.length > 0))) {
-      return [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('js/null?'), x]], [Symbol.for('js/object-type?'), x]];
-    } else {
-      const x1: any = Symbol('x');
-      return [Symbol.for('let'), [[x1, x]], ((x: any): any => [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('js/null?'), x]], [Symbol.for('js/object-type?'), x]])(x1)];
-    }
-  };
-  f.ftype = 'macro';
-  return f;
-})();
-
-jsObjP_.fsource = [Symbol.for('define'), [Symbol.for('js/obj?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('and'), [Symbol.for('not'), [Symbol.for('js/null?'), Symbol.for('x')]], [Symbol.for('js/object-type?'), Symbol.for('x')]]];
-
-/**
- * Whether something types as a JavaScript object.
- *
- * Note that this includes JavaScript's `null` value.
- */
-function jsObjectTypeP_(x: any): any {
-  return typeof x === 'object';
-}
-
-jsObjectTypeP_.compilerMacro = ((): any => {
-  const f: any = (exp: any, env: any): any => {
-    const [x]: any[] = exp.slice(1);
-    return [Symbol.for('eq?'), [Symbol.for('type-of'), x], 'object'];
-  };
-  f.ftype = 'macro';
-  return f;
-})();
-
-jsObjectTypeP_.fsource = [Symbol.for('define'), [Symbol.for('js/object-type?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('eq?'), [Symbol.for('type-of'), Symbol.for('x')], 'object']];
-
-/**
- * Combine multiple JavaScript objects into a new JavaScript object.
- *
- * Like `append`, but for JavaScript objects.
- */
-function jsObjAppend_(...args: any[]): any {
-  return Object.assign({}, ...args);
-}
-
-jsObjAppend_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-append_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('send/apply'), Symbol.for('Object'), Symbol.for('assign'), [Symbol.for('js/obj')], Symbol.for('args')]];
-
-/**
- * Spread a JavaScript object into another.
- */
-function jsObjSpread_(x: any): any {
-  return x;
-}
-
-jsObjSpread_.fsource = [Symbol.for('define'), [Symbol.for('js/obj-spread_'), Symbol.for('x')], Symbol.for('x')];
-
-/**
- * Return the keys for a JavaScript object.
- *
- * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
- * [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
- */
-function jsKeys_(obj: any): any {
-  return Object.keys(obj);
-}
-
-jsKeys_.compilerMacro = ((): any => {
-  const f: any = (exp: any, env: any): any => {
-    const [obj]: any[] = exp.slice(1);
-    return [Symbol.for('send'), Symbol.for('Object'), Symbol.for('keys'), obj];
-  };
-  f.ftype = 'macro';
-  return f;
-})();
-
-jsKeys_.fsource = [Symbol.for('define'), [Symbol.for('js/keys_'), Symbol.for('obj')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('Object'), Symbol.for('keys'), Symbol.for('obj')]];
-
-/**
  * Variadic version of JavaScript's `+` operator.
  *
  * Performs [addition][js:add] or [string concatenation][js:concat],
@@ -515,11 +437,11 @@ jsLength_.fsource = [Symbol.for('define'), [Symbol.for('js/length_'), Symbol.for
 /**
  * Look up the property `key` in the JavaScript object `obj`.
  */
-function jsGet_(obj: any, key: any): any {
+function jsRef_(obj: any, key: any): any {
   return (obj as any)[key];
 }
 
-jsGet_.fsource = [Symbol.for('define'), [Symbol.for('js/get_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/get'), Symbol.for('obj'), Symbol.for('key')]];
+jsRef_.fsource = [Symbol.for('define'), [Symbol.for('js/ref_'), Symbol.for('obj'), Symbol.for('key')], [Symbol.for('js/ref'), Symbol.for('obj'), Symbol.for('key')]];
 
 /**
  * Look up the property `prop` in the JavaScript object `obj`.
@@ -547,7 +469,7 @@ function jsOptionalChaining_(obj: any, ...args: any[]): any {
   return result;
 }
 
-jsOptionalChaining_.fsource = [Symbol.for('define'), [Symbol.for('js/optional-chaining_'), Symbol.for('obj'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), Symbol.for('obj')]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('args')]], [Symbol.for('cond'), [[Symbol.for('js/in'), Symbol.for('x'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/get'), Symbol.for('result'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), undefined], [Symbol.for('break')]]]], Symbol.for('result')]];
+jsOptionalChaining_.fsource = [Symbol.for('define'), [Symbol.for('js/optional-chaining_'), Symbol.for('obj'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), Symbol.for('obj')]], [Symbol.for('for'), [[Symbol.for('x'), Symbol.for('args')]], [Symbol.for('cond'), [[Symbol.for('js/in'), Symbol.for('x'), Symbol.for('result')], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/ref'), Symbol.for('result'), Symbol.for('x')]]], [Symbol.for('else'), [Symbol.for('set!'), Symbol.for('result'), undefined], [Symbol.for('break')]]]], Symbol.for('result')]];
 
 /**
  * Slice a JavaScript array.
@@ -1131,9 +1053,59 @@ jsParseFloat_.compilerMacro = ((): any => {
 
 jsParseFloat_.fsource = [Symbol.for('define'), [Symbol.for('js/parse-float_'), Symbol.for('str')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('parseFloat'), Symbol.for('str')]];
 
+/**
+ * Import a module with [Node's `require`][nodejs:require].
+ * Returns `#f` if not found.
+ *
+ * Note that `require` is a declarative construct which is not really
+ * suited for being called as a function, because
+ * [Node's `require` algorithm][nodejs:require-algorithm] interprets
+ * the `require` call as relative to the file containing it (i.e.,
+ * this file), rather than the current working directory. To make
+ * `js/require` more practical when called interactively, the
+ * approach taken here is to convert a relative path to an absolute
+ * paths, which is then required.
+ *
+ * [nodejs:require]: https://nodejs.org/api/modules.html#requireid
+ * [nodejs:require-algorithm]: https://nodejs.org/api/modules.html#all-together
+ */
+function jsRequire_(id: any): any {
+  let result: any = false;
+  if (id.match(new RegExp('^\\.+/'))) {
+    // If the module path is relative (starts with `./` or `../`), then
+    // interpret it as relative to the current working directory and
+    // rewrite it to an absolute path.
+    const modulePath: any = join(cwd(), id);
+    try {
+      result = require(modulePath);
+    } catch {
+    }
+  } else {
+    // If the module path is not relative, then it probably references
+    // a module located in `node_modules/`, so rewrite it to
+    // "`/absolute/path/to/node_modules/id`".
+    const nodeModulesPath: any = getNodeModulesPath(cwd());
+    if (nodeModulesPath) {
+      const modulePath: any = join(nodeModulesPath, id);
+      try {
+        result = require(modulePath);
+      } catch {
+      }
+    }
+    // Final attempt: load the module as a system module.
+    if (!result) {
+      try {
+        result = require(id);
+      } catch {
+      }
+    }
+  }
+  return result;
+}
+
+jsRequire_.fsource = [Symbol.for('define'), [Symbol.for('js/require_'), Symbol.for('id')], [Symbol.for('define'), Symbol.for('result'), false], [Symbol.for('cond'), [[Symbol.for('regexp-match'), [Symbol.for('regexp'), '^\\.+/'], Symbol.for('id')], [Symbol.for('define'), Symbol.for('module-path'), [Symbol.for('join'), [Symbol.for('cwd')], Symbol.for('id')]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/require'), Symbol.for('module-path')]], [Symbol.for('catch')]]], [Symbol.for('else'), [Symbol.for('define'), Symbol.for('node-modules-path'), [Symbol.for('get-node-modules-path'), [Symbol.for('cwd')]]], [Symbol.for('when'), Symbol.for('node-modules-path'), [Symbol.for('define'), Symbol.for('module-path'), [Symbol.for('join'), Symbol.for('node-modules-path'), Symbol.for('id')]], [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/require'), Symbol.for('module-path')]], [Symbol.for('catch')]]], [Symbol.for('unless'), Symbol.for('result'), [Symbol.for('try'), [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/require'), Symbol.for('id')]], [Symbol.for('catch')]]]]], Symbol.for('result')];
+
 export {
-  jsInstanceof_ as jsInstanceOfP_,
-  jsTypeof_ as jsTypeOf_,
   jsAbs_,
   jsAnd_,
   jsArrayP_,
@@ -1152,13 +1124,11 @@ export {
   jsFunctionObjectP_,
   jsFunctionTypeP_,
   jsFunctionP_,
-  jsGet_,
   jsGt_,
   jsGte_,
   jsIn_,
   jsInstanceof_,
   jsIsNaN_,
-  jsKeys_,
   jsLength_,
   jsLooselyEqualP_,
   jsLt_,
@@ -1167,11 +1137,6 @@ export {
   jsNew_,
   jsNot_,
   jsNullP_,
-  jsObjAppend_,
-  jsObjSpread_,
-  jsObjP_,
-  jsObj_,
-  jsObjectTypeP_,
   jsOptionalChaining_,
   jsOr_,
   jsParseFloat_,
@@ -1180,10 +1145,12 @@ export {
   jsPromise_,
   jsReduceRight_,
   jsReduce_,
+  jsRef_,
   jsRegexpMatch_,
   jsRegexpReplace_,
   jsRegexpP_,
   jsRegexp_,
+  jsRequire_,
   jsReturn_,
   jsSameValueZeroP_,
   jsSameValueP_,

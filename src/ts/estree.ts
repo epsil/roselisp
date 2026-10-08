@@ -17,11 +17,11 @@
  *
  * amounts to the same as
  *
- *     (js/obj "type" "BlockStatement"
+ *     (object "type" "BlockStatement"
  *             "body" (list ...))
  *
  * Objects instantiated with `new` are compatible with objects
- * created with `js/obj`.
+ * created with `object`.
  *
  * There are no private fields. For maximum compatibility with
  * existing implementations, every field and method is public.
@@ -2024,7 +2024,7 @@ function getEstreeField(field: any, node: any): any {
   return fieldVal;
 }
 
-getEstreeField.fsource = [Symbol.for('define'), [Symbol.for('get-estree-field'), Symbol.for('field'), Symbol.for('node')], [Symbol.for('unless'), Symbol.for('node'), [Symbol.for('return'), undefined]], [Symbol.for('define'), Symbol.for('node-val'), Symbol.for('node')], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('node-val'), Symbol.for('InternalPromise')], [Symbol.for('set!'), Symbol.for('node-val'), [Symbol.for('send'), Symbol.for('node-val'), Symbol.for('force')]]], [Symbol.for('define'), Symbol.for('field-val'), [Symbol.for('oget'), Symbol.for('node-val'), Symbol.for('field')]], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('field-val'), Symbol.for('InternalPromise')], [Symbol.for('set!'), Symbol.for('field-val'), [Symbol.for('send'), Symbol.for('field-val'), Symbol.for('force')]]], Symbol.for('field-val')];
+getEstreeField.fsource = [Symbol.for('define'), [Symbol.for('get-estree-field'), Symbol.for('field'), Symbol.for('node')], [Symbol.for('unless'), Symbol.for('node'), [Symbol.for('return'), undefined]], [Symbol.for('define'), Symbol.for('node-val'), Symbol.for('node')], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('node-val'), Symbol.for('InternalPromise')], [Symbol.for('set!'), Symbol.for('node-val'), [Symbol.for('send'), Symbol.for('node-val'), Symbol.for('force')]]], [Symbol.for('define'), Symbol.for('field-val'), [Symbol.for('object-ref'), Symbol.for('node-val'), Symbol.for('field')]], [Symbol.for('when'), [Symbol.for('is-a?'), Symbol.for('field-val'), Symbol.for('InternalPromise')], [Symbol.for('set!'), Symbol.for('field-val'), [Symbol.for('send'), Symbol.for('field-val'), Symbol.for('force')]]], Symbol.for('field-val')];
 
 export {
   Expression as ESTreeExpression,

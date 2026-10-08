@@ -105,12 +105,12 @@
 (define (array-ref_ arr . indices)
   (define result arr)
   (for ((i indices))
-    (set! result (js/get arr i)))
+    (set! result (js/ref arr i)))
   result)
 
 ;;; Compiler macro for `(array-ref ...)` expressions.
 (define-compiler-macro (array-ref_ arr &rest indices)
-  `(js/get ,arr ,@indices))
+  `(js/ref ,arr ,@indices))
 
 ;;; Return the `i`-th element of the array.
 ;;; Accepts negative values, counting back
@@ -168,7 +168,7 @@
     (drop-right indices-and-value 1))
   (define value
     (last indices-and-value))
-  `(js/= (js/get ,arr ,@indices) ,value))
+  `(js/= (js/ref ,arr ,@indices) ,value))
 
 ;;; Take the `n` first elements from `arr`.
 (define (array-take_ arr n)

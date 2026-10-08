@@ -230,13 +230,13 @@ describe('write-to-string', (): any => {
   it('(write-to-string \'())', (): any => assertEqual(writeToString([]), '()'));
   it('(write-to-string \'(1 . 2))', (): any => assertEqual(writeToString([1, Symbol.for('.'), 2]), '(1 . 2)'));
   it(`(write-to-string '(begin "foo
-bar") (js/obj :pretty #t))`, (): any => assertEqual(writeToString([Symbol.for('begin'), `foo
+bar") (object :pretty #t))`, (): any => assertEqual(writeToString([Symbol.for('begin'), `foo
 bar`], {
     pretty: true
   }), `(begin
   "foo
 bar")`));
-  it('(write-to-string \'(begin "\\"foo bar\\"") (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('begin'), '"foo bar"'], {
+  it('(write-to-string \'(begin "\\"foo bar\\"") (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('begin'), '"foo bar"'], {
     pretty: true
   }), `(begin
   "\\"foo bar\\"")`));
@@ -247,41 +247,41 @@ bar")`));
   it('(write-to-string \'("foo" "bar"))', (): any => assertEqual(writeToString(['foo', 'bar']), '("foo" "bar")'));
   it('(write-to-string \'(foo (bar)))', (): any => assertEqual(writeToString([Symbol.for('foo'), [Symbol.for('bar')]]), '(foo (bar))'));
   it('(write-to-string \'(foo (bar (baz))))', (): any => assertEqual(writeToString([Symbol.for('foo'), [Symbol.for('bar'), [Symbol.for('baz')]]]), '(foo (bar (baz)))'));
-  it('(write-to-string \'(begin (foo) (bar)) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('begin'), [Symbol.for('foo')], [Symbol.for('bar')]], {
+  it('(write-to-string \'(begin (foo) (bar)) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('begin'), [Symbol.for('foo')], [Symbol.for('bar')]], {
     pretty: true
   }), `(begin
   (foo)
   (bar))`));
-  it('(write-to-string \'(begin (foo (bar)) (bar (baz))) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('begin'), [Symbol.for('foo'), [Symbol.for('bar')]], [Symbol.for('bar'), [Symbol.for('baz')]]], {
+  it('(write-to-string \'(begin (foo (bar)) (bar (baz))) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('begin'), [Symbol.for('foo'), [Symbol.for('bar')]], [Symbol.for('bar'), [Symbol.for('baz')]]], {
     pretty: true
   }), `(begin
   (foo (bar))
   (bar (baz)))`));
-  it('(write-to-string \'(cond (foo (bar)) (bar (baz))) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('cond'), [Symbol.for('foo'), [Symbol.for('bar')]], [Symbol.for('bar'), [Symbol.for('baz')]]], {
+  it('(write-to-string \'(cond (foo (bar)) (bar (baz))) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('cond'), [Symbol.for('foo'), [Symbol.for('bar')]], [Symbol.for('bar'), [Symbol.for('baz')]]], {
     pretty: true
   }), `(cond
  (foo
   (bar))
  (bar
   (baz)))`));
-  it('(write-to-string \'(if foo bar baz) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('if'), Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')], {
+  it('(write-to-string \'(if foo bar baz) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('if'), Symbol.for('foo'), Symbol.for('bar'), Symbol.for('baz')], {
     pretty: true
   }), `(if foo
     bar
     baz)`));
-  it('(write-to-string \'(when foo bar) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('when'), Symbol.for('foo'), Symbol.for('bar')], {
+  it('(write-to-string \'(when foo bar) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('when'), Symbol.for('foo'), Symbol.for('bar')], {
     pretty: true
   }), `(when foo
   bar)`));
-  it('(write-to-string \'(unless foo bar) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('unless'), Symbol.for('foo'), Symbol.for('bar')], {
+  it('(write-to-string \'(unless foo bar) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('unless'), Symbol.for('foo'), Symbol.for('bar')], {
     pretty: true
   }), `(unless foo
   bar)`));
-  it('(write-to-string \'(define (foo x) x) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], {
+  it('(write-to-string \'(define (foo x) x) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], {
     pretty: true
   }), `(define (foo x)
   x)`));
-  it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (js/obj :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('define'), [Symbol.for('bar'), Symbol.for('y')], Symbol.for('y')]], {
+  it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (object :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('define'), [Symbol.for('bar'), Symbol.for('y')], Symbol.for('y')]], {
     pretty: true
   }), `(module m scheme
   (define (foo x)
@@ -289,7 +289,7 @@ bar")`));
 
   (define (bar y)
     y))`));
-  return it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (js/obj :no-module-form #t :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('define'), [Symbol.for('bar'), Symbol.for('y')], Symbol.for('y')]], {
+  return it('(write-to-string \'(module m scheme (define (foo x) x) (define (bar y) y)) (object :no-module-form #t :pretty #t))', (): any => assertEqual(writeToString([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), [Symbol.for('foo'), Symbol.for('x')], Symbol.for('x')], [Symbol.for('define'), [Symbol.for('bar'), Symbol.for('y')], Symbol.for('y')]], {
     noModuleForm: true,
     pretty: true
   }), `(define (foo x)

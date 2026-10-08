@@ -60,7 +60,7 @@ import {
   taggedListP
 } from './util';
 
-const [listStar, findf]: any[] = ((): any => {
+const [listStar]: any[] = ((): any => {
   function listStar_(...args: any[]): any {
     if (args.length === 0) {
       return undefined;
@@ -76,15 +76,7 @@ const [listStar, findf]: any[] = ((): any => {
       }
     }
   }
-  function findf_(proc: any, lst: any, notFound: any = false): any {
-    const idx: any = lst.findIndex(proc);
-    if (idx >= 0) {
-      return (lst as any)[idx];
-    } else {
-      return notFound;
-    }
-  }
-  return [listStar_, findf_];
+  return [listStar_];
 })();
 
 /**
@@ -279,8 +271,8 @@ function decompileAssignmentExpression(node: any, options: any = {}): any {
     return datumToSyntax(false, [Symbol.for('set-field!'), leftDecompiled.get(1), leftDecompiled.get(2), rightDecompiled]);
   } else if (taggedListP(leftExp, Symbol.for('list-ref'))) {
     return datumToSyntax(false, [Symbol.for('list-set!'), ...leftDecompiled.drop(1), rightDecompiled]);
-  } else if (taggedListP(leftExp, Symbol.for('oget'))) {
-    return datumToSyntax(false, [Symbol.for('oset!'), ...leftDecompiled.drop(1), rightDecompiled]);
+  } else if (taggedListP(leftExp, Symbol.for('object-ref'))) {
+    return datumToSyntax(false, [Symbol.for('object-set!'), ...leftDecompiled.drop(1), rightDecompiled]);
   } else if (estreeTypeP(left, 'ArrayPattern')) {
     return datumToSyntax(false, [Symbol.for('set!-values'), leftDecompiled, rightDecompiled]);
   } else if (estreeTypeP(left, 'ObjectPattern')) {
@@ -467,7 +459,7 @@ function decompileMemberExpression(node: any, options: any = {}): any {
     if (Number.isFinite(propertyExp)) {
       return datumToSyntax(false, [Symbol.for('list-ref'), ...(taggedListP(objectExp, Symbol.for('list-ref')) ? object.drop(1) : [object]), property]);
     } else {
-      return datumToSyntax(false, [Symbol.for('oget'), object, property]);
+      return datumToSyntax(false, [Symbol.for('object-ref'), object, property]);
     }
   } else if (optional) {
     return datumToSyntax(false, [Symbol.for('js/?.'), object, property]);
@@ -728,7 +720,7 @@ function decompileForInStatement(node: any, options: any = {}): any {
   }
   const right: any = decompileEstree(node.right, options);
   const body: any = decompileEstree(node.body, options);
-  return datumToSyntax(false, [Symbol.for('for'), [[left, [Symbol.for('js/keys'), right]]], ...body.drop(1)]);
+  return datumToSyntax(false, [Symbol.for('for'), [[left, [Symbol.for('object-keys'), right]]], ...body.drop(1)]);
 }
 
 /**
@@ -874,9 +866,9 @@ function decompileObjectExpression(node: any, options: any = {}): any {
     }
   }
   if (spreads.length === 0) {
-    return datumToSyntax(false, [Symbol.for('js/obj'), ...properties]);
+    return datumToSyntax(false, [Symbol.for('object'), ...properties]);
   } else {
-    return datumToSyntax(false, [Symbol.for('js/obj-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('js/obj'), ...properties]] : [])]);
+    return datumToSyntax(false, [Symbol.for('object-append'), ...spreads, ...((properties.length > 0) ? [[Symbol.for('object'), ...properties]] : [])]);
   }
 }
 
@@ -944,7 +936,7 @@ function decompileArrayExpression(node: any, options: any = {}): any {
     const regularElements: any = elements.slice(0, -1).map((decompileElement.length === 1) ? decompileElement : (x: any): any => decompileElement(x));
     const restElement: any = decompileElement(elements[elements.length - 1]);
     return datumToSyntax(false, listStar(...[...regularElements, restElement]));
-  } else if (findf((x: any): any => x && estreeTypeP(x, 'SpreadElement'), elements)) {
+  } else if (((idx: any): any => (idx >= 0) ? (elements as any)[idx] : false)(elements.findIndex((x: any): any => x && estreeTypeP(x, 'SpreadElement')))) {
     const elementsDecompiled: any = elements.map((x: any): any => {
       let result: any = decompileElement(x);
       if (x && estreeTypeP(x, 'SpreadElement')) {

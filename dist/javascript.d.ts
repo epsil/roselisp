@@ -30,9 +30,10 @@ declare namespace jsEval_ {
  * [js:strict-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#strict_equality_using
  * [js:strict-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
  */
-declare function jsStrictlyEqualP_(x: any, y: any): any;
+declare function jsStrictlyEqualP_(...args: any[]): any;
 declare namespace jsStrictlyEqualP_ {
-    var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * JavaScript [loose equality][js:loose-equality],
@@ -41,9 +42,10 @@ declare namespace jsStrictlyEqualP_ {
  * [js:loose-equality]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#loose_equality_using
  * [js:loose-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
  */
-declare function jsLooselyEqualP_(x: any, y: any): any;
+declare function jsLooselyEqualP_(...args: any[]): any;
 declare namespace jsLooselyEqualP_ {
-    var fsource: (symbol | symbol[])[];
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * JavaScript [sameValue][js:same-value] equality.
@@ -157,62 +159,6 @@ declare namespace jsIn_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
- * Make a JavaScript object.
- *
- * Similar to [`js-obj` in ClojureScript][cljs:js-obj].
- *
- * [cljs:js-obj]: https://cljs.github.io/api/cljs.core/#js-obj
- */
-declare function jsObj_(...args: any[]): any;
-declare namespace jsObj_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[];
-}
-/**
- * Whether something is a JavaScript object.
- */
-declare function jsObjP_(x: any): any;
-declare namespace jsObjP_ {
-    var compilerMacro: any;
-    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (symbol | (symbol | symbol[])[])[])[];
-}
-/**
- * Whether something types as a JavaScript object.
- *
- * Note that this includes JavaScript's `null` value.
- */
-declare function jsObjectTypeP_(x: any): any;
-declare namespace jsObjectTypeP_ {
-    var compilerMacro: any;
-    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (string | symbol | symbol[])[])[];
-}
-/**
- * Combine multiple JavaScript objects into a new JavaScript object.
- *
- * Like `append`, but for JavaScript objects.
- */
-declare function jsObjAppend_(...args: any[]): any;
-declare namespace jsObjAppend_ {
-    var fsource: (symbol | (symbol | symbol[])[])[];
-}
-/**
- * Spread a JavaScript object into another.
- */
-declare function jsObjSpread_(x: any): any;
-declare namespace jsObjSpread_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
- * Return the keys for a JavaScript object.
- *
- * Similar to [`js-keys` in ClojureScript][cljs:js-keys].
- * [cljs:js-keys]: https://cljs.github.io/api/cljs.core/#js-keys
- */
-declare function jsKeys_(obj: any): any;
-declare namespace jsKeys_ {
-    var compilerMacro: any;
-    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
-}
-/**
  * Variadic version of JavaScript's `+` operator.
  *
  * Performs [addition][js:add] or [string concatenation][js:concat],
@@ -283,8 +229,8 @@ declare namespace jsLength_ {
 /**
  * Look up the property `key` in the JavaScript object `obj`.
  */
-declare function jsGet_(obj: any, key: any): any;
-declare namespace jsGet_ {
+declare function jsRef_(obj: any, key: any): any;
+declare namespace jsRef_ {
     var fsource: (symbol | symbol[])[];
 }
 /**
@@ -567,4 +513,24 @@ declare namespace jsParseFloat_ {
     var compilerMacro: any;
     var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
-export { jsInstanceof_ as jsInstanceOfP_, jsTypeof_ as jsTypeOf_, jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsExpt_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGet_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsIsNaN_, jsKeys_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNew_, jsNot_, jsNullP_, jsObjAppend_, jsObjSpread_, jsObjP_, jsObj_, jsObjectTypeP_, jsOptionalChaining_, jsOr_, jsParseFloat_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };
+/**
+ * Import a module with [Node's `require`][nodejs:require].
+ * Returns `#f` if not found.
+ *
+ * Note that `require` is a declarative construct which is not really
+ * suited for being called as a function, because
+ * [Node's `require` algorithm][nodejs:require-algorithm] interprets
+ * the `require` call as relative to the file containing it (i.e.,
+ * this file), rather than the current working directory. To make
+ * `js/require` more practical when called interactively, the
+ * approach taken here is to convert a relative path to an absolute
+ * paths, which is then required.
+ *
+ * [nodejs:require]: https://nodejs.org/api/modules.html#requireid
+ * [nodejs:require-algorithm]: https://nodejs.org/api/modules.html#all-together
+ */
+declare function jsRequire_(id: any): any;
+declare namespace jsRequire_ {
+    var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[])[])[];
+}
+export { jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsExpt_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsIsNaN_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNew_, jsNot_, jsNullP_, jsOptionalChaining_, jsOr_, jsParseFloat_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRef_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRequire_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };

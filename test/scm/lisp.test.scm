@@ -682,7 +682,7 @@ let baz = 1;"
  > (compile
     '(begin
        (define-fields (foo)
-         (js/obj "foo"
+         (object "foo"
                  (lambda (x)
                    x)))
        (defmacro bar (x)
@@ -704,7 +704,7 @@ let baz = 1;"
  > (compile
     '(begin
        (define-fields ((foo foo1))
-         (js/obj "foo"
+         (object "foo"
                  (lambda (x)
                    x)))
        (defmacro bar (x)
@@ -937,7 +937,7 @@ myPlus.compilerMacro = (() => {
  :describe "clj/try"
  > (clj/try
     (/ 1 2)
-    (catch Exception e
+    (catch Error e
       "there was an error")
     (finally
       (display "finally")))
@@ -945,7 +945,7 @@ myPlus.compilerMacro = (() => {
  > (clj/try
     (/ 1 3)
     (/ 1 2)
-    (catch Exception e
+    (catch Error e
       "there was an error")
     (finally
       (display "finally")))
@@ -960,6 +960,71 @@ myPlus.compilerMacro = (() => {
 }"
  > (compile '(clj/try
               (set! x (/ 2 1))
+              (catch Error e
+                (display e))))
+ "try {
+  x = 2 / 1;
+} catch (e) {
+  if (e instanceof Error) {
+    console.log(e);
+  } else {
+    throw e;
+  }
+}"
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch _ e
+                (display e))))
+ "try {
+  x = 2 / 1;
+} catch (e) {
+  console.log(e);
+}"
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch Error _
+                (display "error"))))
+ "try {
+  x = 2 / 1;
+} catch (e) {
+  if (e instanceof Error) {
+    console.log('error');
+  } else {
+    throw e;
+  }
+}"
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch _ _
+                (display "error"))))
+ "try {
+  x = 2 / 1;
+} catch {
+  console.log('error');
+}"
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch _ _)))
+ "try {
+  x = 2 / 1;
+} catch {
+}"
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch _)))
+ "try {
+  x = 2 / 1;
+} catch {
+}"
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch)))
+ "try {
+  x = 2 / 1;
+} catch {
+}"
+ > (compile '(clj/try
+              (set! x (/ 2 1))
               (finally
                 (display "cleanup"))))
  "try {
@@ -969,7 +1034,7 @@ myPlus.compilerMacro = (() => {
 }"
  > (compile '(clj/try
               (/ 1 2)
-              (catch Object e
+              (catch _ e
                 (display "there was an error"))
               (finally
                 (display "finally"))))
@@ -982,14 +1047,14 @@ myPlus.compilerMacro = (() => {
 }"
  > (compile '(clj/try
               (/ 1 2)
-              (catch Exception e
+              (catch Error e
                 (display "there was an error"))
               (finally
                 (display "finally"))))
  "try {
   1 / 2;
 } catch (e) {
-  if (e instanceof Exception) {
+  if (e instanceof Error) {
     console.log('there was an error');
   } else {
     throw e;
@@ -999,7 +1064,7 @@ myPlus.compilerMacro = (() => {
 }"
  > (compile '(clj/try
               (set! x (/ 2 1))
-              (catch Object e
+              (catch _ e
                 (display "there was an error"))
               (finally
                 (display "cleanup"))))
@@ -1012,7 +1077,7 @@ myPlus.compilerMacro = (() => {
 }"
  > (compile '(clj/try
               (set! x (/ 2 1))
-              (catch MyException e
+              (catch MyError e
                 (display "there was an error")
                 (return #f))
               (finally
@@ -1020,7 +1085,7 @@ myPlus.compilerMacro = (() => {
  "try {
   x = 2 / 1;
 } catch (e) {
-  if (e instanceof MyException) {
+  if (e instanceof MyError) {
     console.log('there was an error');
     return false;
   } else {
@@ -1031,7 +1096,7 @@ myPlus.compilerMacro = (() => {
 }"
  > (compile '(clj/try
               (set! x (/ 2 1))
-              (catch Object e
+              (catch _ e
                 (display "there was an error")
                 (return #f))
               (finally
@@ -1044,10 +1109,13 @@ myPlus.compilerMacro = (() => {
 } finally {
   console.log('cleanup');
 }"
+ ;; Using a variable name that is bound in the language,
+ ;; such as `length`, should pose no issue since it is
+ ;; just a local binding.
  > (compile '(module m scheme
                (clj/try
                 (set! x (/ 2 1))
-                (catch Object length
+                (catch _ length
                   (display "there was an error: " length)
                   (return #f))
                 (finally
@@ -1060,14 +1128,13 @@ myPlus.compilerMacro = (() => {
 } finally {
   console.log('cleanup');
 }"
- > (compile '(module m scheme
-               (clj/try
-                (set! x (/ 2 1))
-                (catch Object _
-                  (display "there was an error")
-                  (return #f))
-                (finally
-                  (display "cleanup")))))
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch _ _
+                (display "there was an error")
+                (return #f))
+              (finally
+                (display "cleanup"))))
  "try {
   x = 2 / 1;
 } catch {
@@ -1076,19 +1143,22 @@ myPlus.compilerMacro = (() => {
 } finally {
   console.log('cleanup');
 }"
- > (compile '(module m scheme
-               (clj/try
-                (set! x (/ 2 1))
-                (catch Error _
-                  (display "there was an error")
-                  (return #f))
-                (finally
-                  (display "cleanup")))))
+ > (compile '(clj/try
+              (set! x (/ 2 1))
+              (catch Error _
+                (display "there was an error")
+                (return #f))
+              (finally
+                (display "cleanup"))))
  "try {
   x = 2 / 1;
-} catch {
-  console.log('there was an error');
-  return false;
+} catch (e) {
+  if (e instanceof Error) {
+    console.log('there was an error');
+    return false;
+  } else {
+    throw e;
+  }
 } finally {
   console.log('cleanup');
 }"

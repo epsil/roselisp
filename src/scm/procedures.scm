@@ -671,6 +671,18 @@
         (list-ref lst idx)
         not-found)))
 
+;;; Compiler macro for `(findf ...)` expressions.
+(define-compiler-macro (findf_ proc lst (not-found #f))
+  (with-gensyms
+   (idx)
+   (once-only
+    (lst)
+    :smart #t
+    `(let ((,idx (js/find-index ,proc ,lst)))
+       (js/? (>= ,idx 0)
+             (list-ref ,lst ,idx)
+             ,not-found)))))
+
 ;;; Find the index of a list element matching a predicate.
 ;;;
 ;;; Similar to [`index-where` in Racket][rkt:index-where] and
@@ -678,9 +690,9 @@
 ;;;
 ;;; [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
 ;;; [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
-(define (findf-index_ proc seq (not-found #f))
+(define (findf-index_ proc lst (not-found #f))
   (declare (inline #t))
-  (let ((idx (js/find-index proc seq)))
+  (let ((idx (js/find-index proc lst)))
     (if (>= idx 0)
         idx
         not-found)))
@@ -692,9 +704,9 @@
 ;;;
 ;;; [rkt:index-where]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-where%29%29
 ;;; [cl:position-if]: http://clhs.lisp.se/Body/f_pos_p.htm#position-if
-(define (index-where_ seq proc (not-found #f))
+(define (index-where_ lst proc (not-found #f))
   (declare (inline #t))
-  (let ((idx (js/find-index proc seq)))
+  (let ((idx (js/find-index proc lst)))
     (if (>= idx 0)
         idx
         not-found)))
@@ -706,8 +718,8 @@
 ;;;
 ;;; [rkt:index-of]: https://docs.racket-lang.org/reference/pairs.html#%28def._%28%28lib._racket%2Flist..rkt%29._index-of%29%29
 ;;; [cl:position]: http://clhs.lisp.se/Body/f_pos_p.htm#position
-(define (index-of_ seq v (is-equal #u))
-  (index-where seq
+(define (index-of_ lst v (is-equal #u))
+  (index-where lst
                (if is-equal
                    (lambda (x)
                      (is-equal x v))

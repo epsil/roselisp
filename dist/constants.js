@@ -1,6 +1,5 @@
 "use strict";
 // SPDX-License-Identifier: MPL-2.0
-// inline-lisp-sources: true
 /**
  * # Constants
  *
@@ -17,7 +16,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.version = exports.unquoteSym_ = exports.unquoteSplicingSym_ = exports.undefined_ = exports.true_ = exports.quoteSym_ = exports.quasiquoteSym_ = exports.packageName = exports.null_ = exports.license = exports.jsNull_ = exports.false_ = exports.defaultLanguage = void 0;
+exports.version = exports.unquoteSym_ = exports.unquoteSplicingSym_ = exports.undefined_ = exports.true_ = exports.quoteSym_ = exports.quasiquoteSym_ = exports.null_ = exports.name = exports.license = exports.jsNull_ = exports.false_ = exports.defaultLanguage = exports.packageName = void 0;
+const util_1 = require("./util");
+util_1.getPackageProperty.ftype = 'macro';
 /**
  * Boolean true value, `#t`.
  *
@@ -100,12 +101,13 @@ exports.defaultLanguage = defaultLanguage;
 /**
  * Roselisp package name.
  */
-const packageName = 'roselisp';
-exports.packageName = packageName;
+const name = 'roselisp';
+exports.packageName = name;
+exports.name = name;
 /**
  * Roselisp version.
  */
-const version = '0.0.1';
+const version = '0.0.2';
 exports.version = version;
 /**
  * Roselisp license.

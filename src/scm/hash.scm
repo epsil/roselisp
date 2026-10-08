@@ -17,9 +17,6 @@
 ;;;
 ;;; [js:Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
 
-(require (only-in "./util"
-                  tagged-list?))
-
 ;;; Whether something is a hash map.
 ;;;
 ;;; Similar to [`hash?` in Racket][rkt:hashp].
@@ -29,63 +26,21 @@
   (declare (inline #t))
   (is-a? v Map))
 
-;;; Make a hash map from a list of `(key . value)` pairs.
+;;; Make a hash map from an association list, i.e., a list
+;;; on the form `((key1 . val1) (key2 . val2) ...)`.
 ;;;
 ;;; Similar to [`make-hash` in Racket][rkt:make-hash].
 ;;;
 ;;; [rkt:make-hash]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._make-hash%29%29
-(define (make-hash_ (assocs '()))
-  ;; TODO: Instead of `(map flatten ...)`, define a converter function
-  ;; `alist->tuples` and call that here. That function can then be given
-  ;; a compiler macro that deals with quasiquoted association lists and
-  ;; the like.
-  (new Map (map flatten assocs)))
+(define (make-hash_ (alst '()))
+  (new Map (alist->tuples alst)))
 
 ;;; Compiler macro for `(make-hash ...)` expressions.
-(define-compiler-macro (make-hash_ assocs)
-  (cond
-   (assocs
-    (cond
-     ((and (or (tagged-list? assocs 'quasiquote)
-               (tagged-list? assocs 'quote))
-           (list? (second assocs))
-           (= (length
-               (filter
-                (lambda (x)
-                  ;; TODO: Use `match` here.
-                  (or (not (pair-or-list? x))
-                      (and (= (length x) 2)
-                           (or (tagged-list? x 'unquote)
-                               (and (tagged-list? x 'unquote-splicing)
-                                    (not (tagged-list?
-                                          (second x)
-                                          'hash->list)))))))
-                (second assocs)))
-              0))
-      ;; If we have a quoted list of pairs, rewrite it to a simpler
-      ;; expression that does not call `flatten`.
-      `(new Map
-            (ann (,(first assocs)
-                  ,(map (lambda (x)
-                          (cond
-                           ;; TODO: Use `match` here.
-                           ((and (tagged-list? x 'unquote-splicing)
-                                 (tagged-list? (second x) 'hash->list))
-                            (cons (first x)
-                                  (list `(send
-                                          ,(second (second x))
-                                          entries))))
-                           (else
-                            (list (car x) (cdr x)))))
-                        (second assocs)))
-                 Any)))
-     (else
-      ;; If the `assocs` form is not simple, then we have map
-      ;; `flatten` over it in order to convert a list of pairs to a
-      ;; list of lists.
-      `(new Map (map flatten ,assocs)))))
-   (else
-    `(new Map))))
+(define-compiler-macro (make-hash_ (alst #u))
+  `(new Map
+        ,@(if alst
+              `((ann (alist->tuples ,alst) Any))
+              '())))
 
 ;;; Set `key` to `v` in the hash map `ht`.
 ;;;

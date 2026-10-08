@@ -13,14 +13,25 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+(require (only-in "fs"
+                  existsSync
+                  readFileSync))
+(require (only-in "path"
+                  join
+                  resolve))
 (require (only-in "process"
-                  cwd
-                  chdir))
+                  chdir
+                  cwd))
 (require (only-in "./constants"
                   quote-sym_
                   quasiquote-sym_
                   unquote-sym_
                   unquote-splicing-sym_))
+(require (only-in "./estree"
+                  ArrayExpression
+                  estree-type?))
+(require (only-in "./plist"
+                  plist-get_))
 (require (only-in "./rose"
                   syntax?
                   syntax->datum))
@@ -99,7 +110,7 @@
 ;;; Whether a method is defined on an object.
 (define (method? method obj)
   (and (object? obj)
-       (procedure? (oget obj method))))
+       (procedure? (object-ref obj method))))
 
 ;;; Make a symbol with a name different from the ones in `lst`.
 ;;; The prefix to use may be specified with `prefix`.
@@ -126,14 +137,21 @@
          '("camelcase"
            "snakecase")))
 
+;;; Whether we are compiling to JavaScript code,
+;;; rather than an ESTree intended for evaluation.
+(define (compiling-to-js? options)
+  ;; FIXME: Kludge. This should look at the `:to` option
+  ;; instead.
+  (valid-js-casing-style? (object-ref options :case)))
+
 ;;; Transform a string to a valid JavaScript identifier
 ;;; string, provided an appropriate casing style
 ;;; (camel case or snake case) is specified in `options`.
 ;;; The input is assumed to be kebab case.
-(define (make-identifier-string str (options (js/obj)))
+(define (make-identifier-string str (options (object)))
   (define result str)
   (define case-option
-    (or (oget options :case)
+    (or (object-ref options :case)
         "none"))
   (when (valid-js-casing-style? case-option)
     (set! result
@@ -777,6 +795,23 @@
    (else
     exp)))
 
+;;; Rewrite `[...[x]]` to `[x]`, recursively.
+(define (insert-into-array-exp! x arr)
+  (cond
+   ((and (estree-type? x "SpreadElement")
+         (estree-type? (get-field argument x)
+                       "ArrayExpression"))
+    (define elements
+      (~> x
+          (get-field argument _)
+          (get-field elements _)))
+    (for ((y elements))
+      (insert-into-array-exp! y arr)))
+   ((estree-type? arr "ArrayExpression")
+    (insert-into-array-exp! x (get-field elements arr)))
+   (else
+    (push-right! arr x))))
+
 ;;; Copy elements from the list `source` to the list `dest`
 ;;; so that the two become equal. Modifies `dest` in place.
 ;;; Only the beginning of `dest` is modified; the rest is
@@ -790,7 +825,7 @@
   (unless (null? dest)
     (unless (eq? (first dest) (first source))
       (pop-left! dest)
-      (push-left dest (first source))))
+      (push-left! dest (first source))))
   dest)
 
 ;;; Remove indentation from a multi-line string.
@@ -807,12 +842,65 @@
     (try
       (try
         (chdir dir)
-        (catch Error err))
-      (f)
+        (catch Error _))
+      (force f)
       (finally
         (try
           (chdir tmp)
-          (catch Error err))))))
+          (catch Error _))))))
+
+;;; Macro for fetching a package property from `package.json`
+;;; during compile time.
+(define-macro (get-package-property prop &rest options)
+  (define obj
+    (~> "../../package.json"
+        (readFileSync _ (object :encoding "utf8"))
+        (send JSON parse _)))
+  (define val
+    (object-ref obj prop))
+  (define as-option
+    (plist-get_ options :as))
+  (cond
+   ((eq? as-option 'symbol)
+    (when (string? val)
+      (set! val (string->symbol val))))
+   ((eq? as-option 'string)
+    (when (symbol? val)
+      (set! val (symbol->string val)))))
+  (define val-exp
+    (if (self-evaluating? val)
+        val
+        `(quote ,val)))
+  val-exp)
+
+;;; Locate the `node_modules/` directory nearest to `dir`.
+;;; Returns the absolute path as a string, or `#f` if
+;;; not found.
+;;;
+;;; This function searches for `node_modules/` in `dir`, then in the
+;;; parent directory of `dir`, then in the parent of the parent, and
+;;; so on, in a manner similar to
+;;; [Node's `require` algorithm][nodejs:require-algorithm].
+;;;
+;;; [nodejs:require-algorithm]: https://nodejs.org/api/modules.html#all-together
+(define (get-node-modules-path (dir "."))
+  (define segments
+    (~> dir
+        (resolve _)
+        (string-split _ "/")
+        (filter (lambda (x)
+                  (not (eq? x "")))
+                _)
+        (cons "/" _)))
+  (for ((i (range (length segments) 0 -1)))
+    (define segments-1
+      (append (take segments i)
+              (list "node_modules")))
+    (define path-str
+      (apply join segments-1))
+    (when (existsSync path-str)
+      (return path-str)))
+  #f)
 
 (provide
   (rename-out (map-has? map-has))
@@ -820,6 +908,7 @@
   begin-wrap
   begin-wrap-smart
   colon-form?
+  compiling-to-js?
   copy-into-array!
   count-tree
   define->define-macro
@@ -827,6 +916,9 @@
   define-method
   flip-function-expression
   form?
+  get-node-modules-path
+  get-package-property
+  insert-into-array-exp!
   kebab-case->camel-case
   kebab-case->snake-case
   lambda->let

@@ -15,11 +15,11 @@
  *
  * amounts to the same as
  *
- *     (js/obj "type" "BlockStatement"
+ *     (object "type" "BlockStatement"
  *             "body" (list ...))
  *
  * Objects instantiated with `new` are compatible with objects
- * created with `js/obj`.
+ * created with `object`.
  *
  * There are no private fields. For maximum compatibility with
  * existing implementations, every field and method is public.

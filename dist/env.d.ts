@@ -162,7 +162,7 @@ declare class Environment {
     /**
      * Convert the environment to a JavaScript object.
      */
-    toObject(): any;
+    toObject(options?: any): any;
 }
 /**
  * Typed environment.
@@ -378,7 +378,7 @@ declare class EnvironmentStack extends PromiseEnvironment {
     /**
      * Convert the environment stack to a JavaScript object.
      */
-    toObject(): any;
+    toObject(options?: any): any;
 }
 /**
  * Compose environments left-to-right.
@@ -460,7 +460,7 @@ declare class JavaScriptEnvironment extends DynamicEnvironment {
 declare class JavaScriptModuleEnvironment extends DynamicEnvironment {
     private jsModule;
     constructor(jsModule: any);
-    toObject(): any;
+    toObject(options?: any): any;
 }
 /**
  * Make an environment.
@@ -538,22 +538,14 @@ declare namespace defaultEnvironment {
     var fsource: (symbol | (symbol | symbol[])[])[];
 }
 /**
- * Run `f` with `currentEnvironmentPointer` bound to `env`.
+ * Run `f` with `current-environment-pointer` bound to `env`.
  * This makes the current environment available through the
- * function {@link currentEnvironment}. The original value
- * of `currentEnvironmentPointer` is restored afterwards.
+ * function {@link current-environment}. The original value
+ * of `current-environment-pointer` is restored afterwards.
  */
-declare function withEnvironmentF(env: any, f: any): any;
-declare namespace withEnvironmentF {
-    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
-}
-/**
- * Macro for `with-environment-f`.
- */
-declare function withEnvironment(exp: any, env: any): any;
+declare function withEnvironment(env: any, f: any): any;
 declare namespace withEnvironment {
-    var ftype: string;
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[] | (symbol | (string | symbol)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[])[];
 }
 /**
  * Return the current compilation options.
@@ -570,4 +562,4 @@ declare function withCompilationOptions(options: any, f: any): any;
 declare namespace withCompilationOptions {
     var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | undefined)[][])[])[];
 }
-export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironmentF as withCurrentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, JavaScriptModuleEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentCompilationOptions, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withCompilationOptions, withEnvironment, withEnvironmentF };
+export { PromiseEnvironment as ThunkedEnvironment, currentEnvironment_ as currentEnvironment, withEnvironment as withCurrentEnvironment, DynamicEnvironment, Environment, EnvironmentComposition, EnvironmentPipe, EnvironmentStack, JavaScriptEnvironment, JavaScriptModuleEnvironment, LispEnvironment, PromiseEnvironment, TypedEnvironment, currentCompilationOptions, currentEnvironmentPointer, currentEnvironment_, defaultEnvironment, emptyEnvironment, environmentFrames, extendEnvironment, linkEnvironmentFrames, makeEnvironment, prefixBindings, withCompilationOptions, withEnvironment };

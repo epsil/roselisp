@@ -29,9 +29,33 @@
  */
 declare class REPL {
     /**
-     * REPL prompt.
+     * Flag for printing values.
      */
-    private prompt;
+    printFlag: any;
+    /**
+     * Flag for quitting.
+     */
+    quitFlag: any;
+    /**
+     * The REPL environment.
+     */
+    env: any;
+    /**
+     * The toplevel environment.
+     */
+    toplevel: any;
+    /**
+     * The current module, if any.
+     */
+    currentModule: any;
+    /**
+     * REPL options.
+     */
+    private options;
+    /**
+     * REPL prompt string.
+     */
+    private promptStr;
     /**
      * REPL state.
      */
@@ -43,18 +67,10 @@ declare class REPL {
     /**
      * REPL history.
      *
-     * A list of strings. The latest entry is stored
+     * A list of strings, with the latest entry stored
      * at the beginning of the list.
      */
     private history;
-    /**
-     * Flag for printing values.
-     */
-    private printFlag;
-    /**
-     * Flag for quitting.
-     */
-    private quitFlag;
     /**
      * `readline` instance.
      */
@@ -64,37 +80,51 @@ declare class REPL {
      */
     private rlHistory;
     /**
-     * The REPL environment.
+     * Absolute path to `~/.roselisp_history`, where
+     * persistent history is stored.
      */
-    private env;
+    private historyFile;
     /**
      * Message displayed when starting the REPL.
      */
     private startupMessage;
-    /**
-     * Help message displayed by the REPL's `help` command.
-     */
-    private helpMessage;
+    private echo;
     /**
      * Create a new REPL.
      */
-    constructor();
+    constructor(options?: any);
     /**
      * Start the REPL.
      */
-    start(): any;
+    start(options?: any): any;
     /**
      * Read--eval--print method.
      */
     rep(input: any, env?: any): any;
     /**
-     * Read a line of user input.
+     * Normalize options.
      */
-    private readLine;
+    private normalizeOptions;
     /**
      * Print startup message.
      */
     private printStartupMessage;
+    /**
+     * Read a line of user input.
+     */
+    private prompt;
+    /**
+     * Read persistent history.
+     */
+    private readHistory;
+    /**
+     * Write persistent history.
+     */
+    private writeHistory;
+    /**
+     * Append an entry to the persistent history.
+     */
+    private writeHistoryEntry;
 }
 /**
  * Read--eval--print function.
@@ -103,5 +133,22 @@ declare function rep(input: any): any;
 /**
  * Read--eval--print--loop function.
  */
-declare function repl(): void;
-export { REPL, rep, repl };
+declare function repl(options?: any): void;
+/**
+ * Convert a history object to a string.
+ * The reverse of `string->history`.
+ */
+declare function historyToString(history: any): any;
+/**
+ * Convert a string to a history object.
+ *
+ * The input to this function is a string of entered lines, separated
+ * by newlines, with the latest entry at the end of the string. The
+ * output is a list of strings, one per expression, in the opposite
+ * order (i.e., with the latest entry at the beginning of the list,
+ * which is what `readline` expects). Expressions spanning multiple
+ * lines are parsed as a single expression, so there might be fewer
+ * entries in the output than there are lines in the input.
+ */
+declare function stringToHistory(str: any): any;
+export { REPL, historyToString, rep, repl, stringToHistory };

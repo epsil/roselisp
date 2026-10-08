@@ -301,9 +301,9 @@
  '(define-macro (foo (x 1))
     `(bar ,x))
  > (define->define-macro
-     '(define (foo (x 1) (options (js/obj)))
+     '(define (foo (x 1) (options (object)))
         (bar x options)))
- '(define-macro (foo (x 1) (options '(js/obj)))
+ '(define-macro (foo (x 1) (options '(object)))
     `(bar ,x ,options))
  > (define->define-macro
      '(define (foo f . args)

@@ -678,32 +678,32 @@
 (define Y Y1c)
 
 (define curried
-  (js/obj "A" A1c
-          "B" B1c
-          "C" C1c
-          "I" I1c
-          "K" K1c
-          "Ki" Ki1c
-          "Q" Q1c
-          "S" S1c
-          "T" T1c
-          "U" U1c
-          "UT" UT1c
-          "Y" Y1c))
+  (object :A A1c
+          :B B1c
+          :C C1c
+          :I I1c
+          :K K1c
+          :Ki Ki1c
+          :Q Q1c
+          :S S1c
+          :T T1c
+          :U U1c
+          :UT UT1c
+          :Y Y1c))
 
 (define variadic
-  (js/obj "A" A2c
-          "B" B2c
-          "C" C2c
-          "I" I2c
-          "K" K2c
-          "Ki" Ki1c
-          "Q" Q2c
-          "S" S1c
-          "T" T2c
-          "U" U1c
-          "UT" UT1c
-          "Y" Y1c))
+  (object :A A2c
+          :B B2c
+          :C C2c
+          :I I2c
+          :K K2c
+          :Ki Ki1c
+          :Q Q2c
+          :S S1c
+          :T T2c
+          :U U1c
+          :UT UT1c
+          :Y Y1c))
 
 (provide
   __

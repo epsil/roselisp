@@ -139,6 +139,16 @@ describe('js/=', (): any => {
   return it('(compile \'(js/= (define-fields (x)) y))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/='), [Symbol.for('define-fields'), [Symbol.for('x')]], Symbol.for('y')]]], 'let {x} = y;']));
 });
 
+describe('js/==', (): any => {
+  it('(compile \'(js/== x y))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y')]]], 'x == y;']));
+  return it('(compile \'(js/== x y z))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/=='), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]]], 'x == y == z;']));
+});
+
+describe('js/===', (): any => {
+  it('(compile \'(js/=== x y))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y')]]], 'x === y;']));
+  return it('(compile \'(js/=== x y z))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/==='), Symbol.for('x'), Symbol.for('y'), Symbol.for('z')]]], 'x === y === z;']));
+});
+
 describe('js/,', (): any => {
   it('(compile \'(js/, x))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/,'), Symbol.for('x')]]], 'x;']));
   it('(compile \'(js/, x y))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/,'), Symbol.for('x'), Symbol.for('y')]]], 'x, y;']));
@@ -700,6 +710,8 @@ describe('js/statement-or-expression', (): any => {
   it('(compile \'(js/statement-or-expression :statement 1 :expression 2) :as "return")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1, Symbol.for(':expression'), 2]], Symbol.for(':as'), 'return'], 'return 2;']));
   return it('(compile \'(js/statement-or-expression :statement 1) :as "return")', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/statement-or-expression'), Symbol.for(':statement'), 1]], Symbol.for(':as'), 'return'], 'return 1;']));
 });
+
+describe('js/require', (): any => it('(compile \'(js/require "foo"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/require'), 'foo']]], 'require(\'foo\');'])));
 
 describe('js/import', (): any => {
   it('(compile \'(js/import * :as foo :from "bar"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js/import'), Symbol.for('*'), Symbol.for(':as'), Symbol.for('foo'), Symbol.for(':from'), 'bar']]], 'import * as foo from \'bar\';']));

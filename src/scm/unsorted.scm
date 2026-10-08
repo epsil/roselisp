@@ -12,28 +12,99 @@
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-;;; Expand a `(let-env ...)` expression.
-(define-macro (let-env_ x &rest body)
-  `(scm/eval '(begin ,@body)
-             (extend-environment
-              ,x
-              (current-environment))))
+;; ;;; Indent a string by prepending each line with `n` spaces.
+;; (define (indent-string str (n 2) (options (js/obj)))
+;;   (define whitespace-option
+;;     (oget options :whitespace))
+;;   (define whitespace
+;;     (or whitespace-option " "))
+;;   (define include-empty-lines-option
+;;     (oget options :include-empty-lines))
+;;   (define pattern
+;;     (if include-empty-lines-option
+;;         (regexp "^" "gm")
+;;         (regexp "^(?!\s*$)" "gm")))
+;;   (define indentation
+;;     (string-repeat whitespace n))
+;;   (regexp-replace pattern str indentation))
 
-;;; Indent a string by prepending each line with `n` spaces.
-(define (indent-string str (n 2) (options (js/obj)))
-  (define whitespace-option
-    (oget options :whitespace))
-  (define whitespace
-    (or whitespace-option " "))
-  (define include-empty-lines-option
-    (oget options :include-empty-lines))
-  (define pattern
-    (if include-empty-lines-option
-        (regexp "^" "gm")
-        (regexp "^(?!\s*$)" "gm")))
-  (define indentation
-    (string-repeat whitespace n))
-  (regexp-replace pattern str indentation))
+;; ;;; Normalize an array expression like `[1, Symbol.for('.'), []]'
+;; ;;; to `[1]`.
+;; (define (normalize-array-expression exp)
+;;   ;; TODO: Pattern matching for ESTree nodes.
+;;   ;; TODO: Handle `quote`, `quasiquote`,
+;;   ;; `unquote`, `unquote-splicing`.
+;;   (define (array-exp? exp)
+;;     (estree-type? exp "ArrayExpression"))
+;;   (define (dotted-array-exp? exp)
+;;     (and (estree-type? exp "ArrayExpression")
+;;          (>= (length (get-field elements exp)) 3)
+;;          (cons-dot-exp?
+;;           (list-ref (get-field elements exp)
+;;                     (- (length (get-field elements exp)) 2)))
+;;          (estree-type?
+;;           (list-ref (get-field elements exp)
+;;                     (- (length (get-field elements exp)) 1))
+;;           "ArrayExpression")))
+;;   (define (cons-dot-exp? exp)
+;;     (and (estree-type? exp "CallExpression")
+;;          (estree-type? (get-field callee exp)
+;;                        "MemberExpression")
+;;          (estree-type? (get-field object
+;;                                   (get-field callee exp))
+;;                        "Identifier")
+;;          (eq? (get-field name (get-field object
+;;                                          (get-field callee exp)))
+;;               "Symbol")
+;;          (estree-type? (get-field property
+;;                                   (get-field callee exp))
+;;                        "Identifier")
+;;          (estree-type? (get-field property
+;;                                   (get-field callee exp))
+;;                        "Identifier")
+;;          (eq? (get-field name
+;;                          (get-field property
+;;                                     (get-field callee exp)))
+;;               "for")
+;;          (not (get-field computed exp))
+;;          (= (length (get-field arguments exp)) 1)
+;;          (estree-type? (first (get-field arguments exp))
+;;                        "Literal")
+;;          (eq? (get-field value
+;;                          (first (get-field arguments exp)))
+;;               ".")))
+;;   (define result exp)
+;;   (when (array-exp? exp)
+;;     (define normalized-subarrays #f)
+;;     (define elements
+;;       (map (lambda (x)
+;;              (define result
+;;                (normalize-array-expression x))
+;;              (unless (eq? result x)
+;;                (set! normalized-subarrays #t))
+;;              result)
+;;            (get-field elements exp)))
+;;     (cond
+;;      ((dotted-array-exp? exp)
+;;       (define tail
+;;         (last (get-field elements exp)))
+;;       (when (array-exp? tail)
+;;         (set! result
+;;               (new ArrayExpression
+;;                    `(,@(drop-right elements 2)
+;;                      ,@(get-field elements tail))))))
+;;      (normalized-subarrays
+;;       (set! result
+;;             (new ArrayExpression elements))))
+;;     result)
+;;   result)
+
+;; ;;; Expand a `(let-env ...)` expression.
+;; (define-macro (let-env_ x &rest body)
+;;   `(scm/eval '(begin ,@body)
+;;              (extend-environment
+;;               ,x
+;;               (current-environment))))
 
 ;; ;;; Create a macro function on the basis of a
 ;; ;;; `(define-macro ...)` expression.
@@ -1449,65 +1520,64 @@
 ;;   (set-field! fexpr f #t)
 ;;   f)
 
-(provide
-  ;; (rename-out (tcall t-call))
-  ;; (rename-out (tcall trampoline-call))
-  ;; (rename-out (trampoline run-trampoline))
-  ;; (rename-out (trampoline trampoline-run))
-  ;; Trampoline
-  ;; TrampolineCall
-  ;; tcall
-  ;; trampoline
-  ;; and-special_
-  ;; ann-special_
-  ;; async-special_
-  ;; await-special_
-  ;; begin-special_
-  ;; break-special_
-  ;; colon-special_
-  ;; cond-special_
-  ;; continue-special_
-  ;; define-async-special_
-  ;; define-class-special_
-  ;; define-fields-special_
-  ;; define-generator-special_
-  ;; define-macro-special_
-  ;; define-public-special_
-  ;; define-special_
-  ;; define-type-special_
-  ;; define-values-special_
-  ;; defmacro-special_
-  ;; dot-special_
-  ;; for-special_
-  ;; fset-special_
-  ;; get-field-special_
-  ;; js/arrow-special_
-  ;; js/do-while-special_
-  ;; js/function-special_
-  ;; js/optional-chaining-special_
-  ;; js/while-special_
-  ;; lambda-special_
-  ;; let-env-special_
-  ;; let-fields-special_
-  ;; let-star-special_
-  ;; let-values-special_
-  ;; macrop-special_
-  ;; module-special_
-  ;; nlambda-special_
-  ;; or-special_
-  ;; provide-special_
-  ;; quasiquote-special_
-  ;; quote-special_
-  ;; require-special_
-  ;; return-special_
-  ;; send-apply-special_
-  ;; send-special_
-  ;; set-field-special_
-  ;; set-fields-special_
-  ;; set-special_
-  ;; set-values-special_
-  ;; setq-special_
-  ;; throw-special_
-  ;; try-special_
-  ;; yield-special_
-  )
+;; (provide
+;;   (rename-out (tcall t-call))
+;;   (rename-out (tcall trampoline-call))
+;;   (rename-out (trampoline run-trampoline))
+;;   (rename-out (trampoline trampoline-run))
+;;   Trampoline
+;;   TrampolineCall
+;;   tcall
+;;   trampoline
+;;   and-special_
+;;   ann-special_
+;;   async-special_
+;;   await-special_
+;;   begin-special_
+;;   break-special_
+;;   colon-special_
+;;   cond-special_
+;;   continue-special_
+;;   define-async-special_
+;;   define-class-special_
+;;   define-fields-special_
+;;   define-generator-special_
+;;   define-macro-special_
+;;   define-public-special_
+;;   define-special_
+;;   define-type-special_
+;;   define-values-special_
+;;   defmacro-special_
+;;   dot-special_
+;;   for-special_
+;;   fset-special_
+;;   get-field-special_
+;;   js/arrow-special_
+;;   js/do-while-special_
+;;   js/function-special_
+;;   js/optional-chaining-special_
+;;   js/while-special_
+;;   lambda-special_
+;;   let-env-special_
+;;   let-fields-special_
+;;   let-star-special_
+;;   let-values-special_
+;;   macrop-special_
+;;   module-special_
+;;   nlambda-special_
+;;   or-special_
+;;   provide-special_
+;;   quasiquote-special_
+;;   quote-special_
+;;   require-special_
+;;   return-special_
+;;   send-apply-special_
+;;   send-special_
+;;   set-field-special_
+;;   set-fields-special_
+;;   set-special_
+;;   set-values-special_
+;;   setq-special_
+;;   throw-special_
+;;   try-special_
+;;   yield-special_)

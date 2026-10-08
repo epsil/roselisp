@@ -21,24 +21,6 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeHash_ = exports.hashp_ = exports.hashValues_ = exports.hashSize_ = exports.hashSet_ = exports.hashSetX_ = exports.hashRemove_ = exports.hashRemoveX_ = exports.hashRef_ = exports.hashKeys_ = exports.hashHasKeyP_ = exports.hashEntries_ = exports.hashCopy_ = exports.hashClear_ = exports.hashClearX_ = exports.hashToList_ = void 0;
-const util_1 = require("./util");
-const [flatten] = (() => {
-    function flatten_(lst) {
-        return lst.reduce((acc, x) => {
-            if (Array.isArray(x)) {
-                return [...acc, ...flatten_(x)];
-            }
-            else if (x === Symbol.for('.')) {
-                return acc;
-            }
-            else {
-                acc.push(x);
-                return acc;
-            }
-        }, []);
-    }
-    return [flatten_];
-})();
 /**
  * Whether something is a hash map.
  *
@@ -60,45 +42,28 @@ hashp_.compilerMacro = (() => {
 })();
 hashp_.fsource = [Symbol.for('define'), [Symbol.for('hash?_'), Symbol.for('v')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('v'), Symbol.for('Map')]];
 /**
- * Make a hash map from a list of `(key . value)` pairs.
+ * Make a hash map from an association list, i.e., a list
+ * on the form `((key1 . val1) (key2 . val2) ...)`.
  *
  * Similar to [`make-hash` in Racket][rkt:make-hash].
  *
  * [rkt:make-hash]: https://docs.racket-lang.org/reference/hashtables.html#%28def._%28%28quote._~23~25kernel%29._make-hash%29%29
  */
-function makeHash_(assocs = []) {
-    // TODO: Instead of `(map flatten ...)`, define a converter function
-    // `alist->tuples` and call that here. That function can then be given
-    // a compiler macro that deals with quasiquoted association lists and
-    // the like.
-    return new Map(assocs.map((flatten.length === 1) ? flatten : (x) => flatten(x)));
+function makeHash_(alst = []) {
+    return new Map(alst.map((x) => [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)]));
 }
 exports.makeHash_ = makeHash_;
-makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('assocs'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), Symbol.for('assocs')]]];
+makeHash_.fsource = [Symbol.for('define'), [Symbol.for('make-hash_'), [Symbol.for('alst'), [Symbol.for('quote'), []]]], [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('alist->tuples'), Symbol.for('alst')]]];
 /**
  * Compiler macro for `(make-hash ...)` expressions.
  */
 makeHash_.compilerMacro = (() => {
     const f = (exp, env) => {
-        const [assocs] = exp.slice(1);
-        if (assocs) {
-            if (((0, util_1.taggedListP)(assocs, Symbol.for('quasiquote')) || (0, util_1.taggedListP)(assocs, Symbol.for('quote'))) && ((x) => Array.isArray(x) && !((x.length >= 3) && (x[x.length - 2] === Symbol.for('.')) && !Array.isArray(x[x.length - 1])))(assocs[1]) && (assocs[1].filter((x) => !Array.isArray(x) || ((x.length === 2) && ((0, util_1.taggedListP)(x, Symbol.for('unquote')) || ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && !(0, util_1.taggedListP)(x[1], Symbol.for('hash->list')))))).length === 0)) {
-                return [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('ann'), [assocs[0], assocs[1].map((x) => {
-                                if ((0, util_1.taggedListP)(x, Symbol.for('unquote-splicing')) && (0, util_1.taggedListP)(x[1], Symbol.for('hash->list'))) {
-                                    return [x[0], [Symbol.for('send'), x[1][1], Symbol.for('entries')]];
-                                }
-                                else {
-                                    return [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)];
-                                }
-                            })], Symbol.for('Any')]];
-            }
-            else {
-                return [Symbol.for('new'), Symbol.for('Map'), [Symbol.for('map'), Symbol.for('flatten'), assocs]];
-            }
+        let [alst] = exp.slice(1);
+        if (alst === undefined) {
+            alst = undefined;
         }
-        else {
-            return [Symbol.for('new'), Symbol.for('Map')];
-        }
+        return [Symbol.for('new'), Symbol.for('Map'), ...(alst ? [[Symbol.for('ann'), [Symbol.for('alist->tuples'), alst], Symbol.for('Any')]] : [])];
     };
     f.ftype = 'macro';
     return f;

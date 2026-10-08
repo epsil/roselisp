@@ -453,6 +453,175 @@
       (circular-list? foo)))
  #t
 
+ :describe "object"
+ > (object)
+ (object)
+ > (object "foo" "bar")
+ (object "foo" "bar")
+ > (object "foo" 1 "bar" 2)
+ (object "foo" 1 "bar" 2)
+ > (object 'foo 1 'bar 2)
+ (object 'foo 1 'bar 2)
+ > (object :foo 1 :bar 2)
+ (object :foo 1 :bar 2)
+ > (let ((x "foo"))
+     (object x "bar"))
+ (object :foo "bar")
+ > (funcall object "foo" "bar")
+ (object :foo "bar")
+ > (funcall object 'foo "bar")
+ (object :foo "bar")
+ > (funcall object :foo "bar")
+ (object :foo "bar")
+ > (compile '(object))
+ "({});"
+ > (compile '(object "foo" foo))
+ "({
+  foo
+});"
+ > (compile '(object "foo" "bar"))
+ "({
+  foo: 'bar'
+});"
+ > (compile '(object foo foo))
+ "({
+  [foo]: foo
+});"
+ > (compile '(object foo "bar"))
+ "({
+  [foo]: 'bar'
+});"
+ > (compile '(object 'foo "bar"))
+ "({
+  foo: 'bar'
+});"
+ > (compile '(object :foo "bar"))
+ "({
+  foo: 'bar'
+});"
+ > (compile '(object "foo-bar" "baz"))
+ "({
+  'foo-bar': 'baz'
+});"
+ > (compile '(object foo-bar "baz"))
+ "({
+  [fooBar]: 'baz'
+});"
+ > (compile '(object 'foo-bar "baz"))
+ "({
+  fooBar: 'baz'
+});"
+ > (compile '(object :foo-bar "baz"))
+ "({
+  fooBar: 'baz'
+});"
+ > (compile '(object "foo bar" "baz"))
+ "({
+  'foo bar': 'baz'
+});"
+ > (compile '(object "foo bar" baz))
+ "({
+  'foo bar': baz
+});"
+ > (compile '(object "foo bar" 'baz))
+ "({
+  'foo bar': Symbol.for('baz')
+});"
+ > (compile '(object "foo bar" :baz))
+ "({
+  'foo bar': Symbol.for(':baz')
+});"
+ > (compile '(object "foo" 1 "bar" 2))
+ "({
+  foo: 1,
+  bar: 2
+});"
+ > (compile '(object "foo" foo "bar" bar))
+ "({
+  foo,
+  bar
+});"
+ > (compile '(object "foo" (object "bar" "baz")))
+ "({
+  foo: {
+    bar: 'baz'
+  }
+});"
+ > (compile '(object "foo" (object "foo" "foo")
+                     "bar" (object "bar" "bar")))
+ "({
+  foo: {
+    foo: 'foo'
+  },
+  bar: {
+    bar: 'bar'
+  }
+});"
+ > (compile '(object "foo" (object)
+                     "bar" (object "bar" "bar")
+                     "baz" (object "baz" "baz")))
+ "({
+  foo: {},
+  bar: {
+    bar: 'bar'
+  },
+  baz: {
+    baz: 'baz'
+  }
+});"
+ > (compile '(object)
+            :as "expression")
+ "{}"
+ > (compile '(object "foo" "bar")
+            :as "expression")
+ "{
+  foo: 'bar'
+}"
+ > (compile '(object "foo" 1 "bar" 2)
+            :as "expression")
+ "{
+  foo: 1,
+  bar: 2
+}"
+ > (compile '(object)
+            :as "return")
+ "return {};"
+ > (compile '(object "foo" "bar")
+            :as "return")
+ "return {
+  foo: 'bar'
+};"
+ > (compile '(object "foo" 1 "bar" 2)
+            :as "return")
+ "return {
+  foo: 1,
+  bar: 2
+};"
+
+ :describe "object?"
+ > (compile '(object? x))
+ "(x !== null) && (typeof x === 'object');"
+
+ :describe "object-append"
+ > (compile '(object-append
+              obj
+              (object "foo" "bar")))
+ "({
+  ...obj,
+  foo: 'bar'
+});"
+
+ :describe "object-keys"
+ > (object-keys (object))
+ '()
+ > (object-keys (object "foo" "bar"))
+ '("foo")
+ > (object-keys (object "foo" "bar"
+                        "baz" "quux"))
+ '("foo" "baz")
+ > (compile '(object-keys x))
+ "Object.keys(x);"
+
  :describe "proper-list->dotted-list"
  > (proper-list->dotted-list '(foo bar))
  '(foo . bar)
@@ -699,7 +868,7 @@ prop;"
 }"
 
  :describe "oget"
- > (let ((obj (js/obj "prop" "foo")))
+ > (let ((obj (object "prop" "foo")))
      (oget obj "prop"))
  "foo"
  > (oget _ "@@functional/placeholder")
@@ -716,15 +885,15 @@ prop;"
  "obj[fooBar()];"
 
  :describe "oset!"
- > (let ((obj (js/obj)))
+ > (let ((obj (object)))
      (oset! obj 'foo-bar "baz")
      (oget obj 'foo-bar))
  "baz"
- > (let ((obj (js/obj)))
+ > (let ((obj (object)))
      (oset! obj :foo-bar "baz")
      (oget obj :foo-bar))
  "baz"
- > (let ((obj (js/obj)))
+ > (let ((obj (object)))
      (oset! obj "foo-bar" "baz")
      (oget obj "foo-bar"))
  "baz"
@@ -1169,27 +1338,27 @@ prop;"
 
  :describe "plist->object"
  > (plist->object '())
- (js/obj)
+ (object)
  > (plist->object '(foo bar))
- (js/obj "foo" 'bar)
+ (object "foo" 'bar)
  > (plist->object '(foo bar baz quux))
- (js/obj "foo" 'bar
+ (object "foo" 'bar
          "baz" 'quux)
 
  :describe "define-fields"
  > ((lambda ()
       (define-fields (x)
-        (js/obj "x" 1))
+        (object "x" 1))
       x))
  1
  > ((lambda ()
       (define-fields (foo)
-        (js/obj "foo" "bar"))
+        (object "foo" "bar"))
       foo))
  "bar"
  > ((lambda ()
       (define-fields ((foo bar))
-        (js/obj "foo" "bar"))
+        (object "foo" "bar"))
       bar))
  "bar"
  > (compile '(define-fields (prop) obj))
@@ -1201,12 +1370,12 @@ prop;"
  > (compile '(define-fields ((x y) z) obj))
  "let {x: y, z} = obj;"
  > (compile '(define-fields (foo)
-               (js/obj "foo" "bar")))
+               (object "foo" "bar")))
  "let {foo} = {
   foo: 'bar'
 };"
  > (compile '(define-fields ((foo bar))
-               (js/obj "foo" "bar")))
+               (object "foo" "bar")))
  "let {foo: bar} = {
   foo: 'bar'
 };"
@@ -1214,7 +1383,7 @@ prop;"
     '(module m scheme
        (define (foo)
          (define obj
-           (js/obj))
+           (object))
          (define-fields (x rest)
            obj)
          (append rest '(5))))
@@ -1228,7 +1397,7 @@ prop;"
     '(module m scheme
        (define (foo)
          (define obj
-           (js/obj))
+           (object))
          (define-fields ((rest r) x)
            obj)
          (list r x)))
@@ -1242,12 +1411,12 @@ prop;"
  :describe "set!-fields"
  > ((lambda ()
       (let (x)
-        (set!-fields (x) (js/obj "x" 1))
+        (set!-fields (x) (object "x" 1))
         x)))
  1
  > (compile '(set!-fields (prop) obj))
  "({prop} = obj);"
- > (compile '(set!-fields (x) (js/obj "x" 1)))
+ > (compile '(set!-fields (x) (object "x" 1)))
  "({x} = {
   x: 1
 });"
@@ -1303,6 +1472,42 @@ let isEqual = memoize(f);
                (+ _ 1)
                (+ _ 1)))
  "0 + 1 + 1;"
+
+ :describe "alist->tuples"
+ > (alist->tuples '((foo . bar)))
+ '((foo bar))
+ > (alist->tuples '((foo . bar) (baz . quux)))
+ '((foo bar) (baz quux))
+ > (compile '(alist->tuples alst))
+ "alst.map(x => [x[0], ((x.length === 3) && (x[1] === Symbol.for('.'))) ? x[2] : x.slice(1)]);"
+ > (compile '(alist->tuples '((1 . 2))))
+ "[[1, 2]];"
+ > (compile '(alist->tuples '((1 . 2) (3 . 4))))
+ "[[1, 2], [3, 4]];"
+ > (compile '(alist->tuples `((1 . 2) ,@(tuples->alist '((3 4))))))
+ "[[1, 2], [3, 4]];"
+ > (compile '(alist->tuples `((1 . 2) ,@(tuples->alist lst))))
+ "[[1, 2], ...lst];"
+ > (compile '(alist->tuples (tuples->alist x)))
+ "x;"
+
+ :describe "tuples->alist"
+ > (tuples->alist '((foo bar)))
+ '((foo . bar))
+ > (tuples->alist '((foo bar) (baz quux)))
+ '((foo . bar) (baz . quux))
+ > (compile '(tuples->alist alst))
+ "alst.map(x => [x[0], ...(x1 => Array.isArray(x1) ? x1 : [Symbol.for('.'), x1])(x[1])]);"
+ > (compile '(tuples->alist '((1 2))))
+ "[[1, Symbol.for('.'), 2]];"
+ > (compile '(tuples->alist '((1 2) (3 4))))
+ "[[1, Symbol.for('.'), 2], [3, Symbol.for('.'), 4]];"
+ > (compile '(tuples->alist `((1 2) ,@(alist->tuples '((3 . 4))))))
+ "[[1, Symbol.for('.'), 2], [3, Symbol.for('.'), 4]];"
+ > (compile '(tuples->alist `((1 2) ,@(alist->tuples lst))))
+ "[[1, Symbol.for('.'), 2], ...lst];"
+ > (compile '(tuples->alist (alist->tuples x)))
+ "x;"
 
  :describe "define-type"
  > (compile '(define-type NN (-> Number Number))

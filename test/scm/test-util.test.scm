@@ -232,7 +232,7 @@
         '(roselisp
           > (+ 1 1)
           2)
-        (js/obj :from "roselisp"
+        (object :from "roselisp"
                 :to "node")))
  '(node
    > "(() => 1 + 1)()"
@@ -242,7 +242,7 @@
         '(roselisp
           > (+ 1 1)
           _)
-        (js/obj :from "roselisp"
+        (object :from "roselisp"
                 :to "node")))
  '(node
    > "(() => 1 + 1)()"

@@ -1,5 +1,4 @@
 ;; SPDX-License-Identifier: MPL-2.0
-;; inline-lisp-sources: true
 ;;; # Constants
 ;;;
 ;;; Various constants.
@@ -13,6 +12,11 @@
 ;;; This Source Code Form is subject to the terms of the Mozilla Public
 ;;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+(require (only-in "./util"
+                  get-package-property))
+
+(declare-macro get-package-property)
 
 ;;; Boolean true value, `#t`.
 ;;;
@@ -78,20 +82,24 @@
 (define default-language "javascript")
 
 ;;; Roselisp package name.
-(define package-name "roselisp")
+(define name
+  (get-package-property "name"))
 
 ;;; Roselisp version.
-(define version "0.0.1")
+(define version
+  (get-package-property "version"))
 
 ;;; Roselisp license.
 (define license
-  'MPL-2.0)
+  (get-package-property "license" :as symbol))
 
 (provide
+  (rename-out (name package-name))
   default-language
   false_
   js/null_
   license
+  name
   null_
   package-name
   quasiquote-sym_

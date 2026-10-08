@@ -314,7 +314,7 @@ function arrayRef_(arr: any, ...indices: any[]): any {
   return result;
 }
 
-arrayRef_.fsource = [Symbol.for('define'), [Symbol.for('array-ref_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('arr')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/get'), Symbol.for('arr'), Symbol.for('i')]]], Symbol.for('result')];
+arrayRef_.fsource = [Symbol.for('define'), [Symbol.for('array-ref_'), Symbol.for('arr'), Symbol.for('.'), Symbol.for('indices')], [Symbol.for('define'), Symbol.for('result'), Symbol.for('arr')], [Symbol.for('for'), [[Symbol.for('i'), Symbol.for('indices')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/ref'), Symbol.for('arr'), Symbol.for('i')]]], Symbol.for('result')];
 
 /**
  * Compiler macro for `(array-ref ...)` expressions.
@@ -322,7 +322,7 @@ arrayRef_.fsource = [Symbol.for('define'), [Symbol.for('array-ref_'), Symbol.for
 arrayRef_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     const [arr, ...indices]: any[] = exp.slice(1);
-    return [Symbol.for('js/get'), arr, ...indices];
+    return [Symbol.for('js/ref'), arr, ...indices];
   };
   f.ftype = 'macro';
   return f;
@@ -399,7 +399,7 @@ arraySetX_.compilerMacro = ((): any => {
     const [arr, ...indicesAndValue]: any[] = exp.slice(1);
     const indices: any = indicesAndValue.slice(0, -1);
     const value: any = indicesAndValue[indicesAndValue.length - 1];
-    return [Symbol.for('js/='), [Symbol.for('js/get'), arr, ...indices], value];
+    return [Symbol.for('js/='), [Symbol.for('js/ref'), arr, ...indices], value];
   };
   f.ftype = 'macro';
   return f;

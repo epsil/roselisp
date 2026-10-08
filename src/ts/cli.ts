@@ -148,6 +148,15 @@ const cliOptions: any = {
     default: false,
     type: 'boolean'
   },
+  replHistory: {
+    default: true,
+    type: 'boolean'
+  },
+  sparseRepl: {
+    alias: 'sparse-repl',
+    default: false,
+    type: 'boolean'
+  },
   to: {
     default: 'javascript',
     type: 'string'
@@ -227,7 +236,7 @@ function main(): void {
   } else if (evalFlag) {
     console.log(interpretString(evalFlag));
   } else if (replFlag || (input.length === 0)) {
-    repl();
+    repl(flags);
   } else if (decompileFlag) {
     decompileFilesX(input, flags);
   } else if (compileFlag) {

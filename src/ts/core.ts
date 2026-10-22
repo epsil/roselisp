@@ -454,16 +454,16 @@ import {
 } from './macros';
 
 import {
-  object_,
-  objectp_,
-  objectTypeP_,
+  fieldNames_,
   objectAppend_,
   objectCopy_,
-  objectSpread_,
   objectKeys_,
-  fieldNames_,
   objectRef_,
-  objectSetX_
+  objectSetX_,
+  objectSpread_,
+  objectTypeP_,
+  objectp_,
+  object_
 } from './object';
 
 import {

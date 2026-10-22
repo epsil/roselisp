@@ -422,18 +422,16 @@
                   while_
                   with-gensyms_))
 (require (only-in "./object"
-
-                  object_
-                  object?_
-                  object-type?_
+                  field-names_
                   object-append_
                   object-copy_
-                  object-spread_
                   object-keys_
-
-                  field-names_
                   object-ref_
-                  object-set!_))
+                  object-set!_
+                  object-spread_
+                  object-type?_
+                  object?_
+                  object_))
 (require (only-in "./parser"
                   LeadingCommentToken
                   TrailingCommentToken

@@ -587,6 +587,8 @@
                   promise?_
                   thunk?_
                   thunk_))
+(require (only-in "./typescript"
+                  ts/as_))
 (require (only-in "./util"
                   begin-wrap
                   colon-form?
@@ -8416,14 +8418,6 @@
                 x)
               stx
               env))
-
-;;; Expand a `(ts/as ...)` expression.
-(define-macro (ts/as_ &whole exp &environment env)
-  ;; TODO: Convert to fexpr.
-  (compile-sexp
-   exp
-   env
-   (current-compilation-options)))
 
 ;;; Expand a `(: ...)` expression.
 (define-macro (colon_ &whole exp &environment env)

@@ -642,6 +642,10 @@ import {
 } from './thunk';
 
 import {
+  tsAs_
+} from './typescript';
+
+import {
   beginWrap,
   colonFormP,
   compilingToJsP,
@@ -7955,18 +7959,6 @@ function iterateStx(f: any, stx: any, env: any = new LispEnvironment()): any {
 }
 
 iterateStx.fsource = [Symbol.for('define'), [Symbol.for('iterate-stx'), Symbol.for('f'), Symbol.for('stx'), [Symbol.for('env'), [Symbol.for('new'), Symbol.for('LispEnvironment')]]], [Symbol.for('map-syntax'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('stack')], [Symbol.for('f'), Symbol.for('x'), Symbol.for('stack')], Symbol.for('x')], Symbol.for('stx'), Symbol.for('env')]];
-
-/**
- * Expand a `(ts/as ...)` expression.
- */
-function tsAs_(exp: any, env: any): any {
-  // TODO: Convert to fexpr.
-  return compileSexp(exp, env, currentCompilationOptions());
-}
-
-tsAs_.ftype = 'macro';
-
-tsAs_.fsource = [Symbol.for('define'), [Symbol.for('ts/as_'), Symbol.for('exp'), Symbol.for('env')], [Symbol.for('declare'), [Symbol.for('ftype'), 'macro']], [Symbol.for('compile-sexp'), Symbol.for('exp'), Symbol.for('env'), [Symbol.for('current-compilation-options')]]];
 
 /**
  * Expand a `(: ...)` expression.

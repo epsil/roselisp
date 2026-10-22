@@ -129,16 +129,6 @@
        (>= (length exp) 1)
        (eq? (first exp) tag)))
 
-;;; Logical negation.
-;;;
-;;; Similar to [`not` in Racket][rkt:not] and
-;;; [`not` in Common Lisp][cl:not].
-;;;
-;;; [rkt:not]: https://docs.racket-lang.org/reference/booleans.html#%28def._%28%28quote._~23~25kernel%29._not%29%29
-;;; [cl:not]: http://clhs.lisp.se/Body/f_not.htm
-(define (not_ x)
-  (not x))
-
 ;;; Map a procedure over a list.
 ;;;
 ;;; Similar to [`map` in Racket][rkt:map] and
@@ -184,78 +174,6 @@
   (declare (inline #t))
   (send lst forEach f))
 
-;;; Less than operator.
-;;;
-;;; Similar to [`<` in Racket][rkt:lt] and [`<` in Common Lisp][cl:lt].
-;;;
-;;; [rkt:lt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c%29%29
-;;; [cl:lt]: http://clhs.lisp.se/Body/f_eq_sle.htm#LT
-(define (lt_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x < y) === (x >= y)
-      (when (>= (list-ref args (- i 1))
-                (list-ref args i))
-        (return #f)))
-    #t)))
-
-;;; Less than or equal operator.
-;;;
-;;; Similar to [`<=` in Racket][rkt:lte] and [`<=` in Common Lisp][cl:lte].
-;;;
-;;; [rkt:lte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c~3d%29%29
-;;; [cl:lte]: http://clhs.lisp.se/Body/f_eq_sle.htm#LTEQ
-(define (lte_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x <= y) === (x > y)
-      (when (> (list-ref args (- i 1))
-               (list-ref args i))
-        (return #f)))
-    #t)))
-
-;;; Greater than operator.
-;;;
-;;; Similar to [`>` in Racket][rkt:gt] and [`>` in Common Lisp][cl:gt].
-;;;
-;;; [rkt:gt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e%29%29
-;;; [cl:gt]: http://clhs.lisp.se/Body/f_eq_sle.htm#GT
-(define (gt_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x > y) === (x <= y)
-      (when (<= (list-ref args (- i 1))
-                (list-ref args i))
-        (return #f)))
-    #t)))
-
-;;; Greater than or equal operator.
-;;;
-;;; Similar to [`>=` in Racket][rkt:gte] and [`>=` in Common Lisp][cl:gte].
-;;;
-;;; [rkt:gte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e~3d%29%29
-;;; [cl:gte]: http://clhs.lisp.se/Body/f_eq_sle.htm#GTEQ
-(define (gte_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x >= y) === (x < y)
-      (when (< (list-ref args (- i 1))
-               (list-ref args i))
-        (return #f)))
-    #t)))
-
 ;;; Modulo operation.
 ;;;
 ;;; Similar to [`modulo` in Racket][rkt:modulo] and
@@ -266,19 +184,6 @@
 (define (modulo_ x y)
   (modulo x y))
 
-;;; Addition.
-;;;
-;;; Similar to [`+` in Racket][rkt:add] and [`+` in Common Lisp][cl:add].
-;;;
-;;; [rkt:add]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2B%29%29
-;;; [cl:add]: http://clhs.lisp.se/Body/f_pl.htm
-(define (add_ . args)
-  (let ((result 0))
-    (for ((arg args))
-      (set! result
-            (+ result arg)))
-    result))
-
 ;;; Return `(+ x 1)`.
 ;;;
 ;;; Similar to [`add1` in Racket][rkt:add1].
@@ -288,26 +193,6 @@
   (declare (inline #t))
   (+ x 1))
 
-;;; Subtraction.
-;;;
-;;; Similar to [`-` in Racket][rkt:sub] and [`-` in Common Lisp][cl:sub].
-;;;
-;;; [rkt:sub]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._-%29%29
-;;; [cl:sub]: http://clhs.lisp.se/Body/f__.htm
-(define (sub_ . args)
-  (let ((len (length args)))
-    (cond
-     ((zero? len)
-      0)
-     ((one? len)
-      (- (first args)))
-     (else
-      (let ((result (first args)))
-        (for ((i (range 1 len)))
-          (set! result
-                (- result (list-ref args i))))
-        result)))))
-
 ;;; Return `(- x 1)`.
 ;;;
 ;;; Similar to [`sub1` in Racket][rkt:sub1].
@@ -316,53 +201,6 @@
 (define (sub1_ x)
   (declare (inline #t))
   (- x 1))
-
-;;; Multiplication.
-;;;
-;;; Similar to [`*` in Racket][rkt:mul] and [`*` in Common Lisp][cl:mul].
-;;;
-;;; [rkt:mul]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2A%29%29
-;;; [cl:mul]: http://clhs.lisp.se/Body/f_st.htm
-(define (mul_ . args)
-  (let ((result 1))
-    (for ((arg args))
-      (set! result
-            (* result arg)))
-    result))
-
-;;; Division.
-;;;
-;;; Similar to [`/` in Racket][rkt:div] and [`/` in Common Lisp][cl:div].
-;;;
-;;; [rkt:div]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2F%29%29
-;;; [cl:div]: http://clhs.lisp.se/Body/f_sl.htm
-(define (div_ . args)
-  (cond
-   ((= (length args) 1)
-    (/ 1 (first args)))
-   (else
-    (let ((result (first args)))
-      (for ((i (range 1 (length args))))
-        (set! result
-              (/ result (list-ref args i))))
-      result))))
-
-;;; Exponentiation.
-;;;
-;;; Similar to [`expt` in Racket][rkt:expt] and [`expt` in Common Lisp][cl:expt].
-;;;
-;;; [rkt:expt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._expt%29%29
-;;; [cl:expt]: http://clhs.lisp.se/Body/f_exp_e.htm#expt
-(define (expt_ . args)
-  (let ((result 1))
-    (for ((i (range (- (length args) 1) -1 -1)))
-      (set! result
-            (js/** (list-ref args i) result)))
-    result))
-
-;;; Compiler macro for `(expt ...)` expressions.
-(define-compiler-macro (expt_ &rest args)
-  `(js/** ,@args))
 
 ;;; Square root.
 ;;;
@@ -956,15 +794,10 @@
 
 (provide
   (rename-out (add1_ add1))
-  (rename-out (add_ _add))
-  (rename-out (add_ add))
-  (rename-out (add_ plus))
   (rename-out (apply_ apply))
   (rename-out (compiler-type?_ compiler-type?))
   (rename-out (compose_ compose))
   (rename-out (display_ display))
-  (rename-out (div_ _div))
-  (rename-out (div_ div))
   (rename-out (error_ error))
   (rename-out (false?_ false?))
   (rename-out (fexpr-type?_ fexpr-type?))
@@ -974,8 +807,6 @@
   (rename-out (foldl_ foldl))
   (rename-out (foldr_ foldr))
   (rename-out (funcall_ funcall))
-  (rename-out (gt_ gt))
-  (rename-out (gte_ gte))
   (rename-out (intersection_ intersection))
   (rename-out (is-a?_ instance-of))
   (rename-out (is-a?_ instance-of?))
@@ -986,8 +817,6 @@
   (rename-out (keyword->string_ keyword->string))
   (rename-out (keyword->symbol_ keyword->symbol))
   (rename-out (keyword?_ keyword?))
-  (rename-out (lt_ lt))
-  (rename-out (lte_ lte))
   (rename-out (macro-type?_ macro-type?))
   (rename-out (macro?_ macro?))
   (rename-out (map_ map))
@@ -998,9 +827,6 @@
   (rename-out (member_ member))
   (rename-out (member_ memq))
   (rename-out (memf_ memf))
-  (rename-out (mul_ _mul))
-  (rename-out (mul_ mul))
-  (rename-out (not_ not))
   (rename-out (number?_ number?))
   (rename-out (pipe_ pipe))
   (rename-out (procedure-type?_ procedure-type?))
@@ -1009,10 +835,6 @@
   (rename-out (range_ range))
   (rename-out (special-type?_ special-type?))
   (rename-out (sub1_ sub1))
-  (rename-out (sub_ _sub))
-  (rename-out (sub_ minus))
-  (rename-out (sub_ sub))
-  (rename-out (sub_ subtract))
   (rename-out (syntax-transformer-type?_ syntax-transformer-type?))
   (rename-out (syntax-transformer?_ syntax-transformer?))
   (rename-out (tagged-list?_ tagged-list?))
@@ -1025,7 +847,6 @@
   (rename-out (zero?_ zerop))
   abs_
   add1_
-  add_
   apply_
   arity_
   assert_
@@ -1035,10 +856,8 @@
   compose_
   const_
   display_
-  div_
   error_
   even?_
-  expt_
   false?_
   fexpr-type?
   fexpr?_
@@ -1049,8 +868,6 @@
   foldr_
   for-each_
   funcall_
-  gt_
-  gte_
   identity_
   index-of_
   index-where_
@@ -1059,8 +876,6 @@
   keyword->string_
   keyword->symbol_
   keyword?_
-  lt_
-  lte_
   macro-type?_
   macro?_
   make-error_
@@ -1072,8 +887,6 @@
   memq?_
   memq_
   modulo_
-  mul_
-  not_
   number?_
   odd?_
   one?_
@@ -1088,7 +901,6 @@
   sqrt_
   string->keyword_
   sub1_
-  sub_
   symbol->keyword_
   syntax-transformer-type?_
   syntax-transformer?_

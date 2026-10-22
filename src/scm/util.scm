@@ -166,6 +166,7 @@
 
 ;;; Helper function for `make-identifier-string`.
 (define (make-identifier-string-helper str)
+  ;; TODO: Move function renaming into its own map.
   (define result
     (~> str
         (regexp-replace (regexp "^\\+$" "g") _ "_add")

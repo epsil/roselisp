@@ -148,19 +148,6 @@ declare namespace taggedListP_ {
     var fsource: (symbol | (symbol | (number | symbol | symbol[])[])[])[];
 }
 /**
- * Logical negation.
- *
- * Similar to [`not` in Racket][rkt:not] and
- * [`not` in Common Lisp][cl:not].
- *
- * [rkt:not]: https://docs.racket-lang.org/reference/booleans.html#%28def._%28%28quote._~23~25kernel%29._not%29%29
- * [cl:not]: http://clhs.lisp.se/Body/f_not.htm
- */
-declare function not_(x: any): any;
-declare namespace not_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
  * Map a procedure over a list.
  *
  * Similar to [`map` in Racket][rkt:map] and
@@ -183,54 +170,6 @@ declare namespace forEach_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
- * Less than operator.
- *
- * Similar to [`<` in Racket][rkt:lt] and [`<` in Common Lisp][cl:lt].
- *
- * [rkt:lt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c%29%29
- * [cl:lt]: http://clhs.lisp.se/Body/f_eq_sle.htm#LT
- */
-declare function lt_(...args: any[]): any;
-declare namespace lt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
- * Less than or equal operator.
- *
- * Similar to [`<=` in Racket][rkt:lte] and [`<=` in Common Lisp][cl:lte].
- *
- * [rkt:lte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c~3d%29%29
- * [cl:lte]: http://clhs.lisp.se/Body/f_eq_sle.htm#LTEQ
- */
-declare function lte_(...args: any[]): any;
-declare namespace lte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
- * Greater than operator.
- *
- * Similar to [`>` in Racket][rkt:gt] and [`>` in Common Lisp][cl:gt].
- *
- * [rkt:gt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e%29%29
- * [cl:gt]: http://clhs.lisp.se/Body/f_eq_sle.htm#GT
- */
-declare function gt_(...args: any[]): any;
-declare namespace gt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
- * Greater than or equal operator.
- *
- * Similar to [`>=` in Racket][rkt:gte] and [`>=` in Common Lisp][cl:gte].
- *
- * [rkt:gte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e~3d%29%29
- * [cl:gte]: http://clhs.lisp.se/Body/f_eq_sle.htm#GTEQ
- */
-declare function gte_(...args: any[]): any;
-declare namespace gte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
  * Modulo operation.
  *
  * Similar to [`modulo` in Racket][rkt:modulo] and
@@ -242,18 +181,6 @@ declare namespace gte_ {
 declare function modulo_(x: any, y: any): any;
 declare namespace modulo_ {
     var fsource: (symbol | symbol[])[];
-}
-/**
- * Addition.
- *
- * Similar to [`+` in Racket][rkt:add] and [`+` in Common Lisp][cl:add].
- *
- * [rkt:add]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2B%29%29
- * [cl:add]: http://clhs.lisp.se/Body/f_pl.htm
- */
-declare function add_(...args: any[]): any;
-declare namespace add_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol)[][])[])[];
 }
 /**
  * Return `(+ x 1)`.
@@ -268,18 +195,6 @@ declare namespace add1_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
 }
 /**
- * Subtraction.
- *
- * Similar to [`-` in Racket][rkt:sub] and [`-` in Common Lisp][cl:sub].
- *
- * [rkt:sub]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._-%29%29
- * [cl:sub]: http://clhs.lisp.se/Body/f__.htm
- */
-declare function sub_(...args: any[]): any;
-declare namespace sub_ {
-    var fsource: (symbol | (symbol | (symbol | (number | symbol[])[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol)[])[][])[])[])[])[])[])[];
-}
-/**
  * Return `(- x 1)`.
  *
  * Similar to [`sub1` in Racket][rkt:sub1].
@@ -290,43 +205,6 @@ declare function sub1_(x: any): any;
 declare namespace sub1_ {
     var compilerMacro: any;
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
-}
-/**
- * Multiplication.
- *
- * Similar to [`*` in Racket][rkt:mul] and [`*` in Common Lisp][cl:mul].
- *
- * [rkt:mul]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2A%29%29
- * [cl:mul]: http://clhs.lisp.se/Body/f_st.htm
- */
-declare function mul_(...args: any[]): any;
-declare namespace mul_ {
-    var fsource: (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (number | symbol)[][])[])[];
-}
-/**
- * Division.
- *
- * Similar to [`/` in Racket][rkt:div] and [`/` in Common Lisp][cl:div].
- *
- * [rkt:div]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2F%29%29
- * [cl:div]: http://clhs.lisp.se/Body/f_sl.htm
- */
-declare function div_(...args: any[]): any;
-declare namespace div_ {
-    var fsource: (symbol | (symbol | (number | symbol | symbol[])[][] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | symbol[])[])[][])[])[])[])[])[];
-}
-/**
- * Exponentiation.
- *
- * Similar to [`expt` in Racket][rkt:expt] and [`expt` in Common Lisp][cl:expt].
- *
- * [rkt:expt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._expt%29%29
- * [cl:expt]: http://clhs.lisp.se/Body/f_exp_e.htm#expt
- */
-declare function expt_(...args: any[]): any;
-declare namespace expt_ {
-    var fsource: (symbol | (symbol | (number | symbol)[][] | (symbol | (symbol | (symbol | symbol[])[])[] | (symbol | (number | symbol | (number | symbol | symbol[])[])[])[][])[])[])[];
-    var compilerMacro: any;
 }
 /**
  * Square root.
@@ -868,4 +746,4 @@ declare namespace sortx_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | undefined)[])[])[];
     var compilerMacro: any;
 }
-export { add1_ as add1, add_ as _add, add_ as add, add_ as plus, apply_ as apply, compilerTypeP_ as compilerTypeP, compose_ as compose, display_ as display, div_ as _div, div_ as div, error_ as error, falsep_ as falsep, fexprTypeP_ as fexprTypeP, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, gt_ as gt, gte_ as gte, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordToString_ as keywordToString, keywordToSymbol_ as keywordToSymbol, keywordp_ as keywordp, lt_ as lt, lte_ as lte, macroTypeP_ as macroTypeP, macrop_ as macrop, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, member_ as member, member_ as memq, memf_ as memf, mul_ as _mul, mul_ as mul, not_ as not, numberp_ as numberp, pipe_ as pipe, procedureTypeP_ as procedureTypeP, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, specialTypeP_ as specialTypeP, sub1_ as sub1, sub_ as _sub, sub_ as minus, sub_ as sub, sub_ as subtract, syntaxTransformerTypeP_ as syntaxTransformerTypeP, syntaxTransformerP_ as syntaxTransformerP, taggedListP_ as taggedListP, truep_ as truep, typeOf_ as typeOf, undefinedTypeP_ as undefinedTypeP, union_ as union, values_ as values, variableTypeP_ as variableTypeP, zerop_ as zerop, abs_, add1_, add_, apply_, arity_, assert_, atomp_, booleanp_, compilerTypeP_, compose_, const_, display_, div_, error_, evenp_, expt_, falsep_, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, forEach_, funcall_, gt_, gte_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordToString_, keywordToSymbol_, keywordp_, lt_, lte_, macroTypeP_, macrop_, makeError_, map_, memberp_, member_, memfp_, memf_, memqp_, memq_, modulo_, mul_, not_, numberp_, oddp_, onep_, pipe_, procedureTypeP_, procedurep_, range_, selfEvaluatingP_, sortx_, sort_, specialTypeP_, sqrt_, stringToKeyword_, sub1_, sub_, symbolToKeyword_, syntaxTransformerTypeP_, syntaxTransformerP_, taggedListP_, truep_, typeOf_, undefinedTypeP_, undefinedp_, union_, values_, variableTypeP_, zerop_ };
+export { add1_ as add1, apply_ as apply, compilerTypeP_ as compilerTypeP, compose_ as compose, display_ as display, error_ as error, falsep_ as falsep, fexprTypeP_ as fexprTypeP, fexprp_ as fexprp, findfIndex_ as findfIndex, findf_ as findf, foldl_ as foldl, foldr_ as foldr, funcall_ as funcall, intersection_ as intersection, isAP_ as instanceOf, isAP_ as instanceOfP, isAP_ as instanceOfP_, isAP_ as instanceOf_, isAP_ as instanceofp, isAP_ as isAP, keywordToString_ as keywordToString, keywordToSymbol_ as keywordToSymbol, keywordp_ as keywordp, macroTypeP_ as macroTypeP, macrop_ as macrop, map_ as map, map_ as mapcar, memberp_ as memberP, memberp_ as memberP_, memberp_ as memberp, member_ as member, member_ as memq, memf_ as memf, numberp_ as numberp, pipe_ as pipe, procedureTypeP_ as procedureTypeP, procedurep_ as functionp, procedurep_ as procedurep, range_ as range, specialTypeP_ as specialTypeP, sub1_ as sub1, syntaxTransformerTypeP_ as syntaxTransformerTypeP, syntaxTransformerP_ as syntaxTransformerP, taggedListP_ as taggedListP, truep_ as truep, typeOf_ as typeOf, undefinedTypeP_ as undefinedTypeP, union_ as union, values_ as values, variableTypeP_ as variableTypeP, zerop_ as zerop, abs_, add1_, apply_, arity_, assert_, atomp_, booleanp_, compilerTypeP_, compose_, const_, display_, error_, evenp_, falsep_, fexprp_, filter_, findfIndex_, findf_, foldl_, foldr_, forEach_, funcall_, identity_, indexOf_, indexWhere_, intersection_, isAP_, keywordToString_, keywordToSymbol_, keywordp_, macroTypeP_, macrop_, makeError_, map_, memberp_, member_, memfp_, memf_, memqp_, memq_, modulo_, numberp_, oddp_, onep_, pipe_, procedureTypeP_, procedurep_, range_, selfEvaluatingP_, sortx_, sort_, specialTypeP_, sqrt_, stringToKeyword_, sub1_, symbolToKeyword_, syntaxTransformerTypeP_, syntaxTransformerP_, taggedListP_, truep_, typeOf_, undefinedTypeP_, undefinedp_, union_, values_, variableTypeP_, zerop_ };

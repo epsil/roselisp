@@ -169,7 +169,8 @@ declare namespace jsIn_ {
  */
 declare function jsPlus_(...args: any[]): any;
 declare namespace jsPlus_ {
-    var fsource: (symbol | (symbol | ((symbol | symbol[])[] | undefined)[] | (symbol | (symbol | (symbol | (symbol | symbol[])[] | (symbol | symbol[])[][])[])[])[])[])[];
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Return the absolute value of `x`.
@@ -368,41 +369,6 @@ declare namespace jsYield_ {
     var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
 }
 /**
- * Less than comparison.
- */
-declare function jsLt_(...args: any[]): any;
-declare namespace jsLt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
- * Less than or equal comparison.
- */
-declare function jsLte_(...args: any[]): any;
-declare namespace jsLte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
- * Greater than comparison.
- */
-declare function jsGt_(...args: any[]): any;
-declare namespace jsGt_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
- * Greater than or equal comparison.
- */
-declare function jsGte_(...args: any[]): any;
-declare namespace jsGte_ {
-    var fsource: (symbol | (symbol | (boolean | (number | symbol | symbol[])[])[] | (boolean | symbol | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (boolean | symbol)[] | (symbol | (symbol | (number | symbol)[])[])[])[])[])[])[])[];
-}
-/**
- * Modulo operation.
- */
-declare function jsMod_(x: any, y: any): any;
-declare namespace jsMod_ {
-    var fsource: (symbol | symbol[])[];
-}
-/**
  * Logical negation.
  */
 declare function jsNot_(x: any): any;
@@ -482,12 +448,92 @@ declare namespace jsUnsignedBitwiseShiftRight_ {
     var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
+ * Less than comparison.
+ */
+declare function jsLt_(...args: any[]): any;
+declare namespace jsLt_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
+}
+/**
+ * Less than or equal comparison.
+ */
+declare function jsLte_(...args: any[]): any;
+declare namespace jsLte_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
+}
+/**
+ * Greater than comparison.
+ */
+declare function jsGt_(...args: any[]): any;
+declare namespace jsGt_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
+}
+/**
+ * Greater than or equal comparison.
+ */
+declare function jsGte_(...args: any[]): any;
+declare namespace jsGte_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
+}
+/**
+ * Addition.
+ */
+declare function jsAdd_(...args: any[]): any;
+declare namespace jsAdd_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
+}
+/**
+ * Subtraction.
+ */
+declare function jsSub_(...args: any[]): any;
+declare namespace jsSub_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
+}
+/**
+ * Multiplication.
+ */
+declare function jsMul_(...args: any[]): any;
+declare namespace jsMul_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
+}
+/**
+ * Division.
+ */
+declare function jsDiv_(...args: any[]): any;
+declare namespace jsDiv_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
+}
+/**
+ * Modulo operation.
+ */
+declare function jsMod_(x: any, y: any): any;
+declare namespace jsMod_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
+}
+/**
  * Exponentiation.
  */
 declare function jsExpt_(...args: any[]): any;
 declare namespace jsExpt_ {
     var compilerMacro: any;
     var fsource: (symbol | (symbol | (boolean | symbol)[])[] | (number | symbol)[])[];
+}
+/**
+ * Convert a string to a number.
+ */
+declare function jsParseFloat_(str: any): any;
+declare namespace jsParseFloat_ {
+    var compilerMacro: any;
+    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
 /**
  * Create a JavaScript `Promise`.
@@ -502,14 +548,6 @@ declare namespace jsPromise_ {
  */
 declare function jsPromiseP_(x: any): any;
 declare namespace jsPromiseP_ {
-    var compilerMacro: any;
-    var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
-}
-/**
- * Convert a string to a number.
- */
-declare function jsParseFloat_(str: any): any;
-declare namespace jsParseFloat_ {
     var compilerMacro: any;
     var fsource: (symbol | (symbol | (boolean | symbol)[])[])[];
 }
@@ -533,4 +571,4 @@ declare function jsRequire_(id: any): any;
 declare namespace jsRequire_ {
     var fsource: (symbol | (boolean | symbol)[] | (symbol | (symbol | (symbol | (symbol | (symbol | symbol[])[])[])[])[] | ((symbol | (symbol | symbol[])[])[] | (symbol | (string | symbol)[])[])[])[])[];
 }
-export { jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsExpt_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsIsNaN_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNew_, jsNot_, jsNullP_, jsOptionalChaining_, jsOr_, jsParseFloat_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRef_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRequire_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };
+export { jsAdd_ as _add, jsSub_ as _sub, jsMul_ as _mul, jsDiv_ as _div, jsAdd_, jsSub_, jsMul_, jsDiv_, jsAbs_, jsAnd_, jsArrayP_, jsArrowP_, jsBitwiseAnd_, jsBitwiseNot_, jsBitwiseOr_, jsBitwiseShiftLeft_, jsBitwiseShiftRight_, jsBitwiseXor_, jsDelete_, jsDot_, jsEval_, jsExpt_, jsFindIndex_, jsFunctionObjectP_, jsFunctionTypeP_, jsFunctionP_, jsGt_, jsGte_, jsIn_, jsInstanceof_, jsIsNaN_, jsLength_, jsLooselyEqualP_, jsLt_, jsLte_, jsMod_, jsNew_, jsNot_, jsNullP_, jsOptionalChaining_, jsOr_, jsParseFloat_, jsPlus_, jsPromiseP_, jsPromise_, jsReduceRight_, jsReduce_, jsRef_, jsRegexpMatch_, jsRegexpReplace_, jsRegexpP_, jsRegexp_, jsRequire_, jsReturn_, jsSameValueZeroP_, jsSameValueP_, jsSlice_, jsSource_, jsStrictlyEqualP_, jsStringConcat_, jsStringLiteralP_, jsStringObjectP_, jsStringP_, jsTaggedTemplate_, jsToString_, jsTypeof_, jsUnsignedBitwiseShiftRight_, jsYield_ };

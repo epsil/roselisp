@@ -41,33 +41,24 @@ describe('Global environment', (): any => {
 
 let lst = [symbolp, booleanp];`));
   it('(compile \'(module m scheme (define one-plus-one (apply + \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-plus-one'), [Symbol.for('apply'), Symbol.for('+'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_add] = (() => {
-  function add_(...args) {
-    let result = 0;
-    for (let arg of args) {
-      result = result + arg;
-    }
-    return result;
+  function jsAdd_(...args) {
+    return (args.length === 0) ? 0 : args.reduce((left, right) => left + right);
   }
-  return [add_];
+  return [jsAdd_];
 })();
 
 let onePlusOne = _add(1, 1);`));
   it('(compile \'(module m scheme (define one-minus-one (apply - \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-minus-one'), [Symbol.for('apply'), Symbol.for('-'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_sub] = (() => {
-  function sub_(...args) {
-    let len = args.length;
-    if (len === 0) {
+  function jsSub_(...args) {
+    if (args.length === 0) {
       return 0;
-    } else if (len === 1) {
+    } else if (args.length === 1) {
       return -args[0];
     } else {
-      let result = args[0];
-      for (let i = 1; i < len; i++) {
-        result = result - args[i];
-      }
-      return result;
+      return args.reduce((left, right) => left - right);
     }
   }
-  return [sub_];
+  return [jsSub_];
 })();
 
 let oneMinusOne = _sub(1, 1);`));
@@ -77,31 +68,24 @@ let oneMinusOne = _sub(1, 1);`));
 
 let oneMinusOne = _sub(1, 1);`));
   it('(compile \'(module m scheme (define one-times-one (apply * \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-times-one'), [Symbol.for('apply'), Symbol.for('*'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_mul] = (() => {
-  function mul_(...args) {
-    let result = 1;
-    for (let arg of args) {
-      result = result * arg;
-    }
-    return result;
+  function jsMul_(...args) {
+    return (args.length === 0) ? 1 : args.reduce((left, right) => left * right);
   }
-  return [mul_];
+  return [jsMul_];
 })();
 
 let oneTimesOne = _mul(1, 1);`));
   it('(compile \'(module m scheme (define one-divided-by-one (apply / \'(1 1)))) :finline-functions #t)', (): any => assertEqual(compile([Symbol.for('module'), Symbol.for('m'), Symbol.for('scheme'), [Symbol.for('define'), Symbol.for('one-divided-by-one'), [Symbol.for('apply'), Symbol.for('/'), [Symbol.for('quote'), [1, 1]]]]], Symbol.for(':finline-functions'), true), `let [_div] = (() => {
-  function div_(...args) {
-    if (args.length === 1) {
+  function jsDiv_(...args) {
+    if (args.length === 0) {
+      return 1;
+    } else if (args.length === 1) {
       return 1 / args[0];
     } else {
-      let result = args[0];
-      let _end = args.length;
-      for (let i = 1; i < _end; i++) {
-        result = result / args[i];
-      }
-      return result;
+      return args.reduce((left, right) => left / right);
     }
   }
-  return [div_];
+  return [jsDiv_];
 })();
 
 let oneDividedByOne = _div(1, 1);`));
@@ -828,14 +812,10 @@ import * as foo from 'foo';`));
  */
 
 const [_add] = (() => {
-  function add_(...args) {
-    let result = 0;
-    for (let arg of args) {
-      result = result + arg;
-    }
-    return result;
+  function jsAdd_(...args) {
+    return (args.length === 0) ? 0 : args.reduce((left, right) => left + right);
   }
-  return [add_];
+  return [jsAdd_];
 })();
 
 const onePlusOne = _add(1, 1);`));
@@ -854,14 +834,10 @@ const onePlusOne = _add(1, 1);`));
  */
 
 const [_add] = (() => {
-  function add_(...args) {
-    let result = 0;
-    for (let arg of args) {
-      result = result + arg;
-    }
-    return result;
+  function jsAdd_(...args) {
+    return (args.length === 0) ? 0 : args.reduce((left, right) => left + right);
   }
-  return [add_];
+  return [jsAdd_];
 })();
 
 /**

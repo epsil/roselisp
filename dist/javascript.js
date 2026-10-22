@@ -18,8 +18,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jsSource_ = exports.jsSlice_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReturn_ = exports.jsRequire_ = exports.jsRegexp_ = exports.jsRegexpP_ = exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsRef_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPromise_ = exports.jsPromiseP_ = exports.jsPlus_ = exports.jsParseFloat_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNew_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsIsNaN_ = exports.jsInstanceof_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFindIndex_ = exports.jsExpt_ = exports.jsEval_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrowP_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = void 0;
-exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeof_ = exports.jsToString_ = exports.jsTaggedTemplate_ = exports.jsStringP_ = exports.jsStringObjectP_ = exports.jsStringLiteralP_ = exports.jsStringConcat_ = exports.jsStrictlyEqualP_ = void 0;
+exports.jsRegexpReplace_ = exports.jsRegexpMatch_ = exports.jsRef_ = exports.jsReduce_ = exports.jsReduceRight_ = exports.jsPromise_ = exports.jsPromiseP_ = exports.jsPlus_ = exports.jsParseFloat_ = exports.jsOr_ = exports.jsOptionalChaining_ = exports.jsNullP_ = exports.jsNot_ = exports.jsNew_ = exports.jsMod_ = exports.jsLte_ = exports.jsLt_ = exports.jsLooselyEqualP_ = exports.jsLength_ = exports.jsIsNaN_ = exports.jsInstanceof_ = exports.jsIn_ = exports.jsGte_ = exports.jsGt_ = exports.jsFunctionP_ = exports.jsFunctionTypeP_ = exports.jsFunctionObjectP_ = exports.jsFindIndex_ = exports.jsExpt_ = exports.jsEval_ = exports.jsDot_ = exports.jsDelete_ = exports.jsBitwiseXor_ = exports.jsBitwiseShiftRight_ = exports.jsBitwiseShiftLeft_ = exports.jsBitwiseOr_ = exports.jsBitwiseNot_ = exports.jsBitwiseAnd_ = exports.jsArrowP_ = exports.jsArrayP_ = exports.jsAnd_ = exports.jsAbs_ = exports.jsDiv_ = exports.jsMul_ = exports.jsSub_ = exports.jsAdd_ = exports._div = exports._mul = exports._sub = exports._add = void 0;
+exports.jsYield_ = exports.jsUnsignedBitwiseShiftRight_ = exports.jsTypeof_ = exports.jsToString_ = exports.jsTaggedTemplate_ = exports.jsStringP_ = exports.jsStringObjectP_ = exports.jsStringLiteralP_ = exports.jsStringConcat_ = exports.jsStrictlyEqualP_ = exports.jsSource_ = exports.jsSlice_ = exports.jsSameValueP_ = exports.jsSameValueZeroP_ = exports.jsReturn_ = exports.jsRequire_ = exports.jsRegexp_ = exports.jsRegexpP_ = void 0;
 const path_1 = require("path");
 const process_1 = require("process");
 const util_1 = require("./util");
@@ -41,7 +41,7 @@ jsEval_.fsource = [Symbol.for('define'), [Symbol.for('js/eval_'), Symbol.for('st
  * [js:strict-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
  */
 function jsStrictlyEqualP_(...args) {
-    return args.slice(1).reduce((left, right) => left === right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left === right);
 }
 exports.jsStrictlyEqualP_ = jsStrictlyEqualP_;
 jsStrictlyEqualP_.compilerMacro = (() => {
@@ -61,7 +61,7 @@ jsStrictlyEqualP_.fsource = [Symbol.for('define'), [Symbol.for('js/strictly-equa
  * [js:loose-equality-operator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
  */
 function jsLooselyEqualP_(...args) {
-    return args.slice(1).reduce((left, right) => left == right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left == right);
 }
 exports.jsLooselyEqualP_ = jsLooselyEqualP_;
 jsLooselyEqualP_.compilerMacro = (() => {
@@ -283,19 +283,18 @@ jsIn_.fsource = [Symbol.for('define'), [Symbol.for('js/in_'), Symbol.for('prop')
  * [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
  */
 function jsPlus_(...args) {
-    if (args.length === 0) {
-        return undefined;
-    }
-    else {
-        let result = args[0];
-        for (let x of args.slice(1)) {
-            result = result + x;
-        }
-        return result;
-    }
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left + right);
 }
 exports.jsPlus_ = jsPlus_;
-jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js/plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('zero?'), [Symbol.for('length'), Symbol.for('args')]], undefined], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('x'), [Symbol.for('rest'), Symbol.for('args')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/+'), Symbol.for('result'), Symbol.for('x')]]], Symbol.for('result')]]]];
+jsPlus_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('+'), [Symbol.for('list'), ...args]];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsPlus_.fsource = [Symbol.for('define'), [Symbol.for('js/plus_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('+'), Symbol.for('args')]];
 /**
  * Return the absolute value of `x`.
  */
@@ -651,107 +650,18 @@ function jsYield_(x = undefined) {
 exports.jsYield_ = jsYield_;
 jsYield_.fsource = [Symbol.for('define'), [Symbol.for('js/yield_'), [Symbol.for('x'), undefined]], Symbol.for('x')];
 /**
- * Less than comparison.
- */
-function jsLt_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x < y) === (x >= y)
-            if (args[i - 1] >= args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.jsLt_ = jsLt_;
-jsLt_.fsource = [Symbol.for('define'), [Symbol.for('js/lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
- * Less than or equal comparison.
- */
-function jsLte_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x <= y) === (x > y)
-            if (args[i - 1] > args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.jsLte_ = jsLte_;
-jsLte_.fsource = [Symbol.for('define'), [Symbol.for('js/lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
- * Greater than comparison.
- */
-function jsGt_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x > y) === (x <= y)
-            if (args[i - 1] <= args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.jsGt_ = jsGt_;
-jsGt_.fsource = [Symbol.for('define'), [Symbol.for('js/gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
- * Greater than or equal comparison.
- */
-function jsGte_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x >= y) === (x < y)
-            if (args[i - 1] < args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.jsGte_ = jsGte_;
-jsGte_.fsource = [Symbol.for('define'), [Symbol.for('js/gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
- * Modulo operation.
- */
-function jsMod_(x, y) {
-    return x % y;
-}
-exports.jsMod_ = jsMod_;
-jsMod_.fsource = [Symbol.for('define'), [Symbol.for('js/mod_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/%'), Symbol.for('x'), Symbol.for('y')]];
-/**
  * Logical negation.
  */
 function jsNot_(x) {
-    // TODO: `define-inline`, `js/op`.
     return !x;
 }
 exports.jsNot_ = jsNot_;
-jsNot_.fsource = [Symbol.for('define'), [Symbol.for('js/not_'), Symbol.for('x')], [Symbol.for('js/!'), Symbol.for('x')]];
+jsNot_.fsource = [Symbol.for('define'), [Symbol.for('js/not_'), Symbol.for('x')], [Symbol.for('js/op'), Symbol.for('!'), Symbol.for('x')]];
 /**
  * Logical AND.
  */
 function jsAnd_(...args) {
-    return args.reduce((left, right) => left && right, true);
+    return (args.length === 0) ? true : args.reduce((left, right) => left && right);
 }
 exports.jsAnd_ = jsAnd_;
 jsAnd_.compilerMacro = (() => {
@@ -767,7 +677,7 @@ jsAnd_.fsource = [Symbol.for('define'), [Symbol.for('js/and_'), Symbol.for('.'),
  * Logical OR.
  */
 function jsOr_(...args) {
-    return args.reduce((left, right) => left || right, false);
+    return (args.length === 0) ? false : args.reduce((left, right) => left || right);
 }
 exports.jsOr_ = jsOr_;
 jsOr_.compilerMacro = (() => {
@@ -799,7 +709,7 @@ jsBitwiseNot_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-not_'), S
  * Bitwise AND.
  */
 function jsBitwiseAnd_(...args) {
-    return args.slice(1).reduce((left, right) => left & right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left & right);
 }
 exports.jsBitwiseAnd_ = jsBitwiseAnd_;
 jsBitwiseAnd_.compilerMacro = (() => {
@@ -815,7 +725,7 @@ jsBitwiseAnd_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-and_'), S
  * Bitwise OR.
  */
 function jsBitwiseOr_(...args) {
-    return args.slice(1).reduce((left, right) => left | right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left | right);
 }
 exports.jsBitwiseOr_ = jsBitwiseOr_;
 jsBitwiseOr_.compilerMacro = (() => {
@@ -831,7 +741,7 @@ jsBitwiseOr_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-or_'), Sym
  * Bitwise XOR.
  */
 function jsBitwiseXor_(...args) {
-    return args.slice(1).reduce((left, right) => left ^ right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left ^ right);
 }
 exports.jsBitwiseXor_ = jsBitwiseXor_;
 jsBitwiseXor_.compilerMacro = (() => {
@@ -847,7 +757,7 @@ jsBitwiseXor_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-xor_'), S
  * Bitwise left shift.
  */
 function jsBitwiseShiftLeft_(...args) {
-    return args.slice(1).reduce((left, right) => left << right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left << right);
 }
 exports.jsBitwiseShiftLeft_ = jsBitwiseShiftLeft_;
 jsBitwiseShiftLeft_.compilerMacro = (() => {
@@ -863,7 +773,7 @@ jsBitwiseShiftLeft_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-shi
  * Bitwise right shift.
  */
 function jsBitwiseShiftRight_(...args) {
-    return args.slice(1).reduce((left, right) => left >> right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left >> right);
 }
 exports.jsBitwiseShiftRight_ = jsBitwiseShiftRight_;
 jsBitwiseShiftRight_.compilerMacro = (() => {
@@ -879,7 +789,7 @@ jsBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/bitwise-sh
  * Bitwise unsigned right shift.
  */
 function jsUnsignedBitwiseShiftRight_(...args) {
-    return args.slice(1).reduce((left, right) => left >>> right, args[0]);
+    return (args.length === 0) ? undefined : args.reduce((left, right) => left >>> right);
 }
 exports.jsUnsignedBitwiseShiftRight_ = jsUnsignedBitwiseShiftRight_;
 jsUnsignedBitwiseShiftRight_.compilerMacro = (() => {
@@ -892,10 +802,226 @@ jsUnsignedBitwiseShiftRight_.compilerMacro = (() => {
 })();
 jsUnsignedBitwiseShiftRight_.fsource = [Symbol.for('define'), [Symbol.for('js/unsigned-bitwise-shift-right_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('>>>'), Symbol.for('args')]];
 /**
+ * Less than comparison.
+ */
+function jsLt_(...args) {
+    if (args.length <= 1) {
+        return true;
+    }
+    else {
+        let result = true;
+        const _end = args.length;
+        for (let i = 1; i < _end; i++) {
+            if (!(args[i - 1] < args[i])) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+}
+exports.jsLt_ = jsLt_;
+jsLt_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('<'), [Symbol.for('list'), ...args], Symbol.for(':fold'), Symbol.for('chain')];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsLt_.fsource = [Symbol.for('define'), [Symbol.for('js/lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('<'), Symbol.for('args'), Symbol.for(':fold'), Symbol.for('chain')]];
+/**
+ * Less than or equal comparison.
+ */
+function jsLte_(...args) {
+    if (args.length <= 1) {
+        return true;
+    }
+    else {
+        let result = true;
+        const _end = args.length;
+        for (let i = 1; i < _end; i++) {
+            if (!(args[i - 1] <= args[i])) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+}
+exports.jsLte_ = jsLte_;
+jsLte_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('<='), [Symbol.for('list'), ...args], Symbol.for(':fold'), Symbol.for('chain')];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsLte_.fsource = [Symbol.for('define'), [Symbol.for('js/lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('<='), Symbol.for('args'), Symbol.for(':fold'), Symbol.for('chain')]];
+/**
+ * Greater than comparison.
+ */
+function jsGt_(...args) {
+    if (args.length <= 1) {
+        return true;
+    }
+    else {
+        let result = true;
+        const _end = args.length;
+        for (let i = 1; i < _end; i++) {
+            if (!(args[i - 1] > args[i])) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+}
+exports.jsGt_ = jsGt_;
+jsGt_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('>'), [Symbol.for('list'), ...args], Symbol.for(':fold'), Symbol.for('chain')];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsGt_.fsource = [Symbol.for('define'), [Symbol.for('js/gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('>'), Symbol.for('args'), Symbol.for(':fold'), Symbol.for('chain')]];
+/**
+ * Greater than or equal comparison.
+ */
+function jsGte_(...args) {
+    if (args.length <= 1) {
+        return true;
+    }
+    else {
+        let result = true;
+        const _end = args.length;
+        for (let i = 1; i < _end; i++) {
+            if (!(args[i - 1] >= args[i])) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+}
+exports.jsGte_ = jsGte_;
+jsGte_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('>='), [Symbol.for('list'), ...args], Symbol.for(':fold'), Symbol.for('chain')];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsGte_.fsource = [Symbol.for('define'), [Symbol.for('js/gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('>='), Symbol.for('args'), Symbol.for(':fold'), Symbol.for('chain')]];
+/**
+ * Addition.
+ */
+function jsAdd_(...args) {
+    return (args.length === 0) ? 0 : args.reduce((left, right) => left + right);
+}
+exports._add = jsAdd_;
+exports.jsAdd_ = jsAdd_;
+jsAdd_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('+'), [Symbol.for('list'), ...args], Symbol.for(':identity'), 0];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsAdd_.fsource = [Symbol.for('define'), [Symbol.for('js/add_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('+'), Symbol.for('args'), Symbol.for(':identity'), 0]];
+/**
+ * Subtraction.
+ */
+function jsSub_(...args) {
+    if (args.length === 0) {
+        return 0;
+    }
+    else if (args.length === 1) {
+        return -args[0];
+    }
+    else {
+        return args.reduce((left, right) => left - right);
+    }
+}
+exports._sub = jsSub_;
+exports.jsSub_ = jsSub_;
+jsSub_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('-'), [Symbol.for('list'), ...args], Symbol.for(':identity'), 0, Symbol.for(':unary'), Symbol.for('pre')];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsSub_.fsource = [Symbol.for('define'), [Symbol.for('js/sub_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('-'), Symbol.for('args'), Symbol.for(':identity'), 0, Symbol.for(':unary'), Symbol.for('pre')]];
+/**
+ * Multiplication.
+ */
+function jsMul_(...args) {
+    return (args.length === 0) ? 1 : args.reduce((left, right) => left * right);
+}
+exports._mul = jsMul_;
+exports.jsMul_ = jsMul_;
+jsMul_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('*'), [Symbol.for('list'), ...args], Symbol.for(':identity'), 1];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsMul_.fsource = [Symbol.for('define'), [Symbol.for('js/mul_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('*'), Symbol.for('args'), Symbol.for(':identity'), 1]];
+/**
+ * Division.
+ */
+function jsDiv_(...args) {
+    if (args.length === 0) {
+        return 1;
+    }
+    else if (args.length === 1) {
+        return 1 / args[0];
+    }
+    else {
+        return args.reduce((left, right) => left / right);
+    }
+}
+exports._div = jsDiv_;
+exports.jsDiv_ = jsDiv_;
+jsDiv_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const args = exp.slice(1);
+        return [Symbol.for('js/op/apply'), Symbol.for('/'), [Symbol.for('list'), ...args], Symbol.for(':identity'), 1, Symbol.for(':unary'), Symbol.for('right')];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsDiv_.fsource = [Symbol.for('define'), [Symbol.for('js/div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('/'), Symbol.for('args'), Symbol.for(':identity'), 1, Symbol.for(':unary'), Symbol.for('right')]];
+/**
+ * Modulo operation.
+ */
+function jsMod_(x, y) {
+    return x % y;
+}
+exports.jsMod_ = jsMod_;
+jsMod_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [x, y] = exp.slice(1);
+        return [Symbol.for('js/op'), Symbol.for('%'), x, y];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsMod_.fsource = [Symbol.for('define'), [Symbol.for('js/mod_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op'), Symbol.for('%'), Symbol.for('x'), Symbol.for('y')]];
+/**
  * Exponentiation.
  */
 function jsExpt_(...args) {
-    return args.reduceRight((right, left) => left ** right, 1);
+    return (args.length === 0) ? 1 : args.reduceRight((right, left) => left ** right);
 }
 exports.jsExpt_ = jsExpt_;
 jsExpt_.compilerMacro = (() => {
@@ -907,6 +1033,22 @@ jsExpt_.compilerMacro = (() => {
     return f;
 })();
 jsExpt_.fsource = [Symbol.for('define'), [Symbol.for('js/expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('js/op/apply'), Symbol.for('**'), Symbol.for('args'), Symbol.for(':identity'), 1, Symbol.for(':fold'), Symbol.for('right')]];
+/**
+ * Convert a string to a number.
+ */
+function jsParseFloat_(str) {
+    return parseFloat(str);
+}
+exports.jsParseFloat_ = jsParseFloat_;
+jsParseFloat_.compilerMacro = (() => {
+    const f = (exp, env) => {
+        const [str] = exp.slice(1);
+        return [Symbol.for('parseFloat'), str];
+    };
+    f.ftype = 'macro';
+    return f;
+})();
+jsParseFloat_.fsource = [Symbol.for('define'), [Symbol.for('js/parse-float_'), Symbol.for('str')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('parseFloat'), Symbol.for('str')]];
 /**
  * Create a JavaScript `Promise`.
  */
@@ -939,22 +1081,6 @@ jsPromiseP_.compilerMacro = (() => {
     return f;
 })();
 jsPromiseP_.fsource = [Symbol.for('define'), [Symbol.for('js/promise?_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('is-a?'), Symbol.for('x'), Symbol.for('Promise')]];
-/**
- * Convert a string to a number.
- */
-function jsParseFloat_(str) {
-    return parseFloat(str);
-}
-exports.jsParseFloat_ = jsParseFloat_;
-jsParseFloat_.compilerMacro = (() => {
-    const f = (exp, env) => {
-        const [str] = exp.slice(1);
-        return [Symbol.for('parseFloat'), str];
-    };
-    f.ftype = 'macro';
-    return f;
-})();
-jsParseFloat_.fsource = [Symbol.for('define'), [Symbol.for('js/parse-float_'), Symbol.for('str')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('parseFloat'), Symbol.for('str')]];
 /**
  * Import a module with [Node's `require`][nodejs:require].
  * Returns `#f` if not found.

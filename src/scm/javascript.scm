@@ -136,14 +136,8 @@
 ;;; [js:add]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
 ;;; [js:concat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators#string_operators
 (define (js/plus_ . args)
-  (cond
-   ((zero? (length args))
-    #u)
-   (else
-    (let ((result (first args)))
-      (for ((x (rest args)))
-        (set! result (js/+ result x)))
-      result))))
+  (declare (inline #t))
+  (js/op/apply + args))
 
 ;;; Return the absolute value of `x`.
 (define (js/abs_ x)
@@ -291,66 +285,9 @@
 (define (js/yield_ (x #u))
   x)
 
-;;; Less than comparison.
-(define (js/lt_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x < y) === (x >= y)
-      (when (>= (list-ref args (- i 1))
-                (list-ref args i))
-        (return #f)))
-    #t)))
-
-;;; Less than or equal comparison.
-(define (js/lte_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x <= y) === (x > y)
-      (when (> (list-ref args (- i 1))
-               (list-ref args i))
-        (return #f)))
-    #t)))
-
-;;; Greater than comparison.
-(define (js/gt_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x > y) === (x <= y)
-      (when (<= (list-ref args (- i 1))
-                (list-ref args i))
-        (return #f)))
-    #t)))
-
-;;; Greater than or equal comparison.
-(define (js/gte_ . args)
-  (cond
-   ((< (length args) 2)
-    #t)
-   (else
-    (for ((i (range 1 (length args))))
-      ;; !(x >= y) === (x < y)
-      (when (< (list-ref args (- i 1))
-               (list-ref args i))
-        (return #f)))
-    #t)))
-
-;;; Modulo operation.
-(define (js/mod_ x y)
-  (js/% x y))
-
 ;;; Logical negation.
 (define (js/not_ x)
-  ;; TODO: `define-inline`, `js/op`.
-  (js/! x))
+  (js/op ! x))
 
 ;;; Logical AND.
 (define (js/and_ . args)
@@ -397,10 +334,60 @@
   (declare (inline #t))
   (js/op/apply >>> args))
 
+;;; Less than comparison.
+(define (js/lt_ . args)
+  (declare (inline #t))
+  (js/op/apply < args :fold chain))
+
+;;; Less than or equal comparison.
+(define (js/lte_ . args)
+  (declare (inline #t))
+  (js/op/apply <= args :fold chain))
+
+;;; Greater than comparison.
+(define (js/gt_ . args)
+  (declare (inline #t))
+  (js/op/apply > args :fold chain))
+
+;;; Greater than or equal comparison.
+(define (js/gte_ . args)
+  (declare (inline #t))
+  (js/op/apply >= args :fold chain))
+
+;;; Addition.
+(define (js/add_ . args)
+  (declare (inline #t))
+  (js/op/apply + args :identity 0))
+
+;;; Subtraction.
+(define (js/sub_ . args)
+  (declare (inline #t))
+  (js/op/apply - args :identity 0 :unary pre))
+
+;;; Multiplication.
+(define (js/mul_ . args)
+  (declare (inline #t))
+  (js/op/apply * args :identity 1))
+
+;;; Division.
+(define (js/div_ . args)
+  (declare (inline #t))
+  (js/op/apply / args :identity 1 :unary right))
+
+;;; Modulo operation.
+(define (js/mod_ x y)
+  (declare (inline #t))
+  (js/op % x y))
+
 ;;; Exponentiation.
 (define (js/expt_ . args)
   (declare (inline #t))
   (js/op/apply ** args :identity 1 :fold right))
+
+;;; Convert a string to a number.
+(define (js/parse-float_ str)
+  (declare (inline #t))
+  (parseFloat str))
 
 ;;; Create a JavaScript `Promise`.
 (define (js/promise_ f)
@@ -411,11 +398,6 @@
 (define (js/promise?_ x)
   (declare (inline #t))
   (is-a? x Promise))
-
-;;; Convert a string to a number.
-(define (js/parse-float_ str)
-  (declare (inline #t))
-  (parseFloat str))
 
 ;;; Import a module with [Node's `require`][nodejs:require].
 ;;; Returns `#f` if not found.
@@ -463,6 +445,14 @@
   result)
 
 (provide
+  (rename-out (js/add_ _add))
+  (rename-out (js/sub_ _sub))
+  (rename-out (js/mul_ _mul))
+  (rename-out (js/div_ _div))
+  js/add_
+  js/sub_
+  js/mul_
+  js/div_
   js/abs_
   js/and_
   js/array?_

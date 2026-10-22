@@ -293,21 +293,6 @@ function taggedListP_(exp: any, tag: any): any {
 taggedListP_.fsource = [Symbol.for('define'), [Symbol.for('tagged-list?_'), Symbol.for('exp'), Symbol.for('tag')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('exp')], [Symbol.for('>='), [Symbol.for('length'), Symbol.for('exp')], 1], [Symbol.for('eq?'), [Symbol.for('first'), Symbol.for('exp')], Symbol.for('tag')]]];
 
 /**
- * Logical negation.
- *
- * Similar to [`not` in Racket][rkt:not] and
- * [`not` in Common Lisp][cl:not].
- *
- * [rkt:not]: https://docs.racket-lang.org/reference/booleans.html#%28def._%28%28quote._~23~25kernel%29._not%29%29
- * [cl:not]: http://clhs.lisp.se/Body/f_not.htm
- */
-function not_(x: any): any {
-  return !x;
-}
-
-not_.fsource = [Symbol.for('define'), [Symbol.for('not_'), Symbol.for('x')], [Symbol.for('not'), Symbol.for('x')]];
-
-/**
  * Map a procedure over a list.
  *
  * Similar to [`map` in Racket][rkt:map] and
@@ -362,106 +347,6 @@ forEach_.compilerMacro = ((): any => {
 forEach_.fsource = [Symbol.for('define'), [Symbol.for('for-each_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('forEach'), Symbol.for('f')]];
 
 /**
- * Less than operator.
- *
- * Similar to [`<` in Racket][rkt:lt] and [`<` in Common Lisp][cl:lt].
- *
- * [rkt:lt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c%29%29
- * [cl:lt]: http://clhs.lisp.se/Body/f_eq_sle.htm#LT
- */
-function lt_(...args: any[]): any {
-  if (args.length < 2) {
-    return true;
-  } else {
-    const _end: any = args.length;
-    for (let i: any = 1; i < _end; i++) {
-      // !(x < y) === (x >= y)
-      if (args[i - 1] >= (args as any)[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-}
-
-lt_.fsource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-
-/**
- * Less than or equal operator.
- *
- * Similar to [`<=` in Racket][rkt:lte] and [`<=` in Common Lisp][cl:lte].
- *
- * [rkt:lte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c~3d%29%29
- * [cl:lte]: http://clhs.lisp.se/Body/f_eq_sle.htm#LTEQ
- */
-function lte_(...args: any[]): any {
-  if (args.length < 2) {
-    return true;
-  } else {
-    const _end: any = args.length;
-    for (let i: any = 1; i < _end; i++) {
-      // !(x <= y) === (x > y)
-      if (args[i - 1] > (args as any)[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-}
-
-lte_.fsource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-
-/**
- * Greater than operator.
- *
- * Similar to [`>` in Racket][rkt:gt] and [`>` in Common Lisp][cl:gt].
- *
- * [rkt:gt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e%29%29
- * [cl:gt]: http://clhs.lisp.se/Body/f_eq_sle.htm#GT
- */
-function gt_(...args: any[]): any {
-  if (args.length < 2) {
-    return true;
-  } else {
-    const _end: any = args.length;
-    for (let i: any = 1; i < _end; i++) {
-      // !(x > y) === (x <= y)
-      if (args[i - 1] <= (args as any)[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-}
-
-gt_.fsource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-
-/**
- * Greater than or equal operator.
- *
- * Similar to [`>=` in Racket][rkt:gte] and [`>=` in Common Lisp][cl:gte].
- *
- * [rkt:gte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e~3d%29%29
- * [cl:gte]: http://clhs.lisp.se/Body/f_eq_sle.htm#GTEQ
- */
-function gte_(...args: any[]): any {
-  if (args.length < 2) {
-    return true;
-  } else {
-    const _end: any = args.length;
-    for (let i: any = 1; i < _end; i++) {
-      // !(x >= y) === (x < y)
-      if (args[i - 1] < (args as any)[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-}
-
-gte_.fsource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-
-/**
  * Modulo operation.
  *
  * Similar to [`modulo` in Racket][rkt:modulo] and
@@ -475,24 +360,6 @@ function modulo_(x: any, y: any): any {
 }
 
 modulo_.fsource = [Symbol.for('define'), [Symbol.for('modulo_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('modulo'), Symbol.for('x'), Symbol.for('y')]];
-
-/**
- * Addition.
- *
- * Similar to [`+` in Racket][rkt:add] and [`+` in Common Lisp][cl:add].
- *
- * [rkt:add]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2B%29%29
- * [cl:add]: http://clhs.lisp.se/Body/f_pl.htm
- */
-function add_(...args: any[]): any {
-  let result: any = 0;
-  for (let arg of args) {
-    result = result + arg;
-  }
-  return result;
-}
-
-add_.fsource = [Symbol.for('define'), [Symbol.for('add_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 0]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('+'), Symbol.for('result'), Symbol.for('arg')]]], Symbol.for('result')]];
 
 /**
  * Return `(+ x 1)`.
@@ -517,31 +384,6 @@ add1_.compilerMacro = ((): any => {
 add1_.fsource = [Symbol.for('define'), [Symbol.for('add1_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('+'), Symbol.for('x'), 1]];
 
 /**
- * Subtraction.
- *
- * Similar to [`-` in Racket][rkt:sub] and [`-` in Common Lisp][cl:sub].
- *
- * [rkt:sub]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._-%29%29
- * [cl:sub]: http://clhs.lisp.se/Body/f__.htm
- */
-function sub_(...args: any[]): any {
-  const len: any = args.length;
-  if (len === 0) {
-    return 0;
-  } else if (len === 1) {
-    return -args[0];
-  } else {
-    let result: any = args[0];
-    for (let i: any = 1; i < len; i++) {
-      result = result - (args as any)[i];
-    }
-    return result;
-  }
-}
-
-sub_.fsource = [Symbol.for('define'), [Symbol.for('sub_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], 0], [[Symbol.for('one?'), Symbol.for('len')], [Symbol.for('-'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('-'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]]];
-
-/**
  * Return `(- x 1)`.
  *
  * Similar to [`sub1` in Racket][rkt:sub1].
@@ -562,78 +404,6 @@ sub1_.compilerMacro = ((): any => {
 })();
 
 sub1_.fsource = [Symbol.for('define'), [Symbol.for('sub1_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('-'), Symbol.for('x'), 1]];
-
-/**
- * Multiplication.
- *
- * Similar to [`*` in Racket][rkt:mul] and [`*` in Common Lisp][cl:mul].
- *
- * [rkt:mul]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2A%29%29
- * [cl:mul]: http://clhs.lisp.se/Body/f_st.htm
- */
-function mul_(...args: any[]): any {
-  let result: any = 1;
-  for (let arg of args) {
-    result = result * arg;
-  }
-  return result;
-}
-
-mul_.fsource = [Symbol.for('define'), [Symbol.for('mul_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 1]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('*'), Symbol.for('result'), Symbol.for('arg')]]], Symbol.for('result')]];
-
-/**
- * Division.
- *
- * Similar to [`/` in Racket][rkt:div] and [`/` in Common Lisp][cl:div].
- *
- * [rkt:div]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2F%29%29
- * [cl:div]: http://clhs.lisp.se/Body/f_sl.htm
- */
-function div_(...args: any[]): any {
-  if (args.length === 1) {
-    return 1 / args[0];
-  } else {
-    let result: any = args[0];
-    const _end: any = args.length;
-    for (let i: any = 1; i < _end; i++) {
-      result = result / (args as any)[i];
-    }
-    return result;
-  }
-}
-
-div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
-
-/**
- * Exponentiation.
- *
- * Similar to [`expt` in Racket][rkt:expt] and [`expt` in Common Lisp][cl:expt].
- *
- * [rkt:expt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._expt%29%29
- * [cl:expt]: http://clhs.lisp.se/Body/f_exp_e.htm#expt
- */
-function expt_(...args: any[]): any {
-  let result: any = 1;
-  const _start: any = args.length - 1;
-  for (let i: any = _start; i > -1; i--) {
-    result = (args as any)[i] ** result;
-  }
-  return result;
-}
-
-expt_.fsource = [Symbol.for('define'), [Symbol.for('expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 1]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('args')], 1], -1, -1]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/**'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')], Symbol.for('result')]]], Symbol.for('result')]];
-
-/**
- * Compiler macro for `(expt ...)` expressions.
- */
-expt_.compilerMacro = ((): any => {
-  const f: any = (exp: any, env: any): any => {
-    const args: any = exp.slice(1);
-    return [Symbol.for('js/**'), ...args];
-  };
-  f.ftype = 'macro';
-  return f;
-})();
 
 /**
  * Square root.
@@ -1382,7 +1152,7 @@ indexOf_.fsource = [Symbol.for('define'), [Symbol.for('index-of_'), Symbol.for('
  */
 function intersection_(...args: any[]): any {
   function intersection2(arr1: any, arr2: any): any {
-    let result: any = [];
+    const result: any = [];
     for (let element of arr1) {
       if (arr2.includes(element) && !result.includes(element)) {
         result.push(element);
@@ -1411,7 +1181,7 @@ intersection_.fsource = [Symbol.for('define'), [Symbol.for('intersection_'), Sym
  */
 function union_(...args: any[]): any {
   function union2(arr1: any, arr2: any): any {
-    let result: any = [];
+    const result: any = [];
     for (let element of arr1) {
       if (!result.includes(element)) {
         result.push(element);
@@ -1442,7 +1212,7 @@ function range_(start: any, end: any = undefined, step: any = undefined): any {
   const startN: any = (end === undefined) ? 0 : start;
   const endN: any = (end === undefined) ? start : end;
   const stepN: any = step || 1;
-  let result: any = [];
+  const result: any = [];
   for (let i: any = startN; (stepN < 0) ? (i > endN) : (i < endN); i = i + stepN) {
     result.push(i);
   }
@@ -1760,15 +1530,10 @@ sortx_.compilerMacro = ((): any => {
 
 export {
   add1_ as add1,
-  add_ as _add,
-  add_ as add,
-  add_ as plus,
   apply_ as apply,
   compilerTypeP_ as compilerTypeP,
   compose_ as compose,
   display_ as display,
-  div_ as _div,
-  div_ as div,
   error_ as error,
   falsep_ as falsep,
   fexprTypeP_ as fexprTypeP,
@@ -1778,8 +1543,6 @@ export {
   foldl_ as foldl,
   foldr_ as foldr,
   funcall_ as funcall,
-  gt_ as gt,
-  gte_ as gte,
   intersection_ as intersection,
   isAP_ as instanceOf,
   isAP_ as instanceOfP,
@@ -1790,8 +1553,6 @@ export {
   keywordToString_ as keywordToString,
   keywordToSymbol_ as keywordToSymbol,
   keywordp_ as keywordp,
-  lt_ as lt,
-  lte_ as lte,
   macroTypeP_ as macroTypeP,
   macrop_ as macrop,
   map_ as map,
@@ -1802,9 +1563,6 @@ export {
   member_ as member,
   member_ as memq,
   memf_ as memf,
-  mul_ as _mul,
-  mul_ as mul,
-  not_ as not,
   numberp_ as numberp,
   pipe_ as pipe,
   procedureTypeP_ as procedureTypeP,
@@ -1813,10 +1571,6 @@ export {
   range_ as range,
   specialTypeP_ as specialTypeP,
   sub1_ as sub1,
-  sub_ as _sub,
-  sub_ as minus,
-  sub_ as sub,
-  sub_ as subtract,
   syntaxTransformerTypeP_ as syntaxTransformerTypeP,
   syntaxTransformerP_ as syntaxTransformerP,
   taggedListP_ as taggedListP,
@@ -1829,7 +1583,6 @@ export {
   zerop_ as zerop,
   abs_,
   add1_,
-  add_,
   apply_,
   arity_,
   assert_,
@@ -1839,10 +1592,8 @@ export {
   compose_,
   const_,
   display_,
-  div_,
   error_,
   evenp_,
-  expt_,
   falsep_,
   fexprp_,
   filter_,
@@ -1852,8 +1603,6 @@ export {
   foldr_,
   forEach_,
   funcall_,
-  gt_,
-  gte_,
   identity_,
   indexOf_,
   indexWhere_,
@@ -1862,8 +1611,6 @@ export {
   keywordToString_,
   keywordToSymbol_,
   keywordp_,
-  lt_,
-  lte_,
   macroTypeP_,
   macrop_,
   makeError_,
@@ -1875,8 +1622,6 @@ export {
   memqp_,
   memq_,
   modulo_,
-  mul_,
-  not_,
   numberp_,
   oddp_,
   onep_,
@@ -1891,7 +1636,6 @@ export {
   sqrt_,
   stringToKeyword_,
   sub1_,
-  sub_,
   symbolToKeyword_,
   syntaxTransformerTypeP_,
   syntaxTransformerP_,

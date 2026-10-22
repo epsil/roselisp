@@ -216,6 +216,7 @@ exports.makeIdentifierString = makeIdentifierString;
  * Helper function for `make-identifier-string`.
  */
 function makeIdentifierStringHelper(str) {
+    // TODO: Move function renaming into its own map.
     let result = str.replace(/^\+$/g, '_add').replace(/^-$/g, '_sub').replace(/^\*$/g, '_mul').replace(new RegExp('^/$', 'g'), '_div').replace(/%/g, '').replace(new RegExp('/', 'g'), '-').replace(/:/g, '-').replace(/->/g, '-to-').replace(/\+/g, '_').replace(/\*$/g, '-star').replace(/\*/g, 'star-');
     const containsMultipleSegments = result.match(/-/g);
     if (containsMultipleSegments) {

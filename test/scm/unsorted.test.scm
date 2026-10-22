@@ -156,6 +156,10 @@ let x1 = 2;
 x1;"
 
  ;;  :describe "Other tests"
+ ;; xit> (/)
+ ;; #u
+ ;;  xit> (js//)
+ ;;  #u
  ;;  :describe "Dotted lists"
  ;;  xit> '(1 . 2)
  ;;  '(1 . 2)

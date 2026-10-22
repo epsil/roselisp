@@ -571,7 +571,7 @@ describe('js/try', (): any => {
 });
 
 describe('js/+', (): any => {
-  it('(js/+)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/+')], 0]));
+  it('(js/+)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/+')], undefined]));
   it('(js/+ 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/+'), 1], 1]));
   it('(js/+ 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/+'), 1, 2], 3]));
   it('(js/+ 2 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js/+'), 2, 2], 4]));
@@ -606,11 +606,11 @@ describe('js/*', (): any => {
 });
 
 describe('js//', (): any => {
-  it('(js//)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js//')], undefined]));
   it('(js// 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js//'), 1], 1]));
   it('(js// 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js//'), 1, 2], 0.5]));
   it('(js// 1 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js//'), 1, 2, 3], [Symbol.for('js//'), 1, 2, 3]]));
-  it('(/ 1 2 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/'), 1, 2, 4], 0.125]));
+  it('(js// 1 2 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js//'), 1, 2, 4], 0.125]));
+  it('(js// (js// 1 2) 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('js//'), [Symbol.for('js//'), 1, 2], 4], 0.125]));
   it('(compile \'(js// 1 2))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js//'), 1, 2]]], '1 / 2;']));
   return it('(compile \'(js// 1 2 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('js//'), 1, 2, 4]]], '1 / 2 / 4;']));
 });

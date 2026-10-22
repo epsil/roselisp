@@ -224,6 +224,11 @@
                   make-hash_))
 (require (only-in "./javascript"
                   (js/new_ new_)
+                  js/add_
+                  js/sub_
+                  js/mul_
+                  js/div_
+                  js/abs_
                   js/abs_
                   js/and_
                   js/array?_
@@ -458,7 +463,6 @@
 (require (only-in "./procedures"
                   abs_
                   add1_
-                  add_
                   apply_
                   arity_
                   assert_
@@ -467,10 +471,8 @@
                   compiler-type?
                   const_
                   display_
-                  div_
                   error_
                   even?_
-                  expt_
                   false?_
                   fexpr-type?
                   fexpr?_
@@ -481,8 +483,6 @@
                   foldr_
                   for-each_
                   funcall_
-                  gt_
-                  gte_
                   identity_
                   index-of_
                   index-where_
@@ -491,8 +491,6 @@
                   keyword->string_
                   keyword->symbol_
                   keyword?_
-                  lt_
-                  lte_
                   macro-type?
                   macro?_
                   make-error_
@@ -503,9 +501,6 @@
                   memf_
                   memq?_
                   memq_
-                  modulo_
-                  mul_
-                  not_
                   number?_
                   odd?_
                   one?_
@@ -519,7 +514,6 @@
                   sqrt_
                   string->keyword_
                   sub1_
-                  sub_
                   symbol->keyword_
                   syntax-transformer-type?_
                   syntax-transformer?_
@@ -1987,7 +1981,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-         lang-env))
+          lang-env))
   (object-set! compilation-options :language-environment lang-env)
   (set! compilation-options
         (object-append
@@ -2825,7 +2819,7 @@
                    object
                    Object))
           '()
-          (list superclass)))
+           (list superclass)))
     (transfer-comments
      stx
      (datum->syntax
@@ -3034,13 +3028,6 @@
 ;;; "NO-OP" operation.
 (define (nop_ exp env)
   #u)
-
-;;; Compile a `(+ ...)` expression.
-(define (compile-add stx env (options (object)))
-  (compile-binary-expression
-   stx env options
-   (object :identity 0
-           :operator "+")))
 
 ;;; Compile an `(apply ...)` expression.
 (define (compile-apply stx env (options (object)))
@@ -3631,27 +3618,6 @@
   (set-field! generator result #t)
   result)
 
-;;; Compile a `(/ ...)` expression.
-(define (compile-div stx env (options (object)))
-  (define exp
-    (syntax->datum stx))
-  (cond
-   ((= (length exp) 1)
-    (compile-expression
-     (datum->syntax stx #u)
-     env options))
-   ((= (length exp) 2)
-    (compile-div
-     (datum->syntax
-      stx
-      `(/ 1 ,(send stx get 1)))
-     env options))
-   (else
-    (compile-binary-expression
-     stx env options
-     (object :identity 1
-             :operator "/")))))
-
 ;;; Compile a `(send ...)` expression.
 (define (compile-send stx env (options (object)))
   (define obj
@@ -3802,114 +3768,6 @@
        ;; value, i.e., if it is provided by the very language
        ;; compiled to.
        (send language-env has? sym (object :filter js-filter))))
-
-;;; Compile a `(< ...)` expression.
-(define (compile-less-than stx env (options (object)))
-  ;; TODO: Convert to macro.
-  (define exp
-    (syntax->datum stx))
-  (cond
-   ((< (length exp) 3)
-    (compile-syntax
-     (datum->syntax #f #t)
-     env options))
-   ((= (length exp) 3)
-    (compile-binary-expression
-     stx env options
-     (object :identity #t
-             :operator "<")))
-   (else
-    ;; Create `(and ...)` expression.
-    (define and-exp
-      `(and))
-    (for ((i (range 2 (length exp))))
-      (push-right! and-exp
-                   `(< ,(list-ref exp (- i 1))
-                       ,(list-ref exp i))))
-    (compile-syntax
-     (datum->syntax #f and-exp)
-     env options))))
-
-;;; Compile a `(<= ...)` expression.
-(define (compile-less-than-or-equal stx env (options (object)))
-  ;; TODO: Convert to macro.
-  (define exp
-    (syntax->datum stx))
-  (cond
-   ((< (length exp) 3)
-    (compile-syntax
-     (datum->syntax #f #t)
-     env options))
-   ((= (length exp) 3)
-    (compile-binary-expression
-     stx env options
-     (object :identity #t
-             :operator "<=")))
-   (else
-    ;; Create `(and ...)` expression.
-    (define and-exp
-      `(and))
-    (for ((i (range 2 (length exp))))
-      (push-right! and-exp
-                   `(<= ,(list-ref exp (- i 1))
-                        ,(list-ref exp i))))
-    (compile-syntax
-     (datum->syntax #f and-exp)
-     env options))))
-
-;;; Compile a `(> ...)` expression.
-(define (compile-greater-than stx env (options (object)))
-  ;; TODO: Convert to macro.
-  (define exp
-    (syntax->datum stx))
-  (cond
-   ((< (length exp) 3)
-    (compile-syntax
-     (datum->syntax #f #t)
-     env options))
-   ((= (length exp) 3)
-    (compile-binary-expression
-     stx env options
-     (object :identity #t
-             :operator ">")))
-   (else
-    ;; Create `(and ...)` expression.
-    (define and-exp
-      `(and))
-    (for ((i (range 2 (length exp))))
-      (push-right! and-exp
-                   `(> ,(list-ref exp (- i 1))
-                       ,(list-ref exp i))))
-    (compile-syntax
-     (datum->syntax #f and-exp)
-     env options))))
-
-;;; Compile a `(>= ...)` expression.
-(define (compile-greater-than-or-equal stx env (options (object)))
-  ;; TODO: Convert to macro.
-  (define exp
-    (syntax->datum stx))
-  (cond
-   ((< (length exp) 3)
-    (compile-syntax
-     (datum->syntax #f #t)
-     env options))
-   ((= (length exp) 3)
-    (compile-binary-expression
-     stx env options
-     (object :identity #t
-             :operator ">=")))
-   (else
-    ;; Create `(and ...)` expression.
-    (define and-exp
-      `(and))
-    (for ((i (range 2 (length exp))))
-      (push-right! and-exp
-                   `(>= ,(list-ref exp (- i 1))
-                        ,(list-ref exp i))))
-    (compile-syntax
-     (datum->syntax #f and-exp)
-     env options))))
 
 ;;; Compile a binary expression.
 ;;; Returns a `BinaryExpression`.
@@ -4342,7 +4200,7 @@
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-        'funcall))
+         'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -4579,7 +4437,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4667,7 +4525,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4866,7 +4724,7 @@
         stx
         `(,(if make-block
                'js/block
-               'begin)
+                'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -5360,27 +5218,13 @@
     `(set! (get-field ,field ,obj) ,val))
    env options))
 
-;;; Compile a `(modulo ...)` expression.
-(define (compile-modulo stx env (options (object)))
-  (compile-binary-expression
-   stx env options
-   (object :identity 1
-           :operator "%")))
-
-;;; Compile a `(* ...)` expression.
-(define (compile-mul stx env (options (object)))
-  (compile-binary-expression
-   stx env options
-   (object :identity 1
-           :operator "*")))
-
 ;;; "NO-OP" compilation operation.
 ;;; Creates an empty program fragment and does nothing else.
 (define (compile-nop stx env (options (object)))
   (make-program-fragment))
 
-;;; Compile a `(not ...)` expression.
-(define (compile-not stx env (options (object)))
+;;; Compile a `(js/! ...)` expression.
+(define (compile-js/not stx env (options (object)))
   (define (is-not-expression? x)
     (and (estree-type? x "UnaryExpression")
          (eq? (get-field operator x) "!")))
@@ -5512,7 +5356,7 @@
   (define env1
     (new LispEnvironment
          '()
-         env))
+          env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -5632,7 +5476,7 @@
     (define env1
       (new LispEnvironment
            '()
-           env))
+            env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -6206,14 +6050,14 @@
   (define val-exp
     (syntax->datum val-stx))
   (cond
-   ((and (form? val-exp add_ env)
+   ((and (form? val-exp js/add_ env)
          (or (and (eq? (second val-exp) sym-exp)
                   (eq? (third val-exp) 1))
              (and (eq? (third val-exp) sym-exp)
                   (eq? (second val-exp) 1))))
     (set! val-exp `(add1 ,sym-exp))
     (set! val-stx (datum->syntax #f val-exp)))
-   ((and (form? val-exp sub_ env)
+   ((and (form? val-exp js/sub_ env)
          (or (and (eq? (second val-exp) sym-exp)
                   (eq? (third val-exp) 1))
              (and (eq? (third val-exp) sym-exp)
@@ -6280,26 +6124,6 @@
       result)))
    (else
     (compile-atom stx env options))))
-
-;;; Compile a `(- ...)` expression.
-(define (compile-sub stx env (options (object)))
-  (define exp
-    (syntax->datum stx))
-  (cond
-   ((= (length exp) 2)
-    (define num
-      (send stx get 1))
-    (define num-compiled
-      (compile-expression
-       num env options))
-    (make-expression-or-statement
-     (new UnaryExpression "-" #t num-compiled)
-     options))
-   (else
-    (compile-binary-expression
-     stx env options
-     (object :identity 0
-             :operator "-")))))
 
 ;;; Compile a variable expression.
 (define (compile-variable stx env (options (object)))
@@ -6565,8 +6389,8 @@
         #n
         (compile-expression test env1 options)))
   (define (increment? x)
-    (or (form? x add_ env1)
-        (form? x sub_ env1)))
+    (or (form? x js/add_ env1)
+        (form? x js/sub_ env1)))
   (when (increment? update-exp)
     (unless sym
       (cond
@@ -6878,7 +6702,7 @@
       (define return-type
         (if is-constructor
             'Void
-            #u))
+             #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -7607,38 +7431,61 @@
 ;;; This macro generalizes a binary operator
 ;;; to multiple operands, using a left fold.
 (define-macro (js/op/apply_ op args . options)
-  ;; TODO: Option for single-argument behavior.
-  ;; Should it return the argument unchanged
-  ;; or combine it with the identity value?
-  (define identity
-    (plist-get_ options :identity))
   (define fold
-    (if (eq? (unwrap-quote-expression
-              (plist-get_ options :fold))
-             'right)
-        'foldr
-        'foldl))
+    (or (plist-get_ options :fold)
+        'left))
+  (define identity
+    (if (eq? fold 'chain)
+        #t
+        (plist-get_ options :identity)))
+  (define unary
+    (plist-get_ options :unary))
   (cond
    ;; If `args` is a variable, then fold over it
    ;; at runtime.
    ((symbol? args)
-    (if (undefined? identity)
-        `(,fold (lambda ,(if (eq? fold 'foldr)
-                             '(left right)
-                             '(right left))
-                  (js/op ,op left right))
-                ,(if (eq? fold 'foldr)
-                     `(last ,args)
-                     `(first ,args))
-                ,(if (eq? fold 'foldr)
-                     `(drop-right ,args 1)
-                     `(rest ,args)))
-        `(,fold (lambda ,(if (eq? fold 'foldr)
-                             '(left right)
-                             '(right left))
-                  (js/op ,op left right))
-                ,identity
-                ,args)))
+    (define result
+      `(cond
+        (,(if (eq? fold 'chain)
+              `(<= (length ,args) 1)
+              `(zero? (length ,args)))
+         ,identity)
+        ,@(if unary
+              `(((one? (length ,args))
+                 ,(cond
+                   ((eq? unary 'left)
+                    `(js/op ,op (first ,args) ,identity))
+                   ((eq? unary 'right)
+                    `(js/op ,op ,identity (first ,args)))
+                   ((eq? unary 'pre)
+                    `(js/op ,op (first ,args)))
+                   (else
+                    `(first ,args)))))
+              '())
+        (else
+         ,(if (eq? fold 'chain)
+              `(let ((result #t))
+                 (for ((i (range 1 (length ,args))))
+                   (unless (,op (list-ref ,args (- i 1))
+                                (list-ref ,args i))
+                     (set! result #f)
+                     (break)))
+                 result)
+              `(,(if (eq? fold 'right)
+                     'js/reduce-right
+                      'js/reduce)
+                ,args
+                (lambda ,(if (eq? fold 'right)
+                             '(right left)
+                              '(left right))
+                  (js/op ,op left right)))))))
+    (when (and (not (eq? fold 'chain))
+               (= (length result) 3))
+      (set! result
+            `(js/? ,(first (second result))
+                   ,(second (second result))
+                   ,(second (third result)))))
+    result)
    ;; If `args` is a `(list ...)` expression,
    ;; then it is possible to perform the fold
    ;; at compile time, producing neater code.
@@ -7646,20 +7493,38 @@
     (define args1
       (rest args))
     (cond
+     ((and (eq? fold 'chain)
+           (<= (length args1) 1))
+      #t)
      ((= (length args1) 0)
       identity)
      ((= (length args1) 1)
-      (first args1))
+      (cond
+       ((eq? unary 'pre)
+        `(js/op ,op ,(first args1)))
+       ((eq? unary 'left)
+        `(js/op ,op ,(first args1) ,identity))
+       ((eq? unary 'right)
+        `(js/op ,op ,identity ,(first args1)))
+       (else
+        (first args1))))
+     ((eq? fold 'chain)
+      (foldl (lambda (right left)
+               (if (eq? (first left) 'and)
+                   `(,@left (js/op ,op ,(last (last left)) ,right))
+                   `(and ,left (js/op ,op ,(last left) ,right))))
+             `(js/op ,op ,(first args1) ,(second args1))
+             (drop args1 2)))
+     ((eq? fold 'right)
+      (foldr (lambda (left right)
+               `(js/op ,op ,left ,right))
+             (last args1)
+             (drop-right args1 1)))
      (else
-      (if (eq? fold 'foldr)
-          (foldr (lambda (left right)
-                   `(js/op ,op ,left ,right))
-                 (last args1)
-                 (drop-right args1 1))
-          (foldl (lambda (right left)
-                   `(js/op ,op ,left ,right))
-                 (first args1)
-                 (rest args1))))))
+      (foldl (lambda (right left)
+               `(js/op ,op ,left ,right))
+             (first args1)
+             (rest args1)))))
    ;; Transform a `(quote (...))` expression to
    ;; the equivalent `(list ...)` expression.
    ((tagged-list? args 'quote)
@@ -8742,17 +8607,17 @@
                 this
                 (new LispEnvironment
                      '()
-                     parent))
+                      parent))
     (set-field! main-environment
                 this
                 (new LispEnvironment
                      '()
-                     (get-field require-environment this)))
+                      (get-field require-environment this)))
     (set-field! provide-environment
                 this
                 (new LispEnvironment
                      '()
-                     (get-field main-environment this)))
+                      (get-field main-environment this)))
     (set-field! compilation-options
                 this
                 (object-append
@@ -9267,8 +9132,7 @@
 ;;; A hashmap from Lisp functions to compiler procedures.
 (define compilation-procedures-map
   (make-hash
-   `((,add_ . ,compile-add)
-     (,append_ . ,compile-append)
+   `((,append_ . ,compile-append)
      (,apply_ . ,compile-apply)
      (,begin_ . ,compile-begin)
      (,break_ . ,compile-break)
@@ -9283,11 +9147,8 @@
      (,define-type_ . ,compile-define-type)
      (,define-values_ . ,compile-define-values)
      (,define_ . ,compile-define)
-     (,div_ . ,compile-div)
      (,dot_ . ,compile-send)
      (,funcall_ . ,compile-funcall)
-     (,gt_ . ,compile-greater-than)
-     (,gte_ . ,compile-greater-than-or-equal)
      (,if_ . ,compile-if)
      (,js/arrow_ . ,compile-js/arrow)
      (,js/assignment_ . ,compile-js/assignment)
@@ -9304,19 +9165,13 @@
      (,js/for-of_ . ,compile-js/for-of)
      (,js/for_ . ,compile-js/for)
      (,js/function_ . ,compile-js/function)
-     (,js/gt_ . ,compile-greater-than)
-     (,js/gte_ . ,compile-greater-than-or-equal)
      (,js/if_ . ,compile-js/if)
      (,js/import_ . ,compile-js/import)
      (,js/let_ . ,compile-js/let)
-     (,js/lt_ . ,compile-less-than)
-     (,js/lte_ . ,compile-less-than-or-equal)
-     (,js/mod_ . ,compile-modulo)
      (,js/new_ . ,compile-js/new)
-     (,js/not_ . ,compile-not)
+     (,js/not_ . ,compile-js/not)
      (,js/op_ . ,compile-js/op)
      (,js/optional-chaining_ . ,compile-js/optional-chaining)
-     (,js/plus_ . ,compile-add)
      (,js/raw_ . ,compile-js/raw)
      (,js/ref_ . ,compile-js/ref)
      (,js/regexp_ . ,compile-js/regexp)
@@ -9337,12 +9192,7 @@
      (,let-values_ . ,compile-let-values)
      (,let_ . ,compile-let)
      (,list_ . ,compile-list)
-     (,lt_ . ,compile-less-than)
-     (,lte_ . ,compile-less-than-or-equal)
      (,module_ . ,compile-module)
-     (,modulo_ . ,compile-modulo)
-     (,mul_ . ,compile-mul)
-     (,not_ . ,compile-not)
      (,object-append_ . ,compile-object-append)
      (,object-spread_ . ,compile-object-spread)
      (,object_ . ,compile-object)
@@ -9355,7 +9205,6 @@
      (,set-field_ . ,compile-set-field)
      (,set-fields_ . ,compile-set-fields)
      (,set-values_ . ,compile-set-values)
-     (,sub_ . ,compile-sub)
      (,throw_ . ,compile-throw)
      (,ts/as_ . ,compile-ts/as)
      (,yield_ . ,compile-yield))))
@@ -9386,20 +9235,20 @@
          (Syntax ,Syntax Any)
          ;; Procedures.
          ($ ,funcall_ (-> Any * Any))
-         (% ,modulo_ (-> Any * Any))
-         (* ,mul_ (-> Any * Any))
-         (+ ,add_ (-> Any * Any))
-         (- ,sub_ (-> Any * Any))
-         (/ ,div_ (-> Any * Any))
-         (< ,lt_ (-> Any * Any))
-         (<= ,lte_ (-> Any * Any))
+         (% ,js/mod_ (-> Any * Any))
+         (* ,js/mul_ (-> Any * Any))
+         (+ ,js/add_ (-> Any * Any))
+         (- ,js/sub_ (-> Any * Any))
+         (/ ,js/div_ (-> Any * Any))
+         (< ,js/lt_ (-> Any * Any))
+         (<= ,js/lte_ (-> Any * Any))
          (= ,eq?_ (-> Any * Any))
          (=? ,eq?_ (-> Any * Any))
-         (> ,gt_ (-> Any * Any))
-         (>= ,gte_ (-> Any * Any))
+         (> ,js/gt_ (-> Any * Any))
+         (>= ,js/gte_ (-> Any * Any))
          (NaN? ,js/is-NaN_ (-> Any * Any))
          (abs ,abs_ (-> Any * Any))
-         (add ,add_ (-> Any * Any))
+         (add ,js/add_ (-> Any * Any))
          (add1 ,add1_ (-> Any * Any))
          (aget ,list-ref_ (-> Any * Any))
          (alist->tuples ,alist->tuples_ (-> Any * Any))
@@ -9492,7 +9341,7 @@
          (decompile ,decompile_ (-> Any * Any))
          (delete ,js/delete_ (-> Any * Any))
          (display ,display_ (-> Any * Any))
-         (div ,div_ (-> Any * Any))
+         (div ,js/div_ (-> Any * Any))
          (dotted-improper-list? ,dotted-improper-list?_ (-> Any * Any))
          (dotted-list->list ,dotted-list->list_ (-> Any * Any))
          (dotted-list->list ,dotted-list->list_ (-> Any * Any))
@@ -9543,7 +9392,7 @@
          (eqv? ,eqv?_ (-> Any * Any))
          (error ,error_ (-> Any * Any))
          (even? ,even?_ (-> Any * Any))
-         (expt ,expt_ (-> Any * Any))
+         (expt ,js/expt_ (-> Any * Any))
          (extend-environment ,extend-environment (-> Any * Any))
          (false? ,false?_ (-> Any * Any))
          (falsep ,false?_ (-> Any * Any))
@@ -9614,13 +9463,12 @@
          (js/% ,js/mod_ (-> Any * Any))
          (js/& ,js/bitwise-and_ (-> Any * Any))
          (js/&& ,js/and_ (-> Any * Any))
-         (js/* ,mul_ (-> Any * Any))
+         (js/* ,js/mul_ (-> Any * Any))
          (js/** ,js/expt_ (-> Any * Any))
-         (js/+ ,add_ (-> Any * Any))
          (js/+ ,js/plus_ (-> Any * Any))
-         (js/- ,sub_ (-> Any * Any))
+         (js/- ,js/sub_ (-> Any * Any))
          (js/. ,js/dot_ (-> Any * Any))
-         (js// ,div_ (-> Any * Any))
+         (js// ,js/div_ (-> Any * Any))
          (js/< ,js/lt_ (-> Any * Any))
          (js/<< ,js/bitwise-shift-left_ (-> Any * Any))
          (js/<= ,js/lte_ (-> Any * Any))
@@ -9768,14 +9616,14 @@
          (memf? ,memf?_ (-> Any * Any))
          (memq ,memq_ (-> Any * Any))
          (memq? ,memq?_ (-> Any * Any))
-         (mod ,modulo_ (-> Any * Any))
-         (modulo ,modulo_ (-> Any * Any))
-         (mul ,mul_ (-> Any * Any))
+         (mod ,js/mod_ (-> Any * Any))
+         (modulo ,js/mod_ (-> Any * Any))
+         (mul ,js/mul_ (-> Any * Any))
          (nan? ,js/is-NaN_ (-> Any * Any))
          (new ,js/new_ (-> Any * Any))
          (new* ,js/new_ (-> Any * Any))
          (ninth ,ninth_ (-> Any * Any))
-         (not ,not_ (-> Any * Any))
+         (not ,js/not_ (-> Any * Any))
          (nth ,nth_ (-> Any * Any))
          (nthcdr ,nthcdr_ (-> Any * Any))
          (null? ,null?_ (-> Any * Any))
@@ -9822,7 +9670,7 @@
          (pop-left! ,pop-left!_ (-> Any * Any))
          (pop-right ,pop-right!_ (-> Any * Any))
          (pop-right! ,pop-right!_ (-> Any * Any))
-         (pow ,expt_ (-> Any * Any))
+         (pow ,js/expt_ (-> Any * Any))
          (print ,display_ (-> Any * Any))
          (print-estree ,print-estree (-> Any * Any))
          (procedure? ,procedure?_ (-> Any * Any))
@@ -9887,7 +9735,7 @@
          (string-upcase ,string-upcase_ (-> Any * Any))
          (string? ,string?_ (-> Any * Any))
          (stringp ,string?_ (-> Any * Any))
-         (sub ,sub_ (-> Any * Any))
+         (sub ,js/sub_ (-> Any * Any))
          (sub1 ,sub1_ (-> Any * Any))
          (substring ,substring_ (-> Any * Any))
          (symbol->gensym ,symbol->gensym_ (-> Any * Any))

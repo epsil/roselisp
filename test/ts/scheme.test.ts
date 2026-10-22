@@ -1699,11 +1699,12 @@ describe('*', (): any => {
 });
 
 describe('/', (): any => {
-  it('(/)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/')], undefined]));
   it('(/ 1)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/'), 1], 1]));
+  it('(/ 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/'), 2], 0.5]));
   it('(/ 1 2)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/'), 1, 2], 0.5]));
   it('(/ 1 2 3)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/'), 1, 2, 3], [Symbol.for('/'), 1, 2, 3]]));
   it('(/ 1 2 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/'), 1, 2, 4], 0.125]));
+  it('(/ (/ 1 2) 4)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('/'), [Symbol.for('/'), 1, 2], 4], 0.125]));
   it('(compile \'(/ 1 2))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('/'), 1, 2]]], '1 / 2;']));
   return it('(compile \'(/ 1 2 4))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('/'), 1, 2, 4]]], '1 / 2 / 4;']));
 });

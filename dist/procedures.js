@@ -18,9 +18,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.not = exports.mul = exports._mul = exports.memf = exports.memq = exports.member = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.lte = exports.lt = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.gte = exports.gt = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.div = exports._div = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.plus = exports.add = exports._add = exports.add1 = void 0;
-exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.gte_ = exports.gt_ = exports.funcall_ = exports.forEach_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.expt_ = exports.evenp_ = exports.error_ = exports.div_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.arity_ = exports.apply_ = exports.add_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.subtract = exports.sub = exports.minus = exports._sub = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = void 0;
-exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub_ = exports.sub1_ = exports.stringToKeyword_ = exports.sqrt_ = exports.specialTypeP_ = exports.sort_ = exports.sortx_ = exports.selfEvaluatingP_ = exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.not_ = exports.mul_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.makeError_ = exports.macrop_ = exports.macroTypeP_ = exports.lte_ = exports.lt_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = void 0;
+exports.values = exports.union = exports.undefinedTypeP = exports.typeOf = exports.truep = exports.taggedListP = exports.syntaxTransformerP = exports.syntaxTransformerTypeP = exports.sub1 = exports.specialTypeP = exports.range = exports.procedurep = exports.functionp = exports.procedureTypeP = exports.pipe = exports.numberp = exports.memf = exports.memq = exports.member = exports.memberp = exports.memberP_ = exports.memberP = exports.mapcar = exports.map = exports.macrop = exports.macroTypeP = exports.keywordp = exports.keywordToSymbol = exports.keywordToString = exports.isAP = exports.instanceofp = exports.instanceOf_ = exports.instanceOfP_ = exports.instanceOfP = exports.instanceOf = exports.intersection = exports.funcall = exports.foldr = exports.foldl = exports.findf = exports.findfIndex = exports.fexprp = exports.fexprTypeP = exports.falsep = exports.error = exports.display = exports.compose = exports.compilerTypeP = exports.apply = exports.add1 = void 0;
+exports.range_ = exports.procedurep_ = exports.procedureTypeP_ = exports.pipe_ = exports.onep_ = exports.oddp_ = exports.numberp_ = exports.modulo_ = exports.memq_ = exports.memqp_ = exports.memf_ = exports.memfp_ = exports.member_ = exports.memberp_ = exports.map_ = exports.makeError_ = exports.macrop_ = exports.macroTypeP_ = exports.keywordp_ = exports.keywordToSymbol_ = exports.keywordToString_ = exports.isAP_ = exports.intersection_ = exports.indexWhere_ = exports.indexOf_ = exports.identity_ = exports.funcall_ = exports.forEach_ = exports.foldr_ = exports.foldl_ = exports.findf_ = exports.findfIndex_ = exports.filter_ = exports.fexprp_ = exports.falsep_ = exports.evenp_ = exports.error_ = exports.display_ = exports.const_ = exports.compose_ = exports.compilerTypeP_ = exports.booleanp_ = exports.atomp_ = exports.assert_ = exports.arity_ = exports.apply_ = exports.add1_ = exports.abs_ = exports.zerop = exports.variableTypeP = void 0;
+exports.zerop_ = exports.variableTypeP_ = exports.values_ = exports.union_ = exports.undefinedp_ = exports.undefinedTypeP_ = exports.typeOf_ = exports.truep_ = exports.taggedListP_ = exports.syntaxTransformerP_ = exports.syntaxTransformerTypeP_ = exports.symbolToKeyword_ = exports.sub1_ = exports.stringToKeyword_ = exports.sqrt_ = exports.specialTypeP_ = exports.sort_ = exports.sortx_ = exports.selfEvaluatingP_ = void 0;
 const util_1 = require("./util");
 const [equalp, keywordp, makeError] = (() => {
     function equalp_(x, y) {
@@ -282,21 +282,6 @@ exports.taggedListP = taggedListP_;
 exports.taggedListP_ = taggedListP_;
 taggedListP_.fsource = [Symbol.for('define'), [Symbol.for('tagged-list?_'), Symbol.for('exp'), Symbol.for('tag')], [Symbol.for('and'), [Symbol.for('pair-or-list?'), Symbol.for('exp')], [Symbol.for('>='), [Symbol.for('length'), Symbol.for('exp')], 1], [Symbol.for('eq?'), [Symbol.for('first'), Symbol.for('exp')], Symbol.for('tag')]]];
 /**
- * Logical negation.
- *
- * Similar to [`not` in Racket][rkt:not] and
- * [`not` in Common Lisp][cl:not].
- *
- * [rkt:not]: https://docs.racket-lang.org/reference/booleans.html#%28def._%28%28quote._~23~25kernel%29._not%29%29
- * [cl:not]: http://clhs.lisp.se/Body/f_not.htm
- */
-function not_(x) {
-    return !x;
-}
-exports.not = not_;
-exports.not_ = not_;
-not_.fsource = [Symbol.for('define'), [Symbol.for('not_'), Symbol.for('x')], [Symbol.for('not'), Symbol.for('x')]];
-/**
  * Map a procedure over a list.
  *
  * Similar to [`map` in Racket][rkt:map] and
@@ -349,110 +334,6 @@ forEach_.compilerMacro = (() => {
 })();
 forEach_.fsource = [Symbol.for('define'), [Symbol.for('for-each_'), Symbol.for('f'), Symbol.for('lst')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('send'), Symbol.for('lst'), Symbol.for('forEach'), Symbol.for('f')]];
 /**
- * Less than operator.
- *
- * Similar to [`<` in Racket][rkt:lt] and [`<` in Common Lisp][cl:lt].
- *
- * [rkt:lt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c%29%29
- * [cl:lt]: http://clhs.lisp.se/Body/f_eq_sle.htm#LT
- */
-function lt_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x < y) === (x >= y)
-            if (args[i - 1] >= args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.lt = lt_;
-exports.lt_ = lt_;
-lt_.fsource = [Symbol.for('define'), [Symbol.for('lt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
- * Less than or equal operator.
- *
- * Similar to [`<=` in Racket][rkt:lte] and [`<=` in Common Lisp][cl:lte].
- *
- * [rkt:lte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3c~3d%29%29
- * [cl:lte]: http://clhs.lisp.se/Body/f_eq_sle.htm#LTEQ
- */
-function lte_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x <= y) === (x > y)
-            if (args[i - 1] > args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.lte = lte_;
-exports.lte_ = lte_;
-lte_.fsource = [Symbol.for('define'), [Symbol.for('lte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('>'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
- * Greater than operator.
- *
- * Similar to [`>` in Racket][rkt:gt] and [`>` in Common Lisp][cl:gt].
- *
- * [rkt:gt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e%29%29
- * [cl:gt]: http://clhs.lisp.se/Body/f_eq_sle.htm#GT
- */
-function gt_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x > y) === (x <= y)
-            if (args[i - 1] <= args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.gt = gt_;
-exports.gt_ = gt_;
-gt_.fsource = [Symbol.for('define'), [Symbol.for('gt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<='), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
- * Greater than or equal operator.
- *
- * Similar to [`>=` in Racket][rkt:gte] and [`>=` in Common Lisp][cl:gte].
- *
- * [rkt:gte]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._~3e~3d%29%29
- * [cl:gte]: http://clhs.lisp.se/Body/f_eq_sle.htm#GTEQ
- */
-function gte_(...args) {
-    if (args.length < 2) {
-        return true;
-    }
-    else {
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            // !(x >= y) === (x < y)
-            if (args[i - 1] < args[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-exports.gte = gte_;
-exports.gte_ = gte_;
-gte_.fsource = [Symbol.for('define'), [Symbol.for('gte_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('<'), [Symbol.for('length'), Symbol.for('args')], 2], true], [Symbol.for('else'), [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('when'), [Symbol.for('<'), [Symbol.for('list-ref'), Symbol.for('args'), [Symbol.for('-'), Symbol.for('i'), 1]], [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]], [Symbol.for('return'), false]]], true]]];
-/**
  * Modulo operation.
  *
  * Similar to [`modulo` in Racket][rkt:modulo] and
@@ -466,26 +347,6 @@ function modulo_(x, y) {
 }
 exports.modulo_ = modulo_;
 modulo_.fsource = [Symbol.for('define'), [Symbol.for('modulo_'), Symbol.for('x'), Symbol.for('y')], [Symbol.for('modulo'), Symbol.for('x'), Symbol.for('y')]];
-/**
- * Addition.
- *
- * Similar to [`+` in Racket][rkt:add] and [`+` in Common Lisp][cl:add].
- *
- * [rkt:add]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2B%29%29
- * [cl:add]: http://clhs.lisp.se/Body/f_pl.htm
- */
-function add_(...args) {
-    let result = 0;
-    for (let arg of args) {
-        result = result + arg;
-    }
-    return result;
-}
-exports._add = add_;
-exports.add = add_;
-exports.plus = add_;
-exports.add_ = add_;
-add_.fsource = [Symbol.for('define'), [Symbol.for('add_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 0]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('+'), Symbol.for('result'), Symbol.for('arg')]]], Symbol.for('result')]];
 /**
  * Return `(+ x 1)`.
  *
@@ -508,36 +369,6 @@ add1_.compilerMacro = (() => {
 })();
 add1_.fsource = [Symbol.for('define'), [Symbol.for('add1_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('+'), Symbol.for('x'), 1]];
 /**
- * Subtraction.
- *
- * Similar to [`-` in Racket][rkt:sub] and [`-` in Common Lisp][cl:sub].
- *
- * [rkt:sub]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._-%29%29
- * [cl:sub]: http://clhs.lisp.se/Body/f__.htm
- */
-function sub_(...args) {
-    const len = args.length;
-    if (len === 0) {
-        return 0;
-    }
-    else if (len === 1) {
-        return -args[0];
-    }
-    else {
-        let result = args[0];
-        for (let i = 1; i < len; i++) {
-            result = result - args[i];
-        }
-        return result;
-    }
-}
-exports._sub = sub_;
-exports.minus = sub_;
-exports.sub = sub_;
-exports.subtract = sub_;
-exports.sub_ = sub_;
-sub_.fsource = [Symbol.for('define'), [Symbol.for('sub_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('len'), [Symbol.for('length'), Symbol.for('args')]]], [Symbol.for('cond'), [[Symbol.for('zero?'), Symbol.for('len')], 0], [[Symbol.for('one?'), Symbol.for('len')], [Symbol.for('-'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, Symbol.for('len')]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('-'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]]];
-/**
  * Return `(- x 1)`.
  *
  * Similar to [`sub1` in Racket][rkt:sub1].
@@ -558,79 +389,6 @@ sub1_.compilerMacro = (() => {
     return f;
 })();
 sub1_.fsource = [Symbol.for('define'), [Symbol.for('sub1_'), Symbol.for('x')], [Symbol.for('declare'), [Symbol.for('inline'), true]], [Symbol.for('-'), Symbol.for('x'), 1]];
-/**
- * Multiplication.
- *
- * Similar to [`*` in Racket][rkt:mul] and [`*` in Common Lisp][cl:mul].
- *
- * [rkt:mul]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2A%29%29
- * [cl:mul]: http://clhs.lisp.se/Body/f_st.htm
- */
-function mul_(...args) {
-    let result = 1;
-    for (let arg of args) {
-        result = result * arg;
-    }
-    return result;
-}
-exports._mul = mul_;
-exports.mul = mul_;
-exports.mul_ = mul_;
-mul_.fsource = [Symbol.for('define'), [Symbol.for('mul_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 1]], [Symbol.for('for'), [[Symbol.for('arg'), Symbol.for('args')]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('*'), Symbol.for('result'), Symbol.for('arg')]]], Symbol.for('result')]];
-/**
- * Division.
- *
- * Similar to [`/` in Racket][rkt:div] and [`/` in Common Lisp][cl:div].
- *
- * [rkt:div]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._%2F%29%29
- * [cl:div]: http://clhs.lisp.se/Body/f_sl.htm
- */
-function div_(...args) {
-    if (args.length === 1) {
-        return 1 / args[0];
-    }
-    else {
-        let result = args[0];
-        const _end = args.length;
-        for (let i = 1; i < _end; i++) {
-            result = result / args[i];
-        }
-        return result;
-    }
-}
-exports._div = div_;
-exports.div = div_;
-exports.div_ = div_;
-div_.fsource = [Symbol.for('define'), [Symbol.for('div_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('cond'), [[Symbol.for('='), [Symbol.for('length'), Symbol.for('args')], 1], [Symbol.for('/'), 1, [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('else'), [Symbol.for('let'), [[Symbol.for('result'), [Symbol.for('first'), Symbol.for('args')]]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), 1, [Symbol.for('length'), Symbol.for('args')]]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('/'), Symbol.for('result'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')]]]], Symbol.for('result')]]]];
-/**
- * Exponentiation.
- *
- * Similar to [`expt` in Racket][rkt:expt] and [`expt` in Common Lisp][cl:expt].
- *
- * [rkt:expt]: https://docs.racket-lang.org/reference/generic-numbers.html#%28def._%28%28quote._~23~25kernel%29._expt%29%29
- * [cl:expt]: http://clhs.lisp.se/Body/f_exp_e.htm#expt
- */
-function expt_(...args) {
-    let result = 1;
-    const _start = args.length - 1;
-    for (let i = _start; i > -1; i--) {
-        result = args[i] ** result;
-    }
-    return result;
-}
-exports.expt_ = expt_;
-expt_.fsource = [Symbol.for('define'), [Symbol.for('expt_'), Symbol.for('.'), Symbol.for('args')], [Symbol.for('let'), [[Symbol.for('result'), 1]], [Symbol.for('for'), [[Symbol.for('i'), [Symbol.for('range'), [Symbol.for('-'), [Symbol.for('length'), Symbol.for('args')], 1], -1, -1]]], [Symbol.for('set!'), Symbol.for('result'), [Symbol.for('js/**'), [Symbol.for('list-ref'), Symbol.for('args'), Symbol.for('i')], Symbol.for('result')]]], Symbol.for('result')]];
-/**
- * Compiler macro for `(expt ...)` expressions.
- */
-expt_.compilerMacro = (() => {
-    const f = (exp, env) => {
-        const args = exp.slice(1);
-        return [Symbol.for('js/**'), ...args];
-    };
-    f.ftype = 'macro';
-    return f;
-})();
 /**
  * Square root.
  *
@@ -1356,7 +1114,7 @@ indexOf_.fsource = [Symbol.for('define'), [Symbol.for('index-of_'), Symbol.for('
  */
 function intersection_(...args) {
     function intersection2(arr1, arr2) {
-        let result = [];
+        const result = [];
         for (let element of arr1) {
             if (arr2.includes(element) && !result.includes(element)) {
                 result.push(element);
@@ -1387,7 +1145,7 @@ intersection_.fsource = [Symbol.for('define'), [Symbol.for('intersection_'), Sym
  */
 function union_(...args) {
     function union2(arr1, arr2) {
-        let result = [];
+        const result = [];
         for (let element of arr1) {
             if (!result.includes(element)) {
                 result.push(element);
@@ -1418,7 +1176,7 @@ function range_(start, end = undefined, step = undefined) {
     const startN = (end === undefined) ? 0 : start;
     const endN = (end === undefined) ? start : end;
     const stepN = step || 1;
-    let result = [];
+    const result = [];
     for (let i = startN; (stepN < 0) ? (i > endN) : (i < endN); i = i + stepN) {
         result.push(i);
     }

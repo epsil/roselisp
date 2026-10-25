@@ -679,42 +679,26 @@ arrayPushRightX_.compilerMacro = ((): any => {
 
 /**
  * Sort an array with a comparator.
- * Returns a new array.
- */
-function arraySort_(arr: any, comp: any = undefined): any {
-  return [...arr].sort(comp);
-}
-
-arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('array-sort!'), [Symbol.for('array-copy'), Symbol.for('arr')], Symbol.for('comp')]];
-
-/**
- * Compiler macro for `(array-sort ...)` expressions.
- */
-arraySort_.compilerMacro = ((): any => {
-  const f: any = (exp: any, env: any): any => {
-    let [arr, comp]: any[] = exp.slice(1);
-    if (comp === undefined) {
-      comp = undefined;
-    }
-    if (comp) {
-      return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr], comp];
-    } else {
-      return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr]];
-    }
-  };
-  f.ftype = 'macro';
-  return f;
-})();
-
-/**
- * Sort an array with a comparator.
  * Changes the array.
  */
-function arraySortX_(arr: any, comp: any = undefined): any {
+function arraySortX_(arr: any, comp: any = (x: any, y: any): any => {
+  if (x < y) {
+    return -1;
+  } else if (x > y) {
+    return 1;
+  } else {
+    return 0;
+  }
+}): any {
+  // Note that if the `sort` method is invoked with no arguments, then
+  // JavaScript's default behavior is to convert the elements into
+  // strings and compare that. This can yield some unexpected results
+  // (e.g., `1000` before `2`), so we override this behavior with a
+  // default comparator.
   return arr.sort(comp);
 }
 
-arraySortX_.fsource = [Symbol.for('define'), [Symbol.for('array-sort!_'), Symbol.for('arr'), [Symbol.for('comp'), undefined]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+arraySortX_.fsource = [Symbol.for('define'), [Symbol.for('array-sort!_'), Symbol.for('arr'), [Symbol.for('comp'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
 
 /**
  * Compiler macro for `(array-sort ...)` expressions.
@@ -723,13 +707,42 @@ arraySortX_.compilerMacro = ((): any => {
   const f: any = (exp: any, env: any): any => {
     let [arr, comp]: any[] = exp.slice(1);
     if (comp === undefined) {
-      comp = undefined;
+      comp = (x: any, y: any): any => (x < y) ? -1 : ((x > y) ? 1 : 0);
     }
-    if (comp) {
-      return [Symbol.for('send'), arr, Symbol.for('sort'), comp];
-    } else {
-      return [Symbol.for('send'), arr, Symbol.for('sort')];
+    return [Symbol.for('send'), arr, Symbol.for('sort'), comp];
+  };
+  f.ftype = 'macro';
+  return f;
+})();
+
+/**
+ * Sort an array with a comparator.
+ * Returns a new array.
+ */
+function arraySort_(arr: any, comp: any = (x: any, y: any): any => {
+  if (x < y) {
+    return -1;
+  } else if (x > y) {
+    return 1;
+  } else {
+    return 0;
+  }
+}): any {
+  return [...arr].sort(comp);
+}
+
+arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]], [Symbol.for('array-sort!'), [Symbol.for('array-copy'), Symbol.for('arr')], Symbol.for('comp')]];
+
+/**
+ * Compiler macro for `(array-sort ...)` expressions.
+ */
+arraySort_.compilerMacro = ((): any => {
+  const f: any = (exp: any, env: any): any => {
+    let [arr, comp]: any[] = exp.slice(1);
+    if (comp === undefined) {
+      comp = (x: any, y: any): any => (x < y) ? -1 : ((x > y) ? 1 : 0);
     }
+    return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr], comp];
   };
   f.ftype = 'macro';
   return f;

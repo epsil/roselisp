@@ -1935,9 +1935,11 @@ describe('filter', (): any => {
 
 describe('sort', (): any => {
   it('(sort \'(4 3 2 1))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
+  it('(sort \'(1 30 4 21 100000))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), [1, 30, 4, 21, 100000]]], [Symbol.for('quote'), [1, 4, 21, 30, 100000]]]));
+  it('(sort \'("1" "30" "4" "21" "100000"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), ['1', '30', '4', '21', '100000']]], [Symbol.for('quote'), ['1', '100000', '21', '30', '4']]]));
   it('(sort \'(4 3 2 1) (lambda (x y) (< x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('<'), Symbol.for('x'), Symbol.for('y')]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
   it('(sort \'(4 3 2 1) <)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort'), [Symbol.for('quote'), [4, 3, 2, 1]], Symbol.for('<')], [Symbol.for('quote'), [1, 2, 3, 4]]]));
-  it('(compile \'(sort lst))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort'), Symbol.for('lst')]]], '[...lst].sort();']));
+  it('(compile \'(sort lst))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort'), Symbol.for('lst')]]], '[...lst].sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));']));
   it('(compile \'(sort lst <))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort'), Symbol.for('lst'), Symbol.for('<')]]], '[...lst].sort((x, y) => (x < y) ? -1 : 1);']));
   return it('(compile \'(sort lst (foo)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort'), Symbol.for('lst'), [Symbol.for('foo')]]]], `let pred = foo();
 
@@ -1946,9 +1948,11 @@ describe('sort', (): any => {
 
 describe('sort!', (): any => {
   it('(sort! \'(4 3 2 1))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort!'), [Symbol.for('quote'), [4, 3, 2, 1]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
+  it('(sort! \'(1 30 4 21 100000))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort!'), [Symbol.for('quote'), [1, 30, 4, 21, 100000]]], [Symbol.for('quote'), [1, 4, 21, 30, 100000]]]));
+  it('(sort! \'("1" "30" "4" "21" "100000"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort!'), [Symbol.for('quote'), ['1', '30', '4', '21', '100000']]], [Symbol.for('quote'), ['1', '100000', '21', '30', '4']]]));
   it('(sort! \'(4 3 2 1) (lambda (x y) (< x y)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort!'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('<'), Symbol.for('x'), Symbol.for('y')]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
   it('(sort! \'(4 3 2 1) <)', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('sort!'), [Symbol.for('quote'), [4, 3, 2, 1]], Symbol.for('<')], [Symbol.for('quote'), [1, 2, 3, 4]]]));
-  it('(compile \'(sort! lst))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort!'), Symbol.for('lst')]]], 'lst.sort();']));
+  it('(compile \'(sort! lst))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort!'), Symbol.for('lst')]]], 'lst.sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));']));
   it('(compile \'(sort! lst <))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort!'), Symbol.for('lst'), Symbol.for('<')]]], 'lst.sort((x, y) => (x < y) ? -1 : 1);']));
   return it('(compile \'(sort! lst (foo)))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('sort!'), Symbol.for('lst'), [Symbol.for('foo')]]]], `let pred = foo();
 

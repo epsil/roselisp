@@ -290,30 +290,55 @@
                      ,arr))))
 
 ;;; Sort an array with a comparator.
-;;; Returns a new array.
-(define (array-sort_ arr (comp #u))
-  (array-sort! (array-copy arr) comp))
-
-;;; Compiler macro for `(array-sort ...)` expressions.
-(define-compiler-macro (array-sort_ arr (comp #u))
-  (cond
-   (comp
-    `(array-sort! (array-copy ,arr) ,comp))
-   (else
-    `(array-sort! (array-copy ,arr)))))
-
-;;; Sort an array with a comparator.
 ;;; Changes the array.
-(define (array-sort!_ arr (comp #u))
+(define (array-sort!_ arr
+                      (comp (lambda (x y)
+                              (cond
+                               ((< x y)
+                                -1)
+                               ((> x y)
+                                1)
+                               (else
+                                0)))))
+  ;; Note that if the `sort` method is invoked with no arguments, then
+  ;; JavaScript's default behavior is to convert the elements into
+  ;; strings and compare that. This can yield some unexpected results
+  ;; (e.g., `1000` before `2`), so we override this behavior with a
+  ;; default comparator.
   (send arr sort comp))
 
 ;;; Compiler macro for `(array-sort ...)` expressions.
-(define-compiler-macro (array-sort!_ arr (comp #u))
-  (cond
-   (comp
-    `(send ,arr sort ,comp))
-   (else
-    `(send ,arr sort))))
+(define-compiler-macro (array-sort!_ arr
+                                     (comp (lambda (x y)
+                                             (js/? (< x y)
+                                                   -1
+                                                   (js/? (> x y)
+                                                         1
+                                                         0)))))
+  `(send ,arr sort ,comp))
+
+;;; Sort an array with a comparator.
+;;; Returns a new array.
+(define (array-sort_ arr
+                     (comp (lambda (x y)
+                             (cond
+                              ((< x y)
+                               -1)
+                              ((> x y)
+                               1)
+                              (else
+                               0)))))
+  (array-sort! (array-copy arr) comp))
+
+;;; Compiler macro for `(array-sort ...)` expressions.
+(define-compiler-macro (array-sort_ arr
+                                    (comp (lambda (x y)
+                                            (js/? (< x y)
+                                                  -1
+                                                  (js/? (> x y)
+                                                        1
+                                                        0)))))
+  `(array-sort! (array-copy ,arr) ,comp))
 
 ;;; Convert an iterator to an array.
 (define (iterator->array_ iterator)

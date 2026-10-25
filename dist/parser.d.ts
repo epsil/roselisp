@@ -137,7 +137,7 @@ declare namespace tokenize_ {
  */
 declare function parseSyntax_(tokens: any, options?: any): any;
 declare namespace parseSyntax_ {
-    var fsource: (symbol | (symbol | undefined)[] | (symbol | (string | symbol)[])[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[] | ((symbol | undefined)[] | (string | symbol)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
+    var fsource: (symbol | (symbol | (string | symbol)[])[] | (symbol | undefined)[] | (symbol | (symbol | (symbol | (symbol | undefined)[])[])[])[] | (symbol | (symbol | (number | symbol | symbol[])[])[][] | (symbol | (symbol | (symbol | (symbol | never[])[])[])[] | (symbol | (symbol | (symbol | (symbol | (string | symbol | (string | symbol)[])[])[])[])[] | ((string | symbol)[] | (symbol | undefined)[] | (symbol | (symbol | (number | symbol | symbol[])[] | (symbol | undefined[])[])[])[])[])[][])[])[])[];
 }
 /**
  * Take the array of tokens produced by `tokenize` and make a

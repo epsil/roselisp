@@ -3625,6 +3625,10 @@ reverse(lst);"
  :describe "sort"
  > (sort '(4 3 2 1))
  '(1 2 3 4)
+ > (sort '(1 30 4 21 100000))
+ '(1 4 21 30 100000)
+ > (sort '("1" "30" "4" "21" "100000"))
+ '("1" "100000" "21" "30" "4")
  > (sort '(4 3 2 1)
          (lambda (x y)
            (< x y)))
@@ -3632,7 +3636,7 @@ reverse(lst);"
  > (sort '(4 3 2 1) <)
  '(1 2 3 4)
  > (compile '(sort lst))
- "[...lst].sort();"
+ "[...lst].sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(sort lst <))
  "[...lst].sort((x, y) => (x < y) ? -1 : 1);"
  > (compile '(sort lst (foo)))
@@ -3643,6 +3647,10 @@ reverse(lst);"
  :describe "sort!"
  > (sort! '(4 3 2 1))
  '(1 2 3 4)
+ > (sort! '(1 30 4 21 100000))
+ '(1 4 21 30 100000)
+ > (sort! '("1" "30" "4" "21" "100000"))
+ '("1" "100000" "21" "30" "4")
  > (sort! '(4 3 2 1)
           (lambda (x y)
             (< x y)))
@@ -3650,7 +3658,7 @@ reverse(lst);"
  > (sort! '(4 3 2 1) <)
  '(1 2 3 4)
  > (compile '(sort! lst))
- "lst.sort();"
+ "lst.sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(sort! lst <))
  "lst.sort((x, y) => (x < y) ? -1 : 1);"
  > (compile '(sort! lst (foo)))

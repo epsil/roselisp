@@ -733,16 +733,16 @@ declare namespace abs_ {
 /**
  * Sort a list with a predicate.
  */
-declare function sort_(lst: any, pred?: any): any;
-declare namespace sort_ {
+declare function sortx_(lst: any, pred?: any): any;
+declare namespace sortx_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | undefined)[])[])[];
     var compilerMacro: any;
 }
 /**
  * Sort a list with a predicate.
  */
-declare function sortx_(lst: any, pred?: any): any;
-declare namespace sortx_ {
+declare function sort_(lst: any, pred?: any): any;
+declare namespace sort_ {
     var fsource: (symbol | (symbol | (symbol | (symbol | (number | symbol | symbol[])[])[] | undefined)[])[])[];
     var compilerMacro: any;
 }

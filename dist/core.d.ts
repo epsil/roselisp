@@ -860,7 +860,7 @@ declare namespace load_ {
  */
 declare function loadModule(modulePath: any, env: any, options?: any): any;
 declare namespace loadModule {
-    var fsource: (symbol | (symbol | undefined)[] | (string | symbol)[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (string | symbol)[])[])[])[])[];
+    var fsource: (symbol | (string | symbol)[] | (symbol | undefined)[] | (symbol | (string | symbol | symbol[])[])[] | (symbol | (symbol | (string | symbol)[])[])[] | (symbol | (symbol | (symbol | (string | symbol | symbol[])[])[])[])[] | (symbol | (symbol | (symbol | undefined)[])[] | (symbol | (symbol | (string | symbol)[])[])[])[])[];
 }
 /**
  * Lisp environment.

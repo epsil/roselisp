@@ -286,20 +286,20 @@ declare namespace arrayPushRightX_ {
 }
 /**
  * Sort an array with a comparator.
- * Returns a new array.
- */
-declare function arraySort_(arr: any, comp?: any): any;
-declare namespace arraySort_ {
-    var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
-    var compilerMacro: any;
-}
-/**
- * Sort an array with a comparator.
  * Changes the array.
  */
 declare function arraySortX_(arr: any, comp?: any): any;
 declare namespace arraySortX_ {
-    var fsource: (symbol | (symbol | (symbol | undefined)[])[])[];
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[] | (number | symbol[])[])[])[])[])[])[];
+    var compilerMacro: any;
+}
+/**
+ * Sort an array with a comparator.
+ * Returns a new array.
+ */
+declare function arraySort_(arr: any, comp?: any): any;
+declare namespace arraySort_ {
+    var fsource: (symbol | (symbol | (symbol | (symbol | (symbol | (number | symbol)[] | (number | symbol[])[])[])[])[])[])[];
     var compilerMacro: any;
 }
 /**

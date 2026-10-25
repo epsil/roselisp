@@ -122,6 +122,10 @@
  #t
 
  :describe "array-sort"
+ > (array-sort '(1 30 4 21 100000))
+ '(1 4 21 30 100000)
+ > (array-sort '("1" "30" "4" "21" "100000"))
+ '("1" "100000" "21" "30" "4")
  > (array-sort '(4 3 2 1)
                (lambda (x y)
                  (cond
@@ -133,7 +137,7 @@
                    0))))
  '(1 2 3 4)
  > (compile '(array-sort arr))
- "[...arr].sort();"
+ "[...arr].sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(array-sort arr
                          (lambda (x y)
                            (cond
@@ -154,6 +158,10 @@
 });"
 
  :describe "array-sort!"
+ > (array-sort! '(1 30 4 21 100000))
+ '(1 4 21 30 100000)
+ > (array-sort! '("1" "30" "4" "21" "100000"))
+ '("1" "100000" "21" "30" "4")
  > (array-sort! '(4 3 2 1)
                 (lambda (x y)
                   (cond
@@ -165,7 +173,7 @@
                     0))))
  '(1 2 3 4)
  > (compile '(array-sort! arr))
- "arr.sort();"
+ "arr.sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(array-sort! arr
                           (lambda (x y)
                             (cond

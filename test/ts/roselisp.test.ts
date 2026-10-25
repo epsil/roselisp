@@ -83,8 +83,10 @@ describe('vector?', (): any => {
 });
 
 describe('array-sort', (): any => {
+  it('(array-sort \'(1 30 4 21 100000))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort'), [Symbol.for('quote'), [1, 30, 4, 21, 100000]]], [Symbol.for('quote'), [1, 4, 21, 30, 100000]]]));
+  it('(array-sort \'("1" "30" "4" "21" "100000"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort'), [Symbol.for('quote'), ['1', '30', '4', '21', '100000']]], [Symbol.for('quote'), ['1', '100000', '21', '30', '4']]]));
   it('(array-sort \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
-  it('(compile \'(array-sort arr))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr')]]], '[...arr].sort();']));
+  it('(compile \'(array-sort arr))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr')]]], '[...arr].sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));']));
   return it('(compile \'(array-sort arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], `[...arr].sort((x, y) => {
   if (x < y) {
     return -1;
@@ -97,8 +99,10 @@ describe('array-sort', (): any => {
 });
 
 describe('array-sort!', (): any => {
+  it('(array-sort! \'(1 30 4 21 100000))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort!'), [Symbol.for('quote'), [1, 30, 4, 21, 100000]]], [Symbol.for('quote'), [1, 4, 21, 30, 100000]]]));
+  it('(array-sort! \'("1" "30" "4" "21" "100000"))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort!'), [Symbol.for('quote'), ['1', '30', '4', '21', '100000']]], [Symbol.for('quote'), ['1', '100000', '21', '30', '4']]]));
   it('(array-sort! \'(4 3 2 1) (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('array-sort!'), [Symbol.for('quote'), [4, 3, 2, 1]], [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]], [Symbol.for('quote'), [1, 2, 3, 4]]]));
-  it('(compile \'(array-sort! arr))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr')]]], 'arr.sort();']));
+  it('(compile \'(array-sort! arr))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr')]]], 'arr.sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));']));
   return it('(compile \'(array-sort! arr (lambda (x y) (cond ((< x y) -1) ((> x y) 1) (else 0)))))', (): any => testRepl([Symbol.for('roselisp'), Symbol.for('>'), [Symbol.for('compile'), [Symbol.for('quote'), [Symbol.for('array-sort!'), Symbol.for('arr'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]]], `arr.sort((x, y) => {
   if (x < y) {
     return -1;

@@ -1454,7 +1454,7 @@ abs_.fsource = [Symbol.for('define'), [Symbol.for('abs_'), Symbol.for('x')], [Sy
  * Sort a list with a predicate.
  */
 function sortx_(lst: any, pred: any = undefined): any {
-  return lst.sort(pred ? (x: any, y: any): any => {
+  return lst.sort(pred ? (x: any, y: any): number => {
     if (pred(x, y)) {
       return -1;
     } else {
@@ -1463,7 +1463,7 @@ function sortx_(lst: any, pred: any = undefined): any {
   } : undefined);
 }
 
-sortx_.fsource = [Symbol.for('define'), [Symbol.for('sort!_'), Symbol.for('lst'), [Symbol.for('pred'), undefined]], [Symbol.for('array-sort!'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('pred'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]], undefined]]];
+sortx_.fsource = [Symbol.for('define'), [Symbol.for('sort!_'), Symbol.for('lst'), [Symbol.for('pred'), undefined]], [Symbol.for('array-sort!'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('pred'), [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]], undefined]]];
 
 /**
  * Compiler macro for `(sort ...)` expressions.
@@ -1476,10 +1476,10 @@ sortx_.compilerMacro = ((): any => {
     }
     if (pred) {
       if (!(Array.isArray(pred) && (pred.length > 0))) {
-        return [Symbol.for('array-sort!'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
+        return [Symbol.for('array-sort!'), lst, [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
       } else {
         const pred1: any = Symbol('pred');
-        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => [Symbol.for('array-sort!'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]])(pred1)];
+        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => [Symbol.for('array-sort!'), lst, [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]])(pred1)];
       }
     } else {
       return [Symbol.for('array-sort!'), lst];
@@ -1493,7 +1493,7 @@ sortx_.compilerMacro = ((): any => {
  * Sort a list with a predicate.
  */
 function sort_(lst: any, pred: any = undefined): any {
-  return [...lst].sort(pred ? (x: any, y: any): any => {
+  return [...lst].sort(pred ? (x: any, y: any): number => {
     if (pred(x, y)) {
       return -1;
     } else {
@@ -1502,7 +1502,7 @@ function sort_(lst: any, pred: any = undefined): any {
   } : undefined);
 }
 
-sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), [Symbol.for('pred'), undefined]], [Symbol.for('array-sort'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('pred'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]], undefined]]];
+sort_.fsource = [Symbol.for('define'), [Symbol.for('sort_'), Symbol.for('lst'), [Symbol.for('pred'), undefined]], [Symbol.for('array-sort'), Symbol.for('lst'), [Symbol.for('if'), Symbol.for('pred'), [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('if'), [Symbol.for('pred'), Symbol.for('x'), Symbol.for('y')], -1, 1]], undefined]]];
 
 /**
  * Compiler macro for `(sort ...)` expressions.
@@ -1515,10 +1515,10 @@ sort_.compilerMacro = ((): any => {
     }
     if (pred) {
       if (!(Array.isArray(pred) && (pred.length > 0))) {
-        return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
+        return [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]];
       } else {
         const pred1: any = Symbol('pred');
-        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]])(pred1)];
+        return [Symbol.for('let'), [[pred1, pred]], ((pred: any): any => [Symbol.for('array-sort'), lst, [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('js/?'), [pred, Symbol.for('x'), Symbol.for('y')], -1, 1]]])(pred1)];
       }
     } else {
       return [Symbol.for('array-sort'), lst];

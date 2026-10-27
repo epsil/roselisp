@@ -746,7 +746,7 @@
 (define (sort!_ lst (pred #u))
   (array-sort! lst
                (if pred
-                   (lambda (x y)
+                   (lambda ((x : Any) (y : Any)) : Number
                      (if (pred x y)
                          -1
                          1))
@@ -760,7 +760,7 @@
      (pred)
      :smart #t
      `(array-sort! ,lst
-                   (lambda (x y)
+                   (lambda ((x : Any) (y : Any)) : Number
                      (js/? (,pred x y)
                            -1
                            1)))))
@@ -771,7 +771,7 @@
 (define (sort_ lst (pred #u))
   (array-sort lst
               (if pred
-                  (lambda (x y)
+                  (lambda ((x : Any) (y : Any)) : Number
                     (if (pred x y)
                         -1
                         1))
@@ -785,7 +785,7 @@
      (pred)
      :smart #t
      `(array-sort ,lst
-                  (lambda (x y)
+                  (lambda ((x : Any) (y : Any)) : Number
                     (js/? (,pred x y)
                           -1
                           1)))))

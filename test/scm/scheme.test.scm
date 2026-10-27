@@ -3637,6 +3637,8 @@ reverse(lst);"
  '(1 2 3 4)
  > (compile '(sort lst))
  "[...lst].sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
+ > (compile '(sort lst) :to "typescript")
+ "[...lst].sort((x: any, y: any): number => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(sort lst <))
  "[...lst].sort((x, y) => (x < y) ? -1 : 1);"
  > (compile '(sort lst (foo)))
@@ -3659,6 +3661,8 @@ reverse(lst);"
  '(1 2 3 4)
  > (compile '(sort! lst))
  "lst.sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
+ > (compile '(sort! lst) :to "typescript")
+ "lst.sort((x: any, y: any): number => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(sort! lst <))
  "lst.sort((x, y) => (x < y) ? -1 : 1);"
  > (compile '(sort! lst (foo)))

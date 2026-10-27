@@ -138,6 +138,8 @@
  '(1 2 3 4)
  > (compile '(array-sort arr))
  "[...arr].sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
+ > (compile '(array-sort arr) :to "typescript")
+ "[...arr].sort((x: any, y: any): number => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(array-sort arr
                          (lambda (x y)
                            (cond
@@ -174,6 +176,8 @@
  '(1 2 3 4)
  > (compile '(array-sort! arr))
  "arr.sort((x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0));"
+ > (compile '(array-sort! arr) :to "typescript")
+ "arr.sort((x: any, y: any): number => (x < y) ? -1 : ((x > y) ? 1 : 0));"
  > (compile '(array-sort! arr
                           (lambda (x y)
                             (cond

@@ -646,15 +646,15 @@ function arraySortX_(arr, comp = (x, y) => {
         return 0;
     }
 }) {
-    // Note that if the `sort` method is invoked with no arguments, then
-    // JavaScript's default behavior is to convert the elements into
-    // strings and compare that. This can yield some unexpected results
-    // (e.g., `1000` before `2`), so we override this behavior with a
-    // default comparator.
+    // Note that if `Array.prototype.sort` is invoked with no arguments, the
+    // [default behavior](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#description)
+    // is to convert the elements into strings and compare that.
+    // This can yield some unexpected results (e.g., `1000` before `2`),
+    // so we override this behavior with a default comparator.
     return arr.sort(comp);
 }
 exports.arraySortX_ = arraySortX_;
-arraySortX_.fsource = [Symbol.for('define'), [Symbol.for('array-sort!_'), Symbol.for('arr'), [Symbol.for('comp'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
+arraySortX_.fsource = [Symbol.for('define'), [Symbol.for('array-sort!_'), Symbol.for('arr'), [Symbol.for('comp'), [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]], [Symbol.for('send'), Symbol.for('arr'), Symbol.for('sort'), Symbol.for('comp')]];
 /**
  * Compiler macro for `(array-sort ...)` expressions.
  */
@@ -662,7 +662,7 @@ arraySortX_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [arr, comp] = exp.slice(1);
         if (comp === undefined) {
-            comp = (x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0);
+            comp = [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('js/?'), [Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1, [Symbol.for('js/?'), [Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1, 0]]];
         }
         return [Symbol.for('send'), arr, Symbol.for('sort'), comp];
     };
@@ -687,7 +687,7 @@ function arraySort_(arr, comp = (x, y) => {
     return [...arr].sort(comp);
 }
 exports.arraySort_ = arraySort_;
-arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), [Symbol.for('lambda'), [Symbol.for('x'), Symbol.for('y')], [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]], [Symbol.for('array-sort!'), [Symbol.for('array-copy'), Symbol.for('arr')], Symbol.for('comp')]];
+arraySort_.fsource = [Symbol.for('define'), [Symbol.for('array-sort_'), Symbol.for('arr'), [Symbol.for('comp'), [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('cond'), [[Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1], [[Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1], [Symbol.for('else'), 0]]]]], [Symbol.for('array-sort!'), [Symbol.for('array-copy'), Symbol.for('arr')], Symbol.for('comp')]];
 /**
  * Compiler macro for `(array-sort ...)` expressions.
  */
@@ -695,7 +695,7 @@ arraySort_.compilerMacro = (() => {
     const f = (exp, env) => {
         let [arr, comp] = exp.slice(1);
         if (comp === undefined) {
-            comp = (x, y) => (x < y) ? -1 : ((x > y) ? 1 : 0);
+            comp = [Symbol.for('lambda'), [[Symbol.for('x'), Symbol.for(':'), Symbol.for('Any')], [Symbol.for('y'), Symbol.for(':'), Symbol.for('Any')]], Symbol.for(':'), Symbol.for('Number'), [Symbol.for('js/?'), [Symbol.for('<'), Symbol.for('x'), Symbol.for('y')], -1, [Symbol.for('js/?'), [Symbol.for('>'), Symbol.for('x'), Symbol.for('y')], 1, 0]]];
         }
         return [Symbol.for('array-sort!'), [Symbol.for('array-copy'), arr], comp];
     };

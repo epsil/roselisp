@@ -1813,7 +1813,7 @@
                                   (cwd)))))))
   (cond
    (m
-    (set! env1 (send m get-provide-environment)))
+    (set! env1 (send m get-export-environment)))
    (else
     (set! m (js/require_ src-val))
     (when m
@@ -1981,7 +1981,7 @@
   (define continuation-env
     (new LispEnvironment
          '()
-          lang-env))
+         lang-env))
   (object-set! compilation-options :language-environment lang-env)
   (set! compilation-options
         (object-append
@@ -2819,7 +2819,7 @@
                    object
                    Object))
           '()
-           (list superclass)))
+          (list superclass)))
     (transfer-comments
      stx
      (datum->syntax
@@ -4200,7 +4200,7 @@
   (define fapply
     (if (tagged-list? args '(cons* list*))
         'apply
-         'funcall))
+        'funcall))
   (define params
     (second f))
   (define-values (regular-params rest-param)
@@ -4437,7 +4437,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4525,7 +4525,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -4724,7 +4724,7 @@
         stx
         `(,(if make-block
                'js/block
-                'begin)
+               'begin)
           ,@definitions
           ,@body))
        env1 inherited-options))
@@ -5356,7 +5356,7 @@
   (define env1
     (new LispEnvironment
          '()
-          env))
+         env))
   (define definitions #f)
   (define define-forms '())
   (define internal-symbols '())
@@ -5476,7 +5476,7 @@
     (define env1
       (new LispEnvironment
            '()
-            env))
+           env))
     (cond
      ((tagged-list? exp 'define-values)
       (define define-values-form
@@ -5705,7 +5705,7 @@
     (object-ref options :current-module))
   (define env1
     (if current-module
-        (get-field require-environment current-module)
+        (get-field import-environment current-module)
         env))
   (define specifier
     (send stx get 1))
@@ -5777,7 +5777,7 @@
           (force module-promise))
         (cond
          (m
-          (send m get-provide-environment))
+          (send m get-export-environment))
          (else
           (define in-dir-option
             (object-ref options :in-dir))
@@ -6702,7 +6702,7 @@
       (define return-type
         (if is-constructor
             'Void
-             #u))
+            #u))
       (define is-computed
         (not (symbol? id)))
       (define id-compiled
@@ -7473,11 +7473,11 @@
                  result)
               `(,(if (eq? fold 'right)
                      'js/reduce-right
-                      'js/reduce)
+                     'js/reduce)
                 ,args
                 (lambda ,(if (eq? fold 'right)
                              '(right left)
-                              '(left right))
+                             '(left right))
                   (js/op ,op left right)))))))
     (when (and (not (eq? fold 'chain))
                (= (length result) 3))
@@ -8584,13 +8584,13 @@
   (define/public compilation-options)
   (define/public stxs '())
   (define/public header-stxs '())
-  (define/public require-stxs '())
-  (define/public provide-stxs '())
+  (define/public import-stxs '())
+  (define/public export-stxs '())
   (define/public main-stxs '())
-  (define/public parent-environment)
-  (define/public require-environment)
+  (define/public import-environment)
+  (define/public export-environment)
   (define/public main-environment)
-  (define/public provide-environment)
+  (define/public parent-environment)
   (define/public module-map)
   (define/public compiled-module-stx #u)
   (define/public inline-lisp-sources-flag #f)
@@ -8603,21 +8603,21 @@
     (set-field! name this name)
     (set-field! module-path this module-path)
     (set-field! parent-environment this parent)
-    (set-field! require-environment
+    (set-field! import-environment
                 this
                 (new LispEnvironment
                      '()
-                      parent))
+                     parent))
     (set-field! main-environment
                 this
                 (new LispEnvironment
                      '()
-                      (get-field require-environment this)))
-    (set-field! provide-environment
+                     (get-field import-environment this)))
+    (set-field! export-environment
                 this
                 (new LispEnvironment
                      '()
-                      (get-field main-environment this)))
+                     (get-field main-environment this)))
     (set-field! compilation-options
                 this
                 (object-append
@@ -8656,7 +8656,7 @@
         (define require-statements
           (compile-statement
            (begin-wrap-stx
-            (get-field require-stxs this))
+            (get-field import-stxs this))
            env1 options1))
         (define main-statements
           (compile-statement-or-return-statement
@@ -8666,7 +8666,7 @@
         (define provide-statements
           (compile-statement
            (begin-wrap-stx
-            (get-field provide-stxs this))
+            (get-field export-stxs this))
            env1 options1))
         (define global-environment
           (build-global-environment
@@ -8732,22 +8732,22 @@
   (define/public (get-name)
     (get-field name this))
 
-  (define/public (get-provide-environment)
+  (define/public (get-import-environment)
     (unless (get-field compiled-module-stx this)
       (send this compile))
-    (get-field provide-environment this))
+    (get-field import-environment this))
 
-  (define/public (get-require-environment)
+  (define/public (get-export-environment)
     (unless (get-field compiled-module-stx this)
       (send this compile))
-    (get-field require-environment this))
+    (get-field export-environment this))
 
   (define/public (initialize-stxs (stxs '()))
     (send this make-header-stx stxs)
     ;; Sort the expressions into `require` expressions,
     ;; `provide` expressions and main expressions.
-    (define require-stxs '())
-    (define provide-stxs '())
+    (define import-stxs '())
+    (define export-stxs '())
     (define main-stxs '())
     (for ((stx stxs))
       (define exp #u)
@@ -8764,15 +8764,15 @@
         (set! stx (datum->syntax #f exp))))
       (cond
        ((tagged-list? exp 'require)
-        (push-right! require-stxs stx))
+        (push-right! import-stxs stx))
        ((tagged-list? exp 'provide)
-        (push-right! provide-stxs stx))
+        (push-right! export-stxs stx))
        (else
         (push-right! main-stxs stx))))
     (define sorted-stxs
-      (append require-stxs main-stxs provide-stxs))
-    (set-field! require-stxs this require-stxs)
-    (set-field! provide-stxs this provide-stxs)
+      (append import-stxs main-stxs export-stxs))
+    (set-field! import-stxs this import-stxs)
+    (set-field! export-stxs this export-stxs)
     (set-field! main-stxs this main-stxs)
     (set-field! stxs this sorted-stxs)
     this)
@@ -8853,7 +8853,7 @@
 
   (define/public (to-object (options (object)))
     (~> this
-        (send _ get-provide-environment)
+        (send _ get-export-environment)
         (send _ to-object options))))
 
 ;;; Convert a map of `module` forms to a map of `Module` objects,

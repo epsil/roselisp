@@ -367,7 +367,7 @@ function enterx(x = undefined) {
     else {
         const m = (0, core_1.loadModule)(x, (0, env_1.currentEnvironment)());
         if (m) {
-            currentRepl().env = m.getProvideEnvironment();
+            currentRepl().env = m.getExportEnvironment();
         }
     }
 }

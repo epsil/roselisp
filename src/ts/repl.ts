@@ -433,7 +433,7 @@ function enterx(x: any = undefined): void {
   } else {
     const m: any = loadModule(x, currentEnvironment());
     if (m) {
-      currentRepl().env = m.getProvideEnvironment();
+      currentRepl().env = m.getExportEnvironment();
     }
   }
 }

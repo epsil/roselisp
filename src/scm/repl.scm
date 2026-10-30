@@ -375,7 +375,7 @@
     (when m
       (set-field! env
                   (current-repl)
-                  (send m get-provide-environment))))))
+                  (send m get-export-environment))))))
 
 ;;; Display help message.
 (define (help) : Void
